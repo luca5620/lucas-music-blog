@@ -2,8 +2,8 @@
 
 /* ============================================
    Y2K DESIGN SYSTEM v2 — Peak Music Reviews
-   Inspired by: AWGE, PS1/PS2 game cases,
-   early YouTube/LiveLeak, CRT monitors.
+   Inspired by: Nintendo DS game cases, PS1/PS2,
+   early YouTube/LiveLeak, retro gaming.
    Bold, gritty, playful.
    ============================================ */
 
@@ -29,11 +29,12 @@
   --accent-rose: #e05575;
   --accent-cyan: #45d0c8;
 
-  /* CRT Bezel — the 3D TV frame colors */
-  --bezel-light: #c8c0b4;
-  --bezel-mid: #9e978c;
-  --bezel-dark: #6e6860;
-  --bezel-shadow: #3a3632;
+  /* DS Case — Nintendo DS game case plastic */
+  --ds-plastic: #1a1a1a;
+  --ds-plastic-light: #2a2a2a;
+  --ds-plastic-dark: #0e0e0e;
+  --ds-inner-border: #333;
+  --ds-spine-width: 48px;
 
   /* Borders */
   --border-subtle: #222228;
@@ -72,10 +73,9 @@
   --color-border-medium: var(--border-medium);
   --color-border-bright: var(--border-bright);
 
-  --color-bezel-light: var(--bezel-light);
-  --color-bezel-mid: var(--bezel-mid);
-  --color-bezel-dark: var(--bezel-dark);
-  --color-bezel-shadow: var(--bezel-shadow);
+  --color-ds-plastic: var(--ds-plastic);
+  --color-ds-plastic-light: var(--ds-plastic-light);
+  --color-ds-plastic-dark: var(--ds-plastic-dark);
 
   --font-sans: var(--font-body);
   --font-heading: var(--font-heading);
@@ -91,58 +91,95 @@ body {
 }
 
 /* ============================================
-   CRT TV FRAME — AWGE-inspired 3D bezel.
-   Content sits "inside" a CRT monitor.
+   NINTENDO DS GAME CASE FRAME
+   Content sits "inside" a DS case like cover art.
+   Wider left spine with "NINTENDO DS" branding.
    ============================================ */
-.crt-frame {
+.ds-case {
   position: relative;
   margin: 1.5rem auto;
   max-width: 1200px;
-  border-radius: 12px;
-  background: var(--bg-screen);
+  display: flex;
+  border-radius: 6px;
+  background: var(--ds-plastic);
 
-  /* Multi-layered 3D bezel */
-  border: 3px solid var(--bezel-dark);
-  outline: 6px solid var(--bezel-mid);
-  outline-offset: 0px;
+  /* 3D plastic case depth */
+  border: 2px solid var(--ds-plastic-light);
   box-shadow:
-    inset 0 0 30px rgba(0, 0, 0, 0.5),
-    inset 0 0 60px rgba(0, 0, 0, 0.2),
-    0 0 0 10px var(--bezel-light),
-    0 0 0 13px var(--bezel-dark),
-    0 0 0 16px var(--bezel-shadow),
-    0 8px 32px rgba(0, 0, 0, 0.6),
-    0 2px 8px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 3px var(--ds-plastic-dark),
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 1px 4px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
-/* Screen curvature vignette */
-.crt-frame::before {
+/* Subtle plastic sheen highlight */
+.ds-case::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   pointer-events: none;
-  z-index: 1;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 60%,
-    rgba(0, 0, 0, 0.3) 100%
+  z-index: 3;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 40%
   );
 }
 
-/* Inner content area */
-.crt-screen {
+/* Left spine — wider, with vertical branding */
+.ds-spine {
+  width: var(--ds-spine-width);
+  min-width: var(--ds-spine-width);
+  background: linear-gradient(
+    90deg,
+    var(--ds-plastic-dark) 0%,
+    var(--ds-plastic) 25%,
+    var(--ds-plastic-light) 50%,
+    var(--ds-plastic) 75%,
+    var(--ds-plastic-dark) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--ds-inner-border);
   position: relative;
-  padding: 2rem;
-  min-height: 70vh;
-  border-radius: 8px;
   z-index: 2;
 }
 
+/* Vertical "NINTENDO DS" text on spine */
+.ds-spine-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #555;
+  user-select: none;
+}
+
+/* Cover art area — where site content lives */
+.ds-cover {
+  flex: 1;
+  position: relative;
+  padding: 2rem;
+  min-height: 70vh;
+  background: var(--bg-screen);
+  z-index: 2;
+
+  /* contain: paint clips fixed-position children (TV transition) to this element */
+  contain: paint;
+}
+
 /* ============================================
-   TV POWER-OFF TRANSITION
+   TV CHANNEL-CHANGE TRANSITION
    Two black bars close top/bottom to center,
    brief white flash line, then open on new page.
+   Scoped to inside the DS case cover area.
    ============================================ */
 .tv-off-top,
 .tv-off-bottom {
@@ -165,7 +202,7 @@ body {
   height: 52%;
 }
 
-/* White flash line when bars fully close (like a real CRT shutting off) */
+/* White flash line when bars fully close */
 .tv-off-line {
   position: fixed;
   top: 50%;
@@ -184,6 +221,18 @@ body {
 .tv-off-flash .tv-off-line {
   height: 2px;
   opacity: 1;
+}
+
+/* --- Responsive DS case: smaller spine on mobile --- */
+@media (max-width: 640px) {
+  .ds-spine {
+    width: 32px;
+    min-width: 32px;
+  }
+  .ds-spine-text {
+    font-size: 0.45rem;
+    letter-spacing: 0.15em;
+  }
 }
 
 /* ============================================

@@ -3,7 +3,7 @@ import { Inter, Space_Grotesk, VT323 } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
-import CRTFrame from "@/components/ui/CRTFrame";
+import DSCaseFrame from "@/components/ui/DSCaseFrame";
 import TVTransition from "@/components/ui/TVTransition";
 
 /* --- Font Setup ---
@@ -46,17 +46,16 @@ export default function RootLayout({
           antialiased
         `}
       >
-        {/* TV power-off transition between pages */}
-        <TVTransition />
-
         {/* Film grain + scan line overlays */}
         <GrainOverlay />
 
-        {/* Everything sits inside the CRT monitor frame */}
-        <CRTFrame>
+        {/* Everything sits inside the Nintendo DS game case frame */}
+        <DSCaseFrame>
+          {/* TV transition is INSIDE the case so it's clipped to the cover area */}
+          <TVTransition />
           <Navigation />
           {children}
-        </CRTFrame>
+        </DSCaseFrame>
       </body>
     </html>
   );

@@ -25,7 +25,7 @@ export default function Navigation() {
         <Link href="/" className="flex items-center gap-3 group">
           <span className="text-2xl">🐧</span>
           <span className="pixel-text text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover">
-            Luca&apos;s Music Blog
+            Peak Music Reviews
           </span>
         </Link>
 

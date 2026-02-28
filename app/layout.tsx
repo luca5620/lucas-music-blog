@@ -28,7 +28,7 @@ const vt323 = VT323({
 });
 
 export const metadata: Metadata = {
-  title: "Luca's Music Blog",
+  title: "Peak Music Reviews",
   description:
     "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions.",
 };

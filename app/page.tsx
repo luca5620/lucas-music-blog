@@ -28,7 +28,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="text-center space-y-5 pt-4">
         <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-extrabold text-accent-primary tracking-tight">
-          Luca&apos;s Music Blog
+          Peak Music Reviews
         </h1>
         <p className="pixel-text text-2xl text-accent-glow">
           honest reviews. real data. no pretentious jargon.

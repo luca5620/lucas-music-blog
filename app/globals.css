@@ -148,18 +148,36 @@ body {
   z-index: 2;
 }
 
-/* Vertical "NINTENDO DS" text on spine */
-.ds-spine-text {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+/* Nintendo DS logo on spine — stacked vertical layout like the real case */
+.ds-spine-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   transform: rotate(180deg);
-  font-family: var(--font-heading);
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: #555;
+  writing-mode: vertical-rl;
   user-select: none;
+}
+
+/* "NINTENDO" — smaller, condensed, lighter */
+.ds-logo-nintendo {
+  font-family: var(--font-heading);
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+/* "DS" — larger, bolder, distinctive */
+.ds-logo-ds {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #888;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Cover art area — where site content lives */
@@ -173,6 +191,9 @@ body {
 
   /* contain: paint clips fixed-position children (TV transition) to this element */
   contain: paint;
+
+  /* Subtle CRT flicker on the "screen" inside the case */
+  animation: crt-flicker 4s infinite;
 }
 
 /* ============================================
@@ -229,9 +250,11 @@ body {
     width: 32px;
     min-width: 32px;
   }
-  .ds-spine-text {
-    font-size: 0.45rem;
-    letter-spacing: 0.15em;
+  .ds-logo-nintendo {
+    font-size: 0.35rem;
+  }
+  .ds-logo-ds {
+    font-size: 0.65rem;
   }
 }
 

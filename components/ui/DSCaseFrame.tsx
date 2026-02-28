@@ -15,9 +15,12 @@ export default function DSCaseFrame({
 }) {
   return (
     <div className="ds-case mx-4 md:mx-8 lg:mx-auto">
-      {/* Left spine — wider strip with vertical branding (like a real DS case) */}
+      {/* Left spine — wider strip with logo like a real DS case */}
       <div className="ds-spine">
-        <span className="ds-spine-text">Nintendo DS</span>
+        <div className="ds-spine-logo">
+          <span className="ds-logo-nintendo">Nintendo</span>
+          <span className="ds-logo-ds">DS</span>
+        </div>
       </div>
 
       {/* Cover art area — all site content goes here */}

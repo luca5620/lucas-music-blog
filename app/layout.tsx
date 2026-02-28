@@ -3,7 +3,7 @@ import { Inter, Space_Grotesk, VT323 } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
-import DSCaseFrame from "@/components/ui/DSCaseFrame";
+import PS2CaseFrame from "@/components/ui/PS2CaseFrame";
 import TVTransition from "@/components/ui/TVTransition";
 
 /* --- Font Setup ---
@@ -50,12 +50,12 @@ export default function RootLayout({
         <GrainOverlay />
 
         {/* Everything sits inside the Nintendo DS game case frame */}
-        <DSCaseFrame>
+        <PS2CaseFrame>
           {/* TV transition is INSIDE the case so it's clipped to the cover area */}
           <TVTransition />
           <Navigation />
           {children}
-        </DSCaseFrame>
+        </PS2CaseFrame>
       </body>
     </html>
   );

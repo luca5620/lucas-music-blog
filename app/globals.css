@@ -2,7 +2,7 @@
 
 /* ============================================
    Y2K DESIGN SYSTEM v2 — Peak Music Reviews
-   Inspired by: Nintendo DS game cases, PS1/PS2,
+   Inspired by: PlayStation 2 game cases, PS1/PS2,
    early YouTube/LiveLeak, retro gaming.
    Bold, gritty, playful.
    ============================================ */
@@ -29,12 +29,12 @@
   --accent-rose: #e05575;
   --accent-cyan: #45d0c8;
 
-  /* DS Case — Nintendo DS game case plastic */
-  --ds-plastic: #1a1a1a;
-  --ds-plastic-light: #2a2a2a;
-  --ds-plastic-dark: #0e0e0e;
-  --ds-inner-border: #333;
-  --ds-spine-width: 48px;
+  /* PS2 Case — PlayStation 2 game case */
+  --ps2-blue: #003087;
+  --ps2-blue-dark: #001a4d;
+  --ps2-blue-light: #0055bb;
+  --ps2-case-bg: #0d0d12;
+  --ps2-spine-width: 44px;
 
   /* Borders */
   --border-subtle: #222228;
@@ -73,9 +73,9 @@
   --color-border-medium: var(--border-medium);
   --color-border-bright: var(--border-bright);
 
-  --color-ds-plastic: var(--ds-plastic);
-  --color-ds-plastic-light: var(--ds-plastic-light);
-  --color-ds-plastic-dark: var(--ds-plastic-dark);
+  --color-ps2-blue: var(--ps2-blue);
+  --color-ps2-blue-dark: var(--ps2-blue-dark);
+  --color-ps2-blue-light: var(--ps2-blue-light);
 
   --font-sans: var(--font-body);
   --font-heading: var(--font-heading);
@@ -91,109 +91,136 @@ body {
 }
 
 /* ============================================
-   NINTENDO DS GAME CASE FRAME
-   Content sits "inside" a DS case like cover art.
-   Wider left spine with "NINTENDO DS" branding.
+   PS2 GAME CASE FRAME
+   Mimics a PlayStation 2 game case.
+   Navy blue top bar + left spine + ESRB rating.
    ============================================ */
-.ds-case {
+.ps2-case {
   position: relative;
   margin: 1.5rem auto;
   max-width: 1200px;
   display: flex;
-  border-radius: 6px;
-  background: var(--ds-plastic);
-
-  /* 3D plastic case depth */
-  border: 2px solid var(--ds-plastic-light);
+  flex-direction: column;
+  border-radius: 4px;
+  background: var(--ps2-case-bg);
+  border: 2px solid #1a1a2e;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 0 3px var(--ds-plastic-dark),
-    0 4px 16px rgba(0, 0, 0, 0.5),
-    0 1px 4px rgba(0, 0, 0, 0.3);
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 0 0 3px #050510,
+    0 4px 16px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
 
-/* Subtle plastic sheen highlight */
-.ds-case::before {
+.ps2-case::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 6px;
+  border-radius: 4px;
   pointer-events: none;
   z-index: 3;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    transparent 40%
-  );
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 40%);
 }
 
-/* Left spine — wider, with vertical branding */
-.ds-spine {
-  width: var(--ds-spine-width);
-  min-width: var(--ds-spine-width);
-  background: linear-gradient(
-    90deg,
-    var(--ds-plastic-dark) 0%,
-    var(--ds-plastic) 25%,
-    var(--ds-plastic-light) 50%,
-    var(--ds-plastic) 75%,
-    var(--ds-plastic-dark) 100%
-  );
+/* Top bar — "Peak Music" branding (replaces PlayStation 2 logo) */
+.ps2-top-bar {
+  background: linear-gradient(180deg, var(--ps2-blue) 0%, var(--ps2-blue-dark) 100%);
+  padding: 6px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid var(--ds-inner-border);
+  border-bottom: 1px solid var(--ps2-blue-light);
+  position: relative;
+  z-index: 3;
+}
+
+.ps2-brand {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 85, 187, 0.5);
+}
+
+/* Main area below top bar — spine + cover side by side */
+.ps2-main {
+  display: flex;
+  flex: 1;
+}
+
+/* Left spine */
+.ps2-spine {
+  width: var(--ps2-spine-width);
+  min-width: var(--ps2-spine-width);
+  background: linear-gradient(90deg, #050510 0%, #0d0d1a 50%, #050510 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #1a1a2e;
   position: relative;
   z-index: 2;
 }
 
-/* Nintendo DS logo on spine — stacked vertical layout like the real case */
-.ds-spine-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  transform: rotate(180deg);
+.ps2-spine-text {
   writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-heading);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #555;
   user-select: none;
 }
 
-/* "NINTENDO" — smaller, condensed, lighter */
-.ds-logo-nintendo {
-  font-family: var(--font-heading);
-  font-size: 0.45rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #666;
-}
-
-/* "DS" — larger, bolder, distinctive */
-.ds-logo-ds {
-  font-family: var(--font-heading);
-  font-size: 0.85rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: #888;
-  line-height: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* Cover art area — where site content lives */
-.ds-cover {
+/* Cover area — where site content lives */
+.ps2-cover {
   flex: 1;
   position: relative;
   padding: 2rem;
   min-height: 70vh;
   background: var(--bg-screen);
   z-index: 2;
-
-  /* contain: paint clips fixed-position children (TV transition) to this element */
   contain: paint;
+  animation: crt-flicker 8s infinite;
+}
 
-  /* Subtle CRT flicker on the "screen" inside the case */
-  animation: crt-flicker 4s infinite;
+/* ESRB-style rating badge — "R" for Real */
+.ps2-rating {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #555;
+  background: #111;
+  width: 42px;
+  user-select: none;
+}
+
+.ps2-rating-letter {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #ddd;
+  line-height: 1.3;
+  padding: 2px 0;
+}
+
+.ps2-rating-text {
+  font-family: var(--font-heading);
+  font-size: 0.4rem;
+  font-weight: 700;
+  color: #ddd;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: #555;
+  width: 100%;
+  text-align: center;
+  padding: 2px 0;
 }
 
 /* ============================================
@@ -244,17 +271,21 @@ body {
   opacity: 1;
 }
 
-/* --- Responsive DS case: smaller spine on mobile --- */
+/* --- Responsive PS2 case: smaller spine on mobile --- */
 @media (max-width: 640px) {
-  .ds-spine {
+  .ps2-spine {
     width: 32px;
     min-width: 32px;
   }
-  .ds-logo-nintendo {
-    font-size: 0.35rem;
+  .ps2-spine-text {
+    font-size: 0.4rem;
   }
-  .ds-logo-ds {
-    font-size: 0.65rem;
+  .ps2-top-bar {
+    padding: 4px 12px;
+  }
+  .ps2-brand {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
   }
 }
 
@@ -553,15 +584,15 @@ body {
 /* --- CRT flicker (subtle) --- */
 @keyframes crt-flicker {
   0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.8; }
   94% { opacity: 1; }
-  96% { opacity: 0.9; }
-  97% { opacity: 1; }
+  95% { opacity: 0.96; }
+  95.5% { opacity: 1; }
+  97% { opacity: 0.98; }
+  98% { opacity: 1; }
 }
 
 .crt-flicker {
-  animation: crt-flicker 4s infinite;
+  animation: crt-flicker 8s infinite;
 }
 
 /* --- Rating badge — PS1 game case style --- */

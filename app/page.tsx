@@ -53,11 +53,6 @@ export default function Home() {
         <div className="absolute top-4 left-4 glow-orb" />
         <div className="absolute top-4 right-4 glow-orb" style={{ animationDelay: "1.5s" }} />
 
-        <div className="label-xbox mx-auto w-fit">
-          <span className="glow-orb" style={{ width: 5, height: 5 }} />
-          System Online
-        </div>
-
         <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-extrabold text-accent-primary tracking-tight drop-shadow-[0_0_30px_rgba(30,144,255,0.3)]">
           Peak Music Reviews
         </h1>
@@ -69,7 +64,7 @@ export default function Home() {
         <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-sm">
           Music opinions where liking something for a dumb reason is just as valid
           as a technical breakdown. Powered by years of Spotify listening data
-          and a stubborn refusal to be Pitchfork.
+          and not falling for bullshit reviews by Pitchfork.
         </p>
 
         <div className="flex gap-4 justify-center pt-2">
@@ -94,7 +89,7 @@ export default function Home() {
         <div className="md:col-span-2 panel-xbox p-5 hover-glow relative">
           <div className="flex items-center gap-2 mb-3">
             <span className="glow-orb" />
-            <span className="label-xbox">Now Playing</span>
+            <span className="label-xbox">Currently Listening</span>
           </div>
           <NowPlaying />
         </div>

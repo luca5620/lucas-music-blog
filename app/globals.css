@@ -328,6 +328,186 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* ============================================
+   XBOX DASHBOARD — Frosted glass panels,
+   glowing borders, circuit-board aesthetic.
+   Adapted from original Xbox UI with blue accents.
+   ============================================ */
+
+/* Frosted glass panel — translucent with glow border */
+.panel-xbox {
+  background: rgba(10, 15, 30, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 144, 255, 0.2);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.panel-xbox::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  background: linear-gradient(
+    160deg,
+    rgba(30, 144, 255, 0.08) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(30, 144, 255, 0.03) 100%
+  );
+}
+
+.panel-xbox:hover {
+  border-color: rgba(30, 144, 255, 0.4);
+  box-shadow:
+    0 0 20px rgba(30, 144, 255, 0.1),
+    inset 0 0 30px rgba(30, 144, 255, 0.03);
+}
+
+/* Panel with stronger glow — for hero/featured sections */
+.panel-xbox-glow {
+  background: rgba(10, 15, 30, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(30, 144, 255, 0.3);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 30px rgba(30, 144, 255, 0.08),
+    inset 0 1px 0 rgba(30, 144, 255, 0.15);
+}
+
+.panel-xbox-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 10px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 144, 255, 0.15) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgba(77, 172, 255, 0.08) 100%
+  );
+}
+
+/* Circuit board background pattern (subtle) */
+.circuit-bg {
+  position: relative;
+}
+
+.circuit-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(rgba(30, 144, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 144, 255, 0.5) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+/* Glowing divider line */
+.divider-glow {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(30, 144, 255, 0.4) 20%,
+    rgba(30, 144, 255, 0.6) 50%,
+    rgba(30, 144, 255, 0.4) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 8px rgba(30, 144, 255, 0.3);
+}
+
+/* Pulsing glow orb — decorative element */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.3), 0 0 30px rgba(30, 144, 255, 0.1);
+    opacity: 0.8;
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(30, 144, 255, 0.5), 0 0 50px rgba(30, 144, 255, 0.2);
+    opacity: 1;
+  }
+}
+
+.glow-orb {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Xbox-style section label — beveled metallic feel */
+.label-xbox {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-glow);
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgba(30, 144, 255, 0.3);
+  border-radius: 3px;
+  background: rgba(30, 144, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Hover glow effect for interactive panels */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow:
+    0 0 20px rgba(30, 144, 255, 0.15),
+    0 0 40px rgba(30, 144, 255, 0.05);
+  border-color: rgba(30, 144, 255, 0.5);
+}
+
+/* Animated scan bar — like an Xbox loading indicator */
+@keyframes scan-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.scan-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  overflow: hidden;
+}
+
+.scan-bar::after {
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(30, 144, 255, 0.6),
+    transparent
+  );
+  animation: scan-bar 3s ease-in-out infinite;
+}
+
 /* --- Pixel Font Accent --- */
 .pixel-text {
   font-family: var(--font-pixel);

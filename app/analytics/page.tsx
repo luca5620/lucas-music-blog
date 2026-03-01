@@ -1,42 +1,42 @@
 /**
- * Analytics Page — Real Spotify listening data from stats.fm.
- * Data source: stats.fm/user/luca5620 (lifetime range)
- * 152,266 total streams, 8,088 hours across 3,012 artists.
+ * Analytics Page — Real data from Spotify Extended Streaming History.
+ * 169,574 total streams, 8,688 hours across 4,186 artists.
+ * Processed from official Spotify data export (2018-2026).
  */
 
 /* Real data from stats.fm — lifetime listening stats */
 const topArtists = [
-  { name: "The Weeknd", streams: 13098, hours: 1000 },
-  { name: "Kanye West", streams: 8782, hours: 528 },
-  { name: "Frank Ocean", streams: 5043, hours: 333 },
-  { name: "Travis Scott", streams: 5409, hours: 306 },
-  { name: "glaive", streams: 8063, hours: 278 },
-  { name: "Drake", streams: 4091, hours: 257 },
-  { name: "Steve Lacy", streams: 4217, hours: 245 },
-  { name: "Playboi Carti", streams: 5112, hours: 244 },
-  { name: "D. Savage", streams: 5043, hours: 216 },
-  { name: "Kendrick Lamar", streams: 2765, hours: 177 },
+  { name: "The Weeknd", streams: 13607, hours: 1010 },
+  { name: "Kanye West", streams: 7797, hours: 473 },
+  { name: "Frank Ocean", streams: 4820, hours: 316 },
+  { name: "Travis Scott", streams: 4808, hours: 283 },
+  { name: "glaive", streams: 7496, hours: 262 },
+  { name: "Steve Lacy", streams: 4313, hours: 248 },
+  { name: "Drake", streams: 4043, hours: 227 },
+  { name: "D. Savage", streams: 5031, hours: 215 },
+  { name: "Playboi Carti", streams: 4568, hours: 198 },
+  { name: "Coldplay", streams: 2922, hours: 172 },
 ];
 
 const topTracks = [
-  { name: "House Of Balloons / Glass Table Girls", artist: "The Weeknd", streams: 1664, hours: 178 },
-  { name: "Mercury", artist: "Steve Lacy", streams: 1013, hours: 80 },
-  { name: "Devil In A New Dress", artist: "Kanye West", streams: 712, hours: 65 },
-  { name: "needy", artist: "Ariana Grande", streams: 1334, hours: 62 },
-  { name: "The Knowing", artist: "The Weeknd", streams: 667, hours: 61 },
-  { name: "Nights", artist: "Frank Ocean", streams: 698, hours: 58 },
-  { name: "Wicked Games", artist: "The Weeknd", streams: 597, hours: 51 },
-  { name: "Viva La Vida", artist: "Coldplay", streams: 658, hours: 43 },
-  { name: "Reborn", artist: "KIDS SEE GHOSTS", streams: 507, hours: 43 },
-  { name: "Real Muthaphuckkin G&apos;s", artist: "Eazy-E", streams: 465, hours: 40 },
+  { name: "House Of Balloons / Glass Table Girls", artist: "The Weeknd", streams: 1800, hours: 185 },
+  { name: "needy", artist: "Ariana Grande", streams: 1367, hours: 63 },
+  { name: "Mercury", artist: "Steve Lacy", streams: 1056, hours: 82 },
+  { name: "Ain\u0027t Bout Nun", artist: "RealYungPhil", streams: 893, hours: 25 },
+  { name: "JOKER, PT. 2", artist: "D. Savage", streams: 836, hours: 34 },
+  { name: "Space Boy (feat. Lucki)", artist: "Manny Laurenko", streams: 821, hours: 36 },
+  { name: "Butterfly", artist: "Pi\u0027erre Bourne", streams: 778, hours: 40 },
+  { name: "Them > You (Gotta Go!)", artist: "Autumn!", streams: 755, hours: 33 },
+  { name: "Devil In A New Dress", artist: "Kanye West", streams: 754, hours: 68 },
+  { name: "HONEST", artist: "Baby Keem", streams: 753, hours: 35 },
 ];
 
 const topAlbums = [
-  { name: "House Of Balloons (Original)", artist: "The Weeknd", hours: 353 },
-  { name: "Blonde", artist: "Frank Ocean", hours: 190 },
-  { name: "Thursday (Original)", artist: "The Weeknd", hours: 128 },
-  { name: "UTOPIA", artist: "Travis Scott", hours: 106 },
-  { name: "My Beautiful Dark Twisted Fantasy", artist: "Kanye West", hours: 98 },
+  { name: "House Of Balloons - Original", artist: "The Weeknd", hours: 338 },
+  { name: "Blonde", artist: "Frank Ocean", hours: 196 },
+  { name: "UTOPIA", artist: "Travis Scott", hours: 117 },
+  { name: "My Beautiful Dark Twisted Fantasy", artist: "Kanye West", hours: 105 },
+  { name: "Thursday - Original", artist: "The Weeknd", hours: 99 },
 ];
 
 const genres = [
@@ -48,10 +48,10 @@ const genres = [
 ];
 
 const stats = [
-  { label: "Total Streams", value: "152,266", sub: "Lifetime" },
-  { label: "Hours Listened", value: "8,088", sub: "~337 days" },
-  { label: "Unique Artists", value: "3,012", sub: "All time" },
-  { label: "Unique Tracks", value: "7,790", sub: "All time" },
+  { label: "Total Streams", value: "169,574", sub: "Lifetime" },
+  { label: "Hours Listened", value: "8,688", sub: "~362 days" },
+  { label: "Unique Artists", value: "4,186", sub: "All time" },
+  { label: "Unique Tracks", value: "13,739", sub: "All time" },
 ];
 
 export default function Analytics() {
@@ -70,7 +70,7 @@ export default function Analytics() {
           not what I say I play.
         </p>
         <p className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-          Data via stats.fm — Lifetime range
+          Data from Spotify Extended Streaming History — 2018-2026
         </p>
       </div>
 
@@ -203,7 +203,7 @@ export default function Analytics() {
           rel="noopener noreferrer"
           className="btn-y2k btn-y2k-outline"
         >
-          View Full Stats on stats.fm ↗
+          View Profile on stats.fm ↗
         </a>
       </div>
     </div>

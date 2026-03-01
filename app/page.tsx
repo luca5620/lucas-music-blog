@@ -102,9 +102,9 @@ export default function Home() {
           </div>
           <div className="space-y-3">
             {[
-              { value: "152,266", label: "Total Streams" },
-              { value: "8,088", label: "Hours Played" },
-              { value: "3,012", label: "Artists" },
+              { value: "169,574", label: "Total Streams" },
+              { value: "8,688", label: "Hours Played" },
+              { value: "4,186", label: "Artists" },
             ].map((stat) => (
               <div key={stat.label} className="flex justify-between items-baseline">
                 <span className="font-[family-name:var(--font-heading)] text-2xl font-bold text-accent-primary">

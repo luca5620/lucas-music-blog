@@ -34,7 +34,7 @@
   --ps1-dark: #0a0a0a;
   --ps1-gray: #222;
   --ps1-case-bg: #0d0d12;
-  --ps1-spine-width: 56px;
+  --ps1-spine-width: 62px;
 
   /* Borders */
   --border-subtle: #222228;
@@ -95,7 +95,8 @@ body {
   font-family: 'PlayStation';
   font-style: normal;
   font-weight: normal;
-  src: url('/fonts/playstation/playstation_by_lyricwest_dby5il4.woff') format('woff');
+  src: url('/fonts/playstation/playstation_by_lyricwest_dby5il4.ttf') format('truetype'),
+       url('/fonts/playstation/playstation_by_lyricwest_dby5il4.woff') format('woff');
 }
 
 /* ============================================
@@ -131,53 +132,59 @@ body {
   z-index: 2;
 }
 
-/* "Peak Music" branding — PlayStation font, vertical */
+/* "Peak Music" branding — PlayStation font, vertical, centered */
 .ps1-spine-brand {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   font-family: 'PlayStation', var(--font-heading);
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: normal;
-  letter-spacing: 0.15em;
-  color: #bbb;
+  letter-spacing: 0.2em;
+  color: #ccc;
   user-select: none;
   flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-/* ESRB-style rating badge on spine */
+/* ESRB-style rating badge on spine — mimics the real ESRB look */
 .ps1-spine-rating {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1.5px solid #555;
-  background: #0a0a0a;
-  width: 34px;
-  margin-top: 12px;
+  width: 38px;
+  margin-top: 8px;
   user-select: none;
+  background: #fff;
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 .ps1-rating-letter {
-  font-family: var(--font-heading);
-  font-size: 1rem;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.3rem;
   font-weight: 900;
-  color: #ccc;
-  line-height: 1.3;
-  padding: 1px 0;
+  font-style: italic;
+  color: #000;
+  line-height: 1;
+  padding: 3px 0 1px;
+  width: 100%;
+  text-align: center;
+  border-bottom: 2px solid #000;
 }
 
 .ps1-rating-text {
   font-family: var(--font-heading);
-  font-size: 0.35rem;
-  font-weight: 700;
-  color: #ccc;
-  letter-spacing: 0.1em;
+  font-size: 0.32rem;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: #444;
   width: 100%;
   text-align: center;
-  padding: 1px 0;
+  padding: 2px 0;
+  background: #fff;
 }
 
 /* Cover area — where site content lives */
@@ -242,21 +249,21 @@ body {
 
 @media (max-width: 640px) {
   .ps1-spine {
-    width: 40px;
-    min-width: 40px;
+    width: 44px;
+    min-width: 44px;
     padding: 10px 0;
   }
   .ps1-spine-brand {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
   .ps1-spine-rating {
-    width: 28px;
+    width: 30px;
   }
   .ps1-rating-letter {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
   .ps1-rating-text {
-    font-size: 0.3rem;
+    font-size: 0.28rem;
   }
 }
 

@@ -23,7 +23,7 @@ export default function Navigation() {
       <div className="flex items-center justify-between">
         {/* Logo / Site Title */}
         <Link href="/" className="flex items-center gap-3 group">
-          <span className="text-2xl">🐧</span>
+          <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-8 h-8 rounded-full object-cover" />
           <span className="pixel-text text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover">
             Peak Music Reviews
           </span>

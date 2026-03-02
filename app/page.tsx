@@ -192,7 +192,7 @@ export default function Home() {
                 <span className="label-xbox text-[0.6rem]">
                   {review.genre}
                 </span>
-                <div className={`w-12 h-12 rounded-lg border bg-[rgba(0,0,0,0.3)] flex items-center justify-center font-[family-name:var(--font-heading)] font-extrabold text-lg transition-all ${getRatingColor(review.rating)}`}>
+                <div className={`rating-badge w-12 h-12 rounded-lg border bg-[rgba(0,0,0,0.3)] flex items-center justify-center font-[family-name:var(--font-heading)] font-extrabold text-lg transition-all ${getRatingColor(review.rating)}`}>
                   {review.rating}
                 </div>
               </div>

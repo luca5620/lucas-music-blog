@@ -133,30 +133,23 @@ body {
   z-index: 2;
 }
 
-/* "Peak Music" branding — PlayStation font, vertical, centered */
+/* "Peak Music" branding — PlayStation font, vertical, fills entire spine */
 .ps1-spine-brand {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-family: 'PlayStation', var(--font-heading);
-  font-size: 1rem;
+  font-family: 'PlayStation', sans-serif !important;
+  font-size: 3rem;
   font-weight: normal;
-  letter-spacing: 0.2em;
+  letter-spacing: normal;
   color: #ccc;
   user-select: none;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Custom "Peak Music" image on spine — rotated to read bottom-to-top, sticky */
-.ps1-spine-brand-img {
-  position: sticky;
-  top: 40vh;
-  transform: rotate(-90deg);
-  width: 280px;
-  height: auto;
-  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow: 0 0 8px rgba(200, 200, 200, 0.15);
 }
 
 /* ESRB-style rating badge on spine — mimics the real ESRB look */
@@ -600,6 +593,57 @@ body {
   font-weight: 800;
   font-size: 1.125rem;
   background: var(--bg-elevated);
+}
+
+/* Perfect 10 — OBNOXIOUS glowing badge */
+.rating-badge.rating-perfect {
+  width: 3.75rem !important;
+  height: 3.75rem !important;
+  font-size: 1.5rem !important;
+  border-width: 2.5px !important;
+  background: rgba(30, 144, 255, 0.15) !important;
+  color: #fff !important;
+  text-shadow:
+    0 0 10px rgba(30, 144, 255, 1),
+    0 0 20px rgba(30, 144, 255, 0.9),
+    0 0 40px rgba(30, 144, 255, 0.7),
+    0 0 80px rgba(30, 144, 255, 0.5) !important;
+  box-shadow:
+    0 0 15px rgba(30, 144, 255, 0.7),
+    0 0 35px rgba(30, 144, 255, 0.5),
+    0 0 70px rgba(30, 144, 255, 0.3),
+    0 0 120px rgba(30, 144, 255, 0.15),
+    inset 0 0 15px rgba(30, 144, 255, 0.3) !important;
+  animation: perfect-glow 2s ease-in-out infinite !important;
+}
+
+@keyframes perfect-glow {
+  0%, 100% {
+    text-shadow:
+      0 0 10px rgba(30, 144, 255, 1),
+      0 0 20px rgba(30, 144, 255, 0.9),
+      0 0 40px rgba(30, 144, 255, 0.7),
+      0 0 80px rgba(30, 144, 255, 0.5);
+    box-shadow:
+      0 0 15px rgba(30, 144, 255, 0.7),
+      0 0 35px rgba(30, 144, 255, 0.5),
+      0 0 70px rgba(30, 144, 255, 0.3),
+      0 0 120px rgba(30, 144, 255, 0.15),
+      inset 0 0 15px rgba(30, 144, 255, 0.3);
+  }
+  50% {
+    text-shadow:
+      0 0 15px rgba(30, 144, 255, 1),
+      0 0 30px rgba(30, 144, 255, 1),
+      0 0 60px rgba(30, 144, 255, 0.8),
+      0 0 100px rgba(30, 144, 255, 0.6);
+    box-shadow:
+      0 0 25px rgba(30, 144, 255, 0.9),
+      0 0 55px rgba(30, 144, 255, 0.7),
+      0 0 100px rgba(30, 144, 255, 0.4),
+      0 0 160px rgba(30, 144, 255, 0.2),
+      inset 0 0 25px rgba(30, 144, 255, 0.4);
+  }
 }
 
 /* --- Scrollbar --- */

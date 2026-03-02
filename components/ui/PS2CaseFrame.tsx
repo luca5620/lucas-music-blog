@@ -11,11 +11,7 @@ export default function PS1CaseFrame({
     <div className="ps1-case mx-4 md:mx-8 lg:mx-auto">
       {/* Left spine — main feature with branding + rating */}
       <div className="ps1-spine">
-        <img
-          src="/peak-music-spine.png"
-          alt="Peak Music"
-          className="ps1-spine-brand-img"
-        />
+        <span className="ps1-spine-brand" style={{ fontFamily: "'PlayStation', sans-serif" }}>Peak Music</span>
 
         {/* ESRB-style rating badge */}
         <div className="ps1-spine-rating">

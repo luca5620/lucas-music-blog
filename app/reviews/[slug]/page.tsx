@@ -77,15 +77,24 @@ export default async function ReviewPage({
           <p className="text-lg text-text-secondary mt-1">{review.artist}</p>
         </div>
 
-        {/* Genre + Date */}
-        <div className="flex items-center gap-3">
+        {/* Genre + Dates */}
+        <div className="flex flex-wrap items-center gap-3">
           <span
             className={`pixel-text text-xs uppercase tracking-widest ${getGenreColor(review.genre)}`}
           >
             {review.genre}
           </span>
           <span className="text-text-muted text-xs">
-            {new Date(review.date).toLocaleDateString("en-US", {
+            Released{" "}
+            {new Date(review.releaseDate + "T12:00:00").toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </span>
+          <span className="text-text-muted text-xs">
+            Reviewed{" "}
+            {new Date(review.reviewDate + "T12:00:00").toLocaleDateString("en-US", {
               month: "long",
               day: "numeric",
               year: "numeric",

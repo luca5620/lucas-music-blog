@@ -119,6 +119,7 @@ body {
 
 /* Left spine — the main feature, wider, with branding + rating */
 .ps1-spine {
+  position: relative;
   width: var(--ps1-spine-width);
   min-width: var(--ps1-spine-width);
   background: linear-gradient(90deg, var(--ps1-dark) 0%, var(--ps1-black) 40%, var(--ps1-gray) 50%, var(--ps1-black) 60%, var(--ps1-dark) 100%);
@@ -146,6 +147,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Custom "Peak Music" image on spine — rotated to read bottom-to-top, sticky */
+.ps1-spine-brand-img {
+  position: sticky;
+  top: 40vh;
+  transform: rotate(-90deg);
+  width: 280px;
+  height: auto;
+  flex-shrink: 0;
 }
 
 /* ESRB-style rating badge on spine — mimics the real ESRB look */
@@ -255,6 +266,9 @@ body {
   }
   .ps1-spine-brand {
     font-size: 0.75rem;
+  }
+  .ps1-spine-brand-img {
+    width: 80%;
   }
   .ps1-spine-rating {
     width: 30px;

@@ -6,7 +6,7 @@
 
 import NowPlaying from "@/components/ui/NowPlaying";
 import Link from "next/link";
-import { getLatestReviews } from "@/lib/reviews";
+import { getLatestReviews, getRatingColor } from "@/lib/reviews";
 
 /* Essential playlists — real data from Spotify profile */
 const playlists = [
@@ -192,7 +192,7 @@ export default function Home() {
                 <span className="label-xbox text-[0.6rem]">
                   {review.genre}
                 </span>
-                <div className="w-12 h-12 rounded-lg border border-[rgba(30,144,255,0.3)] bg-[rgba(30,144,255,0.08)] flex items-center justify-center font-[family-name:var(--font-heading)] font-extrabold text-lg text-accent-primary group-hover:border-accent-primary/60 group-hover:shadow-[0_0_15px_rgba(30,144,255,0.2)] transition-all">
+                <div className={`w-12 h-12 rounded-lg border bg-[rgba(0,0,0,0.3)] flex items-center justify-center font-[family-name:var(--font-heading)] font-extrabold text-lg transition-all ${getRatingColor(review.rating)}`}>
                   {review.rating}
                 </div>
               </div>

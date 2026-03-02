@@ -39,6 +39,34 @@ export interface Review {
 
 export const reviews: Review[] = [
   {
+    slug: "the-romantic-bruno-mars",
+    title: "The Romantic",
+    artist: "Bruno Mars",
+    rating: 8.1,
+    genre: "Pop",
+    releaseType: "album",
+    date: "2026-02-27",
+    summary:
+      "After nearly 10 years, Bruno Mars comes back with a short solo album, with many Latin influences. The album sounds familiar as the formula many have learned to fall in love with over the years continues to win over hearts, especially with standout tracks such as \"Risk It All\", \"Why You Wanna Fight?\", and \"On My Soul\" being my personal favorites. This fantastic album was all killer no filler but personally after such a long wait I wish we could have had a bit more, although Bruno Mars is not known for lengthy solo albums, for the wait it would have been a nice touch. The production and story of the album is great with a few low-lights in my opinion such as \"God Was Showing Off\", and \"Something Serious\", dropping my rating slightly but still putting this album in elite territory for 2026 releases, going with a strong 8.1/10.",
+    snippet:
+      "After nearly 10 years, Bruno Mars comes back with a short solo album. All killer no filler — elite territory for 2026.",
+    coverImage: "/reviews/the-romantic-bruno-mars.png",
+    standoutTracks: [
+      {
+        title: "Risk It All",
+        spotifyUrl: "https://open.spotify.com/track/5y2ijHECwFYWqcAHKTZgzD",
+      },
+      {
+        title: "Why You Wanna Fight?",
+        spotifyUrl: "https://open.spotify.com/track/3Ac4AjYkqsvop2ydbSAhTX",
+      },
+      {
+        title: "On My Soul",
+        spotifyUrl: "https://open.spotify.com/track/4i4BVY2JiH4mDSLIBdNGKD",
+      },
+    ],
+  },
+  {
     slug: "gnx-kendrick-lamar",
     title: "GNX",
     artist: "Kendrick Lamar",

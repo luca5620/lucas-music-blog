@@ -110,13 +110,14 @@ export function getGenreColor(genre: string) {
 }
 
 export function getRatingColor(rating: number) {
-  if (rating >= 9) return "text-emerald-400 border-emerald-400";
-  if (rating >= 8) return "text-green-400 border-green-400";
-  if (rating >= 7) return "text-lime-400 border-lime-400";
-  if (rating >= 6) return "text-yellow-400 border-yellow-400";
-  if (rating >= 5) return "text-amber-400 border-amber-400";
-  if (rating >= 4) return "text-orange-400 border-orange-400";
-  if (rating >= 3) return "text-red-400 border-red-400";
+  if (rating === 10) return "text-[#1e90ff] border-[#1e90ff] drop-shadow-[0_0_8px_rgba(30,144,255,0.6)]";
+  if (rating >= 9) return "text-purple-400 border-purple-400";
+  if (rating >= 8) return "text-[#2563eb] border-[#2563eb]";
+  if (rating >= 7) return "text-[#06b6d4] border-[#06b6d4]";
+  if (rating >= 6) return "text-[#166534] border-[#166534]";
+  if (rating >= 5) return "text-[#84cc16] border-[#84cc16]";
+  if (rating >= 4) return "text-yellow-400 border-yellow-400";
+  if (rating >= 3) return "text-orange-400 border-orange-400";
   if (rating >= 2) return "text-red-500 border-red-500";
-  return "text-red-600 border-red-600";
+  return "text-neutral-900 border-neutral-900";
 }

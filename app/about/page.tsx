@@ -37,8 +37,8 @@ export default function About() {
       {/* Bio Section */}
       <div className="card-y2k p-6 space-y-5">
         <div className="flex items-start gap-5">
-          <div className="w-20 h-20 rounded-full bg-bg-elevated flex items-center justify-center shrink-0 border-2 border-accent-primary">
-            <span className="text-3xl">🐧</span>
+          <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-accent-primary">
+            <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-full h-full object-cover" />
           </div>
           <div className="space-y-2">
             <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-text-primary">

@@ -6,37 +6,37 @@
 
 /* Real data from stats.fm — lifetime listening stats */
 const topArtists = [
-  { name: "The Weeknd", streams: 13607, hours: 1010 },
-  { name: "Kanye West", streams: 7797, hours: 473 },
-  { name: "Frank Ocean", streams: 4820, hours: 316 },
-  { name: "Travis Scott", streams: 4808, hours: 283 },
-  { name: "glaive", streams: 7496, hours: 262 },
-  { name: "Steve Lacy", streams: 4313, hours: 248 },
-  { name: "Drake", streams: 4043, hours: 227 },
-  { name: "D. Savage", streams: 5031, hours: 215 },
-  { name: "Playboi Carti", streams: 4568, hours: 198 },
-  { name: "Coldplay", streams: 2922, hours: 172 },
+  { name: "The Weeknd", streams: 13607, hours: 1010, spotifyId: "2r7BPog74oaTG5shNYiUnV" },
+  { name: "Kanye West", streams: 7797, hours: 473, spotifyId: "1UGD3lW3tDmgZfAVDh6w7r" },
+  { name: "Frank Ocean", streams: 4820, hours: 316, spotifyId: "7eqoqGkKwgOaWNNHx90uEZ" },
+  { name: "Travis Scott", streams: 4808, hours: 283, spotifyId: "1i9lZvlaDdWDPyXEE95aiq" },
+  { name: "glaive", streams: 7496, hours: 262, spotifyId: "4DOvwcmqmeJXcomd7xhleR" },
+  { name: "Steve Lacy", streams: 4313, hours: 248, spotifyId: "3ixe45hov7EBKXm8tYBmvX" },
+  { name: "Drake", streams: 4043, hours: 227, spotifyId: "2HSmyk2qMN8WQjuGhaQgCk" },
+  { name: "D. Savage", streams: 5031, hours: 215, spotifyId: "4tqbLV1qI50CFh5zkvNEPY" },
+  { name: "Playboi Carti", streams: 4568, hours: 198, spotifyId: "3yk7PJnryiJ8mAPqsrujzf" },
+  { name: "Coldplay", streams: 2922, hours: 172, spotifyId: "1mea3bSkSGXuIRvnydlB5b" },
 ];
 
 const topTracks = [
-  { name: "House Of Balloons / Glass Table Girls", artist: "The Weeknd", streams: 1800, hours: 185 },
-  { name: "needy", artist: "Ariana Grande", streams: 1367, hours: 63 },
-  { name: "Mercury", artist: "Steve Lacy", streams: 1056, hours: 82 },
-  { name: "Ain\u0027t Bout Nun", artist: "RealYungPhil", streams: 893, hours: 25 },
-  { name: "JOKER, PT. 2", artist: "D. Savage", streams: 836, hours: 34 },
-  { name: "Space Boy (feat. Lucki)", artist: "Manny Laurenko", streams: 821, hours: 36 },
-  { name: "Butterfly", artist: "Pi\u0027erre Bourne", streams: 778, hours: 40 },
-  { name: "Them > You (Gotta Go!)", artist: "Autumn!", streams: 755, hours: 33 },
-  { name: "Devil In A New Dress", artist: "Kanye West", streams: 754, hours: 68 },
-  { name: "HONEST", artist: "Baby Keem", streams: 753, hours: 35 },
+  { name: "House Of Balloons / Glass Table Girls", artist: "The Weeknd", streams: 1800, hours: 185, spotifyId: "2r7BPog74oaTG5shNYiUnV" },
+  { name: "needy", artist: "Ariana Grande", streams: 1367, hours: 63, spotifyId: "1TEL6MlSSVLSdhOSddidlJ" },
+  { name: "Mercury", artist: "Steve Lacy", streams: 1056, hours: 82, spotifyId: "3ixe45hov7EBKXm8tYBmvX" },
+  { name: "Ain\u0027t Bout Nun", artist: "RealYungPhil", streams: 893, hours: 25, spotifyId: "0HGUqBuwVsTh5vN8kM7YOC" },
+  { name: "JOKER, PT. 2", artist: "D. Savage", streams: 836, hours: 34, spotifyId: "4tqbLV1qI50CFh5zkvNEPY" },
+  { name: "Space Boy (feat. Lucki)", artist: "Manny Laurenko", streams: 821, hours: 36, spotifyId: "5VxBLZn5wWP6adTZNOakY5" },
+  { name: "Butterfly", artist: "Pi\u0027erre Bourne", streams: 778, hours: 40, spotifyId: "0Jttv4sD1ofTqPGkNQAqOh" },
+  { name: "Them > You (Gotta Go!)", artist: "Autumn!", streams: 755, hours: 33, spotifyId: "169jVgHjxiHouzm0nWmIDY" },
+  { name: "Devil In A New Dress", artist: "Kanye West", streams: 754, hours: 68, spotifyId: "1UGD3lW3tDmgZfAVDh6w7r" },
+  { name: "HONEST", artist: "Baby Keem", streams: 753, hours: 35, spotifyId: "58k32my5lKofeZRtIvBDg9" },
 ];
 
 const topAlbums = [
-  { name: "House Of Balloons - Original", artist: "The Weeknd", hours: 338 },
-  { name: "Blonde", artist: "Frank Ocean", hours: 196 },
-  { name: "UTOPIA", artist: "Travis Scott", hours: 117 },
-  { name: "My Beautiful Dark Twisted Fantasy", artist: "Kanye West", hours: 105 },
-  { name: "Thursday - Original", artist: "The Weeknd", hours: 99 },
+  { name: "House Of Balloons - Original", artist: "The Weeknd", hours: 338, spotifyId: "2ye9iWj5V4g6k6HFeTTAKa" },
+  { name: "Blonde", artist: "Frank Ocean", hours: 196, spotifyId: "7eqoqGkKwgOaWNNHx90uEZ" },
+  { name: "UTOPIA", artist: "Travis Scott", hours: 117, spotifyId: "3KCNiDi9Pza6ZD8FggNoaw" },
+  { name: "My Beautiful Dark Twisted Fantasy", artist: "Kanye West", hours: 105, spotifyId: "2gZUPNdnz5Y45eiGxpHGSc" },
+  { name: "Thursday - Original", artist: "The Weeknd", hours: 99, spotifyId: "5JpSjNcjuP8L9QrYmv3xcn" },
 ];
 
 const genres = [
@@ -98,7 +98,7 @@ export default function Analytics() {
           </h2>
           <div className="space-y-3">
             {topArtists.map((artist, i) => (
-              <div key={artist.name} className="flex items-center gap-3">
+              <a key={artist.name} href={`https://open.spotify.com/track/${artist.spotifyId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:bg-bg-elevated/50 rounded-lg p-1 -m-1 transition-colors">
                 <span className="pixel-text text-lg text-text-muted w-6 text-right">{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="font-[family-name:var(--font-heading)] font-semibold text-text-primary text-sm truncate">
@@ -115,7 +115,7 @@ export default function Analytics() {
                   <p className="text-sm font-semibold text-text-primary">{artist.hours.toLocaleString()}h</p>
                   <p className="text-xs text-text-muted">{artist.streams.toLocaleString()}</p>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function Analytics() {
         </h2>
         <div className="space-y-2">
           {topTracks.map((track, i) => (
-            <div key={track.name} className="flex items-center gap-3 py-2 border-b border-border-subtle last:border-0">
+            <a key={track.name} href={`https://open.spotify.com/track/${track.spotifyId}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 py-2 border-b border-border-subtle last:border-0 hover:bg-bg-elevated/50 rounded-lg transition-colors">
               <span className="pixel-text text-lg text-text-muted w-6 text-right">{i + 1}</span>
               <div className="w-10 h-10 rounded bg-bg-elevated flex items-center justify-center shrink-0">
                 <span className="text-sm">💿</span>
@@ -166,7 +166,7 @@ export default function Analytics() {
                 <p className="text-sm font-semibold text-accent-primary">{track.hours}h</p>
                 <p className="text-xs text-text-muted">{track.streams.toLocaleString()} plays</p>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
@@ -178,7 +178,7 @@ export default function Analytics() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {topAlbums.map((album, i) => (
-            <div key={album.name} className="text-center space-y-2">
+            <a key={album.name} href={`https://open.spotify.com/track/${album.spotifyId}`} target="_blank" rel="noopener noreferrer" className="text-center space-y-2 hover:opacity-80 transition-opacity">
               <div className="aspect-square rounded-lg bg-bg-elevated flex items-center justify-center">
                 <span className="text-3xl">💿</span>
               </div>
@@ -190,7 +190,7 @@ export default function Analytics() {
                 <p className="text-xs text-text-secondary">{album.artist}</p>
                 <p className="text-xs text-text-muted">{album.hours}h</p>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>

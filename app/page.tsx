@@ -5,6 +5,8 @@
  */
 
 import NowPlaying from "@/components/ui/NowPlaying";
+import Link from "next/link";
+import { getLatestReviews } from "@/lib/reviews";
 
 /* Essential playlists — real data from Spotify profile */
 const playlists = [
@@ -22,29 +24,9 @@ const playlists = [
   },
 ];
 
-/* Latest reviews data */
-const reviews = [
-  {
-    title: "CHROMAKOPIA",
-    artist: "Tyler, The Creator",
-    rating: "8.7",
-    genre: "Hip-Hop",
-  },
-  {
-    title: "GNX",
-    artist: "Kendrick Lamar",
-    rating: "9.2",
-    genre: "Hip-Hop",
-  },
-  {
-    title: "Brat",
-    artist: "Charli XCX",
-    rating: "8.4",
-    genre: "Pop",
-  },
-];
-
 export default function Home() {
+  const reviews = getLatestReviews(3);
+
   return (
     <div className="space-y-6 circuit-bg">
       {/* ========== HERO PANEL — Main feature panel with glow ========== */}
@@ -187,14 +169,22 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {reviews.map((review) => (
-            <div
-              key={review.title}
+            <Link
+              key={review.slug}
+              href={`/reviews/${review.slug}`}
               className="panel-xbox p-5 space-y-4 group cursor-pointer hover-glow relative"
             >
-              {/* Album art placeholder with glow */}
+              {/* Album art with glow */}
               <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(30,144,255,0.15)] flex items-center justify-center relative overflow-hidden group-hover:border-accent-primary/40 transition-all">
-                <span className="text-5xl group-hover:scale-110 transition-transform">💿</span>
-                {/* Subtle gradient overlay */}
+                {review.coverImage ? (
+                  <img
+                    src={review.coverImage}
+                    alt={`${review.title} cover`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                ) : (
+                  <span className="text-5xl group-hover:scale-110 transition-transform">💿</span>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
 
@@ -214,9 +204,8 @@ export default function Home() {
                 <p className="text-sm text-text-secondary">{review.artist}</p>
               </div>
 
-              {/* Scan bar at bottom */}
               <div className="scan-bar" />
-            </div>
+            </Link>
           ))}
         </div>
       </section>

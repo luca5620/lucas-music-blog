@@ -14,7 +14,7 @@ export default function Reviews() {
     <div className="space-y-8">
       {/* Page Header */}
       <div className="space-y-3">
-        <h1 className="font-[family-name:var(--font-heading)] text-4xl font-extrabold text-accent-primary">
+        <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-accent-primary">
           Reviews
         </h1>
         <p className="text-text-secondary">

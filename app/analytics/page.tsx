@@ -62,7 +62,7 @@ export default function Analytics() {
     <div className="space-y-8">
       {/* Page Header */}
       <div className="space-y-3">
-        <h1 className="font-[family-name:var(--font-heading)] text-4xl font-extrabold text-accent-cyan">
+        <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-accent-cyan">
           Listening Analytics
         </h1>
         <p className="text-text-secondary">
@@ -77,8 +77,8 @@ export default function Analytics() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="card-y2k p-4 text-center space-y-1">
-            <p className="font-[family-name:var(--font-heading)] text-2xl font-extrabold text-accent-primary">
+          <div key={stat.label} className="card-y2k p-3 sm:p-4 text-center space-y-1">
+            <p className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-extrabold text-accent-primary">
               {stat.value}
             </p>
             <p className="pixel-text text-xs text-text-primary uppercase tracking-widest">

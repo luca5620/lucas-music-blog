@@ -55,9 +55,9 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
         ) : (
           filtered.map((review) => (
             <Link href={`/reviews/${review.slug}`} key={review.slug}>
-              <article className="card-y2k p-5 flex gap-5 group cursor-pointer">
+              <article className="card-y2k p-3 sm:p-5 flex gap-3 sm:gap-5 group cursor-pointer overflow-hidden">
                 {/* Cover Image or Placeholder */}
-                <div className="w-24 h-24 md:w-28 md:h-28 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0 overflow-hidden">
                   {review.coverImage ? (
                     <img
                       src={review.coverImage}
@@ -75,7 +75,7 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
                 <div className="flex-1 space-y-2 min-w-0">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors">
+                      <h2 className="font-[family-name:var(--font-heading)] text-base sm:text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors break-words">
                         {review.title}
                       </h2>
                       <p className="text-sm text-text-secondary">

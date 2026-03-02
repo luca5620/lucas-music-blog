@@ -8,7 +8,7 @@ export default function PS1CaseFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div className="ps1-case mx-4 md:mx-8 lg:mx-auto">
+    <div className="ps1-case mx-0 sm:mx-4 md:mx-8 lg:mx-auto">
       {/* Left spine — main feature with branding + rating */}
       <div className="ps1-spine">
         <span className="ps1-spine-brand" style={{ fontFamily: "'PlayStation', sans-serif" }}>Peak Music</span>

@@ -33,7 +33,7 @@ export default async function ReviewPage({
   if (!review) notFound();
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto">
+    <div className="space-y-6 max-w-3xl mx-auto overflow-hidden">
       {/* Back link */}
       <Link
         href="/reviews"
@@ -43,7 +43,7 @@ export default async function ReviewPage({
       </Link>
 
       {/* Main content card */}
-      <div className="panel-xbox-glow p-6 md:p-8 space-y-6 relative">
+      <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">
         {/* Cover Image */}
         <div className="aspect-square max-w-sm mx-auto rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border border-[rgba(30,144,255,0.15)]">
           {review.coverImage ? (
@@ -71,7 +71,7 @@ export default async function ReviewPage({
 
         {/* Title + Artist */}
         <div>
-          <h1 className="font-[family-name:var(--font-heading)] text-3xl md:text-4xl font-extrabold text-text-primary">
+          <h1 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-primary break-words">
             {review.title}
           </h1>
           <p className="text-lg text-text-secondary mt-1">{review.artist}</p>
@@ -117,7 +117,7 @@ export default async function ReviewPage({
           <>
             <div className="divider-glow" />
 
-            <div className="card-y2k p-5 space-y-3">
+            <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
                 <span className="label-xbox">Standout Tracks</span>
@@ -130,17 +130,17 @@ export default async function ReviewPage({
                     href={track.spotifyUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between py-2 border-b border-border-subtle last:border-0 hover:bg-bg-elevated/50 rounded-lg px-2 -mx-2 transition-colors"
+                    className="flex items-center justify-between gap-2 py-2 border-b border-border-subtle last:border-0 hover:bg-bg-elevated/50 rounded-lg px-2 -mx-2 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="pixel-text text-sm text-text-muted">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="pixel-text text-sm text-text-muted shrink-0">
                         {i + 1}
                       </span>
-                      <span className="text-sm font-medium text-text-primary">
+                      <span className="text-sm font-medium text-text-primary truncate">
                         {track.title}
                       </span>
                     </div>
-                    <span className="text-xs text-accent-primary hover:text-accent-glow transition-colors">
+                    <span className="text-xs text-accent-primary hover:text-accent-glow transition-colors shrink-0 whitespace-nowrap">
                       Spotify ↗
                     </span>
                   </a>

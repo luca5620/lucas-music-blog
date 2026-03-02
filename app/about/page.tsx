@@ -26,7 +26,7 @@ export default function About() {
     <div className="space-y-8 max-w-3xl">
       {/* Header */}
       <div className="space-y-3">
-        <h1 className="font-[family-name:var(--font-heading)] text-4xl font-extrabold text-accent-rose">
+        <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-accent-rose">
           About
         </h1>
         <p className="pixel-text text-lg text-accent-primary">
@@ -35,12 +35,12 @@ export default function About() {
       </div>
 
       {/* Bio Section */}
-      <div className="card-y2k p-6 space-y-5">
-        <div className="flex items-start gap-5">
-          <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-accent-primary">
+      <div className="card-y2k p-4 sm:p-6 space-y-5">
+        <div className="flex items-start gap-4 sm:gap-5">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden shrink-0 border-2 border-accent-primary">
             <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-full h-full object-cover" />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0">
             <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-text-primary">
               Luca
             </h2>

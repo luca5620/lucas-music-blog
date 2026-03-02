@@ -252,25 +252,40 @@ body {
 }
 
 @media (max-width: 640px) {
+  /* Hide the spine entirely on mobile — it eats too much horizontal space */
   .ps1-spine {
-    width: 44px;
-    min-width: 44px;
-    padding: 10px 0;
+    display: none !important;
   }
-  .ps1-spine-brand {
-    font-size: 0.75rem;
+
+  /* Let the case take full width with no horizontal margin eating space */
+  .ps1-case {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 0 !important;
+    overflow-x: hidden !important;
   }
-  .ps1-spine-brand-img {
-    width: 80%;
+
+  /* Cover takes full width now that spine is gone */
+  .ps1-cover {
+    padding: 1rem !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    word-break: break-word !important;
   }
-  .ps1-spine-rating {
-    width: 30px;
+
+  /* Hero panel — reduce padding on mobile */
+  .panel-xbox-glow {
+    padding: 1.25rem !important;
   }
-  .ps1-rating-letter {
-    font-size: 1rem;
+
+  .panel-xbox {
+    padding: 1rem !important;
   }
-  .ps1-rating-text {
-    font-size: 0.28rem;
+
+  /* Buttons — stack vertically if needed, reduce size */
+  .btn-y2k {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.75rem !important;
   }
 }
 

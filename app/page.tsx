@@ -30,26 +30,26 @@ export default function Home() {
   return (
     <div className="space-y-6 circuit-bg">
       {/* ========== HERO PANEL — Main feature panel with glow ========== */}
-      <section className="panel-xbox-glow p-8 text-center space-y-5 relative">
+      <section className="panel-xbox-glow p-4 sm:p-8 text-center space-y-4 sm:space-y-5 relative overflow-hidden">
         {/* Decorative glow orbs */}
         <div className="absolute top-4 left-4 glow-orb" />
         <div className="absolute top-4 right-4 glow-orb" style={{ animationDelay: "1.5s" }} />
 
-        <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-extrabold text-accent-primary tracking-tight drop-shadow-[0_0_30px_rgba(30,144,255,0.3)]">
+        <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-5xl md:text-6xl font-extrabold text-accent-primary tracking-tight drop-shadow-[0_0_30px_rgba(30,144,255,0.3)]">
           Peak Music Reviews
         </h1>
 
-        <p className="pixel-text text-xl md:text-2xl text-accent-glow">
+        <p className="pixel-text text-base sm:text-xl md:text-2xl text-accent-glow">
           honest reviews. real data. no pretentious jargon.
         </p>
 
-        <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-sm">
+        <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
           Music opinions where liking something for a dumb reason is just as valid
           as a technical breakdown. Powered by years of Spotify listening data
           and not falling for bullshit reviews by Pitchfork.
         </p>
 
-        <div className="flex gap-4 justify-center pt-2">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
           <a href="/reviews" className="btn-y2k btn-y2k-primary">
             Read Reviews
           </a>
@@ -89,7 +89,7 @@ export default function Home() {
               { value: "4,186", label: "Artists" },
             ].map((stat) => (
               <div key={stat.label} className="flex justify-between items-baseline">
-                <span className="font-[family-name:var(--font-heading)] text-2xl font-bold text-accent-primary">
+                <span className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-accent-primary">
                   {stat.value}
                 </span>
                 <span className="text-xs text-text-muted uppercase tracking-wider">
@@ -125,10 +125,10 @@ export default function Home() {
               href={playlist.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="panel-xbox p-5 flex gap-5 group cursor-pointer hover-glow relative"
+              className="panel-xbox p-4 sm:p-5 flex gap-4 sm:gap-5 group cursor-pointer hover-glow relative overflow-hidden"
             >
               {/* Playlist icon with glow */}
-              <div className="w-16 h-16 rounded-lg bg-[rgba(30,144,255,0.08)] border border-[rgba(30,144,255,0.2)] flex items-center justify-center shrink-0 group-hover:border-accent-primary/50 group-hover:bg-[rgba(30,144,255,0.12)] transition-all">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-[rgba(30,144,255,0.08)] border border-[rgba(30,144,255,0.2)] flex items-center justify-center shrink-0 group-hover:border-accent-primary/50 group-hover:bg-[rgba(30,144,255,0.12)] transition-all">
                 <span className="text-2xl group-hover:scale-110 transition-transform">🎶</span>
               </div>
               <div className="space-y-2 flex-1">
@@ -172,7 +172,7 @@ export default function Home() {
             <Link
               key={review.slug}
               href={`/reviews/${review.slug}`}
-              className="panel-xbox p-5 space-y-4 group cursor-pointer hover-glow relative"
+              className="panel-xbox p-4 sm:p-5 space-y-4 group cursor-pointer hover-glow relative overflow-hidden"
             >
               {/* Album art with glow */}
               <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(30,144,255,0.15)] flex items-center justify-center relative overflow-hidden group-hover:border-accent-primary/40 transition-all">

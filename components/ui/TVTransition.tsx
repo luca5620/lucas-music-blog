@@ -24,7 +24,7 @@ function playChannelChangeSFX() {
   try {
     if (!sfxAudio) {
       sfxAudio = new Audio("/sounds/sicko-mode-sfx.mp3");
-      sfxAudio.volume = 0.3;
+      sfxAudio.volume = 0.05;
     }
     sfxAudio.currentTime = 0;
     sfxAudio.play();

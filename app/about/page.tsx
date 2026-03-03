@@ -3,6 +3,19 @@
  * Real profile links to Spotify, SoundCloud, and stats.fm.
  */
 
+import FAQSchema from "@/components/seo/FAQSchema";
+import { aboutFAQs } from "@/lib/faq-data";
+import { BreadcrumbSchema, ProfilePageSchema } from "@/app/schema";
+
+export const metadata = {
+  title: "About",
+  description:
+    "Meet Luca — the music listener, opinion haver, and data nerd behind Peak Music Reviews. Honest reviews backed by real Spotify data.",
+  alternates: {
+    canonical: "https://peakmusicreviews.com/about",
+  },
+};
+
 const streamingLinks = [
   {
     name: "Spotify",
@@ -24,6 +37,16 @@ const streamingLinks = [
 export default function About() {
   return (
     <div className="space-y-8 max-w-3xl">
+      {/* JSON-LD Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", href: "/" },
+          { name: "About", href: "/about" },
+        ]}
+      />
+      <ProfilePageSchema />
+      <FAQSchema items={aboutFAQs} />
+
       {/* Header */}
       <div className="space-y-3">
         <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-accent-rose">

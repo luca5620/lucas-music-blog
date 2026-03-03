@@ -5,6 +5,7 @@ import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import PS1CaseFrame from "@/components/ui/PS2CaseFrame";
 import TVTransition from "@/components/ui/TVTransition";
+import { WebSiteSchema, PersonSchema } from "@/app/schema";
 
 /* --- Font Setup ---
    - Inter: clean body text
@@ -28,9 +29,50 @@ const vt323 = VT323({
 });
 
 export const metadata: Metadata = {
-  title: "Peak Music Reviews",
+  metadataBase: new URL("https://peakmusicreviews.com"),
+  title: {
+    default: "Peak Music Reviews",
+    template: "%s — Peak Music Reviews",
+  },
   description:
-    "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions.",
+    "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions backed by real Spotify data.",
+  alternates: {
+    canonical: "https://peakmusicreviews.com",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Peak Music Reviews",
+    url: "https://peakmusicreviews.com",
+    title: "Peak Music Reviews",
+    description:
+      "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions.",
+    images: [
+      {
+        url: "/penguin-logo.png",
+        width: 512,
+        height: 512,
+        alt: "Peak Music Reviews",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Peak Music Reviews",
+    description:
+      "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large" as const,
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -40,6 +82,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <WebSiteSchema />
+        <PersonSchema />
+      </head>
       <body
         className={`
           ${inter.variable} ${spaceGrotesk.variable} ${vt323.variable}

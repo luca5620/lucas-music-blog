@@ -4,6 +4,17 @@
  * Processed from official Spotify data export (2018-2026).
  */
 
+import { BreadcrumbSchema } from "@/app/schema";
+
+export const metadata = {
+  title: "Listening Analytics",
+  description:
+    "Real Spotify listening data from 2018-2026. 169,574 streams, 8,688 hours, 4,186 artists. See what Luca actually listens to.",
+  alternates: {
+    canonical: "https://peakmusicreviews.com/analytics",
+  },
+};
+
 /* Real data from stats.fm — lifetime listening stats */
 const topArtists = [
   { name: "The Weeknd", streams: 13607, hours: 1010, spotifyId: "2r7BPog74oaTG5shNYiUnV" },
@@ -60,6 +71,14 @@ export default function Analytics() {
 
   return (
     <div className="space-y-8">
+      {/* JSON-LD Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", href: "/" },
+          { name: "Analytics", href: "/analytics" },
+        ]}
+      />
+
       {/* Page Header */}
       <div className="space-y-3">
         <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-accent-cyan">

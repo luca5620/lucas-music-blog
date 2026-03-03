@@ -2,6 +2,7 @@ import { getAllReviews, getReviewBySlug, getGenreColor, getRatingColor } from "@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 
 export function generateStaticParams() {
   return getAllReviews().map((review) => ({ slug: review.slug }));
@@ -17,8 +18,45 @@ export async function generateMetadata({
   if (!review) return { title: "Review Not Found" };
 
   return {
-    title: `${review.title} by ${review.artist} — Peak Music Reviews`,
+    title: `${review.title} by ${review.artist}`,
     description: review.snippet,
+    keywords: [
+      review.genre,
+      review.artist,
+      review.title,
+      review.releaseType,
+      "music review",
+      "album review",
+    ],
+    openGraph: {
+      type: "music.album",
+      url: `https://peakmusicreviews.com/reviews/${slug}`,
+      title: `${review.title} by ${review.artist} — Peak Music Reviews`,
+      description: review.snippet,
+      ...(review.coverImage && {
+        images: [
+          {
+            url: review.coverImage,
+            width: 1200,
+            height: 1200,
+            alt: `${review.title} by ${review.artist} album cover`,
+          },
+        ],
+      }),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${review.title} by ${review.artist} — Peak Music Reviews`,
+      description: review.snippet,
+      ...(review.coverImage && { images: [review.coverImage] }),
+    },
+    alternates: {
+      canonical: `https://peakmusicreviews.com/reviews/${slug}`,
+    },
+    other: {
+      ...(review.reviewDate && { "article:published_time": review.reviewDate }),
+      "music:release_date": review.releaseDate,
+    },
   };
 }
 
@@ -34,6 +72,16 @@ export default async function ReviewPage({
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto overflow-hidden">
+      {/* JSON-LD Structured Data */}
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", href: "/" },
+          { name: "Reviews", href: "/reviews" },
+          { name: `${review.title} by ${review.artist}`, href: `/reviews/${review.slug}` },
+        ]}
+      />
+      <ReviewSchema review={review} />
+
       {/* Back link */}
       <Link
         href="/reviews"

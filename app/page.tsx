@@ -7,6 +7,7 @@
 import NowPlaying from "@/components/ui/NowPlaying";
 import Link from "next/link";
 import { getLatestReviews, getRatingColor } from "@/lib/reviews";
+import { BreadcrumbSchema, ItemListSchema } from "@/app/schema";
 
 /* Essential playlists — real data from Spotify profile */
 const playlists = [
@@ -29,6 +30,10 @@ export default function Home() {
 
   return (
     <div className="space-y-6 circuit-bg">
+      {/* JSON-LD Structured Data */}
+      <BreadcrumbSchema items={[{ name: "Home", href: "/" }]} />
+      <ItemListSchema reviews={reviews} listName="Latest Reviews" />
+
       {/* ========== HERO PANEL — Main feature panel with glow ========== */}
       <section className="panel-xbox-glow p-4 sm:p-8 text-center space-y-4 sm:space-y-5 relative overflow-hidden">
         {/* Decorative glow orbs */}

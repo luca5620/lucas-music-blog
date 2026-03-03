@@ -100,11 +100,13 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
                       {review.genre}
                     </span>
                     <span className="text-text-muted text-xs">
-                      {new Date(review.reviewDate + "T12:00:00").toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {review.reviewDate
+                        ? new Date(review.reviewDate + "T12:00:00").toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "Review pending"}
                     </span>
                   </div>
                 </div>

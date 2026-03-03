@@ -92,14 +92,18 @@ export default async function ReviewPage({
               year: "numeric",
             })}
           </span>
-          <span className="text-text-muted text-xs">
-            Reviewed{" "}
-            {new Date(review.reviewDate + "T12:00:00").toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
+          {review.reviewDate ? (
+            <span className="text-text-muted text-xs">
+              Reviewed{" "}
+              {new Date(review.reviewDate + "T12:00:00").toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          ) : (
+            <span className="text-text-muted text-xs italic">Review pending</span>
+          )}
         </div>
 
         {/* Divider */}
@@ -107,9 +111,15 @@ export default async function ReviewPage({
 
         {/* Review Summary */}
         <div className="space-y-4">
-          <p className="text-text-secondary leading-relaxed text-sm md:text-base">
-            {review.summary}
-          </p>
+          {review.summary ? (
+            <p className="text-text-secondary leading-relaxed text-sm md:text-base">
+              {review.summary}
+            </p>
+          ) : (
+            <p className="text-text-muted leading-relaxed text-sm md:text-base italic">
+              Full review coming soon. Check back later.
+            </p>
+          )}
         </div>
 
         {/* Standout Tracks */}

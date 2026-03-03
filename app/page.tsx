@@ -16,12 +16,14 @@ const playlists = [
     description: "The greatest playlist ever made",
     tracks: 1022,
     url: "https://open.spotify.com/playlist/1yHHtRgm1jCoMgd3A6B7gt",
+    coverImage: "/playlists/peak-music.png",
   },
   {
     name: "Beautiful music",
     description: "Shorter version of peak music",
     tracks: 330,
     url: "https://open.spotify.com/playlist/1HMNf7Zj7RFaMSjjkCD1l2",
+    coverImage: "/playlists/beautiful-music.png",
   },
 ];
 
@@ -132,9 +134,13 @@ export default function Home() {
               rel="noopener noreferrer"
               className="panel-xbox p-4 sm:p-5 flex gap-4 sm:gap-5 group cursor-pointer hover-glow relative overflow-hidden"
             >
-              {/* Playlist icon with glow */}
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-[rgba(30,144,255,0.08)] border border-[rgba(30,144,255,0.2)] flex items-center justify-center shrink-0 group-hover:border-accent-primary/50 group-hover:bg-[rgba(30,144,255,0.12)] transition-all">
-                <span className="text-2xl group-hover:scale-110 transition-transform">🎶</span>
+              {/* Playlist cover art */}
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-[rgba(30,144,255,0.2)] shrink-0 group-hover:border-accent-primary/50 transition-all">
+                <img
+                  src={playlist.coverImage}
+                  alt={`${playlist.name} playlist cover`}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                />
               </div>
               <div className="space-y-2 flex-1">
                 <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary group-hover:text-accent-primary transition-colors">

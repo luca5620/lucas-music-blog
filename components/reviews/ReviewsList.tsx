@@ -78,7 +78,7 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
                 <div className="flex-1 space-y-2 min-w-0">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="font-[family-name:var(--font-heading)] text-base sm:text-xl font-bold text-text-primary transition-colors break-words group-hover:text-[var(--rating-color)] rating-title-glow">
+                      <h2 className={`font-[family-name:var(--font-heading)] text-base sm:text-xl font-bold text-text-primary transition-colors break-words group-hover:text-[var(--rating-color)]${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
                         {review.title}
                       </h2>
                       <p className="text-sm text-text-secondary">

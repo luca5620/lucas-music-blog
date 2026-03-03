@@ -92,15 +92,15 @@ export default function About() {
         {/* Quick stats from real data */}
         <div className="grid grid-cols-3 gap-3 pt-2">
           <div className="text-center p-3 rounded-lg bg-bg-elevated">
-            <p className="font-[family-name:var(--font-heading)] font-extrabold text-accent-primary text-lg">8,088</p>
+            <p className="font-[family-name:var(--font-heading)] font-extrabold text-accent-primary text-lg">8,688</p>
             <p className="pixel-text text-xs text-text-muted uppercase">Hours listened</p>
           </div>
           <div className="text-center p-3 rounded-lg bg-bg-elevated">
-            <p className="font-[family-name:var(--font-heading)] font-extrabold text-accent-primary text-lg">152K</p>
+            <p className="font-[family-name:var(--font-heading)] font-extrabold text-accent-primary text-lg">169K</p>
             <p className="pixel-text text-xs text-text-muted uppercase">Total streams</p>
           </div>
           <div className="text-center p-3 rounded-lg bg-bg-elevated">
-            <p className="font-[family-name:var(--font-heading)] font-extrabold text-accent-primary text-lg">3,012</p>
+            <p className="font-[family-name:var(--font-heading)] font-extrabold text-accent-primary text-lg">4,186</p>
             <p className="pixel-text text-xs text-text-muted uppercase">Artists</p>
           </div>
         </div>

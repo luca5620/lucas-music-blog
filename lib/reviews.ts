@@ -111,7 +111,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "9.8/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/channel-orange-frank-ocean.png",
     standoutTracks: [],
   },
   {
@@ -125,7 +125,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "9.7/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/thursday-the-weeknd.png",
     standoutTracks: [],
   },
   {
@@ -139,7 +139,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "9.4/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/blonde-frank-ocean.png",
     standoutTracks: [],
   },
   {
@@ -153,7 +153,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "9.2/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/echoes-of-silence-the-weeknd.png",
     standoutTracks: [],
   },
   {
@@ -167,7 +167,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "9.0/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/after-hours-the-weeknd.png",
     standoutTracks: [],
   },
   {
@@ -181,7 +181,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "9.0/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/in-rainbows-radiohead.png",
     standoutTracks: [],
   },
   {
@@ -195,7 +195,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "8.8/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/playboi-carti-playboi-carti.png",
     standoutTracks: [],
   },
   {
@@ -209,7 +209,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "8.8/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/get-up-newjeans.png",
     standoutTracks: [],
   },
   {
@@ -223,7 +223,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "8.7/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/rodeo-travis-scott.png",
     standoutTracks: [],
   },
   {
@@ -237,7 +237,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "8.7/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/who-really-cares-tv-girl.png",
     standoutTracks: [],
   },
   {
@@ -251,7 +251,7 @@ export const reviews: Review[] = [
     reviewDate: "",
     summary: "",
     snippet: "8.3/10 — Full review coming soon.",
-    coverImage: "",
+    coverImage: "/reviews/die-lit-playboi-carti.png",
     standoutTracks: [],
   },
 ];
@@ -300,6 +300,7 @@ export function getGenreColor(genre: string) {
 
 export function getRatingColor(rating: number) {
   if (rating === 10) return "rating-perfect text-[#1e90ff] border-[#1e90ff]";
+  if (rating >= 9.5) return "rating-elite text-purple-400 border-purple-400";
   if (rating >= 9) return "text-purple-400 border-purple-400";
   if (rating >= 8) return "text-[#2563eb] border-[#2563eb]";
   if (rating >= 7) return "text-[#06b6d4] border-[#06b6d4]";

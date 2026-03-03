@@ -3,16 +3,20 @@
  *
  * TEMPLATE WORKFLOW:
  * To add a new review, tell Claude "bring up the template" and provide:
- * 1. Cover image (drop the file — goes in public/reviews/)
- * 2. Release type (single / EP / album / mixtape)
- * 3. Title & Artist
- * 4. Rating (1.0 - 10.0)
- * 5. Genre (Hip-Hop / Pop / Alternative / R&B)
- * 6. Release date
- * 7. Summary (100-200 words)
- * 8. Top 3 standout tracks with Spotify links
+ * 1. Release type (single / EP / album / mixtape)
+ * 2. Title & Artist
+ * 3. Rating (1.0 - 10.0)
+ * 4. Genre (Hip-Hop / Pop / Alternative / R&B)
+ * 5. Release date
+ * 6. Summary (100-200 words)
+ * 7. Top 3 standout tracks with Spotify links
  *
- * Claude will generate the review entry and update this file.
+ * Cover art is fetched automatically from the Spotify API.
+ * Run: node scripts/fetch-album-covers.js
+ * (fetches covers for any review with an empty coverImage field)
+ *
+ * Claude will generate the review entry, update this file,
+ * then run the fetch script to download the cover.
  * Review date is set to the current date automatically.
  */
 
@@ -252,6 +256,20 @@ export const reviews: Review[] = [
     summary: "",
     snippet: "8.3/10 — Full review coming soon.",
     coverImage: "/reviews/die-lit-playboi-carti.png",
+    standoutTracks: [],
+  },
+  {
+    slug: "fever-buckshot-fakemink",
+    title: "Fever",
+    artist: "Buckshot & fakemink",
+    rating: 9.5,
+    genre: "Hip-Hop",
+    releaseType: "single",
+    releaseDate: "2025-08-22",
+    reviewDate: "",
+    summary: "",
+    snippet: "9.5/10 — Full review coming soon.",
+    coverImage: "/reviews/fever-buckshot-fakemink.png",
     standoutTracks: [],
   },
 ];

@@ -47,7 +47,7 @@ export interface Review {
 export const reviews: Review[] = [
   {
     slug: "house-of-balloons-the-weeknd",
-    title: "House of Balloons",
+    title: "House Of Balloons",
     artist: "The Weeknd",
     rating: 10,
     genre: "R&B",
@@ -55,13 +55,13 @@ export const reviews: Review[] = [
     releaseDate: "2011-03-21",
     reviewDate: "2026-03-01",
     summary:
-      "As my first 10/10 rating I have what I say is the \"Greatest Album of All Time\" which is the debut mixtape/album by The Weeknd, who I also think is the greatest artist of all time. I have never heard an album before that has put me in such a vivid experience that I can see and feel, more than this mixtape. House of Balloons is a life-changing album that is so dark and eerie, that makes you want to open a window and breath as you are surrounded by girls, drinks, and drugs all around you in the most drug-induced experience ever. With this explanation I am referring to my favorite track of this mixtape as well as my favorite song of all time, \"House Of Balloons / Glass Table Girls\". I truly do not believe any song on this album is bad, even the bonus song \"Twenty Eight\" being great as well. To round out my top 3 songs however I would say \"The Knowing\" and \"Wicked Games\" are truly fantastic songs and overall this album would be my personal recommendation for anyone in music to give a listen and see if they agree with this 10/10 review of mine.",
+      "As my first 10/10 rating I have what I say is the \"Greatest Album of All Time\" which is the debut mixtape/album by The Weeknd, who I also think is the greatest artist of all time. I have never heard an album before that has put me in such a vivid experience that I can see and feel, more than this mixtape. House Of Balloons is a life-changing album that is so dark and eerie, that makes you want to open a window and breath as you are surrounded by girls, drinks, and drugs all around you in the most drug-induced experience ever. With this explanation I am referring to my favorite track of this mixtape as well as my favorite song of all time, \"House Of Balloons / Glass Table Girls\". I truly do not believe any song on this album is bad, even the bonus song \"Twenty Eight\" being great as well. To round out my top 3 songs however I would say \"The Knowing\" and \"Wicked Games\" are truly fantastic songs and overall this album would be my personal recommendation for anyone in music to give a listen and see if they agree with this 10/10 review of mine.",
     snippet:
       "The \"Greatest Album of All Time\" — a life-changing, dark, and eerie experience. The first and only 10/10.",
     coverImage: "/reviews/house-of-balloons-the-weeknd.png",
     standoutTracks: [
       {
-        title: "House of Balloons / Glass Table Girls",
+        title: "House Of Balloons / Glass Table Girls",
         spotifyUrl: "https://open.spotify.com/track/2r7BPog74oaTG5shNYiUnV",
       },
       {
@@ -314,6 +314,20 @@ export function getGenreColor(genre: string) {
     default:
       return "text-accent-primary";
   }
+}
+
+export function getRatingHex(rating: number) {
+  if (rating === 10) return "#1e90ff";
+  if (rating >= 9.5) return "#c084fc";
+  if (rating >= 9) return "#c084fc";
+  if (rating >= 8) return "#2563eb";
+  if (rating >= 7) return "#06b6d4";
+  if (rating >= 6) return "#166534";
+  if (rating >= 5) return "#84cc16";
+  if (rating >= 4) return "#facc15";
+  if (rating >= 3) return "#fb923c";
+  if (rating >= 2) return "#ef4444";
+  return "#737373";
 }
 
 export function getRatingColor(rating: number) {

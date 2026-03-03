@@ -6,7 +6,7 @@
 
 import NowPlaying from "@/components/ui/NowPlaying";
 import Link from "next/link";
-import { getLatestReviews, getRatingColor } from "@/lib/reviews";
+import { getLatestReviews, getRatingColor, getRatingHex } from "@/lib/reviews";
 import { BreadcrumbSchema, ItemListSchema } from "@/app/schema";
 
 /* Essential playlists — real data from Spotify profile */
@@ -184,6 +184,7 @@ export default function Home() {
               key={review.slug}
               href={`/reviews/${review.slug}`}
               className="panel-xbox p-4 sm:p-5 space-y-4 group cursor-pointer hover-glow relative overflow-hidden"
+              style={{ "--rating-color": getRatingHex(review.rating) } as React.CSSProperties}
             >
               {/* Album art with glow */}
               <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(30,144,255,0.15)] flex items-center justify-center relative overflow-hidden group-hover:border-accent-primary/40 transition-all">
@@ -209,7 +210,7 @@ export default function Home() {
               </div>
 
               <div>
-                <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary group-hover:text-accent-primary transition-colors">
+                <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary transition-colors group-hover:text-[var(--rating-color)]">
                   {review.title}
                 </h3>
                 <p className="text-sm text-text-secondary">{review.artist}</p>

@@ -16,55 +16,18 @@ import { useEffect, useState, useRef, useCallback } from "react";
  */
 
 /**
- * Plays a short TV static / channel-change sound using Web Audio API.
- * No external audio file needed — generates white noise + click programmatically.
+ * Plays the page transition sound effect from an MP3 file.
  */
+let sfxAudio: HTMLAudioElement | null = null;
+
 function playChannelChangeSFX() {
   try {
-    const ctx = new AudioContext();
-
-    /* --- White noise burst (the "static" part) --- */
-    const noiseDuration = 0.15;
-    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * noiseDuration, ctx.sampleRate);
-    const noiseData = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < noiseData.length; i++) {
-      /* Random noise with a quick fade-out envelope */
-      const envelope = 1 - i / noiseData.length;
-      noiseData[i] = (Math.random() * 2 - 1) * envelope;
+    if (!sfxAudio) {
+      sfxAudio = new Audio("/sounds/sicko-mode-sfx.mp3");
+      sfxAudio.volume = 0.3;
     }
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = noiseBuffer;
-
-    /* Bandpass filter to make it sound more like TV static */
-    const filter = ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.value = 4000;
-    filter.Q.value = 0.5;
-
-    const noiseGain = ctx.createGain();
-    noiseGain.gain.value = 0.15; /* not too loud */
-
-    noiseSource.connect(filter);
-    filter.connect(noiseGain);
-    noiseGain.connect(ctx.destination);
-    noiseSource.start();
-
-    /* --- Click / thunk at the start (the "switch" part) --- */
-    const clickOsc = ctx.createOscillator();
-    clickOsc.type = "sine";
-    clickOsc.frequency.value = 150;
-
-    const clickGain = ctx.createGain();
-    clickGain.gain.setValueAtTime(0.3, ctx.currentTime);
-    clickGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-
-    clickOsc.connect(clickGain);
-    clickGain.connect(ctx.destination);
-    clickOsc.start();
-    clickOsc.stop(ctx.currentTime + 0.05);
-
-    /* Clean up audio context after sounds finish */
-    setTimeout(() => ctx.close(), 500);
+    sfxAudio.currentTime = 0;
+    sfxAudio.play();
   } catch {
     /* Silently fail — audio is optional */
   }

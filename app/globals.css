@@ -610,6 +610,14 @@ body {
   background: var(--bg-elevated);
 }
 
+/* Rating-colored title glow on hover */
+.group:hover .rating-title-glow {
+  text-shadow:
+    0 0 8px var(--rating-color),
+    0 0 20px color-mix(in srgb, var(--rating-color) 60%, transparent),
+    0 0 40px color-mix(in srgb, var(--rating-color) 25%, transparent);
+}
+
 /* Elite 9.5-9.9 — prominent purple glow (toned down from perfect 10) */
 .rating-badge.rating-elite {
   border-width: 2.5px !important;

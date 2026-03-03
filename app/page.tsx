@@ -210,7 +210,7 @@ export default function Home() {
               </div>
 
               <div>
-                <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary transition-colors group-hover:text-[var(--rating-color)]">
+                <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary transition-colors group-hover:text-[var(--rating-color)] rating-title-glow">
                   {review.title}
                 </h3>
                 <p className="text-sm text-text-secondary">{review.artist}</p>

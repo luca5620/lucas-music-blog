@@ -610,6 +610,11 @@ body {
   background: var(--bg-elevated);
 }
 
+/* Rating-colored title text on hover — all reviews */
+.group:hover .rating-title-hover {
+  color: var(--rating-color);
+}
+
 /* Rating-colored title glow on hover — only for 9.5+ ratings */
 .group:hover .rating-title-glow-elite {
   text-shadow:

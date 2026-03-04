@@ -5,6 +5,7 @@ import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import PS1CaseFrame from "@/components/ui/PS2CaseFrame";
 import TVTransition from "@/components/ui/TVTransition";
+import BackgroundMusic from "@/components/ui/BackgroundMusic";
 import { WebSiteSchema, PersonSchema } from "@/app/schema";
 
 /* --- Font Setup ---
@@ -94,6 +95,7 @@ export default function RootLayout({
       >
         {/* Film grain + scan line overlays */}
         <GrainOverlay />
+        <BackgroundMusic />
 
         {/* Everything sits inside the PS1 game case frame */}
         <PS1CaseFrame>

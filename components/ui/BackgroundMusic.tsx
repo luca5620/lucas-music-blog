@@ -34,7 +34,10 @@ export default function BackgroundMusic() {
       className="fixed bottom-4 right-4 z-50 w-10 h-10 rounded-full bg-bg-elevated border border-border-subtle flex items-center justify-center text-text-muted hover:text-text-primary hover:border-accent-primary/50 transition-all"
       title={playing ? "Mute music" : "Play music"}
     >
-      <span className="text-sm">{playing ? "♫" : "♪"}</span>
+      <span className="text-sm relative">
+        ♪
+        {!playing && <span className="absolute inset-0 flex items-center justify-center"><span className="block w-6 h-[1.5px] bg-current rotate-[-45deg]" /></span>}
+      </span>
     </button>
   );
 }

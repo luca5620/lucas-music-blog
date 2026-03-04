@@ -13,17 +13,47 @@ const GENRE_OPTIONS: (Genre | "All")[] = [
   "R&B",
 ];
 
+const RATING_OPTIONS: (number | "All")[] = ["All", 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
 export default function ReviewsList({ reviews }: { reviews: Review[] }) {
   const [activeGenre, setActiveGenre] = useState<Genre | "All">("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeRating, setActiveRating] = useState<number | "All">("All");
 
-  const filtered =
-    activeGenre === "All"
-      ? reviews
-      : reviews.filter((r) => r.genre === activeGenre);
+  const filtered = reviews
+    .filter((r) => activeGenre === "All" || r.genre === activeGenre)
+    .filter((r) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return r.title.toLowerCase().includes(q) || r.artist.toLowerCase().includes(q);
+    })
+    .filter((r) => {
+      if (activeRating === "All") return true;
+      return Math.floor(r.rating) === activeRating || (activeRating === 10 && r.rating === 10);
+    });
 
   return (
     <>
-      {/* Filter Bar */}
+      {/* Search Input */}
+      <div className="relative">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by title or artist..."
+          className="w-full px-4 py-3 rounded-lg bg-bg-elevated border border-border-subtle text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/25 transition-all"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors text-sm"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {/* Genre Filter */}
       <div className="flex flex-wrap gap-2">
         {GENRE_OPTIONS.map((genre) => (
           <button
@@ -44,12 +74,40 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
         ))}
       </div>
 
+      {/* Rating Filter */}
+      <div className="flex flex-wrap gap-2">
+        {RATING_OPTIONS.map((rating) => {
+          const isActive = rating === activeRating;
+          const hex = typeof rating === "number" ? getRatingHex(rating) : undefined;
+          return (
+            <button
+              key={String(rating)}
+              onClick={() => setActiveRating(rating)}
+              className={`
+                pixel-text text-xs uppercase tracking-widest px-4 py-2 rounded-full
+                border transition-all duration-200
+                ${
+                  isActive
+                    ? typeof rating === "number"
+                      ? "bg-[var(--btn-color)]/15 border-[var(--btn-color)]/30"
+                      : "bg-accent-primary/15 text-accent-primary border-accent-primary/30"
+                    : "text-text-muted border-border-subtle hover:text-text-primary hover:border-border-medium"
+                }
+              `}
+              style={hex ? { "--btn-color": hex, color: isActive ? hex : undefined } as React.CSSProperties : undefined}
+            >
+              {typeof rating === "number" ? `${rating}+` : rating}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Review List */}
       <div className="space-y-4">
         {filtered.length === 0 ? (
           <div className="card-y2k p-8 text-center">
             <p className="text-text-muted pixel-text text-sm">
-              No reviews in this genre yet.
+              No reviews match your filters.
             </p>
           </div>
         ) : (

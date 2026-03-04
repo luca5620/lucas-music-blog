@@ -31,12 +31,12 @@ export default function BackgroundMusic() {
   return (
     <button
       onClick={toggle}
-      className="fixed bottom-4 right-4 z-50 w-10 h-10 rounded-full bg-bg-elevated border border-border-subtle flex items-center justify-center text-text-muted hover:text-text-primary hover:border-accent-primary/50 transition-all"
+      className="fixed bottom-4 right-4 z-50 w-10 h-10 rounded-full bg-bg-elevated border border-border-subtle flex items-center justify-center text-text-muted hover:text-text-primary hover:border-accent-primary/50 transition-all overflow-hidden"
       title={playing ? "Mute music" : "Play music"}
     >
-      <span className="text-sm relative">
-        ♪
-        {!playing && <span className="absolute inset-0 flex items-center justify-center"><span className="block w-6 h-[1.5px] bg-current rotate-[-45deg]" /></span>}
+      <span className="relative w-full h-full flex items-center justify-center">
+        <span className="text-sm">♫</span>
+        {!playing && <span className="absolute inset-0 flex items-center justify-center"><span className="block w-[120%] h-[2px] bg-current rotate-[-45deg]" /></span>}
       </span>
     </button>
   );

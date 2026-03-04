@@ -36,7 +36,7 @@ export default function BackgroundMusic() {
     >
       <span className="relative w-full h-full flex items-center justify-center">
         <span className="text-sm">♫</span>
-        {!playing && <span className="absolute inset-0 flex items-center justify-center"><span className="block w-[120%] h-[2px] bg-current rotate-[-45deg]" /></span>}
+        {!playing && <span className="absolute inset-0 flex items-center justify-center"><span className="block w-[90%] h-[1.5px] bg-current rotate-[-45deg]" /></span>}
       </span>
     </button>
   );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 /**
  * Navigation — Inside the CRT frame.
@@ -79,6 +80,19 @@ export default function Navigation() {
             })}
           </div>
 
+          {/* Write Review — only when logged in */}
+          {!loading && user && (
+            <Link
+              href="/reviews/new"
+              className="inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap shrink-0 text-accent-primary hover:bg-accent-primary/10 border border-accent-primary/30 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+              <span className="hidden sm:inline">Review</span>
+            </Link>
+          )}
+
           {/* Auth Section */}
           {!loading && (
             <div className="ml-2 shrink-0">
@@ -106,6 +120,9 @@ export default function Navigation() {
                     <span className="hidden sm:inline text-sm text-text-secondary font-[family-name:var(--font-heading)]">
                       {profile?.display_name || profile?.username || "User"}
                     </span>
+                    {profile?.role && profile.role !== "user" && (
+                      <VerifiedBadge role={profile.role} />
+                    )}
                     {/* Chevron */}
                     <svg
                       className={`w-3.5 h-3.5 text-text-muted transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
@@ -121,8 +138,11 @@ export default function Navigation() {
                   {dropdownOpen && (
                     <div className="absolute right-0 top-full mt-2 w-48 bg-[#1e1e22] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden z-50">
                       <div className="px-4 py-3 border-b border-white/5">
-                        <p className="text-sm font-medium text-text-primary truncate">
-                          {profile?.display_name || profile?.username}
+                        <p className="text-sm font-medium text-text-primary truncate flex items-center gap-1.5">
+                          <span>{profile?.display_name || profile?.username}</span>
+                          {profile?.role && profile.role !== "user" && (
+                            <VerifiedBadge role={profile.role} />
+                          )}
                         </p>
                         <p className="text-xs text-text-muted truncate">
                           {user.email}
@@ -135,6 +155,13 @@ export default function Navigation() {
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
                           Profile
+                        </Link>
+                        <Link
+                          href="/reviews/mine"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                        >
+                          My Reviews
                         </Link>
                         <Link
                           href="/settings/profile"

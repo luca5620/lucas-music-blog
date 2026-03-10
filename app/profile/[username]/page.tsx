@@ -15,6 +15,7 @@ import {
 import { getUser } from "@/lib/auth";
 import FollowButton from "./FollowButton";
 import ProfileSongPlayer from "./ProfileSongPlayer";
+import RoleBadge from "@/components/ui/RoleBadge";
 import type { Metadata } from "next";
 import type { Review } from "@/lib/types/database";
 
@@ -149,8 +150,9 @@ export default async function ProfilePage({ params }: Props) {
 
           {/* Name + username + actions */}
           <div className="flex-1 min-w-0 space-y-2">
-            <h1 className="font-[family-name:var(--font-space-grotesk)] text-2xl sm:text-4xl font-extrabold text-[#e8e6e3] truncate">
-              {displayName}
+            <h1 className="font-[family-name:var(--font-space-grotesk)] text-2xl sm:text-4xl font-extrabold text-[#e8e6e3] flex items-center gap-2">
+              <span className="truncate">{displayName}</span>
+              <RoleBadge role={profile.role} size="lg" />
             </h1>
             <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
               @{profile.username}

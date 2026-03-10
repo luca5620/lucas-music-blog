@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
+import { createClient } from "@/lib/supabase/server";
+import CommentsSection from "@/components/reviews/CommentsSection";
 
 export function generateStaticParams() {
   return getAllReviews().map((review) => ({ slug: review.slug }));
@@ -69,6 +71,20 @@ export default async function ReviewPage({
   const review = getReviewBySlug(slug);
 
   if (!review) notFound();
+
+  // Look up the review's database ID from Supabase for comments
+  let reviewDbId: string | null = null;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("reviews")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+    reviewDbId = (data as { id: string } | null)?.id ?? null;
+  } catch {
+    // Supabase may not be configured; comments won't render
+  }
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto overflow-hidden">
@@ -211,6 +227,9 @@ export default async function ReviewPage({
         {/* Scan bar */}
         <div className="scan-bar" />
       </div>
+
+      {/* Comments Section */}
+      {reviewDbId && <CommentsSection reviewId={reviewDbId} />}
     </div>
   );
 }

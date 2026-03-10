@@ -19,6 +19,7 @@ export interface Profile {
   statsfm_url: string | null;
   apple_music_url: string | null;
   favorite_genres: string[];
+  role: "user" | "reviewer" | "admin" | "owner";
   created_at: string;
   updated_at: string;
 }

@@ -8,6 +8,8 @@ import NowPlaying from "@/components/ui/NowPlaying";
 import Link from "next/link";
 import { getLatestReviews, getRatingColor, getRatingHex } from "@/lib/reviews";
 import { BreadcrumbSchema, ItemListSchema } from "@/app/schema";
+import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
+import { Suspense } from "react";
 
 /* Essential playlists — real data from Spotify profile */
 const playlists = [
@@ -221,6 +223,14 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Glowing divider */}
+      <div className="divider-glow" />
+
+      {/* ========== COMMUNITY FEED — Recent reviews from all users ========== */}
+      <Suspense fallback={null}>
+        <DiscoveryFeed />
+      </Suspense>
     </div>
   );
 }

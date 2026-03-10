@@ -45,7 +45,7 @@ export async function getAllPublishedReviews(options?: {
   const supabase = await createClient();
   let query = supabase
     .from("reviews")
-    .select("*, profiles!inner(username, display_name, avatar_url)")
+    .select("*, profiles!inner(username, display_name, avatar_url, role)")
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
@@ -162,4 +162,21 @@ export async function hasUserLiked(
     .single();
 
   return !!data;
+}
+
+/**
+ * Discovery feed — recent published reviews across all users,
+ * with profile data (username, display_name, avatar, role).
+ */
+export async function getDiscoveryFeed(limit = 12) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("reviews")
+    .select("*, profiles!inner(username, display_name, avatar_url, role)")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return data;
 }

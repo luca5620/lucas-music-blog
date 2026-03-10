@@ -31,6 +31,7 @@ create table public.profiles (
   statsfm_url        text,                        -- link to stats.fm profile
   apple_music_url   text,                        -- link to Apple Music profile
   favorite_genres   text[],                      -- array of genres
+  role              text not null default 'user' check (role in ('user', 'reviewer', 'admin', 'owner')),
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now()
 );

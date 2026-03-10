@@ -50,9 +50,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     async function getInitialSession() {
+      // Use getSession() first — it auto-refreshes expired tokens.
+      // getUser() alone won't refresh and returns null on expired tokens.
       const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+      const currentUser = session?.user ?? null;
       setUser(currentUser);
       if (currentUser) {
         await fetchProfile(currentUser.id);

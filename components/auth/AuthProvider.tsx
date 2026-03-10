@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   useRef,
+  useCallback,
   type ReactNode,
 } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -31,6 +32,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const supabaseRef = useRef(createClient());
+  const profileCache = useRef<Record<string, Profile | null>>({});
+
+  const fetchProfile = useCallback(async (userId: string) => {
+    // Check cache first to avoid redundant queries
+    if (profileCache.current[userId] !== undefined) {
+      setProfile(profileCache.current[userId]);
+      return;
+    }
+
+    const { data } = await supabaseRef.current
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    const p = data as Profile | null;
+    profileCache.current[userId] = p;
+    setProfile(p);
+  }, []);
 
   useEffect(() => {
     const supabase = supabaseRef.current;
@@ -40,53 +60,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    async function fetchProfile(userId: string) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-      setProfile(data as Profile | null);
-    }
-
-    async function getInitialSession() {
-      // Use getSession() first — it auto-refreshes expired tokens.
-      // getUser() alone won't refresh and returns null on expired tokens.
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        await fetchProfile(currentUser.id);
-      }
-      setLoading(false);
-    }
-
-    getInitialSession();
-
+    // Use ONLY onAuthStateChange — it fires INITIAL_SESSION first,
+    // then TOKEN_REFRESHED, SIGNED_IN, SIGNED_OUT, etc.
+    // This eliminates the race condition between getSession() and the listener.
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
+
       if (currentUser) {
+        // Invalidate cache on sign-in so we get fresh profile data
+        if (event === "SIGNED_IN") {
+          delete profileCache.current[currentUser.id];
+        }
         await fetchProfile(currentUser.id);
       } else {
         setProfile(null);
       }
+
       setLoading(false);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchProfile]);
 
   const signOut = async () => {
     await supabaseRef.current.auth.signOut();
     setUser(null);
     setProfile(null);
+    profileCache.current = {};
   };
 
   return (

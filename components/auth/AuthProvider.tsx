@@ -32,24 +32,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const supabaseRef = useRef(createClient());
-  const profileCache = useRef<Record<string, Profile | null>>({});
 
   const fetchProfile = useCallback(async (userId: string) => {
-    // Check cache first to avoid redundant queries
-    if (profileCache.current[userId] !== undefined) {
-      setProfile(profileCache.current[userId]);
-      return;
-    }
-
-    const { data } = await supabaseRef.current
+    console.log("[Auth Debug] fetchProfile called for:", userId);
+    const { data, error } = await supabaseRef.current
       .from("profiles")
       .select("*")
       .eq("id", userId)
       .single();
 
-    const p = data as Profile | null;
-    profileCache.current[userId] = p;
-    setProfile(p);
+    console.log("[Auth Debug] fetchProfile result:", {
+      hasData: !!data,
+      error: error?.message,
+      username: (data as Profile | null)?.username,
+    });
+
+    setProfile(data as Profile | null);
   }, []);
 
   useEffect(() => {
@@ -85,10 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(currentUser);
 
       if (currentUser) {
-        // Invalidate cache on sign-in so we get fresh profile data
-        if (event === "SIGNED_IN") {
-          delete profileCache.current[currentUser.id];
-        }
         await fetchProfile(currentUser.id);
       } else {
         setProfile(null);
@@ -106,7 +100,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabaseRef.current.auth.signOut();
     setUser(null);
     setProfile(null);
-    profileCache.current = {};
   };
 
   return (

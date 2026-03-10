@@ -63,9 +63,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Use ONLY onAuthStateChange — it fires INITIAL_SESSION first,
     // then TOKEN_REFRESHED, SIGNED_IN, SIGNED_OUT, etc.
     // This eliminates the race condition between getSession() and the listener.
+    // Also try getSession directly to see what's available
+    supabase.auth.getSession().then(({ data, error }) => {
+      console.log("[Auth Debug] getSession result:", {
+        hasSession: !!data.session,
+        userId: data.session?.user?.id,
+        expiresAt: data.session?.expires_at,
+        error: error?.message,
+      });
+    });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("[Auth Debug] onAuthStateChange:", {
+        event,
+        hasSession: !!session,
+        userId: session?.user?.id,
+      });
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 

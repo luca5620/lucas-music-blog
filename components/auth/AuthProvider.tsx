@@ -5,7 +5,7 @@ import {
   useContext,
   useEffect,
   useState,
-  useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -30,28 +30,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const supabaseRef = useRef(createClient());
 
-  const supabase = createClient();
+  useEffect(() => {
+    const supabase = supabaseRef.current;
 
-  const fetchProfile = useCallback(
-    async (userId: string) => {
+    if (!isSupabaseConfigured()) {
+      setLoading(false);
+      return;
+    }
+
+    async function fetchProfile(userId: string) {
       const { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userId)
         .single();
       setProfile(data as Profile | null);
-    },
-    [supabase]
-  );
+    }
 
-  useEffect(() => {
-    // Get initial session
-    const getInitialSession = async () => {
-      if (!isSupabaseConfigured()) {
-        setLoading(false);
-        return;
-      }
+    async function getInitialSession() {
       const {
         data: { user: currentUser },
       } = await supabase.auth.getUser();
@@ -60,17 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await fetchProfile(currentUser.id);
       }
       setLoading(false);
-    };
+    }
 
     getInitialSession();
 
-    // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-
       if (currentUser) {
         await fetchProfile(currentUser.id);
       } else {
@@ -82,13 +78,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase, fetchProfile]);
+  }, []);
 
-  const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+  const signOut = async () => {
+    await supabaseRef.current.auth.signOut();
     setUser(null);
     setProfile(null);
-  }, [supabase]);
+  };
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, signOut }}>

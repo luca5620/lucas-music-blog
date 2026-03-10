@@ -336,7 +336,7 @@ create trigger trg_comments_updated_at
 
 do $$
 declare
-  luca_id uuid := '00000000-0000-0000-0000-000000000001';  -- REPLACE with real auth user id
+  luca_id uuid := '8587299c-dbb8-49a9-b984-e25c089a65fc';
 begin
 
   -- -------------------------------------------------------------------------

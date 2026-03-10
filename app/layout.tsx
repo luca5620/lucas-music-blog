@@ -6,6 +6,7 @@ import GrainOverlay from "@/components/ui/GrainOverlay";
 import PS1CaseFrame from "@/components/ui/PS2CaseFrame";
 import TVTransition from "@/components/ui/TVTransition";
 import BackgroundMusic from "@/components/ui/BackgroundMusic";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import { WebSiteSchema, PersonSchema } from "@/app/schema";
 
 /* --- Font Setup ---
@@ -97,13 +98,15 @@ export default function RootLayout({
         <GrainOverlay />
         <BackgroundMusic />
 
-        {/* Everything sits inside the PS1 game case frame */}
-        <PS1CaseFrame>
-          {/* TV transition is INSIDE the case so it's clipped to the cover area */}
-          <TVTransition />
-          <Navigation />
-          {children}
-        </PS1CaseFrame>
+        <AuthProvider>
+          {/* Everything sits inside the PS1 game case frame */}
+          <PS1CaseFrame>
+            {/* TV transition is INSIDE the case so it's clipped to the cover area */}
+            <TVTransition />
+            <Navigation />
+            {children}
+          </PS1CaseFrame>
+        </AuthProvider>
       </body>
     </html>
   );

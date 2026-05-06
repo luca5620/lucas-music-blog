@@ -62,8 +62,8 @@ export default function Home() {
           <a href="/reviews" className="btn-y2k btn-y2k-primary">
             Read Reviews
           </a>
-          <a href="/analytics" className="btn-y2k btn-y2k-outline">
-            Listening Data
+          <a href="/profile/lucas" className="btn-y2k btn-y2k-outline">
+            View My Profile
           </a>
         </div>
 
@@ -108,10 +108,10 @@ export default function Home() {
             ))}
           </div>
           <a
-            href="/analytics"
+            href="/profile/lucas#listening"
             className="mt-4 block text-center text-xs text-accent-glow hover:text-accent-primary transition-colors uppercase tracking-widest"
           >
-            View Full Data →
+            View Full Profile →
           </a>
           <div className="scan-bar" />
         </div>

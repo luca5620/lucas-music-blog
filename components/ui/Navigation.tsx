@@ -14,8 +14,8 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/reviews", label: "Reviews" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/about", label: "About" },
+  { href: "/friends", label: "Friends" },
+  { href: "/for-you", label: "For You" },
 ];
 
 export default function Navigation() {

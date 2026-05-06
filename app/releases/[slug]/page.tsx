@@ -19,15 +19,28 @@ import {
   isFollowingRelease,
 } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
-import { getOrCreateRoom, getRoomMessages } from "@/lib/db/rooms";
+import {
+  getOrCreateRoom,
+  getRoomMessages,
+  getTrackReactionCounts,
+  getViewerReactions,
+} from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor } from "@/lib/reviews";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import ChatPanel, {
   type ChatMessageWithProfile,
 } from "@/components/rooms/ChatPanel";
+import ReactionsLayer from "@/components/rooms/ReactionsLayer";
+import TrackReactions from "@/components/rooms/TrackReactions";
 import { BreadcrumbSchema } from "@/app/schema";
-import type { ReleaseTrack } from "@/lib/types/database";
+import type {
+  Profile,
+  Release,
+  ReleaseRoom,
+  ReleaseStats,
+  ReleaseTrack,
+} from "@/lib/types/database";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -126,14 +139,42 @@ export default async function ReleasePage({ params }: Props) {
 
   const reviews = reviewsRaw as unknown as ReviewWithProfile[];
 
-  const initialMessages: ChatMessageWithProfile[] = room
-    ? ((await getRoomMessages(room.id, { limit: 30 })) as ChatMessageWithProfile[])
-    : [];
+  const [initialMessages, trackReactionRows, viewerReactionRows] =
+    await Promise.all([
+      room
+        ? (getRoomMessages(room.id, { limit: 30 }) as Promise<
+            ChatMessageWithProfile[]
+          >)
+        : Promise.resolve([] as ChatMessageWithProfile[]),
+      room ? getTrackReactionCounts(room.id) : Promise.resolve([]),
+      room && user
+        ? getViewerReactions(user.id, room.id)
+        : Promise.resolve([]),
+    ]);
 
   const accentColor =
     stats.avg_rating !== null ? getRatingHex(stats.avg_rating) : "#1e90ff";
 
   const tracks = (release.tracks ?? []) as ReleaseTrack[];
+
+  // Bucket reaction counts by track_position for fast per-row lookup.
+  const trackCountsByPos = new Map<
+    number,
+    { emoji: string; count: number }[]
+  >();
+  for (const r of trackReactionRows) {
+    const arr = trackCountsByPos.get(r.track_position) ?? [];
+    arr.push({ emoji: r.emoji, count: r.count });
+    trackCountsByPos.set(r.track_position, arr);
+  }
+
+  const viewerReactionsByPos = new Map<number, string[]>();
+  for (const r of viewerReactionRows) {
+    if (r.track_position == null) continue;
+    const arr = viewerReactionsByPos.get(r.track_position) ?? [];
+    arr.push(r.emoji);
+    viewerReactionsByPos.set(r.track_position, arr);
+  }
   const releaseDateFormatted = formatDate(release.release_date);
   const artistName = artist?.name ?? "Unknown Artist";
   const artistSlug = artist?.slug;
@@ -166,8 +207,84 @@ export default async function ReleasePage({ params }: Props) {
         ← Back to Releases
       </Link>
 
-      {/* Main content card */}
-      <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">
+      {room ? (
+        <ReactionsLayer roomId={room.id} accentColor={accentColor}>
+          <ReleaseContent
+            release={release}
+            stats={stats}
+            isFollowing={isFollowing}
+            accentColor={accentColor}
+            tracks={tracks}
+            trackCountsByPos={trackCountsByPos}
+            viewerReactionsByPos={viewerReactionsByPos}
+            room={room}
+            initialMessages={initialMessages}
+            reviews={reviews}
+            followers={followers}
+            releaseDateFormatted={releaseDateFormatted}
+            artistName={artistName}
+            artistSlug={artistSlug}
+          />
+        </ReactionsLayer>
+      ) : (
+        <ReleaseContent
+          release={release}
+          stats={stats}
+          isFollowing={isFollowing}
+          accentColor={accentColor}
+          tracks={tracks}
+          trackCountsByPos={trackCountsByPos}
+          viewerReactionsByPos={viewerReactionsByPos}
+          room={null}
+          initialMessages={initialMessages}
+          reviews={reviews}
+          followers={followers}
+          releaseDateFormatted={releaseDateFormatted}
+          artistName={artistName}
+          artistSlug={artistSlug}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────  Release content (extracted for ReactionsLayer wrap)  ───────────────────────── */
+
+interface ReleaseContentProps {
+  release: Release;
+  stats: ReleaseStats;
+  isFollowing: boolean;
+  accentColor: string;
+  tracks: ReleaseTrack[];
+  trackCountsByPos: Map<number, { emoji: string; count: number }[]>;
+  viewerReactionsByPos: Map<number, string[]>;
+  room: ReleaseRoom | null;
+  initialMessages: ChatMessageWithProfile[];
+  reviews: ReviewWithProfile[];
+  followers: Profile[];
+  releaseDateFormatted: string | null;
+  artistName: string;
+  artistSlug: string | undefined;
+}
+
+function ReleaseContent({
+  release,
+  stats,
+  isFollowing,
+  accentColor,
+  tracks,
+  trackCountsByPos,
+  viewerReactionsByPos,
+  room,
+  initialMessages,
+  reviews,
+  followers,
+  releaseDateFormatted,
+  artistName,
+  artistSlug,
+}: ReleaseContentProps) {
+  return (
+    <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">
         {/* Cover Image */}
         <div
           className="aspect-square max-w-md mx-auto rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border-2"
@@ -282,9 +399,12 @@ export default async function ReleasePage({ params }: Props) {
                     ? `https://open.spotify.com/track/${track.spotify_id}`
                     : null;
                   const duration = formatDuration(track.duration_ms);
+                  const trackCounts = trackCountsByPos.get(track.position) ?? [];
+                  const userReactions =
+                    viewerReactionsByPos.get(track.position) ?? [];
 
-                  const inner = (
-                    <>
+                  const titleRow = (
+                    <div className="flex items-center justify-between gap-2 w-full">
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="pixel-text text-sm text-text-muted shrink-0 w-6 tabular-nums">
                           {track.position}
@@ -303,26 +423,38 @@ export default async function ReleasePage({ params }: Props) {
                           </span>
                         )}
                       </div>
-                    </>
+                    </div>
                   );
 
-                  return spotifyHref ? (
-                    <li key={`${track.position}-${track.title}`}>
-                      <a
-                        href={spotifyHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between gap-2 py-2 border-b border-border-subtle last:border-0 hover:bg-bg-elevated/50 rounded-lg px-2 -mx-2 transition-colors"
-                      >
-                        {inner}
-                      </a>
-                    </li>
-                  ) : (
+                  return (
                     <li
                       key={`${track.position}-${track.title}`}
-                      className="flex items-center justify-between gap-2 py-2 border-b border-border-subtle last:border-0 px-2 -mx-2"
+                      data-track-position={track.position}
+                      className="border-b border-border-subtle last:border-0 px-2 -mx-2 py-1.5"
                     >
-                      {inner}
+                      {spotifyHref ? (
+                        <a
+                          href={spotifyHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block py-1 rounded-lg hover:bg-bg-elevated/50 transition-colors"
+                        >
+                          {titleRow}
+                        </a>
+                      ) : (
+                        <div className="py-1">{titleRow}</div>
+                      )}
+                      {room && (
+                        <div className="pl-9 pt-1.5">
+                          <TrackReactions
+                            releaseId={release.id}
+                            trackPosition={track.position}
+                            initialCounts={trackCounts}
+                            initialUserReactions={userReactions}
+                            accentColor={accentColor}
+                          />
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -422,7 +554,6 @@ export default async function ReleasePage({ params }: Props) {
 
         {/* Scan bar */}
         <div className="scan-bar" />
-      </div>
     </div>
   );
 }

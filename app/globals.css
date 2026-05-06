@@ -716,6 +716,29 @@ body {
   }
 }
 
+/* ============================================
+   FLOATING EMOJI TICKER (Phase 2b-3)
+   Track-level reactions drift up and fade out.
+   ============================================ */
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--float-drift, 0px)), -10px) scale(1.2);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--float-drift, 0px) * 0.5), -32px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--float-drift, 0px)), -140px) scale(0.95);
+  }
+}
+
 /* --- Scrollbar --- */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }

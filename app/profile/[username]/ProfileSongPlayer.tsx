@@ -34,6 +34,8 @@ export default function ProfileSongPlayer({
   return (
     <button
       onClick={togglePlay}
+      aria-label={playing ? `Pause profile song ${title}` : `Play profile song ${title}`}
+      aria-pressed={playing}
       className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all hover:scale-[1.02]"
       style={{
         background: `${accentColor}10`,
@@ -54,16 +56,20 @@ export default function ProfileSongPlayer({
         </span>
       </div>
 
-      {/* Animated bars when playing */}
+      {/* Animated bars when playing \u2014 deterministic heights to avoid SSR hydration drift */}
       {playing && (
         <div className="flex items-end gap-[2px] h-4 ml-1">
-          {[0, 0.2, 0.4].map((delay) => (
+          {[
+            { height: 6, delay: 0 },
+            { height: 12, delay: 0.2 },
+            { height: 9, delay: 0.4 },
+          ].map(({ height, delay }) => (
             <div
               key={delay}
               className="w-[3px] rounded-full animate-pulse"
               style={{
                 background: accentColor,
-                height: `${Math.random() * 12 + 4}px`,
+                height: `${height}px`,
                 animationDelay: `${delay}s`,
                 animationDuration: "0.6s",
               }}

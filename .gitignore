@@ -36,8 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
-# Spotify listening data (personal, not committed)
-/data/
+# Spotify listening data (personal, not committed) — ignore raw exports,
+# allow curated TS data modules through
+/data/*
+!/data/analytics/
 
 # typescript
 *.tsbuildinfo

@@ -141,6 +141,43 @@ export interface ReleaseStats {
   avg_rating: number | null;
 }
 
+/* --- Phase 2b: Live release rooms --- */
+
+export interface ReleaseRoom {
+  id: string;
+  release_id: string;
+  message_count: number;
+  last_activity_at: string | null;
+  created_at: string;
+}
+
+export interface RoomMessage {
+  id: string;
+  room_id: string;
+  user_id: string;
+  content: string;
+  track_position: number | null;
+  created_at: string;
+}
+
+export interface RoomReaction {
+  id: string;
+  room_id: string;
+  user_id: string;
+  target_type: "track" | "message";
+  track_position: number | null;
+  message_id: string | null;
+  emoji: string;
+  created_at: string;
+}
+
+// Aggregated for UI: how many of each emoji per track
+export interface TrackReactionCounts {
+  track_position: number;
+  emoji: string;
+  count: number;
+}
+
 /* --- Aggregate / computed types --- */
 
 export interface ProfileStats {
@@ -330,6 +367,77 @@ export type Database = {
             columns: ["release_id"];
             isOneToOne: false;
             referencedRelation: "releases";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      release_rooms: {
+        Row: ReleaseRoom;
+        Insert: Pick<ReleaseRoom, "release_id"> &
+          Partial<Omit<ReleaseRoom, "release_id">>;
+        Update: Partial<ReleaseRoom>;
+        Relationships: [
+          {
+            foreignKeyName: "release_rooms_release_id_fkey";
+            columns: ["release_id"];
+            isOneToOne: true;
+            referencedRelation: "releases";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      room_messages: {
+        Row: RoomMessage;
+        Insert: Pick<RoomMessage, "room_id" | "user_id" | "content"> &
+          Partial<Omit<RoomMessage, "room_id" | "user_id" | "content">>;
+        Update: Partial<RoomMessage>;
+        Relationships: [
+          {
+            foreignKeyName: "room_messages_room_id_fkey";
+            columns: ["room_id"];
+            isOneToOne: false;
+            referencedRelation: "release_rooms";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "room_messages_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      room_reactions: {
+        Row: RoomReaction;
+        Insert: Pick<
+          RoomReaction,
+          "room_id" | "user_id" | "target_type" | "emoji"
+        > &
+          Partial<
+            Omit<RoomReaction, "room_id" | "user_id" | "target_type" | "emoji">
+          >;
+        Update: Partial<RoomReaction>;
+        Relationships: [
+          {
+            foreignKeyName: "room_reactions_room_id_fkey";
+            columns: ["room_id"];
+            isOneToOne: false;
+            referencedRelation: "release_rooms";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "room_reactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "room_reactions_message_id_fkey";
+            columns: ["message_id"];
+            isOneToOne: false;
+            referencedRelation: "room_messages";
             referencedColumns: ["id"];
           }
         ];

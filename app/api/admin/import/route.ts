@@ -4,6 +4,7 @@ import { parseSpotifyUrl } from "@/lib/spotify/auth";
 import {
   importArtistFromSpotify,
   importReleaseFromSpotify,
+  importReleaseFromTrack,
 } from "@/lib/spotify-import";
 import type { Profile } from "@/lib/types/database";
 
@@ -11,7 +12,7 @@ interface ImportBodyByUrl {
   spotifyUrl: string;
 }
 interface ImportBodyByKind {
-  kind: "artist" | "album";
+  kind: "artist" | "album" | "track";
   spotifyId: string;
 }
 type ImportBody = Partial<ImportBodyByUrl & ImportBodyByKind>;
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  let kind: "artist" | "album";
+  let kind: "artist" | "album" | "track";
   let spotifyId: string;
 
   if (body.spotifyUrl) {
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error:
-            "Could not parse Spotify URL. Expected an artist or album link.",
+            "Could not parse Spotify URL. Expected an artist, album, or track link.",
         },
         { status: 400 }
       );
@@ -67,9 +68,9 @@ export async function POST(request: Request) {
     kind = parsed.kind;
     spotifyId = parsed.id;
   } else if (body.kind && body.spotifyId) {
-    if (body.kind !== "artist" && body.kind !== "album") {
+    if (body.kind !== "artist" && body.kind !== "album" && body.kind !== "track") {
       return NextResponse.json(
-        { error: "kind must be 'artist' or 'album'" },
+        { error: "kind must be 'artist', 'album', or 'track'" },
         { status: 400 }
       );
     }
@@ -92,6 +93,17 @@ export async function POST(request: Request) {
         id: artist.id,
         slug: artist.slug,
         name: artist.name,
+      });
+    } else if (kind === "track") {
+      // Track URLs resolve to their parent release.
+      const release = await importReleaseFromTrack(spotifyId);
+      return NextResponse.json({
+        ok: true,
+        kind: "album", // we returned a release, regardless of input kind
+        resolvedFrom: "track",
+        id: release.id,
+        slug: release.slug,
+        title: release.title,
       });
     } else {
       const release = await importReleaseFromSpotify(spotifyId);

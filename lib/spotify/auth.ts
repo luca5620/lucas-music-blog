@@ -64,7 +64,7 @@ export async function getSpotifyToken(): Promise<string> {
   return cached.token;
 }
 
-export type SpotifyResourceKind = "artist" | "album";
+export type SpotifyResourceKind = "artist" | "album" | "track";
 
 export interface ParsedSpotifyResource {
   kind: SpotifyResourceKind;
@@ -78,9 +78,13 @@ export interface ParsedSpotifyResource {
  * Accepts:
  *  - https://open.spotify.com/artist/{id}      (with or without query)
  *  - https://open.spotify.com/album/{id}
+ *  - https://open.spotify.com/track/{id}
  *  - http://open.spotify.com/intl-en/album/{id}  (locale prefix tolerated)
  *  - spotify:artist:{id}
  *  - spotify:album:{id}
+ *  - spotify:track:{id}
+ *
+ * Tracks are resolved to their parent album by the import pipeline.
  */
 export function parseSpotifyUrl(url: string): ParsedSpotifyResource | null {
   if (!url) return null;
@@ -88,7 +92,7 @@ export function parseSpotifyUrl(url: string): ParsedSpotifyResource | null {
   if (!trimmed) return null;
 
   // URI form: spotify:artist:abc123
-  const uriMatch = trimmed.match(/^spotify:(artist|album):([A-Za-z0-9]+)$/);
+  const uriMatch = trimmed.match(/^spotify:(artist|album|track):([A-Za-z0-9]+)$/);
   if (uriMatch) {
     return { kind: uriMatch[1] as SpotifyResourceKind, id: uriMatch[2] };
   }
@@ -96,7 +100,7 @@ export function parseSpotifyUrl(url: string): ParsedSpotifyResource | null {
   // Web URL form. Strip query string before matching.
   const noQuery = trimmed.split("?")[0].split("#")[0];
   const urlMatch = noQuery.match(
-    /open\.spotify\.com\/(?:[a-z-]+\/)?(artist|album)\/([A-Za-z0-9]+)\/?$/
+    /open\.spotify\.com\/(?:[a-z-]+\/)?(artist|album|track)\/([A-Za-z0-9]+)\/?$/
   );
   if (urlMatch) {
     return { kind: urlMatch[1] as SpotifyResourceKind, id: urlMatch[2] };

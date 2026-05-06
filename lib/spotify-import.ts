@@ -336,3 +336,40 @@ export async function importReleaseFromSpotify(
 
   return release;
 }
+
+// ---------------------------------------------------------------------------
+// Track import — resolves to the track's parent album, then imports it.
+// We don't store individual tracks as their own entity (Phase 2a stores
+// tracks as jsonb on the release); a track URL is just a friendlier way
+// for users to point at the release that contains it.
+// ---------------------------------------------------------------------------
+
+interface SpotifyTrackResponse {
+  id: string;
+  name: string;
+  album: { id: string };
+}
+
+export async function importReleaseFromTrack(
+  trackId: string
+): Promise<Release> {
+  if (!trackId) throw new Error("importReleaseFromTrack: trackId required");
+
+  let raw: unknown;
+  try {
+    raw = await spotifyFetch(`/tracks/${trackId}`);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("404")) {
+      throw new Error(`Spotify track not found: ${trackId}`);
+    }
+    throw err;
+  }
+
+  const track = raw as SpotifyTrackResponse;
+  if (!track.album?.id) {
+    throw new Error(`Spotify track ${trackId} has no parent album`);
+  }
+
+  return importReleaseFromSpotify(track.album.id);
+}

@@ -65,7 +65,7 @@ export default async function DiscoveryFeed() {
             >
               {/* Verified badge — just the checkmark */}
               {isVerified && (
-                <div className="absolute top-2 right-2 z-10">
+                <div className="absolute top-1 right-1 z-10">
                   <VerifiedBadge role={profile.role} />
                 </div>
               )}

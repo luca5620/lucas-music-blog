@@ -3,8 +3,24 @@
 -- =============================================================================
 -- Adds canonical artist + release entities, junction (release_artists), follow
 -- tables for both, and patches reviews.release_id. Plus RLS, indexes, and
--- stats functions. Runs after schema.sql + add-role-column.sql.
+-- stats functions. Self-contained and re-runnable — safe to re-execute after
+-- a partial run.
 -- =============================================================================
+
+
+-- ---------------------------------------------------------------------------
+-- 0. set_updated_at() — defined here so the migration is self-sufficient
+--    (also lives in schema.sql; create-or-replace makes this idempotent).
+-- ---------------------------------------------------------------------------
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
 
 
 -- ---------------------------------------------------------------------------
@@ -27,6 +43,7 @@ create index if not exists idx_artists_slug         on public.artists (slug);
 create index if not exists idx_artists_spotify_id   on public.artists (spotify_id);
 create index if not exists idx_artists_lower_name   on public.artists (lower(name));
 
+drop trigger if exists trg_artists_updated_at on public.artists;
 create trigger trg_artists_updated_at
   before update on public.artists
   for each row execute function public.set_updated_at();
@@ -58,6 +75,7 @@ create index if not exists idx_releases_spotify_id        on public.releases (sp
 create index if not exists idx_releases_primary_artist_id on public.releases (primary_artist_id);
 create index if not exists idx_releases_release_date      on public.releases (release_date desc);
 
+drop trigger if exists trg_releases_updated_at on public.releases;
 create trigger trg_releases_updated_at
   before update on public.releases
   for each row execute function public.set_updated_at();
@@ -145,16 +163,19 @@ alter table public.reviews
 -- ---- artists ----
 alter table public.artists enable row level security;
 
+drop policy if exists "Artists are viewable by everyone" on public.artists;
 create policy "Artists are viewable by everyone"
   on public.artists for select
   using (true);
 
+drop policy if exists "Owners and admins can insert artists" on public.artists;
 create policy "Owners and admins can insert artists"
   on public.artists for insert
   with check (
     (select role from public.profiles where id = auth.uid()) in ('owner','admin')
   );
 
+drop policy if exists "Owners and admins can update artists" on public.artists;
 create policy "Owners and admins can update artists"
   on public.artists for update
   using (
@@ -164,6 +185,7 @@ create policy "Owners and admins can update artists"
     (select role from public.profiles where id = auth.uid()) in ('owner','admin')
   );
 
+drop policy if exists "Owners and admins can delete artists" on public.artists;
 create policy "Owners and admins can delete artists"
   on public.artists for delete
   using (
@@ -174,16 +196,19 @@ create policy "Owners and admins can delete artists"
 -- ---- releases ----
 alter table public.releases enable row level security;
 
+drop policy if exists "Releases are viewable by everyone" on public.releases;
 create policy "Releases are viewable by everyone"
   on public.releases for select
   using (true);
 
+drop policy if exists "Owners and admins can insert releases" on public.releases;
 create policy "Owners and admins can insert releases"
   on public.releases for insert
   with check (
     (select role from public.profiles where id = auth.uid()) in ('owner','admin')
   );
 
+drop policy if exists "Owners and admins can update releases" on public.releases;
 create policy "Owners and admins can update releases"
   on public.releases for update
   using (
@@ -193,6 +218,7 @@ create policy "Owners and admins can update releases"
     (select role from public.profiles where id = auth.uid()) in ('owner','admin')
   );
 
+drop policy if exists "Owners and admins can delete releases" on public.releases;
 create policy "Owners and admins can delete releases"
   on public.releases for delete
   using (
@@ -203,16 +229,19 @@ create policy "Owners and admins can delete releases"
 -- ---- release_artists ----
 alter table public.release_artists enable row level security;
 
+drop policy if exists "Release artists are viewable by everyone" on public.release_artists;
 create policy "Release artists are viewable by everyone"
   on public.release_artists for select
   using (true);
 
+drop policy if exists "Owners and admins can insert release_artists" on public.release_artists;
 create policy "Owners and admins can insert release_artists"
   on public.release_artists for insert
   with check (
     (select role from public.profiles where id = auth.uid()) in ('owner','admin')
   );
 
+drop policy if exists "Owners and admins can update release_artists" on public.release_artists;
 create policy "Owners and admins can update release_artists"
   on public.release_artists for update
   using (
@@ -222,6 +251,7 @@ create policy "Owners and admins can update release_artists"
     (select role from public.profiles where id = auth.uid()) in ('owner','admin')
   );
 
+drop policy if exists "Owners and admins can delete release_artists" on public.release_artists;
 create policy "Owners and admins can delete release_artists"
   on public.release_artists for delete
   using (
@@ -232,14 +262,17 @@ create policy "Owners and admins can delete release_artists"
 -- ---- artist_follows ----
 alter table public.artist_follows enable row level security;
 
+drop policy if exists "Artist follows are viewable by everyone" on public.artist_follows;
 create policy "Artist follows are viewable by everyone"
   on public.artist_follows for select
   using (true);
 
+drop policy if exists "Authenticated users can follow artists" on public.artist_follows;
 create policy "Authenticated users can follow artists"
   on public.artist_follows for insert
   with check (auth.uid() = follower_id);
 
+drop policy if exists "Users can unfollow artists" on public.artist_follows;
 create policy "Users can unfollow artists"
   on public.artist_follows for delete
   using (auth.uid() = follower_id);
@@ -248,14 +281,17 @@ create policy "Users can unfollow artists"
 -- ---- release_follows ----
 alter table public.release_follows enable row level security;
 
+drop policy if exists "Release follows are viewable by everyone" on public.release_follows;
 create policy "Release follows are viewable by everyone"
   on public.release_follows for select
   using (true);
 
+drop policy if exists "Authenticated users can follow releases" on public.release_follows;
 create policy "Authenticated users can follow releases"
   on public.release_follows for insert
   with check (auth.uid() = follower_id);
 
+drop policy if exists "Users can unfollow releases" on public.release_follows;
 create policy "Users can unfollow releases"
   on public.release_follows for delete
   using (auth.uid() = follower_id);

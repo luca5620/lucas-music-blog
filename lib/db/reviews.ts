@@ -166,17 +166,52 @@ export async function hasUserLiked(
 
 /**
  * Discovery feed — recent published reviews across all users,
- * with profile data (username, display_name, avatar, role).
+ * with profile data (username, display_name, avatar, role) plus
+ * like_count and viewer_has_liked for the like UI.
  */
-export async function getDiscoveryFeed(limit = 12) {
+export async function getDiscoveryFeed(limit = 12, viewerId?: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("reviews")
-    .select("*, profiles!inner(username, display_name, avatar_url, role)")
+    .select(
+      "*, profiles!inner(username, display_name, avatar_url, role), review_likes(count)"
+    )
     .eq("is_published", true)
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) return [];
-  return data;
+  if (error || !data) return [];
+
+  type RawRow = Record<string, unknown> & {
+    id: string;
+    review_likes?: { count: number }[] | null;
+  };
+  const rows = data as RawRow[];
+  const reviewIds = rows.map((r) => r.id);
+
+  let likedSet = new Set<string>();
+  if (viewerId && reviewIds.length > 0) {
+    const { data: likesData } = await supabase
+      .from("review_likes")
+      .select("review_id")
+      .eq("user_id", viewerId)
+      .in("review_id", reviewIds);
+    if (likesData) {
+      likedSet = new Set(
+        (likesData as { review_id: string }[]).map((r) => r.review_id)
+      );
+    }
+  }
+
+  return rows.map((row) => {
+    const { review_likes, ...rest } = row;
+    const like_count = Array.isArray(review_likes)
+      ? review_likes[0]?.count ?? 0
+      : 0;
+    return {
+      ...rest,
+      like_count,
+      viewer_has_liked: likedSet.has(row.id),
+    };
+  });
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
 import CommentsSection from "@/components/reviews/CommentsSection";
+import LikeButton from "@/components/reviews/LikeButton";
 
 export function generateStaticParams() {
   return getAllReviews().map((review) => ({ slug: review.slug }));
@@ -72,8 +73,10 @@ export default async function ReviewPage({
 
   if (!review) notFound();
 
-  // Look up the review's database ID from Supabase for comments
+  // Look up the review's database ID from Supabase for comments + likes
   let reviewDbId: string | null = null;
+  let likeCount = 0;
+  let viewerHasLiked = false;
   try {
     const supabase = await createClient();
     const { data } = await supabase
@@ -82,8 +85,29 @@ export default async function ReviewPage({
       .eq("slug", slug)
       .single();
     reviewDbId = (data as { id: string } | null)?.id ?? null;
+
+    if (reviewDbId) {
+      const [{ count }, { data: { user } }] = await Promise.all([
+        supabase
+          .from("review_likes")
+          .select("id", { count: "exact", head: true })
+          .eq("review_id", reviewDbId),
+        supabase.auth.getUser(),
+      ]);
+      likeCount = count ?? 0;
+
+      if (user) {
+        const { data: liked } = await supabase
+          .from("review_likes")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("review_id", reviewDbId)
+          .maybeSingle();
+        viewerHasLiked = !!liked;
+      }
+    }
   } catch {
-    // Supabase may not be configured; comments won't render
+    // Supabase may not be configured; comments + likes won't render
   }
 
   return (
@@ -140,6 +164,19 @@ export default async function ReviewPage({
           </h1>
           <p className="text-lg text-text-secondary mt-1">{review.artist}</p>
         </div>
+
+        {/* Like button */}
+        {reviewDbId && (
+          <div className="flex items-center gap-3">
+            <LikeButton
+              reviewId={reviewDbId}
+              initialCount={likeCount}
+              initialLiked={viewerHasLiked}
+              size="md"
+            />
+            <span className="label-xbox text-[0.6rem]">Likes</span>
+          </div>
+        )}
 
         {/* Genre + Dates */}
         <div className="flex flex-wrap items-center gap-3">

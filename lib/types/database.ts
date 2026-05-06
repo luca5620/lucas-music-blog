@@ -40,6 +40,7 @@ export interface Review {
   cover_image: string | null;
   standout_tracks: { title: string; spotifyUrl: string }[];
   is_published: boolean;
+  release_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -66,6 +67,78 @@ export interface Follow {
   follower_id: string;
   following_id: string;
   created_at: string;
+}
+
+/* --- Phase 2a: Artists & Releases --- */
+
+export interface ReleaseTrack {
+  position: number;
+  title: string;
+  duration_ms: number;
+  spotify_id?: string;
+  preview_url?: string | null;
+}
+
+export interface Artist {
+  id: string;
+  slug: string;
+  name: string;
+  spotify_id: string | null;
+  image_url: string | null;
+  bio: string | null;
+  genres: string[];
+  popularity: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Release {
+  id: string;
+  slug: string;
+  title: string;
+  primary_artist_id: string;
+  release_type: "single" | "EP" | "album" | "mixtape" | "compilation";
+  release_date: string | null;
+  cover_image: string | null;
+  spotify_id: string | null;
+  description: string | null;
+  tracks: ReleaseTrack[];
+  popularity: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReleaseArtist {
+  release_id: string;
+  artist_id: string;
+  role: "primary" | "feature" | "producer" | "remix";
+  position: number;
+}
+
+export interface ArtistFollow {
+  id: string;
+  follower_id: string;
+  artist_id: string;
+  created_at: string;
+}
+
+export interface ReleaseFollow {
+  id: string;
+  follower_id: string;
+  release_id: string;
+  created_at: string;
+}
+
+export interface ArtistStats {
+  follower_count: number;
+  release_count: number;
+  review_count: number;
+}
+
+export interface ReleaseStats {
+  follower_count: number;
+  review_count: number;
+  avg_rating: number | null;
 }
 
 /* --- Aggregate / computed types --- */
@@ -170,6 +243,93 @@ export type Database = {
             columns: ["following_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      artists: {
+        Row: Artist;
+        Insert: Partial<Artist> & Pick<Artist, "slug" | "name">;
+        Update: Partial<Artist>;
+        Relationships: [];
+      };
+      releases: {
+        Row: Release;
+        Insert: Partial<Release> &
+          Pick<Release, "slug" | "title" | "primary_artist_id" | "release_type">;
+        Update: Partial<Release>;
+        Relationships: [
+          {
+            foreignKeyName: "releases_primary_artist_id_fkey";
+            columns: ["primary_artist_id"];
+            isOneToOne: false;
+            referencedRelation: "artists";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      release_artists: {
+        Row: ReleaseArtist;
+        Insert: Pick<ReleaseArtist, "release_id" | "artist_id" | "role"> &
+          Partial<Omit<ReleaseArtist, "release_id" | "artist_id" | "role">>;
+        Update: Partial<ReleaseArtist>;
+        Relationships: [
+          {
+            foreignKeyName: "release_artists_release_id_fkey";
+            columns: ["release_id"];
+            isOneToOne: false;
+            referencedRelation: "releases";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "release_artists_artist_id_fkey";
+            columns: ["artist_id"];
+            isOneToOne: false;
+            referencedRelation: "artists";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      artist_follows: {
+        Row: ArtistFollow;
+        Insert: Pick<ArtistFollow, "follower_id" | "artist_id"> &
+          Partial<Omit<ArtistFollow, "follower_id" | "artist_id">>;
+        Update: Partial<ArtistFollow>;
+        Relationships: [
+          {
+            foreignKeyName: "artist_follows_follower_id_fkey";
+            columns: ["follower_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "artist_follows_artist_id_fkey";
+            columns: ["artist_id"];
+            isOneToOne: false;
+            referencedRelation: "artists";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      release_follows: {
+        Row: ReleaseFollow;
+        Insert: Pick<ReleaseFollow, "follower_id" | "release_id"> &
+          Partial<Omit<ReleaseFollow, "follower_id" | "release_id">>;
+        Update: Partial<ReleaseFollow>;
+        Relationships: [
+          {
+            foreignKeyName: "release_follows_follower_id_fkey";
+            columns: ["follower_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "release_follows_release_id_fkey";
+            columns: ["release_id"];
+            isOneToOne: false;
+            referencedRelation: "releases";
             referencedColumns: ["id"];
           }
         ];

@@ -170,6 +170,22 @@ export default function Navigation() {
                         >
                           Settings
                         </Link>
+                        {(profile?.role === "owner" || profile?.role === "admin") && (
+                          <>
+                            <div className="my-1 border-t border-white/5" />
+                            <p className="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-text-muted font-[family-name:var(--font-vt323)]">
+                              Admin
+                            </p>
+                            <Link
+                              href="/admin/import"
+                              onClick={() => setDropdownOpen(false)}
+                              className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
+                            >
+                              Import Release
+                            </Link>
+                            <div className="my-1 border-t border-white/5" />
+                          </>
+                        )}
                         <button
                           onClick={handleSignOut}
                           className="w-full text-left px-4 py-2 text-sm text-accent-rose hover:bg-bg-elevated transition-colors"

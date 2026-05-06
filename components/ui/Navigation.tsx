@@ -15,7 +15,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/reviews", label: "Reviews" },
   { href: "/friends", label: "Friends" },
-  { href: "/for-you", label: "For You" },
+  { href: "/your-taste", label: "Your Taste" },
 ];
 
 export default function Navigation() {

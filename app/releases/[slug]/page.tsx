@@ -19,9 +19,13 @@ import {
   isFollowingRelease,
 } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
+import { getOrCreateRoom, getRoomMessages } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor } from "@/lib/reviews";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
+import ChatPanel, {
+  type ChatMessageWithProfile,
+} from "@/components/rooms/ChatPanel";
 import { BreadcrumbSchema } from "@/app/schema";
 import type { ReleaseTrack } from "@/lib/types/database";
 
@@ -112,14 +116,19 @@ export default async function ReleasePage({ params }: Props) {
 
   const user = await getUser();
 
-  const [stats, reviewsRaw, followers, isFollowing] = await Promise.all([
+  const [stats, reviewsRaw, followers, isFollowing, room] = await Promise.all([
     getReleaseStats(release.id),
     getReleaseReviews(release.id),
     getReleaseFollowers(release.id, 12),
     user ? isFollowingRelease(user.id, release.id) : Promise.resolve(false),
+    getOrCreateRoom(release.id).catch(() => null),
   ]);
 
   const reviews = reviewsRaw as unknown as ReviewWithProfile[];
+
+  const initialMessages: ChatMessageWithProfile[] = room
+    ? ((await getRoomMessages(room.id, { limit: 30 })) as ChatMessageWithProfile[])
+    : [];
 
   const accentColor =
     stats.avg_rating !== null ? getRatingHex(stats.avg_rating) : "#1e90ff";
@@ -319,6 +328,19 @@ export default async function ReleasePage({ params }: Props) {
                 })}
               </ol>
             </div>
+          </>
+        )}
+
+        {/* Live Room */}
+        {room && (
+          <>
+            <div className="divider-glow" />
+            <ChatPanel
+              releaseId={release.id}
+              initialMessages={initialMessages}
+              initialRoom={room}
+              accentColor={accentColor}
+            />
           </>
         )}
 

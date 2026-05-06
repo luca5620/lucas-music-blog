@@ -9,6 +9,7 @@ import Link from "next/link";
 import { getLatestReviews, getRatingColor, getRatingHex } from "@/lib/reviews";
 import { BreadcrumbSchema, ItemListSchema } from "@/app/schema";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
+import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import { Suspense } from "react";
 
 /* Essential playlists — real data from Spotify profile */
@@ -226,6 +227,11 @@ export default function Home() {
 
       {/* Glowing divider */}
       <div className="divider-glow" />
+
+      {/* ========== NEW RELEASES — release-first discovery ========== */}
+      <Suspense fallback={null}>
+        <ReleasesFeed />
+      </Suspense>
 
       {/* ========== COMMUNITY FEED — Recent reviews from all users ========== */}
       <Suspense fallback={null}>

@@ -1,5 +1,7 @@
 import { requireAuth } from "@/lib/auth";
 import { getReviewBySlug } from "@/lib/db/reviews";
+import { getReleaseById } from "@/lib/db/releases";
+import { getArtistById } from "@/lib/db/artists";
 import ReviewForm from "@/components/reviews/ReviewForm";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
@@ -27,5 +29,24 @@ export default async function EditReviewPage({
     redirect("/reviews/mine");
   }
 
-  return <ReviewForm mode="edit" review={review} />;
+  // If the review is attached to a canonical release, hydrate the chip.
+  let initialRelease:
+    | { id: string; title: string; artist_name: string; cover_image: string | null }
+    | undefined;
+  if (review.release_id) {
+    const release = await getReleaseById(review.release_id);
+    if (release) {
+      const artist = await getArtistById(release.primary_artist_id);
+      initialRelease = {
+        id: release.id,
+        title: release.title,
+        artist_name: artist?.name ?? review.artist,
+        cover_image: release.cover_image,
+      };
+    }
+  }
+
+  return (
+    <ReviewForm mode="edit" review={review} initialRelease={initialRelease} />
+  );
 }

@@ -224,6 +224,90 @@ export async function attachReleaseArtists(
     });
 }
 
+/**
+ * Release-first discovery feed. Returns recent releases sorted by
+ * release_date desc nulls last, with primary artist + stats joined in.
+ *
+ * Two-pass: first fetches releases + primary artist, then resolves stats
+ * in parallel via the get_release_stats RPC. We don't filter by review
+ * count — releases with zero reviews still appear so the community can
+ * fill them in.
+ *
+ * Returns [] on any error (including missing releases table) so the
+ * home page degrades gracefully before migration 002 is applied.
+ */
+export interface ReleaseFeedItem {
+  id: string;
+  slug: string;
+  title: string;
+  cover_image: string | null;
+  release_type: string;
+  release_date: string | null;
+  primary_artist: { slug: string; name: string };
+  review_count: number;
+  avg_rating: number | null;
+  follower_count: number;
+}
+
+export async function getReleaseDiscoveryFeed(
+  limit: number = 12
+): Promise<ReleaseFeedItem[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("releases")
+    .select(
+      "id, slug, title, cover_image, release_type, release_date, primary_artist_id, artists!releases_primary_artist_id_fkey(slug, name)"
+    )
+    .order("release_date", { ascending: false, nullsFirst: false })
+    .limit(limit);
+
+  if (error || !data) return [];
+
+  type JoinedArtist = { slug: string; name: string } | { slug: string; name: string }[] | null;
+  type Row = {
+    id: string;
+    slug: string;
+    title: string;
+    cover_image: string | null;
+    release_type: string;
+    release_date: string | null;
+    primary_artist_id: string;
+    artists: JoinedArtist;
+  };
+
+  const rows = data as unknown as Row[];
+
+  // Resolve stats in parallel.
+  const stats = await Promise.all(
+    rows.map((r) => getReleaseStats(r.id).catch(() => ({
+      follower_count: 0,
+      review_count: 0,
+      avg_rating: null,
+    } as ReleaseStats)))
+  );
+
+  return rows.map((row, i) => {
+    const joined = row.artists;
+    const artist = Array.isArray(joined) ? joined[0] : joined;
+    const s = stats[i];
+    return {
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      cover_image: row.cover_image,
+      release_type: row.release_type,
+      release_date: row.release_date,
+      primary_artist: {
+        slug: artist?.slug ?? "",
+        name: artist?.name ?? "Unknown Artist",
+      },
+      review_count: s.review_count,
+      avg_rating: s.avg_rating,
+      follower_count: s.follower_count,
+    };
+  });
+}
+
 export async function listReleases(opts?: {
   sort?: "recent" | "popularity" | "alpha";
   limit?: number;

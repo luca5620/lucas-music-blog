@@ -3,6 +3,9 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { Review } from "@/lib/types/database";
+import SpotifyAutocomplete, {
+  type AutocompleteItem,
+} from "@/components/spotify/SpotifyAutocomplete";
 
 const GENRE_OPTIONS = [
   "Hip-Hop",
@@ -32,12 +35,24 @@ function slugify(title: string, artist: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
+interface InitialRelease {
+  id: string;
+  title: string;
+  artist_name: string;
+  cover_image: string | null;
+}
+
 interface ReviewFormProps {
   review?: Review;
   mode: "create" | "edit";
+  initialRelease?: InitialRelease;
 }
 
-export default function ReviewForm({ review, mode }: ReviewFormProps) {
+export default function ReviewForm({
+  review,
+  mode,
+  initialRelease,
+}: ReviewFormProps) {
   const router = useRouter();
 
   const [title, setTitle] = useState(review?.title ?? "");
@@ -53,8 +68,35 @@ export default function ReviewForm({ review, mode }: ReviewFormProps) {
     { title: string; spotifyUrl: string }[]
   >(review?.standout_tracks ?? [{ title: "", spotifyUrl: "" }]);
 
+  const [releaseId, setReleaseId] = useState<string | null>(
+    review?.release_id ?? initialRelease?.id ?? null
+  );
+  const [attachedRelease, setAttachedRelease] = useState<InitialRelease | null>(
+    initialRelease ?? null
+  );
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleReleaseSelect = useCallback((item: AutocompleteItem) => {
+    setReleaseId(item.id);
+    setAttachedRelease({
+      id: item.id,
+      title: item.title,
+      artist_name: item.artist_name,
+      cover_image: item.cover_image,
+    });
+    setTitle(item.title);
+    setArtist(item.artist_name);
+    setCoverImage(item.cover_image ?? "");
+    if (item.release_type) setReleaseType(item.release_type);
+    if (item.release_date) setReleaseDate(item.release_date);
+  }, []);
+
+  const handleReleaseClear = useCallback(() => {
+    setReleaseId(null);
+    setAttachedRelease(null);
+  }, []);
 
   const slug = slugify(title, artist);
 
@@ -108,6 +150,7 @@ export default function ReviewForm({ review, mode }: ReviewFormProps) {
       standout_tracks: filteredTracks,
       is_published: isPublished,
       review_date: new Date().toISOString().split("T")[0],
+      release_id: releaseId || null,
     };
 
     try {
@@ -207,6 +250,58 @@ export default function ReviewForm({ review, mode }: ReviewFormProps) {
         {/* ========== BASIC INFO ========== */}
         <fieldset className="panel-xbox p-5 space-y-4">
           <legend className="label-xbox">Release Info</legend>
+
+          {/* ========== PICK A RELEASE ========== */}
+          <div className="space-y-2">
+            <span className="label-xbox block">Pick a release</span>
+            {attachedRelease ? (
+              <div className="flex items-center gap-3 p-2 rounded-lg border border-[rgba(30,144,255,0.4)] bg-[rgba(30,144,255,0.08)]">
+                <div className="w-12 h-12 rounded bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {attachedRelease.cover_image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={attachedRelease.cover_image}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-text-muted text-xs">{"//"}</span>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm text-[#e8e6e3] truncate font-medium">
+                    {attachedRelease.title}
+                  </div>
+                  <div className="text-xs text-text-secondary truncate">
+                    {attachedRelease.artist_name}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleReleaseClear}
+                  className="label-xbox hover:text-accent-primary transition-colors text-[0.65rem]"
+                >
+                  Change
+                </button>
+              </div>
+            ) : (
+              <SpotifyAutocomplete
+                kind="release"
+                onSelect={handleReleaseSelect}
+                accentColor="#1e90ff"
+                placeholder="Search for an album, single, or EP..."
+                notFoundCta={
+                  <span>
+                    Not in the catalog yet — fill in the title/artist below and
+                    we&apos;ll attach it later.
+                  </span>
+                }
+              />
+            )}
+            <p className="text-xs text-[#5a5a60] font-[family-name:var(--font-vt323)]">
+              attaching a release links this review to the canonical release page
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField label="Title *">

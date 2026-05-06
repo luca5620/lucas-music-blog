@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { createReview } from "@/lib/db/reviews";
+import { getReleaseById } from "@/lib/db/releases";
 
 export async function POST(request: Request) {
   const user = await getUser();
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
       standout_tracks,
       is_published,
       review_date,
+      release_id,
     } = body;
 
     // Validate required fields
@@ -50,6 +52,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate release_id (if provided) refers to a real release
+    let releaseIdValue: string | null = null;
+    if (release_id) {
+      const release = await getReleaseById(release_id);
+      if (!release) {
+        return NextResponse.json(
+          { error: "Release not found" },
+          { status: 400 }
+        );
+      }
+      releaseIdValue = release.id;
+    }
+
     const review = await createReview({
       user_id: user.id,
       slug,
@@ -65,6 +80,7 @@ export async function POST(request: Request) {
       summary: summary || null,
       standout_tracks: standout_tracks || [],
       is_published: is_published ?? false,
+      release_id: releaseIdValue,
     });
 
     if (!review) {

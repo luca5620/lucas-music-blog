@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { updateReview, deleteReview } from "@/lib/db/reviews";
+import { getReleaseById } from "@/lib/db/releases";
 import { createClient } from "@/lib/supabase/server";
 import type { Review } from "@/lib/types/database";
 
@@ -55,6 +56,7 @@ export async function PUT(
       standout_tracks,
       is_published,
       review_date,
+      release_id,
     } = body;
 
     // Validate required fields
@@ -72,6 +74,22 @@ export async function PUT(
       );
     }
 
+    // Resolve release_id. The body may either omit it (preserve existing),
+    // pass null to clear, or pass a real id to attach. Validate when set.
+    let releaseIdValue: string | null = existing.release_id ?? null;
+    if (release_id === null) {
+      releaseIdValue = null;
+    } else if (typeof release_id === "string" && release_id.length > 0) {
+      const release = await getReleaseById(release_id);
+      if (!release) {
+        return NextResponse.json(
+          { error: "Release not found" },
+          { status: 400 }
+        );
+      }
+      releaseIdValue = release.id;
+    }
+
     const review = await updateReview(reviewId, {
       slug: slug || existing.slug,
       title: title.trim(),
@@ -86,6 +104,7 @@ export async function PUT(
       summary: summary || null,
       standout_tracks: standout_tracks || [],
       is_published: is_published ?? existing.is_published,
+      release_id: releaseIdValue,
     });
 
     if (!review) {

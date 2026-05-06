@@ -332,27 +332,35 @@ create trigger trg_comments_updated_at
 -- ===========================================================================
 -- SEED DATA — Luca's profile and reviews
 -- ===========================================================================
--- Replace this UUID with Luca's actual auth.users id after creating the account.
--- You can find it in the Supabase dashboard under Authentication > Users.
+-- The seed block looks up the auth user dynamically. To run it:
+--   1. Sign up at /signup with username "luca" (this creates the auth user
+--      + profile via the handle_new_user trigger)
+--   2. Run this whole `do $$ ... $$` block — it finds the luca profile by
+--      username, sets role = 'owner', and inserts the seed reviews
+-- If no "luca" profile exists yet, the block silently skips so the rest of
+-- schema.sql can run cleanly on a fresh DB.
 
 do $$
 declare
-  luca_id uuid := '8587299c-dbb8-49a9-b984-e25c089a65fc';
+  luca_id uuid;
 begin
+  select id into luca_id from public.profiles where username = 'luca' limit 1;
+
+  if luca_id is null then
+    raise notice 'No profile with username "luca" — skipping seed. Sign up at /signup as "luca" first, then re-run this block.';
+    return;
+  end if;
 
   -- -------------------------------------------------------------------------
-  -- Profile
+  -- Profile (update existing row created by handle_new_user trigger)
   -- -------------------------------------------------------------------------
-  insert into public.profiles (id, username, display_name, bio, profile_color, favorite_genres)
-  values (
-    luca_id,
-    'luca',
-    'Luca',
-    'Peak Music Reviews. Rating music so you do not have to.',
-    '#1e90ff',
-    array['R&B', 'Hip-Hop', 'Pop', 'Alternative']
-  )
-  on conflict (id) do nothing;
+  update public.profiles
+     set display_name    = coalesce(display_name, 'Luca'),
+         bio             = coalesce(bio, 'Peak Music Reviews. Rating music so you do not have to.'),
+         profile_color   = coalesce(profile_color, '#1e90ff'),
+         favorite_genres = coalesce(favorite_genres, array['R&B', 'Hip-Hop', 'Pop', 'Alternative']),
+         role            = 'owner'
+   where id = luca_id;
 
   -- -------------------------------------------------------------------------
   -- Reviews

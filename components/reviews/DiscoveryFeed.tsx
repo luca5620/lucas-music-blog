@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getDiscoveryFeed } from "@/lib/db/reviews";
+import { createClient } from "@/lib/supabase/server";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import LikeButton from "@/components/reviews/LikeButton";
 
 function getRatingColorHex(rating: number): string {
   if (rating === 10) return "#1e90ff";
@@ -30,8 +32,39 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+/** Type for feed reviews with joined profile data and like aggregates */
+interface FeedReview {
+  id: string;
+  slug: string;
+  title: string;
+  artist: string;
+  rating: number;
+  genre: string | null;
+  cover_image: string | null;
+  created_at: string;
+  like_count: number;
+  viewer_has_liked: boolean;
+  profiles: {
+    username: string;
+    display_name: string | null;
+    avatar_url: string | null;
+    role: "user" | "reviewer" | "admin" | "owner";
+  };
+}
+
 export default async function DiscoveryFeed() {
-  const feed = await getDiscoveryFeed(9);
+  let viewerId: string | undefined;
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    viewerId = user?.id;
+  } catch {
+    // Supabase may not be configured
+  }
+
+  const feed = (await getDiscoveryFeed(9, viewerId)) as unknown as FeedReview[];
 
   if (feed.length === 0) return null;
 
@@ -52,7 +85,7 @@ export default async function DiscoveryFeed() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {feed.map((review: FeedReview) => {
+        {feed.map((review) => {
           const profile = review.profiles;
           const ratingColor = getRatingColorHex(review.rating);
           const isVerified = profile.role !== "user";
@@ -107,7 +140,7 @@ export default async function DiscoveryFeed() {
                 <p className="text-sm text-[#9a9a9e]">{review.artist}</p>
               </div>
 
-              {/* Author + Time */}
+              {/* Author + Like + Time */}
               <div className="flex items-center gap-2 pt-1 border-t border-white/5">
                 {profile.avatar_url ? (
                   <img
@@ -122,12 +155,20 @@ export default async function DiscoveryFeed() {
                     </span>
                   </div>
                 )}
-                <span className="text-xs text-text-muted flex items-center gap-1">
+                <span className="text-xs text-text-muted flex items-center gap-1 truncate">
                   {profile.display_name || profile.username}
                   {isVerified && <VerifiedBadge role={profile.role} />}
                 </span>
-                <span className="text-xs text-text-muted ml-auto">
-                  {timeAgo(review.created_at)}
+                <span className="ml-auto flex items-center gap-2">
+                  <LikeButton
+                    reviewId={review.id}
+                    initialCount={review.like_count}
+                    initialLiked={review.viewer_has_liked}
+                    size="sm"
+                  />
+                  <span className="text-xs text-text-muted">
+                    {timeAgo(review.created_at)}
+                  </span>
                 </span>
               </div>
 
@@ -138,22 +179,4 @@ export default async function DiscoveryFeed() {
       </div>
     </section>
   );
-}
-
-/** Type for feed reviews with joined profile data */
-interface FeedReview {
-  id: string;
-  slug: string;
-  title: string;
-  artist: string;
-  rating: number;
-  genre: string | null;
-  cover_image: string | null;
-  created_at: string;
-  profiles: {
-    username: string;
-    display_name: string | null;
-    avatar_url: string | null;
-    role: "user" | "reviewer" | "admin" | "owner";
-  };
 }

@@ -150,7 +150,7 @@ export default async function ProfilePage({ params }: Props) {
 
           {/* Name + username + actions */}
           <div className="flex-1 min-w-0 space-y-2">
-            <h1 className="font-[family-name:var(--font-space-grotesk)] text-2xl sm:text-4xl font-extrabold text-[#e8e6e3] flex items-center gap-2">
+            <h1 className="font-[family-name:var(--font-space-grotesk)] text-3xl sm:text-5xl font-extrabold text-[#e8e6e3] flex items-center gap-2">
               <span className="truncate">{displayName}</span>
               <RoleBadge role={profile.role} size="md" />
             </h1>

@@ -8,6 +8,8 @@ import TVTransition from "@/components/ui/TVTransition";
 import BackgroundMusic from "@/components/ui/BackgroundMusic";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { WebSiteSchema, PersonSchema } from "@/app/schema";
+import { createClient as createServerSupabase } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/types/database";
 
 /* --- Font Setup ---
    - Inter: clean body text
@@ -77,11 +79,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch the current user + profile on the server so the nav avatar
+  // renders on first paint with no loading flash and no client-side race.
+  const supabase = await createServerSupabase();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let profile: Profile | null = null;
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    profile = data as Profile | null;
+  }
+
   return (
     <html lang="en">
       <head>
@@ -98,7 +117,7 @@ export default function RootLayout({
         <GrainOverlay />
         <BackgroundMusic />
 
-        <AuthProvider>
+        <AuthProvider initialUser={user} initialProfile={profile}>
           {/* Everything sits inside the PS1 game case frame */}
           <PS1CaseFrame>
             {/* TV transition is INSIDE the case so it's clipped to the cover area */}

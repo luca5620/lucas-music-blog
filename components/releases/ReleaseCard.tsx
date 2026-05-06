@@ -9,6 +9,7 @@
 import Link from "next/link";
 import type { Release } from "@/lib/types/database";
 import { getRatingHex, getRatingColor } from "@/lib/reviews";
+import LiveBadge from "@/components/rooms/LiveBadge";
 
 interface ReleaseCardProps {
   release: Release;
@@ -17,6 +18,8 @@ interface ReleaseCardProps {
   reviewCount?: number;
   avgRating?: number | null;
   followerCount?: number;
+  /** ISO timestamp of last room activity — drives the LIVE badge. */
+  lastActivityAt?: string | null;
 }
 
 export default function ReleaseCard({
@@ -26,6 +29,7 @@ export default function ReleaseCard({
   reviewCount,
   avgRating,
   followerCount,
+  lastActivityAt = null,
 }: ReleaseCardProps) {
   const year =
     release.release_date && release.release_date.length >= 4
@@ -56,6 +60,9 @@ export default function ReleaseCard({
           </span>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute top-2 right-2 z-10">
+          <LiveBadge lastActivityAt={lastActivityAt} />
+        </div>
       </div>
 
       {/* Type + Year */}

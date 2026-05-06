@@ -717,6 +717,21 @@ body {
 }
 
 /* ============================================
+   LIVE BADGE PULSE (Phase 2b-4)
+   Subtle pulsing red dot for the LIVE indicator.
+   ============================================ */
+@keyframes live-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 4px #ff3344, 0 0 8px rgba(255, 51, 68, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 8px #ff3344, 0 0 16px rgba(255, 51, 68, 0.5);
+  }
+}
+
+/* ============================================
    FLOATING EMOJI TICKER (Phase 2b-3)
    Track-level reactions drift up and fade out.
    ============================================ */

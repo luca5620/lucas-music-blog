@@ -247,6 +247,8 @@ export interface ReleaseFeedItem {
   review_count: number;
   avg_rating: number | null;
   follower_count: number;
+  /** Last activity timestamp from the associated release_room, if any. */
+  last_activity_at: string | null;
 }
 
 export async function getReleaseDiscoveryFeed(
@@ -256,7 +258,7 @@ export async function getReleaseDiscoveryFeed(
   const { data, error } = await supabase
     .from("releases")
     .select(
-      "id, slug, title, cover_image, release_type, release_date, primary_artist_id, artists!releases_primary_artist_id_fkey(slug, name)"
+      "id, slug, title, cover_image, release_type, release_date, primary_artist_id, artists!releases_primary_artist_id_fkey(slug, name), release_rooms(last_activity_at)"
     )
     .order("release_date", { ascending: false, nullsFirst: false })
     .limit(limit);
@@ -264,6 +266,10 @@ export async function getReleaseDiscoveryFeed(
   if (error || !data) return [];
 
   type JoinedArtist = { slug: string; name: string } | { slug: string; name: string }[] | null;
+  type JoinedRoom =
+    | { last_activity_at: string | null }
+    | { last_activity_at: string | null }[]
+    | null;
   type Row = {
     id: string;
     slug: string;
@@ -273,6 +279,7 @@ export async function getReleaseDiscoveryFeed(
     release_date: string | null;
     primary_artist_id: string;
     artists: JoinedArtist;
+    release_rooms: JoinedRoom;
   };
 
   const rows = data as unknown as Row[];
@@ -289,6 +296,9 @@ export async function getReleaseDiscoveryFeed(
   return rows.map((row, i) => {
     const joined = row.artists;
     const artist = Array.isArray(joined) ? joined[0] : joined;
+    const room = Array.isArray(row.release_rooms)
+      ? row.release_rooms[0]
+      : row.release_rooms;
     const s = stats[i];
     return {
       id: row.id,
@@ -304,6 +314,7 @@ export async function getReleaseDiscoveryFeed(
       review_count: s.review_count,
       avg_rating: s.avg_rating,
       follower_count: s.follower_count,
+      last_activity_at: room?.last_activity_at ?? null,
     };
   });
 }

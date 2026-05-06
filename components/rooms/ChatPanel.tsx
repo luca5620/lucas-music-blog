@@ -19,6 +19,8 @@ import Link from "next/link";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import LiveBadge from "@/components/rooms/LiveBadge";
+import PresencePile from "@/components/rooms/PresencePile";
 import type {
   Profile,
   ReleaseRoom,
@@ -409,12 +411,16 @@ export default function ChatPanel({
       style={{ borderColor: `${accentColor}30` }}
     >
       {/* Header */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <span className="glow-orb" />
         <span className="label-xbox">Live Room</span>
         <span className="text-xs text-text-muted ml-1">
           ({messages.filter((m) => !m.id.startsWith("temp-")).length})
         </span>
+        <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
+        <div className="ml-auto">
+          <PresencePile roomId={initialRoom.id} accentColor={accentColor} />
+        </div>
       </div>
 
       <div className="divider-glow" />

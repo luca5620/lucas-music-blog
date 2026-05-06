@@ -14,6 +14,7 @@
 import Link from "next/link";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
 import { getRatingHex, getRatingColor } from "@/lib/reviews";
+import LiveBadge from "@/components/rooms/LiveBadge";
 
 function yearOf(dateStr: string | null): string | null {
   if (!dateStr || dateStr.length < 4) return null;
@@ -80,6 +81,9 @@ export default async function ReleasesFeed() {
                   </span>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute top-2 right-2 z-10">
+                  <LiveBadge lastActivityAt={item.last_activity_at} />
+                </div>
               </div>
 
               {/* Type + Year */}

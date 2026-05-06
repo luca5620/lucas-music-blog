@@ -63,20 +63,10 @@ export default async function DiscoveryFeed() {
               href={`/reviews/${review.slug}`}
               className="panel-xbox p-4 sm:p-5 space-y-3 group cursor-pointer hover-glow relative overflow-hidden"
             >
-              {/* Verified badge ribbon */}
+              {/* Verified badge — just the checkmark */}
               {isVerified && (
-                <div className="absolute top-3 right-3 z-10">
-                  <span
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider font-[family-name:var(--font-heading)]"
-                    style={{
-                      background: profile.role === "owner" ? "#fbbf2415" : "#1e90ff15",
-                      border: `1px solid ${profile.role === "owner" ? "#fbbf2430" : "#1e90ff30"}`,
-                      color: profile.role === "owner" ? "#fbbf24" : "#1e90ff",
-                    }}
-                  >
-                    <VerifiedBadge role={profile.role} />
-                    {profile.role === "owner" ? "Owner" : "Verified"}
-                  </span>
+                <div className="absolute top-2 right-2 z-10">
+                  <VerifiedBadge role={profile.role} />
                 </div>
               )}
 

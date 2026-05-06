@@ -23,7 +23,7 @@ import type { Review } from "@/lib/reviews";
 const SITE_URL = "https://peakmusicreviews.com";
 const SITE_NAME = "Peak Music Reviews";
 const AUTHOR_NAME = "Luca";
-const AUTHOR_URL = `${SITE_URL}/about`;
+const AUTHOR_URL = `${SITE_URL}/profile/lucas`;
 const LOGO_URL = `${SITE_URL}/penguin-logo.png`;
 
 /* ------------------------------------------------------------------ */
@@ -308,7 +308,7 @@ export function ItemListSchema({
 }
 
 /* ------------------------------------------------------------------ */
-/*  ProfilePage Schema — for the /about author page                    */
+/*  ProfilePage Schema — for the /profile/lucas author page             */
 /* ------------------------------------------------------------------ */
 
 export function ProfilePageSchema() {
@@ -318,7 +318,7 @@ export function ProfilePageSchema() {
     name: "About Luca — Peak Music Reviews",
     description:
       "Music listener, opinion haver, data nerd. The person behind Peak Music Reviews.",
-    url: `${SITE_URL}/about`,
+    url: `${SITE_URL}/profile/lucas`,
     mainEntity: {
       "@type": "Person",
       name: AUTHOR_NAME,

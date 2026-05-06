@@ -16,6 +16,8 @@ import { getUser } from "@/lib/auth";
 import FollowButton from "./FollowButton";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
+import ListeningSection from "@/components/profile/listening/ListeningSection";
+import LucasDefaultBio from "@/components/profile/LucasDefaultBio";
 import type { Metadata } from "next";
 import type { Review } from "@/lib/types/database";
 
@@ -36,6 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       profile.bio ??
       `Check out ${profile.display_name ?? profile.username}'s profile on Peak Music Reviews.`,
+    alternates: {
+      canonical: `https://peakmusicreviews.com/profile/${username}`,
+    },
   };
 }
 
@@ -186,12 +191,14 @@ export default async function ProfilePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Bio */}
-        {profile.bio && (
+        {/* Bio — falls back to LucasDefaultBio for the lucas profile when bio is empty */}
+        {profile.bio ? (
           <p className="text-[#e8e6e3] text-sm sm:text-base leading-relaxed max-w-2xl">
             {profile.bio}
           </p>
-        )}
+        ) : profile.username === "lucas" ? (
+          <LucasDefaultBio accentColor={accentColor} />
+        ) : null}
 
         {/* Stats row */}
         <div className="flex gap-6">
@@ -284,6 +291,13 @@ export default async function ProfilePage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {/* ========== LISTENING SECTION ========== */}
+      {/* Auto-hides for users without listening data (returns null). */}
+      <ListeningSection
+        username={profile.username}
+        accentColor={accentColor}
+      />
 
       {/* Glowing divider */}
       <div className="mx-4 sm:mx-8">

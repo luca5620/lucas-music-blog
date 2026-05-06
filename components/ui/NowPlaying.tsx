@@ -6,6 +6,10 @@ import { useEffect, useState } from "react";
  * NowPlaying — Live Spotify widget.
  * Polls /api/now-playing every 30 seconds.
  * Shows currently playing track with album art, or falls back to last played.
+ *
+ * When `accentColor` is provided, color-driven elements use inline styles
+ * instead of the default Tailwind `accent-primary` classes — this lets the
+ * widget adopt a profile owner's color when embedded on a profile page.
  */
 
 interface TrackData {
@@ -23,7 +27,11 @@ interface TrackData {
   message?: string;
 }
 
-export default function NowPlaying() {
+interface NowPlayingProps {
+  accentColor?: string;
+}
+
+export default function NowPlaying({ accentColor }: NowPlayingProps = {}) {
   const [data, setData] = useState<TrackData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -97,7 +105,9 @@ export default function NowPlaying() {
       href={data.trackUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="card-y2k p-5 flex items-center gap-5 group cursor-pointer hover:border-accent-primary/30 transition-all"
+      className={`card-y2k p-5 flex items-center gap-5 group cursor-pointer transition-all ${
+        accentColor ? "" : "hover:border-accent-primary/30"
+      }`}
     >
       {/* Album Art */}
       {data.albumArt ? (
@@ -106,7 +116,9 @@ export default function NowPlaying() {
           alt={data.album}
           width={56}
           height={56}
-          className="w-14 h-14 rounded-lg shrink-0 object-cover border border-border-medium group-hover:border-accent-primary/50 transition-colors"
+          className={`w-14 h-14 rounded-lg shrink-0 object-cover border border-border-medium transition-colors ${
+            accentColor ? "" : "group-hover:border-accent-primary/50"
+          }`}
         />
       ) : (
         <div className="w-14 h-14 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0 border border-border-medium">
@@ -117,19 +129,58 @@ export default function NowPlaying() {
       {/* Track Info */}
       <div className="space-y-1 flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="pixel-text text-xs text-accent-primary uppercase tracking-widest">
+          <span
+            className={`pixel-text text-xs uppercase tracking-widest ${
+              accentColor ? "" : "text-accent-primary"
+            }`}
+            style={accentColor ? { color: accentColor } : undefined}
+          >
             {data.isPlaying ? "Now Playing" : "Last Played"}
           </span>
           {data.isPlaying && (
             <span className="flex gap-0.5 items-end h-3">
               {/* Animated equalizer bars */}
-              <span className="w-0.5 bg-accent-primary rounded-full animate-bounce" style={{ height: "8px", animationDelay: "0ms", animationDuration: "0.6s" }} />
-              <span className="w-0.5 bg-accent-primary rounded-full animate-bounce" style={{ height: "12px", animationDelay: "0.15s", animationDuration: "0.6s" }} />
-              <span className="w-0.5 bg-accent-primary rounded-full animate-bounce" style={{ height: "6px", animationDelay: "0.3s", animationDuration: "0.6s" }} />
+              <span
+                className={`w-0.5 rounded-full animate-bounce ${
+                  accentColor ? "" : "bg-accent-primary"
+                }`}
+                style={{
+                  height: "8px",
+                  animationDelay: "0ms",
+                  animationDuration: "0.6s",
+                  ...(accentColor ? { backgroundColor: accentColor } : {}),
+                }}
+              />
+              <span
+                className={`w-0.5 rounded-full animate-bounce ${
+                  accentColor ? "" : "bg-accent-primary"
+                }`}
+                style={{
+                  height: "12px",
+                  animationDelay: "0.15s",
+                  animationDuration: "0.6s",
+                  ...(accentColor ? { backgroundColor: accentColor } : {}),
+                }}
+              />
+              <span
+                className={`w-0.5 rounded-full animate-bounce ${
+                  accentColor ? "" : "bg-accent-primary"
+                }`}
+                style={{
+                  height: "6px",
+                  animationDelay: "0.3s",
+                  animationDuration: "0.6s",
+                  ...(accentColor ? { backgroundColor: accentColor } : {}),
+                }}
+              />
             </span>
           )}
         </div>
-        <p className="font-[family-name:var(--font-heading)] font-bold text-text-primary truncate group-hover:text-accent-primary transition-colors">
+        <p
+          className={`font-[family-name:var(--font-heading)] font-bold text-text-primary truncate transition-colors ${
+            accentColor ? "" : "group-hover:text-accent-primary"
+          }`}
+        >
           {data.title}
         </p>
         <p className="text-sm text-text-secondary truncate">
@@ -145,8 +196,13 @@ export default function NowPlaying() {
         <div className="hidden md:block w-32 shrink-0">
           <div className="h-1 bg-bg-elevated rounded-full overflow-hidden">
             <div
-              className="h-full bg-accent-primary rounded-full transition-all duration-1000"
-              style={{ width: `${progressPercent}%` }}
+              className={`h-full rounded-full transition-all duration-1000 ${
+                accentColor ? "" : "bg-accent-primary"
+              }`}
+              style={{
+                width: `${progressPercent}%`,
+                ...(accentColor ? { backgroundColor: accentColor } : {}),
+              }}
             />
           </div>
         </div>

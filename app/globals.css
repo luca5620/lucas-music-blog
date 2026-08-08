@@ -754,6 +754,136 @@ body {
   }
 }
 
+/* ============================================
+   POSTER GRID — Letterboxd-style album-art wall.
+   The core visual unit of the overhaul: dense
+   grids of covers that light up on hover.
+   ============================================ */
+.poster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .poster-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* A single album cover tile. Wrap an <img> (or fallback) in this. */
+.poster {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  display: block;
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poster:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 16px var(--glow-primary);
+}
+
+/* Small rating chip pinned to a poster corner */
+.poster-rating {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid var(--border-medium);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  backdrop-filter: blur(4px);
+}
+
+/* Ranked-list position badge (1, 2, 3…) pinned top-left */
+.poster-rank {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.3rem;
+  border-radius: 4px;
+  background: var(--accent-primary);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Overlapping cover fan — used on list cards (5 covers stacked) */
+.cover-fan {
+  display: flex;
+}
+
+.cover-fan .poster {
+  width: 25%;
+  border: 2px solid var(--bg-card);
+  border-radius: 4px;
+}
+
+.cover-fan .poster + .poster {
+  margin-left: -12%;
+}
+
+/* Pixel-font month/section header for diary timelines */
+.timeline-header {
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-glow);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.4rem;
+}
+
+/* Simple Y2K tab row (profile tabs: Reviews / Diary / Lists) */
+.tab-y2k {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.tab-y2k:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+.tab-y2k.tab-active {
+  color: var(--accent-primary);
+  background: rgba(30, 144, 255, 0.12);
+  border-color: rgba(30, 144, 255, 0.3);
+}
+
 /* --- Scrollbar --- */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }

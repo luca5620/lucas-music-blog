@@ -14,6 +14,7 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/reviews", label: "Reviews" },
+  { href: "/lists", label: "Lists" },
   { href: "/friends", label: "Friends" },
   { href: "/your-taste", label: "Your Taste" },
 ];
@@ -162,6 +163,13 @@ export default function Navigation() {
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
                           My Reviews
+                        </Link>
+                        <Link
+                          href="/diary"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                        >
+                          My Diary
                         </Link>
                         <Link
                           href="/settings/profile"

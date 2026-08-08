@@ -6,10 +6,11 @@
 
 import NowPlaying from "@/components/ui/NowPlaying";
 import Link from "next/link";
-import { getLatestReviews, getRatingColor, getRatingHex } from "@/lib/reviews";
+import { getLatestReviews, getRatingHex } from "@/lib/reviews";
 import { BreadcrumbSchema, ItemListSchema } from "@/app/schema";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
 import ReleasesFeed from "@/components/feed/ReleasesFeed";
+import ListsRail from "@/components/feed/ListsRail";
 import { Suspense } from "react";
 
 /* Essential playlists — real data from Spotify profile */
@@ -31,7 +32,8 @@ const playlists = [
 ];
 
 export default function Home() {
-  const reviews = getLatestReviews(3);
+  // Poster-wall density: show more covers, Letterboxd style.
+  const reviews = getLatestReviews(6);
 
   return (
     <div className="space-y-6 circuit-bg">
@@ -181,45 +183,34 @@ export default function Home() {
           <span className="label-xbox">{reviews.length} Reviews</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Letterboxd-style poster wall: dense grid of covers with a
+            rating chip pinned to each corner. Title/artist on hover
+            (title attr) and below on small screens. */}
+        <div className="poster-grid">
           {reviews.map((review) => (
             <Link
               key={review.slug}
               href={`/reviews/${review.slug}`}
-              className="panel-xbox p-4 sm:p-5 space-y-4 group cursor-pointer hover-glow relative overflow-hidden"
+              className="group space-y-1.5"
+              title={`${review.title} — ${review.artist} (${review.rating}/10)`}
               style={{ "--rating-color": getRatingHex(review.rating) } as React.CSSProperties}
             >
-              {/* Album art with glow */}
-              <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(30,144,255,0.15)] flex items-center justify-center relative overflow-hidden group-hover:border-accent-primary/40 transition-all">
+              <span className="poster">
                 {review.coverImage ? (
-                  <img
-                    src={review.coverImage}
-                    alt={`${review.title} cover`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
+                  <img src={review.coverImage} alt={`${review.title} cover`} />
                 ) : (
-                  <span className="text-5xl group-hover:scale-110 transition-transform">💿</span>
+                  <span className="w-full h-full flex items-center justify-center text-4xl">💿</span>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="label-xbox text-[0.6rem]">
-                  {review.genre}
-                </span>
-                <div className={`rating-badge w-12 h-12 rounded-lg border bg-[rgba(0,0,0,0.3)] flex items-center justify-center font-[family-name:var(--font-heading)] font-extrabold text-lg transition-all ${getRatingColor(review.rating)}`}>
-                  {review.rating}
-                </div>
-              </div>
-
-              <div>
-                <h3 className={`font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary transition-colors rating-title-hover${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
+                <span className="poster-rating">{review.rating}</span>
+              </span>
+              <span className="block">
+                <span className={`block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)] rating-title-hover${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
                   {review.title}
-                </h3>
-                <p className="text-sm text-text-secondary">{review.artist}</p>
-              </div>
-
-              <div className="scan-bar" />
+                </span>
+                <span className="block text-xs text-text-secondary truncate">
+                  {review.artist}
+                </span>
+              </span>
             </Link>
           ))}
         </div>
@@ -227,6 +218,11 @@ export default function Home() {
 
       {/* Glowing divider */}
       <div className="divider-glow" />
+
+      {/* ========== FRESH LISTS — community album lists ========== */}
+      <Suspense fallback={null}>
+        <ListsRail />
+      </Suspense>
 
       {/* ========== NEW RELEASES — release-first discovery ========== */}
       <Suspense fallback={null}>

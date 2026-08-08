@@ -178,6 +178,79 @@ export interface TrackReactionCounts {
   count: number;
 }
 
+/* --- Overhaul: Diary, Lists, Favorites (migration 004) --- */
+
+export interface DiaryEntry {
+  id: string;
+  user_id: string;
+  release_id: string | null;
+  title: string;
+  artist: string;
+  cover_image: string | null;
+  listened_on: string; // date (YYYY-MM-DD)
+  rating: number | null;
+  note: string | null;
+  is_relisten: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface List {
+  id: string;
+  user_id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  is_ranked: boolean;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ListItem {
+  id: string;
+  list_id: string;
+  release_id: string | null;
+  title: string;
+  artist: string;
+  cover_image: string | null;
+  note: string | null;
+  position: number;
+  created_at: string;
+}
+
+export interface ListLike {
+  id: string;
+  user_id: string;
+  list_id: string;
+  created_at: string;
+}
+
+export interface ProfileFavorite {
+  id: string;
+  user_id: string;
+  position: number; // 1-4
+  release_id: string | null;
+  title: string;
+  artist: string;
+  cover_image: string | null;
+  created_at: string;
+}
+
+// Histogram bucket from get_rating_distribution()
+export interface RatingBucket {
+  bucket: number;
+  count: number;
+}
+
+// From get_diary_stats()
+export interface DiaryStats {
+  total_entries: number;
+  entries_this_year: number;
+  relistens: number;
+  avg_rating: number | null;
+}
+
 /* --- Aggregate / computed types --- */
 
 export interface ProfileStats {
@@ -438,6 +511,109 @@ export type Database = {
             columns: ["message_id"];
             isOneToOne: false;
             referencedRelation: "room_messages";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      diary_entries: {
+        Row: DiaryEntry;
+        Insert: Pick<DiaryEntry, "user_id" | "title" | "artist"> &
+          Partial<Omit<DiaryEntry, "user_id" | "title" | "artist">>;
+        Update: Partial<DiaryEntry>;
+        Relationships: [
+          {
+            foreignKeyName: "diary_entries_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "diary_entries_release_id_fkey";
+            columns: ["release_id"];
+            isOneToOne: false;
+            referencedRelation: "releases";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      lists: {
+        Row: List;
+        Insert: Pick<List, "user_id" | "slug" | "title"> &
+          Partial<Omit<List, "user_id" | "slug" | "title">>;
+        Update: Partial<List>;
+        Relationships: [
+          {
+            foreignKeyName: "lists_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      list_items: {
+        Row: ListItem;
+        Insert: Pick<ListItem, "list_id" | "title" | "artist"> &
+          Partial<Omit<ListItem, "list_id" | "title" | "artist">>;
+        Update: Partial<ListItem>;
+        Relationships: [
+          {
+            foreignKeyName: "list_items_list_id_fkey";
+            columns: ["list_id"];
+            isOneToOne: false;
+            referencedRelation: "lists";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "list_items_release_id_fkey";
+            columns: ["release_id"];
+            isOneToOne: false;
+            referencedRelation: "releases";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      list_likes: {
+        Row: ListLike;
+        Insert: Pick<ListLike, "user_id" | "list_id"> &
+          Partial<Omit<ListLike, "user_id" | "list_id">>;
+        Update: Partial<ListLike>;
+        Relationships: [
+          {
+            foreignKeyName: "list_likes_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "list_likes_list_id_fkey";
+            columns: ["list_id"];
+            isOneToOne: false;
+            referencedRelation: "lists";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      profile_favorites: {
+        Row: ProfileFavorite;
+        Insert: Pick<ProfileFavorite, "user_id" | "position" | "title" | "artist"> &
+          Partial<Omit<ProfileFavorite, "user_id" | "position" | "title" | "artist">>;
+        Update: Partial<ProfileFavorite>;
+        Relationships: [
+          {
+            foreignKeyName: "profile_favorites_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profile_favorites_release_id_fkey";
+            columns: ["release_id"];
+            isOneToOne: false;
+            referencedRelation: "releases";
             referencedColumns: ["id"];
           }
         ];

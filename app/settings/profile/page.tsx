@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import FavoritesEditor from "@/components/profile/FavoritesEditor";
 import type { Profile } from "@/lib/types/database";
 
 const GENRE_OPTIONS = [
@@ -490,6 +491,14 @@ export default function ProfileSettingsPage() {
           </button>
         </div>
       </form>
+
+      {/* ========== FOUR FAVORITES ==========
+          Lives outside the main form because it saves through its own
+          API route (/api/profile/favorites) with its own button. */}
+      <fieldset className="panel-xbox p-5 space-y-4">
+        <legend className="label-xbox">Four Favorites</legend>
+        <FavoritesEditor />
+      </fieldset>
     </div>
   );
 }

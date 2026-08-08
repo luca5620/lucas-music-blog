@@ -8,21 +8,47 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   getProfileByUsername,
+  getProfileFavorites,
   getProfileReviews,
   getProfileStats,
   isFollowing,
 } from "@/lib/db/profiles";
+import {
+  getDiaryEntries,
+  getDiaryStats,
+  getRatingDistribution,
+} from "@/lib/db/diary";
+import { getListsByUsername, type ListSummary } from "@/lib/db/lists";
 import { getUser } from "@/lib/auth";
 import FollowButton from "./FollowButton";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
 import ListeningSection from "@/components/profile/listening/ListeningSection";
 import LucasDefaultBio from "@/components/profile/LucasDefaultBio";
+import FourFavorites from "@/components/profile/FourFavorites";
+import RatingHistogram from "@/components/profile/RatingHistogram";
+import DiaryTimeline from "@/components/diary/DiaryTimeline";
+import LogListenModal from "@/components/diary/LogListenModal";
+import ListCard from "@/components/lists/ListCard";
 import type { Metadata } from "next";
-import type { Review } from "@/lib/types/database";
+import type {
+  DiaryEntry,
+  DiaryStats,
+  RatingBucket,
+  Review,
+} from "@/lib/types/database";
 
 interface Props {
   params: Promise<{ username: string }>;
+  /** ?tab=reviews|diary|lists — which profile tab is active. */
+  searchParams: Promise<{ tab?: string }>;
+}
+
+/** The three profile tabs. Anything else falls back to "reviews". */
+type ProfileTab = "reviews" | "diary" | "lists";
+
+function resolveTab(raw: string | undefined): ProfileTab {
+  return raw === "diary" || raw === "lists" ? raw : "reviews";
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -56,7 +82,7 @@ const streamingServices = [
   },
 ];
 
-export default async function ProfilePage({ params }: Props) {
+export default async function ProfilePage({ params, searchParams }: Props) {
   const { username } = await params;
   const profile = await getProfileByUsername(username);
 
@@ -64,10 +90,15 @@ export default async function ProfilePage({ params }: Props) {
     notFound();
   }
 
-  const [currentUser, stats, reviews] = await Promise.all([
+  // Which tab is active (?tab=diary / ?tab=lists; default reviews).
+  const { tab: rawTab } = await searchParams;
+  const activeTab = resolveTab(rawTab);
+
+  const [currentUser, stats, reviews, favorites] = await Promise.all([
     getUser(),
     getProfileStats(profile.id),
     getProfileReviews(profile.id),
+    getProfileFavorites(profile.id),
   ]);
 
   const isOwnProfile = currentUser?.id === profile.id;
@@ -76,6 +107,23 @@ export default async function ProfilePage({ params }: Props) {
       ? await isFollowing(currentUser.id, profile.id)
       : false;
 
+  // Tab-specific data — only fetched for the tab actually being shown,
+  // so switching tabs stays cheap.
+  let diaryEntries: DiaryEntry[] = [];
+  let diaryStats: DiaryStats | null = null;
+  let ratingDistribution: RatingBucket[] = [];
+  let profileLists: ListSummary[] = [];
+
+  if (activeTab === "diary") {
+    [diaryEntries, diaryStats, ratingDistribution] = await Promise.all([
+      getDiaryEntries(profile.id, { limit: 100 }),
+      getDiaryStats(profile.id),
+      getRatingDistribution(profile.id),
+    ]);
+  } else if (activeTab === "lists") {
+    profileLists = await getListsByUsername(profile.username);
+  }
+
   const accentColor = profile.profile_color ?? "#1e90ff";
   const displayName = profile.display_name ?? profile.username;
   const memberSince = new Date(profile.created_at).toLocaleDateString("en-US", {
@@ -83,15 +131,33 @@ export default async function ProfilePage({ params }: Props) {
     year: "numeric",
   });
 
+  // --- Sanitize user-controlled style inputs (defense against stored XSS /
+  // CSS injection: these values go into inline styles and hrefs). ---
+  // Banner: https or local path only, and no quotes/parens that could break
+  // out of the CSS url() wrapper.
+  const safeBannerUrl =
+    profile.banner_url &&
+    (profile.banner_url.startsWith("https://") || profile.banner_url.startsWith("/")) &&
+    !/["'()\\]/.test(profile.banner_url)
+      ? profile.banner_url
+      : null;
+  // Gradient: safe charset only — no url(), quotes, or semicolons.
+  const safeGradient =
+    profile.profile_gradient &&
+    profile.profile_gradient.length <= 300 &&
+    /^[a-zA-Z0-9#%(),.\s-]*$/.test(profile.profile_gradient)
+      ? profile.profile_gradient
+      : null;
+
   // Build banner style
-  const bannerStyle: React.CSSProperties = profile.banner_url
+  const bannerStyle: React.CSSProperties = safeBannerUrl
     ? {
-        backgroundImage: `url(${profile.banner_url})`,
+        backgroundImage: `url(${safeBannerUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }
-    : profile.profile_gradient
-      ? { background: profile.profile_gradient }
+    : safeGradient
+      ? { background: safeGradient }
       : {
           background: `linear-gradient(135deg, ${accentColor}33 0%, #0a0a0c 50%, ${accentColor}1a 100%)`,
         };
@@ -137,7 +203,9 @@ export default async function ProfilePage({ params }: Props) {
               boxShadow: `0 0 24px ${accentColor}60, 0 0 48px ${accentColor}20`,
             }}
           >
-            {profile.avatar_url ? (
+            {profile.avatar_url &&
+            (profile.avatar_url.startsWith("https://") ||
+              profile.avatar_url.startsWith("/")) ? (
               <img
                 src={profile.avatar_url}
                 alt={displayName}
@@ -220,6 +288,14 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           ))}
         </div>
+
+        {/* Four Favorites — the Letterboxd-style showcase. Hidden for
+            visitors when empty; owners see dashed "add one" slots. */}
+        <FourFavorites
+          favorites={favorites}
+          isOwner={isOwnProfile}
+          accentColor={accentColor}
+        />
       </div>
 
       {/* ========== STREAMING LINKS + PROFILE SONG ========== */}
@@ -228,7 +304,9 @@ export default async function ProfilePage({ params }: Props) {
         <div className="flex gap-2 flex-wrap">
           {streamingServices.map(({ key, label, icon: Icon }) => {
             const url = profile[key];
-            if (!url) return null;
+            // Only render https links — a stored javascript: URI here would
+            // execute for every visitor who clicks it (stored XSS).
+            if (!url || !url.startsWith("https://")) return null;
             return (
               <a
                 key={key}
@@ -310,52 +388,143 @@ export default async function ProfilePage({ params }: Props) {
         />
       </div>
 
-      {/* ========== REVIEWS GRID ========== */}
+      {/* ========== TABBED SECTION: Reviews | Diary | Lists ==========
+          Server-only tabs: each tab is just a link that sets ?tab=,
+          so no client JS is needed to switch (the page re-renders
+          with the right data on the server). */}
       <div className="px-4 sm:px-8 pb-8 space-y-4">
-        <div className="flex items-center gap-3">
-          <span
-            className="w-2 h-2 rounded-full"
-            style={{
-              background: accentColor,
-              boxShadow: `0 0 8px ${accentColor}80`,
-            }}
-          />
-          <h2 className="font-[family-name:var(--font-space-grotesk)] text-xl font-bold text-[#e8e6e3]">
-            Reviews
-          </h2>
-          <div
-            className="flex-1 h-[1px]"
-            style={{
-              background: `linear-gradient(90deg, ${accentColor}40, transparent)`,
-            }}
-          />
-          <span
-            className="font-[family-name:var(--font-space-grotesk)] text-xs font-bold uppercase tracking-widest px-3 py-1 rounded"
-            style={{
-              color: accentColor,
-              background: `${accentColor}10`,
-              border: `1px solid ${accentColor}30`,
-            }}
-          >
-            {reviews.length} {reviews.length === 1 ? "Review" : "Reviews"}
-          </span>
+        {/* Tab bar (+ "Log a Listen" for the owner) */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {(
+            [
+              { key: "reviews", label: "Reviews" },
+              { key: "diary", label: "Diary" },
+              { key: "lists", label: "Lists" },
+            ] as { key: ProfileTab; label: string }[]
+          ).map((t) => (
+            <Link
+              key={t.key}
+              // Default tab keeps a clean URL; others get ?tab=.
+              href={
+                t.key === "reviews"
+                  ? `/profile/${profile.username}`
+                  : `/profile/${profile.username}?tab=${t.key}`
+              }
+              scroll={false}
+              className={`tab-y2k ${activeTab === t.key ? "tab-active" : ""}`}
+            >
+              {t.label}
+            </Link>
+          ))}
+
+          <div className="flex-1" />
+
+          {/* Owner convenience: log a listen right from your profile.
+              The modal renders its own trigger button. */}
+          {isOwnProfile && <LogListenModal />}
         </div>
 
-        {reviews.length === 0 ? (
-          <div className="panel-xbox p-8 text-center">
-            <p className="font-[family-name:var(--font-vt323)] text-lg text-[#5a5a60]">
-              No reviews yet.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {reviews.map((review: Review) => (
-              <ReviewCard
-                key={review.id}
-                review={review}
-                accentColor={accentColor}
+        {/* ----- Reviews tab (default) ----- */}
+        {activeTab === "reviews" && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span
+                className="w-2 h-2 rounded-full"
+                style={{
+                  background: accentColor,
+                  boxShadow: `0 0 8px ${accentColor}80`,
+                }}
               />
-            ))}
+              <h2 className="font-[family-name:var(--font-space-grotesk)] text-xl font-bold text-[#e8e6e3]">
+                Reviews
+              </h2>
+              <div
+                className="flex-1 h-[1px]"
+                style={{
+                  background: `linear-gradient(90deg, ${accentColor}40, transparent)`,
+                }}
+              />
+              <span
+                className="font-[family-name:var(--font-space-grotesk)] text-xs font-bold uppercase tracking-widest px-3 py-1 rounded"
+                style={{
+                  color: accentColor,
+                  background: `${accentColor}10`,
+                  border: `1px solid ${accentColor}30`,
+                }}
+              >
+                {reviews.length} {reviews.length === 1 ? "Review" : "Reviews"}
+              </span>
+            </div>
+
+            {reviews.length === 0 ? (
+              <div className="panel-xbox p-8 text-center">
+                <p className="font-[family-name:var(--font-vt323)] text-lg text-[#5a5a60]">
+                  No reviews yet.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {reviews.map((review: Review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    accentColor={accentColor}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ----- Diary tab ----- */}
+        {activeTab === "diary" && (
+          <div className="space-y-4">
+            {/* Stats line from get_diary_stats() */}
+            {diaryStats && diaryStats.total_entries > 0 && (
+              <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
+                {diaryStats.total_entries}{" "}
+                {diaryStats.total_entries === 1 ? "listen" : "listens"} ·{" "}
+                {diaryStats.entries_this_year} this year ·{" "}
+                {diaryStats.relistens}{" "}
+                {diaryStats.relistens === 1 ? "relisten" : "relistens"}
+                {diaryStats.avg_rating !== null && (
+                  <>
+                    {" "}
+                    · avg{" "}
+                    <span style={{ color: accentColor }}>
+                      {diaryStats.avg_rating.toFixed(1)}
+                    </span>
+                  </>
+                )}
+              </p>
+            )}
+
+            {/* Rating histogram (renders nothing when unrated) */}
+            <RatingHistogram
+              distribution={ratingDistribution}
+              accentColor={accentColor}
+            />
+
+            <DiaryTimeline entries={diaryEntries} isOwner={isOwnProfile} />
+          </div>
+        )}
+
+        {/* ----- Lists tab ----- */}
+        {activeTab === "lists" && (
+          <div className="space-y-4">
+            {profileLists.length === 0 ? (
+              <div className="panel-xbox p-8 text-center">
+                <p className="font-[family-name:var(--font-vt323)] text-lg text-[#5a5a60]">
+                  No lists yet.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {profileLists.map((list) => (
+                  <ListCard key={list.id} list={list} />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -34,7 +34,13 @@ export default function FAQSchema({ items }: FAQSchemaProps) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      // Escape < > & so content can never break out of the script tag (XSS).
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(structuredData)
+          .replace(/</g, "\\u003c")
+          .replace(/>/g, "\\u003e")
+          .replace(/&/g, "\\u0026"),
+      }}
     />
   );
 }

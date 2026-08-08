@@ -17,6 +17,8 @@ export default function ProfileSongPlayer({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   function togglePlay() {
+    // Only play https or local audio — never other schemes from user data.
+    if (!url.startsWith("https://") && !url.startsWith("/")) return;
     if (!audioRef.current) {
       audioRef.current = new Audio(url);
       audioRef.current.addEventListener("ended", () => setPlaying(false));

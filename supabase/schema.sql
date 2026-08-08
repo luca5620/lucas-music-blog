@@ -143,10 +143,13 @@ create policy "Profiles are viewable by everyone"
   on public.profiles for select
   using (true);
 
+-- SECURITY: the "with check" also pins the role column — without it, any
+-- signed-in user could update their own row to role = 'owner' and unlock
+-- every admin policy in the app.
 create policy "Users can update their own profile"
   on public.profiles for update
   using (auth.uid() = id)
-  with check (auth.uid() = id);
+  with check (auth.uid() = id and role = (select role from public.profiles where id = auth.uid()));
 
 -- ---- reviews ----
 alter table public.reviews enable row level security;
@@ -234,9 +237,12 @@ as $$
 declare
   _username text;
 begin
-  -- Derive a username from the email (everything before the @), lowercased.
-  -- If that username already exists, append a random suffix.
-  _username := lower(split_part(new.email, '@', 1));
+  -- Prefer the username the user picked at signup (sent in raw_user_meta_data);
+  -- fall back to the email local-part if it's missing or invalid.
+  _username := lower(coalesce(new.raw_user_meta_data ->> 'username', ''));
+  if _username !~ '^[a-z0-9_-]{3,30}$' then
+    _username := lower(split_part(new.email, '@', 1));
+  end if;
 
   -- Strip non-alphanumeric characters (keep letters, digits, underscores, hyphens)
   _username := regexp_replace(_username, '[^a-z0-9_-]', '', 'g');

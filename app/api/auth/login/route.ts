@@ -13,6 +13,12 @@ const SCOPES = [
 ].join(" ");
 
 export async function GET() {
+  // One-time LOCAL setup tool (pairs with /api/auth/callback, which prints a
+  // secret token). Never expose it on the live site.
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not available" }, { status: 404 });
+  }
+
   const params = new URLSearchParams({
     response_type: "code",
     client_id: process.env.SPOTIFY_CLIENT_ID!,

@@ -79,11 +79,17 @@ export default async function ReviewPage({
   let viewerHasLiked = false;
   try {
     const supabase = await createClient();
+    // Slugs are only unique per user (unique user_id + slug), so scope the
+    // lookup to the site owner's profile — this page renders Luca's static
+    // reviews. Without the scope, a second user reusing the slug would make
+    // .single() throw and could bind likes/comments to the wrong review.
     const { data } = await supabase
       .from("reviews")
-      .select("id")
+      .select("id, profiles!inner(username)")
       .eq("slug", slug)
-      .single();
+      .eq("profiles.username", "lucas")
+      .limit(1)
+      .maybeSingle();
     reviewDbId = (data as { id: string } | null)?.id ?? null;
 
     if (reviewDbId) {

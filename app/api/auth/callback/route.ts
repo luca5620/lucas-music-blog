@@ -9,7 +9,27 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * Escape user-controlled text before putting it in HTML.
+ * Query params like ?error= come from the browser, so without this an
+ * attacker could inject <script> tags into the page (XSS).
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function GET(request: NextRequest) {
+  // This is a one-time LOCAL setup tool (it prints a secret token in the
+  // browser). It must never run on the live site.
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not available" }, { status: 404 });
+  }
+
   const code = request.nextUrl.searchParams.get("code");
   const error = request.nextUrl.searchParams.get("error");
 
@@ -18,7 +38,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(
       `<html><body style="background:#0a0a0c;color:#e8e6e3;font-family:monospace;padding:2rem;">
         <h1 style="color:#e05575;">Authorization Denied</h1>
-        <p>Error: ${error}</p>
+        <p>Error: ${escapeHtml(error)}</p>
         <p><a href="/api/auth/login" style="color:#1e90ff;">Try again</a></p>
       </body></html>`,
       { headers: { "Content-Type": "text/html" } }
@@ -60,8 +80,8 @@ export async function GET(request: NextRequest) {
     return new NextResponse(
       `<html><body style="background:#0a0a0c;color:#e8e6e3;font-family:monospace;padding:2rem;">
         <h1 style="color:#e05575;">Token Exchange Failed</h1>
-        <p>Error: ${tokenData.error}</p>
-        <p>${tokenData.error_description || ""}</p>
+        <p>Error: ${escapeHtml(String(tokenData.error))}</p>
+        <p>${escapeHtml(String(tokenData.error_description || ""))}</p>
         <p><a href="/api/auth/login" style="color:#1e90ff;">Try again</a></p>
       </body></html>`,
       { headers: { "Content-Type": "text/html" } }
@@ -74,7 +94,7 @@ export async function GET(request: NextRequest) {
       <h1 style="color:#1e90ff;">✅ Spotify Connected!</h1>
       <p style="color:#45d0c8;">Copy the refresh token below and send it to Claude:</p>
       <div style="background:#161619;border:1px solid #333338;border-radius:8px;padding:1rem;margin:1rem 0;word-break:break-all;">
-        <code style="color:#4dacff;font-size:14px;">${tokenData.refresh_token}</code>
+        <code style="color:#4dacff;font-size:14px;">${escapeHtml(String(tokenData.refresh_token))}</code>
       </div>
       <p style="color:#9a9a9e;font-size:13px;">
         This token is stored in your .env.local file and lets the site fetch your

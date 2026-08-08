@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { followUser, unfollowUser, isFollowing } from "@/lib/db/profiles";
+import { rateLimit } from "@/lib/rate-limit";
+import { isUuid } from "@/lib/validate";
 
 /**
  * POST /api/follow — Follow a user.
@@ -16,12 +18,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Max 30 follow actions per user per minute (stops follow-spam loops).
+  const limited = rateLimit(`follow:${user.id}`, 30, 60_000);
+  if (limited) return limited;
+
   const body = await request.json();
   const { followingId } = body;
 
-  if (!followingId) {
+  if (!isUuid(followingId)) {
     return NextResponse.json(
-      { error: "followingId is required" },
+      { error: "followingId must be a valid id" },
       { status: 400 }
     );
   }
@@ -62,9 +68,9 @@ export async function DELETE(request: NextRequest) {
   const body = await request.json();
   const { followingId } = body;
 
-  if (!followingId) {
+  if (!isUuid(followingId)) {
     return NextResponse.json(
-      { error: "followingId is required" },
+      { error: "followingId must be a valid id" },
       { status: 400 }
     );
   }

@@ -116,8 +116,13 @@ export async function POST(request: Request) {
       });
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
+    // Log the full error server-side; return a generic message so DB /
+    // Spotify internals never leak to the client.
+    console.error("Admin import failed:", err);
     const status = isSpotifyError(err) ? 502 : 500;
+    const message = isSpotifyError(err)
+      ? "Spotify request failed — check the URL and try again."
+      : "Import failed.";
     return NextResponse.json({ error: message }, { status });
   }
 }

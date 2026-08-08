@@ -38,7 +38,36 @@ export async function updateSession(request: NextRequest) {
 
   // Refresh the auth session — important for Server Components.
   // https://supabase.com/docs/guides/auth/server-side/nextjs
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // --- Defense-in-depth route gating ---
+  // Pages and API routes each check auth themselves; this is a second layer
+  // so a forgotten check in a page doesn't become a hole.
+  const path = request.nextUrl.pathname;
+
+  const protectedPrefixes = [
+    "/settings",
+    "/admin",
+    "/reviews/new",
+    "/reviews/mine",
+    "/diary",
+    "/lists/new",
+  ];
+
+  if (!user) {
+    // Admin API calls get a JSON 401 instead of a redirect.
+    if (path.startsWith("/api/admin")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (protectedPrefixes.some((p) => path === p || path.startsWith(p + "/"))) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      loginUrl.search = "";
+      return NextResponse.redirect(loginUrl);
+    }
+  }
 
   return supabaseResponse;
 }

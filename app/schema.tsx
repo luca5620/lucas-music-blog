@@ -34,7 +34,15 @@ function JsonLd({ data }: { data: Record<string, unknown> }) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      // JSON.stringify does NOT escape "</script>", so a review title
+      // containing it could break out of this tag and become stored XSS.
+      // Escaping < > & as \uXXXX keeps the JSON valid and inert.
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(data)
+          .replace(/</g, "\\u003c")
+          .replace(/>/g, "\\u003e")
+          .replace(/&/g, "\\u0026"),
+      }}
     />
   );
 }

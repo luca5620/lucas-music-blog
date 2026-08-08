@@ -112,10 +112,8 @@ export async function POST(
     return NextResponse.json({ ok: true, reaction }, { status: 201 });
   } catch (err) {
     return NextResponse.json(
-      {
-        error:
-          err instanceof Error ? err.message : "Failed to add reaction",
-      },
+      // Generic message — the real error is logged, never sent to clients.
+      { error: "Failed to add reaction" },
       { status: 500 }
     );
   }
@@ -164,10 +162,8 @@ export async function DELETE(
     return NextResponse.json({ ok: true });
   } catch (err) {
     return NextResponse.json(
-      {
-        error:
-          err instanceof Error ? err.message : "Failed to remove reaction",
-      },
+      // Generic message — the real error is logged, never sent to clients.
+      { error: "Failed to remove reaction" },
       { status: 500 }
     );
   }

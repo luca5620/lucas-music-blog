@@ -32,6 +32,21 @@ export async function getOrCreateRoom(
   return row as ReleaseRoom;
 }
 
+/**
+ * Read-only room lookup — returns null if no room exists yet.
+ * Used by public GET endpoints so anonymous readers never trigger an
+ * insert (room creation only happens when someone actually posts).
+ */
+export async function getRoom(releaseId: string): Promise<ReleaseRoom | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("release_rooms")
+    .select("*")
+    .eq("release_id", releaseId)
+    .maybeSingle();
+  return (data as ReleaseRoom | null) ?? null;
+}
+
 export type RoomMessageWithProfile = RoomMessage & {
   profile: Pick<
     Profile,

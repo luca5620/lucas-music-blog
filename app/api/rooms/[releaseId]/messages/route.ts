@@ -3,9 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getReleaseById } from "@/lib/db/releases";
 import {
   getOrCreateRoom,
+  getRoom,
   getRoomMessages,
   postRoomMessage,
 } from "@/lib/db/rooms";
+import { rateLimit } from "@/lib/rate-limit";
 import type { Profile, RoomMessage } from "@/lib/types/database";
 
 type MessageProfile = Pick<
@@ -36,6 +38,10 @@ export async function POST(
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Max 20 chat messages per user per minute.
+  const limited = rateLimit(`room-messages:${user.id}`, 20, 60_000);
+  if (limited) return limited;
 
   const release = await getReleaseById(releaseId);
   if (!release) {
@@ -108,11 +114,10 @@ export async function POST(
 
     return NextResponse.json({ message }, { status: 201 });
   } catch (err) {
+    // Log the real error server-side; never leak DB internals to clients.
+    console.error("postRoomMessage failed:", err);
     return NextResponse.json(
-      {
-        error:
-          err instanceof Error ? err.message : "Failed to post message",
-      },
+      { error: "Failed to post message" },
       { status: 500 }
     );
   }
@@ -133,18 +138,29 @@ export async function GET(
     return NextResponse.json({ error: "Release not found" }, { status: 404 });
   }
 
-  const before = request.nextUrl.searchParams.get("before") ?? undefined;
+  // Validate the pagination cursor — it goes straight into a query filter.
+  const rawBefore = request.nextUrl.searchParams.get("before");
+  let before: string | undefined;
+  if (rawBefore) {
+    if (Number.isNaN(new Date(rawBefore).getTime())) {
+      return NextResponse.json({ error: "Invalid 'before' cursor" }, { status: 400 });
+    }
+    before = rawBefore;
+  }
 
   try {
-    const room = await getOrCreateRoom(release.id);
+    // Read-only lookup: anonymous GETs must never create rooms.
+    // Rooms are created lazily when the first message is POSTed.
+    const room = await getRoom(release.id);
+    if (!room) {
+      return NextResponse.json({ room: null, messages: [] });
+    }
     const messages = await getRoomMessages(room.id, { limit: 50, before });
     return NextResponse.json({ room, messages });
   } catch (err) {
+    console.error("getRoomMessages failed:", err);
     return NextResponse.json(
-      {
-        error:
-          err instanceof Error ? err.message : "Failed to load messages",
-      },
+      { error: "Failed to load messages" },
       { status: 500 }
     );
   }

@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import type { Release } from "@/lib/types/database";
-import { getRatingHex, getRatingColor } from "@/lib/rating";
+import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import LiveBadge from "@/components/rooms/LiveBadge";
 
 interface ReleaseCardProps {
@@ -37,7 +37,7 @@ export default function ReleaseCard({
       : null;
 
   const hasRating = typeof avgRating === "number" && !Number.isNaN(avgRating);
-  const ratingDisplay = hasRating ? avgRating!.toFixed(1) : null;
+  const ratingDisplay = hasRating ? formatRating(avgRating!) : null;
   const ratingColor = hasRating ? getRatingHex(avgRating!) : "#1e90ff";
   const ratingClass = hasRating ? getRatingColor(avgRating!) : "";
 

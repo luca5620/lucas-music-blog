@@ -13,6 +13,7 @@
  */
 
 import Link from "next/link";
+import { formatRating } from "@/lib/rating";
 import { getUser } from "@/lib/auth";
 import UserSearch from "@/components/friends/UserSearch";
 import {
@@ -202,7 +203,7 @@ function PopularPoster({ item }: { item: PopularItem }) {
           className="poster-rating"
           style={{ color: getRatingColor(item.avg_rating) }}
         >
-          {item.avg_rating.toFixed(1)}
+          {formatRating(item.avg_rating)}
         </span>
       )}
     </div>
@@ -337,7 +338,7 @@ function RatingChip({ rating }: { rating: number }) {
         background: `${getRatingColor(rating)}12`,
       }}
     >
-      {rating.toFixed(1)}
+      {formatRating(rating)}
     </span>
   );
 }

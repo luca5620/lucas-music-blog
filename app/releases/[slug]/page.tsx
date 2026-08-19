@@ -21,7 +21,7 @@ import {
 import { getArtistById } from "@/lib/db/artists";
 import { getOrCreateRoom, getRoomMessages } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
-import { getRatingHex, getRatingColor } from "@/lib/rating";
+import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import ChatPanel, {
   type ChatMessageWithProfile,
@@ -284,7 +284,7 @@ function ReleaseContent({
               <div
                 className={`rating-badge text-2xl ${getRatingColor(stats.avg_rating)}`}
               >
-                {stats.avg_rating.toFixed(1)}
+                {formatRating(stats.avg_rating)}
               </div>
               <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
                 Avg rating

@@ -20,7 +20,7 @@
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { getRatingHex } from "@/lib/rating";
+import { getRatingHex, formatRating } from "@/lib/rating";
 
 export const metadata = {
   title: "Your Taste",
@@ -250,7 +250,7 @@ export default async function YourTastePage() {
       {/* ===== Your year — quick stats strip ===== */}
       <section className="grid grid-cols-3 gap-3">
         <StatTile value={String(yearReviews.length)} label={`reviews in ${thisYear}`} />
-        <StatTile value={avgRating !== null ? avgRating.toFixed(1) : "—"} label="avg rating" />
+        <StatTile value={avgRating !== null ? formatRating(avgRating) : "—"} label="avg rating" />
         <StatTile value={topArtist ?? "—"} label="most reviewed" small={!!topArtist} />
       </section>
 
@@ -310,7 +310,7 @@ export default async function YourTastePage() {
                       className="poster-rating"
                       style={{ color: getRatingHex(r.rating) }}
                     >
-                      {r.rating.toFixed(1)}
+                      {formatRating(r.rating)}
                     </span>
                   </span>
                   <span className="block">

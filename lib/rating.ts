@@ -4,6 +4,15 @@
  * survives now that all review data lives in the database.
  */
 
+/**
+ * Display a rating: whole numbers lose the pointless decimal
+ * (10, 0, 7), everything else keeps exactly one (9.5, 7.8).
+ */
+export function formatRating(rating: number): string {
+  const r = Math.round(rating * 10) / 10;
+  return Number.isInteger(r) ? String(r) : r.toFixed(1);
+}
+
 export function getGenreColor(genre: string) {
   switch (genre) {
     case "Hip-Hop":

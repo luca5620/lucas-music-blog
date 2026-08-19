@@ -24,7 +24,7 @@ import {
 } from "@/lib/db/profiles";
 import { getListsByUsername, type ListSummary } from "@/lib/db/lists";
 import { getUser } from "@/lib/auth";
-import { getRatingHex } from "@/lib/rating";
+import { getRatingHex, formatRating } from "@/lib/rating";
 import FollowButton from "./FollowButton";
 import BlockButton from "@/components/moderation/BlockButton";
 import { isBlocked } from "@/lib/db/moderation";
@@ -256,10 +256,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   });
   const avgRating =
     reviews.length > 0
-      ? (
+      ? formatRating(
           (reviews as Review[]).reduce((sum, r) => sum + r.rating, 0) /
-          reviews.length
-        ).toFixed(1)
+            reviews.length
+        )
       : null;
 
   // --- Sanitize user-controlled banner URL (goes into a CSS url()). ---

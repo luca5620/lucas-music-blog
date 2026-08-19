@@ -20,7 +20,7 @@ import type { Release, Review } from "@/lib/types/database";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
-import { getRatingHex } from "@/lib/rating";
+import { getRatingHex, formatRating } from "@/lib/rating";
 
 interface ReviewFormProps {
   mode: "create" | "edit";
@@ -236,7 +236,7 @@ export default function ReviewForm({
               background: `${ratingColor}15`,
             }}
           >
-            {rating.toFixed(1)}
+            {formatRating(rating)}
           </div>
 
           <div className="flex-1 space-y-2">

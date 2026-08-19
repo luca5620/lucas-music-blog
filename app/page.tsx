@@ -12,6 +12,7 @@
  */
 
 import Link from "next/link";
+import { formatRating } from "@/lib/rating";
 import { Suspense } from "react";
 import { getUser } from "@/lib/auth";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
@@ -263,7 +264,7 @@ function CompactActivityRow({ item }: { item: ActivityItem }) {
   switch (item.type) {
     case "review":
       verb = "reviewed";
-      object = `${item.payload.title} — ${item.payload.rating.toFixed(1)}`;
+      object = `${item.payload.title} — ${formatRating(item.payload.rating)}`;
       href = `/reviews/${item.payload.slug}`;
       break;
     case "list":

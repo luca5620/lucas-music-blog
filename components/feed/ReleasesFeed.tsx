@@ -13,7 +13,7 @@
 
 import Link from "next/link";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
-import { getRatingHex, getRatingColor } from "@/lib/rating";
+import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import LiveBadge from "@/components/rooms/LiveBadge";
 
 function yearOf(dateStr: string | null): string | null {
@@ -59,7 +59,7 @@ export default async function ReleasesFeed() {
             ? getRatingHex(item.avg_rating!)
             : "#1e90ff";
           const ratingClass = hasRating ? getRatingColor(item.avg_rating!) : "";
-          const ratingDisplay = hasRating ? item.avg_rating!.toFixed(1) : null;
+          const ratingDisplay = hasRating ? formatRating(item.avg_rating!) : null;
 
           return (
             <Link

@@ -20,8 +20,6 @@ import { searchReleases } from "@/lib/db/releases";
 import {
   searchGeniusSongs,
   getGeniusSong,
-  getGeniusAlbum,
-  getGeniusAlbumTracks,
   geniusDateToIso,
   geniusConfigured,
 } from "@/lib/genius";
@@ -332,50 +330,19 @@ async function ensureFromSpotify(albumId: string): Promise<Release> {
   });
 }
 
+/**
+ * A Genius pick is always THE SONG the user clicked, imported as a
+ * standalone single-track release — same intent as the Spotify track
+ * flow ("I want this song"), never the album/EP it appears on.
+ * (Importing the parent album here surprised people: clicking one
+ * song attached their review to a whole EP. The released album is
+ * still importable through its Spotify album result in the same
+ * search.)
+ */
 async function ensureFromGenius(songId: number): Promise<Release> {
   const song = await getGeniusSong(songId);
   if (!song) throw new Error(`Genius song ${songId} not found`);
 
-  // Song belongs to an album → import the whole album.
-  if (song.album?.id) {
-    const [album, tracks] = await Promise.all([
-      getGeniusAlbum(song.album.id),
-      getGeniusAlbumTracks(song.album.id),
-    ]);
-
-    const albumArtist = album?.artist ?? song.album.artist ?? song.primary_artist;
-    const releaseDate = geniusDateToIso(album?.release_date_components);
-
-    return importViaRpc({
-      release: {
-        slug:
-          slugify(`${song.album.name}-${albumArtist?.name ?? ""}`) ||
-          `release-g${song.album.id}`,
-        title: album?.name ?? song.album.name,
-        release_type: tracks.length > 0 && tracks.length <= 3 ? "EP" : "album",
-        release_date: releaseDate,
-        cover_image: album?.cover_art_url ?? song.album.cover_art_url ?? null,
-        genius_id: `album:${song.album.id}`,
-        is_unreleased: !releaseDate,
-        tracks: tracks.map((t, i) => ({
-          position: t.number ?? i + 1,
-          title: t.song.title,
-          duration_ms: 0,
-        })),
-      },
-      artists: [
-        {
-          slug: slugify(albumArtist?.name ?? "") || `artist-g${albumArtist?.id ?? songId}`,
-          name: albumArtist?.name ?? "Unknown Artist",
-          genius_id: albumArtist ? String(albumArtist.id) : null,
-          image_url: albumArtist?.image_url ?? null,
-          role: "primary",
-        },
-      ],
-    });
-  }
-
-  // No album → standalone single (this is the unreleased/loosie path).
   const releaseDate =
     song.release_date ?? geniusDateToIso(song.release_date_components);
 
@@ -387,7 +354,8 @@ async function ensureFromGenius(songId: number): Promise<Release> {
       title: song.title,
       release_type: "single",
       release_date: releaseDate,
-      cover_image: song.song_art_image_url ?? null,
+      // Song art first; the parent album's cover is only a fallback.
+      cover_image: song.song_art_image_url ?? song.album?.cover_art_url ?? null,
       genius_id: `song:${song.id}`,
       is_unreleased: !releaseDate,
       tracks: [{ position: 1, title: song.title, duration_ms: 0 }],

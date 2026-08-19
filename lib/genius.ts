@@ -122,8 +122,9 @@ export async function getGeniusSong(songId: number): Promise<GeniusSong | null> 
 
 /**
  * Album detail. Lightly documented endpoint but works with a client
- * token; callers must tolerate null (we fall back to importing the
- * selected song as a standalone single).
+ * token; callers must tolerate null. Currently unused — a Genius pick
+ * imports the clicked song as a standalone single (see lib/catalog.ts).
+ * Kept for a future "import the whole Genius album" feature.
  */
 export async function getGeniusAlbum(albumId: number): Promise<GeniusAlbum | null> {
   const raw = await geniusFetch(`/albums/${albumId}`);

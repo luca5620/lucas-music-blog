@@ -39,21 +39,6 @@ function timeAgo(iso: string | null): string | null {
 
 const fmt = new Intl.NumberFormat("en-US");
 
-function Attribution({ href }: { href: string }) {
-  return (
-    <p className="text-right">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
-      >
-        via stats.fm ↗
-      </a>
-    </p>
-  );
-}
-
 export default async function ListeningShowcase({
   mode,
   statsfmUrl,
@@ -131,44 +116,52 @@ export default async function ListeningShowcase({
     return (
       <section className="space-y-3">
         <div className="vhs-label inline-block text-sm">{label}</div>
-        <div className="panel-xbox p-5 space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
-              {track.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={track.image}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
+        {/* Single compact row — cover, track info, attribution tucked
+            in the corner. No dead vertical space. */}
+        <div className="panel-xbox p-3 flex items-center gap-3">
+          <div className="w-12 h-12 rounded overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
+            {track.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={track.image}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="w-full h-full flex items-center justify-center text-xl">
+                💿
+              </span>
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="pixel-text text-[11px] uppercase tracking-widest">
+              {track.isPlaying ? (
+                <span className="text-osd-green">
+                  <span className="animate-pulse">●</span> Listening now
+                </span>
               ) : (
-                <span className="w-full h-full flex items-center justify-center text-2xl">
-                  💿
+                <span className="text-text-muted">
+                  Last played{ago ? ` · ${ago}` : ""}
                 </span>
               )}
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="pixel-text text-xs uppercase tracking-widest mb-0.5">
-                {track.isPlaying ? (
-                  <span className="text-osd-green">
-                    <span className="animate-pulse">●</span> Listening now
-                  </span>
-                ) : (
-                  <span className="text-text-muted">
-                    Last played{ago ? ` · ${ago}` : ""}
-                  </span>
-                )}
-              </p>
-              <p className="font-[family-name:var(--font-heading)] font-bold text-text-primary truncate">
-                {track.name}
-              </p>
-              <p className="text-sm text-text-secondary truncate">
-                {track.artists}
-              </p>
-            </div>
+            </p>
+            <p className="font-[family-name:var(--font-heading)] text-sm font-bold text-text-primary truncate">
+              {track.name}
+            </p>
+            <p className="text-xs text-text-secondary truncate">
+              {track.artists}
+            </p>
           </div>
-          <Attribution href={statsfmUrl ?? "https://stats.fm"} />
+
+          <a
+            href={statsfmUrl ?? "https://stats.fm"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors shrink-0 self-end"
+          >
+            stats.fm ↗
+          </a>
         </div>
       </section>
     );
@@ -192,32 +185,41 @@ export default async function ListeningShowcase({
   return (
     <section className="space-y-3">
       <div className="vhs-label inline-block text-sm">{label}</div>
-      <div className="panel-xbox p-5 space-y-4">
-        <div className="grid grid-cols-2 gap-6 text-center">
-          <div>
-            <p
-              className="font-[family-name:var(--font-heading)] text-3xl font-extrabold"
+      {/* Compact strip: both numbers on one row, attribution in the
+          corner — sized to the two stats it holds, nothing more. */}
+      <div className="panel-xbox p-3 flex items-end gap-6">
+        <div className="flex flex-wrap items-baseline gap-x-8 gap-y-1 flex-1">
+          <p className="whitespace-nowrap">
+            <span
+              className="font-[family-name:var(--font-heading)] text-xl font-extrabold"
               style={{ color: accentColor }}
             >
               {fmt.format(stats.minutes)}
-            </p>
-            <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-              Minutes listened
-            </p>
-          </div>
-          <div>
-            <p
-              className="font-[family-name:var(--font-heading)] text-3xl font-extrabold"
+            </span>{" "}
+            <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
+              minutes
+            </span>
+          </p>
+          <p className="whitespace-nowrap">
+            <span
+              className="font-[family-name:var(--font-heading)] text-xl font-extrabold"
               style={{ color: accentColor }}
             >
               {fmt.format(stats.streams)}
-            </p>
-            <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-              Total streams
-            </p>
-          </div>
+            </span>{" "}
+            <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
+              streams
+            </span>
+          </p>
         </div>
-        <Attribution href={statsfmUrl ?? "https://stats.fm"} />
+        <a
+          href={statsfmUrl ?? "https://stats.fm"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors shrink-0"
+        >
+          stats.fm ↗
+        </a>
       </div>
     </section>
   );

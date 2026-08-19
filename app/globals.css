@@ -680,13 +680,19 @@ body {
   user-select: none;
 }
 
-/* Keep the page from rubber-banding sideways in the shell, and kill
+/* Keep the page from rubber-banding in the shell, and kill
    double-tap-zoom / pinch-zoom — apps don't zoom their chrome. (The
    viewport meta gets maximum-scale=1 from NativeMode.tsx too; this is
-   the CSS half of the same rule.) Vertical rubber-band STAYS — that
-   bounce is native iOS feel, removing it reads as broken. */
+   the CSS half of the same rule.) Vertical bounce is HARD-CAPPED too
+   (Luca 2026-08-19: "you can scroll too high" — the bounce revealed
+   the black void above the page). overscroll-behavior must sit on the
+   ROOT scroller (html) for WebKit to honor it for page scroll; body
+   gets it too for scroll-chaining from inner scrollers. */
+.native-app,
 .native-app body {
-  overscroll-behavior-x: none;
+  overscroll-behavior: none;
+}
+.native-app body {
   touch-action: pan-x pan-y;
   -webkit-text-size-adjust: 100%;
 }

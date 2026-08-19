@@ -36,6 +36,23 @@ const config: CapacitorConfig = {
   android: {
     backgroundColor: "#000000",
   },
+  plugins: {
+    // Branded splash: the black penguin image in Splash.imageset.
+    // Short + no spinner — it's a curtain, not a loading screen.
+    SplashScreen: {
+      launchShowDuration: 1200,
+      launchAutoHide: true,
+      backgroundColor: "#000000",
+      showSpinner: false,
+    },
+    // Light clock/battery text on the true-black app ("DARK" = dark
+    // background style). backgroundColor/overlays are Android-only.
+    StatusBar: {
+      style: "DARK",
+      backgroundColor: "#000000",
+      overlaysWebView: true,
+    },
+  },
 };
 
 export default config;

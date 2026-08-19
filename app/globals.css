@@ -254,11 +254,13 @@ body {
   padding: 12px;
 }
 
-/* Spine + screen sit side by side inside the bezel */
+/* Spine + screen sit side by side inside the bezel.
+   NO overflow clipping here — dropdowns (account menu, release
+   search) must be able to hang past the screen edge. The rounded
+   corners are drawn on the spine/screen themselves instead. */
 .crt-body {
   display: flex;
   border-radius: 10px;
-  overflow: hidden;
 }
 
 /* ============================================================
@@ -277,6 +279,7 @@ body {
   justify-content: space-between;
   padding: 16px 0;
   border-right: 1px solid #1c1c20;
+  border-radius: 10px 0 0 10px;
 }
 
 /* "Peak Music" branding — PlayStation font, rotated to read upward */
@@ -339,13 +342,13 @@ body {
   position: relative;
   flex: 1;
   min-width: 0;
-  /* .crt-body owns the rounding + clipping now that the spine sits beside us */
-  border-radius: 0;
+  border-radius: 0 10px 10px 0;
   background: var(--bg-screen);
   min-height: 78vh;
   padding: 1.75rem 2rem 3rem;
-  overflow: hidden;
-  contain: paint;
+  /* NO overflow:hidden / contain:paint — they clipped dropdowns that
+     extend past the bottom of short pages. The frame is decoration;
+     it must never eat UI. */
   border: 1px solid #0a0a0c;
   /* Faint corner vignette only — the tube itself stays true black
      so OLED pixels actually turn off. No flicker. */
@@ -1070,6 +1073,8 @@ body {
 
   .crt-screen {
     padding: 1rem 1rem 2.5rem;
+    /* Spine is hidden on mobile, so round all four corners */
+    border-radius: 6px;
   }
 
   /* The spine eats too much width on a phone — screen goes full bleed */

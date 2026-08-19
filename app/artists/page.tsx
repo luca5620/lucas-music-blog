@@ -69,10 +69,7 @@ export default async function ArtistsPage({ searchParams }: PageProps) {
     <div className="space-y-6">
       {/* ========== HEADER ========== */}
       <div className="space-y-3">
-        <span className="label-xbox">Browse</span>
-        <h1 className="font-[family-name:var(--font-space-grotesk)] text-3xl sm:text-4xl font-extrabold text-accent-primary">
-          Artists
-        </h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">ARTISTS</h1>
         <p className="text-text-secondary text-sm">
           Every artist with a release, review, or follower in the system.
         </p>

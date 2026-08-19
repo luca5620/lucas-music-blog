@@ -65,10 +65,14 @@ export default function Navigation() {
           </span>
         </Link>
 
-        {/* Nav Links + Auth */}
-        <div className="flex items-center gap-1 sm:gap-2">
-          {/* Nav Links — horizontally scrollable on mobile */}
-          <div className="flex items-center gap-1 overflow-x-auto -mx-1 px-1">
+        {/* Nav Links + Auth.
+            min-w-0 + flex-1 on the links strip makes IT the only thing
+            that gives way when space runs out (it scrolls sideways) —
+            the Review button and account button can never be pushed
+            past the screen edge and clipped again. */}
+        <div className="flex items-center gap-1 sm:gap-2 min-w-0 w-full lg:w-auto">
+          {/* Nav Links — horizontally scrollable when squeezed */}
+          <div className="flex flex-1 min-w-0 items-center gap-1 overflow-x-auto -mx-1 px-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -128,9 +132,11 @@ export default function Navigation() {
                         </span>
                       </div>
                     )}
-                    {/* Ellipsize long names instead of letting the row
-                        clip them mid-letter; the dropdown shows it full. */}
-                    <span className="hidden sm:inline text-sm text-text-secondary font-[family-name:var(--font-heading)] max-w-[9rem] truncate">
+                    {/* inline-block, not inline — truncate/max-width are
+                        ignored on plain inline elements, which is why the
+                        earlier attempt didn't ellipsize. Dropdown shows
+                        the full name regardless. */}
+                    <span className="hidden sm:inline-block align-middle text-sm text-text-secondary font-[family-name:var(--font-heading)] max-w-[9rem] truncate">
                       {profile?.display_name || profile?.username || "User"}
                     </span>
                     {profile?.role && profile.role !== "user" && (

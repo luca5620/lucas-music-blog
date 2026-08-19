@@ -77,9 +77,7 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
 
       {/* Page header */}
       <div className="space-y-3">
-        <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-accent-primary">
-          Releases
-        </h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">RELEASES</h1>
         <p className="text-text-secondary">
           Albums, EPs, mixtapes, and singles. Follow a release to be in the
           live room when it drops.

@@ -104,7 +104,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "PMR",
+    title: "Peak Music Reviews",
   },
 };
 

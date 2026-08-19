@@ -58,10 +58,9 @@ export default function Navigation() {
         {/* Logo / Site Title */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
           <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
-          {/* Full name on desktop, PMR on small screens */}
-          <span className="pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover">
-            <span className="hidden sm:inline">Peak Music Reviews</span>
-            <span className="sm:hidden tracking-widest">PMR</span>
+          {/* Full name at every size — Luca's preference over "PMR" */}
+          <span className="pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover whitespace-nowrap">
+            Peak Music Reviews
           </span>
         </Link>
 

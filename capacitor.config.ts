@@ -14,10 +14,11 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 const config: CapacitorConfig = {
   appId: "com.peakmusicreviews.app",
-  // Home-screen label - "Peak Music Reviews" would truncate under the
-  // icon, so the short form goes here. The App Store listing itself
-  // can still be titled "Peak Music Reviews".
-  appName: "PMR",
+  // Home-screen label. Luca prefers the full name even though iOS
+  // truncates icon labels around ~13 chars ("Peak Music..."); if that
+  // bothers him later, shorten to "PMR" here AND in ios/App/App/
+  // Info.plist (CFBundleDisplayName) + android strings.xml.
+  appName: "Peak Music Reviews",
   webDir: "mobile/www",
   backgroundColor: "#000000",
   server: {

@@ -9,7 +9,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getReviewWithContextBySlug } from "@/lib/db/reviews";
-import { getRatingColor, getGenreColor } from "@/lib/rating";
+import { getRatingColor, getGenreColor, formatRating } from "@/lib/rating";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
 import CommentsSection from "@/components/reviews/CommentsSection";
@@ -177,10 +177,10 @@ export default async function ReviewPage({
         {/* Release type + Rating */}
         <div className="flex items-center justify-between">
           <span className="label-xbox text-[0.6rem]">
-            {review.release_type ?? "release"}
+            {(review.release_type ?? "RELEASE").toUpperCase()}
           </span>
           <div className={`rating-badge text-2xl ${getRatingColor(review.rating)}`}>
-            {review.rating}
+            {formatRating(review.rating)}
           </div>
         </div>
 

@@ -12,7 +12,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { ReviewWithAuthor } from "@/lib/db/reviews";
-import { getGenreColor, getRatingColor, getRatingHex } from "@/lib/rating";
+import { getGenreColor, getRatingColor, getRatingHex, formatRating } from "@/lib/rating";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 const RATING_OPTIONS: (number | "All")[] = ["All", 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
@@ -170,7 +170,7 @@ export default function ReviewsList({
                       <div
                         className={`rating-badge shrink-0 ${getRatingColor(review.rating)}`}
                       >
-                        {review.rating}
+                        {formatRating(review.rating)}
                       </div>
                     </div>
 

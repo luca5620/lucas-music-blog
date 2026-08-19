@@ -3,7 +3,7 @@ import { getDiscoveryFeed } from "@/lib/db/reviews";
 import { createClient } from "@/lib/supabase/server";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LikeButton from "@/components/reviews/LikeButton";
-import { getRatingHex } from "@/lib/rating";
+import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -27,6 +27,8 @@ interface FeedReview {
   artist: string;
   rating: number;
   genre: string | null;
+  release_type: string | null;
+  release_date: string | null;
   cover_image: string | null;
   created_at: string;
   like_count: number;
@@ -106,17 +108,16 @@ export default async function DiscoveryFeed() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
 
-              {/* Genre + Rating */}
+              {/* Type + Year — same treatment as the release cards */}
               <div className="flex items-center justify-between">
                 <span className="label-xbox text-[0.6rem]">
-                  {review.genre ?? "Music"}
+                  {(review.release_type ?? "MUSIC").toUpperCase()}
                 </span>
-                <div
-                  className="w-12 h-12 rounded-lg border bg-[rgba(0,0,0,0.3)] flex items-center justify-center font-[family-name:var(--font-heading)] font-extrabold text-lg transition-all"
-                  style={{ color: ratingColor, borderColor: ratingColor }}
-                >
-                  {review.rating}
-                </div>
+                {review.release_date && review.release_date.length >= 4 && (
+                  <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
+                    {review.release_date.slice(0, 4)}
+                  </span>
+                )}
               </div>
 
               {/* Title + Artist */}
@@ -125,6 +126,16 @@ export default async function DiscoveryFeed() {
                   {review.title}
                 </h3>
                 <p className="text-sm text-[#9a9a9e]">{review.artist}</p>
+              </div>
+
+              {/* Glowing rating badge — identical classes to Latest Drops */}
+              <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
+                <div
+                  className={`rating-badge text-sm w-10 h-10 ${getRatingColor(review.rating)}`}
+                  style={{ color: ratingColor, borderColor: ratingColor }}
+                >
+                  {formatRating(review.rating)}
+                </div>
               </div>
 
               {/* Author + Like + Time */}

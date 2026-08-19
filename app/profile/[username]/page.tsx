@@ -24,7 +24,7 @@ import {
 } from "@/lib/db/profiles";
 import { getListsByUsername, type ListSummary } from "@/lib/db/lists";
 import { getUser } from "@/lib/auth";
-import { getRatingHex, formatRating } from "@/lib/rating";
+import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowButton from "./FollowButton";
 import BlockButton from "@/components/moderation/BlockButton";
 import { isBlocked } from "@/lib/db/moderation";
@@ -663,10 +663,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                     <div className="min-w-0 flex-1 space-y-2">
                       <div className="flex items-center gap-3">
                         <span
-                          className="rating-badge"
+                          className={`rating-badge ${getRatingColor(featuredReview.rating)}`}
                           style={{ color: ratingColor, borderColor: ratingColor }}
                         >
-                          {featuredReview.rating}
+                          {formatRating(featuredReview.rating)}
                         </span>
                         <div className="min-w-0">
                           <h3 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary truncate group-hover:text-accent-primary transition-colors">
@@ -901,6 +901,10 @@ function EmptyState({ text }: { text: string }) {
 
 function ReviewCard({ review }: { review: Review }) {
   const ratingColor = getRatingHex(review.rating);
+  const year =
+    review.release_date && review.release_date.length >= 4
+      ? review.release_date.slice(0, 4)
+      : null;
 
   return (
     <Link
@@ -923,16 +927,16 @@ function ReviewCard({ review }: { review: Review }) {
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
 
+      {/* Type + Year — matches the release-card treatment exactly */}
       <div className="flex items-center justify-between">
         <span className="label-xbox text-[0.6rem]">
-          {review.genre ?? "Music"}
+          {(review.release_type ?? "MUSIC").toUpperCase()}
         </span>
-        <div
-          className="w-12 h-12 rounded-lg border bg-[rgba(0,0,0,0.3)] flex items-center justify-center font-[family-name:var(--font-heading)] font-extrabold text-lg transition-all"
-          style={{ color: ratingColor, borderColor: ratingColor }}
-        >
-          {review.rating}
-        </div>
+        {year && (
+          <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
+            {year}
+          </span>
+        )}
       </div>
 
       <div>
@@ -940,6 +944,16 @@ function ReviewCard({ review }: { review: Review }) {
           {review.title}
         </h3>
         <p className="text-sm text-text-secondary">{review.artist}</p>
+      </div>
+
+      {/* Glowing rating badge — same component classes as everywhere */}
+      <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
+        <div
+          className={`rating-badge text-sm w-10 h-10 ${getRatingColor(review.rating)}`}
+          style={{ color: ratingColor, borderColor: ratingColor }}
+        >
+          {formatRating(review.rating)}
+        </div>
       </div>
 
       <div className="scan-bar" />

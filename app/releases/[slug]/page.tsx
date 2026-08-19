@@ -551,7 +551,7 @@ function ReleaseReviewCard({ review }: { review: ReviewWithProfile }) {
               className={`rating-badge text-xs w-9 h-9 shrink-0 ${getRatingColor(review.rating)}`}
               style={{ color: ratingColor, borderColor: ratingColor }}
             >
-              {review.rating}
+              {formatRating(review.rating)}
             </div>
           </div>
           <p className="text-xs text-text-muted truncate">by {reviewerName}</p>

@@ -14,6 +14,7 @@ import Link from "next/link";
 import type { ReviewWithAuthor } from "@/lib/db/reviews";
 import { getGenreColor, getRatingColor, getRatingHex, formatRating } from "@/lib/rating";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
 
 const RATING_OPTIONS: (number | "All")[] = ["All", 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 
@@ -25,6 +26,8 @@ export default function ReviewsList({
   const [activeGenre, setActiveGenre] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRating, setActiveRating] = useState<number | "All">("All");
+  // Folder-style view choice (detailed/posters/compact), persisted.
+  const [view, setView] = useReviewView();
 
   // Build the genre chips from what's actually in the data.
   const genres = useMemo(() => {
@@ -51,23 +54,26 @@ export default function ReviewsList({
 
   return (
     <>
-      {/* Search Input */}
-      <div className="relative">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by title, artist, or reviewer…"
-          className="form-input"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors text-sm"
-          >
-            ✕
-          </button>
-        )}
+      {/* Search Input + view switcher */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by title, artist, or reviewer…"
+            className="form-input"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors text-sm"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        <ViewToggle view={view} onChange={setView} />
       </div>
 
       {/* Genre Filter — only shows if there are genres to filter by */}
@@ -121,8 +127,88 @@ export default function ReviewsList({
         })}
       </div>
 
-      {/* Review List */}
-      <div className="space-y-4">
+      {/* ===== POSTERS view — dense cover wall ===== */}
+      {view === "posters" && filtered.length > 0 && (
+        <div className="poster-grid">
+          {filtered.map((review) => (
+            <Link
+              key={review.id}
+              href={`/reviews/${review.slug}`}
+              className="group space-y-1.5"
+              title={`${review.title} — ${review.artist} (${formatRating(review.rating)}/10 by ${review.profiles.username})`}
+              style={{ "--rating-color": getRatingHex(review.rating) } as React.CSSProperties}
+            >
+              <span className="poster">
+                {review.cover_image ? (
+                  <img src={review.cover_image} alt={`${review.title} cover`} />
+                ) : (
+                  <span className="w-full h-full flex items-center justify-center text-4xl">
+                    💿
+                  </span>
+                )}
+                <span className="poster-rating">{formatRating(review.rating)}</span>
+              </span>
+              <span className="block">
+                <span className={`block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)] rating-title-hover${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
+                  {review.title}
+                </span>
+                <span className="block text-xs text-text-secondary truncate">
+                  {review.artist}
+                </span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* ===== COMPACT view — slim rows, minimum vertical space ===== */}
+      {view === "compact" && filtered.length > 0 && (
+        <div className="panel-xbox divide-y divide-border-subtle">
+          {filtered.map((review) => {
+            const author = review.profiles;
+            return (
+              <Link
+                key={review.id}
+                href={`/reviews/${review.slug}`}
+                className="flex items-center gap-3 px-3 py-2 hover:bg-bg-elevated transition-colors"
+              >
+                <span className="w-9 h-9 rounded overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
+                  {review.cover_image ? (
+                    <img
+                      src={review.cover_image}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="w-full h-full flex items-center justify-center text-base">
+                      💿
+                    </span>
+                  )}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-sm">
+                  <span className="font-bold text-text-primary font-[family-name:var(--font-heading)]">
+                    {review.title}
+                  </span>
+                  <span className="text-text-secondary"> — {review.artist}</span>
+                </span>
+                <span className="hidden sm:flex items-center gap-1 text-xs text-text-muted shrink-0">
+                  {author.display_name || author.username}
+                  {author.role !== "user" && <VerifiedBadge role={author.role} />}
+                </span>
+                <span
+                  className="pixel-text text-sm font-bold tabular-nums shrink-0 w-9 text-right"
+                  style={{ color: getRatingHex(review.rating) }}
+                >
+                  {formatRating(review.rating)}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ===== DETAILED view (default) + shared empty state ===== */}
+      <div className={view === "detailed" ? "space-y-4" : filtered.length === 0 ? "space-y-4" : "hidden"}>
         {filtered.length === 0 ? (
           <div className="card-y2k p-8 text-center">
             <p className="text-text-muted pixel-text text-sm">
@@ -131,7 +217,7 @@ export default function ReviewsList({
                 : "No reviews match your filters."}
             </p>
           </div>
-        ) : (
+        ) : view !== "detailed" ? null : (
           filtered.map((review) => {
             const author = review.profiles;
             const isVerified = author.role !== "user";

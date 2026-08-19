@@ -34,6 +34,7 @@ import FourFavorites from "@/components/profile/FourFavorites";
 import RatingHistogram from "@/components/profile/RatingHistogram";
 import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
+import ProfileReviewsGrid from "@/components/profile/ProfileReviewsGrid";
 import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import type { StreakIcon } from "@/components/profile/StreakIndicator";
 import ListCard from "@/components/lists/ListCard";
@@ -853,11 +854,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           ((reviews as Review[]).length === 0 ? (
             <EmptyState text="NO SIGNAL — no reviews yet." />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {(reviews as Review[]).map((review) => (
-                <ReviewCard key={review.id} review={review} />
-              ))}
-            </div>
+            /* View-switchable (detailed/posters/compact) — the choice
+               persists and is shared with the reviews index. */
+            <ProfileReviewsGrid reviews={reviews as Review[]} />
           ))}
 
         {/* ----- Lists tab ----- */}
@@ -899,67 +898,8 @@ function EmptyState({ text }: { text: string }) {
    Review Card (inline)
    ============================================ */
 
-function ReviewCard({ review }: { review: Review }) {
-  const ratingColor = getRatingHex(review.rating);
-  const year =
-    review.release_date && review.release_date.length >= 4
-      ? review.release_date.slice(0, 4)
-      : null;
-
-  return (
-    <Link
-      href={`/reviews/${review.slug}`}
-      className="panel-xbox p-4 sm:p-5 space-y-4 group cursor-pointer hover-glow relative overflow-hidden"
-    >
-      {/* Cover art */}
-      <div className="aspect-square rounded-lg bg-bg-elevated border border-white/10 flex items-center justify-center relative overflow-hidden group-hover:border-white/30 transition-all">
-        {review.cover_image ? (
-          <img
-            src={review.cover_image}
-            alt={`${review.title} cover`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-          />
-        ) : (
-          <span className="text-5xl group-hover:scale-110 transition-transform">
-            💿
-          </span>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      </div>
-
-      {/* Type + Year — matches the release-card treatment exactly */}
-      <div className="flex items-center justify-between">
-        <span className="label-xbox text-[0.6rem]">
-          {(review.release_type ?? "MUSIC").toUpperCase()}
-        </span>
-        {year && (
-          <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-            {year}
-          </span>
-        )}
-      </div>
-
-      <div>
-        <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary group-hover:text-accent-primary transition-colors">
-          {review.title}
-        </h3>
-        <p className="text-sm text-text-secondary">{review.artist}</p>
-      </div>
-
-      {/* Glowing rating badge — same component classes as everywhere */}
-      <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
-        <div
-          className={`rating-badge text-sm w-10 h-10 ${getRatingColor(review.rating)}`}
-          style={{ color: ratingColor, borderColor: ratingColor }}
-        >
-          {formatRating(review.rating)}
-        </div>
-      </div>
-
-      <div className="scan-bar" />
-    </Link>
-  );
-}
+/* ReviewCard moved to components/profile/ProfileReviewsGrid.tsx so the
+   Reviews tab can switch views (detailed/posters/compact) client-side. */
 
 /* ============================================
    Streaming Service Icons (inline SVGs)

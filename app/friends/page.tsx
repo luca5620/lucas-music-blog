@@ -14,6 +14,7 @@
 
 import Link from "next/link";
 import { getUser } from "@/lib/auth";
+import UserSearch from "@/components/friends/UserSearch";
 import {
   getFriendActivity,
   getPopularWithFriends,
@@ -119,6 +120,9 @@ export default async function FriendsPage() {
           What your people have been spinning.
         </p>
       </div>
+
+      {/* Find people — type a username, click through, hit Follow */}
+      <UserSearch />
 
       {/* ===== Popular with friends ===== */}
       {popular.length > 0 && (

@@ -282,11 +282,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           }}
         />
 
-        {/* Channel tag — little OSD flourish naming the profile */}
-        <span className="osd-text absolute top-3 right-4 text-sm opacity-80">
-          CH·{profile.username.slice(0, 8).toUpperCase()}
-        </span>
-
         <div className="absolute bottom-0 left-0 right-0 h-[1px] overflow-hidden">
           <div
             className="h-full w-1/2 animate-[scan-bar_3s_ease-in-out_infinite]"

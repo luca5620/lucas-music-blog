@@ -93,8 +93,9 @@ export default function PrivacyPage() {
           <li>Edit or delete your own content at any time.</li>
           <li>Block other users and report content that breaks the rules.</li>
           <li>
-            Request account deletion — contact us (below) and your account and
-            content will be removed.
+            Delete your account yourself at any time — Settings &rarr; Danger
+            Zone. Deletion is immediate and removes your account and all your
+            content. (You can also contact us below.)
           </li>
         </ul>
       </section>

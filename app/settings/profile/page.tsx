@@ -21,6 +21,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import FavoritesEditor from "@/components/profile/FavoritesEditor";
+import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
@@ -967,6 +968,11 @@ export default function ProfileSettingsPage() {
         <legend className="label-xbox">Four Favorites</legend>
         <FavoritesEditor />
       </fieldset>
+
+      {/* ========== DANGER ZONE ==========
+          In-app account deletion — App Store guideline 5.1.1(v)
+          requires it wherever account creation exists. */}
+      <DeleteAccountSection username={username} />
     </div>
   );
 }

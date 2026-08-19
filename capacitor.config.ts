@@ -27,7 +27,12 @@ const config: CapacitorConfig = {
     allowNavigation: ["peakmusicreviews.com", "*.supabase.co"],
   },
   ios: {
-    contentInset: "automatic",
+    // "never", NOT "automatic": automatic made UIScrollView add
+    // safe-area insets at BOTH scroll ends — the black bars above/
+    // below every scrollable page (Luca 2026-08-19). The page handles
+    // its own safe areas via env() padding (globals.css native-app
+    // section), so the WebView must go true edge-to-edge.
+    contentInset: "never",
     backgroundColor: "#000000",
     // No long-press link previews — the app should feel like an app,
     // not a webpage in a frame. (Luca's request, 2026-08-19.)

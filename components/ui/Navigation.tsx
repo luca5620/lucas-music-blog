@@ -126,29 +126,41 @@ export default function Navigation() {
               </button>
 
               {createOpen && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] overflow-hidden z-50 py-1">
+                <div className="absolute right-0 top-full mt-2 w-64 bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] z-50 p-2 space-y-1.5">
+                  {/* Real button treatment — bordered cards that light up
+                      on hover/focus so it's obvious which one you're on. */}
                   <Link
                     href="/reviews/new"
                     onClick={() => setCreateOpen(false)}
-                    className="block px-4 py-2.5 hover:bg-bg-elevated transition-colors"
+                    className="group flex items-center gap-3 rounded-lg border border-white/10 px-3 py-2.5 transition-all hover:border-accent-primary/60 hover:bg-accent-primary/10 focus-visible:border-accent-primary/60 focus-visible:bg-accent-primary/10 focus:outline-none"
                   >
-                    <span className="block text-sm font-bold text-text-primary font-[family-name:var(--font-heading)]">
-                      Review
+                    <span className="w-8 h-8 shrink-0 rounded-full border border-accent-primary/30 bg-accent-primary/10 flex items-center justify-center text-base group-hover:border-accent-primary/60 transition-colors">
+                      ★
                     </span>
-                    <span className="block text-xs text-text-muted">
-                      rate a release
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
+                        Review
+                      </span>
+                      <span className="block text-xs text-text-muted">
+                        rate a release
+                      </span>
                     </span>
                   </Link>
                   <Link
                     href="/posts/new"
                     onClick={() => setCreateOpen(false)}
-                    className="block px-4 py-2.5 hover:bg-bg-elevated transition-colors"
+                    className="group flex items-center gap-3 rounded-lg border border-white/10 px-3 py-2.5 transition-all hover:border-accent-primary/60 hover:bg-accent-primary/10 focus-visible:border-accent-primary/60 focus-visible:bg-accent-primary/10 focus:outline-none"
                   >
-                    <span className="block text-sm font-bold text-text-primary font-[family-name:var(--font-heading)]">
-                      Post
+                    <span className="w-8 h-8 shrink-0 rounded-full border border-accent-primary/30 bg-accent-primary/10 flex items-center justify-center text-base group-hover:border-accent-primary/60 transition-colors">
+                      ▶
                     </span>
-                    <span className="block text-xs text-text-muted">
-                      write it up — embed YouTube / TikTok
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
+                        Post
+                      </span>
+                      <span className="block text-xs text-text-muted">
+                        write it up — embed YouTube / TikTok
+                      </span>
                     </span>
                   </Link>
                 </div>

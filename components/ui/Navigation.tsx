@@ -47,7 +47,10 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="border-b border-border-subtle pb-4 mb-6">
+    // relative z-40 lifts the whole nav above later page sections —
+    // .crt-screen gives every direct child z-index:1, so without this
+    // the avatar dropdown painted UNDER content further down the DOM.
+    <nav className="border-b border-border-subtle pb-4 mb-6 relative z-40">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         {/* Logo / Site Title */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">

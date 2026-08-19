@@ -66,13 +66,15 @@
    crt-blue is the site default (no class needed).
    ============================================================ */
 
-/* PS3 — XMB. Black void, silver-blue shimmer, thin airy type. */
+/* PS3 — XMB. Black void, silver-blue shimmer, and the actual
+   PlayStation display font on headings (it has limited glyphs, so
+   anything it can't draw falls through to thin Jost per-character). */
 .theme-ps3 {
   --accent-primary: #7ec9e8;
   --accent-glow: #b8e4f5;
   --accent-dim: #4a93b3;
   --accent-rgb: 126, 201, 232;
-  --font-heading: var(--font-jost), system-ui, sans-serif;
+  --font-heading: 'PlayStation', var(--font-jost), system-ui, sans-serif;
 }
 .theme-ps3 .panel-xbox,
 .theme-ps3 .panel-xbox-glow {
@@ -252,9 +254,93 @@ body {
   padding: 12px;
 }
 
+/* Spine + screen sit side by side inside the bezel */
+.crt-body {
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ============================================================
+   GAME-CASE SPINE — the PS1 disc-box spine, back by request.
+   Vertical "Peak Music" in the PlayStation font + an ESRB-style
+   "R for Real" rating badge at the bottom.
+   ============================================================ */
+.crt-spine {
+  position: relative;
+  width: 58px;
+  min-width: 58px;
+  background: linear-gradient(90deg, #050506 0%, #0c0c0e 40%, #17171a 50%, #0c0c0e 60%, #050506 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-right: 1px solid #1c1c20;
+}
+
+/* "Peak Music" branding — PlayStation font, rotated to read upward */
+.crt-spine-brand {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: 'PlayStation', sans-serif;
+  font-size: 2.6rem;
+  color: #c4c4c8;
+  user-select: none;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow: 0 0 8px rgba(200, 200, 200, 0.12);
+}
+
+/* ESRB-style rating badge — R for Real */
+.crt-spine-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 36px;
+  margin-top: 8px;
+  user-select: none;
+  background: #fff;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.crt-rating-letter {
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #000;
+  line-height: 1;
+  padding: 3px 0 1px;
+  width: 100%;
+  text-align: center;
+  border-bottom: 2px solid #000;
+}
+
+.crt-rating-text {
+  font-family: var(--font-heading);
+  font-size: 0.32rem;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: 100%;
+  text-align: center;
+  padding: 2px 0;
+  background: #fff;
+}
+
 .crt-screen {
   position: relative;
-  border-radius: 10px;
+  flex: 1;
+  min-width: 0;
+  /* .crt-body owns the rounding + clipping now that the spine sits beside us */
+  border-radius: 0;
   background: var(--bg-screen);
   min-height: 78vh;
   padding: 1.75rem 2rem 3rem;
@@ -341,49 +427,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .grain-overlay { animation: none; }
   .tracking-glitch { animation: none; }
-}
-
-/* ============================================================
-   TV CHANNEL-CHANGE TRANSITION (kept from v2/v3)
-   ============================================================ */
-.tv-off-top,
-.tv-off-bottom {
-  position: fixed;
-  left: 0;
-  right: 0;
-  height: 0;
-  background: #000;
-  z-index: 100;
-  pointer-events: none;
-  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.tv-off-top { top: 0; }
-.tv-off-bottom { bottom: 0; }
-
-.tv-off-active .tv-off-top,
-.tv-off-active .tv-off-bottom {
-  height: 52%;
-}
-
-.tv-off-line {
-  position: fixed;
-  top: 50%;
-  left: 10%;
-  right: 10%;
-  height: 0px;
-  background: rgba(255, 255, 255, 0.9);
-  z-index: 101;
-  pointer-events: none;
-  transform: translateY(-50%);
-  transition: all 0.15s ease;
-  opacity: 0;
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-}
-
-.tv-off-flash .tv-off-line {
-  height: 2px;
-  opacity: 1;
 }
 
 /* ============================================================
@@ -1026,7 +1069,11 @@ body {
 
   .crt-screen {
     padding: 1rem 1rem 2.5rem;
-    border-radius: 6px;
+  }
+
+  /* The spine eats too much width on a phone — screen goes full bleed */
+  .crt-spine {
+    display: none;
   }
 
   .panel-xbox-glow { padding: 1.25rem !important; }

@@ -133,7 +133,10 @@ export default function CatalogSearch({
   }
 
   return (
-    <div ref={boxRef} className="relative">
+    // z-40 lifts the search box (and its results dropdown) above the
+    // form sections that come after it — without a z-index here, later
+    // siblings paint over the dropdown in DOM order and block clicks.
+    <div ref={boxRef} className="relative z-40">
       {label && (
         <label className="block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]">
           {label}

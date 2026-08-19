@@ -11,7 +11,6 @@ import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import CRTShell from "@/components/ui/CRTShell";
-import TVTransition from "@/components/ui/TVTransition";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { WebSiteSchema } from "@/app/schema";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
@@ -156,8 +155,6 @@ export default async function RootLayout({
         <AuthProvider initialUser={user} initialProfile={profile}>
           {/* Everything renders on the tube */}
           <CRTShell>
-            {/* Channel-change transition is INSIDE the screen so it clips */}
-            <TVTransition />
             <Navigation />
             {children}
           </CRTShell>

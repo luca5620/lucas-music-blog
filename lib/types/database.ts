@@ -31,14 +31,15 @@ export interface Profile {
   updated_at: string;
 }
 
-/** Named CRT themes a user can skin their profile with. */
+/** Profile theme presets — site default + vintage console dashboards. */
 export type ProfileTheme =
-  | "crt-blue"
-  | "crt-green"
-  | "crt-amber"
-  | "crt-rose"
-  | "crt-mono"
-  | "vhs-static";
+  | "crt-blue" // site default
+  | "ps3" // XMB: black void, silver-blue, thin type
+  | "ps4" // deep PlayStation blue
+  | "xbox-og" // acid green on black metal
+  | "xbox-360" // blade-dashboard green, glossy
+  | "wii" // white channel cards, rounded + cheerful
+  | "limewire"; // lime on old-Windows gray, beveled panels
 
 /** Showcase blocks a user can arrange on their profile, Steam-style. */
 export type ShowcaseType =

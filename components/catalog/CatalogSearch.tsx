@@ -42,7 +42,7 @@ interface CatalogSearchProps {
 }
 
 const SOURCE_BADGE: Record<CatalogResult["source"], { text: string; cls: string }> = {
-  local: { text: "ON PEAK", cls: "text-accent-glow border-accent-primary/40" },
+  local: { text: "ON PMR", cls: "text-accent-glow border-accent-primary/40" },
   spotify: { text: "SPOTIFY", cls: "text-osd-green border-osd-green/40" },
   genius: { text: "GENIUS", cls: "text-osd-amber border-osd-amber/40" },
 };
@@ -161,7 +161,7 @@ export default function CatalogSearch({
       {error && <p className="mt-1.5 text-xs text-accent-rose">{error}</p>}
 
       {open && results.length > 0 && (
-        <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-96 overflow-y-auto rounded-lg border border-border-medium bg-[#141417] shadow-[0_16px_50px_rgba(0,0,0,0.7)]">
+        <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-[65vh] overflow-y-auto rounded-lg border border-border-medium bg-[#0c0c0f] shadow-[0_16px_50px_rgba(0,0,0,0.8)]">
           {results.map((r) => {
             const key = `${r.source}:${r.id}`;
             const badge = SOURCE_BADGE[r.source];
@@ -171,25 +171,25 @@ export default function CatalogSearch({
                 type="button"
                 onClick={() => handlePick(r)}
                 disabled={importing !== null}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-bg-elevated transition-colors disabled:opacity-60"
+                className="w-full flex items-center gap-3 px-3 py-3 text-left hover:bg-bg-elevated transition-colors disabled:opacity-60"
               >
                 {/* Cover thumb */}
-                <span className="w-10 h-10 rounded overflow-hidden bg-bg-elevated shrink-0 border border-border-subtle">
+                <span className="w-14 h-14 rounded overflow-hidden bg-bg-elevated shrink-0 border border-border-subtle">
                   {r.cover ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={r.cover} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <span className="w-full h-full flex items-center justify-center text-lg">
+                    <span className="w-full h-full flex items-center justify-center text-xl">
                       💿
                     </span>
                   )}
                 </span>
 
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-text-primary truncate">
+                  <span className="block text-base font-bold text-text-primary truncate">
                     {r.title}
                   </span>
-                  <span className="block text-xs text-text-secondary truncate">
+                  <span className="block text-sm text-text-secondary truncate">
                     {r.artist}
                     {r.year ? ` · ${r.year}` : ""}
                     {r.kind ? ` · ${r.kind}` : ""}

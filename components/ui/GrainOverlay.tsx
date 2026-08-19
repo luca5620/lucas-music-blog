@@ -1,8 +1,8 @@
 /**
- * GrainOverlay — the full CRT atmosphere stack: animated film
- * grain, horizontal scanlines, Trinitron-style aperture grille,
- * and a slow rolling vsync band. All layers are fixed-position,
- * pointer-transparent, and honor prefers-reduced-motion.
+ * GrainOverlay — subtle CRT atmosphere: soft film grain, faint
+ * scanlines, and a barely-there aperture grille. All layers are
+ * fixed-position, pointer-transparent, dialed low so true-black
+ * OLED pixels stay dark, and honor prefers-reduced-motion.
  */
 export default function GrainOverlay() {
   return (
@@ -10,7 +10,6 @@ export default function GrainOverlay() {
       <div className="grain-overlay" aria-hidden="true" />
       <div className="scanlines" aria-hidden="true" />
       <div className="aperture-grille" aria-hidden="true" />
-      <div className="vsync-band" aria-hidden="true" />
     </>
   );
 }

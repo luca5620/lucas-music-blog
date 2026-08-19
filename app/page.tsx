@@ -1,7 +1,7 @@
 /**
  * Home — two different shows depending on who's watching.
  *
- * Logged OUT → the test-card splash: what PEAK is, why you'd join.
+ * Logged OUT → the test-card splash: what Peak Music Reviews is, why you'd join.
  * Logged IN  → the social dashboard: what's ON AIR right now,
  *              friends' activity, fresh drops, lists, and the
  *              community review wall. Dense and poster-first,
@@ -69,7 +69,7 @@ function Splash() {
 
         <p className="osd-text text-xs">— NOW BROADCASTING —</p>
 
-        <h1 className="crt-title text-6xl sm:text-8xl tracking-tight">PEAK</h1>
+        <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
 
         <p className="pixel-text text-lg sm:text-2xl text-accent-glow">
           every album. every leak. every argument.

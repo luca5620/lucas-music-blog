@@ -1,4 +1,4 @@
-# PEAK — Roadmap
+# PMR — Roadmap
 
 *Updated 2026-08-18 as part of Overhaul v2 (the platform pivot).*
 

@@ -5,7 +5,8 @@
  *
  * Steam-style: you don't just edit text fields, you SKIN your page.
  *  - Identity: name, tagline, pronouns, location, bio
- *  - Appearance: one of six CRT themes (live preview) + real
+ *  - Appearance: a "vintage consoles" theme preset (live preview —
+ *    each preset swaps accents, fonts, AND panel styling) + real
  *    avatar/banner uploads to Supabase Storage (no more URL pasting)
  *  - Showcases: choose WHICH blocks appear on your profile and in
  *    what order (favorites, stats, recent reviews, featured review,
@@ -33,15 +34,18 @@ const GENRE_OPTIONS = [
   "Funk", "Punk", "Blues", "K-Pop", "J-Pop", "Reggaeton",
 ];
 
-/* The six CRT themes. Hexes must match the theme-* classes in
-   globals.css — the swatch shows the accent, the class does the rest. */
-const THEMES: { id: ProfileTheme; label: string; hex: string }[] = [
-  { id: "crt-blue", label: "CRT Blue", hex: "#1e90ff" },
-  { id: "crt-green", label: "Phosphor Green", hex: "#2fff5e" },
-  { id: "crt-amber", label: "Amber Terminal", hex: "#ffb02f" },
-  { id: "crt-rose", label: "Rose Static", hex: "#ff5e8a" },
-  { id: "crt-mono", label: "Mono", hex: "#d9d9de" },
-  { id: "vhs-static", label: "VHS Static", hex: "#b18cff" },
+/* Theme presets — "vintage consoles". Ids and hexes must match the
+   theme-* classes in globals.css AND the DB constraint from migration
+   006. The swatch shows the accent; the theme-* class does the real
+   work (accents, heading font, panel styling). */
+const THEMES: { id: ProfileTheme; label: string; hex: string; desc: string }[] = [
+  { id: "crt-blue", label: "Broadcast", hex: "#1e90ff", desc: "The standard Peak Music Reviews look" },
+  { id: "ps3", label: "PS3 · XMB", hex: "#7ec9e8", desc: "Black void, silver-blue shimmer, thin airy type" },
+  { id: "ps4", label: "PS4", hex: "#4a90d9", desc: "Deep PlayStation blue, clean and modern" },
+  { id: "xbox-og", label: "Xbox OG", hex: "#5dc21e", desc: "Acid green on black metal, industrial type" },
+  { id: "xbox-360", label: "Xbox 360", hex: "#92c83e", desc: "Blade-dashboard green, glossy and friendly" },
+  { id: "wii", label: "Wii", hex: "#35b7d8", desc: "White channel cards, rounded and cheerful" },
+  { id: "limewire", label: "LimeWire", hex: "#32cd32", desc: "Where internet music began — beveled freeware beige" },
 ];
 
 /* Every showcase block a profile can display. */
@@ -461,12 +465,15 @@ export default function ProfileSettingsPage() {
         <fieldset className="panel-xbox p-5 space-y-5">
           <legend className="label-xbox">Appearance</legend>
 
-          {/* Theme picker — six swatches */}
+          {/* Theme presets — one card per vintage console. Each card
+              wears its own theme-* class so the LABEL renders in that
+              preset's actual heading font: the picker doubles as a
+              type specimen. */}
           <div className="space-y-2">
             <p className="font-[family-name:var(--font-heading)] text-xs font-bold text-text-secondary uppercase tracking-wider">
-              CRT Theme
+              Theme Presets — Vintage Consoles
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {THEMES.map((t) => {
                 const active = theme === t.id;
                 return (
@@ -477,7 +484,7 @@ export default function ProfileSettingsPage() {
                       setTheme(t.id);
                       setSaved(false);
                     }}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-all"
+                    className={`theme-${t.id} flex items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-all`}
                     style={{
                       background: active ? `${t.hex}18` : "rgba(255,255,255,0.03)",
                       border: `2px solid ${active ? t.hex : "rgba(255,255,255,0.1)"}`,
@@ -486,17 +493,23 @@ export default function ProfileSettingsPage() {
                   >
                     {/* Swatch: a tiny glowing tube */}
                     <span
-                      className="w-5 h-5 rounded-sm shrink-0"
+                      className="w-5 h-5 rounded-sm shrink-0 mt-0.5"
                       style={{
                         background: t.hex,
                         boxShadow: `0 0 8px ${t.hex}90`,
                       }}
                     />
-                    <span
-                      className="pixel-text text-sm"
-                      style={{ color: active ? t.hex : "#9a9a9e" }}
-                    >
-                      {t.label}
+                    <span className="min-w-0">
+                      <span
+                        className="block text-sm font-bold font-[family-name:var(--font-heading)]"
+                        style={{ color: active ? t.hex : "#c8c8cc" }}
+                      >
+                        {t.label}
+                      </span>
+                      {/* Description stays in the site font for readability */}
+                      <span className="block text-xs text-[#8a8a90] font-[family-name:var(--font-inter)]">
+                        {t.desc}
+                      </span>
                     </span>
                   </button>
                 );

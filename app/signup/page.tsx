@@ -239,7 +239,7 @@ export default function SignUpPage() {
             <p className="osd-text text-xs">NEW VIEWER REGISTRATION</p>
             <h1 className="crt-title text-3xl">Create Account</h1>
             <p className="text-text-secondary text-sm">
-              claim your handle on PEAK
+              claim your handle on Peak Music Reviews
             </p>
           </div>
 

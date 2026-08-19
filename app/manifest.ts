@@ -11,15 +11,15 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PEAK — the music social network",
-    short_name: "PEAK",
+    name: "Peak Music Reviews",
+    short_name: "PMR",
     description:
       "Rate albums, build lists, join live release rooms and debates. Every record on Spotify plus the deep Genius catalog — unreleased included.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#060607",
-    theme_color: "#060607",
+    background_color: "#000000",
+    theme_color: "#000000",
     categories: ["music", "social", "entertainment"],
     icons: [
       {

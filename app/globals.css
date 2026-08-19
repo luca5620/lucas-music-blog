@@ -1,25 +1,28 @@
 @import "tailwindcss";
 
 /* ============================================================
-   PEAK — DESIGN SYSTEM v4 "PHYSICAL MEDIA"
+   PEAK MUSIC REVIEWS — DESIGN SYSTEM v5 "TRUE BLACK"
    The whole site lives inside a CRT television. Phosphor glow,
    aperture grille, film grain, VHS labels, OSD chrome. Grainy,
    warm, a little haunted. Y2K without the pastiche.
    ============================================================ */
 
-/* --- Tokens --- */
+/* --- Tokens ---
+   True-black base: pure #000 backgrounds so OLED panels (iPhone,
+   modern monitors) switch those pixels fully off. Elevation comes
+   from near-black steps + borders, not gray washes. --- */
 :root {
   /* The room the TV sits in (page background, behind the bezel) */
-  --bg-room: #060607;
+  --bg-room: #000000;
   /* Bezel plastic */
-  --bg-bezel: #17171a;
-  --bg-bezel-hi: #232328;
+  --bg-bezel: #0e0e10;
+  --bg-bezel-hi: #19191d;
   /* The powered-on tube */
-  --bg-primary: #0a0a0c;
-  --bg-secondary: #101013;
-  --bg-card: #141417;
-  --bg-elevated: #1c1c21;
-  --bg-screen: #0d0d10;
+  --bg-primary: #000000;
+  --bg-secondary: #08080a;
+  --bg-card: #0c0c0f;
+  --bg-elevated: #141418;
+  --bg-screen: #000000;
 
   --text-primary: #e8e6e3;
   --text-secondary: #9a9a9e;
@@ -42,45 +45,146 @@
   --border-bright: #444448;
 
   --glow-primary: rgba(var(--accent-rgb), 0.25);
-  --scanline-opacity: 0.07;
-  --grille-opacity: 0.06;
+  /* CRT ambience, dialed back — texture, not a filter over the site */
+  --scanline-opacity: 0.03;
+  --grille-opacity: 0.02;
 
-  --font-heading: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-heading: var(--font-chakra-petch), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-pixel: var(--font-vt323), monospace;
+
+  /* Legacy alias — older components reference the Space Grotesk var
+     directly; route them all to the current heading face. */
+  --font-space-grotesk: var(--font-chakra-petch);
 }
 
-/* --- Profile themes — scope with class theme-<name> on any wrapper.
-       Only accents move; the tube stays the tube. --- */
-.theme-crt-green {
-  --accent-primary: #2fff5e;
-  --accent-glow: #7dffa0;
-  --accent-dim: #1cb944;
-  --accent-rgb: 47, 255, 94;
+/* ============================================================
+   PROFILE THEME PRESETS — "vintage consoles"
+   Scope with class theme-<name> on the profile wrapper. Each
+   preset re-skins accents, the heading font, and panel styling
+   so a profile genuinely feels like that machine's dashboard.
+   crt-blue is the site default (no class needed).
+   ============================================================ */
+
+/* PS3 — XMB. Black void, silver-blue shimmer, thin airy type. */
+.theme-ps3 {
+  --accent-primary: #7ec9e8;
+  --accent-glow: #b8e4f5;
+  --accent-dim: #4a93b3;
+  --accent-rgb: 126, 201, 232;
+  --font-heading: var(--font-jost), system-ui, sans-serif;
 }
-.theme-crt-amber {
-  --accent-primary: #ffb02f;
-  --accent-glow: #ffd07d;
-  --accent-dim: #c9820f;
-  --accent-rgb: 255, 176, 47;
+.theme-ps3 .panel-xbox,
+.theme-ps3 .panel-xbox-glow {
+  background: linear-gradient(170deg, rgba(10, 16, 24, 0.75) 0%, rgba(0, 0, 0, 0.85) 100%);
+  border-color: rgba(126, 201, 232, 0.22);
 }
-.theme-crt-rose {
-  --accent-primary: #ff5e8a;
-  --accent-glow: #ff9ab5;
-  --accent-dim: #c93a63;
-  --accent-rgb: 255, 94, 138;
+.theme-ps3 h1, .theme-ps3 h2, .theme-ps3 h3 {
+  font-weight: 300;
+  letter-spacing: 0.06em;
 }
-.theme-crt-mono {
-  --accent-primary: #d9d9de;
-  --accent-glow: #ffffff;
-  --accent-dim: #8a8a92;
-  --accent-rgb: 217, 217, 222;
+
+/* PS4 — deep PlayStation blue, clean and modern. */
+.theme-ps4 {
+  --accent-primary: #4a90d9;
+  --accent-glow: #7fb3e8;
+  --accent-dim: #2e6db4;
+  --accent-rgb: 74, 144, 217;
+  --font-heading: var(--font-jost), system-ui, sans-serif;
 }
-.theme-vhs-static {
-  --accent-primary: #b18cff;
-  --accent-glow: #d3bcff;
-  --accent-dim: #7d5cc4;
-  --accent-rgb: 177, 140, 255;
+.theme-ps4 .panel-xbox,
+.theme-ps4 .panel-xbox-glow {
+  background: linear-gradient(160deg, rgba(0, 30, 70, 0.55) 0%, rgba(0, 8, 20, 0.85) 100%);
+  border-color: rgba(74, 144, 217, 0.28);
+}
+
+/* Original Xbox — acid green on black metal, industrial type. */
+.theme-xbox-og {
+  --accent-primary: #5dc21e;
+  --accent-glow: #8fe84f;
+  --accent-dim: #3f8a12;
+  --accent-rgb: 93, 194, 30;
+  --font-heading: var(--font-michroma), system-ui, sans-serif;
+}
+.theme-xbox-og .panel-xbox,
+.theme-xbox-og .panel-xbox-glow {
+  background: rgba(6, 12, 4, 0.8);
+  border-color: rgba(93, 194, 30, 0.3);
+  box-shadow: inset 0 0 30px rgba(93, 194, 30, 0.05);
+}
+.theme-xbox-og h1, .theme-xbox-og h2, .theme-xbox-og h3 {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Xbox 360 — blade-dashboard green, glossy and friendly. */
+.theme-xbox-360 {
+  --accent-primary: #92c83e;
+  --accent-glow: #b8e26e;
+  --accent-dim: #6a9a24;
+  --accent-rgb: 146, 200, 62;
+}
+.theme-xbox-360 .panel-xbox,
+.theme-xbox-360 .panel-xbox-glow {
+  background: linear-gradient(180deg, rgba(30, 34, 26, 0.7) 0%, rgba(8, 10, 6, 0.85) 100%);
+  border-color: rgba(146, 200, 62, 0.28);
+  border-radius: 14px;
+}
+
+/* Wii — white channel cards on the void, rounded and cheerful. */
+.theme-wii {
+  --accent-primary: #35b7d8;
+  --accent-glow: #6fd2ea;
+  --accent-dim: #2189a3;
+  --accent-rgb: 53, 183, 216;
+  --font-heading: var(--font-quicksand), system-ui, sans-serif;
+  --bg-card: #f2f3f5;
+  --bg-elevated: #ffffff;
+  --text-primary: #3a3a3e;
+  --text-secondary: #6f6f76;
+  --text-muted: #9a9aa2;
+  --border-subtle: #dcdce2;
+  --border-medium: #c6c6ce;
+}
+.theme-wii .panel-xbox,
+.theme-wii .panel-xbox-glow {
+  background: rgba(245, 246, 248, 0.95);
+  border-color: #d4d4dc;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+.theme-wii .panel-xbox::before,
+.theme-wii .panel-xbox-glow::before { display: none; }
+.theme-wii .vhs-label { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
+
+/* LimeWire — where internet music began. Lime on old-Windows gray. */
+.theme-limewire {
+  --accent-primary: #32cd32;
+  --accent-glow: #66e766;
+  --accent-dim: #1f9e1f;
+  --accent-rgb: 50, 205, 50;
+  --font-heading: Verdana, Tahoma, "Segoe UI", sans-serif;
+  --font-body: Verdana, Tahoma, "Segoe UI", sans-serif;
+  --bg-card: #ece9d8;
+  --bg-elevated: #f5f3e9;
+  --text-primary: #1c1c1c;
+  --text-secondary: #4a4a44;
+  --text-muted: #7c7c72;
+  --border-subtle: #c9c5b2;
+  --border-medium: #a8a492;
+}
+.theme-limewire .panel-xbox,
+.theme-limewire .panel-xbox-glow {
+  background: #ece9d8;
+  border: 2px outset #f5f3e9; /* the beveled 2002 freeware look */
+  border-radius: 2px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.theme-limewire .panel-xbox::before,
+.theme-limewire .panel-xbox-glow::before { display: none; }
+.theme-limewire .btn-y2k { border-radius: 3px; }
+.theme-limewire h1, .theme-limewire h2, .theme-limewire h3 {
+  letter-spacing: 0;
 }
 
 /* --- Register with Tailwind v4 --- */
@@ -140,12 +244,12 @@ body {
   max-width: 1240px;
   border-radius: 18px;
   background:
-    linear-gradient(175deg, var(--bg-bezel-hi) 0%, var(--bg-bezel) 18%, #101013 100%);
-  border: 1px solid #26262c;
+    linear-gradient(175deg, var(--bg-bezel-hi) 0%, var(--bg-bezel) 18%, #08080a 100%);
+  border: 1px solid #1c1c20;
   box-shadow:
     0 24px 80px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  padding: 14px;
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding: 12px;
 }
 
 .crt-screen {
@@ -156,13 +260,10 @@ body {
   padding: 1.75rem 2rem 3rem;
   overflow: hidden;
   contain: paint;
-  border: 1px solid #000;
-  /* Tube depth: dark vignette pinching the corners */
-  box-shadow:
-    inset 0 0 6px rgba(0, 0, 0, 0.9),
-    inset 0 0 60px rgba(0, 0, 0, 0.55),
-    inset 0 0 160px rgba(0, 0, 0, 0.35);
-  animation: crt-flicker 9s infinite;
+  border: 1px solid #0a0a0c;
+  /* Faint corner vignette only — the tube itself stays true black
+     so OLED pixels actually turn off. No flicker. */
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
 }
 
 /* Phosphor bloom behind everything on the tube */
@@ -183,73 +284,21 @@ body {
   z-index: 1;
 }
 
-/* Bezel chin — brand + power LED row rendered by CRTShell */
-.crt-chin {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px 2px;
-  user-select: none;
-}
-
-.crt-brand {
-  font-family: 'PlayStation', var(--font-heading), sans-serif;
-  font-size: 1.05rem;
-  letter-spacing: 0.06em;
-  color: #6a6a72;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
-}
-
-.crt-led {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ff3344;
-  box-shadow: 0 0 6px #ff3344, 0 0 14px rgba(255, 51, 68, 0.6);
-  animation: led-breathe 4s ease-in-out infinite;
-}
-
-@keyframes led-breathe {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
-}
-
-/* OSD — the green "CH 03" style overlay text */
-.crt-osd {
-  position: absolute;
-  top: 0.9rem;
-  right: 1.25rem;
-  z-index: 40;
-  pointer-events: none;
-  font-family: var(--font-pixel);
-  font-size: 1rem;
-  letter-spacing: 0.12em;
-  color: var(--osd-green);
-  text-shadow: 0 0 6px rgba(47, 255, 94, 0.8), 0 0 18px rgba(47, 255, 94, 0.35);
-  text-transform: uppercase;
-  opacity: 0.85;
-}
-
-.crt-osd .osd-rec {
-  color: #ff4455;
-  text-shadow: 0 0 6px rgba(255, 68, 85, 0.8);
-  animation: led-breathe 2s ease-in-out infinite;
-}
-
 /* ============================================================
-   ATMOSPHERE LAYERS — grain, scanlines, aperture grille,
-   rolling vsync band. All pointer-transparent.
+   ATMOSPHERE LAYERS — grain, scanlines, aperture grille.
+   Deliberately subtle: texture you feel, not a filter you see,
+   and never bright enough to lift OLED blacks noticeably.
    ============================================================ */
 .grain-overlay {
   position: fixed;
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.22;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
   background-size: 180px 180px;
-  animation: grain-shift 0.9s steps(3) infinite;
+  animation: grain-shift 1.4s steps(3) infinite;
 }
 
 @keyframes grain-shift {
@@ -288,44 +337,9 @@ body {
   );
 }
 
-/* Slow rolling brightness band, like a camera filming a CRT */
-.vsync-band {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: -20%;
-  height: 18%;
-  z-index: 48;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.025) 45%,
-    rgba(255, 255, 255, 0.045) 50%,
-    rgba(255, 255, 255, 0.025) 55%,
-    transparent 100%
-  );
-  animation: vsync-roll 11s linear infinite;
-}
-
-@keyframes vsync-roll {
-  0% { transform: translateY(-10vh); }
-  100% { transform: translateY(120vh); }
-}
-
-@keyframes crt-flicker {
-  0%, 100% { opacity: 1; }
-  93% { opacity: 1; }
-  93.5% { opacity: 0.97; }
-  94% { opacity: 1; }
-  97% { opacity: 0.985; }
-  98% { opacity: 1; }
-}
-
 /* Kill the ambience for users who ask for calm */
 @media (prefers-reduced-motion: reduce) {
-  .grain-overlay, .vsync-band { animation: none; }
-  .crt-screen { animation: none; }
+  .grain-overlay { animation: none; }
   .tracking-glitch { animation: none; }
 }
 
@@ -1014,10 +1028,6 @@ body {
     padding: 1rem 1rem 2.5rem;
     border-radius: 6px;
   }
-
-  .crt-chin { padding: 8px 8px 2px; }
-  .crt-brand { font-size: 0.85rem; }
-  .crt-osd { top: 0.5rem; right: 0.75rem; font-size: 0.85rem; }
 
   .panel-xbox-glow { padding: 1.25rem !important; }
   .panel-xbox { padding: 1rem !important; }

@@ -1,10 +1,10 @@
 /**
- * JSON-LD Structured Data — PEAK
+ * JSON-LD Structured Data — Peak Music Reviews
  *
  * Reusable schema components that output <script type="application/ld+json"> tags.
  * Follows Google's structured data guidelines for rich results.
  *
- * Overhaul v2: PEAK is a community platform now, not a one-person
+ * Overhaul v2: Peak Music Reviews is a community platform now, not a one-person
  * blog — so the site publishes as an Organization and every review
  * credits its actual community author.
  *
@@ -21,7 +21,7 @@
 /* ------------------------------------------------------------------ */
 
 const SITE_URL = "https://peakmusicreviews.com";
-const SITE_NAME = "PEAK";
+const SITE_NAME = "Peak Music Reviews";
 const LOGO_URL = `${SITE_URL}/penguin-logo.png`;
 
 /* ------------------------------------------------------------------ */
@@ -222,7 +222,7 @@ export function CollectionPageSchema({ totalItems }: { totalItems: number }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Community Music Reviews — PEAK",
+    name: "Community Music Reviews — Peak Music Reviews",
     description:
       "Honest takes from the whole community. Every review is tied to a real release.",
     url: `${SITE_URL}/reviews`,

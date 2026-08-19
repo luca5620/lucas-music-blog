@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * Capacitor config — the native iOS/Android shell.
+ * Capacitor config - the native iOS/Android shell.
  *
  * Strategy: the app is a native WebView that loads the LIVE site
  * (server.url). That means every deploy to Vercel updates the app
@@ -10,13 +10,16 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * page shown when the phone has no connection.
  *
  * Native seasoning (haptics, share sheet, status bar) comes from the
- * injected Capacitor bridge — see lib/native.ts.
+ * injected Capacitor bridge - see lib/native.ts.
  */
 const config: CapacitorConfig = {
   appId: "com.peakmusicreviews.app",
-  appName: "PEAK",
+  // Home-screen label - "Peak Music Reviews" would truncate under the
+  // icon, so the short form goes here. The App Store listing itself
+  // can still be titled "Peak Music Reviews".
+  appName: "PMR",
   webDir: "mobile/www",
-  backgroundColor: "#060607",
+  backgroundColor: "#000000",
   server: {
     url: "https://peakmusicreviews.com",
     // Domains the WebView may navigate to without bouncing to Safari.
@@ -24,10 +27,10 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: "automatic",
-    backgroundColor: "#060607",
+    backgroundColor: "#000000",
   },
   android: {
-    backgroundColor: "#060607",
+    backgroundColor: "#000000",
   },
 };
 

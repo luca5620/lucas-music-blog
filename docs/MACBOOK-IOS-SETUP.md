@@ -59,7 +59,7 @@ That opens Xcode with the project. Then:
    Settings → General → VPN & Device Management → trust your developer
    certificate.
 
-PEAK is now on your home screen. This alone gets you "working on my
+PMR is now on your home screen. This alone gets you "working on my
 iPhone this week" even while App Review is pending.
 
 ## 5. App Store submission
@@ -67,7 +67,7 @@ iPhone this week" even while App Review is pending.
 ### App icon
 Xcode needs a 1024×1024 icon with **no transparency**. In Xcode:
 App → Assets → AppIcon → drag the PNG in (use the penguin logo on the
-`#060607` background; ask Claude on the Mac to generate the exact sizes
+`#000000` background; ask Claude on the Mac to generate the exact sizes
 if needed).
 
 ### Archive & upload
@@ -77,8 +77,7 @@ if needed).
    Upload** (defaults are fine).
 
 ### App Store Connect (https://appstoreconnect.apple.com)
-1. **My Apps → + → New App**: platform iOS, name **PEAK — music social
-   network** (or just PEAK if free), bundle id `com.peakmusicreviews.app`,
+1. **My Apps → + → New App**: platform iOS, name **Peak Music Reviews**, bundle id `com.peakmusicreviews.app`,
    SKU `peak-001`.
 2. Fill in: description, keywords (music, reviews, albums, social,
    letterboxd, rate), support URL (peakmusicreviews.com), screenshots

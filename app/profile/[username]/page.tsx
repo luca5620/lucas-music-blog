@@ -2,10 +2,11 @@
  * Public User Profile Page — "Steam on a CRT"
  *
  * Every profile is a little owned space: the user picks a THEME
- * (one of six CRT palettes — the `theme-*` classes in globals.css
- * recolor every accent-based element inside the wrapper div) and
- * arranges SHOWCASES (ordered blocks: favorites, stats, recent
- * reviews, featured review, badges, lists, anticipated releases).
+ * (a "vintage console" preset — the `theme-*` classes in globals.css
+ * re-skin accents, heading fonts, and panel styling inside the
+ * wrapper div) and arranges SHOWCASES (ordered blocks: favorites,
+ * stats, recent reviews, featured review, badges, lists, anticipated
+ * releases).
  *
  * Everything renders on the server; tabs are plain links (?tab=)
  * so switching needs no client JS.
@@ -57,11 +58,26 @@ function resolveTab(raw: string | undefined): ProfileTab {
        color once here and pass it down. Must match globals.css. --- */
 const THEME_ACCENT: Record<ProfileTheme, string> = {
   "crt-blue": "#1e90ff",
-  "crt-green": "#2fff5e",
-  "crt-amber": "#ffb02f",
-  "crt-rose": "#ff5e8a",
-  "crt-mono": "#d9d9de",
-  "vhs-static": "#b18cff",
+  ps3: "#7ec9e8",
+  ps4: "#4a90d9",
+  "xbox-og": "#5dc21e",
+  "xbox-360": "#92c83e",
+  wii: "#35b7d8",
+  limewire: "#32cd32",
+};
+
+/* Wii and LimeWire are LIGHT presets: their theme classes flip the
+   text tokens dark, so the page area behind them must go light too —
+   otherwise dark text lands on the black tube and vanishes. null =
+   keep the normal black page. */
+const THEME_PAGE_BG: Record<ProfileTheme, string | null> = {
+  "crt-blue": null,
+  ps3: null,
+  ps4: null,
+  "xbox-og": null,
+  "xbox-360": null,
+  wii: "#e9eaee",
+  limewire: "#d8d4c2",
 };
 
 const VALID_THEMES = Object.keys(THEME_ACCENT) as ProfileTheme[];
@@ -92,7 +108,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       profile.tagline ??
       profile.bio ??
-      `${profile.display_name ?? profile.username} on PEAK.`,
+      `${profile.display_name ?? profile.username} on Peak Music Reviews.`,
     alternates: {
       canonical: `https://peakmusicreviews.com/profile/${username}`,
     },
@@ -138,6 +154,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     ? profile.theme
     : "crt-blue";
   const accentColor = THEME_ACCENT[theme];
+  const pageBg = THEME_PAGE_BG[theme];
 
   const rawShowcases = Array.isArray(profile.showcases)
     ? profile.showcases
@@ -240,11 +257,23 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   return (
     /* The theme wrapper: every accent-token-based class inside
        (label-xbox, panel glow, poster hover, tab-y2k, osd accents…)
-       re-colors to the user's chosen CRT palette. */
-    <div className={`theme-${theme} space-y-6 -m-8 sm:-m-8`}>
+       re-skins to the user's chosen console preset. Light presets
+       (Wii, LimeWire) also repaint the page area behind the content,
+       because their text tokens flip dark. */
+    <div
+      className={`theme-${theme} space-y-6 -m-8 sm:-m-8`}
+      style={pageBg ? { background: pageBg } : undefined}
+    >
       {/* ========== BANNER ========== */}
       <div className="relative h-48 sm:h-64 w-full" style={bannerStyle}>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0d0d10]" />
+        {/* Fade the banner into whatever the page behind it is —
+            black normally, the light wash on Wii/LimeWire. */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(to bottom, transparent 0%, transparent 55%, ${pageBg ?? "#000000"} 100%)`,
+          }}
+        />
 
         {/* Channel tag — little OSD flourish naming the profile */}
         <span className="osd-text absolute top-3 right-4 text-sm opacity-80">

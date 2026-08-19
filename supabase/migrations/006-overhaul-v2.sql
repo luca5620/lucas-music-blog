@@ -99,11 +99,14 @@ alter table public.profiles
   add column if not exists tagline text,
   add column if not exists featured_review_id uuid references public.reviews(id) on delete set null;
 
+-- Profile theme presets: the default site look plus "vintage console"
+-- dashboards (each re-skins accents, fonts, and panel styling) and an
+-- OG LimeWire homage — where internet music began.
 alter table public.profiles
   drop constraint if exists profiles_theme_check;
 alter table public.profiles
   add constraint profiles_theme_check
-  check (theme in ('crt-blue', 'crt-green', 'crt-amber', 'crt-rose', 'crt-mono', 'vhs-static'));
+  check (theme in ('crt-blue', 'ps3', 'ps4', 'xbox-og', 'xbox-360', 'wii', 'limewire'));
 
 -- Keep flair fields short — these render everywhere.
 alter table public.profiles
@@ -327,6 +330,9 @@ declare
   artist_row public.artists;
   primary_id uuid;
   pos        integer := 0;
+  -- Accumulates resolved (artist_id, role, position) rows as we loop.
+  -- A plain local array — jsonb_set can't create nested paths.
+  resolved   jsonb := '[]'::jsonb;
 begin
   if auth.uid() is null then
     raise exception 'authentication required';
@@ -432,13 +438,9 @@ begin
         primary_id := artist_row.id;
       end if;
 
-      -- Attach to release later; remember via temp table-free approach:
-      -- stash (artist_id, role, position) pairs in a jsonb accumulator.
-      payload := jsonb_set(
-        payload,
-        array['_resolved', pos::text],
-        jsonb_build_object('artist_id', artist_row.id, 'role', a_role, 'position', pos),
-        true
+      -- Remember the junction row for after the release insert.
+      resolved := resolved || jsonb_build_array(
+        jsonb_build_object('artist_id', artist_row.id, 'role', a_role, 'position', pos)
       );
       pos := pos + 1;
     end;
@@ -465,7 +467,7 @@ begin
          (v->>'artist_id')::uuid,
          v->>'role',
          (v->>'position')::integer
-    from jsonb_each(coalesce(payload->'_resolved', '{}'::jsonb)) as e(k, v)
+    from jsonb_array_elements(resolved) as v
   on conflict do nothing;
 
   return rel;

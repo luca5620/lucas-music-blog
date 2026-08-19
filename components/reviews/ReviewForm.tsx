@@ -212,7 +212,7 @@ export default function ReviewForm({
         )}
 
         <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-          everything on PEAK is tied to a real release — spotify catalog +
+          everything on Peak Music Reviews is tied to a real release — spotify catalog +
           genius deep cuts (unreleased included)
         </p>
       </fieldset>

@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   const desc =
     review.snippet ||
-    `${review.rating}/10 for ${review.title} by ${review.artist} on PEAK.`;
+    `${review.rating}/10 for ${review.title} by ${review.artist} on Peak Music Reviews.`;
 
   return {
     title: `${review.title} by ${review.artist} — review by ${review.profiles.username}`,
@@ -38,7 +38,7 @@ export async function generateMetadata({
     openGraph: {
       type: "music.album",
       url: `https://peakmusicreviews.com/reviews/${slug}`,
-      title: `${review.title} by ${review.artist} — PEAK`,
+      title: `${review.title} by ${review.artist} — Peak Music Reviews`,
       description: desc,
       ...(review.cover_image && {
         images: [
@@ -53,7 +53,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${review.title} by ${review.artist} — PEAK`,
+      title: `${review.title} by ${review.artist} — Peak Music Reviews`,
       description: desc,
       ...(review.cover_image && { images: [review.cover_image] }),
     },

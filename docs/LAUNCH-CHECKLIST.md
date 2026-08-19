@@ -1,4 +1,4 @@
-# PEAK overhaul — launch checklist
+# Peak Music Reviews overhaul — launch checklist
 
 Things only YOU can do (they need your logins / your money). In order.
 
@@ -21,7 +21,7 @@ until this runs.
 Powers the deep catalog: unreleased tracks, leaks, loosies.
 
 1. Go to https://genius.com/api-clients (sign up / log in).
-2. **New API Client** — App name: PEAK, App website URL:
+2. **New API Client** — App name: Peak Music Reviews, App website URL:
    https://peakmusicreviews.com (icon/redirect not needed).
 3. Copy the **Client Access Token** (NOT the client id/secret).
 4. Add to `.env.local`:  `GENIUS_ACCESS_TOKEN=<token>`

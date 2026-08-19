@@ -83,7 +83,7 @@ export default function LoginPage() {
           <div className="text-center mb-8 space-y-2">
             <p className="osd-text text-xs">RESUME BROADCAST</p>
             <h1 className="crt-title text-3xl">Sign In</h1>
-            <p className="text-text-secondary text-sm">welcome back to PEAK</p>
+            <p className="text-text-secondary text-sm">welcome back to Peak Music Reviews</p>
           </div>
 
           {/* Plain errors */}

@@ -1,4 +1,4 @@
-# PEAK
+# Peak Music Reviews
 
 A music social platform with a CRT soul. Letterboxd's logging/review
 backbone + Real's live energy, for music — rate any album or song on

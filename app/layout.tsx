@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk, VT323 } from "next/font/google";
+import {
+  Inter,
+  Chakra_Petch,
+  Jost,
+  Michroma,
+  Quicksand,
+  VT323,
+} from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
@@ -12,16 +19,35 @@ import type { Profile } from "@/lib/types/database";
 
 /* --- Font Setup ---
    - Inter: clean body text
-   - Space Grotesk: geometric retro-modern headings
-   - VT323: pixel/monospace for OSD text and labels */
+   - Chakra Petch: squared console-dashboard headings (site-wide)
+   - VT323: pixel/monospace for small labels
+   - Jost / Michroma / Quicksand: profile theme presets only
+     (PS3+PS4 / OG Xbox / Wii — LimeWire uses system Verdana) */
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const chakraPetch = Chakra_Petch({
+  variable: "--font-chakra-petch",
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin"],
+});
+
+const jost = Jost({
+  variable: "--font-jost",
+  subsets: ["latin"],
+});
+
+const michroma = Michroma({
+  variable: "--font-michroma",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const quicksand = Quicksand({
+  variable: "--font-quicksand",
   subsets: ["latin"],
 });
 
@@ -34,34 +60,34 @@ const vt323 = VT323({
 export const metadata: Metadata = {
   metadataBase: new URL("https://peakmusicreviews.com"),
   title: {
-    default: "PEAK — the music social network",
-    template: "%s — PEAK",
+    default: "Peak Music Reviews — the music social network",
+    template: "%s — Peak Music Reviews",
   },
   description:
-    "Rate albums, log your taste, join live release rooms and debates. A music social platform with a CRT soul — every record on Spotify and the deep Genius catalog, unreleased included.",
+    "Rate albums, log your taste, join live release rooms and debates. A music social platform — every record on Spotify and the deep Genius catalog, unreleased included.",
   alternates: {
     canonical: "https://peakmusicreviews.com",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "PEAK",
+    siteName: "Peak Music Reviews",
     url: "https://peakmusicreviews.com",
-    title: "PEAK — the music social network",
+    title: "Peak Music Reviews — the music social network",
     description:
-      "Rate albums, build lists, join live release rooms and debates. Letterboxd energy for music, on a CRT.",
+      "Rate albums, build lists, join live release rooms and debates. Letterboxd energy for music.",
     images: [
       {
         url: "/penguin-logo.png",
         width: 512,
         height: 512,
-        alt: "PEAK",
+        alt: "Peak Music Reviews",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PEAK — the music social network",
+    title: "Peak Music Reviews — the music social network",
     description:
       "Rate albums, build lists, join live release rooms and debates.",
   },
@@ -79,12 +105,12 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "PEAK",
+    title: "PMR",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#060607",
+  themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -119,7 +145,8 @@ export default async function RootLayout({
       </head>
       <body
         className={`
-          ${inter.variable} ${spaceGrotesk.variable} ${vt323.variable}
+          ${inter.variable} ${chakraPetch.variable} ${jost.variable}
+          ${michroma.variable} ${quicksand.variable} ${vt323.variable}
           antialiased
         `}
       >

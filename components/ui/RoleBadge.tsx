@@ -2,7 +2,8 @@
 
 /**
  * Role Badge — Verification checkmarks for profiles and reviews.
- * - Owner: GOLD with a strong glow
+ * - Founder (role value stays 'owner' internally — every RLS policy
+ *   and permission gate checks that string): GOLD with a strong glow
  * - Admin: site blue with a strong glow
  * - Verified Reviewer: green, subtle (no dramatic glow)
  * - Early Tester: PURPLE with a strong glow — the day-one crew
@@ -24,7 +25,7 @@ const badgeConfig: Record<
   owner: {
     color: "#fbbf24",
     glow: "#fbbf24",
-    label: "Owner",
+    label: "Founder",
     strongGlow: true,
   },
   admin: {

@@ -37,8 +37,9 @@ export async function POST(request: NextRequest) {
 
   const { source, id } = (body ?? {}) as { source?: string; id?: string };
 
+  const validSources = ["local", "spotify", "spotify_track", "genius"];
   if (
-    (source !== "local" && source !== "spotify" && source !== "genius") ||
+    !validSources.includes(source ?? "") ||
     typeof id !== "string" ||
     id.length === 0 ||
     id.length > 64
@@ -47,7 +48,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const release = await ensureRelease(source, id);
+    const release = await ensureRelease(
+      source as "local" | "spotify" | "spotify_track" | "genius",
+      id
+    );
     return NextResponse.json({ release });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Import failed";

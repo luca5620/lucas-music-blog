@@ -32,9 +32,11 @@ import type { Release, ReleaseTrack } from "@/lib/types/database";
    --------------------------------------------------------------- */
 
 export interface CatalogResult {
-  /** Where this result lives right now. Local = already in our DB. */
-  source: "local" | "spotify" | "genius";
-  /** Source-specific id: release uuid, Spotify album id, or Genius song id. */
+  /** Where this result lives right now. Local = already in our DB.
+      spotify = an album; spotify_track = a single track (importing
+      it pulls in its parent album). */
+  source: "local" | "spotify" | "spotify_track" | "genius";
+  /** Source-specific id: release uuid, Spotify album/track id, or Genius song id. */
   id: string;
   title: string;
   artist: string;
@@ -76,6 +78,48 @@ async function searchSpotifyAlbums(
     }));
   } catch (err) {
     console.warn("Spotify search failed:", err instanceof Error ? err.message : err);
+    return [];
+  }
+}
+
+interface SpotifyTrackHit {
+  id: string;
+  name: string;
+  artists: { name: string }[];
+  album?: {
+    images?: { url: string; width: number | null }[];
+    release_date?: string;
+  };
+}
+
+/**
+ * Track-level Spotify search — the fix for "I typed a SONG name and
+ * got nothing": album search only matches album titles, so deep cuts
+ * like an album track were unfindable unless Genius surfaced them.
+ */
+async function searchSpotifyTracks(
+  query: string,
+  limit = 6
+): Promise<CatalogResult[]> {
+  try {
+    const raw = (await spotifyFetch(
+      `/search?type=track&limit=${limit}&q=${encodeURIComponent(query)}`
+    )) as { tracks?: { items?: SpotifyTrackHit[] } };
+
+    return (raw.tracks?.items ?? []).map((t) => ({
+      source: "spotify_track" as const,
+      id: t.id,
+      title: t.name,
+      artist: t.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
+      cover: t.album?.images?.[0]?.url ?? null,
+      year: t.album?.release_date?.slice(0, 4) ?? null,
+      kind: "song",
+    }));
+  } catch (err) {
+    console.warn(
+      "Spotify track search failed:",
+      err instanceof Error ? err.message : err
+    );
     return [];
   }
 }
@@ -124,10 +168,11 @@ export async function searchCatalog(query: string): Promise<{
   results: CatalogResult[];
   geniusEnabled: boolean;
 }> {
-  const [local, spotify, genius] = await Promise.all([
+  const [local, spotify, spotifyTracks, genius] = await Promise.all([
     searchLocal(query),
-    searchSpotifyAlbums(query),
-    searchGenius(query),
+    searchSpotifyAlbums(query, 6),
+    searchSpotifyTracks(query, 6),
+    searchGenius(query, 6),
   ]);
 
   const supabase = await createClient();
@@ -145,9 +190,12 @@ export async function searchCatalog(query: string): Promise<{
   }
 
   return {
+    // Order: what's already here, album matches, then song-level
+    // matches (Spotify tracks + Genius) for "I typed a song name".
     results: [
       ...local,
       ...spotify.filter((s) => !known.has(s.id)),
+      ...spotifyTracks,
       ...genius,
     ],
     geniusEnabled: geniusConfigured(),
@@ -370,7 +418,7 @@ async function ensureFromGenius(songId: number): Promise<Release> {
  * `source` + `id` come straight from a CatalogResult.
  */
 export async function ensureRelease(
-  source: "local" | "spotify" | "genius",
+  source: "local" | "spotify" | "spotify_track" | "genius",
   id: string
 ): Promise<Release> {
   if (source === "local") {
@@ -387,6 +435,18 @@ export async function ensureRelease(
   if (source === "spotify") {
     if (!/^[A-Za-z0-9]{10,30}$/.test(id)) throw new Error("Bad Spotify id");
     return ensureFromSpotify(id);
+  }
+
+  if (source === "spotify_track") {
+    // A track pick imports its PARENT ALBUM — the caller then chooses
+    // the track from the release's tracklist (review standouts, song
+    // of the day, profile song all work track-level off the release).
+    if (!/^[A-Za-z0-9]{10,30}$/.test(id)) throw new Error("Bad Spotify id");
+    const track = (await spotifyFetch(`/tracks/${id}`)) as {
+      album?: { id?: string };
+    };
+    if (!track.album?.id) throw new Error("Track has no parent album");
+    return ensureFromSpotify(track.album.id);
   }
 
   const songId = Number(id);

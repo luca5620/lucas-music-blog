@@ -12,6 +12,11 @@
  *  2. The live chat: realtime postgres INSERT subscription on
  *     debate_messages (same pattern as the release-room ChatPanel),
  *     optimistic sends deduped by id against the realtime echo.
+ *     Each message carries an emoji reaction strip (optimistic
+ *     toggles via useMessageReactions, live via realtime
+ *     INSERT/DELETE on debate_message_reactions). Other users'
+ *     votes also move the bar live: INSERT/UPDATE on debate_votes
+ *     schedules a debounced authoritative refetch of the counts.
  *  3. Side badges: each message is stamped server-side with the
  *     side its author had voted at post time — A gets the accent
  *     color, B gets rose, no vote renders a muted SPECTATOR tag.
@@ -24,18 +29,29 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import ReportButton from "@/components/moderation/ReportButton";
 import VoteBar from "@/components/debates/VoteBar";
+import MessageReactions from "@/components/chat/MessageReactions";
+import {
+  useMessageReactions,
+  type ReactionCountRow,
+  type ViewerReactionRow,
+} from "@/components/chat/useMessageReactions";
 import type {
   DebateMessageWithProfile,
   DebateProfile,
   DebateWithMeta,
   VoteCounts,
 } from "@/lib/db/debates";
-import type { DebateMessage } from "@/lib/types/database";
+import type {
+  DebateMessage,
+  DebateMessageReaction,
+} from "@/lib/types/database";
 
 interface DebateRoomProps {
   debate: DebateWithMeta;
   initialMessages: DebateMessageWithProfile[]; // oldest → newest
   initialUserVote: "a" | "b" | null;
+  initialReactionCounts: ReactionCountRow[];
+  initialViewerReactions: ViewerReactionRow[];
 }
 
 /* ─── Small helpers ─── */
@@ -117,6 +133,8 @@ export default function DebateRoom({
   debate,
   initialMessages,
   initialUserVote,
+  initialReactionCounts,
+  initialViewerReactions,
 }: DebateRoomProps) {
   const { user } = useAuth();
   const supabaseRef = useRef(createClient());
@@ -205,11 +223,67 @@ export default function DebateRoom({
     []
   );
 
-  /* ─── Realtime: new messages in this debate ─── */
+  /* ─── Message reactions ─── */
+
+  // Persist a reaction toggle; useMessageReactions rolls back if we throw.
+  const persistReaction = useCallback(
+    async (messageId: string, emoji: string, action: "add" | "remove") => {
+      const res = await fetch(`/api/debates/${debate.id}/reactions`, {
+        method: action === "add" ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emoji, message_id: messageId }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        throw new Error(data.error ?? "Reaction failed");
+      }
+    },
+    [debate.id]
+  );
+
+  const { countsFor, mineFor, toggle, applyRemoteAdd, applyRemoteRemove } =
+    useMessageReactions({
+      initialCounts: initialReactionCounts,
+      initialMine: initialViewerReactions,
+      userId: user?.id ?? null,
+      persist: persistReaction,
+    });
+
+  // Debounce timer for the live vote-count refetch (cleared on unmount).
+  const voteRefetchTimerRef = useRef<number | null>(null);
+
+  /* ─── Realtime: messages, reactions, and votes in this debate ─── */
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
     const supabase = supabaseRef.current;
 
+    // A burst of vote changes collapses into ONE authoritative refetch.
+    // The viewer's own vote already reconciles from the POST response;
+    // the echo-triggered refetch just re-reads the same truth.
+    const scheduleVoteRefetch = () => {
+      if (voteRefetchTimerRef.current !== null) {
+        window.clearTimeout(voteRefetchTimerRef.current);
+      }
+      voteRefetchTimerRef.current = window.setTimeout(async () => {
+        voteRefetchTimerRef.current = null;
+        const { data, error } = await supabase
+          .from("debate_votes")
+          .select("side")
+          .eq("debate_id", debate.id);
+        if (error || !data) return;
+        const next: VoteCounts = { a: 0, b: 0 };
+        for (const row of data as { side: "a" | "b" }[]) {
+          next[row.side] += 1;
+        }
+        setVotes(next);
+      }, 300);
+    };
+
+    // Every binding chains onto the SAME builder before the single
+    // .subscribe() — subscribing an already-joining channel is a
+    // silent no-op in supabase-js.
     const channel = supabase
       .channel(`debate:${debate.id}`)
       .on(
@@ -243,12 +317,72 @@ export default function DebateRoom({
           scrollIfNearBottom();
         }
       )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "debate_message_reactions",
+          filter: `debate_id=eq.${debate.id}`,
+        },
+        (payload: { new: DebateMessageReaction }) => {
+          const row = payload.new;
+          if (!row?.message_id || !row.emoji || !row.user_id) return;
+          applyRemoteAdd(row.message_id, row.emoji, row.user_id);
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "debate_message_reactions",
+          filter: `debate_id=eq.${debate.id}`,
+        },
+        (payload: { old: Partial<DebateMessageReaction> }) => {
+          // REPLICA IDENTITY FULL means `old` carries every column,
+          // but guard anyway — a partial payload is dropped, not crashed.
+          const row = payload.old;
+          if (!row?.message_id || !row.emoji || !row.user_id) return;
+          applyRemoteRemove(row.message_id, row.emoji, row.user_id);
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "debate_votes",
+          filter: `debate_id=eq.${debate.id}`,
+        },
+        scheduleVoteRefetch
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "debate_votes",
+          filter: `debate_id=eq.${debate.id}`,
+        },
+        scheduleVoteRefetch
+      )
       .subscribe();
 
     return () => {
+      if (voteRefetchTimerRef.current !== null) {
+        window.clearTimeout(voteRefetchTimerRef.current);
+        voteRefetchTimerRef.current = null;
+      }
       supabase.removeChannel(channel);
     };
-  }, [debate.id, fetchProfile, scrollIfNearBottom]);
+  }, [
+    debate.id,
+    fetchProfile,
+    scrollIfNearBottom,
+    applyRemoteAdd,
+    applyRemoteRemove,
+  ]);
 
   /* ─── Voting ─── */
   const castVote = useCallback(
@@ -517,6 +651,15 @@ export default function DebateRoom({
                   <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">
                     {m.content}
                   </p>
+                  {/* Reaction strip — disabled while signed out, on
+                      archived debates, and on optimistic temp rows
+                      (no real id to react to yet). */}
+                  <MessageReactions
+                    counts={countsFor(m.id)}
+                    mine={mineFor(m.id)}
+                    canReact={!!user && !isClosed && !m.id.startsWith("temp-")}
+                    onToggle={(emoji) => void toggle(m.id, emoji)}
+                  />
                 </div>
               </div>
             ))

@@ -299,6 +299,15 @@ export interface DebateMessage {
   created_at: string;
 }
 
+export interface DebateMessageReaction {
+  id: string;
+  debate_id: string;
+  message_id: string;
+  user_id: string;
+  emoji: string;
+  created_at: string;
+}
+
 /* --- Aggregate / computed types --- */
 
 export interface ProfileStats {
@@ -625,6 +634,43 @@ export type Database = {
           },
           {
             foreignKeyName: "debate_messages_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      debate_message_reactions: {
+        Row: DebateMessageReaction;
+        Insert: Pick<
+          DebateMessageReaction,
+          "debate_id" | "message_id" | "user_id" | "emoji"
+        > &
+          Partial<
+            Omit<
+              DebateMessageReaction,
+              "debate_id" | "message_id" | "user_id" | "emoji"
+            >
+          >;
+        Update: Partial<DebateMessageReaction>;
+        Relationships: [
+          {
+            foreignKeyName: "debate_message_reactions_debate_id_fkey";
+            columns: ["debate_id"];
+            isOneToOne: false;
+            referencedRelation: "debates";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "debate_message_reactions_message_id_fkey";
+            columns: ["message_id"];
+            isOneToOne: false;
+            referencedRelation: "debate_messages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "debate_message_reactions_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";

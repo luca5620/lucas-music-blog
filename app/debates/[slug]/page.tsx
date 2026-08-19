@@ -3,14 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getDebateBySlug,
+  getDebateMessageReactionCounts,
   getDebateMessages,
   getUserVote,
+  getViewerDebateReactions,
 } from "@/lib/db/debates";
 import { getUser } from "@/lib/auth";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import DebateRoom from "@/components/debates/DebateRoom";
 
-// Live rooms: votes and messages change second to second.
+// Live rooms: votes, messages, and reactions change second to second.
 export const dynamic = "force-dynamic";
 
 interface PageProps {
@@ -45,6 +47,14 @@ export default async function DebatePage({ params }: PageProps) {
   const [messages, userVote] = await Promise.all([
     getDebateMessages(debate.id),
     user ? getUserVote(debate.id, user.id) : Promise.resolve(null),
+  ]);
+
+  // Reaction state needs the message ids, so it runs as a second wave.
+  const [reactionCounts, viewerReactions] = await Promise.all([
+    getDebateMessageReactionCounts(messages.map((m) => m.id)),
+    user
+      ? getViewerDebateReactions(user.id, debate.id)
+      : Promise.resolve([]),
   ]);
 
   const creatorName =
@@ -122,6 +132,8 @@ export default async function DebatePage({ params }: PageProps) {
         debate={debate}
         initialMessages={messages}
         initialUserVote={userVote}
+        initialReactionCounts={reactionCounts}
+        initialViewerReactions={viewerReactions}
       />
     </div>
   );

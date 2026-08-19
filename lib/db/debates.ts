@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type {
   Debate,
   DebateMessage,
+  DebateMessageReaction,
   Profile,
   Release,
 } from "@/lib/types/database";
@@ -199,4 +200,124 @@ export async function getDebateMessages(
     })
     .filter((m): m is DebateMessageWithProfile => m !== null)
     .reverse();
+}
+
+/* --- Message reactions (migration 008) --- */
+
+/**
+ * Aggregated emoji counts for a set of debate messages in ONE query:
+ * fetch (message_id, emoji) pairs and tally in JS — same tradeoff as
+ * getVoteCountsFor.
+ */
+export async function getDebateMessageReactionCounts(
+  messageIds: string[]
+): Promise<{ message_id: string; emoji: string; count: number }[]> {
+  if (messageIds.length === 0) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("debate_message_reactions")
+    .select("message_id, emoji")
+    .in("message_id", messageIds);
+
+  if (error || !data) return [];
+
+  const buckets = new Map<
+    string,
+    { message_id: string; emoji: string; count: number }
+  >();
+  for (const r of data as { message_id: string; emoji: string }[]) {
+    const key = `${r.message_id}::${r.emoji}`;
+    const existing = buckets.get(key);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      buckets.set(key, { message_id: r.message_id, emoji: r.emoji, count: 1 });
+    }
+  }
+
+  return Array.from(buckets.values());
+}
+
+/**
+ * Reactions the current viewer has already added in this debate — used
+ * to highlight active emoji chips in the UI.
+ */
+export async function getViewerDebateReactions(
+  userId: string,
+  debateId: string
+): Promise<{ message_id: string; emoji: string }[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("debate_message_reactions")
+    .select("message_id, emoji")
+    .eq("user_id", userId)
+    .eq("debate_id", debateId);
+
+  if (error || !data) return [];
+  return data as { message_id: string; emoji: string }[];
+}
+
+/**
+ * Adds a reaction to a debate message. Idempotent — if the
+ * (user, message, emoji) tuple already exists (caught via the unique
+ * constraint on debate_message_reactions), the existing row is fetched
+ * and returned instead of throwing.
+ */
+export async function addDebateMessageReaction(input: {
+  debateId: string;
+  messageId: string;
+  userId: string;
+  emoji: string;
+}): Promise<DebateMessageReaction> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("debate_message_reactions")
+    .insert({
+      debate_id: input.debateId,
+      message_id: input.messageId,
+      user_id: input.userId,
+      emoji: input.emoji,
+    } as never)
+    .select()
+    .single();
+
+  if (!error && data) return data as DebateMessageReaction;
+
+  // Postgres unique-violation = 23505. Fall back to fetching the existing
+  // row so the call stays idempotent.
+  const isUnique =
+    error &&
+    ((error as { code?: string }).code === "23505" ||
+      /duplicate key/i.test(error.message ?? ""));
+
+  if (isUnique) {
+    const { data: existing, error: fetchErr } = await supabase
+      .from("debate_message_reactions")
+      .select("*")
+      .eq("user_id", input.userId)
+      .eq("message_id", input.messageId)
+      .eq("emoji", input.emoji)
+      .single();
+    if (!fetchErr && existing) return existing as DebateMessageReaction;
+  }
+
+  throw new Error(
+    `addDebateMessageReaction failed: ${error?.message ?? "no data returned"}`
+  );
+}
+
+/** Removes the viewer's reaction from a debate message. */
+export async function removeDebateMessageReaction(input: {
+  userId: string;
+  messageId: string;
+  emoji: string;
+}): Promise<void> {
+  const supabase = await createClient();
+  await supabase
+    .from("debate_message_reactions")
+    .delete()
+    .eq("user_id", input.userId)
+    .eq("message_id", input.messageId)
+    .eq("emoji", input.emoji);
 }

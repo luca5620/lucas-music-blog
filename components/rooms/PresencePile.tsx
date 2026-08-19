@@ -5,10 +5,14 @@
  *
  * Avatar stack of who's currently in the live room.
  *
- * Joins the same `room:${roomId}` channel that ChatPanel and ReactionsLayer
- * use. Supabase Realtime coalesces multiple subscribes from one client to a
- * single websocket connection, so adding presence here doesn't open a second
- * socket. Presence + postgres_changes ride on the same channel.
+ * Subscribes on its own `room:${roomId}:presence` channel. It MUST NOT share
+ * a topic with ChatPanel: supabase-js returns the same channel instance for a
+ * duplicate topic, `subscribe()` on an already-joining channel is a silent
+ * no-op, and the join only carries whichever bindings existed at first
+ * subscribe — sharing the topic is exactly what silently killed all realtime
+ * on release pages (plus this component's cleanup would removeChannel() the
+ * shared instance whenever auth state resolved). Separate topics still
+ * multiplex over the one websocket, so this costs nothing extra.
  *
  * Logged-in users track with their user_id as the presence key. Anonymous
  * visitors get a stable session-scoped UUID (regenerated per tab/refresh,
@@ -127,7 +131,7 @@ export default function PresencePile({
       presenceKey = anonIdRef.current;
     }
 
-    const channel: RealtimeChannel = supabase.channel(`room:${roomId}`, {
+    const channel: RealtimeChannel = supabase.channel(`room:${roomId}:presence`, {
       config: { presence: { key: presenceKey } },
     });
 

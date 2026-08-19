@@ -4,8 +4,16 @@
  * ChatPanel — Phase 2b-2
  *
  * Live release-room chat. Renders the initial message backlog (server-fetched),
- * subscribes to postgres INSERTs on `room_messages`, and lets signed-in users
- * post via the API. Optimistic posts dedupe against the realtime echo by id.
+ * subscribes to postgres INSERTs on `room_messages` plus INSERT/DELETE on
+ * `room_reactions` (message-targeted), and lets signed-in users post and
+ * react via the API. Optimistic posts dedupe against the realtime echo by id.
+ *
+ * Channel topic is `room:${roomId}:chat` — deliberately NOT shared with
+ * PresencePile's `room:${roomId}:presence`. supabase-js returns the same
+ * channel instance for a duplicate topic and silently ignores a second
+ * subscribe(), so topic-sharing components clobber each other's bindings
+ * (this was the bug that killed all release-room realtime). One websocket
+ * still carries both channels.
  */
 
 import {
@@ -21,10 +29,17 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LiveBadge from "@/components/rooms/LiveBadge";
 import PresencePile from "@/components/rooms/PresencePile";
+import MessageReactions from "@/components/chat/MessageReactions";
+import {
+  useMessageReactions,
+  type ReactionCountRow,
+  type ViewerReactionRow,
+} from "@/components/chat/useMessageReactions";
 import type {
   Profile,
   ReleaseRoom,
   RoomMessage,
+  RoomReaction,
 } from "@/lib/types/database";
 
 type ChatProfile = Pick<
@@ -41,6 +56,10 @@ interface ChatPanelProps {
   initialMessages: ChatMessageWithProfile[];
   initialRoom: ReleaseRoom;
   accentColor: string;
+  /** Aggregated emoji counts for the backlog messages. */
+  initialReactionCounts: ReactionCountRow[];
+  /** The viewer's own reactions on backlog messages. */
+  initialViewerReactions: ViewerReactionRow[];
 }
 
 /* ─── Time-ago, ticks each minute via panel-level interval ─── */
@@ -99,10 +118,20 @@ function MessageRow({
   message,
   tick,
   pending,
+  reactionCounts,
+  myReactions,
+  canReact,
+  onToggleReaction,
+  accentColor,
 }: {
   message: ChatMessageWithProfile;
   tick: number;
   pending: boolean;
+  reactionCounts: Record<string, number>;
+  myReactions: Set<string>;
+  canReact: boolean;
+  onToggleReaction: (emoji: string) => void;
+  accentColor: string;
 }) {
   const name =
     message.profile.display_name ||
@@ -130,6 +159,13 @@ function MessageRow({
         <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">
           {message.content}
         </p>
+        <MessageReactions
+          counts={reactionCounts}
+          mine={myReactions}
+          canReact={canReact}
+          onToggle={onToggleReaction}
+          accentColor={accentColor}
+        />
       </div>
     </div>
   );
@@ -142,6 +178,8 @@ export default function ChatPanel({
   initialMessages,
   initialRoom,
   accentColor,
+  initialReactionCounts,
+  initialViewerReactions,
 }: ChatPanelProps) {
   const { user } = useAuth();
   const supabaseRef = useRef(createClient());
@@ -170,6 +208,33 @@ export default function ChatPanel({
 
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  /* ─── Message reactions (state + optimistic toggle + echo dedupe) ─── */
+
+  const persistReaction = useCallback(
+    async (messageId: string, emoji: string, action: "add" | "remove") => {
+      const res = await fetch(`/api/rooms/${releaseId}/reactions`, {
+        method: action === "add" ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emoji, message_id: messageId }),
+      });
+      if (!res.ok) throw new Error("reaction failed");
+    },
+    [releaseId]
+  );
+
+  const {
+    countsFor,
+    mineFor,
+    toggle: toggleReaction,
+    applyRemoteAdd,
+    applyRemoteRemove,
+  } = useMessageReactions({
+    initialCounts: initialReactionCounts,
+    initialMine: initialViewerReactions,
+    userId: user?.id ?? null,
+    persist: persistReaction,
+  });
 
   // Per-minute re-render so timeAgo refreshes without per-message timers.
   useEffect(() => {
@@ -234,8 +299,42 @@ export default function ChatPanel({
     const supabase = supabaseRef.current;
     const roomId = initialRoom.id;
 
+    // All bindings MUST be chained before the single .subscribe() call —
+    // subscribe() on an already-joining channel is a silent no-op and the
+    // join only carries the bindings that exist when it fires.
     const channel = supabase
-      .channel(`room:${roomId}`)
+      .channel(`room:${roomId}:chat`)
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "room_reactions",
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload: { new: RoomReaction }) => {
+          const row = payload.new;
+          if (!row || row.target_type !== "message" || !row.message_id) return;
+          applyRemoteAdd(row.message_id, row.emoji, row.user_id);
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "room_reactions",
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload: { old: Partial<RoomReaction> }) => {
+          // DELETE payloads carry the full old row thanks to REPLICA
+          // IDENTITY FULL (migration 008); guard anyway.
+          const row = payload.old;
+          if (!row || row.target_type !== "message") return;
+          if (!row.message_id || !row.emoji || !row.user_id) return;
+          applyRemoteRemove(row.message_id, row.emoji, row.user_id);
+        }
+      )
       .on(
         "postgres_changes" as never,
         {
@@ -288,7 +387,7 @@ export default function ChatPanel({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [initialRoom.id, fetchProfile]);
+  }, [initialRoom.id, fetchProfile, applyRemoteAdd, applyRemoteRemove]);
 
   /* ─── Submit handler ─── */
 
@@ -457,6 +556,11 @@ export default function ChatPanel({
               message={m}
               tick={tick}
               pending={pendingIds.has(m.id)}
+              reactionCounts={countsFor(m.id)}
+              myReactions={mineFor(m.id)}
+              canReact={!!user && !m.id.startsWith("temp-")}
+              onToggleReaction={(emoji) => void toggleReaction(m.id, emoji)}
+              accentColor={accentColor}
             />
           ))
         )}

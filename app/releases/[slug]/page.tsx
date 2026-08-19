@@ -19,7 +19,12 @@ import {
   isFollowingRelease,
 } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
-import { getOrCreateRoom, getRoomMessages } from "@/lib/db/rooms";
+import {
+  getOrCreateRoom,
+  getRoomMessages,
+  getMessageReactionCounts,
+  getViewerReactions,
+} from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
@@ -134,11 +139,22 @@ export default async function ReleasePage({ params }: Props) {
 
   // Track-level emoji reactions were removed 2026-08-19 (Luca: too
   // cluttered) — the live chat room stays, the per-track emoji rows go.
+  // Message-level reactions replaced them (2026-08-19, live-chat overhaul).
   const initialMessages = room
     ? ((await getRoomMessages(room.id, {
         limit: 30,
       })) as ChatMessageWithProfile[])
     : ([] as ChatMessageWithProfile[]);
+
+  const [initialReactionCounts, viewerReactionsRaw] = await Promise.all([
+    getMessageReactionCounts(initialMessages.map((m) => m.id)),
+    user && room ? getViewerReactions(user.id, room.id) : Promise.resolve([]),
+  ]);
+  // getViewerReactions also returns the viewer's leftover track reactions;
+  // keep only message-targeted rows for the chat UI.
+  const initialViewerReactions = viewerReactionsRaw
+    .filter((r): r is typeof r & { message_id: string } => !!r.message_id)
+    .map((r) => ({ message_id: r.message_id, emoji: r.emoji }));
 
   const accentColor =
     stats.avg_rating !== null ? getRatingHex(stats.avg_rating) : "#1e90ff";
@@ -185,6 +201,8 @@ export default async function ReleasePage({ params }: Props) {
         tracks={tracks}
         room={room}
         initialMessages={initialMessages}
+        initialReactionCounts={initialReactionCounts}
+        initialViewerReactions={initialViewerReactions}
         reviews={reviews}
         followers={followers}
         releaseDateFormatted={releaseDateFormatted}
@@ -195,7 +213,7 @@ export default async function ReleasePage({ params }: Props) {
   );
 }
 
-/* ─────────────────────────  Release content (extracted for ReactionsLayer wrap)  ───────────────────────── */
+/* ─────────────────────────  Release content  ───────────────────────── */
 
 interface ReleaseContentProps {
   release: Release;
@@ -205,6 +223,8 @@ interface ReleaseContentProps {
   tracks: ReleaseTrack[];
   room: ReleaseRoom | null;
   initialMessages: ChatMessageWithProfile[];
+  initialReactionCounts: { message_id: string; emoji: string; count: number }[];
+  initialViewerReactions: { message_id: string; emoji: string }[];
   reviews: ReviewWithProfile[];
   followers: Profile[];
   releaseDateFormatted: string | null;
@@ -220,6 +240,8 @@ function ReleaseContent({
   tracks,
   room,
   initialMessages,
+  initialReactionCounts,
+  initialViewerReactions,
   reviews,
   followers,
   releaseDateFormatted,
@@ -401,6 +423,8 @@ function ReleaseContent({
               initialMessages={initialMessages}
               initialRoom={room}
               accentColor={accentColor}
+              initialReactionCounts={initialReactionCounts}
+              initialViewerReactions={initialViewerReactions}
             />
           </>
         )}

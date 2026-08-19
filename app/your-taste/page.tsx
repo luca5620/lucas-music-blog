@@ -144,7 +144,7 @@ export default async function YourTastePage() {
     const { data } = await supabase
       .from("reviews")
       .select(
-        "slug, title, artist, rating, cover_image, profiles!inner(username)"
+        "slug, title, artist, rating, cover_image, profiles!reviews_user_id_fkey!inner(username)"
       )
       .in("user_id", peopleIds)
       .eq("is_published", true)

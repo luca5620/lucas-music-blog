@@ -178,10 +178,14 @@ export async function getFriendActivity(
   const ACTOR = "profiles!inner(username, display_name, avatar_url)";
 
   const [reviewsRes, listsRes, likesRes, debatesRes] = await Promise.all([
-    // 1. Published reviews by friends
+    // 1. Published reviews by friends. The actor join here must name
+    //    its FK: reviews↔profiles has two relationships since 006
+    //    (author + featured_review_id) and unqualified embeds error.
     supabase
       .from("reviews")
-      .select(`slug, title, artist, rating, cover_image, created_at, ${ACTOR}`)
+      .select(
+        `slug, title, artist, rating, cover_image, created_at, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)`
+      )
       .in("user_id", followedIds)
       .eq("is_published", true)
       .order("created_at", { ascending: false })

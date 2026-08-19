@@ -24,7 +24,11 @@ export async function getReviewWithContextBySlug(
   const { data, error } = await supabase
     .from("reviews")
     .select(
-      "*, profiles!inner(username, display_name, avatar_url, role), releases(*)"
+      // profiles must be joined VIA reviews_user_id_fkey: since
+      // migration 006 added profiles.featured_review_id there are TWO
+      // relationships between reviews and profiles, and an unqualified
+      // embed makes PostgREST error out (PGRST201) instead of guessing.
+      "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role), releases(*)"
     )
     .eq("slug", slug)
     .limit(1)
@@ -104,7 +108,9 @@ export async function getAllPublishedReviews(options?: {
   const supabase = await createClient();
   let query = supabase
     .from("reviews")
-    .select("*, profiles!inner(username, display_name, avatar_url, role)")
+    .select(
+      "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role)"
+    )
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
@@ -233,7 +239,7 @@ export async function getDiscoveryFeed(limit = 12, viewerId?: string) {
   const { data, error } = await supabase
     .from("reviews")
     .select(
-      "*, profiles!inner(username, display_name, avatar_url, role), review_likes(count)"
+      "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role), review_likes(count)"
     )
     .eq("is_published", true)
     .order("created_at", { ascending: false })

@@ -19,20 +19,13 @@ import {
   isFollowingRelease,
 } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
-import {
-  getOrCreateRoom,
-  getRoomMessages,
-  getTrackReactionCounts,
-  getViewerReactions,
-} from "@/lib/db/rooms";
+import { getOrCreateRoom, getRoomMessages } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor } from "@/lib/rating";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import ChatPanel, {
   type ChatMessageWithProfile,
 } from "@/components/rooms/ChatPanel";
-import ReactionsLayer from "@/components/rooms/ReactionsLayer";
-import TrackReactions from "@/components/rooms/TrackReactions";
 import { BreadcrumbSchema } from "@/app/schema";
 import type {
   Profile,
@@ -139,42 +132,19 @@ export default async function ReleasePage({ params }: Props) {
 
   const reviews = reviewsRaw as unknown as ReviewWithProfile[];
 
-  const [initialMessages, trackReactionRows, viewerReactionRows] =
-    await Promise.all([
-      room
-        ? (getRoomMessages(room.id, { limit: 30 }) as Promise<
-            ChatMessageWithProfile[]
-          >)
-        : Promise.resolve([] as ChatMessageWithProfile[]),
-      room ? getTrackReactionCounts(room.id) : Promise.resolve([]),
-      room && user
-        ? getViewerReactions(user.id, room.id)
-        : Promise.resolve([]),
-    ]);
+  // Track-level emoji reactions were removed 2026-08-19 (Luca: too
+  // cluttered) — the live chat room stays, the per-track emoji rows go.
+  const initialMessages = room
+    ? ((await getRoomMessages(room.id, {
+        limit: 30,
+      })) as ChatMessageWithProfile[])
+    : ([] as ChatMessageWithProfile[]);
 
   const accentColor =
     stats.avg_rating !== null ? getRatingHex(stats.avg_rating) : "#1e90ff";
 
   const tracks = (release.tracks ?? []) as ReleaseTrack[];
 
-  // Bucket reaction counts by track_position for fast per-row lookup.
-  const trackCountsByPos = new Map<
-    number,
-    { emoji: string; count: number }[]
-  >();
-  for (const r of trackReactionRows) {
-    const arr = trackCountsByPos.get(r.track_position) ?? [];
-    arr.push({ emoji: r.emoji, count: r.count });
-    trackCountsByPos.set(r.track_position, arr);
-  }
-
-  const viewerReactionsByPos = new Map<number, string[]>();
-  for (const r of viewerReactionRows) {
-    if (r.track_position == null) continue;
-    const arr = viewerReactionsByPos.get(r.track_position) ?? [];
-    arr.push(r.emoji);
-    viewerReactionsByPos.set(r.track_position, arr);
-  }
   const releaseDateFormatted = formatDate(release.release_date);
   const artistName = artist?.name ?? "Unknown Artist";
   const artistSlug = artist?.slug;
@@ -207,43 +177,20 @@ export default async function ReleasePage({ params }: Props) {
         ← Back to Releases
       </Link>
 
-      {room ? (
-        <ReactionsLayer roomId={room.id} accentColor={accentColor}>
-          <ReleaseContent
-            release={release}
-            stats={stats}
-            isFollowing={isFollowing}
-            accentColor={accentColor}
-            tracks={tracks}
-            trackCountsByPos={trackCountsByPos}
-            viewerReactionsByPos={viewerReactionsByPos}
-            room={room}
-            initialMessages={initialMessages}
-            reviews={reviews}
-            followers={followers}
-            releaseDateFormatted={releaseDateFormatted}
-            artistName={artistName}
-            artistSlug={artistSlug}
-          />
-        </ReactionsLayer>
-      ) : (
-        <ReleaseContent
-          release={release}
-          stats={stats}
-          isFollowing={isFollowing}
-          accentColor={accentColor}
-          tracks={tracks}
-          trackCountsByPos={trackCountsByPos}
-          viewerReactionsByPos={viewerReactionsByPos}
-          room={null}
-          initialMessages={initialMessages}
-          reviews={reviews}
-          followers={followers}
-          releaseDateFormatted={releaseDateFormatted}
-          artistName={artistName}
-          artistSlug={artistSlug}
-        />
-      )}
+      <ReleaseContent
+        release={release}
+        stats={stats}
+        isFollowing={isFollowing}
+        accentColor={accentColor}
+        tracks={tracks}
+        room={room}
+        initialMessages={initialMessages}
+        reviews={reviews}
+        followers={followers}
+        releaseDateFormatted={releaseDateFormatted}
+        artistName={artistName}
+        artistSlug={artistSlug}
+      />
     </div>
   );
 }
@@ -256,8 +203,6 @@ interface ReleaseContentProps {
   isFollowing: boolean;
   accentColor: string;
   tracks: ReleaseTrack[];
-  trackCountsByPos: Map<number, { emoji: string; count: number }[]>;
-  viewerReactionsByPos: Map<number, string[]>;
   room: ReleaseRoom | null;
   initialMessages: ChatMessageWithProfile[];
   reviews: ReviewWithProfile[];
@@ -273,8 +218,6 @@ function ReleaseContent({
   isFollowing,
   accentColor,
   tracks,
-  trackCountsByPos,
-  viewerReactionsByPos,
   room,
   initialMessages,
   reviews,
@@ -399,9 +342,6 @@ function ReleaseContent({
                     ? `https://open.spotify.com/track/${track.spotify_id}`
                     : null;
                   const duration = formatDuration(track.duration_ms);
-                  const trackCounts = trackCountsByPos.get(track.position) ?? [];
-                  const userReactions =
-                    viewerReactionsByPos.get(track.position) ?? [];
 
                   const titleRow = (
                     <div className="flex items-center justify-between gap-2 w-full">
@@ -444,17 +384,6 @@ function ReleaseContent({
                       ) : (
                         <div className="py-1">{titleRow}</div>
                       )}
-                      {room && (
-                        <div className="pl-9 pt-1.5">
-                          <TrackReactions
-                            releaseId={release.id}
-                            trackPosition={track.position}
-                            initialCounts={trackCounts}
-                            initialUserReactions={userReactions}
-                            accentColor={accentColor}
-                          />
-                        </div>
-                      )}
                     </li>
                   );
                 })}
@@ -476,12 +405,23 @@ function ReleaseContent({
           </>
         )}
 
-        {/* Reviews */}
+        {/* Top Reviews — highest-rated first (getReleaseReviews sorts
+            by rating, then recency), with a persistent "add yours" */}
         <div className="divider-glow" />
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="glow-orb" />
-            <span className="label-xbox">Reviews</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="glow-orb" />
+              <span className="label-xbox">Top Reviews</span>
+            </div>
+            {reviews.length > 0 && (
+              <Link
+                href={`/reviews/new?release_id=${release.id}`}
+                className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+              >
+                + Add yours
+              </Link>
+            )}
           </div>
 
           {reviews.length === 0 ? (

@@ -52,7 +52,11 @@ export async function getReleaseReviews(releaseId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("reviews")
-    .select("*, profiles!inner(username, display_name, avatar_url, role)")
+    // FK-qualified: reviews↔profiles has two relationships since 006
+    // (author + featured_review_id) — unqualified embeds error out.
+    .select(
+      "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role)"
+    )
     .eq("release_id", releaseId)
     .eq("is_published", true)
     .order("rating", { ascending: false })

@@ -272,7 +272,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       style={pageBg ? { background: pageBg } : undefined}
     >
       {/* ========== BANNER ========== */}
-      <div className="relative h-48 sm:h-64 w-full" style={bannerStyle}>
+      <div className="relative h-56 sm:h-80 w-full" style={bannerStyle}>
         {/* Fade the banner into the page at BOTH edges (top + bottom)
             so it doesn't start with a hard line — black normally, the
             light wash on Wii/LimeWire. */}

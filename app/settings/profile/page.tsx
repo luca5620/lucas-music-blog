@@ -59,8 +59,13 @@ const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string; hint: string }[] = [
   { id: "anticipated", label: "Waiting On", hint: "Releases you follow, unreleased included" },
 ];
 
-/** Uploads are capped client-side; the buckets are public-read. */
-const MAX_UPLOAD_BYTES = 2 * 1024 * 1024; // 2MB
+/** Uploads are capped client-side; the buckets are public-read.
+    Banners get a bigger allowance — they're wide, detailed images
+    and 2MB forced ugly compression. 6MB is still a fast download. */
+const MAX_UPLOAD_BYTES: Record<"avatars" | "banners", number> = {
+  avatars: 2 * 1024 * 1024, // 2MB
+  banners: 6 * 1024 * 1024, // 6MB
+};
 
 export default function ProfileSettingsPage() {
   const router = useRouter();
@@ -213,8 +218,10 @@ export default function ProfileSettingsPage() {
       setError("That file isn't an image.");
       return;
     }
-    if (file.size > MAX_UPLOAD_BYTES) {
-      setError("Image is too big — keep it under 2MB.");
+    if (file.size > MAX_UPLOAD_BYTES[bucket]) {
+      setError(
+        `Image is too big — keep it under ${bucket === "banners" ? 6 : 2}MB.`
+      );
       return;
     }
 
@@ -539,7 +546,7 @@ export default function ProfileSettingsPage() {
 
             <UploadField
               label="Banner"
-              hint="Wide (~3:1) works best · max 2MB"
+              hint="Wide (~3:1) works best · max 6MB"
               currentUrl={bannerUrl}
               busy={uploadingBanner}
               accent={themeHex}

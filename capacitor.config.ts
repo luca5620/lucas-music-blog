@@ -29,6 +29,9 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: "automatic",
     backgroundColor: "#000000",
+    // No long-press link previews — the app should feel like an app,
+    // not a webpage in a frame. (Luca's request, 2026-08-19.)
+    allowsLinkPreview: false,
   },
   android: {
     backgroundColor: "#000000",

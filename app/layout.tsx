@@ -10,6 +10,7 @@ import {
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
+import NativeMode from "@/components/ui/NativeMode";
 import CRTShell from "@/components/ui/CRTShell";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { WebSiteSchema } from "@/app/schema";
@@ -149,8 +150,10 @@ export default async function RootLayout({
           antialiased
         `}
       >
-        {/* CRT atmosphere: grain, scanlines, grille, vsync band */}
+        {/* CRT atmosphere: grain, scanlines, grille */}
         <GrainOverlay />
+        {/* Tags <html> when running inside the native app shell */}
+        <NativeMode />
 
         <AuthProvider initialUser={user} initialProfile={profile}>
           {/* Everything renders on the tube */}

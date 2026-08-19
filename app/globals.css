@@ -441,6 +441,38 @@ body {
 }
 
 /* ============================================================
+   NATIVE APP MODE — html.native-app is set by NativeMode.tsx
+   when running inside the iOS/Android shell. Strips the
+   "this is a webpage" tells; browser visitors are unaffected.
+   ============================================================ */
+.native-app {
+  /* No gray flash when tapping things */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* No long-press callout sheets (link/image "Open in..." menus) and
+   no accidental text-selection on interactive chrome. Inputs and
+   textareas stay fully selectable/editable, and review/comment BODY
+   text stays selectable so people can still copy a take. */
+.native-app a,
+.native-app button,
+.native-app nav,
+.native-app img,
+.native-app .poster,
+.native-app .btn-y2k,
+.native-app .tab-y2k,
+.native-app .label-xbox {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Keep the page from rubber-banding sideways in the shell */
+.native-app body {
+  overscroll-behavior-x: none;
+}
+
+/* ============================================================
    TYPE TREATMENTS
    ============================================================ */
 

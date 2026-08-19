@@ -78,8 +78,10 @@ begin
 
   select count(*) into streak
     from (
+      -- ::int matters: row_number() yields bigint and Postgres has no
+      -- date - bigint operator (only date - integer).
       select picked_on,
-             row_number() over (order by picked_on desc) - 1 as row_offset
+             (row_number() over (order by picked_on desc) - 1)::int as row_offset
         from public.song_of_day
        where user_id = user_uuid
          and picked_on <= anchor

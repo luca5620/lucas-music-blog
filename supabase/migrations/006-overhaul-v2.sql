@@ -254,6 +254,49 @@ alter table public.profiles
 --    URLs. Public read; users can only write inside a folder
 --    named after their own user id ("<uid>/avatar.png").
 -- ------------------------------------------------------------
+-- Keep the signup trigger in lockstep with the new username rules:
+-- the 005 version allowed hyphens and 30 chars, which would now
+-- violate profiles_username_format and abort profile creation.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = ''
+as $$
+declare
+  _username text;
+begin
+  -- Prefer the username picked at signup; fall back to email local-part.
+  _username := lower(coalesce(new.raw_user_meta_data ->> 'username', ''));
+  if _username !~ '^[a-z0-9_]{3,20}$' then
+    _username := lower(split_part(new.email, '@', 1));
+  end if;
+
+  -- Normalize to the allowed charset and length (underscores only now).
+  _username := regexp_replace(_username, '[^a-z0-9_]', '', 'g');
+  _username := left(_username, 20);
+  if char_length(_username) < 3 then
+    _username := 'user_' || substr(replace(new.id::text, '-', ''), 1, 8);
+  end if;
+
+  -- Case-insensitive collision loop (unique index is on lower(username)).
+  while exists (
+    select 1 from public.profiles where lower(username) = _username
+  ) loop
+    _username := left(_username, 14) || '_' || substr(md5(random()::text), 1, 4);
+  end loop;
+
+  insert into public.profiles (id, username, display_name, avatar_url)
+  values (
+    new.id,
+    _username,
+    coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name', _username),
+    coalesce(new.raw_user_meta_data ->> 'avatar_url', null)
+  );
+
+  return new;
+end;
+$$;
+
 -- ------------------------------------------------------------
 -- 7.5 ON-DEMAND CATALOG IMPORT — regular users can't insert
 --     into artists/releases directly (RLS: admin-only, by

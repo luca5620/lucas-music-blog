@@ -1,10 +1,11 @@
 /**
- * Reviews Page — Browsable archive of all reviews.
- * Filterable by genre with functional genre toggle buttons.
- * Data sourced from lib/reviews.ts.
+ * Reviews Page — the community review wall.
+ * Overhaul v2: fully DB-driven. Every review here was written by a
+ * member against a real catalog release. Filters run client-side in
+ * ReviewsList (genre chips are derived from the data itself).
  */
 
-import { getAllReviews } from "@/lib/reviews";
+import { getAllPublishedReviews, type ReviewWithAuthor } from "@/lib/db/reviews";
 import ReviewsList from "@/components/reviews/ReviewsList";
 import {
   BreadcrumbSchema,
@@ -17,14 +18,19 @@ import { reviewsFAQs } from "@/lib/faq-data";
 export const metadata = {
   title: "Reviews",
   description:
-    "Browse honest album reviews across R&B, Hip-Hop, Pop, and Alternative. Every rating backed by real Spotify listening data.",
+    "Community album and track reviews — every one tied to a real release from the Spotify catalog or Genius deep cuts. No pretentious jargon, just honest takes.",
   alternates: {
     canonical: "https://peakmusicreviews.com/reviews",
   },
 };
 
-export default function Reviews() {
-  const reviews = getAllReviews();
+// This page reads live community data — never prerender it statically.
+export const dynamic = "force-dynamic";
+
+export default async function Reviews() {
+  const reviews = (await getAllPublishedReviews({
+    limit: 100,
+  })) as ReviewWithAuthor[];
 
   return (
     <div className="space-y-8">
@@ -36,16 +42,23 @@ export default function Reviews() {
         ]}
       />
       <CollectionPageSchema totalItems={reviews.length} />
-      <ItemListSchema reviews={reviews} listName="All Music Reviews" />
+      <ItemListSchema
+        reviews={reviews.map((r) => ({
+          slug: r.slug,
+          title: r.title,
+          artist: r.artist,
+          rating: r.rating,
+        }))}
+        listName="Community Music Reviews"
+      />
       <FAQSchema items={reviewsFAQs} />
 
       {/* Page Header */}
       <div className="space-y-3">
-        <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-accent-primary">
-          Reviews
-        </h1>
+        <div className="vhs-label inline-block text-lg">REVIEWS</div>
         <p className="text-text-secondary">
-          Honest takes on albums and tracks. No filler, no pretentious breakdowns.
+          Honest takes from the whole community. Every review is tied to a
+          real release — no filler, no fake entries.
         </p>
       </div>
 

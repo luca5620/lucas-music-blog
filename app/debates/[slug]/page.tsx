@@ -1,0 +1,128 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  getDebateBySlug,
+  getDebateMessages,
+  getUserVote,
+} from "@/lib/db/debates";
+import { getUser } from "@/lib/auth";
+import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import DebateRoom from "@/components/debates/DebateRoom";
+
+// Live rooms: votes and messages change second to second.
+export const dynamic = "force-dynamic";
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const debate = await getDebateBySlug(slug);
+  if (!debate) return { title: "Debate not found" };
+  return {
+    title: debate.title,
+    description:
+      debate.prompt ??
+      `${debate.side_a_label} vs ${debate.side_b_label} — vote and argue live.`,
+  };
+}
+
+/**
+ * /debates/[slug] — one debate room.
+ * Server component fetches the debate + backlog + the viewer's vote,
+ * then hands off to the DebateRoom client for the live parts.
+ */
+export default async function DebatePage({ params }: PageProps) {
+  const { slug } = await params;
+  const debate = await getDebateBySlug(slug);
+  if (!debate) notFound();
+
+  const user = await getUser();
+  const [messages, userVote] = await Promise.all([
+    getDebateMessages(debate.id),
+    user ? getUserVote(debate.id, user.id) : Promise.resolve(null),
+  ]);
+
+  const creatorName =
+    debate.creator?.display_name || debate.creator?.username || "unknown";
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      {/* ══════════ Debate header ══════════ */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link
+            href="/debates"
+            className="osd-text text-xs hover:opacity-100 opacity-70 transition-opacity"
+          >
+            ◄ THE ARENA
+          </Link>
+          <span className="osd-text text-xs opacity-60">
+            / {debate.status === "open" ? "ON AIR" : "SIGN-OFF"}
+          </span>
+        </div>
+
+        <div className="flex items-start gap-4">
+          {/* Pinned release, physical-media style */}
+          {debate.release && (
+            <Link
+              href={`/releases/${debate.release.slug}`}
+              className="poster w-20 h-20 sm:w-24 sm:h-24 shrink-0"
+              title={debate.release.title}
+            >
+              {debate.release.cover_image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={debate.release.cover_image}
+                  alt={debate.release.title}
+                />
+              ) : (
+                <span className="w-full h-full flex items-center justify-center text-3xl">
+                  💿
+                </span>
+              )}
+            </Link>
+          )}
+
+          <div className="min-w-0 space-y-2">
+            <h1 className="crt-title text-2xl sm:text-4xl leading-tight">
+              {debate.title}
+            </h1>
+            {debate.prompt && (
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {debate.prompt}
+              </p>
+            )}
+            <div className="flex items-center gap-1.5 text-xs text-text-muted">
+              <span>opened by</span>
+              {debate.creator ? (
+                <Link
+                  href={`/profile/${debate.creator.username}`}
+                  className="font-bold text-text-secondary hover:text-accent-primary transition-colors"
+                >
+                  {creatorName}
+                </Link>
+              ) : (
+                <span className="font-bold text-text-secondary">
+                  {creatorName}
+                </span>
+              )}
+              {debate.creator && <VerifiedBadge role={debate.creator.role} />}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ Vote + live floor (client) ══════════ */}
+      <DebateRoom
+        debate={debate}
+        initialMessages={messages}
+        initialUserVote={userVote}
+      />
+    </div>
+  );
+}

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { addListItem, getListById, reorderListItems } from "@/lib/db/lists";
 import { getReleaseById } from "@/lib/db/releases";
+import { getArtistById } from "@/lib/db/artists";
+import { rateLimit } from "@/lib/rate-limit";
 import type { List } from "@/lib/types/database";
 
 const UUID_RE =
@@ -54,7 +56,12 @@ async function requireOwnedList(
 
 /**
  * POST /api/lists/[listId]/items — add an item to a list you own.
- * Body: { title, artist, cover_image?, note?, position, release_id? }
+ * Body: { release_id, note?, position }
+ *
+ * Overhaul v2: items can ONLY reference a real catalog release.
+ * The client never sends title/artist/cover — we derive them here
+ * from the release row, so a tampered request can't invent a fake
+ * album or point the cover at a hostile URL.
  */
 export async function POST(
   request: Request,
@@ -65,26 +72,27 @@ export async function POST(
   const guard = await requireOwnedList(listId);
   if ("errorResponse" in guard) return guard.errorResponse;
 
+  // Guard is only reached when signed in, so key the limiter on the
+  // list owner. 60 item-adds per minute is plenty for a human.
+  const owner = guard.list.user_id;
+  const limited = rateLimit(`list-items:${owner}`, 60, 60_000);
+  if (limited) return limited;
+
   try {
     const body = await request.json();
-    const { title, artist, cover_image, note, position, release_id } = body;
+    const { note, position, release_id } = body;
 
-    // --- title + artist: required, up to 200 chars each ---
-    if (typeof title !== "string" || !title.trim()) {
+    // --- release_id: REQUIRED — a UUID pointing at a real release ---
+    if (typeof release_id !== "string" || !UUID_RE.test(release_id)) {
       return NextResponse.json(
-        { error: "Item title is required." },
+        { error: "Pick a release from the catalog search." },
         { status: 400 }
       );
     }
-    if (typeof artist !== "string" || !artist.trim()) {
+    const release = await getReleaseById(release_id);
+    if (!release) {
       return NextResponse.json(
-        { error: "Item artist is required." },
-        { status: 400 }
-      );
-    }
-    if (title.trim().length > 200 || artist.trim().length > 200) {
-      return NextResponse.json(
-        { error: "Title and artist must be 200 characters or fewer." },
+        { error: "Release not found." },
         { status: 400 }
       );
     }
@@ -116,44 +124,16 @@ export async function POST(
       );
     }
 
-    // --- release_id: optional; when set it must be a UUID that
-    //     points at a real release in the catalog ---
-    let releaseIdValue: string | null = null;
-    if (release_id !== undefined && release_id !== null) {
-      if (typeof release_id !== "string" || !UUID_RE.test(release_id)) {
-        return NextResponse.json(
-          { error: "release_id must be a UUID or null." },
-          { status: 400 }
-        );
-      }
-      const release = await getReleaseById(release_id);
-      if (!release) {
-        return NextResponse.json(
-          { error: "Release not found." },
-          { status: 400 }
-        );
-      }
-      releaseIdValue = release.id;
-    }
-
-    // --- cover_image: optional string URL ---
-    if (
-      cover_image !== undefined &&
-      cover_image !== null &&
-      typeof cover_image !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "cover_image must be a URL string or null." },
-        { status: 400 }
-      );
-    }
+    // Denormalize title/artist/cover FROM THE CATALOG, never from
+    // the request. The artist name comes off the primary artist row.
+    const primaryArtist = await getArtistById(release.primary_artist_id);
 
     const item = await addListItem({
       list_id: listId,
-      release_id: releaseIdValue,
-      title: title.trim(),
-      artist: artist.trim(),
-      cover_image: cover_image || null,
+      release_id: release.id,
+      title: release.title,
+      artist: primaryArtist?.name ?? "Unknown Artist",
+      cover_image: release.cover_image,
       note: trimmedNote || null,
       position,
     });

@@ -60,7 +60,7 @@ function safeImage(url: string | null): string | null {
   return url.startsWith("https://") || url.startsWith("/") ? url : null;
 }
 
-/** Rating color ramp shared with the diary/review UI. */
+/** Rating color ramp shared with the review UI. */
 function getRatingColor(rating: number): string {
   if (rating >= 9) return "#a855f7";
   if (rating >= 8) return "#22c55e";
@@ -112,13 +112,11 @@ export default async function FriendsPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
-      {/* Page header */}
+      {/* Page header — v4: chromatic CRT title + OSD subline */}
       <div className="space-y-1">
-        <h1 className="font-[family-name:var(--font-space-grotesk)] text-3xl sm:text-4xl font-extrabold text-[#e8e6e3]">
-          Friends
-        </h1>
-        <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-          what your people have been spinning
+        <h1 className="crt-title text-3xl sm:text-4xl">FRIENDS</h1>
+        <p className="osd-text text-sm">
+          ▸ what your people have been spinning
         </p>
       </div>
 
@@ -255,21 +253,20 @@ function ActivityRow({ item }: { item: ActivityItem }) {
 /** The verb + object part of the sentence, per activity type. */
 function ActivitySentence({ item }: { item: ActivityItem }) {
   switch (item.type) {
-    case "diary": {
+    case "debate": {
       const p = item.payload;
       return (
         <>
-          {p.is_relisten ? "relistened to" : "logged"}{" "}
-          {/* Diary entries have no page of their own — link to the
-              actor's diary tab instead. */}
+          started a debate:{" "}
           <Link
-            href={`/profile/${item.actor.username}?tab=diary`}
+            href={`/debates/${p.slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
           >
             {p.title}
           </Link>{" "}
-          by {p.artist}
-          {p.rating !== null && <RatingChip rating={p.rating} />}
+          <span className="text-[#5a5a60]">
+            ({p.side_a_label} vs {p.side_b_label})
+          </span>
         </>
       );
     }

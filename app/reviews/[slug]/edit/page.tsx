@@ -24,29 +24,26 @@ export default async function EditReviewPage({
     notFound();
   }
 
-  // Verify ownership
+  // Verify ownership (getReviewBySlug already scopes to user, belt+suspenders)
   if (review.user_id !== user.id) {
     redirect("/reviews/mine");
   }
 
-  // If the review is attached to a canonical release, hydrate the chip.
-  let initialRelease:
-    | { id: string; title: string; artist_name: string; cover_image: string | null }
-    | undefined;
-  if (review.release_id) {
-    const release = await getReleaseById(review.release_id);
-    if (release) {
-      const artist = await getArtistById(release.primary_artist_id);
-      initialRelease = {
-        id: release.id,
-        title: release.title,
-        artist_name: artist?.name ?? review.artist,
-        cover_image: release.cover_image,
-      };
-    }
-  }
+  // The attached release is fixed for the life of a review. Load it so
+  // the form can render the locked-in card and the track checkboxes.
+  const release = review.release_id
+    ? await getReleaseById(review.release_id)
+    : null;
+  const artist = release
+    ? await getArtistById(release.primary_artist_id)
+    : null;
 
   return (
-    <ReviewForm mode="edit" review={review} initialRelease={initialRelease} />
+    <ReviewForm
+      mode="edit"
+      review={review}
+      release={release}
+      artistName={artist?.name ?? review.artist}
+    />
   );
 }

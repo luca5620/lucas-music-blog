@@ -3,20 +3,7 @@ import { getDiscoveryFeed } from "@/lib/db/reviews";
 import { createClient } from "@/lib/supabase/server";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LikeButton from "@/components/reviews/LikeButton";
-
-function getRatingColorHex(rating: number): string {
-  if (rating === 10) return "#1e90ff";
-  if (rating >= 9.5) return "#c084fc";
-  if (rating >= 9) return "#c084fc";
-  if (rating >= 8) return "#2563eb";
-  if (rating >= 7) return "#06b6d4";
-  if (rating >= 6) return "#166534";
-  if (rating >= 5) return "#84cc16";
-  if (rating >= 4) return "#facc15";
-  if (rating >= 3) return "#fb923c";
-  if (rating >= 2) return "#ef4444";
-  return "#737373";
-}
+import { getRatingHex } from "@/lib/rating";
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -87,7 +74,7 @@ export default async function DiscoveryFeed() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {feed.map((review) => {
           const profile = review.profiles;
-          const ratingColor = getRatingColorHex(review.rating);
+          const ratingColor = getRatingHex(review.rating);
           const isVerified = profile.role !== "user";
 
           return (

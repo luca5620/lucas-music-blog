@@ -1,5 +1,6 @@
 import { requireAuth } from "@/lib/auth";
 import { getReviewsByUser } from "@/lib/db/reviews";
+import { getRatingHex } from "@/lib/rating";
 import Link from "next/link";
 import type { Metadata } from "next";
 import DeleteReviewButton from "@/components/reviews/DeleteReviewButton";
@@ -7,16 +8,6 @@ import DeleteReviewButton from "@/components/reviews/DeleteReviewButton";
 export const metadata: Metadata = {
   title: "My Reviews",
 };
-
-function getRatingColor(rating: number): string {
-  if (rating >= 9) return "#a855f7";
-  if (rating >= 8) return "#22c55e";
-  if (rating >= 7) return "#84cc16";
-  if (rating >= 6) return "#eab308";
-  if (rating >= 5) return "#f97316";
-  if (rating >= 4) return "#ef4444";
-  return "#dc2626";
-}
 
 export default async function MyReviewsPage() {
   const user = await requireAuth();
@@ -65,7 +56,7 @@ export default async function MyReviewsPage() {
       ) : (
         <div className="space-y-3">
           {reviews.map((review) => {
-            const ratingColor = getRatingColor(review.rating);
+            const ratingColor = getRatingHex(review.rating);
 
             return (
               <div

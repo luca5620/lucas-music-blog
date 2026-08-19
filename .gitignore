@@ -1,4 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+﻿# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -41,10 +41,16 @@ yarn-error.log*
 # vercel
 .vercel
 
-# Spotify listening data (personal, not committed) — ignore raw exports,
-# allow curated TS data modules through
-/data/*
-!/data/analytics/
+# Capacitor native build outputs (the projects themselves ARE committed)
+ios/App/Pods
+ios/App/App/public
+ios/App/output
+ios/DerivedData
+android/.gradle
+android/app/build
+android/build
+android/local.properties
+android/app/src/main/assets/public
 
 # typescript
 *.tsbuildinfo

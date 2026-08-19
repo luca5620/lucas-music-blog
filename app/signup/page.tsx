@@ -1,11 +1,34 @@
 "use client";
 
-import { useState } from "react";
+/**
+ * /signup — create an account.
+ *
+ * The overhaul rules:
+ * - usernames are 3-20 chars of letters/numbers/underscores, unique
+ *   case-insensitively (DB enforces both; we validate live here so
+ *   nobody finds out at submit time)
+ * - email confirmation is REQUIRED: after signUp we show a CRT-style
+ *   "CHECK YOUR INBOX" panel until they click the link. One account
+ *   per real inbox — that's the anti-spam wall.
+ */
+
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
-const USERNAME_REGEX = /^[a-z0-9][a-z0-9-]{1,18}[a-z0-9]$/;
+// Matches the DB constraint from migration 006 exactly. We lowercase
+// input as they type, so the effective alphabet is a-z 0-9 _.
+const USERNAME_REGEX = /^[a-z0-9_]{3,20}$/;
+
+// Names that would let someone impersonate the platform or its staff.
+const RESERVED_USERNAMES = new Set([
+  "admin", "peak", "mod", "moderator", "staff", "support",
+  "api", "root", "system", "official", "help",
+]);
+
+/** Availability check result for the little status line. */
+type Availability = "idle" | "checking" | "free" | "taken";
 
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
@@ -13,13 +36,32 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [availability, setAvailability] = useState<Availability>("idle");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendNote, setResendNote] = useState<string | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
 
+  // Tick the resend cooldown down once per second.
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  /**
+   * Validate format immediately, then (if it passes) ask the database
+   * whether the name is taken — debounced so we don't query on every
+   * keystroke. ilike gives us a case-insensitive match; underscores
+   * are LIKE wildcards so we escape them to avoid false "taken"s.
+   */
   const validateUsername = (value: string) => {
     const lower = value.toLowerCase();
     setUsername(lower);
+    setAvailability("idle");
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (lower.length === 0) {
       setUsernameError(null);
@@ -34,12 +76,26 @@ export default function SignUpPage() {
       return;
     }
     if (!USERNAME_REGEX.test(lower)) {
-      setUsernameError(
-        "Only lowercase letters, numbers, and hyphens. Must start and end with a letter or number."
-      );
+      setUsernameError("Letters, numbers, and underscores only");
+      return;
+    }
+    if (RESERVED_USERNAMES.has(lower)) {
+      setUsernameError("That name is reserved");
       return;
     }
     setUsernameError(null);
+
+    // Format is fine — now check availability after a quiet moment.
+    setAvailability("checking");
+    debounceRef.current = setTimeout(async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .ilike("username", lower.replace(/_/g, "\\_"))
+        .maybeSingle();
+      setAvailability(data ? "taken" : "free");
+    }, 400);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -47,15 +103,19 @@ export default function SignUpPage() {
     setError(null);
 
     if (usernameError) return;
-    if (!USERNAME_REGEX.test(username)) {
+    if (!USERNAME_REGEX.test(username) || RESERVED_USERNAMES.has(username)) {
       setUsernameError("Please enter a valid username");
+      return;
+    }
+    if (availability === "taken") {
+      setUsernameError("That username is taken");
       return;
     }
 
     setLoading(true);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -63,72 +123,123 @@ export default function SignUpPage() {
           username,
           display_name: username,
         },
+        // After clicking the confirmation link, land back on the site
+        // signed in (the browser client exchanges the code for us).
+        emailRedirectTo:
+          typeof window !== "undefined" ? window.location.origin : undefined,
       },
     });
 
     if (authError) {
-      setError(authError.message);
+      // Friendlier wording for the common case.
+      setError(
+        /already registered/i.test(authError.message)
+          ? "That email already has an account — try signing in instead."
+          : authError.message
+      );
       setLoading(false);
       return;
     }
 
-    // If email confirmation is enabled, show success. Otherwise redirect.
-    setSuccess(true);
+    // With confirmation ON, Supabase "succeeds" for an existing email
+    // but returns a ghost user with no identities. Catch that so the
+    // person isn't left staring at an inbox with nothing in it.
+    if (data.user && data.user.identities?.length === 0) {
+      setError("That email already has an account — try signing in instead.");
+      setLoading(false);
+      return;
+    }
+
+    if (data.session) {
+      // Confirmation is disabled in the dashboard — we're signed in.
+      router.push("/");
+      router.refresh();
+      return;
+    }
+
+    // Confirmation required (the normal path).
+    setAwaitingConfirm(true);
+    setResendCooldown(60);
     setLoading(false);
   };
 
-  if (success) {
+  const handleResend = async () => {
+    if (resendCooldown > 0) return;
+    setResendNote(null);
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+    });
+    setResendNote(
+      resendError
+        ? "Couldn't resend — wait a minute and try again."
+        : "Signal re-sent. Give it a minute (and check spam)."
+    );
+    setResendCooldown(60);
+  };
+
+  /* --- CHECK YOUR INBOX — post-signup holding screen --- */
+  if (awaitingConfirm) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="w-full max-w-md">
-          <div className="bg-[#1e1e22] border border-white/10 rounded-lg p-8 shadow-[0_0_40px_rgba(30,144,255,0.08)] text-center">
-            <div className="w-16 h-16 rounded-full bg-[#1e90ff]/15 border border-[#1e90ff]/30 flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-8 h-8 text-[#1e90ff]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-[#e8e6e3] font-[family-name:var(--font-space-grotesk)] mb-3">
-              Check Your Email
-            </h2>
-            <p className="text-[#9a9a9e] text-sm mb-6">
-              We sent a confirmation link to{" "}
-              <span className="text-[#e8e6e3]">{email}</span>. Click it to
-              activate your account.
+          <div className="panel-xbox-glow p-8 text-center space-y-5 relative overflow-hidden">
+            <p className="osd-text text-sm">
+              <span className="text-[#ff4455]">●</span> AWAITING SIGNAL
             </p>
-            <button
-              onClick={() => router.push("/login")}
-              className="px-6 py-2 rounded font-bold text-sm uppercase tracking-wider bg-[#1e90ff] hover:bg-[#1e90ff]/80 text-white transition-colors font-[family-name:var(--font-space-grotesk)]"
-            >
-              Go to Sign In
-            </button>
+            <h1 className="crt-title text-3xl">Check Your Inbox</h1>
+            <p className="text-text-secondary text-sm leading-relaxed">
+              Confirmation link sent to{" "}
+              <span className="text-text-primary font-medium">{email}</span>.
+              Click it to switch your account on — until then this channel
+              stays static.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-1">
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resendCooldown > 0}
+                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+              >
+                {resendCooldown > 0
+                  ? `Resend in ${resendCooldown}s`
+                  : "Resend Link"}
+              </button>
+              <Link href="/login" className="btn-y2k btn-y2k-primary">
+                Go to Sign In
+              </Link>
+            </div>
+            {resendNote && (
+              <p className="pixel-text text-sm text-accent-glow">{resendNote}</p>
+            )}
+            <div className="scan-bar" />
           </div>
         </div>
       </div>
     );
   }
 
+  /* --- The signup form itself --- */
+  const availabilityLine =
+    availability === "checking" ? (
+      <p className="mt-1.5 text-xs osd-text animate-pulse">CHECKING…</p>
+    ) : availability === "free" && !usernameError && username ? (
+      <p className="mt-1.5 text-xs text-osd-green">✓ @{username} is free</p>
+    ) : availability === "taken" ? (
+      <p className="mt-1.5 text-xs text-accent-rose">@{username} is taken</p>
+    ) : null;
+
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Panel */}
-        <div className="bg-[#1e1e22] border border-white/10 rounded-lg p-8 shadow-[0_0_40px_rgba(30,144,255,0.08)]">
+        <div className="panel-xbox-glow p-8 relative overflow-hidden">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#e8e6e3] font-[family-name:var(--font-space-grotesk)] mb-2">
-              Create Account
-            </h1>
-            <p className="text-[#9a9a9e] text-sm">
-              Join Peak Music Reviews
+          <div className="text-center mb-8 space-y-2">
+            <p className="osd-text text-xs">NEW VIEWER REGISTRATION</p>
+            <h1 className="crt-title text-3xl">Create Account</h1>
+            <p className="text-text-secondary text-sm">
+              claim your handle on PEAK
             </p>
           </div>
 
@@ -144,7 +255,7 @@ export default function SignUpPage() {
             <div>
               <label
                 htmlFor="username"
-                className="block text-xs font-bold uppercase tracking-wider text-[#9a9a9e] mb-2 font-[family-name:var(--font-space-grotesk)]"
+                className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
                 Username
               </label>
@@ -154,18 +265,21 @@ export default function SignUpPage() {
                 value={username}
                 onChange={(e) => validateUsername(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded bg-[#0a0a0c] border border-white/10 text-[#e8e6e3] placeholder:text-[#5a5a60] focus:outline-none focus:border-[#1e90ff]/50 focus:ring-1 focus:ring-[#1e90ff]/30 transition-colors"
-                placeholder="your-username"
+                className="form-input"
+                placeholder="your_username"
+                autoComplete="username"
               />
-              {usernameError && (
+              {usernameError ? (
                 <p className="mt-1.5 text-xs text-red-400">{usernameError}</p>
+              ) : (
+                availabilityLine
               )}
             </div>
 
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-bold uppercase tracking-wider text-[#9a9a9e] mb-2 font-[family-name:var(--font-space-grotesk)]"
+                className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
                 Email
               </label>
@@ -175,15 +289,19 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded bg-[#0a0a0c] border border-white/10 text-[#e8e6e3] placeholder:text-[#5a5a60] focus:outline-none focus:border-[#1e90ff]/50 focus:ring-1 focus:ring-[#1e90ff]/30 transition-colors"
+                className="form-input"
                 placeholder="you@example.com"
+                autoComplete="email"
               />
+              <p className="mt-1.5 text-xs text-text-muted">
+                You&apos;ll confirm this — one account per inbox.
+              </p>
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="block text-xs font-bold uppercase tracking-wider text-[#9a9a9e] mb-2 font-[family-name:var(--font-space-grotesk)]"
+                className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
                 Password
               </label>
@@ -194,27 +312,33 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 rounded bg-[#0a0a0c] border border-white/10 text-[#e8e6e3] placeholder:text-[#5a5a60] focus:outline-none focus:border-[#1e90ff]/50 focus:ring-1 focus:ring-[#1e90ff]/30 transition-colors"
+                className="form-input"
                 placeholder="At least 6 characters"
+                autoComplete="new-password"
               />
             </div>
 
             <button
               type="submit"
-              disabled={loading || !!usernameError}
-              className="w-full py-3 rounded font-bold text-sm uppercase tracking-wider bg-[#1e90ff] hover:bg-[#1e90ff]/80 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-space-grotesk)]"
+              disabled={loading || !!usernameError || availability === "taken"}
+              className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating account..." : "Create Account"}
+              {loading ? "Tuning in…" : "Create Account"}
             </button>
           </form>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-sm text-[#9a9a9e]">
+          <p className="mt-6 text-center text-sm text-text-secondary">
             Already have an account?{" "}
-            <Link href="/login" className="text-[#1e90ff] hover:underline">
+            <Link
+              href="/login"
+              className="text-accent-primary hover:text-accent-glow hover:underline"
+            >
               Sign in
             </Link>
           </p>
+
+          <div className="scan-bar" />
         </div>
       </div>
     </div>

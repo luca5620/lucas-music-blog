@@ -1,35 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import type { Review, Genre } from "@/lib/reviews";
-import { getGenreColor, getRatingColor, getRatingHex } from "@/lib/reviews";
+/**
+ * ReviewsList — client-side filterable list of DB review rows.
+ *
+ * Overhaul v2: rows come from the database with the author profile
+ * joined in (see ReviewWithAuthor in lib/db/reviews.ts), so every
+ * card carries reviewer attribution + verified badge. Genre filter
+ * options are derived from the data instead of a hardcoded list.
+ */
 
-const GENRE_OPTIONS: (Genre | "All")[] = [
-  "All",
-  "Hip-Hop",
-  "Pop",
-  "Alternative",
-  "R&B",
-];
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import type { ReviewWithAuthor } from "@/lib/db/reviews";
+import { getGenreColor, getRatingColor, getRatingHex } from "@/lib/rating";
+import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 const RATING_OPTIONS: (number | "All")[] = ["All", 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 
-export default function ReviewsList({ reviews }: { reviews: Review[] }) {
-  const [activeGenre, setActiveGenre] = useState<Genre | "All">("All");
+export default function ReviewsList({
+  reviews,
+}: {
+  reviews: ReviewWithAuthor[];
+}) {
+  const [activeGenre, setActiveGenre] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRating, setActiveRating] = useState<number | "All">("All");
+
+  // Build the genre chips from what's actually in the data.
+  const genres = useMemo(() => {
+    const set = new Set<string>();
+    reviews.forEach((r) => r.genre && set.add(r.genre));
+    return ["All", ...Array.from(set).sort()];
+  }, [reviews]);
 
   const filtered = reviews
     .filter((r) => activeGenre === "All" || r.genre === activeGenre)
     .filter((r) => {
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase();
-      return r.title.toLowerCase().includes(q) || r.artist.toLowerCase().includes(q);
+      return (
+        r.title.toLowerCase().includes(q) ||
+        r.artist.toLowerCase().includes(q) ||
+        r.profiles.username.toLowerCase().includes(q)
+      );
     })
     .filter((r) => {
       if (activeRating === "All") return true;
-      return Math.floor(r.rating) === activeRating || (activeRating === 10 && r.rating === 10);
+      return r.rating >= activeRating;
     });
 
   return (
@@ -40,8 +57,8 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by title or artist..."
-          className="w-full px-4 py-3 rounded-lg bg-bg-elevated border border-border-subtle text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/25 transition-all"
+          placeholder="Search by title, artist, or reviewer…"
+          className="form-input"
         />
         {searchQuery && (
           <button
@@ -53,26 +70,28 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
         )}
       </div>
 
-      {/* Genre Filter */}
-      <div className="flex flex-wrap gap-2">
-        {GENRE_OPTIONS.map((genre) => (
-          <button
-            key={genre}
-            onClick={() => setActiveGenre(genre)}
-            className={`
-              pixel-text text-xs uppercase tracking-widest px-4 py-2 rounded-full
-              border transition-all duration-200
-              ${
-                genre === activeGenre
-                  ? "bg-accent-primary/15 text-accent-primary border-accent-primary/30"
-                  : "text-text-muted border-border-subtle hover:text-text-primary hover:border-border-medium"
-              }
-            `}
-          >
-            {genre}
-          </button>
-        ))}
-      </div>
+      {/* Genre Filter — only shows if there are genres to filter by */}
+      {genres.length > 1 && (
+        <div className="flex flex-wrap gap-2">
+          {genres.map((genre) => (
+            <button
+              key={genre}
+              onClick={() => setActiveGenre(genre)}
+              className={`
+                pixel-text text-xs uppercase tracking-widest px-4 py-2 rounded-full
+                border transition-all duration-200
+                ${
+                  genre === activeGenre
+                    ? "bg-accent-primary/15 text-accent-primary border-accent-primary/30"
+                    : "text-text-muted border-border-subtle hover:text-text-primary hover:border-border-medium"
+                }
+              `}
+            >
+              {genre}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Rating Filter */}
       <div className="flex flex-wrap gap-2">
@@ -107,73 +126,102 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
         {filtered.length === 0 ? (
           <div className="card-y2k p-8 text-center">
             <p className="text-text-muted pixel-text text-sm">
-              No reviews match your filters.
+              {reviews.length === 0
+                ? "No reviews yet. Be the first — hit Review in the nav."
+                : "No reviews match your filters."}
             </p>
           </div>
         ) : (
-          filtered.map((review) => (
-            <Link href={`/reviews/${review.slug}`} key={review.slug}>
-              <article
-                className="card-y2k p-3 sm:p-5 flex gap-3 sm:gap-5 group cursor-pointer overflow-hidden"
-                style={{ "--rating-color": getRatingHex(review.rating) } as React.CSSProperties}
-              >
-                {/* Cover Image or Placeholder */}
-                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0 overflow-hidden">
-                  {review.coverImage ? (
-                    <img
-                      src={review.coverImage}
-                      alt={`${review.title} cover`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                  ) : (
-                    <span className="text-3xl group-hover:scale-110 transition-transform">
-                      💿
-                    </span>
-                  )}
-                </div>
+          filtered.map((review) => {
+            const author = review.profiles;
+            const isVerified = author.role !== "user";
+            return (
+              <Link href={`/reviews/${review.slug}`} key={review.id}>
+                <article
+                  className="card-y2k p-3 sm:p-5 flex gap-3 sm:gap-5 group cursor-pointer overflow-hidden"
+                  style={{ "--rating-color": getRatingHex(review.rating) } as React.CSSProperties}
+                >
+                  {/* Cover from the catalog */}
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0 overflow-hidden">
+                    {review.cover_image ? (
+                      <img
+                        src={review.cover_image}
+                        alt={`${review.title} cover`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <span className="text-3xl group-hover:scale-110 transition-transform">
+                        💿
+                      </span>
+                    )}
+                  </div>
 
-                {/* Review Content */}
-                <div className="flex-1 space-y-2 min-w-0">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h2 className={`font-[family-name:var(--font-heading)] text-base sm:text-xl font-bold text-text-primary transition-colors break-words rating-title-hover${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
-                        {review.title}
-                      </h2>
-                      <p className="text-sm text-text-secondary">
-                        {review.artist}
+                  {/* Review Content */}
+                  <div className="flex-1 space-y-2 min-w-0">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <h2 className={`font-[family-name:var(--font-heading)] text-base sm:text-xl font-bold text-text-primary transition-colors break-words rating-title-hover${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
+                          {review.title}
+                        </h2>
+                        <p className="text-sm text-text-secondary truncate">
+                          {review.artist}
+                        </p>
+                      </div>
+                      <div
+                        className={`rating-badge shrink-0 ${getRatingColor(review.rating)}`}
+                      >
+                        {review.rating}
+                      </div>
+                    </div>
+
+                    {review.snippet && (
+                      <p className="text-sm text-text-secondary leading-relaxed line-clamp-2">
+                        {review.snippet}
                       </p>
-                    </div>
-                    <div
-                      className={`rating-badge shrink-0 ${getRatingColor(review.rating)}`}
-                    >
-                      {review.rating}
+                    )}
+
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {/* Reviewer attribution */}
+                      <span className="flex items-center gap-1.5 text-xs text-text-muted min-w-0">
+                        {author.avatar_url ? (
+                          <img
+                            src={author.avatar_url}
+                            alt=""
+                            className="w-4 h-4 rounded-full object-cover border border-white/10"
+                          />
+                        ) : (
+                          <span className="w-4 h-4 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-[8px] font-bold text-accent-primary uppercase">
+                            {(author.username || "U")[0]}
+                          </span>
+                        )}
+                        <span className="truncate">
+                          {author.display_name || author.username}
+                        </span>
+                        {isVerified && <VerifiedBadge role={author.role} />}
+                      </span>
+
+                      {review.genre && (
+                        <span
+                          className={`pixel-text text-xs uppercase tracking-widest ${getGenreColor(review.genre)}`}
+                        >
+                          {review.genre}
+                        </span>
+                      )}
+                      <span className="text-text-muted text-xs">
+                        {review.review_date
+                          ? new Date(review.review_date + "T12:00:00").toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                          : ""}
+                      </span>
                     </div>
                   </div>
-
-                  <p className="text-sm text-text-secondary leading-relaxed line-clamp-2">
-                    {review.snippet}
-                  </p>
-
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`pixel-text text-xs uppercase tracking-widest ${getGenreColor(review.genre)}`}
-                    >
-                      {review.genre}
-                    </span>
-                    <span className="text-text-muted text-xs">
-                      {review.reviewDate
-                        ? new Date(review.reviewDate + "T12:00:00").toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })
-                        : "Review pending"}
-                    </span>
-                  </div>
-                </div>
-              </article>
-            </Link>
-          ))
+                </article>
+              </Link>
+            );
+          })
         )}
       </div>
     </>

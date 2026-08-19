@@ -4,19 +4,19 @@
  * FavoritesEditor — the settings-page editor for the "four favorites"
  * showcase (Letterboxd style).
  *
- * Four slots. Each one can be filled either by:
- *  - picking a catalog release via SpotifyAutocomplete (fills title,
- *    artist, cover, and release_id in one click), or
- *  - typing a free-text title + artist for music we haven't imported.
+ * Four slots. Each is filled by picking a REAL release through
+ * CatalogSearch (local catalog + Spotify + Genius, imported on
+ * demand) — there is no free-text entry anymore, so every favorite
+ * carries a release_id, proper title/artist, and real cover art.
  *
  * "Save Favorites" PUTs the whole set to /api/profile/favorites,
  * which deletes cleared slots and upserts the rest.
  */
 
 import { useEffect, useState } from "react";
-import SpotifyAutocomplete, {
-  type AutocompleteItem,
-} from "@/components/spotify/SpotifyAutocomplete";
+import CatalogSearch, {
+  type CatalogPick,
+} from "@/components/catalog/CatalogSearch";
 import type { ProfileFavorite } from "@/lib/types/database";
 
 /** Editable state for one of the four slots. */
@@ -48,10 +48,6 @@ export default function FavoritesEditor() {
     { ...EMPTY_SLOT },
     { ...EMPTY_SLOT },
   ]);
-
-  // Bumping a slot's key remounts its autocomplete so the search box
-  // clears when the slot is removed or replaced.
-  const [slotKeys, setSlotKeys] = useState<number[]>([0, 0, 0, 0]);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -94,30 +90,28 @@ export default function FavoritesEditor() {
     };
   }, []);
 
-  /** Update one field of one slot. */
-  function updateSlot(index: number, patch: Partial<SlotState>) {
+  /** A catalog pick fills the whole slot in one go. */
+  function handlePick(index: number, pick: CatalogPick) {
     setSlots((prev) =>
-      prev.map((slot, i) => (i === index ? { ...slot, ...patch } : slot))
+      prev.map((slot, i) =>
+        i === index
+          ? {
+              title: pick.release.title,
+              artist: pick.artist_name,
+              cover_image: pick.release.cover_image ?? "",
+              release_id: pick.release.id,
+            }
+          : slot
+      )
     );
     setSaved(false);
   }
 
-  /** A catalog pick fills the whole slot in one go. */
-  function handleSelect(index: number, item: AutocompleteItem) {
-    updateSlot(index, {
-      title: item.title,
-      artist: item.artist_name,
-      cover_image: item.cover_image ?? "",
-      release_id: item.id,
-    });
-  }
-
-  /** Clear a slot back to empty (and reset its autocomplete input). */
+  /** Clear a slot back to empty. */
   function removeSlot(index: number) {
     setSlots((prev) =>
       prev.map((slot, i) => (i === index ? { ...EMPTY_SLOT } : slot))
     );
-    setSlotKeys((prev) => prev.map((k, i) => (i === index ? k + 1 : k)));
     setSaved(false);
   }
 
@@ -125,34 +119,18 @@ export default function FavoritesEditor() {
     setError(null);
     setSaved(false);
 
-    // Build the payload from filled slots. A slot counts as filled
-    // when it has BOTH a title and an artist; half-filled slots are
-    // a user mistake we flag instead of silently dropping.
-    const favorites: {
-      position: number;
-      title: string;
-      artist: string;
-      cover_image?: string;
-      release_id?: string;
-    }[] = [];
-
-    for (let i = 0; i < 4; i++) {
-      const slot = slots[i];
-      const hasTitle = slot.title.trim().length > 0;
-      const hasArtist = slot.artist.trim().length > 0;
-      if (!hasTitle && !hasArtist) continue; // genuinely empty slot
-      if (!hasTitle || !hasArtist) {
-        setError(`Slot ${i + 1} needs both a title and an artist.`);
-        return;
-      }
-      favorites.push({
-        position: i + 1,
+    // Filled slots only — a slot is filled exactly when a catalog
+    // pick landed in it (title + artist always arrive together).
+    const favorites = slots
+      .map((slot, i) => ({ slot, position: i + 1 }))
+      .filter(({ slot }) => slot.title.trim() && slot.artist.trim())
+      .map(({ slot, position }) => ({
+        position,
         title: slot.title.trim(),
         artist: slot.artist.trim(),
         ...(slot.cover_image ? { cover_image: slot.cover_image } : {}),
         ...(slot.release_id ? { release_id: slot.release_id } : {}),
-      });
-    }
+      }));
 
     setSaving(true);
     try {
@@ -180,32 +158,25 @@ export default function FavoritesEditor() {
   }
 
   if (loading) {
-    return (
-      <p className="font-[family-name:var(--font-vt323)] text-[#5a5a60] animate-pulse">
-        Loading favorites...
-      </p>
-    );
+    return <p className="osd-text text-sm animate-pulse">TUNING…</p>;
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-[#5a5a60]">
-        Pick up to four albums to showcase at the top of your profile —
-        search the catalog or just type a title and artist.
+      <p className="text-xs text-text-muted">
+        Pick up to four records to showcase at the top of your profile.
+        Search covers everything on Spotify plus the deep Genius catalog
+        (unreleased included).
       </p>
 
       {/* The four slots */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {slots.map((slot, i) => {
-          const filled =
-            slot.title.trim().length > 0 || slot.artist.trim().length > 0;
+          const filled = slot.title.trim().length > 0;
           const cover = safeCover(slot.cover_image);
 
           return (
-            <div
-              key={i}
-              className="card-y2k p-3 space-y-3"
-            >
+            <div key={i} className="card-y2k p-3 space-y-3">
               {/* Slot header + remove button */}
               <div className="flex items-center justify-between">
                 <span className="label-xbox text-[0.6rem]">Slot {i + 1}</span>
@@ -220,68 +191,38 @@ export default function FavoritesEditor() {
                 )}
               </div>
 
-              {/* Cover preview (when a catalog pick / cover is set) */}
-              {cover && (
+              {filled ? (
+                /* Filled slot: show the pick. To change it, remove first —
+                   keeps the UI honest about what's saved in the slot. */
                 <div className="flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={cover}
-                    alt=""
-                    className="w-12 h-12 rounded object-cover border border-white/10"
-                  />
+                  {cover ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={cover}
+                      alt=""
+                      className="w-14 h-14 rounded object-cover border border-white/10"
+                    />
+                  ) : (
+                    <span className="w-14 h-14 rounded bg-bg-elevated border border-white/10 flex items-center justify-center text-xl">
+                      💿
+                    </span>
+                  )}
                   <div className="min-w-0">
-                    <p className="text-sm text-[#e8e6e3] truncate font-medium">
+                    <p className="text-sm text-text-primary truncate font-medium">
                       {slot.title}
                     </p>
-                    <p className="text-xs text-[#9a9a9e] truncate">
+                    <p className="text-xs text-text-secondary truncate">
                       {slot.artist}
                     </p>
                   </div>
                 </div>
+              ) : (
+                /* Empty slot: the catalog picker */
+                <CatalogSearch
+                  onPick={(pick) => handlePick(i, pick)}
+                  placeholder="Search any album or song…"
+                />
               )}
-
-              {/* Catalog search — remounts (clears) when the slot resets */}
-              <SpotifyAutocomplete
-                key={`fav-slot-${i}-${slotKeys[i]}`}
-                kind="release"
-                onSelect={(item) => handleSelect(i, item)}
-                placeholder="Search the catalog..."
-                notFoundCta={
-                  <span>Not in the catalog — type it below instead.</span>
-                }
-              />
-
-              {/* Free-text fallback (also lets you tweak a pick) */}
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  value={slot.title}
-                  onChange={(e) =>
-                    updateSlot(i, {
-                      title: e.target.value.slice(0, 200),
-                      // Manual edits detach the catalog link — the
-                      // text no longer matches the release.
-                      release_id: null,
-                    })
-                  }
-                  placeholder="Title"
-                  maxLength={200}
-                  className="form-input"
-                />
-                <input
-                  type="text"
-                  value={slot.artist}
-                  onChange={(e) =>
-                    updateSlot(i, {
-                      artist: e.target.value.slice(0, 200),
-                      release_id: null,
-                    })
-                  }
-                  placeholder="Artist"
-                  maxLength={200}
-                  className="form-input"
-                />
-              </div>
             </div>
           );
         })}

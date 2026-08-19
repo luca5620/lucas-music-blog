@@ -5,7 +5,8 @@
  *
  * Handles:
  * - list metadata (title, description, ranked + public toggles)
- * - adding albums via the catalog autocomplete (SpotifyAutocomplete)
+ * - adding releases via CatalogSearch (local + Spotify + Genius —
+ *   items can ONLY come from the catalog, no free-text entry)
  * - a per-item note field, remove button, and up/down reorder buttons
  *
  * Item edits are held in local state and persisted all at once when
@@ -20,14 +21,18 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { List, ListItem } from "@/lib/types/database";
-import SpotifyAutocomplete, {
-  type AutocompleteItem,
-} from "@/components/spotify/SpotifyAutocomplete";
+import CatalogSearch, {
+  type CatalogPick,
+} from "@/components/catalog/CatalogSearch";
 
 /**
  * An item row as the editor sees it. Saved items carry their database
  * id; freshly-added ones have id: null until we POST them. localId is
  * a stable client-side key for React (never sent to the server).
+ *
+ * title/artist/cover_image are display-only copies — the server
+ * re-derives them from release_id on save, so nothing here can be
+ * forged into the database.
  */
 interface EditorItem {
   localId: string;
@@ -86,17 +91,19 @@ export default function ListEditor({
 
   /* --- Item row operations --- */
 
-  // Autocomplete pick → append a new row at the end.
-  const handleAddRelease = useCallback((picked: AutocompleteItem) => {
+  // Catalog pick → append a new row at the end. The picker has
+  // already imported the release, so we get a real local row back
+  // with a guaranteed release.id.
+  const handleAddRelease = useCallback((picked: CatalogPick) => {
     setItems((prev) => [
       ...prev,
       {
         localId: makeLocalId(),
         id: null,
-        release_id: picked.id,
-        title: picked.title,
+        release_id: picked.release.id,
+        title: picked.release.title,
         artist: picked.artist_name || "Unknown Artist",
-        cover_image: picked.cover_image,
+        cover_image: picked.release.cover_image,
         note: "",
       },
     ]);
@@ -168,18 +175,17 @@ export default function ListEditor({
         const created = (await res.json()) as List;
 
         // 2) Add each item, in order. Position = its index on screen.
+        //    We only send release_id + note — the server pulls the
+        //    title/artist/cover straight from the catalog row.
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
           const itemRes = await fetch(`/api/lists/${created.id}/items`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              title: item.title,
-              artist: item.artist,
-              cover_image: item.cover_image,
+              release_id: item.release_id,
               note: item.note.trim() || null,
               position: i,
-              release_id: item.release_id,
             }),
           });
           if (!itemRes.ok) {
@@ -231,16 +237,15 @@ export default function ListEditor({
 
         if (!item.id) {
           // New item — create it and remember the id we get back.
+          // Same slim body as create mode: the catalog is the only
+          // source of truth for what this item *is*.
           const res = await fetch(`/api/lists/${list.id}/items`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              title: item.title,
-              artist: item.artist,
-              cover_image: item.cover_image,
+              release_id: item.release_id,
               note: item.note.trim() || null,
               position: i,
-              release_id: item.release_id,
             }),
           });
           if (!res.ok) {
@@ -307,10 +312,10 @@ export default function ListEditor({
     <div className="space-y-6 max-w-2xl">
       {/* --- Header --- */}
       <div className="space-y-2">
-        <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-[#e8e6e3]">
+        <h1 className="crt-title text-3xl sm:text-4xl">
           {mode === "edit" ? "Edit List" : "New List"}
         </h1>
-        <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
+        <p className="osd-text text-sm">
           {mode === "edit"
             ? "tweak the lineup"
             : "gather albums into something worth sharing"}
@@ -383,14 +388,13 @@ export default function ListEditor({
       <fieldset className="panel-xbox p-5 space-y-4">
         <legend className="label-xbox">Albums ({items.length})</legend>
 
-        {/* Add via catalog search */}
+        {/* Add via the unified catalog picker — local rows, Spotify
+            albums, and Genius deep cuts (unreleased included). */}
         <div className="space-y-2">
           <span className="label-xbox block">Add a release</span>
-          <SpotifyAutocomplete
-            kind="release"
-            onSelect={handleAddRelease}
-            accentColor="#1e90ff"
-            placeholder="Search for an album, single, or EP..."
+          <CatalogSearch
+            onPick={handleAddRelease}
+            placeholder="Search any album, EP, single — even unreleased…"
           />
         </div>
 

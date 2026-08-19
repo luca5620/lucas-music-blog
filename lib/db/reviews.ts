@@ -1,5 +1,64 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Review } from "@/lib/types/database";
+import type { Profile, Release, Review } from "@/lib/types/database";
+
+/** Profile fields we join onto review rows for attribution. */
+export interface ReviewAuthor {
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  role: Profile["role"];
+}
+
+export type ReviewWithAuthor = Review & { profiles: ReviewAuthor };
+
+/**
+ * One review looked up by its (globally unique) slug, with the author
+ * profile and the attached release joined in. Drafts are only returned
+ * to their owner — pass viewerId so the check happens in one query path.
+ */
+export async function getReviewWithContextBySlug(
+  slug: string,
+  viewerId?: string
+): Promise<(ReviewWithAuthor & { releases: Release | null }) | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("reviews")
+    .select(
+      "*, profiles!inner(username, display_name, avatar_url, role), releases(*)"
+    )
+    .eq("slug", slug)
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) return null;
+
+  const row = data as unknown as ReviewWithAuthor & {
+    releases: Release | Release[] | null;
+  };
+
+  // Drafts are private to their author.
+  if (!row.is_published && row.user_id !== viewerId) return null;
+
+  return {
+    ...row,
+    releases: Array.isArray(row.releases) ? row.releases[0] ?? null : row.releases,
+  };
+}
+
+/**
+ * True if a review slug is already taken. Used by the API to pick a
+ * unique slug (`x-by-user`, `x-by-user-2`, …) at creation time.
+ */
+export async function reviewSlugTaken(slug: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("reviews")
+    .select("id")
+    .eq("slug", slug)
+    .limit(1)
+    .maybeSingle();
+  return !!data;
+}
 
 export async function getReviewsByUser(
   userId: string,

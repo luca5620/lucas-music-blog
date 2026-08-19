@@ -4,14 +4,17 @@ import { createClient } from "@/lib/supabase/server";
    Friends activity — data access layer
 
    Powers the /friends page: a merged, newest-first feed of what the
-   people YOU follow have been doing (diary logs, reviews, lists,
-   likes), plus a "popular with friends" rail of the releases they've
-   been spinning most in the last 30 days.
+   people YOU follow have been doing (reviews, lists, likes, debates),
+   plus a "popular with friends" rail of the releases they've rated
+   most in the last 30 days.
 
    Everything runs server-side through the cookie-aware Supabase
    client, so RLS applies: private lists and unpublished reviews are
    filtered both by our explicit .eq() checks AND by the database
    policies (belt and suspenders).
+
+   (The diary feature was removed in migration 006 — reviews ARE the
+   log now.)
    ============================================ */
 
 /* --- Shapes returned to the UI --- */
@@ -21,15 +24,6 @@ export interface ActivityActor {
   username: string;
   display_name: string | null;
   avatar_url: string | null;
-}
-
-/** "luca logged House Of Balloons — 10.0" */
-export interface DiaryActivityPayload {
-  title: string;
-  artist: string;
-  cover_image: string | null;
-  rating: number | null;
-  is_relisten: boolean;
 }
 
 /** "luca reviewed DAMN. — 9.5" (links to /reviews/[slug]) */
@@ -56,23 +50,31 @@ export interface LikeActivityPayload {
   review_artist: string;
 }
 
+/** "luca started a debate: MBDTF vs Blonde" (links to /debates/[slug]) */
+export interface DebateActivityPayload {
+  slug: string;
+  title: string;
+  side_a_label: string;
+  side_b_label: string;
+}
+
 /**
  * One row in the merged feed. A discriminated union on `type` so the
  * renderer can switch() and TypeScript knows exactly which payload
  * shape it's holding in each branch.
  */
 export type ActivityItem =
-  | { type: "diary"; created_at: string; actor: ActivityActor; payload: DiaryActivityPayload }
   | { type: "review"; created_at: string; actor: ActivityActor; payload: ReviewActivityPayload }
   | { type: "list"; created_at: string; actor: ActivityActor; payload: ListActivityPayload }
-  | { type: "like"; created_at: string; actor: ActivityActor; payload: LikeActivityPayload };
+  | { type: "like"; created_at: string; actor: ActivityActor; payload: LikeActivityPayload }
+  | { type: "debate"; created_at: string; actor: ActivityActor; payload: DebateActivityPayload };
 
 /** One tile in the "Popular with friends" rail. */
 export interface PopularItem {
   title: string;
   artist: string;
   cover_image: string | null;
-  /** How many friend logs + reviews it got in the last 30 days. */
+  /** How many friend reviews it got in the last 30 days. */
   count: number;
   /** Average of whatever ratings those carried (null if none rated). */
   avg_rating: number | null;
@@ -108,17 +110,7 @@ async function getFollowedIds(viewerId: string): Promise<string[]> {
   return (data as { following_id: string }[]).map((r) => r.following_id);
 }
 
-/* --- Raw row shapes for the four feed queries --- */
-
-interface RawDiaryRow {
-  title: string;
-  artist: string;
-  cover_image: string | null;
-  rating: number | null;
-  is_relisten: boolean;
-  created_at: string;
-  profiles: JoinedProfile;
-}
+/* --- Raw row shapes for the feed queries --- */
 
 interface RawReviewRow {
   slug: string;
@@ -148,6 +140,15 @@ interface RawLikeRow {
     | null;
 }
 
+interface RawDebateRow {
+  slug: string;
+  title: string;
+  side_a_label: string;
+  side_b_label: string;
+  created_at: string;
+  profiles: JoinedProfile;
+}
+
 /* --- The feed --- */
 
 /**
@@ -172,19 +173,12 @@ export async function getFriendActivity(
 
   const supabase = await createClient();
 
-  // The actor join is identical for all four queries.
+  // The actor join is identical for all four queries. Debates name
+  // their author column created_by, so that one spells the join out.
   const ACTOR = "profiles!inner(username, display_name, avatar_url)";
 
-  const [diaryRes, reviewsRes, listsRes, likesRes] = await Promise.all([
-    // 1. Diary logs by friends
-    supabase
-      .from("diary_entries")
-      .select(`title, artist, cover_image, rating, is_relisten, created_at, ${ACTOR}`)
-      .in("user_id", followedIds)
-      .order("created_at", { ascending: false })
-      .limit(limit),
-
-    // 2. Published reviews by friends
+  const [reviewsRes, listsRes, likesRes, debatesRes] = await Promise.all([
+    // 1. Published reviews by friends
     supabase
       .from("reviews")
       .select(`slug, title, artist, rating, cover_image, created_at, ${ACTOR}`)
@@ -193,7 +187,7 @@ export async function getFriendActivity(
       .order("created_at", { ascending: false })
       .limit(limit),
 
-    // 3. Public lists created by friends (with an item count for flavor)
+    // 2. Public lists created by friends (with an item count for flavor)
     supabase
       .from("lists")
       .select(`slug, title, is_ranked, created_at, ${ACTOR}, list_items(count)`)
@@ -202,11 +196,21 @@ export async function getFriendActivity(
       .order("created_at", { ascending: false })
       .limit(limit),
 
-    // 4. Review likes by friends — join the liked review for its title/link
+    // 3. Review likes by friends — join the liked review for its title/link
     supabase
       .from("review_likes")
       .select(`created_at, ${ACTOR}, reviews!inner(slug, title, artist)`)
       .in("user_id", followedIds)
+      .order("created_at", { ascending: false })
+      .limit(limit),
+
+    // 4. Debates started by friends (table added in migration 006 —
+    //    an error here just yields an empty slice, so the feed still
+    //    renders before the migration is applied)
+    supabase
+      .from("debates")
+      .select(`slug, title, side_a_label, side_b_label, created_at, ${ACTOR}`)
+      .in("created_by", followedIds)
       .order("created_at", { ascending: false })
       .limit(limit),
   ]);
@@ -214,21 +218,6 @@ export async function getFriendActivity(
   const items: ActivityItem[] = [];
 
   // --- Normalize each source into typed ActivityItems ---
-
-  for (const row of (diaryRes.data ?? []) as unknown as RawDiaryRow[]) {
-    items.push({
-      type: "diary",
-      created_at: row.created_at,
-      actor: unwrapActor(row.profiles),
-      payload: {
-        title: row.title,
-        artist: row.artist,
-        cover_image: row.cover_image,
-        rating: row.rating === null ? null : Number(row.rating),
-        is_relisten: row.is_relisten,
-      },
-    });
-  }
 
   for (const row of (reviewsRes.data ?? []) as unknown as RawReviewRow[]) {
     items.push({
@@ -278,6 +267,20 @@ export async function getFriendActivity(
     });
   }
 
+  for (const row of (debatesRes.data ?? []) as unknown as RawDebateRow[]) {
+    items.push({
+      type: "debate",
+      created_at: row.created_at,
+      actor: unwrapActor(row.profiles),
+      payload: {
+        slug: row.slug,
+        title: row.title,
+        side_a_label: row.side_a_label,
+        side_b_label: row.side_b_label,
+      },
+    });
+  }
+
   // Merge: newest first (ISO timestamps compare correctly as strings),
   // then cap at the requested size.
   items.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
@@ -287,12 +290,12 @@ export async function getFriendActivity(
 /* --- Popular with friends --- */
 
 /**
- * The releases your friends have logged + reviewed most in the last
- * 30 days, grouped by (title, artist) case-insensitively, with a
- * count and average rating for the chip on each poster.
+ * The releases your friends reviewed most in the last 30 days,
+ * grouped by (title, artist) case-insensitively, with a count and
+ * average rating for the chip on each poster.
  *
- * Grouping happens in JS because the "release" may be free-text (no
- * release_id), so title+artist is the only reliable group key.
+ * Grouping happens in JS because title+artist is the most reliable
+ * group key across older rows that may predate release_id.
  */
 export async function getPopularWithFriends(
   viewerId: string,
@@ -305,27 +308,18 @@ export async function getPopularWithFriends(
 
   const supabase = await createClient();
 
-  // 30 days back from now, as an ISO timestamp for the .gte() filters.
+  // 30 days back from now, as an ISO timestamp for the .gte() filter.
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Pull recent diary logs and reviews by friends, in parallel.
-  // 300 rows per source is far more than a friend group produces in a
-  // month, while still bounding the query.
-  const [diaryRes, reviewsRes] = await Promise.all([
-    supabase
-      .from("diary_entries")
-      .select("title, artist, cover_image, rating")
-      .in("user_id", followedIds)
-      .gte("created_at", since)
-      .limit(300),
-    supabase
-      .from("reviews")
-      .select("title, artist, cover_image, rating")
-      .in("user_id", followedIds)
-      .eq("is_published", true)
-      .gte("created_at", since)
-      .limit(300),
-  ]);
+  // 300 rows is far more than a friend group produces in a month,
+  // while still bounding the query.
+  const { data } = await supabase
+    .from("reviews")
+    .select("title, artist, cover_image, rating")
+    .in("user_id", followedIds)
+    .eq("is_published", true)
+    .gte("created_at", since)
+    .limit(300);
 
   interface SourceRow {
     title: string;
@@ -334,10 +328,7 @@ export async function getPopularWithFriends(
     rating: number | null;
   }
 
-  const rows: SourceRow[] = [
-    ...((diaryRes.data ?? []) as SourceRow[]),
-    ...((reviewsRes.data ?? []) as SourceRow[]),
-  ];
+  const rows: SourceRow[] = (data ?? []) as SourceRow[];
 
   // Group by lowercase "title|artist" so "Damn" and "DAMN." by the
   // same artist still merge when the casing differs.
@@ -376,7 +367,7 @@ export async function getPopularWithFriends(
     }
   }
 
-  // Most-logged first; average rating breaks ties.
+  // Most-reviewed first; average rating breaks ties.
   return Array.from(groups.values())
     .sort((a, b) => {
       if (b.count !== a.count) return b.count - a.count;

@@ -3,57 +3,53 @@
  *
  * These FAQs are rendered as JSON-LD on their respective pages
  * so Google can display rich FAQ snippets in search results.
+ * Overhaul v2 copy: PEAK is a community platform, not a blog.
  */
 
 import type { FAQItem } from "@/components/seo/FAQSchema";
 
 export const aboutFAQs: FAQItem[] = [
   {
-    question: "What is Peak Music Reviews?",
+    question: "What is PEAK?",
     answer:
-      "Peak Music Reviews is a music blog by Luca that combines honest album reviews with real Spotify listening data. Every review is backed by actual streaming numbers — no reviewing an album after one listen and pretending to have absorbed the whole thing.",
+      "PEAK is a music social network — think Letterboxd, but for albums. Members rate and review releases, build shareable lists, join live chat rooms when new albums drop, and argue their side in community debates. Every review is tied to a real release from the Spotify catalog or Genius's deep library, unreleased tracks included.",
   },
   {
-    question: "How are albums rated on Peak Music Reviews?",
+    question: "How are albums rated on PEAK?",
     answer:
-      "Albums are rated on a scale of 1.0 to 10.0, with decimal precision. Ratings reflect personal enjoyment and listening habits rather than purely technical analysis. A 10/10 is reserved for truly life-changing albums, while anything above 8.0 is considered elite territory.",
+      "Members rate releases from 0 to 10.0 with decimal precision. Ratings reflect genuine personal enjoyment rather than purely technical analysis — liking something for a dumb reason is just as valid as a technical breakdown. Release pages show the community average across all reviews.",
   },
   {
-    question: "What data does Peak Music Reviews use?",
+    question: "Can I review unreleased or leaked music on PEAK?",
     answer:
-      "Peak Music Reviews uses extended Spotify streaming history data spanning multiple years, including over 8,000 hours of listening across 152,000+ total streams and 3,000+ artists. This data backs every review and powers the analytics dashboard on the site.",
+      "Yes. PEAK's catalog is powered by both Spotify (the canonical released catalog) and Genius (the deep library — unreleased tracks, loosies, and songs that never hit streaming). Unreleased releases are clearly tagged on their pages.",
   },
   {
-    question: "Who writes the reviews on Peak Music Reviews?",
+    question: "Do I need an account to use PEAK?",
     answer:
-      "All reviews are written by Luca, a lifelong music listener and data enthusiast. Luca tracks personal Spotify listening data and writes honest opinions without pretentious jargon or gatekeeping — just real takes on music.",
-  },
-  {
-    question: "How does Peak Music Reviews pick which albums to review?",
-    answer:
-      "Albums are chosen based on personal listening habits and Spotify data. If an album gets significant play time and leaves an impression, it earns a review. The catalog spans R&B, Hip-Hop, Pop, and Alternative, with artists ranging from The Weeknd and Frank Ocean to Radiohead and TV Girl.",
+      "Browsing is open to everyone. Rating, reviewing, building lists, joining live release rooms, and voting in debates require a free account with a unique username and a confirmed email address.",
   },
 ];
 
 export const reviewsFAQs: FAQItem[] = [
   {
-    question: "How often are new reviews posted on Peak Music Reviews?",
+    question: "Who writes the reviews on PEAK?",
     answer:
-      "New reviews are posted as albums earn enough listening time to warrant an honest take. There is no fixed schedule — quality and genuine engagement with the music come first. Some reviews are published shortly after release, while classic albums are reviewed after years of listening.",
+      "The community. Every PEAK member can review any release in the catalog. Notable accounts carry verified badges, and each review page credits its author with a link to their profile.",
   },
   {
-    question: "What music genres does Peak Music Reviews cover?",
+    question: "How does the PEAK rating scale work?",
     answer:
-      "Peak Music Reviews currently covers four main genres: R&B, Hip-Hop, Pop, and Alternative. The catalog includes artists like The Weeknd, Frank Ocean, Bruno Mars, Playboi Carti, Travis Scott, Radiohead, NewJeans, and TV Girl, among others.",
+      "The scale runs from 0 to 10.0 with decimal precision. Ratings above 9.0 are exceptional territory, 9.5+ gets an elite glow across the site, and a perfect 10 is reserved for all-timers. Release pages aggregate every member's rating into a community average.",
   },
   {
-    question: "How does the Peak Music Reviews rating scale work?",
+    question: "Can I review any song or album?",
     answer:
-      "The rating scale runs from 1.0 to 10.0 with decimal precision. Ratings above 9.0 are considered exceptional, 8.0 and above is elite territory, and a perfect 10.0 is reserved for albums considered all-time greats. Every rating is informed by actual Spotify listening data and personal connection to the music.",
+      "Yes — search the catalog while writing a review and pick any album from Spotify's catalog or any song from Genius's deep library, including unreleased material. Reviews are always attached to a real release, so there are no fake or duplicate entries.",
   },
   {
-    question: "Can I filter reviews by genre?",
+    question: "Can I filter and search reviews?",
     answer:
-      "Yes. The reviews page includes genre filter buttons that let you browse reviews by R&B, Hip-Hop, Pop, or Alternative. You can toggle genres on and off to find exactly what you are looking for.",
+      "Yes. The reviews page has live search by title, artist, or reviewer, plus genre chips and minimum-rating filters that update instantly.",
   },
 ];

@@ -1,38 +1,56 @@
 /**
  * Web App Manifest — Next.js App Router convention.
  *
- * Generates /manifest.webmanifest automatically.
- * Provides metadata for PWA install prompts, mobile home screen icons,
- * and browser theming.
+ * Generates /manifest.webmanifest automatically. This is what makes
+ * the site installable to a phone home screen (PWA) and themes the
+ * browser chrome. The native iOS/Android apps are separate (Capacitor
+ * shell — see docs/MACBOOK-IOS-SETUP.md) but share this identity.
  */
 
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Peak Music Reviews",
-    short_name: "Peak Music",
+    name: "PEAK — the music social network",
+    short_name: "PEAK",
     description:
-      "Honest music reviews and Spotify listening analytics by Luca. No pretentious jargon — just real opinions backed by data.",
+      "Rate albums, build lists, join live release rooms and debates. Every record on Spotify plus the deep Genius catalog — unreleased included.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0a0a0f",
-    theme_color: "#1e90ff",
+    orientation: "portrait",
+    background_color: "#060607",
+    theme_color: "#060607",
+    categories: ["music", "social", "entertainment"],
     icons: [
-      {
-        src: "/icon.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
       {
         src: "/favicon-192.png",
         sizes: "192x192",
         type: "image/png",
+        purpose: "any",
       },
       {
         src: "/favicon-512.png",
         sizes: "512x512",
         type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+    ],
+    shortcuts: [
+      {
+        name: "Write a review",
+        url: "/reviews/new",
+        description: "Rate something you just heard",
+      },
+      {
+        name: "Debates",
+        url: "/debates",
+        description: "Jump into the arena",
       },
     ],
   };

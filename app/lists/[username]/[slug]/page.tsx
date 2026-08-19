@@ -69,7 +69,7 @@ export default async function ListDetailPage({ params }: PageParams) {
                 <span className="label-xbox text-[0.6rem]">Private</span>
               )}
             </div>
-            <h1 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-primary break-words">
+            <h1 className="crt-title text-2xl sm:text-3xl md:text-4xl break-words">
               {list.title}
             </h1>
 

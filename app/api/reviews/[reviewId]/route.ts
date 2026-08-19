@@ -3,16 +3,39 @@ import { getUser } from "@/lib/auth";
 import { updateReview, deleteReview } from "@/lib/db/reviews";
 import { getReleaseById } from "@/lib/db/releases";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 import type { Review } from "@/lib/types/database";
-import {
-  isSafeSlug,
-  isText,
-  isOptionalText,
-  isOptionalSafeUrl,
-  isUuid,
-  parseRating,
-  parseStandoutTracks,
-} from "@/lib/validate";
+import { isOptionalText, parseRating } from "@/lib/validate";
+
+/**
+ * PUT /api/reviews/[reviewId]
+ *
+ * Overhaul v2: the attached release is FIXED for the life of a
+ * review — you can't retarget a review at a different album, and
+ * you can't hand-edit title/artist/cover (those always mirror the
+ * catalog). Only the user-authored parts are mutable:
+ *   rating, summary, snippet, standout_tracks, is_published.
+ */
+
+function parseTrackPicks(
+  value: unknown
+): { title: string; spotifyUrl: string }[] | null {
+  if (value == null) return [];
+  if (!Array.isArray(value) || value.length > 30) return null;
+  const out: { title: string; spotifyUrl: string }[] = [];
+  for (const item of value) {
+    if (typeof item !== "object" || item === null) return null;
+    const title = (item as { title?: unknown }).title;
+    const url = (item as { spotifyUrl?: unknown }).spotifyUrl ?? "";
+    if (typeof title !== "string" || title.length === 0 || title.length > 200) {
+      return null;
+    }
+    if (typeof url !== "string") return null;
+    if (url !== "" && !url.startsWith("https://open.spotify.com/")) return null;
+    out.push({ title, spotifyUrl: url });
+  }
+  return out;
+}
 
 async function getReviewById(reviewId: string): Promise<Review | null> {
   const supabase = await createClient();
@@ -36,45 +59,23 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const limited = rateLimit(`reviews-edit:${user.id}`, 20, 300_000);
+  if (limited) return limited;
+
   const { reviewId } = await params;
 
-  // Verify ownership
+  // Verify ownership before reading the body — cheapest check first.
   const existing = await getReviewById(reviewId);
   if (!existing) {
     return NextResponse.json({ error: "Review not found." }, { status: 404 });
   }
-
   if (existing.user_id !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
     const body = await request.json();
-
-    const {
-      title,
-      artist,
-      slug,
-      rating,
-      genre,
-      release_type,
-      release_date,
-      cover_image,
-      snippet,
-      summary,
-      standout_tracks,
-      is_published,
-      review_date,
-      release_id,
-    } = body;
-
-    // --- Validate every field. Nothing from the request body is trusted. ---
-    if (!isText(title, 200) || !isText(artist, 200)) {
-      return NextResponse.json(
-        { error: "Title and artist are required (max 200 characters)." },
-        { status: 400 }
-      );
-    }
+    const { rating, summary, snippet, standout_tracks, is_published } = body;
 
     const parsedRating = parseRating(rating);
     if (parsedRating === null) {
@@ -84,27 +85,14 @@ export async function PUT(
       );
     }
 
-    if (slug != null && !isSafeSlug(slug)) {
-      return NextResponse.json({ error: "Invalid slug." }, { status: 400 });
-    }
-
-    if (!isOptionalText(genre, 60) || !isOptionalText(snippet, 500) || !isOptionalText(summary, 20000)) {
+    if (!isOptionalText(snippet, 500) || !isOptionalText(summary, 20000)) {
       return NextResponse.json(
         { error: "A field exceeds its maximum length." },
         { status: 400 }
       );
     }
 
-    // cover_image is rendered as <img src>, so it must be https or a local path.
-    if (!isOptionalSafeUrl(cover_image)) {
-      return NextResponse.json(
-        { error: "Cover image must be an https URL." },
-        { status: 400 }
-      );
-    }
-
-    // standout_tracks are rendered as links — enforce Spotify https URLs only.
-    const parsedTracks = parseStandoutTracks(standout_tracks);
+    const parsedTracks = parseTrackPicks(standout_tracks);
     if (parsedTracks === null) {
       return NextResponse.json(
         { error: "Invalid standout tracks." },
@@ -112,48 +100,24 @@ export async function PUT(
       );
     }
 
-    const allowedReleaseTypes = ["single", "EP", "album", "mixtape"];
-    if (release_type != null && !allowedReleaseTypes.includes(release_type)) {
-      return NextResponse.json(
-        { error: "Invalid release type." },
-        { status: 400 }
-      );
-    }
-
-    // Resolve release_id. The body may either omit it (preserve existing),
-    // pass null to clear, or pass a real id to attach. Validate when set.
-    let releaseIdValue: string | null = existing.release_id ?? null;
-    if (release_id === null) {
-      releaseIdValue = null;
-    } else if (typeof release_id === "string" && release_id.length > 0) {
-      if (!isUuid(release_id)) {
-        return NextResponse.json({ error: "Invalid release id" }, { status: 400 });
-      }
-      const release = await getReleaseById(release_id);
-      if (!release) {
+    // Standout picks must still belong to the attached release.
+    if (existing.release_id && parsedTracks.length > 0) {
+      const release = await getReleaseById(existing.release_id);
+      const titles = new Set((release?.tracks ?? []).map((t) => t.title));
+      if (parsedTracks.some((t) => !titles.has(t.title))) {
         return NextResponse.json(
-          { error: "Release not found" },
+          { error: "Standout tracks must come from the release's track list." },
           { status: 400 }
         );
       }
-      releaseIdValue = release.id;
     }
 
     const review = await updateReview(reviewId, {
-      slug: slug || existing.slug,
-      title: title.trim(),
-      artist: artist.trim(),
       rating: parsedRating,
-      genre: genre || null,
-      release_type: release_type || null,
-      release_date: release_date || null,
-      review_date: review_date || existing.review_date,
-      cover_image: cover_image || null,
       snippet: snippet || null,
       summary: summary || null,
       standout_tracks: parsedTracks,
       is_published: is_published ?? existing.is_published,
-      release_id: releaseIdValue,
     });
 
     if (!review) {
@@ -165,10 +129,7 @@ export async function PUT(
 
     return NextResponse.json(review);
   } catch {
-    return NextResponse.json(
-      { error: "Invalid request body." },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 }
 
@@ -189,7 +150,6 @@ export async function DELETE(
   if (!existing) {
     return NextResponse.json({ error: "Review not found." }, { status: 404 });
   }
-
   if (existing.user_id !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

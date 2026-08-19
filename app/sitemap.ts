@@ -1,48 +1,63 @@
 /**
  * Dynamic Sitemap — Next.js App Router convention.
  *
- * Generates /sitemap.xml automatically at build time.
- * Includes all static pages plus every individual review page
- * pulled from the review data source.
+ * Static platform pages plus the published review and release URLs
+ * pulled live from the database. If the DB is unreachable at build
+ * time the sitemap degrades to static routes only — never fails.
  */
 
 import type { MetadataRoute } from "next";
-import { reviews } from "@/lib/reviews";
+import { createClient } from "@/lib/supabase/server";
 
 const BASE_URL = "https://peakmusicreviews.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  // Static pages with manually tuned priority and changeFrequency
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: BASE_URL,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1.0,
-    },
-    {
-      url: `${BASE_URL}/reviews`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/profile/lucas`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
+    { url: BASE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
+    { url: `${BASE_URL}/reviews`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/releases`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/lists`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 },
+    { url: `${BASE_URL}/debates`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 },
+    { url: `${BASE_URL}/artists`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
   ];
 
-  // Dynamic review pages — one entry per review slug
-  const reviewPages: MetadataRoute.Sitemap = reviews.map((review) => ({
-    url: `${BASE_URL}/reviews/${review.slug}`,
-    lastModified: review.reviewDate
-      ? new Date(review.reviewDate)
-      : new Date(review.releaseDate),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+  try {
+    const supabase = await createClient();
 
-  return [...staticPages, ...reviewPages];
+    const [{ data: reviews }, { data: releases }] = await Promise.all([
+      supabase
+        .from("reviews")
+        .select("slug, updated_at")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false })
+        .limit(2000),
+      supabase
+        .from("releases")
+        .select("slug, updated_at")
+        .order("created_at", { ascending: false })
+        .limit(2000),
+    ]);
+
+    const reviewPages: MetadataRoute.Sitemap = (
+      (reviews ?? []) as { slug: string; updated_at: string }[]
+    ).map((r) => ({
+      url: `${BASE_URL}/reviews/${r.slug}`,
+      lastModified: new Date(r.updated_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+    const releasePages: MetadataRoute.Sitemap = (
+      (releases ?? []) as { slug: string; updated_at: string }[]
+    ).map((r) => ({
+      url: `${BASE_URL}/releases/${r.slug}`,
+      lastModified: new Date(r.updated_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+
+    return [...staticPages, ...reviewPages, ...releasePages];
+  } catch {
+    return staticPages;
+  }
 }

@@ -1,29 +1,27 @@
 /**
- * JSON-LD Structured Data — Peak Music Reviews
+ * JSON-LD Structured Data — PEAK
  *
  * Reusable schema components that output <script type="application/ld+json"> tags.
  * Follows Google's structured data guidelines for rich results.
  *
+ * Overhaul v2: PEAK is a community platform now, not a one-person
+ * blog — so the site publishes as an Organization and every review
+ * credits its actual community author.
+ *
  * Components:
  *  - WebSiteSchema        — Site-wide sitelinks searchbox & identity
- *  - PersonSchema         — Author (Luca) as Person entity
  *  - BreadcrumbSchema     — Breadcrumb navigation trail
- *  - ReviewSchema         — Individual album/track review (MusicAlbum + Review)
+ *  - ReviewSchema         — Individual review (MusicAlbum + Review)
  *  - CollectionPageSchema — Reviews listing page
  *  - ItemListSchema       — List of review items (for home + reviews pages)
- *  - ProfilePageSchema    — About page author profile
  */
-
-import type { Review } from "@/lib/reviews";
 
 /* ------------------------------------------------------------------ */
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
 const SITE_URL = "https://peakmusicreviews.com";
-const SITE_NAME = "Peak Music Reviews";
-const AUTHOR_NAME = "Luca";
-const AUTHOR_URL = `${SITE_URL}/profile/lucas`;
+const SITE_NAME = "PEAK";
 const LOGO_URL = `${SITE_URL}/penguin-logo.png`;
 
 /* ------------------------------------------------------------------ */
@@ -58,11 +56,12 @@ export function WebSiteSchema() {
     name: SITE_NAME,
     url: SITE_URL,
     description:
-      "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions.",
+      "The music social network: rate albums, build lists, join live release rooms and debates.",
     publisher: {
-      "@type": "Person",
-      name: AUTHOR_NAME,
-      url: AUTHOR_URL,
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: LOGO_URL,
     },
     potentialAction: {
       "@type": "SearchAction",
@@ -72,37 +71,6 @@ export function WebSiteSchema() {
       },
       "query-input": "required name=search_term_string",
     },
-  };
-
-  return <JsonLd data={schema} />;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Person Schema — the author, used in root layout                    */
-/* ------------------------------------------------------------------ */
-
-export function PersonSchema() {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: AUTHOR_NAME,
-    url: AUTHOR_URL,
-    image: LOGO_URL,
-    description:
-      "Music listener, opinion haver, data nerd. Creator of Peak Music Reviews.",
-    sameAs: [
-      "https://open.spotify.com/user/lucapivard5620",
-      "https://soundcloud.com/dope-oasis",
-      "https://stats.fm/user/luca5620",
-    ],
-    knowsAbout: [
-      "Music Reviews",
-      "Hip-Hop",
-      "R&B",
-      "Pop",
-      "Alternative",
-      "Spotify Analytics",
-    ],
   };
 
   return <JsonLd data={schema} />;
@@ -134,13 +102,36 @@ export function BreadcrumbSchema({ items }: { items: BreadcrumbItem[] }) {
 
 /* ------------------------------------------------------------------ */
 /*  Review Schema — MusicAlbum + Review for individual review pages    */
-/*  Converts 1-10 rating scale to schema.org Rating format             */
+/*  Takes the DB row shape (snake_case) + the community author.        */
 /* ------------------------------------------------------------------ */
 
-export function ReviewSchema({ review }: { review: Review }) {
-  // Map releaseType to schema.org MusicAlbumProductionType
+export interface ReviewSchemaInput {
+  slug: string;
+  title: string;
+  artist: string;
+  rating: number;
+  genre: string | null;
+  release_type: string | null;
+  release_date: string | null;
+  review_date: string | null;
+  snippet: string | null;
+  summary: string | null;
+  cover_image: string | null;
+  standout_tracks: { title: string; spotifyUrl: string }[];
+}
+
+export function ReviewSchema({
+  review,
+  authorName,
+  authorUrl,
+}: {
+  review: ReviewSchemaInput;
+  authorName: string;
+  authorUrl: string;
+}) {
+  // Map release_type to schema.org MusicAlbumProductionType
   const albumProductionType = (() => {
-    switch (review.releaseType) {
+    switch (review.release_type) {
       case "album":
         return "StudioAlbum";
       case "EP":
@@ -154,73 +145,65 @@ export function ReviewSchema({ review }: { review: Review }) {
     }
   })();
 
-  // Map releaseType to schema.org MusicAlbumReleaseType
   const albumReleaseType = (() => {
-    switch (review.releaseType) {
+    switch (review.release_type) {
       case "single":
         return "SingleRelease";
       case "EP":
         return "EPRelease";
-      case "album":
-        return "AlbumRelease";
-      case "mixtape":
-        return "AlbumRelease";
       default:
         return "AlbumRelease";
     }
   })();
 
   const reviewUrl = `${SITE_URL}/reviews/${review.slug}`;
-  const coverImageUrl = review.coverImage
-    ? `${SITE_URL}${review.coverImage}`
-    : undefined;
 
   const schema = {
     "@context": "https://schema.org",
     "@type": "Review",
     name: `${review.title} by ${review.artist} — Review`,
     url: reviewUrl,
-    description: review.snippet || review.summary,
-    ...(review.reviewDate && { datePublished: review.reviewDate }),
+    description: review.snippet || review.summary || undefined,
+    ...(review.review_date && { datePublished: review.review_date }),
     author: {
       "@type": "Person",
-      name: AUTHOR_NAME,
-      url: AUTHOR_URL,
+      name: authorName,
+      url: authorUrl,
     },
     publisher: {
-      "@type": "Person",
-      name: AUTHOR_NAME,
-      url: AUTHOR_URL,
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
     },
     reviewRating: {
       "@type": "Rating",
       ratingValue: review.rating,
       bestRating: 10,
-      worstRating: 1,
+      worstRating: 0,
     },
     itemReviewed: {
       "@type": "MusicAlbum",
       name: review.title,
-      ...(coverImageUrl && { image: coverImageUrl }),
-      datePublished: review.releaseDate,
-      genre: review.genre,
+      ...(review.cover_image && { image: review.cover_image }),
+      ...(review.release_date && { datePublished: review.release_date }),
+      ...(review.genre && { genre: review.genre }),
       albumProductionType: `https://schema.org/${albumProductionType}`,
       albumReleaseType: `https://schema.org/${albumReleaseType}`,
       byArtist: {
         "@type": "MusicGroup",
         name: review.artist,
       },
-      ...(review.standoutTracks.length > 0 && {
+      ...(review.standout_tracks.length > 0 && {
         track: {
           "@type": "ItemList",
-          numberOfItems: review.standoutTracks.length,
-          itemListElement: review.standoutTracks.map((track, index) => ({
+          numberOfItems: review.standout_tracks.length,
+          itemListElement: review.standout_tracks.map((track, index) => ({
             "@type": "ListItem",
             position: index + 1,
             item: {
               "@type": "MusicRecording",
               name: track.title,
-              url: track.spotifyUrl,
+              ...(track.spotifyUrl && { url: track.spotifyUrl }),
             },
           })),
         },
@@ -235,17 +218,13 @@ export function ReviewSchema({ review }: { review: Review }) {
 /*  CollectionPage Schema — for the /reviews listing page              */
 /* ------------------------------------------------------------------ */
 
-export function CollectionPageSchema({
-  totalItems,
-}: {
-  totalItems: number;
-}) {
+export function CollectionPageSchema({ totalItems }: { totalItems: number }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Music Reviews — Peak Music Reviews",
+    name: "Community Music Reviews — PEAK",
     description:
-      "Honest takes on albums and tracks. No filler, no pretentious breakdowns.",
+      "Honest takes from the whole community. Every review is tied to a real release.",
     url: `${SITE_URL}/reviews`,
     isPartOf: {
       "@type": "WebSite",
@@ -267,13 +246,21 @@ export function CollectionPageSchema({
 
 /* ------------------------------------------------------------------ */
 /*  ItemList Schema — for review lists (home latest + reviews page)    */
+/*  Takes a minimal shape so both static + DB callers can use it.      */
 /* ------------------------------------------------------------------ */
+
+export interface ItemListReview {
+  slug: string;
+  title: string;
+  artist: string;
+  rating: number;
+}
 
 export function ItemListSchema({
   reviews,
   listName,
 }: {
-  reviews: Review[];
+  reviews: ItemListReview[];
   listName: string;
 }) {
   const schema = {
@@ -290,15 +277,11 @@ export function ItemListSchema({
         "@type": "Review",
         name: `${review.title} by ${review.artist} — Review`,
         url: `${SITE_URL}/reviews/${review.slug}`,
-        author: {
-          "@type": "Person",
-          name: AUTHOR_NAME,
-        },
         reviewRating: {
           "@type": "Rating",
           ratingValue: review.rating,
           bestRating: 10,
-          worstRating: 1,
+          worstRating: 0,
         },
         itemReviewed: {
           "@type": "MusicAlbum",
@@ -310,50 +293,6 @@ export function ItemListSchema({
         },
       },
     })),
-  };
-
-  return <JsonLd data={schema} />;
-}
-
-/* ------------------------------------------------------------------ */
-/*  ProfilePage Schema — for the /profile/lucas author page             */
-/* ------------------------------------------------------------------ */
-
-export function ProfilePageSchema() {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "ProfilePage",
-    name: "About Luca — Peak Music Reviews",
-    description:
-      "Music listener, opinion haver, data nerd. The person behind Peak Music Reviews.",
-    url: `${SITE_URL}/profile/lucas`,
-    mainEntity: {
-      "@type": "Person",
-      name: AUTHOR_NAME,
-      alternateName: "lu-cuh",
-      url: AUTHOR_URL,
-      image: LOGO_URL,
-      description:
-        "Music listener, opinion haver, data nerd. Creator of Peak Music Reviews.",
-      sameAs: [
-        "https://open.spotify.com/user/lucapivard5620",
-        "https://soundcloud.com/dope-oasis",
-        "https://stats.fm/user/luca5620",
-      ],
-      knowsAbout: [
-        "Music Reviews",
-        "Hip-Hop",
-        "R&B",
-        "Pop",
-        "Alternative",
-        "Spotify Analytics",
-      ],
-    },
-    isPartOf: {
-      "@type": "WebSite",
-      name: SITE_NAME,
-      url: SITE_URL,
-    },
   };
 
   return <JsonLd data={schema} />;

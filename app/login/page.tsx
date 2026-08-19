@@ -1,6 +1,15 @@
 "use client";
 
-import { useState } from "react";
+/**
+ * /login — sign in.
+ *
+ * Special case worth handling well: someone signs up, never clicks
+ * the confirmation email, then tries to log in. Supabase answers
+ * "Email not confirmed" — we turn that into a clear message plus a
+ * one-click resend (with a cooldown so it can't be spammed).
+ */
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -9,12 +18,22 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendNote, setResendNote] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setNeedsConfirmation(false);
     setLoading(true);
 
     const supabase = createClient();
@@ -24,7 +43,14 @@ export default function LoginPage() {
     });
 
     if (authError) {
-      setError(authError.message);
+      // Unconfirmed inbox gets its own path with a resend button.
+      if (/email not confirmed/i.test(authError.message)) {
+        setNeedsConfirmation(true);
+      } else if (/invalid login credentials/i.test(authError.message)) {
+        setError("Wrong email or password.");
+      } else {
+        setError(authError.message);
+      }
       setLoading(false);
       return;
     }
@@ -33,25 +59,62 @@ export default function LoginPage() {
     router.refresh();
   };
 
+  const handleResend = async () => {
+    if (resendCooldown > 0 || !email) return;
+    setResendNote(null);
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+    });
+    setResendNote(
+      resendError
+        ? "Couldn't resend — wait a minute and try again."
+        : "Confirmation link re-sent. Check spam too."
+    );
+    setResendCooldown(60);
+  };
+
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Panel */}
-        <div className="bg-[#1e1e22] border border-white/10 rounded-lg p-8 shadow-[0_0_40px_rgba(30,144,255,0.08)]">
+        <div className="panel-xbox-glow p-8 relative overflow-hidden">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#e8e6e3] font-[family-name:var(--font-space-grotesk)] mb-2">
-              Sign In
-            </h1>
-            <p className="text-[#9a9a9e] text-sm">
-              Welcome back to Peak Music Reviews
-            </p>
+          <div className="text-center mb-8 space-y-2">
+            <p className="osd-text text-xs">RESUME BROADCAST</p>
+            <h1 className="crt-title text-3xl">Sign In</h1>
+            <p className="text-text-secondary text-sm">welcome back to PEAK</p>
           </div>
 
-          {/* Error */}
+          {/* Plain errors */}
           {error && (
             <div className="mb-6 p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
               {error}
+            </div>
+          )}
+
+          {/* Unconfirmed email — explain + offer a resend */}
+          {needsConfirmation && (
+            <div className="mb-6 p-4 rounded bg-osd-amber/10 border border-osd-amber/30 space-y-3">
+              <p className="text-sm text-text-primary">
+                This account hasn&apos;t been switched on yet — the
+                confirmation link in your inbox does that.
+              </p>
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resendCooldown > 0}
+                className="btn-y2k btn-y2k-outline text-xs disabled:opacity-50"
+              >
+                {resendCooldown > 0
+                  ? `Resend in ${resendCooldown}s`
+                  : "Resend confirmation link"}
+              </button>
+              {resendNote && (
+                <p className="pixel-text text-sm text-accent-glow">
+                  {resendNote}
+                </p>
+              )}
             </div>
           )}
 
@@ -60,7 +123,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-bold uppercase tracking-wider text-[#9a9a9e] mb-2 font-[family-name:var(--font-space-grotesk)]"
+                className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
                 Email
               </label>
@@ -70,15 +133,16 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded bg-[#0a0a0c] border border-white/10 text-[#e8e6e3] placeholder:text-[#5a5a60] focus:outline-none focus:border-[#1e90ff]/50 focus:ring-1 focus:ring-[#1e90ff]/30 transition-colors"
+                className="form-input"
                 placeholder="you@example.com"
+                autoComplete="email"
               />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="block text-xs font-bold uppercase tracking-wider text-[#9a9a9e] mb-2 font-[family-name:var(--font-space-grotesk)]"
+                className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
                 Password
               </label>
@@ -88,27 +152,33 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded bg-[#0a0a0c] border border-white/10 text-[#e8e6e3] placeholder:text-[#5a5a60] focus:outline-none focus:border-[#1e90ff]/50 focus:ring-1 focus:ring-[#1e90ff]/30 transition-colors"
+                className="form-input"
                 placeholder="Your password"
+                autoComplete="current-password"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded font-bold text-sm uppercase tracking-wider bg-[#1e90ff] hover:bg-[#1e90ff]/80 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-[family-name:var(--font-space-grotesk)]"
+              className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Tuning in…" : "Sign In"}
             </button>
           </form>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-sm text-[#9a9a9e]">
+          <p className="mt-6 text-center text-sm text-text-secondary">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-[#1e90ff] hover:underline">
+            <Link
+              href="/signup"
+              className="text-accent-primary hover:text-accent-glow hover:underline"
+            >
               Sign up
             </Link>
           </p>
+
+          <div className="scan-bar" />
         </div>
       </div>
     </div>

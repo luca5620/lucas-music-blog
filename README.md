@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PEAK
 
-## Getting Started
+A music social platform with a CRT soul. Letterboxd's logging/review
+backbone + Real's live energy, for music — rate any album or song on
+Spotify **or** the deep Genius catalog (unreleased included), build
+lists, customize a Steam-style profile, join live release rooms, and
+argue in two-sided debates.
 
-First, run the development server:
+Live at **[peakmusicreviews.com](https://peakmusicreviews.com)** ·
+deployed on Vercel from `main`.
+
+## Stack
+
+- **Next.js 16** (App Router) + **Tailwind v4** (CSS-first tokens in
+  `app/globals.css` — no tailwind.config)
+- **Supabase** — Postgres + RLS (anon key only, no service-role key in
+  the app; user-seeded catalog writes go through an insert-only
+  `security definer` function), auth with email confirmation, storage
+  for avatars/banners, realtime for live chat
+- **Spotify API** (client credentials) + **Genius API** — unified
+  catalog search, releases imported on demand the first time someone
+  reviews them
+- **Capacitor 7** — native iOS/Android shells (`ios/`, `android/`)
+  that load the live site; see `docs/MACBOOK-IOS-SETUP.md`
+
+## Development
 
 ```bash
+npm install
+cp .env.example .env.local   # fill in Supabase/Spotify/Genius values
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Database changes are plain SQL files in `supabase/migrations/`, run by
+hand in the Supabase SQL Editor, in numeric order. Setup steps that
+need human hands (store accounts, API tokens, dashboard toggles) live
+in `docs/LAUNCH-CHECKLIST.md`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Design system
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Everything renders inside a CRT television (`components/ui/CRTShell`)
+with grain/scanlines/aperture-grille overlays. The visual language is
+"physical media": VHS labels, OSD text, phosphor glow, channel-change
+page transitions. Profile pages re-skin the accent palette via
+`theme-crt-*` classes — six themes users pick in settings.
 
-## Learn More
+## Conventions
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- API mutations: session-derived `user_id` + `lib/validate` helpers +
+  `rateLimit()` — every route, no exceptions
+- Ratings are 0–10 with one decimal
+- Nothing is hand-typed into the catalog: all releases enter through
+  `components/catalog/CatalogSearch` → `/api/catalog/ensure`
+- Code is heavily commented on purpose — the owner is learning

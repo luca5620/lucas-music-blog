@@ -16,9 +16,7 @@ export default async function ListsRail() {
     <section className="space-y-4">
       <div className="flex items-center gap-3">
         <span className="glow-orb" style={{ animationDelay: "1.2s" }} />
-        <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
-          Fresh Lists
-        </h2>
+        <span className="vhs-label text-sm">FRESH LISTS</span>
         <div className="flex-1 divider-glow" />
         <Link
           href="/lists"

@@ -26,13 +26,12 @@ export default async function ListsPage() {
 
   return (
     <div className="space-y-6">
-      {/* --- Header --- */}
+      {/* --- Header — a shelf of mixtapes --- */}
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-[#e8e6e3]">
-            Lists
-          </h1>
-          <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
+        <div className="space-y-2">
+          <div className="vhs-label inline-block text-sm">MIXTAPE SHELF</div>
+          <h1 className="crt-title text-3xl sm:text-4xl">Lists</h1>
+          <p className="osd-text text-sm">
             albums, curated — rankings, moods, obsessions
           </p>
         </div>

@@ -1,82 +1,63 @@
-# Peak Music Reviews — Roadmap
+# PEAK — Roadmap
 
-*Updated 2026-08-08 as part of the ground-up overhaul.*
+*Updated 2026-08-18 as part of Overhaul v2 (the platform pivot).*
 
-The vision: **Letterboxd's logging/review/social backbone + Real's live-and-gamified energy, for music, skinned in Y2K.**
-
-- **Letterboxd → music:** a diary of everything you listen to, ratings with short honest reviews, shareable lists, friends' activity, rich stat-heavy profiles, album-art grids everywhere.
-- **Real → music:** live release rooms (already built: chat, track reactions, presence), predictions + karma, collectible energy around albums and artists.
-- **Your Taste:** a TikTok-style For You feed driven by your listening data, logs, and follows.
+The vision: **a full music social platform.** Letterboxd's
+review/list/profile backbone + Real's live rooms and debates, skinned
+as physical media — the whole site lives inside a CRT. No personal-blog
+remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
 ## ✅ Done
 
-### Phase 1 — Personal blog
-- Reviews (1–10.0 ratings, markdown), Spotify extended-history analytics, now-playing widget, profile-centric about/analytics.
+### Phases 1–2 (2025 → 2026-08-08)
+Personal blog era → release-first platform: reviews, artists/releases
+schema, follows, live release rooms (chat, track reactions, presence),
+lists, four favorites, security hardening (RLS fixes, rate limiting,
+validation, CSP).
 
-### Phase 2a — Release-first platform
-- Artists + releases schema, public artist/release pages, Spotify import (owner admin tool), generalized follow (users/artists/releases), autocomplete search, release-first home feed.
-
-### Phase 2b — Live release rooms (the "Real" layer, v1)
-- Live chat panel on release pages, track-level emoji reactions with floating ticker, presence pile + LIVE indicator.
-
----
-
-## 🔨 The Overhaul (current)
-
-Numbered by priority — reorder anytime.
-
-### 1. Security hardening
-Auth/authorization checks on every mutation route, input validation everywhere, security headers, rate limiting on write endpoints, env hygiene. Boring, but it protects everything else.
-
-### 2. Design System v3
-Keep the Y2K identity (grain, CRT, PS1 case, pixel accents) but make it cohesive and denser with content, Letterboxd-style:
-- Album-art poster grids as the core visual unit (home, profiles, artists, lists)
-- Tighter typography scale, consistent cards/buttons/badges across every route
-- Better empty states, loading states, mobile polish
-
-### 3. Listening diary (Letterboxd's core loop)
-- Log any album/track: date + rating + optional one-liner — lighter weight than a full review
-- Diary tab on profiles (chronological, month headers)
-- Feeds stats: "logged this year", rating distribution histogram
-
-### 4. Lists
-- Create/edit/reorder album lists ("best of 2026", "3am driving music")
-- Public list pages with poster grids, likes, lists showcased on profiles
-
-### 5. Friends activity feed + profile upgrades
-- Activity feed: recent logs/reviews/likes/list-adds from people you follow
-- "Popular with friends" rail on releases and home
-- Profile: four-favorites showcase, stats block, diary/lists/reviews tabs
-
-### 6. Your Taste v2 (For You feed)
-- Rank a feed from: your Spotify history genres/artists, your logs and ratings, who you follow, what's popular with friends, live-room activity
-- Infinite scroll of releases/reviews/lists with "why you're seeing this" tags
-
-### 7. Predictions + karma (the "Real" gamification layer)
-- Predict the community rating of an upcoming release before it drops; earn karma for accuracy
-- Karma on profiles; leaderboard among friends
-- Later: collectible artist/album cards, weekly rotation "draft"
-
-### 8. Listening parties v2
-- Scheduled listening parties for release nights (synced track position, countdown)
-- Room replay: see the reaction ticker from release night
+### Overhaul v2 (2026-08-18) — the platform pivot
+- **Teardown:** diary removed; all hand-typed content paths removed
+  (no more cover-URL fields); personal analytics/now-playing/bg-music
+  gone; full content wipe (migration 006) keeping accounts + badges.
+- **Catalog:** unified Spotify + Genius search; releases import on
+  demand via an insert-only SQL function; unreleased/leaked tracks
+  supported with UNRELEASED tags.
+- **Design v4 "physical media":** CRT TV shell, aperture grille,
+  animated grain, vsync band, VHS labels, OSD text, six themes.
+- **Profiles, Steam-level:** themes, arrangeable showcases, avatar +
+  banner uploads, pronouns/location/tagline, featured review.
+- **Debates:** two-sided rooms with votes + live side-badged chat.
+- **Your Taste v1:** For You page from follows + review history.
+- **Auth:** email confirmation required, unique well-formed usernames.
+- **Mobile:** PWA manifest + Capacitor iOS/Android shells committed
+  (`docs/MACBOOK-IOS-SETUP.md`).
 
 ---
 
-## 🔮 Later
+## 🔨 Next up (priority order)
 
-- **Mobile app** (PWA first, then React Native) — push notifications for friends' logs and release-night rooms
-- **Multi-platform music linking** — Apple Music/Tidal/SoundCloud profile links; deeper integrations where APIs allow
-- **Deep profile customization** — Myspace-style: custom backgrounds, profile song, arrangeable sections, font/color picker
-- **Rebrand decision** — "Peak Music Reviews" vs. a new name when the social platform opens up
+### 1. App Store launch week
+Apple Developer enrollment → sign in Xcode on the MacBook → TestFlight
+→ App Store review. Google Play closed test (14-day clock) in parallel.
+Then: push notifications (also the strongest guard against an Apple
+4.2 "web wrapper" rejection).
 
----
+### 2. Live layer v2
+Scheduled listening parties for release dates (waiting rooms on
+anticipated albums), debate discovery on release pages, weekly featured
+debate.
 
-## Principles (from the project brief)
+### 3. Predictions + karma (the Real layer, gamified)
+Predict an album's community rating before release day; earn karma;
+leaderboards. Karma later gates perks (host debates, custom flair).
 
-- **Anti-Pitchfork:** casual-but-serious voice; loving a song for a dumb reason is valid
-- **Content-first:** reviews and real listening data are the product; design serves them
-- **1–10.0 ratings**, one decimal, everywhere
-- **Well-commented code** — Luca is learning; every non-obvious block gets a comment
+### 4. Your Taste v2
+Real recommendation signals: co-review similarity, taste-match scores
+between users ("92% compatible"), genre drift over time.
+
+### 5. Growth guardrails
+Upstash rate limiting (replace in-memory), Resend SMTP for auth email,
+moderation tools (report queue, mute), phone 2FA for feature gates when
+scale demands it.

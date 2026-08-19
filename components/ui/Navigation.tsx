@@ -51,7 +51,10 @@ export default function Navigation() {
     // .crt-screen gives every direct child z-index:1, so without this
     // the avatar dropdown painted UNDER content further down the DOM.
     <nav className="border-b border-border-subtle pb-4 mb-6 relative z-40">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Two rows below lg: with 7 nav links plus the spine eating
+          width, a single row crushed the account button. On lg+ it's
+          the classic one-line bar again. */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
         {/* Logo / Site Title */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
           <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
@@ -125,7 +128,9 @@ export default function Navigation() {
                         </span>
                       </div>
                     )}
-                    <span className="hidden sm:inline text-sm text-text-secondary font-[family-name:var(--font-heading)]">
+                    {/* Ellipsize long names instead of letting the row
+                        clip them mid-letter; the dropdown shows it full. */}
+                    <span className="hidden sm:inline text-sm text-text-secondary font-[family-name:var(--font-heading)] max-w-[9rem] truncate">
                       {profile?.display_name || profile?.username || "User"}
                     </span>
                     {profile?.role && profile.role !== "user" && (
@@ -144,7 +149,7 @@ export default function Navigation() {
 
                   {/* Dropdown Menu */}
                   {dropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-[#1e1e22] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden z-50">
+                    <div className="absolute right-0 top-full mt-2 w-60 bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] overflow-hidden z-50">
                       <div className="px-4 py-3 border-b border-white/5">
                         <p className="text-sm font-medium text-text-primary truncate flex items-center gap-1.5">
                           <span>{profile?.display_name || profile?.username}</span>

@@ -384,8 +384,10 @@ export default function ListEditor({
         </div>
       </fieldset>
 
-      {/* --- Items --- */}
-      <fieldset className="panel-xbox p-5 space-y-4">
+      {/* --- Items ---
+          overflow-visible: hosts the catalog search dropdown, which the
+          panel's default overflow:hidden would clip. */}
+      <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
         <legend className="label-xbox">Albums ({items.length})</legend>
 
         {/* Add via the unified catalog picker — local rows, Spotify

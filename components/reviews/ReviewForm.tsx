@@ -152,8 +152,10 @@ export default function ReviewForm({
         </p>
       </div>
 
-      {/* ========== STEP 1: THE RELEASE ========== */}
-      <fieldset className="panel-xbox p-5 space-y-4">
+      {/* ========== STEP 1: THE RELEASE ==========
+          overflow-visible: this panel hosts the search dropdown —
+          the panel's default overflow:hidden would clip the list. */}
+      <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
         <legend className="label-xbox">The Release</legend>
 
         {release ? (

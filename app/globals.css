@@ -370,6 +370,14 @@ body {
   z-index: 1;
 }
 
+/* ...except the nav, which must float above every page section so
+   its avatar dropdown is never painted over. This lives AFTER the
+   rule above on purpose — Tailwind's z-40 utility loses to it on
+   source order, so the fix has to happen here in plain CSS. */
+.crt-screen > nav {
+  z-index: 40;
+}
+
 /* ============================================================
    ATMOSPHERE LAYERS — grain, scanlines, aperture grille.
    Deliberately subtle: texture you feel, not a filter you see,
@@ -526,6 +534,14 @@ body {
   box-shadow:
     0 0 20px rgba(var(--accent-rgb), 0.1),
     inset 0 0 30px rgba(var(--accent-rgb), 0.03);
+}
+
+/* Opt-out for panels that host dropdowns (search pickers etc.) —
+   the default overflow:hidden would clip the results list. The
+   double-class selector outranks the base rule regardless of order. */
+.panel-xbox.overflow-visible,
+.panel-xbox-glow.overflow-visible {
+  overflow: visible;
 }
 
 /* Hero panel — stronger bloom */

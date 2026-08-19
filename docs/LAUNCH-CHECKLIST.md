@@ -68,6 +68,20 @@ The `android/` project in the repo is ready when you are.
   stream live.
 - Check your own account still has the owner badge.
 
+## 7. App Store prerequisites (added after Apple enrollment)
+
+- **Run `supabase/migrations/007-moderation.sql`** in the SQL Editor
+  (same routine) — creates the report/block system Apple requires for
+  apps with user content.
+- **Set up the contact email**: the privacy/terms pages list
+  `contact@peakmusicreviews.com`. Your domain doesn't have email —
+  add free forwarding to your Gmail with ImprovMX
+  (https://improvmx.com — add 2 DNS records at your domain registrar)
+  or, if the domain's DNS is on Cloudflare, use Cloudflare Email
+  Routing. Takes ~10 minutes either way.
+- Before submitting: create the `applereview` demo account and confirm
+  its email (see docs/APP-STORE-LISTING.md).
+
 ## Notes
 
 - Old personal-blog stuff (diary, hardcoded analytics, background

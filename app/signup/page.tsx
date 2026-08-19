@@ -324,6 +324,19 @@ export default function SignUpPage() {
             >
               {loading ? "Tuning in…" : "Create Account"}
             </button>
+
+            {/* Legal consent — Apple + common sense both want this. */}
+            <p className="text-xs text-text-muted text-center">
+              By creating an account you agree to the{" "}
+              <Link href="/terms" className="text-accent-primary hover:underline">
+                Terms
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="text-accent-primary hover:underline">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </form>
 
           {/* Footer */}

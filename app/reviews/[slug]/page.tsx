@@ -14,6 +14,7 @@ import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
 import CommentsSection from "@/components/reviews/CommentsSection";
 import LikeButton from "@/components/reviews/LikeButton";
+import ReportButton from "@/components/moderation/ReportButton";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 // Community content changes constantly — always render fresh.
@@ -216,7 +217,7 @@ export default async function ReviewPage({
           </span>
         </Link>
 
-        {/* Like button */}
+        {/* Like + report */}
         <div className="flex items-center gap-3">
           <LikeButton
             reviewId={review.id}
@@ -225,6 +226,7 @@ export default async function ReviewPage({
             size="md"
           />
           <span className="label-xbox text-[0.6rem]">Likes</span>
+          <ReportButton targetType="review" targetId={review.id} />
         </div>
 
         {/* Genre + Dates */}

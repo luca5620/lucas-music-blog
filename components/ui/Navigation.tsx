@@ -202,6 +202,13 @@ export default function Navigation() {
                             >
                               Import Release
                             </Link>
+                            <Link
+                              href="/admin/reports"
+                              onClick={() => setDropdownOpen(false)}
+                              className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
+                            >
+                              Reports
+                            </Link>
                             <div className="my-1 border-t border-white/5" />
                           </>
                         )}

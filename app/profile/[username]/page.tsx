@@ -26,6 +26,8 @@ import { getListsByUsername, type ListSummary } from "@/lib/db/lists";
 import { getUser } from "@/lib/auth";
 import { getRatingHex } from "@/lib/rating";
 import FollowButton from "./FollowButton";
+import BlockButton from "@/components/moderation/BlockButton";
+import { isBlocked } from "@/lib/db/moderation";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
 import FourFavorites from "@/components/profile/FourFavorites";
@@ -176,6 +178,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const userFollows =
     currentUser && !isOwnProfile
       ? await isFollowing(currentUser.id, profile.id)
+      : false;
+  // Has the viewer blocked this profile? Drives the Block/Unblock button.
+  const viewerHasBlocked =
+    currentUser && !isOwnProfile
+      ? await isBlocked(currentUser.id, profile.id)
       : false;
 
   // --- Showcase data: fetch only what the arrangement needs. ---
@@ -360,11 +367,18 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 Customize
               </Link>
             ) : currentUser ? (
-              <FollowButton
-                profileId={profile.id}
-                initialFollowing={userFollows}
-                accentColor={accentColor}
-              />
+              <span className="inline-flex items-center gap-2">
+                <FollowButton
+                  profileId={profile.id}
+                  initialFollowing={userFollows}
+                  accentColor={accentColor}
+                />
+                <BlockButton
+                  targetUserId={profile.id}
+                  targetUsername={profile.username}
+                  initialBlocked={viewerHasBlocked}
+                />
+              </span>
             ) : (
               <Link href="/login" className="btn-y2k btn-y2k-outline">
                 Log in to follow

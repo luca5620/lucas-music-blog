@@ -22,6 +22,7 @@ import Link from "next/link";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import ReportButton from "@/components/moderation/ReportButton";
 import VoteBar from "@/components/debates/VoteBar";
 import type {
   DebateMessageWithProfile,
@@ -137,6 +138,9 @@ export default function DebateRoom({
 
   const [messages, setMessages] =
     useState<DebateMessageWithProfile[]>(initialMessages);
+  // Authors this viewer has blocked. Filtering happens at render
+  // time, so realtime arrivals from blocked users never show either.
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -150,6 +154,24 @@ export default function DebateRoom({
     const id = window.setInterval(() => setTick((t) => t + 1), 60_000);
     return () => window.clearInterval(id);
   }, []);
+
+  // Load the viewer's block list; errors just mean nothing is hidden.
+  useEffect(() => {
+    if (!user) {
+      setBlockedIds(new Set());
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/blocks")
+      .then((res) => (res.ok ? res.json() : { blocked: [] }))
+      .then((data: { blocked?: string[] }) => {
+        if (!cancelled) setBlockedIds(new Set(data.blocked ?? []));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   // Start scrolled to the newest message.
   useEffect(() => {
@@ -350,7 +372,9 @@ export default function DebateRoom({
   );
 
   const sideLabels = { a: debate.side_a_label, b: debate.side_b_label };
-  const realCount = messages.filter((m) => !m.id.startsWith("temp-")).length;
+  // Hide messages from blocked authors (initial load AND realtime).
+  const visibleMessages = messages.filter((m) => !blockedIds.has(m.user_id));
+  const realCount = visibleMessages.filter((m) => !m.id.startsWith("temp-")).length;
 
   return (
     <div className="space-y-6">
@@ -447,7 +471,7 @@ export default function DebateRoom({
           className="overflow-y-auto pr-1 space-y-3"
           style={{ maxHeight: "min(60vh, 500px)", minHeight: "240px" }}
         >
-          {messages.length === 0 ? (
+          {visibleMessages.length === 0 ? (
             <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center gap-3 py-8">
               <span className="osd-text text-sm">DEAD AIR</span>
               <p className="text-sm text-text-muted max-w-xs">
@@ -455,8 +479,8 @@ export default function DebateRoom({
               </p>
             </div>
           ) : (
-            messages.map((m) => (
-              <div key={m.id} className="flex gap-2.5 items-start">
+            visibleMessages.map((m) => (
+              <div key={m.id} className="flex gap-2.5 items-start group">
                 <Avatar profile={m.profile} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -476,6 +500,19 @@ export default function DebateRoom({
                         sending…
                       </span>
                     )}
+                    {/* Report flag — appears on hover, never on your own
+                        takes, never on optimistic temp rows (no real id
+                        to report yet). */}
+                    {m.user_id !== (user?.id ?? "") &&
+                      !m.id.startsWith("temp-") && (
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ReportButton
+                            targetType="debate_message"
+                            targetId={m.id}
+                            small
+                          />
+                        </span>
+                      )}
                   </div>
                   <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">
                     {m.content}

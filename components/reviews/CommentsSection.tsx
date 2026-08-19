@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
+import ReportButton from "@/components/moderation/ReportButton";
 import Link from "next/link";
 
 /* ─── Types ─── */
@@ -260,6 +261,10 @@ function CommentItem({
                 </button>
               </>
             )}
+            {/* You can't report yourself — everyone else's comments get a flag. */}
+            {!isOwn && (
+              <ReportButton targetType="comment" targetId={comment.id} small />
+            )}
           </div>
         )}
       </div>
@@ -274,7 +279,28 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
   const [comments, setComments] = useState<CommentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  // Authors this viewer has blocked — their comments are hidden.
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
   const supabaseRef = useRef(createClient());
+
+  // Load the viewer's block list once they're known. Failure is
+  // harmless (nothing gets hidden) so errors are swallowed.
+  useEffect(() => {
+    if (!user) {
+      setBlockedIds(new Set());
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/blocks")
+      .then((res) => (res.ok ? res.json() : { blocked: [] }))
+      .then((data: { blocked?: string[] }) => {
+        if (!cancelled) setBlockedIds(new Set(data.blocked ?? []));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const fetchComments = useCallback(async () => {
     if (!isSupabaseConfigured()) {
@@ -348,11 +374,14 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
     }
   };
 
-  /* ─── Organize into threads (1 level deep) ─── */
+  /* ─── Organize into threads (1 level deep) ───
+     Comments from blocked authors are dropped before threading, so
+     their replies-to-others also vanish for this viewer. */
 
-  const topLevel = comments.filter((c) => !c.parent_id);
+  const visible = comments.filter((c) => !blockedIds.has(c.user_id));
+  const topLevel = visible.filter((c) => !c.parent_id);
   const repliesMap = new Map<string, CommentData[]>();
-  comments
+  visible
     .filter((c) => c.parent_id)
     .forEach((c) => {
       const list = repliesMap.get(c.parent_id!) ?? [];
@@ -360,7 +389,7 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
       repliesMap.set(c.parent_id!, list);
     });
 
-  const commentCount = comments.length;
+  const commentCount = visible.length;
 
   /* ─── Render ─── */
 

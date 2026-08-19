@@ -32,6 +32,7 @@ import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
 import FourFavorites from "@/components/profile/FourFavorites";
 import RatingHistogram from "@/components/profile/RatingHistogram";
+import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import ListCard from "@/components/lists/ListCard";
 import type { Metadata } from "next";
 import type {
@@ -732,6 +733,19 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                     </div>
                   )}
                 </section>
+              );
+
+            case "listening":
+              // ON ROTATION — now playing / last played + lifetime
+              // minutes & streams, read from the user's public
+              // stats.fm profile (link set in Settings → Links).
+              return (
+                <ListeningShowcase
+                  key={type}
+                  statsfmUrl={profile.statsfm_url}
+                  isOwner={isOwnProfile}
+                  accentColor={accentColor}
+                />
               );
 
             default:

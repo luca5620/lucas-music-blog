@@ -8,6 +8,16 @@ interface ProfileSongPlayerProps {
   accentColor: string;
 }
 
+/** True when the URL is actual audio we can play in-page: a Spotify
+    30s preview (p.scdn.co) or a direct audio file. Anything else
+    (a Spotify track page, one of our release pages) renders as a
+    link instead of a dead play button. */
+function isPlayableAudio(url: string): boolean {
+  return (
+    url.includes("p.scdn.co") || /\.(mp3|m4a|ogg|wav|aac)(\?|$)/i.test(url)
+  );
+}
+
 export default function ProfileSongPlayer({
   url,
   title,
@@ -15,6 +25,33 @@ export default function ProfileSongPlayer({
 }: ProfileSongPlayerProps) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Non-audio target (catalog pick without a preview): song-as-link.
+  if (!isPlayableAudio(url) && (url.startsWith("https://") || url.startsWith("/"))) {
+    return (
+      <a
+        href={url}
+        target={url.startsWith("/") ? undefined : "_blank"}
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all hover:scale-[1.02]"
+        style={{
+          background: `${accentColor}10`,
+          border: `1px solid ${accentColor}30`,
+          color: accentColor,
+        }}
+      >
+        <span className="text-lg">♪</span>
+        <span className="text-left">
+          <span className="font-[family-name:var(--font-vt323)] text-xs text-[#5a5a60] uppercase tracking-wider block">
+            Profile Song
+          </span>
+          <span className="font-[family-name:var(--font-space-grotesk)] text-sm font-bold block">
+            {title} ↗
+          </span>
+        </span>
+      </a>
+    );
+  }
 
   function togglePlay() {
     // Only play https or local audio — never other schemes from user data.

@@ -51,7 +51,8 @@ export type ShowcaseType =
   | "featured_review"
   | "badges"
   | "lists"
-  | "anticipated";
+  | "anticipated"
+  | "listening"; // ON ROTATION — now playing + lifetime stats via stats.fm
 
 export interface Review {
   id: string;

@@ -21,6 +21,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import FavoritesEditor from "@/components/profile/FavoritesEditor";
+import CatalogSearch, {
+  type CatalogPick,
+} from "@/components/catalog/CatalogSearch";
 import type {
   Profile,
   ProfileTheme,
@@ -57,6 +60,7 @@ const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string; hint: string }[] = [
   { id: "badges", label: "Credentials", hint: "Verified badge, member since, transmission count" },
   { id: "lists", label: "Mixtapes", hint: "Your newest public lists" },
   { id: "anticipated", label: "Waiting On", hint: "Releases you follow, unreleased included" },
+  { id: "listening", label: "On Rotation", hint: "Now playing + lifetime minutes/streams (needs your stats.fm link below)" },
 ];
 
 /** Uploads are capped client-side; the buckets are public-read.
@@ -102,6 +106,9 @@ export default function ProfileSettingsPage() {
   // --- Song / links / genres ---
   const [profileSongUrl, setProfileSongUrl] = useState("");
   const [profileSongTitle, setProfileSongTitle] = useState("");
+  // Catalog pick in progress for the profile song (release chosen,
+  // track not yet chosen). Not persisted — only title/url are saved.
+  const [songRelease, setSongRelease] = useState<CatalogPick | null>(null);
   const [spotifyUrl, setSpotifyUrl] = useState("");
   const [soundcloudUrl, setSoundcloudUrl] = useState("");
   const [statsfmUrl, setStatsfmUrl] = useState("");
@@ -666,31 +673,89 @@ export default function ProfileSettingsPage() {
           </FormField>
         </fieldset>
 
-        {/* ========== PROFILE SONG ========== */}
-        <fieldset className="panel-xbox p-5 space-y-4">
+        {/* ========== PROFILE SONG — picked from the catalog, same
+            flow as reviews. No pasted URLs. When Spotify has a 30s
+            preview for the track it plays right on your profile;
+            otherwise the song shows as a tappable link. ========== */}
+        <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
           <legend className="label-xbox">Profile Song</legend>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField label="Song Title">
-              <input
-                type="text"
-                value={profileSongTitle}
-                onChange={(e) => setProfileSongTitle(e.target.value)}
-                placeholder="My favorite song"
-                className="form-input"
-              />
-            </FormField>
-
-            <FormField label="Song URL (audio file)">
-              <input
-                type="url"
-                value={profileSongUrl}
-                onChange={(e) => setProfileSongUrl(e.target.value)}
-                placeholder="https://example.com/song.mp3"
-                className="form-input"
-              />
-            </FormField>
-          </div>
+          {profileSongTitle ? (
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border-medium bg-bg-elevated/50">
+              <span className="text-xl">♪</span>
+              <span className="min-w-0 flex-1 text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)]">
+                {profileSongTitle}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setProfileSongTitle("");
+                  setProfileSongUrl("");
+                  setSongRelease(null);
+                }}
+                className="label-xbox hover:text-accent-rose transition-colors text-[0.65rem] shrink-0"
+              >
+                Remove
+              </button>
+            </div>
+          ) : songRelease ? (
+            /* Release picked — now choose WHICH track on it. */
+            <div className="space-y-2">
+              <p className="text-xs text-text-muted">
+                Pick the track from{" "}
+                <span className="text-text-primary font-bold">
+                  {songRelease.release.title}
+                </span>
+                :
+              </p>
+              <div className="max-h-56 overflow-y-auto rounded-lg border border-border-subtle divide-y divide-border-subtle">
+                {(songRelease.release.tracks ?? []).map((t) => (
+                  <button
+                    key={`${t.position}-${t.title}`}
+                    type="button"
+                    onClick={() => {
+                      setProfileSongTitle(
+                        `${t.title} — ${songRelease.artist_name}`
+                      );
+                      // Best playable/linkable target we have, in order:
+                      // 30s Spotify preview → Spotify track page → our
+                      // own release page.
+                      setProfileSongUrl(
+                        t.preview_url ||
+                          (t.spotify_id
+                            ? `https://open.spotify.com/track/${t.spotify_id}`
+                            : `/releases/${songRelease.release.slug}`)
+                      );
+                      setSongRelease(null);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm hover:bg-bg-elevated transition-colors"
+                  >
+                    <span className="pixel-text text-xs text-text-muted w-6 shrink-0 tabular-nums">
+                      {t.position}
+                    </span>
+                    <span className="text-text-primary truncate">{t.title}</span>
+                    {t.preview_url && (
+                      <span className="ml-auto pixel-text text-[10px] text-osd-green shrink-0">
+                        ▶ PREVIEW
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setSongRelease(null)}
+                className="text-xs text-text-muted hover:text-text-primary transition-colors"
+              >
+                ← different release
+              </button>
+            </div>
+          ) : (
+            <CatalogSearch
+              onPick={(pick) => setSongRelease(pick)}
+              placeholder="Search for your profile song…"
+            />
+          )}
         </fieldset>
 
         {/* ========== STREAMING LINKS ========== */}

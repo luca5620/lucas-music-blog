@@ -2,8 +2,8 @@
 -- Migration 008 — "Early Tester" role (2026-08-19)
 -- Run in the Supabase SQL Editor after 007.
 --
--- Adds 'tester' to the allowed roles: a red glowing checkmark for
--- the day-one crew who helped test the platform before launch.
+-- Adds 'tester' to the allowed roles: a purple glowing checkmark
+-- for the day-one crew who helped test the platform before launch.
 -- Testers get the badge ONLY — no admin/moderation powers (every
 -- permission check in the app and in RLS looks for admin/owner).
 -- ============================================================

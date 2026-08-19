@@ -5,7 +5,7 @@
  * - Owner: GOLD with a strong glow
  * - Admin: site blue with a strong glow
  * - Verified Reviewer: green, subtle (no dramatic glow)
- * - Early Tester: RED with a strong glow — the day-one crew
+ * - Early Tester: PURPLE with a strong glow — the day-one crew
  * - Regular users: no badge
  */
 
@@ -40,8 +40,8 @@ const badgeConfig: Record<
     strongGlow: false,
   },
   tester: {
-    color: "#ff4455",
-    glow: "#ff4455",
+    color: "#a855f7",
+    glow: "#a855f7",
     label: "Early Tester",
     strongGlow: true,
   },

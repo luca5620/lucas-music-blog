@@ -12,10 +12,11 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
  */
 
 // Home lives on the penguin logo (no Home tab needed).
+// Posts deliberately have no tab (Luca: no new module) — creating one
+// lives in the CREATE menu, browsing surfaces through feeds + /posts.
 const navLinks = [
   { href: "/releases", label: "Releases" },
   { href: "/reviews", label: "Reviews" },
-  { href: "/posts", label: "Posts" },
   { href: "/lists", label: "Lists" },
   { href: "/debates", label: "Debates" },
   { href: "/friends", label: "Friends" },
@@ -26,9 +27,11 @@ export default function Navigation() {
   const pathname = usePathname();
   const { user, profile, loading, signOut } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const createRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  // Close either dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -36,6 +39,12 @@ export default function Navigation() {
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setDropdownOpen(false);
+      }
+      if (
+        createRef.current &&
+        !createRef.current.contains(event.target as Node)
+      ) {
+        setCreateOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -99,17 +108,52 @@ export default function Navigation() {
             })}
           </div>
 
-          {/* Write Review — only when logged in */}
+          {/* CREATE — one button for both content types (Luca 2026-08-19:
+              fold posts into the review button, pick a name that fits
+              both). Click → choose Review or Post. */}
           {!loading && user && (
-            <Link
-              href="/reviews/new"
-              className="inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap shrink-0 text-accent-primary hover:bg-accent-primary/10 border border-accent-primary/30 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-              </svg>
-              <span className="hidden sm:inline">Review</span>
-            </Link>
+            <div className="relative shrink-0" ref={createRef}>
+              <button
+                onClick={() => setCreateOpen(!createOpen)}
+                aria-expanded={createOpen}
+                aria-haspopup="menu"
+                className="inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-accent-primary hover:bg-accent-primary/10 border border-accent-primary/30 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="hidden sm:inline">Create</span>
+              </button>
+
+              {createOpen && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] overflow-hidden z-50 py-1">
+                  <Link
+                    href="/reviews/new"
+                    onClick={() => setCreateOpen(false)}
+                    className="block px-4 py-2.5 hover:bg-bg-elevated transition-colors"
+                  >
+                    <span className="block text-sm font-bold text-text-primary font-[family-name:var(--font-heading)]">
+                      Review
+                    </span>
+                    <span className="block text-xs text-text-muted">
+                      rate a release
+                    </span>
+                  </Link>
+                  <Link
+                    href="/posts/new"
+                    onClick={() => setCreateOpen(false)}
+                    className="block px-4 py-2.5 hover:bg-bg-elevated transition-colors"
+                  >
+                    <span className="block text-sm font-bold text-text-primary font-[family-name:var(--font-heading)]">
+                      Post
+                    </span>
+                    <span className="block text-xs text-text-muted">
+                      write it up — embed YouTube / TikTok
+                    </span>
+                  </Link>
+                </div>
+              )}
+            </div>
           )}
 
           {/* Auth Section */}

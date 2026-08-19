@@ -52,7 +52,8 @@ export type ShowcaseType =
   | "badges"
   | "lists"
   | "anticipated"
-  | "listening"; // ON ROTATION — now playing + lifetime stats via stats.fm
+  | "listening" // ON ROTATION — now playing + lifetime stats via stats.fm
+  | "sotd"; // SONG OF THE DAY — daily pick + streak flame
 
 export interface Review {
   id: string;

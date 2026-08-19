@@ -61,6 +61,7 @@ const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string; hint: string }[] = [
   { id: "lists", label: "Mixtapes", hint: "Your newest public lists" },
   { id: "anticipated", label: "Waiting On", hint: "Releases you follow, unreleased included" },
   { id: "listening", label: "On Rotation", hint: "Now playing + lifetime minutes/streams (needs your stats.fm link below)" },
+  { id: "sotd", label: "Song of the Day", hint: "Daily pick — keep it up every day to grow your streak flame" },
 ];
 
 /** Uploads are capped client-side; the buckets are public-read.

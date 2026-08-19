@@ -33,6 +33,9 @@ import RoleBadge from "@/components/ui/RoleBadge";
 import FourFavorites from "@/components/profile/FourFavorites";
 import RatingHistogram from "@/components/profile/RatingHistogram";
 import ListeningShowcase from "@/components/profile/ListeningShowcase";
+import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
+import StreakFlame from "@/components/profile/StreakFlame";
+import { getSotdStreak } from "@/lib/db/sotd";
 import ListCard from "@/components/lists/ListCard";
 import type { Metadata } from "next";
 import type {
@@ -96,6 +99,8 @@ const VALID_SHOWCASES: ShowcaseType[] = [
   "badges",
   "lists",
   "anticipated",
+  "listening",
+  "sotd",
 ];
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -168,12 +173,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       VALID_SHOWCASES.includes(s as ShowcaseType) && rawShowcases.indexOf(s) === i
   );
 
-  const [currentUser, stats, reviews, favorites] = await Promise.all([
-    getUser(),
-    getProfileStats(profile.id),
-    getProfileReviews(profile.id),
-    getProfileFavorites(profile.id),
-  ]);
+  const [currentUser, stats, reviews, favorites, sotdStreak] =
+    await Promise.all([
+      getUser(),
+      getProfileStats(profile.id),
+      getProfileReviews(profile.id),
+      getProfileFavorites(profile.id),
+      // Streak flame for the header; 0 (hidden) until migration 009 runs.
+      getSotdStreak(profile.id),
+    ]);
 
   const isOwnProfile = currentUser?.id === profile.id;
   const userFollows =
@@ -328,6 +336,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             <h1 className="crt-title text-3xl sm:text-5xl flex items-center gap-2">
               <span className="truncate">{displayName}</span>
               <RoleBadge role={profile.role} size="md" />
+              {/* Song-of-the-day streak flame — always on the header
+                  when lit, regardless of showcase arrangement. */}
+              <StreakFlame streak={sotdStreak} size="md" />
             </h1>
             <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
               @{profile.username}
@@ -745,6 +756,16 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                   statsfmUrl={profile.statsfm_url}
                   isOwner={isOwnProfile}
                   accentColor={accentColor}
+                />
+              );
+
+            case "sotd":
+              // SONG OF THE DAY — daily pick + streak (migration 009).
+              return (
+                <SongOfDayShowcase
+                  key={type}
+                  userId={profile.id}
+                  isOwner={isOwnProfile}
                 />
               );
 

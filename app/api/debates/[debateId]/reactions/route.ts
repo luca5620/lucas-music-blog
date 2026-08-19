@@ -126,7 +126,8 @@ export async function POST(
     });
 
     return NextResponse.json({ ok: true, reaction }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("Failed to add debate reaction:", err);
     return NextResponse.json(
       // Generic message — the real error is logged, never sent to clients.
       { error: "Failed to add reaction" },
@@ -176,7 +177,8 @@ export async function DELETE(
     });
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error("Failed to remove debate reaction:", err);
     return NextResponse.json(
       // Generic message — the real error is logged, never sent to clients.
       { error: "Failed to remove reaction" },

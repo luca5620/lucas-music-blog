@@ -273,12 +273,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     >
       {/* ========== BANNER ========== */}
       <div className="relative h-48 sm:h-64 w-full" style={bannerStyle}>
-        {/* Fade the banner into whatever the page behind it is —
-            black normally, the light wash on Wii/LimeWire. */}
+        {/* Fade the banner into the page at BOTH edges (top + bottom)
+            so it doesn't start with a hard line — black normally, the
+            light wash on Wii/LimeWire. */}
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(to bottom, transparent 0%, transparent 55%, ${pageBg ?? "#000000"} 100%)`,
+            background: `linear-gradient(to bottom, ${pageBg ?? "#000000"} 0%, transparent 30%, transparent 55%, ${pageBg ?? "#000000"} 100%)`,
           }}
         />
 

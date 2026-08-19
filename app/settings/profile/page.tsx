@@ -284,6 +284,44 @@ export default function ProfileSettingsPage() {
       return;
     }
 
+    // Streaming links must come from their actual services — these
+    // render as clickable links on your PUBLIC profile, so nothing
+    // else is allowed (the database enforces the same rule).
+    const linkRules: { value: string; prefixes: string[]; label: string }[] = [
+      {
+        value: spotifyUrl,
+        prefixes: ["https://open.spotify.com/"],
+        label: "Spotify link must start with https://open.spotify.com/",
+      },
+      {
+        value: soundcloudUrl,
+        prefixes: [
+          "https://soundcloud.com/",
+          "https://www.soundcloud.com/",
+          "https://on.soundcloud.com/",
+        ],
+        label: "SoundCloud link must start with https://soundcloud.com/",
+      },
+      {
+        value: statsfmUrl,
+        prefixes: ["https://stats.fm/", "https://www.stats.fm/", "https://spotistats.app/"],
+        label: "stats.fm link must start with https://stats.fm/",
+      },
+      {
+        value: appleMusicUrl,
+        prefixes: ["https://music.apple.com/"],
+        label: "Apple Music link must start with https://music.apple.com/",
+      },
+    ];
+    for (const rule of linkRules) {
+      const v = rule.value.trim();
+      if (v && !rule.prefixes.some((p) => v.startsWith(p))) {
+        setError(rule.label);
+        setSaving(false);
+        return;
+      }
+    }
+
     const updates: Partial<Profile> = {
       display_name: displayName || null,
       username,

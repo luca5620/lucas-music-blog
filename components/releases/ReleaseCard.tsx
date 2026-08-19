@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import type { Release } from "@/lib/types/database";
-import { getRatingHex, getRatingColor } from "@/lib/reviews";
+import { getRatingHex, getRatingColor } from "@/lib/rating";
 import LiveBadge from "@/components/rooms/LiveBadge";
 
 interface ReleaseCardProps {

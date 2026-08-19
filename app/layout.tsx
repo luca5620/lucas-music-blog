@@ -1,20 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, VT323 } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
-import PS1CaseFrame from "@/components/ui/PS2CaseFrame";
+import CRTShell from "@/components/ui/CRTShell";
 import TVTransition from "@/components/ui/TVTransition";
-import BackgroundMusic from "@/components/ui/BackgroundMusic";
 import { AuthProvider } from "@/components/auth/AuthProvider";
-import { WebSiteSchema, PersonSchema } from "@/app/schema";
+import { WebSiteSchema } from "@/app/schema";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
 
 /* --- Font Setup ---
    - Inter: clean body text
    - Space Grotesk: geometric retro-modern headings
-   - VT323: pixel/monospace for accents and labels */
+   - VT323: pixel/monospace for OSD text and labels */
 
 const inter = Inter({
   variable: "--font-inter",
@@ -35,36 +34,36 @@ const vt323 = VT323({
 export const metadata: Metadata = {
   metadataBase: new URL("https://peakmusicreviews.com"),
   title: {
-    default: "Peak Music Reviews",
-    template: "%s — Peak Music Reviews",
+    default: "PEAK — the music social network",
+    template: "%s — PEAK",
   },
   description:
-    "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions backed by real Spotify data.",
+    "Rate albums, log your taste, join live release rooms and debates. A music social platform with a CRT soul — every record on Spotify and the deep Genius catalog, unreleased included.",
   alternates: {
     canonical: "https://peakmusicreviews.com",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Peak Music Reviews",
+    siteName: "PEAK",
     url: "https://peakmusicreviews.com",
-    title: "Peak Music Reviews",
+    title: "PEAK — the music social network",
     description:
-      "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions.",
+      "Rate albums, build lists, join live release rooms and debates. Letterboxd energy for music, on a CRT.",
     images: [
       {
         url: "/penguin-logo.png",
         width: 512,
         height: 512,
-        alt: "Peak Music Reviews",
+        alt: "PEAK",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Peak Music Reviews",
+    title: "PEAK — the music social network",
     description:
-      "Honest music reviews and Spotify listening analytics. No pretentious jargon — just real opinions.",
+      "Rate albums, build lists, join live release rooms and debates.",
   },
   robots: {
     index: true,
@@ -77,6 +76,18 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "PEAK",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#060607",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({
@@ -105,7 +116,6 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <WebSiteSchema />
-        <PersonSchema />
       </head>
       <body
         className={`
@@ -113,18 +123,17 @@ export default async function RootLayout({
           antialiased
         `}
       >
-        {/* Film grain + scan line overlays */}
+        {/* CRT atmosphere: grain, scanlines, grille, vsync band */}
         <GrainOverlay />
-        <BackgroundMusic />
 
         <AuthProvider initialUser={user} initialProfile={profile}>
-          {/* Everything sits inside the PS1 game case frame */}
-          <PS1CaseFrame>
-            {/* TV transition is INSIDE the case so it's clipped to the cover area */}
+          {/* Everything renders on the tube */}
+          <CRTShell>
+            {/* Channel-change transition is INSIDE the screen so it clips */}
             <TVTransition />
             <Navigation />
             {children}
-          </PS1CaseFrame>
+          </CRTShell>
         </AuthProvider>
       </body>
     </html>

@@ -13,7 +13,7 @@
 
 import Link from "next/link";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
-import { getRatingHex, getRatingColor } from "@/lib/reviews";
+import { getRatingHex, getRatingColor } from "@/lib/rating";
 import LiveBadge from "@/components/rooms/LiveBadge";
 
 function yearOf(dateStr: string | null): string | null {

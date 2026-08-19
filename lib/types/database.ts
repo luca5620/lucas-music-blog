@@ -20,9 +20,35 @@ export interface Profile {
   apple_music_url: string | null;
   favorite_genres: string[];
   role: "user" | "reviewer" | "admin" | "owner";
+  /* Steam-style customization (migration 006) */
+  theme: ProfileTheme;
+  showcases: ShowcaseType[];
+  pronouns: string | null;
+  location: string | null;
+  tagline: string | null;
+  featured_review_id: string | null;
   created_at: string;
   updated_at: string;
 }
+
+/** Named CRT themes a user can skin their profile with. */
+export type ProfileTheme =
+  | "crt-blue"
+  | "crt-green"
+  | "crt-amber"
+  | "crt-rose"
+  | "crt-mono"
+  | "vhs-static";
+
+/** Showcase blocks a user can arrange on their profile, Steam-style. */
+export type ShowcaseType =
+  | "favorites"
+  | "stats"
+  | "recent_reviews"
+  | "featured_review"
+  | "badges"
+  | "lists"
+  | "anticipated";
 
 export interface Review {
   id: string;
@@ -84,6 +110,7 @@ export interface Artist {
   slug: string;
   name: string;
   spotify_id: string | null;
+  genius_id: string | null;
   image_url: string | null;
   bio: string | null;
   genres: string[];
@@ -101,6 +128,9 @@ export interface Release {
   release_date: string | null;
   cover_image: string | null;
   spotify_id: string | null;
+  genius_id: string | null;
+  source: "spotify" | "genius" | "manual";
+  is_unreleased: boolean;
   description: string | null;
   tracks: ReleaseTrack[];
   popularity: number | null;
@@ -178,22 +208,7 @@ export interface TrackReactionCounts {
   count: number;
 }
 
-/* --- Overhaul: Diary, Lists, Favorites (migration 004) --- */
-
-export interface DiaryEntry {
-  id: string;
-  user_id: string;
-  release_id: string | null;
-  title: string;
-  artist: string;
-  cover_image: string | null;
-  listened_on: string; // date (YYYY-MM-DD)
-  rating: number | null;
-  note: string | null;
-  is_relisten: boolean;
-  created_at: string;
-  updated_at: string;
-}
+/* --- Overhaul: Lists, Favorites (migration 004; diary removed in 006) --- */
 
 export interface List {
   id: string;
@@ -243,12 +258,36 @@ export interface RatingBucket {
   count: number;
 }
 
-// From get_diary_stats()
-export interface DiaryStats {
-  total_entries: number;
-  entries_this_year: number;
-  relistens: number;
-  avg_rating: number | null;
+/* --- Debates (migration 006) — Real-app style two-sided rooms --- */
+
+export interface Debate {
+  id: string;
+  slug: string;
+  title: string;
+  prompt: string | null;
+  side_a_label: string;
+  side_b_label: string;
+  release_id: string | null;
+  created_by: string;
+  status: "open" | "closed";
+  message_count: number;
+  created_at: string;
+}
+
+export interface DebateVote {
+  debate_id: string;
+  user_id: string;
+  side: "a" | "b";
+  created_at: string;
+}
+
+export interface DebateMessage {
+  id: string;
+  debate_id: string;
+  user_id: string;
+  side: "a" | "b" | null;
+  content: string;
+  created_at: string;
 }
 
 /* --- Aggregate / computed types --- */
@@ -515,24 +554,71 @@ export type Database = {
           }
         ];
       };
-      diary_entries: {
-        Row: DiaryEntry;
-        Insert: Pick<DiaryEntry, "user_id" | "title" | "artist"> &
-          Partial<Omit<DiaryEntry, "user_id" | "title" | "artist">>;
-        Update: Partial<DiaryEntry>;
+      debates: {
+        Row: Debate;
+        Insert: Pick<
+          Debate,
+          "slug" | "title" | "side_a_label" | "side_b_label" | "created_by"
+        > &
+          Partial<Omit<Debate, "slug" | "title" | "side_a_label" | "side_b_label" | "created_by">>;
+        Update: Partial<Debate>;
         Relationships: [
           {
-            foreignKeyName: "diary_entries_user_id_fkey";
-            columns: ["user_id"];
+            foreignKeyName: "debates_created_by_fkey";
+            columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "diary_entries_release_id_fkey";
+            foreignKeyName: "debates_release_id_fkey";
             columns: ["release_id"];
             isOneToOne: false;
             referencedRelation: "releases";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      debate_votes: {
+        Row: DebateVote;
+        Insert: Pick<DebateVote, "debate_id" | "user_id" | "side"> &
+          Partial<Omit<DebateVote, "debate_id" | "user_id" | "side">>;
+        Update: Partial<DebateVote>;
+        Relationships: [
+          {
+            foreignKeyName: "debate_votes_debate_id_fkey";
+            columns: ["debate_id"];
+            isOneToOne: false;
+            referencedRelation: "debates";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "debate_votes_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      debate_messages: {
+        Row: DebateMessage;
+        Insert: Pick<DebateMessage, "debate_id" | "user_id" | "content"> &
+          Partial<Omit<DebateMessage, "debate_id" | "user_id" | "content">>;
+        Update: Partial<DebateMessage>;
+        Relationships: [
+          {
+            foreignKeyName: "debate_messages_debate_id_fkey";
+            columns: ["debate_id"];
+            isOneToOne: false;
+            referencedRelation: "debates";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "debate_messages_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           }
         ];

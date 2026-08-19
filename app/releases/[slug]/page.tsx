@@ -26,7 +26,7 @@ import {
   getViewerReactions,
 } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
-import { getRatingHex, getRatingColor } from "@/lib/reviews";
+import { getRatingHex, getRatingColor } from "@/lib/rating";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import ChatPanel, {
   type ChatMessageWithProfile,

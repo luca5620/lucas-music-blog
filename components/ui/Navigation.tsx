@@ -13,8 +13,10 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/releases", label: "Releases" },
   { href: "/reviews", label: "Reviews" },
   { href: "/lists", label: "Lists" },
+  { href: "/debates", label: "Debates" },
   { href: "/friends", label: "Friends" },
   { href: "/your-taste", label: "Your Taste" },
 ];
@@ -49,9 +51,9 @@ export default function Navigation() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         {/* Logo / Site Title */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
-          <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
-          <span className="pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover">
-            Peak Music Reviews
+          <img src="/penguin-logo.png" alt="PEAK" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
+          <span className="pixel-text text-lg sm:text-2xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover tracking-widest">
+            PEAK
           </span>
         </Link>
 
@@ -163,13 +165,6 @@ export default function Navigation() {
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
                           My Reviews
-                        </Link>
-                        <Link
-                          href="/diary"
-                          onClick={() => setDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-                        >
-                          My Diary
                         </Link>
                         <Link
                           href="/settings/profile"

@@ -1,58 +1,89 @@
 @import "tailwindcss";
 
-/* ============================================
-   Y2K DESIGN SYSTEM v2 — Peak Music Reviews
-   Inspired by: PlayStation 1 game cases, PS1/PS2,
-   early YouTube/LiveLeak, retro gaming.
-   Bold, gritty, playful.
-   ============================================ */
+/* ============================================================
+   PEAK — DESIGN SYSTEM v4 "PHYSICAL MEDIA"
+   The whole site lives inside a CRT television. Phosphor glow,
+   aperture grille, film grain, VHS labels, OSD chrome. Grainy,
+   warm, a little haunted. Y2K without the pastiche.
+   ============================================================ */
 
-/* --- Color Palette & Design Tokens --- */
+/* --- Tokens --- */
 :root {
-  /* Backgrounds — deep blacks and dark grays */
+  /* The room the TV sits in (page background, behind the bezel) */
+  --bg-room: #060607;
+  /* Bezel plastic */
+  --bg-bezel: #17171a;
+  --bg-bezel-hi: #232328;
+  /* The powered-on tube */
   --bg-primary: #0a0a0c;
-  --bg-secondary: #111114;
-  --bg-card: #161619;
-  --bg-elevated: #1e1e22;
+  --bg-secondary: #101013;
+  --bg-card: #141417;
+  --bg-elevated: #1c1c21;
+  --bg-screen: #0d0d10;
 
-  /* CRT "screen" area — the powered-on monitor surface */
-  --bg-screen: #131316;
-
-  /* Text */
   --text-primary: #e8e6e3;
   --text-secondary: #9a9a9e;
   --text-muted: #5a5a60;
 
-  /* Accents — Xbox 360 power ring blue as primary */
+  /* Accent — themeable. Default: CRT blue (Xbox-360-ring lineage). */
   --accent-primary: #1e90ff;
   --accent-glow: #4dacff;
+  --accent-dim: #1570c8;
+  --accent-rgb: 30, 144, 255;
   --accent-rose: #e05575;
   --accent-cyan: #45d0c8;
 
-  /* PS1 Case — PlayStation 1 game case */
-  --ps1-black: #111;
-  --ps1-dark: #0a0a0a;
-  --ps1-gray: #222;
-  --ps1-case-bg: #0d0d12;
-  --ps1-spine-width: 62px;
+  /* OSD — the green on-screen-display text every CRT had */
+  --osd-green: #2fff5e;
+  --osd-amber: #ffb02f;
 
-  /* Borders */
   --border-subtle: #222228;
   --border-medium: #333338;
   --border-bright: #444448;
 
-  /* Effects */
-  --glow-primary: rgba(30, 144, 255, 0.25);
-  --glow-rose: rgba(224, 85, 117, 0.15);
-  --scanline-opacity: 0.04;
+  --glow-primary: rgba(var(--accent-rgb), 0.25);
+  --scanline-opacity: 0.07;
+  --grille-opacity: 0.06;
 
-  /* Fonts */
   --font-heading: var(--font-space-grotesk), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-pixel: var(--font-vt323), monospace;
 }
 
-/* --- Register colors with Tailwind v4 --- */
+/* --- Profile themes — scope with class theme-<name> on any wrapper.
+       Only accents move; the tube stays the tube. --- */
+.theme-crt-green {
+  --accent-primary: #2fff5e;
+  --accent-glow: #7dffa0;
+  --accent-dim: #1cb944;
+  --accent-rgb: 47, 255, 94;
+}
+.theme-crt-amber {
+  --accent-primary: #ffb02f;
+  --accent-glow: #ffd07d;
+  --accent-dim: #c9820f;
+  --accent-rgb: 255, 176, 47;
+}
+.theme-crt-rose {
+  --accent-primary: #ff5e8a;
+  --accent-glow: #ff9ab5;
+  --accent-dim: #c93a63;
+  --accent-rgb: 255, 94, 138;
+}
+.theme-crt-mono {
+  --accent-primary: #d9d9de;
+  --accent-glow: #ffffff;
+  --accent-dim: #8a8a92;
+  --accent-rgb: 217, 217, 222;
+}
+.theme-vhs-static {
+  --accent-primary: #b18cff;
+  --accent-glow: #d3bcff;
+  --accent-dim: #7d5cc4;
+  --accent-rgb: 177, 140, 255;
+}
+
+/* --- Register with Tailwind v4 --- */
 @theme inline {
   --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
@@ -68,29 +99,27 @@
   --color-accent-glow: var(--accent-glow);
   --color-accent-rose: var(--accent-rose);
   --color-accent-cyan: var(--accent-cyan);
+  --color-osd-green: var(--osd-green);
+  --color-osd-amber: var(--osd-amber);
 
   --color-border-subtle: var(--border-subtle);
   --color-border-medium: var(--border-medium);
   --color-border-bright: var(--border-bright);
-
-  --color-ps1-black: var(--ps1-black);
-  --color-ps1-dark: var(--ps1-dark);
-  --color-ps1-gray: var(--ps1-gray);
 
   --font-sans: var(--font-body);
   --font-heading: var(--font-heading);
   --font-pixel: var(--font-pixel);
 }
 
-/* --- Base Styles --- */
+/* --- Base --- */
 body {
-  background: var(--bg-primary);
+  background: var(--bg-room);
   color: var(--text-primary);
   font-family: var(--font-body);
   overflow-x: hidden;
 }
 
-/* PlayStation font for spine branding */
+/* PlayStation display font (kept for branding accents) */
 @font-face {
   font-family: 'PlayStation';
   font-style: normal;
@@ -99,116 +128,210 @@ body {
        url('/fonts/playstation/playstation_by_lyricwest_dby5il4.woff') format('woff');
 }
 
-/* ============================================
-   PS1 GAME CASE FRAME
-   Mimics a PlayStation 1 game case.
-   Left spine with Peak Music branding + R rating.
-   ============================================ */
-.ps1-case {
+/* ============================================================
+   THE TELEVISION
+   .crt-tv     — plastic bezel around everything
+   .crt-screen — the powered-on tube where the site renders
+   .crt-osd    — green channel text pinned in the corner
+   ============================================================ */
+.crt-tv {
   position: relative;
-  margin: 1.5rem auto;
-  max-width: 1200px;
-  display: flex;
-  border-radius: 3px;
-  background: var(--ps1-case-bg);
-  border: 1px solid #1a1a1a;
+  margin: 1.25rem auto;
+  max-width: 1240px;
+  border-radius: 18px;
+  background:
+    linear-gradient(175deg, var(--bg-bezel-hi) 0%, var(--bg-bezel) 18%, #101013 100%);
+  border: 1px solid #26262c;
   box-shadow:
-    0 2px 12px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
+    0 24px 80px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 14px;
 }
 
-/* Left spine — the main feature, wider, with branding + rating */
-.ps1-spine {
+.crt-screen {
   position: relative;
-  width: var(--ps1-spine-width);
-  min-width: var(--ps1-spine-width);
-  background: linear-gradient(90deg, var(--ps1-dark) 0%, var(--ps1-black) 40%, var(--ps1-gray) 50%, var(--ps1-black) 60%, var(--ps1-dark) 100%);
+  border-radius: 10px;
+  background: var(--bg-screen);
+  min-height: 78vh;
+  padding: 1.75rem 2rem 3rem;
+  overflow: hidden;
+  contain: paint;
+  border: 1px solid #000;
+  /* Tube depth: dark vignette pinching the corners */
+  box-shadow:
+    inset 0 0 6px rgba(0, 0, 0, 0.9),
+    inset 0 0 60px rgba(0, 0, 0, 0.55),
+    inset 0 0 160px rgba(0, 0, 0, 0.35);
+  animation: crt-flicker 9s infinite;
+}
+
+/* Phosphor bloom behind everything on the tube */
+.crt-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 90% at 50% 8%,
+      rgba(var(--accent-rgb), 0.06) 0%, transparent 55%);
+  z-index: 0;
+}
+
+/* Everything the screen contains stacks above the bloom */
+.crt-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Bezel chin — brand + power LED row rendered by CRTShell */
+.crt-chin {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
-  border-right: 1px solid #2a2a2a;
-  position: relative;
-  z-index: 2;
-}
-
-/* "Peak Music" branding — PlayStation font, vertical, fills entire spine */
-.ps1-spine-brand {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-family: 'PlayStation', sans-serif !important;
-  font-size: 3rem;
-  font-weight: normal;
-  letter-spacing: normal;
-  color: #ccc;
+  padding: 10px 12px 2px;
   user-select: none;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-shadow: 0 0 8px rgba(200, 200, 200, 0.15);
 }
 
-/* ESRB-style rating badge on spine — mimics the real ESRB look */
-.ps1-spine-rating {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 38px;
-  margin-top: 8px;
-  user-select: none;
-  background: #fff;
-  border-radius: 2px;
-  overflow: hidden;
+.crt-brand {
+  font-family: 'PlayStation', var(--font-heading), sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  color: #6a6a72;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
 }
 
-.ps1-rating-letter {
-  font-family: 'Times New Roman', Georgia, serif;
-  font-size: 1.3rem;
-  font-weight: 900;
-  font-style: italic;
-  color: #000;
-  line-height: 1;
-  padding: 3px 0 1px;
-  width: 100%;
-  text-align: center;
-  border-bottom: 2px solid #000;
+.crt-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff3344;
+  box-shadow: 0 0 6px #ff3344, 0 0 14px rgba(255, 51, 68, 0.6);
+  animation: led-breathe 4s ease-in-out infinite;
 }
 
-.ps1-rating-text {
-  font-family: var(--font-heading);
-  font-size: 0.32rem;
-  font-weight: 800;
-  color: #000;
-  letter-spacing: 0.08em;
+@keyframes led-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* OSD — the green "CH 03" style overlay text */
+.crt-osd {
+  position: absolute;
+  top: 0.9rem;
+  right: 1.25rem;
+  z-index: 40;
+  pointer-events: none;
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  color: var(--osd-green);
+  text-shadow: 0 0 6px rgba(47, 255, 94, 0.8), 0 0 18px rgba(47, 255, 94, 0.35);
   text-transform: uppercase;
-  width: 100%;
-  text-align: center;
-  padding: 2px 0;
-  background: #fff;
+  opacity: 0.85;
 }
 
-/* Cover area — where site content lives */
-.ps1-cover {
-  flex: 1;
-  position: relative;
-  padding: 2rem;
-  min-height: 70vh;
-  background: var(--bg-screen);
-  z-index: 2;
-  contain: paint;
-  animation: crt-flicker 8s infinite;
+.crt-osd .osd-rec {
+  color: #ff4455;
+  text-shadow: 0 0 6px rgba(255, 68, 85, 0.8);
+  animation: led-breathe 2s ease-in-out infinite;
 }
 
-/* ============================================
-   TV CHANNEL-CHANGE TRANSITION
-   Two black bars close top/bottom to center,
-   brief white flash line, then open on new page.
-   Scoped to inside the DS case cover area.
-   ============================================ */
+/* ============================================================
+   ATMOSPHERE LAYERS — grain, scanlines, aperture grille,
+   rolling vsync band. All pointer-transparent.
+   ============================================================ */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  animation: grain-shift 0.9s steps(3) infinite;
+}
+
+@keyframes grain-shift {
+  0% { background-position: 0 0; }
+  33% { background-position: -40px 20px; }
+  66% { background-position: 25px -35px; }
+  100% { background-position: 0 0; }
+}
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 4px
+  );
+}
+
+/* Vertical RGB stripes — the aperture grille of a Trinitron */
+.aperture-grille {
+  position: fixed;
+  inset: 0;
+  z-index: 48;
+  pointer-events: none;
+  opacity: var(--grille-opacity);
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 60, 60, 0.8) 0px, rgba(255, 60, 60, 0.8) 1px,
+    rgba(60, 255, 60, 0.8) 1px, rgba(60, 255, 60, 0.8) 2px,
+    rgba(60, 60, 255, 0.8) 2px, rgba(60, 60, 255, 0.8) 3px
+  );
+}
+
+/* Slow rolling brightness band, like a camera filming a CRT */
+.vsync-band {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: -20%;
+  height: 18%;
+  z-index: 48;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.025) 45%,
+    rgba(255, 255, 255, 0.045) 50%,
+    rgba(255, 255, 255, 0.025) 55%,
+    transparent 100%
+  );
+  animation: vsync-roll 11s linear infinite;
+}
+
+@keyframes vsync-roll {
+  0% { transform: translateY(-10vh); }
+  100% { transform: translateY(120vh); }
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  93% { opacity: 1; }
+  93.5% { opacity: 0.97; }
+  94% { opacity: 1; }
+  97% { opacity: 0.985; }
+  98% { opacity: 1; }
+}
+
+/* Kill the ambience for users who ask for calm */
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay, .vsync-band { animation: none; }
+  .crt-screen { animation: none; }
+  .tracking-glitch { animation: none; }
+}
+
+/* ============================================================
+   TV CHANNEL-CHANGE TRANSITION (kept from v2/v3)
+   ============================================================ */
 .tv-off-top,
 .tv-off-bottom {
   position: fixed;
@@ -224,13 +347,11 @@ body {
 .tv-off-top { top: 0; }
 .tv-off-bottom { bottom: 0; }
 
-/* Bars expand to meet in the middle */
 .tv-off-active .tv-off-top,
 .tv-off-active .tv-off-bottom {
   height: 52%;
 }
 
-/* White flash line when bars fully close */
 .tv-off-line {
   position: fixed;
   top: 50%;
@@ -251,149 +372,77 @@ body {
   opacity: 1;
 }
 
-@media (max-width: 640px) {
-  /* Hide the spine entirely on mobile — it eats too much horizontal space */
-  .ps1-spine {
-    display: none !important;
-  }
+/* ============================================================
+   TYPE TREATMENTS
+   ============================================================ */
 
-  /* Let the case take full width with no horizontal margin eating space */
-  .ps1-case {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    border-radius: 0 !important;
-    overflow-x: hidden !important;
-  }
-
-  /* Cover takes full width now that spine is gone */
-  .ps1-cover {
-    padding: 1rem !important;
-    width: 100% !important;
-    overflow-x: hidden !important;
-    word-break: break-word !important;
-  }
-
-  /* Hero panel — reduce padding on mobile */
-  .panel-xbox-glow {
-    padding: 1.25rem !important;
-  }
-
-  .panel-xbox {
-    padding: 1rem !important;
-  }
-
-  /* Buttons — stack vertically if needed, reduce size */
-  .btn-y2k {
-    padding: 0.6rem 1rem !important;
-    font-size: 0.75rem !important;
-  }
+/* Big display text with slight RGB mis-registration */
+.crt-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-shadow:
+    1.5px 0 0 rgba(255, 45, 85, 0.35),
+    -1.5px 0 0 rgba(0, 200, 255, 0.35),
+    0 0 24px rgba(var(--accent-rgb), 0.25);
 }
 
-/* ============================================
-   FILM GRAIN — heavier, grittier
-   ============================================ */
-.grain-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none;
-  opacity: 0.5;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
+.pixel-text {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.05em;
 }
 
-/* --- CRT Scan Lines --- */
-.scanlines {
-  position: fixed;
-  inset: 0;
-  z-index: 49;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 0, 0, var(--scanline-opacity)) 2px,
-    rgba(0, 0, 0, var(--scanline-opacity)) 4px
-  );
+/* OSD-style utility text (timestamps, counters, meta) */
+.osd-text {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--osd-green);
+  text-shadow: 0 0 6px rgba(47, 255, 94, 0.5);
 }
 
-/* ============================================
-   COMPONENT STYLES
-   ============================================ */
-
-/* --- Y2K Button — chunky, bold, 3D --- */
-.btn-y2k {
+/* Section label — VHS spine sticker energy */
+.label-xbox {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-glow);
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.3);
+  border-radius: 3px;
+  background: rgba(var(--accent-rgb), 0.08);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.875rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-  cursor: pointer;
+  gap: 0.4rem;
 }
 
-.btn-y2k-primary {
-  background: var(--accent-primary);
-  color: #fff;
-  border-color: var(--accent-primary);
-  box-shadow: 0 3px 0 #1570c8, 0 4px 12px rgba(0, 0, 0, 0.4);
+/* VHS tracking glitch — occasional horizontal shear on hover targets */
+@keyframes tracking-warp {
+  0%, 100% { transform: translateX(0) skewX(0); filter: none; }
+  20% { transform: translateX(-3px) skewX(-2deg); filter: saturate(1.4); }
+  40% { transform: translateX(2px) skewX(1deg); }
+  60% { transform: translateX(-1px) skewX(0); filter: hue-rotate(8deg); }
+  80% { transform: translateX(1px); filter: none; }
 }
 
-.btn-y2k-primary:hover {
-  transform: translateY(-2px);
-  background: var(--accent-glow);
-  box-shadow: 0 5px 0 #1570c8, 0 8px 20px rgba(30, 144, 255, 0.3);
+.glitch-hover:hover,
+.tracking-glitch:hover {
+  animation: tracking-warp 0.28s ease;
 }
 
-.btn-y2k-primary:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #1570c8, 0 2px 4px rgba(0, 0, 0, 0.4);
-}
+/* ============================================================
+   SURFACES
+   ============================================================ */
 
-.btn-y2k-outline {
-  background: transparent;
-  color: var(--text-primary);
-  border-color: var(--border-bright);
-}
-
-.btn-y2k-outline:hover {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  box-shadow: 0 0 16px var(--glow-primary);
-}
-
-/* --- Card — dark, bold --- */
-.card-y2k {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
-  transition: all 0.2s ease;
-}
-
-.card-y2k:hover {
-  border-color: var(--border-medium);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* ============================================
-   XBOX DASHBOARD — Frosted glass panels,
-   glowing borders, circuit-board aesthetic.
-   Adapted from original Xbox UI with blue accents.
-   ============================================ */
-
-/* Frosted glass panel — translucent with glow border */
+/* Primary panel — smoked CRT glass with phosphor edge */
 .panel-xbox {
-  background: rgba(10, 15, 30, 0.7);
+  background: rgba(12, 14, 22, 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(30, 144, 255, 0.2);
+  border: 1px solid rgba(var(--accent-rgb), 0.18);
   border-radius: 8px;
   position: relative;
   overflow: hidden;
@@ -408,32 +457,32 @@ body {
   pointer-events: none;
   background: linear-gradient(
     160deg,
-    rgba(30, 144, 255, 0.08) 0%,
+    rgba(var(--accent-rgb), 0.08) 0%,
     transparent 40%,
     transparent 60%,
-    rgba(30, 144, 255, 0.03) 100%
+    rgba(var(--accent-rgb), 0.03) 100%
   );
 }
 
 .panel-xbox:hover {
-  border-color: rgba(30, 144, 255, 0.4);
+  border-color: rgba(var(--accent-rgb), 0.4);
   box-shadow:
-    0 0 20px rgba(30, 144, 255, 0.1),
-    inset 0 0 30px rgba(30, 144, 255, 0.03);
+    0 0 20px rgba(var(--accent-rgb), 0.1),
+    inset 0 0 30px rgba(var(--accent-rgb), 0.03);
 }
 
-/* Panel with stronger glow — for hero/featured sections */
+/* Hero panel — stronger bloom */
 .panel-xbox-glow {
-  background: rgba(10, 15, 30, 0.6);
+  background: rgba(12, 14, 22, 0.62);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(30, 144, 255, 0.3);
+  border: 1px solid rgba(var(--accent-rgb), 0.3);
   border-radius: 10px;
   position: relative;
   overflow: hidden;
   box-shadow:
-    0 0 30px rgba(30, 144, 255, 0.08),
-    inset 0 1px 0 rgba(30, 144, 255, 0.15);
+    0 0 30px rgba(var(--accent-rgb), 0.08),
+    inset 0 1px 0 rgba(var(--accent-rgb), 0.15);
 }
 
 .panel-xbox-glow::before {
@@ -444,18 +493,53 @@ body {
   pointer-events: none;
   background: linear-gradient(
     135deg,
-    rgba(30, 144, 255, 0.15) 0%,
+    rgba(var(--accent-rgb), 0.15) 0%,
     transparent 30%,
     transparent 70%,
-    rgba(77, 172, 255, 0.08) 100%
+    rgba(var(--accent-rgb), 0.08) 100%
   );
 }
 
-/* Circuit board background pattern (subtle) */
-.circuit-bg {
-  position: relative;
+.card-y2k {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
 }
 
+.card-y2k:hover {
+  border-color: var(--border-medium);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* VHS label — handwritten-sticker card header. Put on a div at the
+   top of a card: white-ish label, top tear, marker underline. */
+.vhs-label {
+  position: relative;
+  background: linear-gradient(180deg, #efece4 0%, #e2dfd6 100%);
+  color: #17171a;
+  border-radius: 2px;
+  padding: 0.5rem 0.9rem 0.45rem;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  transform: rotate(-0.4deg);
+}
+
+.vhs-label::after {
+  content: "";
+  position: absolute;
+  left: 0.9rem;
+  right: 30%;
+  bottom: 0.3rem;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, #b3342f 0 6px, transparent 6px 8px);
+  opacity: 0.7;
+}
+
+/* Circuit-board underlay (kept) */
+.circuit-bg { position: relative; }
 .circuit-bg::after {
   content: "";
   position: absolute;
@@ -463,35 +547,33 @@ body {
   pointer-events: none;
   opacity: 0.03;
   background-image:
-    linear-gradient(rgba(30, 144, 255, 0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(30, 144, 255, 0.5) 1px, transparent 1px);
+    linear-gradient(rgba(var(--accent-rgb), 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--accent-rgb), 0.5) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
 }
 
-/* Glowing divider line */
 .divider-glow {
   height: 1px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(30, 144, 255, 0.4) 20%,
-    rgba(30, 144, 255, 0.6) 50%,
-    rgba(30, 144, 255, 0.4) 80%,
+    rgba(var(--accent-rgb), 0.4) 20%,
+    rgba(var(--accent-rgb), 0.6) 50%,
+    rgba(var(--accent-rgb), 0.4) 80%,
     transparent 100%
   );
-  box-shadow: 0 0 8px rgba(30, 144, 255, 0.3);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.3);
 }
 
-/* Pulsing glow orb — decorative element */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(30, 144, 255, 0.3), 0 0 30px rgba(30, 144, 255, 0.1);
+    box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.3), 0 0 30px rgba(var(--accent-rgb), 0.1);
     opacity: 0.8;
   }
   50% {
-    box-shadow: 0 0 25px rgba(30, 144, 255, 0.5), 0 0 50px rgba(30, 144, 255, 0.2);
+    box-shadow: 0 0 25px rgba(var(--accent-rgb), 0.5), 0 0 50px rgba(var(--accent-rgb), 0.2);
     opacity: 1;
   }
 }
@@ -504,36 +586,14 @@ body {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
-/* Xbox-style section label — beveled metallic feel */
-.label-xbox {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent-glow);
-  padding: 0.25rem 0.75rem;
-  border: 1px solid rgba(30, 144, 255, 0.3);
-  border-radius: 3px;
-  background: rgba(30, 144, 255, 0.08);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-/* Hover glow effect for interactive panels */
-.hover-glow {
-  transition: all 0.3s ease;
-}
-
+.hover-glow { transition: all 0.3s ease; }
 .hover-glow:hover {
   box-shadow:
-    0 0 20px rgba(30, 144, 255, 0.15),
-    0 0 40px rgba(30, 144, 255, 0.05);
-  border-color: rgba(30, 144, 255, 0.5);
+    0 0 20px rgba(var(--accent-rgb), 0.15),
+    0 0 40px rgba(var(--accent-rgb), 0.05);
+  border-color: rgba(var(--accent-rgb), 0.5);
 }
 
-/* Animated scan bar — like an Xbox loading indicator */
 @keyframes scan-bar {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(200%); }
@@ -556,46 +616,109 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(30, 144, 255, 0.6),
+    rgba(var(--accent-rgb), 0.6),
     transparent
   );
   animation: scan-bar 3s ease-in-out infinite;
 }
 
-/* --- Pixel Font Accent --- */
-.pixel-text {
-  font-family: var(--font-pixel);
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+.btn-y2k {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.875rem;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
 }
 
-/* --- Glitch text on hover --- */
-@keyframes glitch {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(2px, -2px); }
-  60% { transform: translate(-1px, -1px); }
-  80% { transform: translate(1px, 1px); }
+.btn-y2k-primary {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+  box-shadow: 0 3px 0 var(--accent-dim), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.glitch-hover:hover {
-  animation: glitch 0.3s ease;
+.btn-y2k-primary:hover {
+  transform: translateY(-2px);
+  background: var(--accent-glow);
+  box-shadow: 0 5px 0 var(--accent-dim), 0 8px 20px rgba(var(--accent-rgb), 0.3);
 }
 
-/* --- CRT flicker (subtle) --- */
-@keyframes crt-flicker {
-  0%, 100% { opacity: 1; }
-  94% { opacity: 1; }
-  95% { opacity: 0.96; }
-  95.5% { opacity: 1; }
-  97% { opacity: 0.98; }
-  98% { opacity: 1; }
+.btn-y2k-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--accent-dim), 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.crt-flicker {
-  animation: crt-flicker 8s infinite;
+.btn-y2k-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-bright);
 }
 
-/* --- Rating badge — PS1 game case style --- */
+.btn-y2k-outline:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  box-shadow: 0 0 16px var(--glow-primary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background: rgba(10, 10, 12, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15);
+}
+
+.form-input::placeholder { color: var(--text-muted); }
+
+.tab-y2k {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.tab-y2k:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+.tab-y2k.tab-active {
+  color: var(--accent-primary);
+  background: rgba(var(--accent-rgb), 0.12);
+  border-color: rgba(var(--accent-rgb), 0.3);
+}
+
+/* ============================================================
+   RATINGS
+   ============================================================ */
 .rating-badge {
   display: inline-flex;
   align-items: center;
@@ -610,12 +733,8 @@ body {
   background: var(--bg-elevated);
 }
 
-/* Rating-colored title text on hover — all reviews */
-.group:hover .rating-title-hover {
-  color: var(--rating-color);
-}
+.group:hover .rating-title-hover { color: var(--rating-color); }
 
-/* Rating-colored title glow on hover — only for 9.5+ ratings */
 .group:hover .rating-title-glow-elite {
   text-shadow:
     0 0 8px var(--rating-color),
@@ -623,7 +742,6 @@ body {
     0 0 40px var(--rating-color);
 }
 
-/* Elite 9.5-9.9 — prominent purple glow (toned down from perfect 10) */
 .rating-badge.rating-elite {
   border-width: 2.5px !important;
   background: rgba(168, 85, 247, 0.15) !important;
@@ -665,61 +783,49 @@ body {
   }
 }
 
-/* Perfect 10 — OBNOXIOUS glowing badge */
 .rating-badge.rating-perfect {
   width: 3.75rem !important;
   height: 3.75rem !important;
   font-size: 1.5rem !important;
   border-width: 2.5px !important;
-  background: rgba(30, 144, 255, 0.15) !important;
+  background: rgba(var(--accent-rgb), 0.15) !important;
   color: #fff !important;
   text-shadow:
-    0 0 10px rgba(30, 144, 255, 1),
-    0 0 20px rgba(30, 144, 255, 0.9),
-    0 0 40px rgba(30, 144, 255, 0.7),
-    0 0 80px rgba(30, 144, 255, 0.5) !important;
+    0 0 10px rgba(var(--accent-rgb), 1),
+    0 0 20px rgba(var(--accent-rgb), 0.9),
+    0 0 40px rgba(var(--accent-rgb), 0.7),
+    0 0 80px rgba(var(--accent-rgb), 0.5) !important;
   box-shadow:
-    0 0 15px rgba(30, 144, 255, 0.7),
-    0 0 35px rgba(30, 144, 255, 0.5),
-    0 0 70px rgba(30, 144, 255, 0.3),
-    0 0 120px rgba(30, 144, 255, 0.15),
-    inset 0 0 15px rgba(30, 144, 255, 0.3) !important;
+    0 0 15px rgba(var(--accent-rgb), 0.7),
+    0 0 35px rgba(var(--accent-rgb), 0.5),
+    0 0 70px rgba(var(--accent-rgb), 0.3),
+    0 0 120px rgba(var(--accent-rgb), 0.15),
+    inset 0 0 15px rgba(var(--accent-rgb), 0.3) !important;
   animation: perfect-glow 2s ease-in-out infinite !important;
 }
 
 @keyframes perfect-glow {
   0%, 100% {
-    text-shadow:
-      0 0 10px rgba(30, 144, 255, 1),
-      0 0 20px rgba(30, 144, 255, 0.9),
-      0 0 40px rgba(30, 144, 255, 0.7),
-      0 0 80px rgba(30, 144, 255, 0.5);
     box-shadow:
-      0 0 15px rgba(30, 144, 255, 0.7),
-      0 0 35px rgba(30, 144, 255, 0.5),
-      0 0 70px rgba(30, 144, 255, 0.3),
-      0 0 120px rgba(30, 144, 255, 0.15),
-      inset 0 0 15px rgba(30, 144, 255, 0.3);
+      0 0 15px rgba(var(--accent-rgb), 0.7),
+      0 0 35px rgba(var(--accent-rgb), 0.5),
+      0 0 70px rgba(var(--accent-rgb), 0.3),
+      0 0 120px rgba(var(--accent-rgb), 0.15),
+      inset 0 0 15px rgba(var(--accent-rgb), 0.3);
   }
   50% {
-    text-shadow:
-      0 0 15px rgba(30, 144, 255, 1),
-      0 0 30px rgba(30, 144, 255, 1),
-      0 0 60px rgba(30, 144, 255, 0.8),
-      0 0 100px rgba(30, 144, 255, 0.6);
     box-shadow:
-      0 0 25px rgba(30, 144, 255, 0.9),
-      0 0 55px rgba(30, 144, 255, 0.7),
-      0 0 100px rgba(30, 144, 255, 0.4),
-      0 0 160px rgba(30, 144, 255, 0.2),
-      inset 0 0 25px rgba(30, 144, 255, 0.4);
+      0 0 25px rgba(var(--accent-rgb), 0.9),
+      0 0 55px rgba(var(--accent-rgb), 0.7),
+      0 0 100px rgba(var(--accent-rgb), 0.4),
+      0 0 160px rgba(var(--accent-rgb), 0.2),
+      inset 0 0 25px rgba(var(--accent-rgb), 0.4);
   }
 }
 
-/* ============================================
-   LIVE BADGE PULSE (Phase 2b-4)
-   Subtle pulsing red dot for the LIVE indicator.
-   ============================================ */
+/* ============================================================
+   LIVE + REACTIONS (rooms, debates)
+   ============================================================ */
 @keyframes live-pulse {
   0%, 100% {
     opacity: 1;
@@ -731,10 +837,6 @@ body {
   }
 }
 
-/* ============================================
-   FLOATING EMOJI TICKER (Phase 2b-3)
-   Track-level reactions drift up and fade out.
-   ============================================ */
 @keyframes float-up {
   0% {
     opacity: 0;
@@ -754,11 +856,31 @@ body {
   }
 }
 
-/* ============================================
-   POSTER GRID — Letterboxd-style album-art wall.
-   The core visual unit of the overhaul: dense
-   grids of covers that light up on hover.
-   ============================================ */
+/* Debate side bars */
+.debate-bar {
+  height: 10px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  display: flex;
+}
+
+.debate-bar .side-a {
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-glow));
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.5);
+  transition: width 0.4s ease;
+}
+
+.debate-bar .side-b {
+  background: linear-gradient(90deg, #ff7799, var(--accent-rose));
+  box-shadow: 0 0 10px rgba(224, 85, 117, 0.5);
+  transition: width 0.4s ease;
+  margin-left: auto;
+}
+
+/* ============================================================
+   POSTER GRID — the Letterboxd wall (kept + tuned)
+   ============================================================ */
 .poster-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -772,7 +894,6 @@ body {
   }
 }
 
-/* A single album cover tile. Wrap an <img> (or fallback) in this. */
 .poster {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -796,7 +917,6 @@ body {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 16px var(--glow-primary);
 }
 
-/* Small rating chip pinned to a poster corner */
 .poster-rating {
   position: absolute;
   bottom: 6px;
@@ -812,7 +932,6 @@ body {
   backdrop-filter: blur(4px);
 }
 
-/* Ranked-list position badge (1, 2, 3…) pinned top-left */
 .poster-rank {
   position: absolute;
   top: 6px;
@@ -832,10 +951,23 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Overlapping cover fan — used on list cards (5 covers stacked) */
-.cover-fan {
-  display: flex;
+/* "UNRELEASED" corner tag for Genius deep-catalog stuff */
+.poster-unreleased {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 176, 47, 0.6);
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--osd-amber);
+  text-transform: uppercase;
 }
+
+.cover-fan { display: flex; }
 
 .cover-fan .poster {
   width: 25%;
@@ -843,11 +975,8 @@ body {
   border-radius: 4px;
 }
 
-.cover-fan .poster + .poster {
-  margin-left: -12%;
-}
+.cover-fan .poster + .poster { margin-left: -12%; }
 
-/* Pixel-font month/section header for diary timelines */
 .timeline-header {
   font-family: var(--font-pixel);
   font-size: 1.1rem;
@@ -858,63 +987,43 @@ body {
   padding-bottom: 0.4rem;
 }
 
-/* Simple Y2K tab row (profile tabs: Reviews / Diary / Lists) */
-.tab-y2k {
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  border: 1px solid transparent;
-  transition: all 0.15s ease;
-  cursor: pointer;
-}
-
-.tab-y2k:hover {
-  color: var(--text-primary);
-  background: var(--bg-elevated);
-}
-
-.tab-y2k.tab-active {
-  color: var(--accent-primary);
-  background: rgba(30, 144, 255, 0.12);
-  border-color: rgba(30, 144, 255, 0.3);
-}
-
-/* --- Scrollbar --- */
+/* ============================================================
+   MISC
+   ============================================================ */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }
 ::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* --- Form Inputs — dark, bordered, matching the Y2K aesthetic --- */
-.form-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  background: rgba(10, 10, 12, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(30, 144, 255, 0.15);
-}
-
-.form-input::placeholder {
-  color: var(--text-muted);
-}
-
-/* --- Selection --- */
 ::selection {
   background: var(--accent-primary);
   color: #fff;
+}
+
+/* --- Mobile — thin bezel, full-bleed screen --- */
+@media (max-width: 640px) {
+  .crt-tv {
+    margin: 0;
+    padding: 6px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .crt-screen {
+    padding: 1rem 1rem 2.5rem;
+    border-radius: 6px;
+  }
+
+  .crt-chin { padding: 8px 8px 2px; }
+  .crt-brand { font-size: 0.85rem; }
+  .crt-osd { top: 0.5rem; right: 0.75rem; font-size: 0.85rem; }
+
+  .panel-xbox-glow { padding: 1.25rem !important; }
+  .panel-xbox { padding: 1rem !important; }
+
+  .btn-y2k {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.75rem !important;
+  }
 }

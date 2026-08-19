@@ -54,20 +54,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  async redirects() {
-    return [
-      {
-        source: "/about",
-        destination: "/profile/lucas",
-        permanent: true,
-      },
-      {
-        source: "/analytics",
-        destination: "/profile/lucas",
-        permanent: true,
-      },
-    ];
-  },
 };
 
 export default nextConfig;

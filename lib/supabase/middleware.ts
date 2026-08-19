@@ -52,8 +52,8 @@ export async function updateSession(request: NextRequest) {
     "/admin",
     "/reviews/new",
     "/reviews/mine",
-    "/diary",
     "/lists/new",
+    "/debates/new",
   ];
 
   if (!user) {

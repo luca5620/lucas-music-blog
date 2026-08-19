@@ -51,7 +51,7 @@ export function slugify(text: string): string {
 // HTTP helper with 429 backoff
 // ---------------------------------------------------------------------------
 
-async function spotifyFetch(path: string): Promise<unknown> {
+export async function spotifyFetch(path: string): Promise<unknown> {
   const url = path.startsWith("http") ? path : `${SPOTIFY_API}${path}`;
   const maxRetries = 3;
 

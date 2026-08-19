@@ -11,10 +11,9 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
  * Xbox 360 blue as the primary accent color.
  */
 
-// Home lives on the penguin logo; Releases pages are still reachable
-// through covers/reviews — both pulled from the bar so it fits
-// without scrolling (Luca, 2026-08-19).
+// Home lives on the penguin logo (no Home tab needed).
 const navLinks = [
+  { href: "/releases", label: "Releases" },
   { href: "/reviews", label: "Reviews" },
   { href: "/lists", label: "Lists" },
   { href: "/debates", label: "Debates" },
@@ -55,7 +54,10 @@ export default function Navigation() {
       {/* Two rows below lg: with 7 nav links plus the spine eating
           width, a single row crushed the account button. On lg+ it's
           the classic one-line bar again. */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      {/* Tabs are LEFT-justified: they sit right after the logo, and
+          the flex-1 links strip pushes Review + account to the far
+          right edge instead of dragging the tabs along with them. */}
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3">
         {/* Logo / Site Title */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
           <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
@@ -70,7 +72,7 @@ export default function Navigation() {
             that gives way when space runs out (it scrolls sideways) —
             the Review button and account button can never be pushed
             past the screen edge and clipped again. */}
-        <div className="flex items-center gap-1 sm:gap-2 min-w-0 w-full lg:w-auto">
+        <div className="flex items-center gap-1 sm:gap-2 min-w-0 w-full lg:flex-1">
           {/* Nav Links — can still scroll sideways on tiny screens,
               but the scrollbar itself is hidden (no-scrollbar) */}
           <div className="flex flex-1 min-w-0 items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">

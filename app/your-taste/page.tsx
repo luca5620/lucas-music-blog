@@ -7,11 +7,17 @@
  * says exactly why it's showing you something.
  *
  * Sections:
- *   1. BECAUSE YOU FOLLOW — releases by artists you follow that
- *      you haven't reviewed yet.
- *   2. YOUR PEOPLE RATED — recent reviews from people you follow.
- *   3. ANTICIPATED — releases you follow, unreleased/newest first.
- *   4. YOUR YEAR — your own quick stats for the current year.
+ *   1. ON AIR — the featured video slot (universal test seed for now).
+ *   2. TUNED TO YOU — the algorithmic shelf (lib/taste.ts): reviews,
+ *      debates, and releases mixed, 70% taste match / 30% popularity,
+ *      most-liked fallback for cold-start users, reason chips only
+ *      where one clean signal explains a pick.
+ *   3. BECAUSE YOU FOLLOW — releases by artists you follow that
+ *      you haven't reviewed yet, ordered by taste affinity.
+ *   4. YOUR PEOPLE RATED — recent reviews from people you follow,
+ *      taste-affine artists first.
+ *   5. ANTICIPATED — releases you follow, unreleased first then
+ *      taste affinity.
  *
  * Server component; auth required (middleware also gates nothing
  * here, so we redirect ourselves via requireAuth).
@@ -22,6 +28,8 @@ import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getRatingHex, formatRating } from "@/lib/rating";
 import FeaturedVideo from "@/components/taste/FeaturedVideo";
+import TunedToYou from "@/components/taste/TunedToYou";
+import { buildTasteProfile, getTunedToYou, affinityFor } from "@/lib/taste";
 
 /**
  * TEST SEED — the universal featured video (Luca, 2026-08-19). Every user
@@ -51,6 +59,8 @@ interface PosterRelease {
   release_date: string | null;
   is_unreleased: boolean;
   artist_name: string;
+  /** Viewer's taste score for the artist — used only for in-section order. */
+  affinity: number;
 }
 
 interface FriendReview {
@@ -71,6 +81,10 @@ function safeImage(url: string | null): string | null {
 export default async function YourTastePage() {
   const user = await requireAuth();
   const supabase = await createClient();
+
+  /* ---- Taste profile + the TUNED TO YOU picks ---- */
+  const profile = await buildTasteProfile(user.id);
+  const tunedItems = await getTunedToYou(profile, user.id);
 
   /* ---- Gather the viewer's graph in parallel ---- */
   const [artistFollowsRes, releaseFollowsRes, peopleFollowsRes, myReviewsRes] =
@@ -118,7 +132,7 @@ export default async function YourTastePage() {
     const { data } = await supabase
       .from("releases")
       .select(
-        "id, slug, title, cover_image, release_date, is_unreleased, artists!releases_primary_artist_id_fkey(name)"
+        "id, slug, title, cover_image, release_date, is_unreleased, primary_artist_id, artists!releases_primary_artist_id_fkey(name)"
       )
       .in("primary_artist_id", artistIds)
       .order("release_date", { ascending: false, nullsFirst: false })
@@ -131,11 +145,11 @@ export default async function YourTastePage() {
       cover_image: string | null;
       release_date: string | null;
       is_unreleased: boolean;
+      primary_artist_id: string | null;
       artists: { name: string } | { name: string }[] | null;
     };
     becauseYouFollow = ((data ?? []) as unknown as Row[])
       .filter((r) => !reviewedReleaseIds.has(r.id))
-      .slice(0, 12)
       .map((r) => ({
         id: r.id,
         slug: r.slug,
@@ -146,7 +160,16 @@ export default async function YourTastePage() {
         artist_name: Array.isArray(r.artists)
           ? r.artists[0]?.name ?? ""
           : r.artists?.name ?? "",
-      }));
+        affinity: affinityFor(
+          profile,
+          r.primary_artist_id,
+          Array.isArray(r.artists) ? r.artists[0]?.name ?? null : r.artists?.name ?? null
+        ),
+      }))
+      // Taste-ordered (the query already put newest first, and sort() is
+      // stable, so equal affinities keep recency order).
+      .sort((a, b) => b.affinity - a.affinity)
+      .slice(0, 12);
   }
 
   /* ---- Section 2: recent reviews from people you follow ---- */
@@ -170,16 +193,23 @@ export default async function YourTastePage() {
       cover_image: string | null;
       profiles: { username: string } | { username: string }[] | null;
     };
-    friendReviews = ((data ?? []) as unknown as Row[]).map((r) => ({
-      slug: r.slug,
-      title: r.title,
-      artist: r.artist,
-      rating: Number(r.rating),
-      cover_image: r.cover_image,
-      username: Array.isArray(r.profiles)
-        ? r.profiles[0]?.username ?? ""
-        : r.profiles?.username ?? "",
-    }));
+    friendReviews = ((data ?? []) as unknown as Row[])
+      .map((r) => ({
+        slug: r.slug,
+        title: r.title,
+        artist: r.artist,
+        rating: Number(r.rating),
+        cover_image: r.cover_image,
+        username: Array.isArray(r.profiles)
+          ? r.profiles[0]?.username ?? ""
+          : r.profiles?.username ?? "",
+      }))
+      // Taste-affine artists first; stable sort keeps recency inside ties.
+      .sort(
+        (a, b) =>
+          affinityFor(profile, null, b.artist) -
+          affinityFor(profile, null, a.artist)
+      );
   }
 
   /* ---- Section 3: releases you follow — unreleased/newest first ---- */
@@ -188,7 +218,7 @@ export default async function YourTastePage() {
     const { data } = await supabase
       .from("releases")
       .select(
-        "id, slug, title, cover_image, release_date, is_unreleased, artists!releases_primary_artist_id_fkey(name)"
+        "id, slug, title, cover_image, release_date, is_unreleased, primary_artist_id, artists!releases_primary_artist_id_fkey(name)"
       )
       .in("id", followedReleaseIds)
       .limit(24);
@@ -200,6 +230,7 @@ export default async function YourTastePage() {
       cover_image: string | null;
       release_date: string | null;
       is_unreleased: boolean;
+      primary_artist_id: string | null;
       artists: { name: string } | { name: string }[] | null;
     };
     anticipated = ((data ?? []) as unknown as Row[])
@@ -213,35 +244,20 @@ export default async function YourTastePage() {
         artist_name: Array.isArray(r.artists)
           ? r.artists[0]?.name ?? ""
           : r.artists?.name ?? "",
+        affinity: affinityFor(
+          profile,
+          r.primary_artist_id,
+          Array.isArray(r.artists) ? r.artists[0]?.name ?? null : r.artists?.name ?? null
+        ),
       }))
-      // Unreleased first, then newest release date.
+      // Unreleased first, then taste affinity, then newest release date.
       .sort((a, b) => {
         if (a.is_unreleased !== b.is_unreleased) return a.is_unreleased ? -1 : 1;
+        if (a.affinity !== b.affinity) return b.affinity - a.affinity;
         return (b.release_date ?? "") < (a.release_date ?? "") ? -1 : 1;
       })
       .slice(0, 12);
   }
-
-  /* ---- Section 4: your year, computed from your own reviews ---- */
-  const thisYear = new Date().getFullYear();
-  const yearReviews = myReviews.filter(
-    (r) => new Date(r.created_at).getFullYear() === thisYear
-  );
-  const avgRating =
-    yearReviews.length > 0
-      ? Math.round(
-          (yearReviews.reduce((sum, r) => sum + Number(r.rating), 0) /
-            yearReviews.length) *
-            10
-        ) / 10
-      : null;
-  // Most-reviewed artist this year (simple count by name).
-  const artistCounts = new Map<string, number>();
-  for (const r of yearReviews) {
-    artistCounts.set(r.artist, (artistCounts.get(r.artist) ?? 0) + 1);
-  }
-  const topArtist =
-    [...artistCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
   const hasAnySignal =
     becauseYouFollow.length > 0 ||
@@ -258,13 +274,6 @@ export default async function YourTastePage() {
         </p>
       </div>
 
-      {/* ===== Your year — quick stats strip ===== */}
-      <section className="grid grid-cols-3 gap-3">
-        <StatTile value={String(yearReviews.length)} label={`reviews in ${thisYear}`} />
-        <StatTile value={avgRating !== null ? formatRating(avgRating) : "—"} label="avg rating" />
-        <StatTile value={topArtist ?? "—"} label="most reviewed" small={!!topArtist} />
-      </section>
-
       {/* ===== Featured video — universal test slot, algorithm later ===== */}
       <section className="space-y-3">
         <SectionHeader label="ON AIR" sub="one pick, broadcast to everyone — for now" />
@@ -273,6 +282,14 @@ export default async function YourTastePage() {
           title={FEATURED_VIDEO.title}
         />
       </section>
+
+      {/* ===== Tuned to you — the algorithmic shelf ===== */}
+      {tunedItems.length > 0 && (
+        <section className="space-y-3">
+          <SectionHeader label="TUNED TO YOU" sub="picked for your taste — new here? it's what's hot" />
+          <TunedToYou items={tunedItems} />
+        </section>
+      )}
 
       {/* ===== No signal at all? Help them tune in. ===== */}
       {!hasAnySignal && (
@@ -373,30 +390,6 @@ function SectionHeader({ label, sub }: { label: string; sub: string }) {
       <span className="vhs-label text-sm">{label}</span>
       <span className="text-text-secondary text-xs hidden sm:inline">{sub}</span>
       <div className="flex-1 divider-glow" />
-    </div>
-  );
-}
-
-function StatTile({
-  value,
-  label,
-  small = false,
-}: {
-  value: string;
-  label: string;
-  small?: boolean;
-}) {
-  return (
-    <div className="panel-xbox p-4 text-center space-y-1">
-      <p
-        className={`font-[family-name:var(--font-heading)] font-extrabold text-accent-primary truncate ${
-          small ? "text-lg" : "text-2xl sm:text-3xl"
-        }`}
-        title={value}
-      >
-        {value}
-      </p>
-      <p className="text-[10px] uppercase tracking-widest text-text-muted">{label}</p>
     </div>
   );
 }

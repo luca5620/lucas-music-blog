@@ -446,10 +446,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           )}
         </div>
 
-        {/* Favorite genres — pill row */}
-        {profile.favorite_genres.length > 0 && (
+        {/* Favorite genres — pill row. Trigger-created accounts have
+            NULL here (they never picked genres), not an empty array —
+            this crashed every fresh signup's profile until guarded. */}
+        {(profile.favorite_genres?.length ?? 0) > 0 && (
           <div className="flex flex-wrap gap-2">
-            {profile.favorite_genres.map((genre) => (
+            {(profile.favorite_genres ?? []).map((genre) => (
               <span
                 key={genre}
                 className="px-3 py-1 rounded-full font-[family-name:var(--font-vt323)] text-sm uppercase tracking-wider"

@@ -11,9 +11,10 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
  * Xbox 360 blue as the primary accent color.
  */
 
+// Home lives on the penguin logo; Releases pages are still reachable
+// through covers/reviews — both pulled from the bar so it fits
+// without scrolling (Luca, 2026-08-19).
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/releases", label: "Releases" },
   { href: "/reviews", label: "Reviews" },
   { href: "/lists", label: "Lists" },
   { href: "/debates", label: "Debates" },
@@ -70,8 +71,9 @@ export default function Navigation() {
             the Review button and account button can never be pushed
             past the screen edge and clipped again. */}
         <div className="flex items-center gap-1 sm:gap-2 min-w-0 w-full lg:w-auto">
-          {/* Nav Links — horizontally scrollable when squeezed */}
-          <div className="flex flex-1 min-w-0 items-center gap-1 overflow-x-auto -mx-1 px-1">
+          {/* Nav Links — can still scroll sideways on tiny screens,
+              but the scrollbar itself is hidden (no-scrollbar) */}
+          <div className="flex flex-1 min-w-0 items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (

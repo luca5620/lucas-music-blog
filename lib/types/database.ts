@@ -18,7 +18,9 @@ export interface Profile {
   soundcloud_url: string | null;
   statsfm_url: string | null;
   apple_music_url: string | null;
-  favorite_genres: string[];
+  /** NULL for accounts that never picked genres (signup trigger
+      doesn't set it) — always guard with ?? [] before iterating. */
+  favorite_genres: string[] | null;
   role: "user" | "reviewer" | "admin" | "owner";
   /* Steam-style customization (migration 006) */
   theme: ProfileTheme;

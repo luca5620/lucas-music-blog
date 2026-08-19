@@ -291,14 +291,19 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       // relative + isolate: the animated ThemeBackdrop sits at -z
       // INSIDE this wrapper's own stacking context, above the page
       // background but below every piece of content.
-      className={`theme-${theme} relative isolate space-y-6 -m-8 sm:-m-8`}
+      // Full-bleed: the negative margins must EXACTLY cancel
+      // .crt-screen's padding (1rem on phones, 2rem/1.75rem on sm+).
+      // -m-8 everywhere overshot by 1rem per side on phones — the page
+      // went wider than the screen, so the app wobbled sideways and
+      // the banner hung past the borders.
+      className={`theme-${theme} relative isolate space-y-6 -mx-4 -mt-4 -mb-8 sm:-mx-8 sm:-mt-7`}
       style={pageBg ? { background: pageBg } : undefined}
     >
       {/* Animated console-dashboard atmosphere for this theme */}
       <ThemeBackdrop theme={theme} />
 
       {/* ========== BANNER ========== */}
-      <div className="relative h-56 sm:h-80 w-full" style={bannerStyle}>
+      <div className="relative h-44 sm:h-80 w-full" style={bannerStyle}>
         {/* Fade the banner into the page at BOTH edges (top + bottom)
             so it doesn't start with a hard line — black normally, the
             light wash on Wii/LimeWire. */}
@@ -324,7 +329,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-6">
           {/* Avatar */}
           <div
-            className="w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 shrink-0"
+            className="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 shrink-0"
             style={{
               borderColor: accentColor,
               boxShadow: `0 0 24px ${accentColor}60, 0 0 48px ${accentColor}20`,
@@ -537,7 +542,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
                       <div className="text-center">
                         <p
-                          className="font-[family-name:var(--font-heading)] text-4xl font-extrabold"
+                          className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
                           style={{ color: accentColor }}
                         >
                           {stats.review_count}
@@ -548,7 +553,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                       </div>
                       <div className="text-center">
                         <p
-                          className="font-[family-name:var(--font-heading)] text-4xl font-extrabold"
+                          className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
                           style={{ color: accentColor }}
                         >
                           {avgRating ?? "—"}
@@ -560,7 +565,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                       {/* Total likes across ALL of this user's reviews */}
                       <div className="text-center">
                         <p
-                          className="font-[family-name:var(--font-heading)] text-4xl font-extrabold"
+                          className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
                           style={{ color: accentColor }}
                         >
                           {stats.total_likes_received}

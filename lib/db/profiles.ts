@@ -65,7 +65,7 @@ export async function getProfileStats(
 ): Promise<ProfileStats> {
   const supabase = await createClient();
 
-  const [reviewsRes, followersRes, followingRes] = await Promise.all([
+  const [reviewsRes, followersRes, followingRes, likesRes] = await Promise.all([
     supabase
       .from("reviews")
       .select("id", { count: "exact", head: true })
@@ -79,13 +79,20 @@ export async function getProfileStats(
       .from("follows")
       .select("id", { count: "exact", head: true })
       .eq("follower_id", userId),
+    // Likes on THIS user's reviews: count review_likes rows whose
+    // joined review belongs to them. The !inner join makes the
+    // .eq() filter on the embedded table actually restrict the count.
+    supabase
+      .from("review_likes")
+      .select("id, reviews!inner(user_id)", { count: "exact", head: true })
+      .eq("reviews.user_id", userId),
   ]);
 
   return {
     review_count: reviewsRes.count ?? 0,
     follower_count: followersRes.count ?? 0,
     following_count: followingRes.count ?? 0,
-    total_likes_received: 0,
+    total_likes_received: likesRes.count ?? 0,
   };
 }
 

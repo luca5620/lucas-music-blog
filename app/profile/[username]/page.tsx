@@ -34,6 +34,7 @@ import FourFavorites from "@/components/profile/FourFavorites";
 import RatingHistogram from "@/components/profile/RatingHistogram";
 import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
+import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import type { StreakIcon } from "@/components/profile/StreakIndicator";
 import ListCard from "@/components/lists/ListCard";
 import type { Metadata } from "next";
@@ -286,9 +287,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
        (Wii, LimeWire) also repaint the page area behind the content,
        because their text tokens flip dark. */
     <div
-      className={`theme-${theme} space-y-6 -m-8 sm:-m-8`}
+      // relative + isolate: the animated ThemeBackdrop sits at -z
+      // INSIDE this wrapper's own stacking context, above the page
+      // background but below every piece of content.
+      className={`theme-${theme} relative isolate space-y-6 -m-8 sm:-m-8`}
       style={pageBg ? { background: pageBg } : undefined}
     >
+      {/* Animated console-dashboard atmosphere for this theme */}
+      <ThemeBackdrop theme={theme} />
+
       {/* ========== BANNER ========== */}
       <div className="relative h-56 sm:h-80 w-full" style={bannerStyle}>
         {/* Fade the banner into the page at BOTH edges (top + bottom)

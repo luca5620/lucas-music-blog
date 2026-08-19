@@ -28,7 +28,7 @@ import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getRatingHex, formatRating } from "@/lib/rating";
 import FeaturedVideo from "@/components/taste/FeaturedVideo";
-import TunedToYou from "@/components/taste/TunedToYou";
+import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou, affinityFor } from "@/lib/taste";
 
 /**
@@ -82,9 +82,9 @@ export default async function YourTastePage() {
   const user = await requireAuth();
   const supabase = await createClient();
 
-  /* ---- Taste profile + the TUNED TO YOU picks ---- */
+  /* ---- Taste profile (the picks come after the graph loads — they
+     want the people-you-follow list for the author boost) ---- */
   const profile = await buildTasteProfile(user.id);
-  const tunedItems = await getTunedToYou(profile, user.id);
 
   /* ---- Gather the viewer's graph in parallel ---- */
   const [artistFollowsRes, releaseFollowsRes, peopleFollowsRes, myReviewsRes] =
@@ -125,6 +125,11 @@ export default async function YourTastePage() {
   const reviewedReleaseIds = new Set(
     myReviews.map((r) => r.release_id).filter(Boolean) as string[]
   );
+
+  /* ---- The TUNED TO YOU picks ---- */
+  const tunedItems = await getTunedToYou(profile, user.id, {
+    followedUserIds: peopleIds,
+  });
 
   /* ---- Section 1: releases by artists you follow, unreviewed ---- */
   let becauseYouFollow: PosterRelease[] = [];
@@ -283,11 +288,11 @@ export default async function YourTastePage() {
         />
       </section>
 
-      {/* ===== Tuned to you — the algorithmic shelf ===== */}
+      {/* ===== Tuned to you — the channel-surf pager ===== */}
       {tunedItems.length > 0 && (
         <section className="space-y-3">
-          <SectionHeader label="TUNED TO YOU" sub="picked for your taste — new here? it's what's hot" />
-          <TunedToYou items={tunedItems} />
+          <SectionHeader label="TUNED TO YOU" sub="swipe / arrow through your channel" />
+          <ChannelSurf items={tunedItems} />
         </section>
       )}
 

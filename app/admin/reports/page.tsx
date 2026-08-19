@@ -32,6 +32,7 @@ const DELETABLE_TYPES: ReportTargetType[] = [
   "debate_message",
   "room_message",
   "list",
+  "post",
 ];
 
 /** Human label + (where possible) a link to look at the target. */
@@ -44,6 +45,7 @@ function targetLabel(type: ReportTargetType): string {
     case "debate_message": return "Debate message";
     case "room_message": return "Room message";
     case "profile": return "Profile";
+    case "post": return "Post";
   }
 }
 

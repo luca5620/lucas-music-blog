@@ -54,6 +54,7 @@ export async function updateSession(request: NextRequest) {
     "/reviews/mine",
     "/lists/new",
     "/debates/new",
+    "/posts/new",
     "/connections",
   ];
 

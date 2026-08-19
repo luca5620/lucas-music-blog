@@ -16,7 +16,8 @@ export type ReportTargetType =
   | "debate"
   | "debate_message"
   | "room_message"
-  | "profile";
+  | "profile"
+  | "post";
 
 export const REPORT_TARGET_TYPES: ReportTargetType[] = [
   "review",
@@ -26,6 +27,7 @@ export const REPORT_TARGET_TYPES: ReportTargetType[] = [
   "debate_message",
   "room_message",
   "profile",
+  "post",
 ];
 
 export interface ContentReport {

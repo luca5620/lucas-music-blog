@@ -22,7 +22,8 @@ interface ReportButtonProps {
     | "debate"
     | "debate_message"
     | "room_message"
-    | "profile";
+    | "profile"
+    | "post";
   targetId: string;
   /** Tighter icon-only styling for dense rows (comments, chat). */
   small?: boolean;

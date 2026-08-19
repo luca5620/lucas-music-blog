@@ -27,6 +27,7 @@ const DELETABLE: Record<string, string> = {
   debate_message: "debate_messages",
   room_message: "room_messages",
   list: "lists",
+  post: "posts",
 };
 
 export async function POST(

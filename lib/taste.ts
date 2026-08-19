@@ -263,9 +263,13 @@ export type TunedItem =
       reason: string | null;
     };
 
-const TUNED_MAX_ITEMS = 6;
+// Sized for the channel-surf pager: enough cards to scroll through
+// without letting one artist or type take the feed over.
+const TUNED_MAX_ITEMS = 12;
 const TUNED_MAX_PER_ARTIST = 2;
-const TUNED_MAX_PER_TYPE = 3;
+const TUNED_MAX_PER_TYPE = 6;
+/** Reviews written by people the viewer follows get this taste boost. */
+const W_FOLLOWED_AUTHOR = 1.5;
 /** Half-strength freshness at two weeks; nothing goes fully to zero. */
 const FRESH_HALF_LIFE_DAYS = 14;
 
@@ -281,15 +285,20 @@ interface Candidate {
 
 export async function getTunedToYou(
   profile: TasteProfile,
-  viewerId: string
+  viewerId: string,
+  opts?: {
+    /** People the viewer follows — their reviews get boosted + a reason. */
+    followedUserIds?: string[];
+  }
 ): Promise<TunedItem[]> {
   const supabase = await createClient();
+  const followedAuthors = new Set(opts?.followedUserIds ?? []);
 
   const [reviewsRes, debatesRes, releasesRes] = await Promise.all([
     supabase
       .from("reviews")
       .select(
-        "id, slug, title, artist, rating, cover_image, created_at, release_id, releases(primary_artist_id), profiles!reviews_user_id_fkey!inner(username)"
+        "id, user_id, slug, title, artist, rating, cover_image, created_at, release_id, releases(primary_artist_id), profiles!reviews_user_id_fkey!inner(username)"
       )
       .eq("is_published", true)
       .neq("user_id", viewerId)
@@ -356,6 +365,7 @@ export async function getTunedToYou(
 
   type ReviewRow = {
     id: string;
+    user_id: string;
     slug: string;
     title: string;
     artist: string;
@@ -367,7 +377,18 @@ export async function getTunedToYou(
   };
   for (const r of (reviewsRes.data ?? []) as unknown as ReviewRow[]) {
     const artistId = first(r.releases)?.primary_artist_id ?? null;
-    const taste = affinityFor(profile, artistId, r.artist);
+    const fromFollow = followedAuthors.has(r.user_id);
+    const taste =
+      affinityFor(profile, artistId, r.artist) +
+      (fromFollow ? W_FOLLOWED_AUTHOR : 0);
+    const username = first(r.profiles)?.username ?? "";
+    // A followed author beats an artist-affinity reason: "your person
+    // rated this" is the cleaner explanation of the two.
+    const reason = fromFollow
+      ? `from @${username} — you follow them`
+      : artistId
+        ? profile.reasonByArtistId.get(artistId) ?? null
+        : null;
     candidates.push({
       item: {
         type: "review",
@@ -376,14 +397,14 @@ export async function getTunedToYou(
         artist: r.artist,
         rating: Number(r.rating),
         cover_image: r.cover_image,
-        username: first(r.profiles)?.username ?? "",
+        username,
         reason: null,
       },
       artistKey: artistId ?? r.artist.toLowerCase(),
       taste,
       popularity: likeCounts.get(r.id) ?? 0,
       ageDays: ageDays(r.created_at),
-      reason: artistId ? profile.reasonByArtistId.get(artistId) ?? null : null,
+      reason,
     });
   }
 

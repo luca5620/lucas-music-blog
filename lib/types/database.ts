@@ -308,6 +308,23 @@ export interface DebateMessageReaction {
   created_at: string;
 }
 
+/* --- Posts (migration 013) — freeform blog-style writeups --- */
+
+export interface Post {
+  id: string;
+  user_id: string;
+  slug: string;
+  title: string;
+  body: string;
+  /** Both video fields are set together or both null (DB constraint).
+      video_id is the extracted platform id only — never a raw URL. */
+  video_kind: "youtube" | "tiktok" | null;
+  video_id: string | null;
+  release_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 /* --- Aggregate / computed types --- */
 
 export interface ProfileStats {
@@ -733,6 +750,28 @@ export type Database = {
             columns: ["list_id"];
             isOneToOne: false;
             referencedRelation: "lists";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      posts: {
+        Row: Post;
+        Insert: Pick<Post, "user_id" | "slug" | "title" | "body"> &
+          Partial<Omit<Post, "user_id" | "slug" | "title" | "body">>;
+        Update: Partial<Post>;
+        Relationships: [
+          {
+            foreignKeyName: "posts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "posts_release_id_fkey";
+            columns: ["release_id"];
+            isOneToOne: false;
+            referencedRelation: "releases";
             referencedColumns: ["id"];
           }
         ];

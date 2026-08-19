@@ -38,9 +38,10 @@ const securityHeaders = [
       "media-src 'self' https:",
       "font-src 'self' data:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.spotify.com https://accounts.spotify.com",
-      // YouTube embeds (Your Taste section). nocookie is the privacy-
-      // enhanced player; www.youtube.com covers player-internal redirects.
-      "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
+      // Video embeds (Your Taste + posts). YouTube: nocookie is the
+      // privacy-enhanced player, www.youtube.com covers player-internal
+      // redirects. TikTok: the iframe player lives at www.tiktok.com.
+      "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

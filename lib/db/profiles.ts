@@ -96,6 +96,60 @@ export async function getProfileStats(
   };
 }
 
+/** Slice of a profile used in connection lists. */
+export interface ConnectionProfile {
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  role: Profile["role"];
+}
+
+/**
+ * People who follow `userId`. NOTE the FK-qualified embed: follows
+ * has TWO relationships to profiles (follower_id + following_id),
+ * so an unqualified join would be ambiguous and error.
+ */
+export async function getFollowers(
+  userId: string
+): Promise<ConnectionProfile[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("follows")
+    .select(
+      "profiles!follows_follower_id_fkey(username, display_name, avatar_url, role)"
+    )
+    .eq("following_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(200);
+
+  if (error || !data) return [];
+  type Row = { profiles: ConnectionProfile | ConnectionProfile[] | null };
+  return (data as unknown as Row[])
+    .map((r) => (Array.isArray(r.profiles) ? r.profiles[0] : r.profiles))
+    .filter((p): p is ConnectionProfile => !!p);
+}
+
+/** People `userId` follows. Same FK-qualification story as above. */
+export async function getFollowing(
+  userId: string
+): Promise<ConnectionProfile[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("follows")
+    .select(
+      "profiles!follows_following_id_fkey(username, display_name, avatar_url, role)"
+    )
+    .eq("follower_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(200);
+
+  if (error || !data) return [];
+  type Row = { profiles: ConnectionProfile | ConnectionProfile[] | null };
+  return (data as unknown as Row[])
+    .map((r) => (Array.isArray(r.profiles) ? r.profiles[0] : r.profiles))
+    .filter((p): p is ConnectionProfile => !!p);
+}
+
 export async function isFollowing(
   followerId: string,
   followingId: string

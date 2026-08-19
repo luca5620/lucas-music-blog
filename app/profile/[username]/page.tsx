@@ -415,25 +415,43 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </p>
         )}
 
-        {/* Stats row */}
+        {/* Stats row. Privacy by design: follower/following counts are
+            clickable ONLY on your own profile (they link to the private
+            /connections page) — visitors just see numbers, never lists. */}
         <div className="flex gap-6">
           {[
-            { label: "Reviews", value: stats.review_count },
-            { label: "Followers", value: stats.follower_count },
-            { label: "Following", value: stats.following_count },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p
-                className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold"
-                style={{ color: accentColor }}
+            { label: "Reviews", value: stats.review_count, link: false },
+            { label: "Followers", value: stats.follower_count, link: true },
+            { label: "Following", value: stats.following_count, link: true },
+          ].map((stat) => {
+            const inner = (
+              <>
+                <p
+                  className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold"
+                  style={{ color: accentColor }}
+                >
+                  {stat.value}
+                </p>
+                <p className="font-[family-name:var(--font-vt323)] text-xs text-text-muted uppercase tracking-wider">
+                  {stat.label}
+                </p>
+              </>
+            );
+            return isOwnProfile && stat.link ? (
+              <Link
+                key={stat.label}
+                href="/connections"
+                className="text-center hover:opacity-75 transition-opacity"
+                title="View your connections"
               >
-                {stat.value}
-              </p>
-              <p className="font-[family-name:var(--font-vt323)] text-xs text-text-muted uppercase tracking-wider">
-                {stat.label}
-              </p>
-            </div>
-          ))}
+                {inner}
+              </Link>
+            ) : (
+              <div key={stat.label} className="text-center">
+                {inner}
+              </div>
+            );
+          })}
         </div>
 
         {/* Streaming links + profile song */}

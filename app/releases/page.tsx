@@ -11,7 +11,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { listReleases } from "@/lib/db/releases";
-import ReleaseCard from "@/components/releases/ReleaseCard";
+import ReleasesIndexClient from "@/components/releases/ReleasesIndexClient";
 import { BreadcrumbSchema } from "@/app/schema";
 
 const PAGE_SIZE = 24;
@@ -119,11 +119,18 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {releases.map((release) => (
-            <ReleaseCard key={release.id} release={release} />
-          ))}
-        </div>
+        /* View-switchable listing (detailed/posters/compact) — shares
+           the same persisted preference as every other listing. */
+        <ReleasesIndexClient
+          items={releases.map((release) => ({
+            id: release.id,
+            slug: release.slug,
+            title: release.title,
+            cover_image: release.cover_image,
+            release_type: release.release_type,
+            release_date: release.release_date,
+          }))}
+        />
       )}
 
       {/* Pagination */}

@@ -30,6 +30,26 @@ export async function POST() {
   const limited = rateLimit(`account-delete:${user.id}`, 3, 3_600_000);
   if (limited) return limited;
 
+  // Uploads first, via the Storage API with the user's own session
+  // (their delete-own-folder policy covers it) — SQL can't touch
+  // storage.objects (protect_delete trigger). Best-effort: a failure
+  // here never blocks the account deletion itself; orphaned files
+  // are unreachable behind the folder-scoped policies anyway.
+  for (const bucket of ["avatars", "banners"]) {
+    try {
+      const { data: files } = await supabase.storage
+        .from(bucket)
+        .list(user.id);
+      if (files && files.length > 0) {
+        await supabase.storage
+          .from(bucket)
+          .remove(files.map((f) => `${user.id}/${f.name}`));
+      }
+    } catch (err) {
+      console.error(`storage cleanup failed for ${bucket}:`, err);
+    }
+  }
+
   const { error } = await supabase.rpc("delete_own_account");
   if (error) {
     console.error("account deletion failed:", error);

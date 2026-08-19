@@ -29,12 +29,12 @@ begin
     raise exception 'Not signed in';
   end if;
 
-  -- Uploaded avatar/banner files — owner is stamped by Supabase
-  -- Storage at upload time. Rows only; the actual blobs are pruned
-  -- by Supabase's own orphan cleanup.
-  delete from storage.objects
-  where bucket_id in ('avatars', 'banners')
-    and owner = _uid;
+  -- NO storage delete here: Supabase's storage.protect_delete()
+  -- trigger forbids SQL deletes on storage.objects (v1 of this
+  -- function failed on it). The API route removes the user's
+  -- avatar/banner uploads through the Storage API — with the
+  -- user's own session, allowed by the "Users delete files in
+  -- their own folder" policy — BEFORE calling this function.
 
   -- The cascade: auth.users -> profiles -> all content.
   delete from auth.users where id = _uid;

@@ -486,8 +486,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             case "stats":
               return (
                 <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">TASTE READOUT</div>
-                  <div className="panel-xbox p-5 grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+                  <div className="vhs-label inline-block text-sm">SCORECARD</div>
+                  <div className="panel-xbox p-5 grid grid-cols-1 sm:grid-cols-4 gap-6 items-center">
                     <div className="text-center">
                       <p
                         className="font-[family-name:var(--font-heading)] text-4xl font-extrabold"
@@ -510,18 +510,28 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                         Average rating
                       </p>
                     </div>
-                    <div>
-                      {ratingDistribution.length > 0 ? (
+                    {/* Total likes across ALL of this user's reviews —
+                        replaced the old NO SIGNAL placeholder cell. */}
+                    <div className="text-center">
+                      <p
+                        className="font-[family-name:var(--font-heading)] text-4xl font-extrabold"
+                        style={{ color: accentColor }}
+                      >
+                        {stats.total_likes_received}
+                      </p>
+                      <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
+                        Likes received
+                      </p>
+                    </div>
+                    {/* Histogram simply hides until there are ratings */}
+                    {ratingDistribution.length > 0 && (
+                      <div>
                         <RatingHistogram
                           distribution={ratingDistribution}
                           accentColor={accentColor}
                         />
-                      ) : (
-                        <p className="osd-text text-xs text-center opacity-60">
-                          NO SIGNAL
-                        </p>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </section>
               );

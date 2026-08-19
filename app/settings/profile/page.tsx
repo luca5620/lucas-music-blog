@@ -24,6 +24,9 @@ import FavoritesEditor from "@/components/profile/FavoritesEditor";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
+import StreakIndicator, {
+  type StreakIcon as StreakIconChoice,
+} from "@/components/profile/StreakIndicator";
 import type {
   Profile,
   ProfileTheme,
@@ -97,6 +100,7 @@ export default function ProfileSettingsPage() {
   const [bannerUrl, setBannerUrl] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [streakIcon, setStreakIcon] = useState<StreakIconChoice>("flame");
 
   // --- Showcases (ordered list of ENABLED blocks) ---
   const [showcases, setShowcases] = useState<ShowcaseType[]>([
@@ -157,6 +161,7 @@ export default function ProfileSettingsPage() {
         );
         setAvatarUrl(p.avatar_url ?? "");
         setBannerUrl(p.banner_url ?? "");
+        setStreakIcon(p.streak_icon ?? "flame");
         setShowcases(
           Array.isArray(p.showcases) && p.showcases.length > 0
             ? p.showcases.filter((s): s is ShowcaseType =>
@@ -291,6 +296,7 @@ export default function ProfileSettingsPage() {
       featured_review_id: featuredReviewId || null,
       avatar_url: avatarUrl || null,
       banner_url: bannerUrl || null,
+      streak_icon: streakIcon,
       profile_song_url: profileSongUrl || null,
       profile_song_title: profileSongTitle || null,
       spotify_url: spotifyUrl || null,
@@ -572,6 +578,39 @@ export default function ProfileSettingsPage() {
               }}
             />
           </div>
+
+          {/* --- Streak icon — the animated counter on Song of the Day.
+                Live previews: what you see is exactly what renders. --- */}
+          <FormField label="Streak icon (Song of the Day)">
+            <div className="flex flex-wrap gap-3">
+              {(
+                [
+                  { id: "flame", label: "Flame" },
+                  { id: "vinyl", label: "Vinyl" },
+                  { id: "cd", label: "CD" },
+                ] as { id: StreakIconChoice; label: string }[]
+              ).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => {
+                    setStreakIcon(opt.id);
+                    setSaved(false);
+                  }}
+                  className={`flex flex-col items-center gap-1 px-5 py-3 rounded-lg border transition-all ${
+                    streakIcon === opt.id
+                      ? "border-accent-primary bg-accent-primary/10"
+                      : "border-border-subtle hover:border-border-bright"
+                  }`}
+                >
+                  <StreakIndicator streak={7} icon={opt.id} size="sm" preview />
+                  <span className="pixel-text text-xs uppercase tracking-widest text-text-secondary">
+                    {opt.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </FormField>
         </fieldset>
 
         {/* ========== SHOWCASES ========== */}

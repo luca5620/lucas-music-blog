@@ -29,6 +29,9 @@ export interface Profile {
   location: string | null;
   tagline: string | null;
   featured_review_id: string | null;
+  /** Animated streak icon choice (migration 010). May be absent
+      until that migration runs — treat undefined as "flame". */
+  streak_icon?: "flame" | "vinyl" | "cd";
   created_at: string;
   updated_at: string;
 }

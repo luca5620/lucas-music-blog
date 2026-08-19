@@ -434,10 +434,33 @@ body {
   );
 }
 
+/* ============================================================
+   STREAK INDICATOR ANIMATIONS — vinyl/CD spin + flame flicker
+   ============================================================ */
+@keyframes streak-spin {
+  to { transform: rotate(360deg); }
+}
+.streak-spin {
+  animation: streak-spin 2.8s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes streak-flicker {
+  0%, 100% { transform: scale(1) skewX(0deg); }
+  25% { transform: scale(1.06, 0.94) skewX(-2deg); }
+  50% { transform: scale(0.95, 1.06) skewX(1deg); }
+  75% { transform: scale(1.04, 0.97) skewX(2deg); }
+}
+.streak-flicker {
+  animation: streak-flicker 0.9s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
 /* Kill the ambience for users who ask for calm */
 @media (prefers-reduced-motion: reduce) {
   .grain-overlay { animation: none; }
   .tracking-glitch { animation: none; }
+  .streak-spin, .streak-flicker { animation: none; }
 }
 
 /* ============================================================

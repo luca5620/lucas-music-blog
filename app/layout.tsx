@@ -12,6 +12,7 @@ import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import NativeMode from "@/components/ui/NativeMode";
 import TabBar from "@/components/ui/TabBar";
+import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { WebSiteSchema } from "@/app/schema";
@@ -161,6 +162,8 @@ export default async function RootLayout({
           <CRTShell>
             <Navigation />
             {children}
+            {/* Bug-report hatch on every page */}
+            <SiteFooter />
           </CRTShell>
           {/* App-only bottom tabs — renders null on the web */}
           <TabBar />

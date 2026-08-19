@@ -672,9 +672,103 @@ body {
   user-select: none;
 }
 
-/* Keep the page from rubber-banding sideways in the shell */
+/* Keep the page from rubber-banding sideways in the shell, and kill
+   double-tap-zoom / pinch-zoom — apps don't zoom their chrome. (The
+   viewport meta gets maximum-scale=1 from NativeMode.tsx too; this is
+   the CSS half of the same rule.) Vertical rubber-band STAYS — that
+   bounce is native iOS feel, removing it reads as broken. */
 .native-app body {
   overscroll-behavior-x: none;
+  touch-action: pan-x pan-y;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Web-only chrome the app hides: the top nav link strip duplicates
+   the bottom tab bar in the shell, so it goes. Logo + CREATE + avatar
+   stay on top. */
+.native-app .app-hide {
+  display: none !important;
+}
+
+/* With the link strip gone, the header collapses to a single tight
+   row in the app: logo left, CREATE + avatar right. */
+.native-app .app-nav-row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* App-only elements (e.g. the Lists/Friends/Your Taste links in the
+   avatar dropdown — pages without a bottom tab). Invisible on web. */
+.app-only {
+  display: none;
+}
+.native-app .app-only {
+  display: block;
+}
+
+/* Notch/status-bar breathing room: env() is 0 outside the shell, so
+   web layouts are untouched. */
+.native-app .crt-tv {
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+}
+
+/* Room for the fixed tab bar so page bottoms are never covered.
+   3rem matches .crt-screen's own bottom padding. */
+.native-app .crt-screen {
+  padding-bottom: calc(3rem + 60px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ============================================================
+   BOTTOM TAB BAR — app-only (TabBar.tsx renders null on web).
+   True-black glass over content, safe-area aware, accent tint
+   on the active tab. Sits above nav dropdowns (z-50).
+   ============================================================ */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  background: rgba(0, 0, 0, 0.92);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tab-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 0 7px;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+
+.tab-bar-item svg {
+  width: 22px;
+  height: 22px;
+}
+
+.tab-bar-item.active {
+  color: var(--accent-primary);
+}
+
+/* Active tab glows faintly — the CRT read of iOS's filled-icon state */
+.tab-bar-item.active svg {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-primary) 60%, transparent));
 }
 
 /* ============================================================

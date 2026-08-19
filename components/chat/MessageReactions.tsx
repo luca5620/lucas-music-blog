@@ -13,6 +13,7 @@
  */
 
 import { useState } from "react";
+import { hapticTap } from "@/lib/native";
 
 export const REACTION_EMOJIS = ["🔥", "💀", "🎯", "❤️", "🤧", "🥶"];
 
@@ -42,9 +43,15 @@ export default function MessageReactions({
 
   if (chips.length === 0 && !canReact) return null;
 
+  // Every reaction toggle gets a physical tap in the app (no-op on web)
+  const toggle = (emoji: string) => {
+    hapticTap();
+    onToggle(emoji);
+  };
+
   const pick = (emoji: string) => {
     setPickerOpen(false);
-    onToggle(emoji);
+    toggle(emoji);
   };
 
   return (
@@ -56,7 +63,7 @@ export default function MessageReactions({
             key={emoji}
             type="button"
             disabled={!canReact}
-            onClick={() => onToggle(emoji)}
+            onClick={() => toggle(emoji)}
             aria-pressed={isMine}
             aria-label={`${emoji} — ${count} reaction${count === 1 ? "" : "s"}`}
             className="inline-flex items-center gap-1 px-1.5 py-px rounded-full text-xs transition-all disabled:cursor-default enabled:hover:scale-110"

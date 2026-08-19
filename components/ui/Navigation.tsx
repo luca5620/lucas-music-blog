@@ -67,7 +67,10 @@ export default function Navigation() {
       {/* Tabs are LEFT-justified: they sit right after the logo, and
           the flex-1 links strip pushes Review + account to the far
           right edge instead of dragging the tabs along with them. */}
-      <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+      {/* app-nav-row: in the native shell the link strip is hidden, so
+          this collapses to ONE row — logo left, CREATE + avatar right
+          (globals.css forces flex-row + justify-between there). */}
+      <div className="app-nav-row flex flex-col lg:flex-row lg:items-center gap-3">
         {/* Logo / Site Title */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
           <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
@@ -82,10 +85,15 @@ export default function Navigation() {
             that gives way when space runs out (it scrolls sideways) —
             the Review button and account button can never be pushed
             past the screen edge and clipped again. */}
-        <div className="flex items-center gap-1 sm:gap-2 min-w-0 w-full lg:flex-1">
+        {/* justify-end is a no-op on web (the flex-1 strip eats all free
+            space) but right-aligns CREATE + avatar in the app, where the
+            strip is hidden. */}
+        <div className="flex items-center justify-end gap-1 sm:gap-2 min-w-0 w-full lg:flex-1">
           {/* Nav Links — can still scroll sideways on tiny screens,
-              but the scrollbar itself is hidden (no-scrollbar) */}
-          <div className="flex flex-1 min-w-0 items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
+              but the scrollbar itself is hidden (no-scrollbar).
+              app-hide: in the native shell the bottom TabBar is the
+              primary nav, so this strip disappears there. */}
+          <div className="app-hide flex flex-1 min-w-0 items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -249,6 +257,33 @@ export default function Navigation() {
                         >
                           Settings
                         </Link>
+                        {/* App-only (display:none on web): these pages
+                            have no bottom tab, so the dropdown is how
+                            the app reaches them. */}
+                        <div className="app-only">
+                          <div className="my-1 border-t border-white/5" />
+                          <Link
+                            href="/your-taste"
+                            onClick={() => setDropdownOpen(false)}
+                            className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                          >
+                            Your Taste
+                          </Link>
+                          <Link
+                            href="/lists"
+                            onClick={() => setDropdownOpen(false)}
+                            className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                          >
+                            Lists
+                          </Link>
+                          <Link
+                            href="/friends"
+                            onClick={() => setDropdownOpen(false)}
+                            className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                          >
+                            Friends
+                          </Link>
+                        </div>
                         {(profile?.role === "owner" || profile?.role === "admin") && (
                           <>
                             <div className="my-1 border-t border-white/5" />

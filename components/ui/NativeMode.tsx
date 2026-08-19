@@ -15,9 +15,18 @@ import { isNativeApp } from "@/lib/native";
  */
 export default function NativeMode() {
   useEffect(() => {
-    if (isNativeApp()) {
-      document.documentElement.classList.add("native-app");
-    }
+    if (!isNativeApp()) return;
+    document.documentElement.classList.add("native-app");
+
+    // Lock zoom in the shell only. Apps don't pinch-zoom their chrome;
+    // WKWebView honors maximum-scale/user-scalable (unlike Safari, which
+    // ignores it for accessibility — exactly why we never put this in
+    // the global viewport meta for web visitors).
+    const meta = document.querySelector('meta[name="viewport"]');
+    meta?.setAttribute(
+      "content",
+      "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    );
   }, []);
 
   return null;

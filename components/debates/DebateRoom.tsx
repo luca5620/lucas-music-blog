@@ -30,6 +30,7 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import ReportButton from "@/components/moderation/ReportButton";
 import VoteBar from "@/components/debates/VoteBar";
 import MessageReactions from "@/components/chat/MessageReactions";
+import { hapticTap } from "@/lib/native";
 import {
   useMessageReactions,
   type ReactionCountRow,
@@ -388,6 +389,7 @@ export default function DebateRoom({
   const castVote = useCallback(
     async (side: "a" | "b") => {
       if (!user || voting || isClosed || myVote === side) return;
+      hapticTap(); // physical thunk on vote in the app; no-op on web
       setVoting(true);
       setErrorMsg(null);
 

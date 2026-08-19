@@ -21,6 +21,7 @@ import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
 import { getRatingHex, formatRating } from "@/lib/rating";
+import { hapticTap } from "@/lib/native";
 
 interface ReviewFormProps {
   mode: "create" | "edit";
@@ -246,7 +247,13 @@ export default function ReviewForm({
               max="10"
               step="0.1"
               value={rating}
-              onChange={(e) => setRating(parseFloat(e.target.value))}
+              onChange={(e) => {
+                // onChange only fires when the value actually moves, so
+                // this ratchets once per 0.1 tick — the iOS-picker feel.
+                // No-op on web.
+                hapticTap();
+                setRating(parseFloat(e.target.value));
+              }}
               className="w-full h-2 bg-[rgba(255,255,255,0.05)] rounded-full appearance-none cursor-pointer"
               style={{ accentColor: ratingColor }}
               aria-label="Rating from 0 to 10"

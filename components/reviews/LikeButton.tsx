@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { hapticTap } from "@/lib/native";
 
 interface LikeButtonProps {
   reviewId: string;
@@ -39,6 +40,8 @@ export default function LikeButton({
     }
 
     if (pending) return;
+
+    hapticTap(); // physical click in the app; no-op on web
 
     const prevLiked = liked;
     const prevCount = count;

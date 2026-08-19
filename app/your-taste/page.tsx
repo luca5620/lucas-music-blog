@@ -21,6 +21,17 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getRatingHex, formatRating } from "@/lib/rating";
+import FeaturedVideo from "@/components/taste/FeaturedVideo";
+
+/**
+ * TEST SEED — the universal featured video (Luca, 2026-08-19). Every user
+ * sees this one until the Your Taste algorithm starts picking the slot's
+ * content per viewer (most-liked as the cold-start default for new users).
+ */
+const FEATURED_VIDEO = {
+  videoId: "yBBumoYwkGc",
+  title: "Fall In Love - Phantogram 4K (Boruto AMV)",
+};
 
 export const metadata = {
   title: "Your Taste",
@@ -252,6 +263,15 @@ export default async function YourTastePage() {
         <StatTile value={String(yearReviews.length)} label={`reviews in ${thisYear}`} />
         <StatTile value={avgRating !== null ? formatRating(avgRating) : "—"} label="avg rating" />
         <StatTile value={topArtist ?? "—"} label="most reviewed" small={!!topArtist} />
+      </section>
+
+      {/* ===== Featured video — universal test slot, algorithm later ===== */}
+      <section className="space-y-3">
+        <SectionHeader label="ON AIR" sub="one pick, broadcast to everyone — for now" />
+        <FeaturedVideo
+          videoId={FEATURED_VIDEO.videoId}
+          title={FEATURED_VIDEO.title}
+        />
       </section>
 
       {/* ===== No signal at all? Help them tune in. ===== */}

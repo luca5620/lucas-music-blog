@@ -585,30 +585,15 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* VHS label — handwritten-sticker card header. Put on a div at the
-   top of a card: white-ish label, top tear, marker underline. */
+/* Section label — used to be a white VHS sticker; now a clean
+   uppercase heading, per Luca's preference (no boxes, no tilt).
+   Font size comes from the caller's text-* utility. */
 .vhs-label {
-  position: relative;
-  background: linear-gradient(180deg, #efece4 0%, #e2dfd6 100%);
-  color: #17171a;
-  border-radius: 2px;
-  padding: 0.5rem 0.9rem 0.45rem;
   font-family: var(--font-heading);
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
-  transform: rotate(-0.4deg);
-}
-
-.vhs-label::after {
-  content: "";
-  position: absolute;
-  left: 0.9rem;
-  right: 30%;
-  bottom: 0.3rem;
-  height: 2px;
-  background: repeating-linear-gradient(90deg, #b3342f 0 6px, transparent 6px 8px);
-  opacity: 0.7;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-primary);
 }
 
 /* Circuit-board underlay (kept) */

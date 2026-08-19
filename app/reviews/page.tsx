@@ -53,9 +53,9 @@ export default async function Reviews() {
       />
       <FAQSchema items={reviewsFAQs} />
 
-      {/* Page Header */}
+      {/* Page Header — same treatment as HOME */}
       <div className="space-y-3">
-        <div className="vhs-label inline-block text-lg">REVIEWS</div>
+        <h1 className="crt-title text-3xl sm:text-4xl">REVIEWS</h1>
         <p className="text-text-secondary">
           Honest takes from the whole community. Every review is tied to a
           real release — no filler, no fake entries.

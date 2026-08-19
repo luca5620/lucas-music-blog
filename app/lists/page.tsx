@@ -29,10 +29,9 @@ export default async function ListsPage() {
       {/* --- Header — a shelf of mixtapes --- */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-2">
-          <div className="vhs-label inline-block text-sm">MIXTAPE SHELF</div>
-          <h1 className="crt-title text-3xl sm:text-4xl">Lists</h1>
-          <p className="osd-text text-sm">
-            albums, curated — rankings, moods, obsessions
+          <h1 className="crt-title text-3xl sm:text-4xl">LISTS</h1>
+          <p className="text-text-secondary text-sm">
+            Albums, curated — rankings, moods, obsessions.
           </p>
         </div>
 

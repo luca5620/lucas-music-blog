@@ -236,8 +236,7 @@ export default function SignUpPage() {
         <div className="panel-xbox-glow p-8 relative overflow-hidden">
           {/* Header */}
           <div className="text-center mb-8 space-y-2">
-            <p className="osd-text text-xs">NEW VIEWER REGISTRATION</p>
-            <h1 className="crt-title text-3xl">Create Account</h1>
+            <h1 className="crt-title text-3xl">CREATE ACCOUNT</h1>
             <p className="text-text-secondary text-sm">
               claim your handle on Peak Music Reviews
             </p>

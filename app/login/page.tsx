@@ -81,8 +81,7 @@ export default function LoginPage() {
         <div className="panel-xbox-glow p-8 relative overflow-hidden">
           {/* Header */}
           <div className="text-center mb-8 space-y-2">
-            <p className="osd-text text-xs">RESUME BROADCAST</p>
-            <h1 className="crt-title text-3xl">Sign In</h1>
+            <h1 className="crt-title text-3xl">SIGN IN</h1>
             <p className="text-text-secondary text-sm">welcome back to Peak Music Reviews</p>
           </div>
 

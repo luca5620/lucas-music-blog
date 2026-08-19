@@ -23,11 +23,7 @@ export default async function DebatesPage() {
     <div className="space-y-6 circuit-bg">
       {/* ══════════ Header ══════════ */}
       <section className="panel-xbox-glow p-4 sm:p-8 space-y-3 relative overflow-hidden">
-        <div className="flex items-center gap-2">
-          <span className="glow-orb" />
-          <span className="label-xbox">Live opinion combat</span>
-        </div>
-        <h1 className="crt-title text-3xl sm:text-5xl">THE ARENA</h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">DEBATES</h1>
         <p className="text-sm text-text-secondary max-w-xl">
           Two sides. One vote. Endless arguing. Pick where you stand and
           defend it on air — your takes get stamped with your side.

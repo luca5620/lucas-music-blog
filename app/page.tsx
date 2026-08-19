@@ -67,8 +67,6 @@ function Splash() {
         <div className="absolute top-4 left-4 glow-orb" />
         <div className="absolute top-4 right-4 glow-orb" style={{ animationDelay: "1.5s" }} />
 
-        <p className="osd-text text-xs">— NOW BROADCASTING —</p>
-
         <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
 
         <p className="pixel-text text-lg sm:text-2xl text-accent-glow">
@@ -148,7 +146,6 @@ async function Dashboard({ userId }: { userId: string }) {
       <section className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="flex-1">
           <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
-          <p className="osd-text text-xs mt-1">▸ signal check · all channels</p>
         </div>
         <div className="flex gap-3">
           <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">

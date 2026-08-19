@@ -239,10 +239,12 @@ export default async function YourTastePage() {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Header */}
+      {/* Header — same treatment as HOME */}
       <div className="space-y-1">
         <h1 className="crt-title text-3xl sm:text-4xl">YOUR TASTE</h1>
-        <p className="osd-text text-sm">▸ a channel tuned to exactly one viewer</p>
+        <p className="text-text-secondary text-sm">
+          Built from who you follow and what you rate.
+        </p>
       </div>
 
       {/* ===== Your year — quick stats strip ===== */}
@@ -349,7 +351,7 @@ function SectionHeader({ label, sub }: { label: string; sub: string }) {
   return (
     <div className="flex items-center gap-3">
       <span className="vhs-label text-sm">{label}</span>
-      <span className="osd-text text-xs hidden sm:inline">▸ {sub}</span>
+      <span className="text-text-secondary text-xs hidden sm:inline">{sub}</span>
       <div className="flex-1 divider-glow" />
     </div>
   );

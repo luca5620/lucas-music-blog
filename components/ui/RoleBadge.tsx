@@ -1,13 +1,15 @@
 "use client";
 
 /**
- * Role Badge — Verification badges for profiles and reviews.
- * - Owner: Gold checkmark badge
- * - Admin/Reviewer: Blue checkmark badge
+ * Role Badge — Verification checkmarks for profiles and reviews.
+ * - Owner: GOLD with a strong glow
+ * - Admin: site blue with a strong glow
+ * - Verified Reviewer: green, subtle (no dramatic glow)
+ * - Early Tester: RED with a strong glow — the day-one crew
  * - Regular users: no badge
  */
 
-type Role = "user" | "reviewer" | "admin" | "owner";
+type Role = "user" | "reviewer" | "admin" | "owner" | "tester";
 
 interface RoleBadgeProps {
   role: Role;
@@ -17,11 +19,32 @@ interface RoleBadgeProps {
 
 const badgeConfig: Record<
   Exclude<Role, "user">,
-  { color: string; glow: string; label: string }
+  { color: string; glow: string; label: string; strongGlow: boolean }
 > = {
-  owner: { color: "#fbbf24", glow: "#fbbf2480", label: "Owner" },
-  admin: { color: "#1e90ff", glow: "#1e90ff80", label: "Admin" },
-  reviewer: { color: "#1e90ff", glow: "#1e90ff80", label: "Verified Reviewer" },
+  owner: {
+    color: "#fbbf24",
+    glow: "#fbbf24",
+    label: "Owner",
+    strongGlow: true,
+  },
+  admin: {
+    color: "#1e90ff",
+    glow: "#1e90ff",
+    label: "Admin",
+    strongGlow: true,
+  },
+  reviewer: {
+    color: "#22c55e",
+    glow: "#22c55e",
+    label: "Verified Reviewer",
+    strongGlow: false,
+  },
+  tester: {
+    color: "#ff4455",
+    glow: "#ff4455",
+    label: "Early Tester",
+    strongGlow: true,
+  },
 };
 
 const sizeMap = {
@@ -38,7 +61,17 @@ export default function RoleBadge({
   if (role === "user") return null;
 
   const config = badgeConfig[role];
+  // Unknown role value (e.g. DB ahead of the deployed code) — show nothing
+  // rather than crash.
+  if (!config) return null;
+
   const s = sizeMap[size];
+
+  // Strong glow = layered drop-shadows (tight core + wide halo);
+  // subtle = the single soft shadow the badges always had.
+  const glowFilter = config.strongGlow
+    ? `drop-shadow(0 0 3px ${config.glow}) drop-shadow(0 0 9px ${config.glow}99)`
+    : `drop-shadow(0 0 4px ${config.glow}80)`;
 
   return (
     <span className="inline-flex items-center gap-1" title={config.label}>
@@ -46,7 +79,7 @@ export default function RoleBadge({
         viewBox="0 0 24 24"
         fill="none"
         className={s.icon}
-        style={{ filter: `drop-shadow(0 0 4px ${config.glow})` }}
+        style={{ filter: glowFilter }}
       >
         {/* Shield / badge shape */}
         <path

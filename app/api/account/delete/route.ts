@@ -53,8 +53,12 @@ export async function POST() {
   const { error } = await supabase.rpc("delete_own_account");
   if (error) {
     console.error("account deletion failed:", error);
+    // TEMP while stabilizing the feature: surface the underlying
+    // reason so it's visible in the UI, not just Vercel logs.
     return NextResponse.json(
-      { error: "Could not delete the account. Try again or contact support." },
+      {
+        error: `Could not delete the account (${error.code ?? "?"}: ${error.message}). Try again or contact support.`,
+      },
       { status: 500 }
     );
   }

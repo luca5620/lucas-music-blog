@@ -1,6 +1,28 @@
 import UIKit
 import Capacitor
 
+/// The app's WebView controller — Main.storyboard points here instead
+/// of at the stock CAPBridgeViewController so we can flip the native
+/// scroll switches CSS can't reach:
+///  - bounces = false: WKWebView's rubber-band is UIScrollView-level;
+///    CSS overscroll-behavior does NOT disable it. This is the real
+///    "you can scroll too high into black" fix (Luca, 2026-08-19).
+///  - contentInsetAdjustmentBehavior = .never: belt-and-braces with
+///    ios.contentInset "never" in capacitor.config.ts — kills the
+///    black safe-area bars at the top/bottom of scrollable pages.
+///    The page handles its own safe areas via env() CSS padding.
+/// (Lives in this file so no Xcode project-file surgery is needed —
+/// any compiled file can hold the class.)
+class AppViewController: CAPBridgeViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        webView?.scrollView.bounces = false
+        webView?.scrollView.alwaysBounceVertical = false
+        webView?.scrollView.alwaysBounceHorizontal = false
+        webView?.scrollView.contentInsetAdjustmentBehavior = .never
+    }
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

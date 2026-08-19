@@ -697,6 +697,16 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+/* iOS force-zooms the page when focusing an input whose font is under
+   16px — and with pinch-zoom locked, that zoom got STUCK ("everything
+   was super warped" after signing in, Luca 2026-08-19). 16px inputs
+   remove the trigger entirely; native apps use ~17pt fields anyway. */
+.native-app input,
+.native-app textarea,
+.native-app select {
+  font-size: 16px !important;
+}
+
 /* Web-only chrome the app hides: the top nav link strip duplicates
    the bottom tab bar in the shell, so it goes. Logo + CREATE + avatar
    stay on top. */

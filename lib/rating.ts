@@ -30,7 +30,9 @@ export function getRatingHex(rating: number) {
   if (rating >= 4) return "#facc15";
   if (rating >= 3) return "#fb923c";
   if (rating >= 2) return "#ef4444";
-  return "#737373";
+  // Bottom of the barrel (0–1.9): light gray, NOT dark gray — this
+  // color lands on near-black surfaces, so it must stay readable.
+  return "#a1a1aa";
 }
 
 export function getRatingColor(rating: number) {
@@ -44,5 +46,7 @@ export function getRatingColor(rating: number) {
   if (rating >= 4) return "text-yellow-400 border-yellow-400";
   if (rating >= 3) return "text-orange-400 border-orange-400";
   if (rating >= 2) return "text-red-500 border-red-500";
-  return "text-neutral-900 border-neutral-900";
+  // Was text-neutral-900 — black-on-black, the 0 was literally
+  // invisible on dark panels. Light gray reads everywhere.
+  return "text-neutral-300 border-neutral-500";
 }

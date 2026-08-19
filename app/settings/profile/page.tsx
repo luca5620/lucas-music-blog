@@ -60,7 +60,8 @@ const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string; hint: string }[] = [
   { id: "badges", label: "Credentials", hint: "Verified badge, member since, transmission count" },
   { id: "lists", label: "Mixtapes", hint: "Your newest public lists" },
   { id: "anticipated", label: "Waiting On", hint: "Releases you follow, unreleased included" },
-  { id: "listening", label: "On Rotation", hint: "Now playing + lifetime minutes/streams (needs your stats.fm link below)" },
+  { id: "listening", label: "On Rotation", hint: "What you're playing right now / last played (needs your stats.fm link below)" },
+  { id: "listening_stats", label: "All-Time Listening", hint: "Lifetime minutes + total streams (needs your stats.fm link below)" },
   { id: "sotd", label: "Song of the Day", hint: "Daily pick — keep it up every day to grow your streak flame" },
 ];
 

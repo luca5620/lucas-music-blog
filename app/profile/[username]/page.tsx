@@ -100,6 +100,7 @@ const VALID_SHOWCASES: ShowcaseType[] = [
   "lists",
   "anticipated",
   "listening",
+  "listening_stats",
   "sotd",
 ];
 
@@ -198,8 +199,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const supabase = await createClient();
 
   const needsDistribution = showcases.includes("stats");
-  const needsFeatured =
-    showcases.includes("featured_review") && !!profile.featured_review_id;
+  // Featured review works even with nothing pinned: fall back to the
+  // user's highest-rated published review so enabling the showcase
+  // always shows SOMETHING (a pin in Settings overrides the pick).
+  const needsFeatured = showcases.includes("featured_review");
   const needsLists = showcases.includes("lists") || activeTab === "lists";
   const needsAnticipated = showcases.includes("anticipated");
 
@@ -211,12 +214,22 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           } as never)
         : Promise.resolve({ data: null }),
       needsFeatured
-        ? supabase
-            .from("reviews")
-            .select("*")
-            .eq("id", profile.featured_review_id!)
-            .eq("is_published", true)
-            .single()
+        ? profile.featured_review_id
+          ? supabase
+              .from("reviews")
+              .select("*")
+              .eq("id", profile.featured_review_id)
+              .eq("is_published", true)
+              .maybeSingle()
+          : supabase
+              .from("reviews")
+              .select("*")
+              .eq("user_id", profile.id)
+              .eq("is_published", true)
+              .order("rating", { ascending: false })
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle()
         : Promise.resolve({ data: null }),
       needsLists ? getListsByUsername(profile.username) : Promise.resolve([]),
       needsAnticipated
@@ -747,12 +760,23 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               );
 
             case "listening":
-              // ON ROTATION — now playing / last played + lifetime
-              // minutes & streams, read from the user's public
-              // stats.fm profile (link set in Settings → Links).
+              // ON ROTATION — now playing / last played (stats.fm).
               return (
                 <ListeningShowcase
                   key={type}
+                  mode="track"
+                  statsfmUrl={profile.statsfm_url}
+                  isOwner={isOwnProfile}
+                  accentColor={accentColor}
+                />
+              );
+
+            case "listening_stats":
+              // ALL-TIME LISTENING — lifetime minutes + streams (stats.fm).
+              return (
+                <ListeningShowcase
+                  key={type}
+                  mode="stats"
                   statsfmUrl={profile.statsfm_url}
                   isOwner={isOwnProfile}
                   accentColor={accentColor}

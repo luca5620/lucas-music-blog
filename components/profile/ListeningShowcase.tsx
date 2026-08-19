@@ -1,14 +1,14 @@
 /**
- * ListeningShowcase — "ON ROTATION" profile block.
+ * ListeningShowcase — the two stats.fm-powered profile blocks.
  *
- * Shows what the profile owner is playing RIGHT NOW (or the last
- * track they streamed) plus their lifetime listening totals —
- * minutes listened and total streams — all pulled from their public
- * stats.fm profile. Zero setup beyond pasting the stats.fm link in
- * Settings; private/absent stats.fm data just renders less.
+ * mode="track" → "ON ROTATION": what's playing right now (or the
+ *                last stream), nothing else.
+ * mode="stats" → "ALL-TIME LISTENING": lifetime minutes + streams.
  *
- * Server component: data is fetched (and cached in lib/statsfm)
- * during the profile render, so there's nothing to poll client-side.
+ * They're separate showcases so users can arrange (or skip) them
+ * independently. Both read the user's public stats.fm profile via
+ * the link Settings already collects; lib/statsfm caches so a
+ * profile showing both doesn't fetch twice.
  */
 
 import Link from "next/link";
@@ -18,6 +18,7 @@ import {
 } from "@/lib/statsfm";
 
 interface Props {
+  mode: "track" | "stats";
   statsfmUrl: string | null;
   isOwner: boolean;
   accentColor: string;
@@ -38,23 +39,41 @@ function timeAgo(iso: string | null): string | null {
 
 const fmt = new Intl.NumberFormat("en-US");
 
+function Attribution({ href }: { href: string }) {
+  return (
+    <p className="text-right">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
+      >
+        via stats.fm ↗
+      </a>
+    </p>
+  );
+}
+
 export default async function ListeningShowcase({
+  mode,
   statsfmUrl,
   isOwner,
   accentColor,
 }: Props) {
+  const label = mode === "track" ? "ON ROTATION" : "ALL-TIME LISTENING";
   const username = parseStatsfmUsername(statsfmUrl);
 
-  // No stats.fm link: give the owner a setup nudge, show visitors nothing.
+  // No stats.fm link: give the owner a setup nudge (once, on the
+  // track block only so it isn't repeated), show visitors nothing.
   if (!username) {
-    if (!isOwner) return null;
+    if (!isOwner || mode === "stats") return null;
     return (
       <section className="space-y-3">
-        <div className="vhs-label inline-block text-sm">ON ROTATION</div>
+        <div className="vhs-label inline-block text-sm">{label}</div>
         <div className="panel-xbox p-5 text-sm text-text-secondary space-y-2">
           <p>
-            Show what you&apos;re listening to and your lifetime minutes +
-            streams here. Two steps:
+            Show what you&apos;re listening to (and your lifetime minutes +
+            streams) here. Two steps:
           </p>
           <ol className="list-decimal pl-5 space-y-1 text-text-muted">
             <li>
@@ -90,29 +109,29 @@ export default async function ListeningShowcase({
 
   const { track, stats } = await getListeningSnapshot(username);
 
-  // Linked but nothing readable (private profile / no data yet).
-  if (!track && !stats) {
-    if (!isOwner) return null;
+  /* ---------------- ON ROTATION — the track ---------------- */
+  if (mode === "track") {
+    if (!track) {
+      if (!isOwner) return null;
+      return (
+        <section className="space-y-3">
+          <div className="vhs-label inline-block text-sm">{label}</div>
+          <div className="panel-xbox p-5 text-sm text-text-secondary">
+            Couldn&apos;t read your recent streams — make sure your stats.fm
+            profile is <span className="text-text-primary">public</span>{" "}
+            (stats.fm app → Settings → Privacy). (Only you can see this
+            hint.)
+          </div>
+        </section>
+      );
+    }
+
+    const ago = !track.isPlaying ? timeAgo(track.endedAt) : null;
+
     return (
       <section className="space-y-3">
-        <div className="vhs-label inline-block text-sm">ON ROTATION</div>
-        <div className="panel-xbox p-5 text-sm text-text-secondary">
-          Couldn&apos;t read your stats.fm data — make sure your stats.fm
-          profile is set to <span className="text-text-primary">public</span>{" "}
-          (stats.fm app → Settings → Privacy). (Only you can see this hint.)
-        </div>
-      </section>
-    );
-  }
-
-  const ago = track && !track.isPlaying ? timeAgo(track.endedAt) : null;
-
-  return (
-    <section className="space-y-3">
-      <div className="vhs-label inline-block text-sm">ON ROTATION</div>
-      <div className="panel-xbox p-5 space-y-5">
-        {/* --- Now playing / last played --- */}
-        {track && (
+        <div className="vhs-label inline-block text-sm">{label}</div>
+        <div className="panel-xbox p-5 space-y-4">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-lg overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
               {track.image ? (
@@ -149,47 +168,56 @@ export default async function ListeningShowcase({
               </p>
             </div>
           </div>
-        )}
+          <Attribution href={statsfmUrl ?? "https://stats.fm"} />
+        </div>
+      </section>
+    );
+  }
 
-        {/* --- Lifetime totals --- */}
-        {stats && (
-          <div className="grid grid-cols-2 gap-6 text-center">
-            <div>
-              <p
-                className="font-[family-name:var(--font-heading)] text-3xl font-extrabold"
-                style={{ color: accentColor }}
-              >
-                {fmt.format(stats.minutes)}
-              </p>
-              <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                Minutes listened
-              </p>
-            </div>
-            <div>
-              <p
-                className="font-[family-name:var(--font-heading)] text-3xl font-extrabold"
-                style={{ color: accentColor }}
-              >
-                {fmt.format(stats.streams)}
-              </p>
-              <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                Total streams
-              </p>
-            </div>
+  /* ------------- ALL-TIME LISTENING — the numbers ------------- */
+  if (!stats) {
+    if (!isOwner) return null;
+    return (
+      <section className="space-y-3">
+        <div className="vhs-label inline-block text-sm">{label}</div>
+        <div className="panel-xbox p-5 text-sm text-text-secondary">
+          No lifetime numbers yet — stats.fm needs your Spotify history
+          imported (stats.fm app → Import) and your profile set to public.
+          (Only you can see this hint.)
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="space-y-3">
+      <div className="vhs-label inline-block text-sm">{label}</div>
+      <div className="panel-xbox p-5 space-y-4">
+        <div className="grid grid-cols-2 gap-6 text-center">
+          <div>
+            <p
+              className="font-[family-name:var(--font-heading)] text-3xl font-extrabold"
+              style={{ color: accentColor }}
+            >
+              {fmt.format(stats.minutes)}
+            </p>
+            <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
+              Minutes listened
+            </p>
           </div>
-        )}
-
-        {/* Attribution + deep link */}
-        <p className="text-right">
-          <a
-            href={statsfmUrl ?? "https://stats.fm"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
-          >
-            via stats.fm ↗
-          </a>
-        </p>
+          <div>
+            <p
+              className="font-[family-name:var(--font-heading)] text-3xl font-extrabold"
+              style={{ color: accentColor }}
+            >
+              {fmt.format(stats.streams)}
+            </p>
+            <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
+              Total streams
+            </p>
+          </div>
+        </div>
+        <Attribution href={statsfmUrl ?? "https://stats.fm"} />
       </div>
     </section>
   );

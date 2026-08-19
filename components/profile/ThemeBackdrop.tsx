@@ -17,6 +17,7 @@
  */
 
 import type { ProfileTheme } from "@/lib/types/database";
+import BackdropVideo from "@/components/profile/BackdropVideo";
 
 /** Deterministic sparkle/bubble positions — no Math.random so the
     server render always matches the client. */
@@ -39,14 +40,15 @@ const BUBBLES = [
 ];
 
 export default function ThemeBackdrop({ theme }: { theme: ProfileTheme }) {
-  // The default look and LimeWire stay still on purpose.
-  if (theme === "crt-blue" || theme === "limewire") return null;
-
   return (
     <div
       className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
       aria-hidden="true"
     >
+      {/* Prerendered 3D loop when public/backdrops/<theme>.webm exists;
+          hides itself when the file is absent and the CSS scene below
+          carries the theme instead. */}
+      <BackdropVideo theme={theme} />
       {theme === "ps3" && (
         <>
           <div className="bd-ps3-ribbon" />

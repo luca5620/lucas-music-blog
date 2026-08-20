@@ -4,8 +4,9 @@
  * rainbow slivers, repeating radial track grooves, a clear-plastic
  * hub, slow spin. Two variants:
  *
- *  - "hero": large, tilted in perspective like a product render,
- *    crossed by two neon-green laser lines (the Desktop.fm scene)
+ *  - "hero": large, tilted in perspective like a product render.
+ *    Sits BEHIND hero text (position it absolutely inside a -z
+ *    backdrop layer) so it never crops the words in front of it.
  *  - "mini": small flat spinner for section headers — a "now
  *    playing" punctuation mark
  *
@@ -32,8 +33,6 @@ export default function ChromeDisc({
       <div className="cd-tilt">
         <div className="cd-disc" />
       </div>
-      <span className="cd-laser cd-laser-1" />
-      <span className="cd-laser cd-laser-2" />
     </div>
   );
 }

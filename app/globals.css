@@ -1727,35 +1727,6 @@ a.card-y2k:hover { transform: translateY(-2px); }
   to { transform: rotate(360deg); }
 }
 
-/* --- Neon green lasers crossing the scene (Desktop.fm's grid) --- */
-.cd-laser {
-  position: absolute;
-  height: 2px;
-  left: -14%;
-  right: -14%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    #39ff5e 30%,
-    #c9ffd6 50%,
-    #39ff5e 70%,
-    transparent 100%
-  );
-  box-shadow: 0 0 8px rgba(57, 255, 94, 0.8), 0 0 26px rgba(57, 255, 94, 0.35);
-  pointer-events: none;
-}
-
-.cd-laser-1 {
-  top: 44%;
-  transform: rotate(-14deg);
-}
-
-.cd-laser-2 {
-  top: 62%;
-  transform: rotate(9deg);
-  opacity: 0.75;
-}
-
 /* Mini variant — a small spinning disc beside section titles */
 .cd-mini {
   width: 2.25rem;

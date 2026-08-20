@@ -71,13 +71,20 @@ function Splash() {
         {/* Molten iridescent atmosphere drifting behind everything */}
         <LiquidAtmosphere />
 
+        {/* The chrome disc floats BEHIND the text — big, centered
+            high, softened so the title stays fully readable */}
+        <div
+          className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
+          aria-hidden="true"
+        >
+          <ChromeDisc className="absolute left-1/2 -translate-x-1/2 -top-24 sm:-top-36 w-[26rem] sm:w-[38rem] opacity-60" />
+        </div>
+
         <div className="absolute top-4 left-4 glow-orb" />
         <div className="absolute top-4 right-4 glow-orb" style={{ animationDelay: "1.5s" }} />
 
-        {/* The product render: a big chrome CD in perspective, crossed
-            by neon lasers. Negative margins absorb the empty space the
-            perspective tilt leaves in its square layout box. */}
-        <ChromeDisc className="w-72 sm:w-[26rem] mx-auto -mt-6 -mb-12 sm:-mt-8 sm:-mb-20" />
+        {/* Breathing room so the title sits below the disc's center */}
+        <div className="h-24 sm:h-40" />
 
         <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
 
@@ -158,20 +165,23 @@ async function Dashboard({ userId }: { userId: string }) {
              chrome disc spinning on the right ===== */}
       <section className="panel-xbox-glow p-6 sm:p-8 relative isolate overflow-hidden">
         <LiquidAtmosphere />
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          <div className="flex-1 space-y-4 text-center sm:text-left">
-            <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
-              <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
-                ✚ Write a Review
-              </Link>
-              <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
-                ⚔ Start a Debate
-              </Link>
-            </div>
+        {/* The disc spins behind the right side of the band */}
+        <div
+          className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
+          aria-hidden="true"
+        >
+          <ChromeDisc className="absolute -right-16 md:-right-10 -top-14 w-56 md:w-72 opacity-70" />
+        </div>
+        <div className="space-y-4 text-center sm:text-left">
+          <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
+            <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
+              ✚ Write a Review
+            </Link>
+            <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
+              ⚔ Start a Debate
+            </Link>
           </div>
-          {/* The disc — hidden on phones so the actions stay compact */}
-          <ChromeDisc className="hidden sm:block w-48 md:w-60 shrink-0 -my-8 md:-my-12" />
         </div>
         <div className="scan-bar" />
       </section>

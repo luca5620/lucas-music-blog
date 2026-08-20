@@ -13,6 +13,7 @@ import type { Metadata } from "next";
 import { listReleases } from "@/lib/db/releases";
 import ReleasesIndexClient from "@/components/releases/ReleasesIndexClient";
 import { BreadcrumbSchema } from "@/app/schema";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 
 const PAGE_SIZE = 24;
 
@@ -67,7 +68,9 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative isolate">
+      {/* Molten light across the top of the page */}
+      <LiquidAtmosphere variant="page" />
       <BreadcrumbSchema
         items={[
           { name: "Home", href: "/" },

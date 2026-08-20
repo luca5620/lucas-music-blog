@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getUser } from "@/lib/auth";
 import { getPublicLists } from "@/lib/db/lists";
 import ListCard from "@/components/lists/ListCard";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 
 export const metadata: Metadata = {
   title: "Lists",
@@ -25,7 +26,9 @@ export default async function ListsPage() {
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative isolate">
+      {/* Molten light across the top of the page */}
+      <LiquidAtmosphere variant="page" />
       {/* --- Header — a shelf of mixtapes --- */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-2">

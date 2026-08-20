@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listDebates } from "@/lib/db/debates";
 import DebateCard from "@/components/debates/DebateCard";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 
 export const metadata: Metadata = {
   title: "Debates",
@@ -20,7 +21,9 @@ export default async function DebatesPage() {
   const debates = await listDebates(24);
 
   return (
-    <div className="space-y-6 circuit-bg">
+    <div className="space-y-6 circuit-bg relative isolate">
+      {/* Molten light across the top of the page */}
+      <LiquidAtmosphere variant="page" />
       {/* ══════════ Header ══════════ */}
       <section className="panel-xbox-glow p-4 sm:p-8 space-y-3 relative overflow-hidden">
         <h1 className="crt-title text-3xl sm:text-4xl">DEBATES</h1>

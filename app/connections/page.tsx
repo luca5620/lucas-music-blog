@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/auth";
 import { getFollowers, getFollowing } from "@/lib/db/profiles";
 import type { ConnectionProfile } from "@/lib/db/profiles";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -29,7 +30,9 @@ export default async function ConnectionsPage() {
   ]);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-12">
+    <div className="max-w-3xl mx-auto space-y-8 pb-12 relative isolate">
+      {/* Molten light across the top of the page */}
+      <LiquidAtmosphere variant="page" />
       <div className="space-y-1">
         <h1 className="crt-title text-3xl sm:text-4xl">CONNECTIONS</h1>
         <p className="text-text-secondary text-sm">

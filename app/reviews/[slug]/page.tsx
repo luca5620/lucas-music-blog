@@ -15,6 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 import CommentsSection from "@/components/reviews/CommentsSection";
 import LikeButton from "@/components/reviews/LikeButton";
 import ReportButton from "@/components/moderation/ReportButton";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 // Community content changes constantly — always render fresh.
@@ -157,7 +158,9 @@ export default async function ReviewPage({
       )}
 
       {/* Main content card */}
-      <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">
+      <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative isolate overflow-hidden">
+        {/* Molten light drifting behind the review */}
+        <LiquidAtmosphere />
         {/* Header: cover beside the metadata on desktop, stacked on
             phones — the review text then gets the full width below. */}
         <div className="lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-8 lg:items-start">

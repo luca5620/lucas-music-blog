@@ -168,14 +168,14 @@ async function Dashboard({ userId }: { userId: string }) {
              chrome disc spinning on the right ===== */}
       <section className="panel-xbox-glow p-6 sm:p-8 relative isolate overflow-hidden">
         <LiquidAtmosphere />
-        {/* The disc spins behind the right side of the band — hidden
-            on phones (too much overlap in the small box), scrimmed so
-            text crossing the chrome stays readable */}
+        {/* The disc spins behind the right side of the band — compact
+            on phones, bigger on desktop, scrimmed so text crossing
+            the chrome stays readable */}
         <div
           className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
           aria-hidden="true"
         >
-          <ChromeDisc className="hidden sm:block absolute -right-16 md:-right-10 -top-14 w-56 md:w-72 opacity-70" />
+          <ChromeDisc className="absolute w-36 -right-12 -top-8 sm:w-56 sm:-right-16 sm:-top-14 md:w-72 md:-right-10 opacity-70" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/35 to-black/10" />
         </div>
         <div className="space-y-4 text-center sm:text-left">

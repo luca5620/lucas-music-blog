@@ -3,7 +3,7 @@ import { requireAuth } from "@/lib/auth";
 import { getFollowers, getFollowing } from "@/lib/db/profiles";
 import type { ConnectionProfile } from "@/lib/db/profiles";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PageHero from "@/components/ui/PageHero";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -30,15 +30,9 @@ export default async function ConnectionsPage() {
   ]);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-12 relative isolate">
-      {/* Molten light across the top of the page */}
-      <LiquidAtmosphere variant="page" />
-      <div className="space-y-1">
-        <h1 className="crt-title text-3xl sm:text-4xl">CONNECTIONS</h1>
-        <p className="text-text-secondary text-sm">
-          Only you can see this page.
-        </p>
-      </div>
+    <div className="max-w-3xl mx-auto space-y-8 pb-12">
+      {/* Page header — boxed hero, same as HOME */}
+      <PageHero title="CONNECTIONS" sub="Only you can see this page." />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <ConnectionColumn

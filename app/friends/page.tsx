@@ -16,7 +16,7 @@ import Link from "next/link";
 import { formatRating } from "@/lib/rating";
 import { getUser } from "@/lib/auth";
 import UserSearch from "@/components/friends/UserSearch";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PageHero from "@/components/ui/PageHero";
 import {
   getFriendActivity,
   getPopularWithFriends,
@@ -114,16 +114,12 @@ export default async function FriendsPage() {
   ]);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-12 relative isolate">
-      {/* Molten light across the top of the page */}
-      <LiquidAtmosphere variant="page" />
-      {/* Page header — same treatment as HOME */}
-      <div className="space-y-1">
-        <h1 className="crt-title text-3xl sm:text-4xl">FRIENDS</h1>
-        <p className="text-text-secondary text-sm">
-          What the people you follow have been spinning.
-        </p>
-      </div>
+    <div className="max-w-3xl mx-auto space-y-8 pb-12">
+      {/* Page header — boxed hero, same as HOME */}
+      <PageHero
+        title="FRIENDS"
+        sub="What the people you follow have been spinning."
+      />
 
       {/* Find people — type a username, click through, hit Follow */}
       <UserSearch />

@@ -13,7 +13,7 @@ import {
   ItemListSchema,
 } from "@/app/schema";
 import FAQSchema from "@/components/seo/FAQSchema";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PageHero from "@/components/ui/PageHero";
 import { reviewsFAQs } from "@/lib/faq-data";
 
 export const metadata = {
@@ -34,9 +34,7 @@ export default async function Reviews() {
   })) as ReviewWithAuthor[];
 
   return (
-    <div className="space-y-8 relative isolate">
-      {/* Molten light across the top of the page */}
-      <LiquidAtmosphere variant="page" />
+    <div className="space-y-8">
       {/* JSON-LD Structured Data */}
       <BreadcrumbSchema
         items={[
@@ -56,14 +54,11 @@ export default async function Reviews() {
       />
       <FAQSchema items={reviewsFAQs} />
 
-      {/* Page Header — same treatment as HOME */}
-      <div className="space-y-3">
-        <h1 className="crt-title text-3xl sm:text-4xl">REVIEWS</h1>
-        <p className="text-text-secondary">
-          Honest takes from the whole community. Every review is tied to a
-          real release — no filler, no fake entries.
-        </p>
-      </div>
+      {/* Page Header — boxed hero, same as HOME */}
+      <PageHero
+        title="REVIEWS"
+        sub="Honest takes from the whole community. Every review is tied to a real release — no filler, no fake entries."
+      />
 
       {/* Interactive filter + review list */}
       <ReviewsList reviews={reviews} />

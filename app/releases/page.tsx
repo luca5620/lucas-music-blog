@@ -13,7 +13,7 @@ import type { Metadata } from "next";
 import { listReleases } from "@/lib/db/releases";
 import ReleasesIndexClient from "@/components/releases/ReleasesIndexClient";
 import { BreadcrumbSchema } from "@/app/schema";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PageHero from "@/components/ui/PageHero";
 
 const PAGE_SIZE = 24;
 
@@ -68,9 +68,7 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="space-y-8 relative isolate">
-      {/* Molten light across the top of the page */}
-      <LiquidAtmosphere variant="page" />
+    <div className="space-y-8">
       <BreadcrumbSchema
         items={[
           { name: "Home", href: "/" },
@@ -78,14 +76,11 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
         ]}
       />
 
-      {/* Page header */}
-      <div className="space-y-3">
-        <h1 className="crt-title text-3xl sm:text-4xl">RELEASES</h1>
-        <p className="text-text-secondary">
-          Albums, EPs, mixtapes, and singles. Follow a release to be in the
-          live room when it drops.
-        </p>
-      </div>
+      {/* Page header — boxed hero, same as HOME */}
+      <PageHero
+        title="RELEASES"
+        sub="Albums, EPs, mixtapes, and singles. Follow a release to be in the live room when it drops."
+      />
 
       {/* Sort tabs */}
       <div className="flex flex-wrap gap-2">

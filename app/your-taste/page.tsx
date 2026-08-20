@@ -25,7 +25,7 @@
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PageHero from "@/components/ui/PageHero";
 import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou, affinityFor } from "@/lib/taste";
 
@@ -207,16 +207,12 @@ export default async function YourTastePage() {
     becauseYouFollow.length > 0 || anticipated.length > 0;
 
   return (
-    <div className="space-y-8 pb-12 relative isolate">
-      {/* Molten light across the top of the page */}
-      <LiquidAtmosphere variant="page" />
-      {/* Header — same treatment as HOME */}
-      <div className="space-y-1">
-        <h1 className="crt-title text-3xl sm:text-4xl">YOUR TASTE</h1>
-        <p className="text-text-secondary text-sm">
-          Built from who you follow and what you rate.
-        </p>
-      </div>
+    <div className="space-y-8 pb-12">
+      {/* Header — boxed hero, same as HOME */}
+      <PageHero
+        title="YOUR TASTE"
+        sub="Built from who you follow and what you rate."
+      />
 
       {/* ===== Tuned to you — the channel-surf pager, top of the
              page and the only place reviews appear here ===== */}

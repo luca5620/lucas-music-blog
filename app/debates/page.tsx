@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listDebates } from "@/lib/db/debates";
 import DebateCard from "@/components/debates/DebateCard";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PageHero from "@/components/ui/PageHero";
 
 export const metadata: Metadata = {
   title: "Debates",
@@ -21,23 +21,18 @@ export default async function DebatesPage() {
   const debates = await listDebates(24);
 
   return (
-    <div className="space-y-6 circuit-bg relative isolate">
-      {/* Molten light across the top of the page */}
-      <LiquidAtmosphere variant="page" />
-      {/* ══════════ Header ══════════ */}
-      <section className="panel-xbox-glow p-4 sm:p-8 space-y-3 relative overflow-hidden">
-        <h1 className="crt-title text-3xl sm:text-4xl">DEBATES</h1>
-        <p className="text-sm text-text-secondary max-w-xl">
-          Two sides. One vote. Endless arguing. Pick where you stand and
-          defend it on air — your takes get stamped with your side.
-        </p>
+    <div className="space-y-6 circuit-bg">
+      {/* ══════════ Header — boxed hero, same as HOME ══════════ */}
+      <PageHero
+        title="DEBATES"
+        sub="Two sides. One vote. Endless arguing. Pick where you stand and defend it on air — your takes get stamped with your side."
+      >
         <div className="pt-1">
           <Link href="/debates/new" className="btn-y2k btn-y2k-primary">
             Stake a claim
           </Link>
         </div>
-        <div className="scan-bar" />
-      </section>
+      </PageHero>
 
       {/* ══════════ Debate grid ══════════ */}
       {debates.length === 0 ? (

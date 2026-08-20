@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getUser } from "@/lib/auth";
 import { getPublicLists } from "@/lib/db/lists";
 import ListCard from "@/components/lists/ListCard";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PageHero from "@/components/ui/PageHero";
 
 export const metadata: Metadata = {
   title: "Lists",
@@ -26,27 +26,18 @@ export default async function ListsPage() {
   ]);
 
   return (
-    <div className="space-y-6 relative isolate">
-      {/* Molten light across the top of the page */}
-      <LiquidAtmosphere variant="page" />
-      {/* --- Header — a shelf of mixtapes --- */}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="crt-title text-3xl sm:text-4xl">LISTS</h1>
-          <p className="text-text-secondary text-sm">
-            Albums, curated — rankings, moods, obsessions.
-          </p>
-        </div>
-
+    <div className="space-y-6">
+      {/* --- Header — boxed hero, same as HOME --- */}
+      <PageHero title="LISTS" sub="Albums, curated — rankings, moods, obsessions.">
         {/* Only signed-in users can start a list. */}
         {user && (
-          <Link href="/lists/new" className="btn-y2k btn-y2k-primary">
-            + New List
-          </Link>
+          <div className="pt-1">
+            <Link href="/lists/new" className="btn-y2k btn-y2k-primary">
+              + New List
+            </Link>
+          </div>
         )}
-      </div>
-
-      <div className="divider-glow" />
+      </PageHero>
 
       {/* --- Grid of list cards --- */}
       {lists.length > 0 ? (

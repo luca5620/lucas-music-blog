@@ -101,6 +101,22 @@ export default function ThemeBackdrop({ theme }: { theme: ProfileTheme }) {
         </>
       )}
 
+      {theme === "bleach" && (
+        <>
+          <div className="bd-bleach-tone" />
+          <div className="bd-bleach-slash" />
+          <div className="bd-bleach-slash bd-bleach-slash2" />
+          <div className="bd-bleach-slash bd-bleach-slash-red" />
+        </>
+      )}
+
+      {theme === "daft-punk" && (
+        <>
+          <div className="bd-dp-pyramid" />
+          <div className="bd-dp-grid" />
+        </>
+      )}
+
       {theme === "wii" && (
         <>
           {BUBBLES.map((b, i) => (

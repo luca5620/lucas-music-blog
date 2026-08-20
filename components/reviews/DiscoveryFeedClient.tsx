@@ -25,6 +25,8 @@ export interface FeedReview {
   release_type: string | null;
   release_date: string | null;
   cover_image: string | null;
+  snippet: string | null;
+  summary: string | null;
   created_at: string;
   like_count: number;
   viewer_has_liked: boolean;
@@ -34,6 +36,19 @@ export interface FeedReview {
     avatar_url: string | null;
     role: "user" | "reviewer" | "admin" | "owner" | "tester";
   };
+  /** Embedded catalog release (when the review is catalog-attached) —
+      lets the card link straight to the release's community page. */
+  releases?: { slug: string } | { slug: string }[] | null;
+}
+
+/** The card's main click-through: the release page (all ratings +
+    the histogram) when the review is catalog-attached, otherwise
+    the review's own page. */
+function releaseHref(review: FeedReview): string {
+  const rel = Array.isArray(review.releases)
+    ? review.releases[0]
+    : review.releases;
+  return rel?.slug ? `/releases/${rel.slug}` : `/reviews/${review.slug}`;
 }
 
 function timeAgo(dateStr: string): string {
@@ -153,106 +168,117 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
         </div>
       )}
 
-      {/* ===== Detailed cards (default) ===== */}
+      {/* ===== Detailed cards (default) =====
+          The review itself lives ON the card — reviewer, rating, and
+          their words together, no extra click to read. The cover and
+          title click through to the release's community page (all
+          ratings + the histogram); the review page is one small link
+          away for comments. 4–5 cards per row on desktop keeps the
+          covers album-sized instead of gigantic. */}
       {view === "detailed" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 items-start">
           {feed.map((review) => {
             const profile = review.profiles;
             const ratingColor = getRatingHex(review.rating);
             const isVerified = profile.role !== "user";
+            const body = review.summary ?? review.snippet;
 
             return (
-              <Link
+              <article
                 key={review.id}
-                href={`/reviews/${review.slug}`}
-                className="panel-xbox p-4 sm:p-5 space-y-3 group cursor-pointer hover-glow relative overflow-hidden"
+                className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
               >
-                {isVerified && (
-                  <div className="absolute top-1 right-1 z-10">
-                    <VerifiedBadge role={profile.role} />
+                {/* Cover + title row → the release page */}
+                <Link href={releaseHref(review)} className="block group space-y-2">
+                  <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-[rgba(255,255,255,0.3)] transition-all">
+                    {review.cover_image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={review.cover_image}
+                        alt={`${review.title} cover`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <span className="text-5xl group-hover:scale-110 transition-transform">
+                        {"//"}
+                      </span>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                )}
 
-                <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-[rgba(255,255,255,0.3)] transition-all">
-                  {review.cover_image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={review.cover_image}
-                      alt={`${review.title} cover`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                  ) : (
-                    <span className="text-5xl group-hover:scale-110 transition-transform">
-                      {"//"}
-                    </span>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-
-                {/* Type + Year — same treatment as the release cards */}
-                <div className="flex items-center justify-between">
-                  <span className="label-xbox text-[0.6rem]">
-                    {(review.release_type ?? "MUSIC").toUpperCase()}
-                  </span>
-                  {review.release_date && review.release_date.length >= 4 && (
-                    <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-                      {review.release_date.slice(0, 4)}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-[#e8e6e3] group-hover:text-accent-primary transition-colors">
-                    {review.title}
-                  </h3>
-                  <p className="text-sm text-[#9a9a9e]">{review.artist}</p>
-                </div>
-
-                {/* Glowing rating badge — identical classes to Latest Drops */}
-                <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
-                  <div
-                    className={`rating-badge text-sm w-10 h-10 ${getRatingColor(review.rating)}`}
-                    style={{ color: ratingColor, borderColor: ratingColor }}
-                  >
-                    {formatRating(review.rating)}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-[#e8e6e3] group-hover:text-accent-primary transition-colors truncate">
+                        {review.title}
+                      </h3>
+                      <p className="text-xs text-[#9a9a9e] truncate">
+                        {review.artist}
+                        {review.release_date && review.release_date.length >= 4 &&
+                          ` · ${review.release_date.slice(0, 4)}`}
+                      </p>
+                    </div>
+                    <div
+                      className={`rating-badge text-xs w-9 h-9 shrink-0 ${getRatingColor(review.rating)}`}
+                      style={{ color: ratingColor, borderColor: ratingColor }}
+                    >
+                      {formatRating(review.rating)}
+                    </div>
                   </div>
-                </div>
+                </Link>
 
-                {/* Author + Like + Time */}
-                <div className="flex items-center gap-2 pt-1 border-t border-white/5">
+                {/* Reviewer */}
+                <Link
+                  href={`/profile/${profile.username}`}
+                  className="flex items-center gap-2 pt-2 border-t border-white/5 group/author"
+                >
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={profile.avatar_url}
                       alt={profile.display_name || profile.username}
-                      className="w-5 h-5 rounded-full object-cover border border-white/10"
+                      className="w-6 h-6 rounded-full object-cover border border-white/10"
                     />
                   ) : (
-                    <div className="w-5 h-5 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center justify-center">
-                      <span className="text-[9px] font-bold text-accent-primary uppercase">
+                    <div className="w-6 h-6 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center justify-center">
+                      <span className="text-[10px] font-bold text-accent-primary uppercase">
                         {(profile.username || "U")[0]}
                       </span>
                     </div>
                   )}
-                  <span className="text-xs text-text-muted flex items-center gap-1 truncate">
+                  <span className="text-xs text-text-muted group-hover/author:text-text-primary transition-colors flex items-center gap-1 truncate">
                     {profile.display_name || profile.username}
                     {isVerified && <VerifiedBadge role={profile.role} />}
                   </span>
-                  <span className="ml-auto flex items-center gap-2">
-                    <LikeButton
-                      reviewId={review.id}
-                      initialCount={review.like_count}
-                      initialLiked={review.viewer_has_liked}
-                      size="sm"
-                    />
-                    <span className="text-xs text-text-muted">
-                      {timeAgo(review.created_at)}
-                    </span>
+                  <span className="ml-auto text-xs text-text-muted shrink-0">
+                    {timeAgo(review.created_at)}
                   </span>
+                </Link>
+
+                {/* Their words, right here */}
+                {body && (
+                  <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-6">
+                    {body}
+                  </p>
+                )}
+
+                {/* Likes + the review's own page for comments */}
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
+                  <LikeButton
+                    reviewId={review.id}
+                    initialCount={review.like_count}
+                    initialLiked={review.viewer_has_liked}
+                    size="sm"
+                  />
+                  <Link
+                    href={`/reviews/${review.slug}`}
+                    className="pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+                  >
+                    Comments →
+                  </Link>
                 </div>
 
                 <div className="scan-bar" />
-              </Link>
+              </article>
             );
           })}
         </div>

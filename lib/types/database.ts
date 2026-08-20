@@ -44,7 +44,9 @@ export type ProfileTheme =
   | "xbox-og" // acid green on black metal
   | "xbox-360" // blade-dashboard green, glossy
   | "wii" // white channel cards, rounded + cheerful
-  | "limewire"; // lime on old-Windows gray, beveled panels
+  | "limewire" // lime on old-Windows gray, beveled panels
+  | "bleach" // Soul Reaper: manga ink, black & white + blood red
+  | "daft-punk"; // Robot Rock: helmet chrome + Discovery gold
 
 /** Showcase blocks a user can arrange on their profile, Steam-style. */
 export type ShowcaseType =

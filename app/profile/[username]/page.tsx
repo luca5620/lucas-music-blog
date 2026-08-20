@@ -71,6 +71,8 @@ const THEME_ACCENT: Record<ProfileTheme, string> = {
   "xbox-360": "#92c83e",
   wii: "#35b7d8",
   limewire: "#32cd32",
+  bleach: "#e3342f",
+  "daft-punk": "#f0b93c",
 };
 
 /* Wii and LimeWire are LIGHT presets: their theme classes flip the
@@ -85,6 +87,8 @@ const THEME_PAGE_BG: Record<ProfileTheme, string | null> = {
   "xbox-360": null,
   wii: "#e9eaee",
   limewire: "#d8d4c2",
+  bleach: null,
+  "daft-punk": null,
 };
 
 const VALID_THEMES = Object.keys(THEME_ACCENT) as ProfileTheme[];

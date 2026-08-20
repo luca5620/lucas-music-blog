@@ -53,6 +53,8 @@ const THEMES: { id: ProfileTheme; label: string; hex: string; desc: string }[] =
   { id: "xbox-360", label: "Xbox 360", hex: "#92c83e", desc: "Blade-dashboard green, glossy and friendly" },
   { id: "wii", label: "Wii", hex: "#35b7d8", desc: "White channel cards, rounded and cheerful" },
   { id: "limewire", label: "LimeWire", hex: "#32cd32", desc: "Where internet music began — beveled freeware beige" },
+  { id: "bleach", label: "Soul Reaper", hex: "#e3342f", desc: "Manga ink — stark black & white with a blood-red slash" },
+  { id: "daft-punk", label: "Robot Rock", hex: "#f0b93c", desc: "Helmet chrome and Discovery gold, neon horizon" },
 ];
 
 /* Every showcase block a profile can display. */

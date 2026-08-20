@@ -189,6 +189,59 @@
   letter-spacing: 0;
 }
 
+/* Soul Reaper — Bleach manga ink. Stark black & white, a blood-red
+   slash of accent, hard edges, halftone screentone. Panels look
+   inked, not glowing: heavy white borders with a hard red drop. */
+.theme-bleach {
+  --accent-primary: #e3342f;
+  --accent-glow: #ff5a4f;
+  --accent-dim: #a32420;
+  --accent-rgb: 227, 52, 47;
+  --border-subtle: #2a2a2e;
+  --border-medium: #3d3d42;
+  --border-bright: #e8e6e3;
+}
+.theme-bleach .panel-xbox,
+.theme-bleach .panel-xbox-glow {
+  background: rgba(8, 8, 9, 0.92);
+  border: 2px solid rgba(232, 230, 227, 0.85);
+  border-radius: 2px;
+  box-shadow: 5px 5px 0 rgba(227, 52, 47, 0.5);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.theme-bleach .panel-xbox::before,
+.theme-bleach .panel-xbox-glow::before { display: none; }
+.theme-bleach h1, .theme-bleach h2, .theme-bleach h3 {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-style: italic; /* the slashing manga-title lean */
+  letter-spacing: 0.02em;
+}
+.theme-bleach .btn-y2k { border-radius: 2px; }
+
+/* Robot Rock — Daft Punk. Helmet chrome and Discovery gold on the
+   void, Michroma's robotic type, a neon horizon behind everything. */
+.theme-daft-punk {
+  --accent-primary: #f0b93c;
+  --accent-glow: #ffd76e;
+  --accent-dim: #b8871f;
+  --accent-rgb: 240, 185, 60;
+  --font-heading: var(--font-michroma), system-ui, sans-serif;
+}
+.theme-daft-punk .panel-xbox,
+.theme-daft-punk .panel-xbox-glow {
+  background: linear-gradient(170deg, rgba(24, 18, 8, 0.72) 0%, rgba(5, 4, 2, 0.9) 100%);
+  border-color: rgba(240, 185, 60, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 215, 110, 0.25), /* chrome top highlight */
+    0 0 24px rgba(240, 185, 60, 0.06);
+}
+.theme-daft-punk h1, .theme-daft-punk h2, .theme-daft-punk h3 {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* --- Register with Tailwind v4 --- */
 @theme inline {
   --color-bg-primary: var(--bg-primary);
@@ -368,7 +421,7 @@ body {
    1440px+ only; laptops and phones keep the classic 1240px set. */
 @media (min-width: 1440px) {
   .crt-tv {
-    max-width: min(1680px, calc(100vw - 4rem));
+    max-width: min(1840px, calc(100vw - 3rem));
   }
   .crt-screen {
     padding: 2rem 3.25rem 3.5rem;
@@ -617,6 +670,100 @@ body {
   100% { translate: 8% -12px; rotate: 2deg; }
 }
 
+/* --- Soul Reaper: ink slashes cutting across the void, over a
+   faint halftone screentone --- */
+.bd-bleach-tone {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(232, 230, 227, 0.05) 1px, transparent 1px);
+  background-size: 9px 9px;
+}
+
+.bd-bleach-slash {
+  position: absolute;
+  top: 12%;
+  left: -20%;
+  width: 140%;
+  height: 64px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(232, 230, 227, 0.09) 35%,
+    rgba(232, 230, 227, 0.15) 50%,
+    rgba(232, 230, 227, 0.09) 65%,
+    transparent 100%
+  );
+  transform: rotate(-18deg);
+  filter: blur(2px);
+  animation: bd-slash-drift 12s ease-in-out infinite;
+}
+
+.bd-bleach-slash2 {
+  top: 46%;
+  height: 38px;
+  transform: rotate(-23deg);
+  opacity: 0.7;
+  animation-delay: -5s;
+}
+
+/* The one red slash — Zangetsu's arc */
+.bd-bleach-slash-red {
+  top: 70%;
+  height: 24px;
+  transform: rotate(-15deg);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(227, 52, 47, 0.3) 50%,
+    transparent 100%
+  );
+  animation-delay: -8s;
+}
+
+@keyframes bd-slash-drift {
+  0%, 100% { translate: -3% 0; }
+  50% { translate: 3% 8px; }
+}
+
+/* --- Robot Rock: the glowing pyramid over a neon horizon grid --- */
+.bd-dp-pyramid {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  width: 340px;
+  height: 250px;
+  margin-left: -170px;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 215, 110, 0.22) 0%,
+    rgba(240, 185, 60, 0.06) 60%,
+    transparent 100%
+  );
+  filter: blur(6px) drop-shadow(0 0 24px rgba(240, 185, 60, 0.35));
+  animation: bd-dp-pulse 5s ease-in-out infinite;
+}
+
+@keyframes bd-dp-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.bd-dp-grid {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  height: 38%;
+  background:
+    repeating-linear-gradient(0deg, rgba(240, 185, 60, 0.18) 0px, rgba(240, 185, 60, 0.18) 1px, transparent 1px, transparent 26px),
+    repeating-linear-gradient(90deg, rgba(240, 185, 60, 0.12) 0px, rgba(240, 185, 60, 0.12) 1px, transparent 1px, transparent 42px);
+  transform: perspective(300px) rotateX(55deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(180deg, transparent 0%, black 55%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 55%);
+}
+
 /* --- Wii: soft bubbles drifting up the channel screen --- */
 .bd-bubble {
   position: absolute;
@@ -662,7 +809,7 @@ body {
   .tracking-glitch { animation: none; }
   .streak-spin, .streak-flicker { animation: none; }
   .bd-ps3-ribbon, .bd-spark, .bd-ps4-ray, .bd-og-orb, .bd-og-ring,
-  .bd-360-wave, .bd-bubble { animation: none; }
+  .bd-360-wave, .bd-bubble, .bd-bleach-slash, .bd-dp-pyramid { animation: none; }
 }
 
 /* ============================================================

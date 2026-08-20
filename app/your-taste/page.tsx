@@ -70,6 +70,12 @@ interface FriendReview {
   rating: number;
   cover_image: string | null;
   username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  /** The review's words, shown right on the card — no extra click. */
+  body: string | null;
+  /** Catalog release slug so the card can link to the community page. */
+  release_slug: string | null;
 }
 
 /** Only https:// or local /path images (stored-XSS defense). */
@@ -183,32 +189,46 @@ export default async function YourTastePage() {
     const { data } = await supabase
       .from("reviews")
       .select(
-        "slug, title, artist, rating, cover_image, profiles!reviews_user_id_fkey!inner(username)"
+        "slug, title, artist, rating, cover_image, snippet, summary, releases(slug), profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)"
       )
       .in("user_id", peopleIds)
       .eq("is_published", true)
       .order("created_at", { ascending: false })
       .limit(12);
 
+    type RowProfile = {
+      username: string;
+      display_name: string | null;
+      avatar_url: string | null;
+    };
     type Row = {
       slug: string;
       title: string;
       artist: string;
       rating: number;
       cover_image: string | null;
-      profiles: { username: string } | { username: string }[] | null;
+      snippet: string | null;
+      summary: string | null;
+      releases: { slug: string } | { slug: string }[] | null;
+      profiles: RowProfile | RowProfile[] | null;
     };
     friendReviews = ((data ?? []) as unknown as Row[])
-      .map((r) => ({
-        slug: r.slug,
-        title: r.title,
-        artist: r.artist,
-        rating: Number(r.rating),
-        cover_image: r.cover_image,
-        username: Array.isArray(r.profiles)
-          ? r.profiles[0]?.username ?? ""
-          : r.profiles?.username ?? "",
-      }))
+      .map((r) => {
+        const p = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
+        const rel = Array.isArray(r.releases) ? r.releases[0] : r.releases;
+        return {
+          slug: r.slug,
+          title: r.title,
+          artist: r.artist,
+          rating: Number(r.rating),
+          cover_image: r.cover_image,
+          username: p?.username ?? "",
+          display_name: p?.display_name ?? null,
+          avatar_url: p?.avatar_url ?? null,
+          body: r.summary ?? r.snippet,
+          release_slug: rel?.slug ?? null,
+        };
+      })
       // Taste-affine artists first; stable sort keeps recency inside ties.
       .sort(
         (a, b) =>
@@ -327,43 +347,82 @@ export default async function YourTastePage() {
         </section>
       )}
 
-      {/* ===== Who you follow rated ===== */}
+      {/* ===== Who you follow rated =====
+          Full takes, not bare posters: the reviewer and their words sit
+          right on the card. Cover + title click through to the release's
+          community page (all ratings); avatar goes to the reviewer. */}
       {friendReviews.length > 0 && (
         <section className="space-y-3">
           <SectionHeader label="WHO YOU FOLLOW RATED" sub="fresh takes from your follows" />
-          <div className="poster-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
             {friendReviews.map((r) => {
               const cover = safeImage(r.cover_image);
+              const avatar = safeImage(r.avatar_url);
+              const reviewerName = r.display_name ?? r.username;
+              const mainHref = r.release_slug
+                ? `/releases/${r.release_slug}`
+                : `/reviews/${r.slug}`;
               return (
-                <Link
+                <article
                   key={r.slug}
-                  href={`/reviews/${r.slug}`}
-                  className="group space-y-1.5"
-                  title={`${r.title} — ${r.artist} (${r.rating}/10 by @${r.username})`}
+                  className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
                 >
-                  <span className="poster">
-                    {cover ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={cover} alt={`${r.title} cover`} />
-                    ) : (
-                      <span className="w-full h-full flex items-center justify-center text-4xl">💿</span>
-                    )}
+                  <Link href={mainHref} className="flex items-start gap-3 group">
+                    <span className="w-16 h-16 rounded-md overflow-hidden bg-bg-elevated border border-border-subtle shrink-0 flex items-center justify-center">
+                      {cover ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={cover}
+                          alt={`${r.title} cover`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <span className="text-2xl">💿</span>
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)] group-hover:text-accent-primary transition-colors">
+                        {r.title}
+                      </span>
+                      <span className="block text-xs text-text-secondary truncate">
+                        {r.artist}
+                      </span>
+                    </span>
                     <span
-                      className="poster-rating"
+                      className="pixel-text text-sm font-bold tabular-nums shrink-0"
                       style={{ color: getRatingHex(r.rating) }}
                     >
                       {formatRating(r.rating)}
                     </span>
-                  </span>
-                  <span className="block">
-                    <span className="block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)] group-hover:text-accent-primary transition-colors">
-                      {r.title}
+                  </Link>
+
+                  <Link
+                    href={`/profile/${r.username}`}
+                    className="flex items-center gap-2 group/author"
+                  >
+                    {avatar ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={avatar}
+                        alt={reviewerName}
+                        className="w-5 h-5 rounded-full object-cover border border-white/10"
+                      />
+                    ) : (
+                      <span className="w-5 h-5 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-[9px] font-bold text-accent-primary uppercase">
+                        {(r.username || "U")[0]}
+                      </span>
+                    )}
+                    <span className="text-xs text-text-muted group-hover/author:text-text-primary transition-colors truncate">
+                      {reviewerName}
                     </span>
-                    <span className="block text-xs text-text-secondary truncate">
-                      @{r.username}
-                    </span>
-                  </span>
-                </Link>
+                  </Link>
+
+                  {r.body && (
+                    <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-5">
+                      {r.body}
+                    </p>
+                  )}
+                </article>
               );
             })}
           </div>

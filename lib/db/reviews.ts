@@ -239,7 +239,7 @@ export async function getDiscoveryFeed(limit = 12, viewerId?: string) {
   const { data, error } = await supabase
     .from("reviews")
     .select(
-      "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role), review_likes(count)"
+      "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role), review_likes(count), releases(slug)"
     )
     .eq("is_published", true)
     .order("created_at", { ascending: false })

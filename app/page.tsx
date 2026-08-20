@@ -72,12 +72,15 @@ function Splash() {
         <LiquidAtmosphere />
 
         {/* The chrome disc floats BEHIND the text — big, centered
-            high, softened so the title stays fully readable */}
+            high. The scrim gradient darkens it progressively where
+            the title, tagline, and gray copy sit, so nothing gets
+            washed out against the chrome. */}
         <div
           className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
           aria-hidden="true"
         >
           <ChromeDisc className="absolute left-1/2 -translate-x-1/2 -top-24 sm:-top-36 w-[26rem] sm:w-[38rem] opacity-60" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.3)_28%,rgba(0,0,0,0.68)_52%,rgba(0,0,0,0.82)_100%)]" />
         </div>
 
         <div className="absolute top-4 left-4 glow-orb" />
@@ -165,12 +168,15 @@ async function Dashboard({ userId }: { userId: string }) {
              chrome disc spinning on the right ===== */}
       <section className="panel-xbox-glow p-6 sm:p-8 relative isolate overflow-hidden">
         <LiquidAtmosphere />
-        {/* The disc spins behind the right side of the band */}
+        {/* The disc spins behind the right side of the band — hidden
+            on phones (too much overlap in the small box), scrimmed so
+            text crossing the chrome stays readable */}
         <div
           className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
           aria-hidden="true"
         >
-          <ChromeDisc className="absolute -right-16 md:-right-10 -top-14 w-56 md:w-72 opacity-70" />
+          <ChromeDisc className="hidden sm:block absolute -right-16 md:-right-10 -top-14 w-56 md:w-72 opacity-70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/35 to-black/10" />
         </div>
         <div className="space-y-4 text-center sm:text-left">
           <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>

@@ -21,12 +21,16 @@ export default function PageHero({
   return (
     <section className="panel-xbox-glow p-6 sm:p-8 relative isolate overflow-hidden">
       <LiquidAtmosphere />
-      {/* The disc spins behind the right side of the band */}
+      {/* The disc spins behind the right side of the band. Phones hide
+          it (the box is too small — everything would overlap), and a
+          dark scrim sits over it so gray text crossing the chrome
+          stays readable. */}
       <div
         className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
         aria-hidden="true"
       >
-        <ChromeDisc className="absolute -right-16 md:-right-10 -top-14 w-56 md:w-72 opacity-70" />
+        <ChromeDisc className="hidden sm:block absolute -right-16 md:-right-10 -top-14 w-56 md:w-72 opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/35 to-black/10" />
       </div>
       <div className="space-y-3 text-center sm:text-left">
         <h1 className="crt-title text-3xl sm:text-4xl">{title}</h1>

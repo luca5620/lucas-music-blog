@@ -14,7 +14,7 @@
  *      where one clean signal explains a pick.
  *   3. BECAUSE YOU FOLLOW — releases by artists you follow that
  *      you haven't reviewed yet, ordered by taste affinity.
- *   4. YOUR PEOPLE RATED — recent reviews from people you follow,
+ *   4. WHO YOU FOLLOW RATED — recent reviews from people you follow,
  *      taste-affine artists first.
  *   5. ANTICIPATED — releases you follow, unreleased first then
  *      taste affinity.
@@ -327,10 +327,10 @@ export default async function YourTastePage() {
         </section>
       )}
 
-      {/* ===== Your people rated ===== */}
+      {/* ===== Who you follow rated ===== */}
       {friendReviews.length > 0 && (
         <section className="space-y-3">
-          <SectionHeader label="YOUR PEOPLE RATED" sub="fresh takes from your follows" />
+          <SectionHeader label="WHO YOU FOLLOW RATED" sub="fresh takes from your follows" />
           <div className="poster-grid">
             {friendReviews.map((r) => {
               const cover = safeImage(r.cover_image);

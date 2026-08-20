@@ -118,7 +118,7 @@ export default async function FriendsPage() {
       <div className="space-y-1">
         <h1 className="crt-title text-3xl sm:text-4xl">FRIENDS</h1>
         <p className="text-text-secondary text-sm">
-          What your people have been spinning.
+          What the people you follow have been spinning.
         </p>
       </div>
 

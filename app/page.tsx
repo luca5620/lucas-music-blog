@@ -203,7 +203,7 @@ async function Dashboard({ userId }: { userId: string }) {
       {activity.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-3">
-            <span className="vhs-label text-sm">YOUR PEOPLE</span>
+            <span className="vhs-label text-sm">WHO YOU FOLLOW</span>
             <div className="flex-1 divider-glow" />
             <Link
               href="/friends"

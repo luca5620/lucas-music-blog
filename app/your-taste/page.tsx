@@ -6,17 +6,16 @@
  * and what you've reviewed. No black-box algorithm — each section
  * says exactly why it's showing you something.
  *
- * Sections:
- *   1. ON AIR — the featured video slot (universal test seed for now).
- *   2. TUNED TO YOU — the algorithmic shelf (lib/taste.ts): reviews,
+ * Sections (Luca 2026-08-20: pager first and it is the ONLY place
+ * reviews appear here — the old ON AIR video slot and the "WHO YOU
+ * FOLLOW RATED" grid were removed; the video became a post):
+ *   1. TUNED TO YOU — the algorithmic pager (lib/taste.ts): reviews,
  *      debates, and releases mixed, 70% taste match / 30% popularity,
  *      most-liked fallback for cold-start users, reason chips only
  *      where one clean signal explains a pick.
- *   3. BECAUSE YOU FOLLOW — releases by artists you follow that
+ *   2. BECAUSE YOU FOLLOW — releases by artists you follow that
  *      you haven't reviewed yet, ordered by taste affinity.
- *   4. WHO YOU FOLLOW RATED — recent reviews from people you follow,
- *      taste-affine artists first.
- *   5. ANTICIPATED — releases you follow, unreleased first then
+ *   3. ANTICIPATED — releases you follow, unreleased first then
  *      taste affinity.
  *
  * Server component; auth required (middleware also gates nothing
@@ -26,21 +25,9 @@
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { getRatingHex, formatRating } from "@/lib/rating";
-import FeaturedVideo from "@/components/taste/FeaturedVideo";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou, affinityFor } from "@/lib/taste";
-
-/**
- * TEST SEED — the universal featured video (Luca, 2026-08-19). Every user
- * sees this one until the Your Taste algorithm starts picking the slot's
- * content per viewer (most-liked as the cold-start default for new users).
- */
-const FEATURED_VIDEO = {
-  videoId: "yBBumoYwkGc",
-  title: "Fall In Love - Phantogram 4K (Boruto AMV)",
-};
 
 export const metadata = {
   title: "Your Taste",
@@ -62,21 +49,6 @@ interface PosterRelease {
   artist_name: string;
   /** Viewer's taste score for the artist — used only for in-section order. */
   affinity: number;
-}
-
-interface FriendReview {
-  slug: string;
-  title: string;
-  artist: string;
-  rating: number;
-  cover_image: string | null;
-  username: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  /** The review's words, shown right on the card — no extra click. */
-  body: string | null;
-  /** Catalog release slug so the card can link to the community page. */
-  release_slug: string | null;
 }
 
 /** Only https:// or local /path images (stored-XSS defense). */
@@ -184,60 +156,6 @@ export default async function YourTastePage() {
       .slice(0, 12);
   }
 
-  /* ---- Section 2: recent reviews from people you follow ---- */
-  let friendReviews: FriendReview[] = [];
-  if (peopleIds.length > 0) {
-    const { data } = await supabase
-      .from("reviews")
-      .select(
-        "slug, title, artist, rating, cover_image, snippet, summary, releases(slug), profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)"
-      )
-      .in("user_id", peopleIds)
-      .eq("is_published", true)
-      .order("created_at", { ascending: false })
-      .limit(12);
-
-    type RowProfile = {
-      username: string;
-      display_name: string | null;
-      avatar_url: string | null;
-    };
-    type Row = {
-      slug: string;
-      title: string;
-      artist: string;
-      rating: number;
-      cover_image: string | null;
-      snippet: string | null;
-      summary: string | null;
-      releases: { slug: string } | { slug: string }[] | null;
-      profiles: RowProfile | RowProfile[] | null;
-    };
-    friendReviews = ((data ?? []) as unknown as Row[])
-      .map((r) => {
-        const p = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
-        const rel = Array.isArray(r.releases) ? r.releases[0] : r.releases;
-        return {
-          slug: r.slug,
-          title: r.title,
-          artist: r.artist,
-          rating: Number(r.rating),
-          cover_image: r.cover_image,
-          username: p?.username ?? "",
-          display_name: p?.display_name ?? null,
-          avatar_url: p?.avatar_url ?? null,
-          body: r.summary ?? r.snippet,
-          release_slug: rel?.slug ?? null,
-        };
-      })
-      // Taste-affine artists first; stable sort keeps recency inside ties.
-      .sort(
-        (a, b) =>
-          affinityFor(profile, null, b.artist) -
-          affinityFor(profile, null, a.artist)
-      );
-  }
-
   /* ---- Section 3: releases you follow — unreleased/newest first ---- */
   let anticipated: PosterRelease[] = [];
   if (followedReleaseIds.length > 0) {
@@ -286,9 +204,7 @@ export default async function YourTastePage() {
   }
 
   const hasAnySignal =
-    becauseYouFollow.length > 0 ||
-    friendReviews.length > 0 ||
-    anticipated.length > 0;
+    becauseYouFollow.length > 0 || anticipated.length > 0;
 
   return (
     <div className="space-y-8 pb-12 relative isolate">
@@ -302,16 +218,8 @@ export default async function YourTastePage() {
         </p>
       </div>
 
-      {/* ===== Featured video — universal test slot, algorithm later ===== */}
-      <section className="space-y-3">
-        <SectionHeader label="ON AIR" sub="one pick, broadcast to everyone — for now" />
-        <FeaturedVideo
-          videoId={FEATURED_VIDEO.videoId}
-          title={FEATURED_VIDEO.title}
-        />
-      </section>
-
-      {/* ===== Tuned to you — the channel-surf pager ===== */}
+      {/* ===== Tuned to you — the channel-surf pager, top of the
+             page and the only place reviews appear here ===== */}
       {tunedItems.length > 0 && (
         <section className="space-y-3">
           <SectionHeader label="TUNED TO YOU" sub="swipe / arrow through your channel" />
@@ -346,88 +254,6 @@ export default async function YourTastePage() {
             {becauseYouFollow.map((r) => (
               <ReleasePoster key={r.id} release={r} />
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* ===== Who you follow rated =====
-          Full takes, not bare posters: the reviewer and their words sit
-          right on the card. Cover + title click through to the release's
-          community page (all ratings); avatar goes to the reviewer. */}
-      {friendReviews.length > 0 && (
-        <section className="space-y-3">
-          <SectionHeader label="WHO YOU FOLLOW RATED" sub="fresh takes from your follows" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
-            {friendReviews.map((r) => {
-              const cover = safeImage(r.cover_image);
-              const avatar = safeImage(r.avatar_url);
-              const reviewerName = r.display_name ?? r.username;
-              const mainHref = r.release_slug
-                ? `/releases/${r.release_slug}`
-                : `/reviews/${r.slug}`;
-              return (
-                <article
-                  key={r.slug}
-                  className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
-                >
-                  <Link href={mainHref} className="flex items-start gap-3 group">
-                    <span className="w-16 h-16 rounded-md overflow-hidden bg-bg-elevated border border-border-subtle shrink-0 flex items-center justify-center">
-                      {cover ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={cover}
-                          alt={`${r.title} cover`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      ) : (
-                        <span className="text-2xl">💿</span>
-                      )}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)] group-hover:text-accent-primary transition-colors">
-                        {r.title}
-                      </span>
-                      <span className="block text-xs text-text-secondary truncate">
-                        {r.artist}
-                      </span>
-                    </span>
-                    <span
-                      className="pixel-text text-sm font-bold tabular-nums shrink-0"
-                      style={{ color: getRatingHex(r.rating) }}
-                    >
-                      {formatRating(r.rating)}
-                    </span>
-                  </Link>
-
-                  <Link
-                    href={`/profile/${r.username}`}
-                    className="flex items-center gap-2 group/author"
-                  >
-                    {avatar ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={avatar}
-                        alt={reviewerName}
-                        className="w-5 h-5 rounded-full object-cover border border-white/10"
-                      />
-                    ) : (
-                      <span className="w-5 h-5 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-[9px] font-bold text-accent-primary uppercase">
-                        {(r.username || "U")[0]}
-                      </span>
-                    )}
-                    <span className="text-xs text-text-muted group-hover/author:text-text-primary transition-colors truncate">
-                      {reviewerName}
-                    </span>
-                  </Link>
-
-                  {r.body && (
-                    <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-5">
-                      {r.body}
-                    </p>
-                  )}
-                </article>
-              );
-            })}
           </div>
         </section>
       )}

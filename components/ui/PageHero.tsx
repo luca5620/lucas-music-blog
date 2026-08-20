@@ -28,7 +28,9 @@ export default function PageHero({
         className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
         aria-hidden="true"
       >
-        <ChromeDisc className="absolute w-36 -right-12 -top-8 sm:w-56 sm:-right-16 sm:-top-14 md:w-72 md:-right-10 opacity-70" />
+        {/* Phones: centered behind the centered title. sm+: behind
+            the right edge, matching the left-aligned text. */}
+        <ChromeDisc className="absolute w-36 left-1/2 -translate-x-1/2 -top-10 sm:left-auto sm:translate-x-0 sm:w-56 sm:-right-16 sm:-top-14 md:w-72 md:-right-10 opacity-70" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/35 to-black/10" />
       </div>
       <div className="space-y-3 text-center sm:text-left">

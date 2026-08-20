@@ -26,20 +26,30 @@ function safeImage(url: string | null): string | null {
 /* ─── One full-frame card ─── */
 
 function SurfCard({ item }: { item: TunedItem }) {
-  const cover = safeImage(item.cover_image);
+  // Posts without a tied release fall back to the video's thumbnail
+  // (YouTube serves one per id; TikTok doesn't, so those show the icon).
+  const cover =
+    safeImage(item.cover_image) ??
+    (item.type === "post" && item.video_kind === "youtube" && item.video_id
+      ? `https://i.ytimg.com/vi/${item.video_id}/hqdefault.jpg`
+      : null);
   const href =
     item.type === "review"
       ? `/reviews/${item.slug}`
-      : item.type === "debate"
-        ? `/debates/${item.slug}`
-        : `/releases/${item.slug}`;
+      : item.type === "post"
+        ? `/posts/${item.slug}`
+        : item.type === "debate"
+          ? `/debates/${item.slug}`
+          : `/releases/${item.slug}`;
 
   const typeLabel =
     item.type === "review"
       ? "REVIEW"
-      : item.type === "debate"
-        ? "DEBATE"
-        : "RELEASE";
+      : item.type === "post"
+        ? "POST"
+        : item.type === "debate"
+          ? "DEBATE"
+          : "RELEASE";
 
   return (
     <Link
@@ -63,6 +73,36 @@ function SurfCard({ item }: { item: TunedItem }) {
         <span className="pixel-text text-[10px] uppercase px-1.5 py-px rounded border border-border-medium text-text-muted">
           {typeLabel}
         </span>
+
+        {/* Posts lead with the person too — their transmission */}
+        {item.type === "post" && (
+          <span className="flex items-center gap-2.5">
+            {safeImage(item.avatar_url) ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={safeImage(item.avatar_url)!}
+                alt=""
+                className="w-8 h-8 rounded-full object-cover border border-white/10"
+              />
+            ) : (
+              <span className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-xs font-bold text-accent-primary uppercase">
+                {(item.username || "U")[0]}
+              </span>
+            )}
+            <span className="text-sm text-text-secondary">
+              <span className="font-bold text-text-primary">
+                {item.display_name || item.username}
+              </span>{" "}
+              posted
+              {item.video_kind && (
+                <span className="text-text-muted">
+                  {" "}
+                  · ▶ {item.video_kind === "youtube" ? "YouTube" : "TikTok"}
+                </span>
+              )}
+            </span>
+          </span>
+        )}
 
         {/* Reviews lead with the person: avatar + name above the work */}
         {item.type === "review" && (
@@ -96,7 +136,7 @@ function SurfCard({ item }: { item: TunedItem }) {
 
         <span
           className={`poster shrink-0 ${
-            item.type === "review" && item.body
+            (item.type === "review" || item.type === "post") && item.body
               ? "w-28 sm:w-32" /* smaller cover — their words get the room */
               : "w-40 sm:w-48"
           }`}
@@ -106,7 +146,7 @@ function SurfCard({ item }: { item: TunedItem }) {
             <img src={cover} alt={`${item.title} cover`} />
           ) : (
             <span className="w-full h-full flex items-center justify-center text-5xl">
-              {item.type === "debate" ? "🎙️" : "💿"}
+              {item.type === "debate" ? "🎙️" : item.type === "post" ? "📺" : "💿"}
             </span>
           )}
           {item.type === "review" && (
@@ -143,9 +183,9 @@ function SurfCard({ item }: { item: TunedItem }) {
           )}
         </span>
 
-        {/* The review itself, right on the card — clamped to fit the
-            frame; the full page is one click away */}
-        {item.type === "review" && item.body && (
+        {/* The words themselves, right on the card — clamped to fit
+            the frame; the full page is one click away */}
+        {(item.type === "review" || item.type === "post") && item.body && (
           <span className="block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line line-clamp-4 sm:line-clamp-6">
             {item.body}
           </span>

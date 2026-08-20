@@ -119,10 +119,18 @@ export default async function PostPage({
           </span>
         </div>
 
-        {/* Report (viewers) / delete (author) */}
+        {/* Report (viewers) / edit + delete (author) */}
         <div className="flex items-center gap-3">
           {isAuthor ? (
-            <DeletePostButton postId={post.id} postTitle={post.title} />
+            <>
+              <Link
+                href={`/posts/${post.slug}/edit`}
+                className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+              >
+                ✎ Edit
+              </Link>
+              <DeletePostButton postId={post.id} postTitle={post.title} />
+            </>
           ) : (
             <ReportButton targetType="post" targetId={post.id} />
           )}

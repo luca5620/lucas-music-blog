@@ -249,6 +249,21 @@ export type TunedItem =
       reason: string | null;
     }
   | {
+      type: "post";
+      slug: string;
+      title: string;
+      username: string;
+      display_name: string | null;
+      avatar_url: string | null;
+      /** The post's words — shown right on the pager card. */
+      body: string;
+      video_kind: "youtube" | "tiktok" | null;
+      video_id: string | null;
+      /** Tied release cover, if the post is catalog-attached. */
+      cover_image: string | null;
+      reason: string | null;
+    }
+  | {
       type: "debate";
       slug: string;
       title: string;
@@ -299,7 +314,7 @@ export async function getTunedToYou(
   const supabase = await createClient();
   const followedAuthors = new Set(opts?.followedUserIds ?? []);
 
-  const [reviewsRes, debatesRes, releasesRes] = await Promise.all([
+  const [reviewsRes, debatesRes, releasesRes, postsRes] = await Promise.all([
     supabase
       .from("reviews")
       .select(
@@ -322,6 +337,14 @@ export async function getTunedToYou(
       .select(
         "id, slug, title, cover_image, is_unreleased, created_at, primary_artist_id, artists!releases_primary_artist_id_fkey(name)"
       )
+      .order("created_at", { ascending: false })
+      .limit(30),
+    supabase
+      .from("posts")
+      .select(
+        "id, user_id, slug, title, body, video_kind, video_id, release_id, created_at, releases(primary_artist_id, cover_image), profiles!posts_user_id_fkey(username, display_name, avatar_url)"
+      )
+      .neq("user_id", viewerId)
       .order("created_at", { ascending: false })
       .limit(30),
   ]);
@@ -420,6 +443,62 @@ export async function getTunedToYou(
       taste,
       popularity: likeCounts.get(r.id) ?? 0,
       ageDays: ageDays(r.created_at),
+      reason,
+    });
+  }
+
+  type PostRowT = {
+    id: string;
+    user_id: string;
+    slug: string;
+    title: string;
+    body: string;
+    video_kind: "youtube" | "tiktok" | null;
+    video_id: string | null;
+    created_at: string;
+    releases:
+      | { primary_artist_id: string | null; cover_image: string | null }
+      | { primary_artist_id: string | null; cover_image: string | null }[]
+      | null;
+    profiles:
+      | { username: string; display_name: string | null; avatar_url: string | null }
+      | { username: string; display_name: string | null; avatar_url: string | null }[]
+      | null;
+  };
+  for (const p of (postsRes.data ?? []) as unknown as PostRowT[]) {
+    const rel = first(p.releases);
+    const artistId = rel?.primary_artist_id ?? null;
+    const author = first(p.profiles);
+    const fromFollow = followedAuthors.has(p.user_id);
+    const taste =
+      affinityFor(profile, artistId, null) +
+      (fromFollow ? W_FOLLOWED_AUTHOR : 0);
+    const username = author?.username ?? "";
+    const reason = fromFollow
+      ? `from @${username} — you follow them`
+      : artistId
+        ? profile.reasonByArtistId.get(artistId) ?? null
+        : null;
+    candidates.push({
+      item: {
+        type: "post",
+        slug: p.slug,
+        title: p.title,
+        username,
+        display_name: author?.display_name ?? null,
+        avatar_url: author?.avatar_url ?? null,
+        body: p.body,
+        video_kind: p.video_kind,
+        video_id: p.video_id,
+        cover_image: rel?.cover_image ?? null,
+        reason: null,
+      },
+      // Untied posts key on the author so one prolific poster can't
+      // flood the pager (same diversity guard as artists).
+      artistKey: artistId ?? `post-author:${username}`,
+      taste,
+      popularity: 0, // posts have no likes yet
+      ageDays: ageDays(p.created_at),
       reason,
     });
   }

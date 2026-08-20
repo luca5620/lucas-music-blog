@@ -37,6 +37,7 @@ import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
 import ProfileReviewsGrid from "@/components/profile/ProfileReviewsGrid";
 import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
+import { getUserPosts } from "@/lib/db/posts";
 import type { StreakIcon } from "@/components/profile/StreakIndicator";
 import ListCard from "@/components/lists/ListCard";
 import type { Metadata } from "next";
@@ -55,10 +56,10 @@ interface Props {
 }
 
 /** The two profile tabs. Anything else falls back to "reviews". */
-type ProfileTab = "reviews" | "lists";
+type ProfileTab = "reviews" | "lists" | "posts";
 
 function resolveTab(raw: string | undefined): ProfileTab {
-  return raw === "lists" ? raw : "reviews";
+  return raw === "lists" || raw === "posts" ? raw : "reviews";
 }
 
 /* --- Theme → accent hex. Client components (FollowButton, the
@@ -208,6 +209,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const needsFeatured = showcases.includes("featured_review");
   const needsLists = showcases.includes("lists") || activeTab === "lists";
   const needsAnticipated = showcases.includes("anticipated");
+
+  // Posts tab data — only fetched when that tab is open.
+  const profilePosts =
+    activeTab === "posts" ? await getUserPosts(profile.id) : [];
 
   const [distributionRes, featuredRes, profileLists, anticipatedRes] =
     await Promise.all([
@@ -845,6 +850,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             [
               { key: "reviews", label: "Reviews" },
               { key: "lists", label: "Lists" },
+              { key: "posts", label: "Posts" },
             ] as { key: ProfileTab; label: string }[]
           ).map((t) => (
             <Link
@@ -880,6 +886,43 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {profileLists.map((list) => (
                 <ListCard key={list.id} list={list} />
+              ))}
+            </div>
+          ))}
+
+        {/* ----- Posts tab ----- */}
+        {activeTab === "posts" &&
+          (profilePosts.length === 0 ? (
+            <EmptyState text="NO SIGNAL — no posts yet." />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+              {profilePosts.map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/posts/${p.slug}`}
+                  className="panel-xbox p-4 space-y-2 hover-glow block"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-text-primary line-clamp-2">
+                      {p.title}
+                    </h3>
+                    {p.video_kind && (
+                      <span className="label-xbox text-[0.55rem] shrink-0">
+                        ▶ {p.video_kind === "youtube" ? "YouTube" : "TikTok"}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-4">
+                    {p.body}
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    {new Date(p.created_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                </Link>
               ))}
             </div>
           ))}

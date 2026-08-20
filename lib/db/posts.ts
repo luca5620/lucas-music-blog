@@ -153,6 +153,46 @@ export async function createPost(input: {
 }
 
 /**
+ * Update a post's editable fields. The slug stays stable (links keep
+ * working even if the title changes — same rule as reviews). RLS
+ * only lets authors update their own rows; the API layer re-checks.
+ */
+export async function updatePost(
+  id: string,
+  fields: {
+    title: string;
+    body: string;
+    video: ParsedVideo | null;
+    releaseId: string | null;
+  }
+): Promise<Post | null> {
+  // Same belt-and-braces as createPost: a video must be a coherent pair.
+  if (
+    fields.video &&
+    (!fields.video.kind || !fields.video.id || fields.video.id.length > 40)
+  ) {
+    return null;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      title: fields.title,
+      body: fields.body,
+      video_kind: fields.video?.kind ?? null,
+      video_id: fields.video?.id ?? null,
+      release_id: fields.releaseId,
+    } as never)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error || !data) return null;
+  return data as Post;
+}
+
+/**
  * One post looked up by its (globally unique) slug, with the author
  * profile and the tied release (incl. primary artist name) joined in.
  */

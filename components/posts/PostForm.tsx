@@ -23,16 +23,36 @@ import { parseVideoUrl, isTikTokShortLink } from "@/lib/video";
 
 const BODY_MAX = 10000;
 
-export default function PostForm() {
-  const router = useRouter();
+/** Rebuild a canonical URL from the stored (kind, id) pair so the
+    edit form's video field starts filled. Both shapes re-parse to the
+    same id through lib/video.ts. */
+function videoUrlFromPost(post: Post): string {
+  if (!post.video_kind || !post.video_id) return "";
+  return post.video_kind === "youtube"
+    ? `https://www.youtube.com/watch?v=${post.video_id}`
+    : `https://www.tiktok.com/@user/video/${post.video_id}`;
+}
 
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
+export default function PostForm({
+  post,
+  initialRelease = null,
+  initialArtist = "",
+}: {
+  /** Present = edit mode: PATCH this post instead of creating one. */
+  post?: Post;
+  initialRelease?: Release | null;
+  initialArtist?: string;
+}) {
+  const router = useRouter();
+  const editing = !!post;
+
+  const [title, setTitle] = useState(post?.title ?? "");
+  const [body, setBody] = useState(post?.body ?? "");
+  const [videoUrl, setVideoUrl] = useState(post ? videoUrlFromPost(post) : "");
 
   // The optionally tied release (full local row via /api/catalog/ensure).
-  const [release, setRelease] = useState<Release | null>(null);
-  const [pickedArtist, setPickedArtist] = useState("");
+  const [release, setRelease] = useState<Release | null>(initialRelease);
+  const [pickedArtist, setPickedArtist] = useState(initialArtist);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,8 +88,8 @@ export default function PostForm() {
     setError(null);
 
     try {
-      const res = await fetch("/api/posts", {
-        method: "POST",
+      const res = await fetch(editing ? `/api/posts/${post!.id}` : "/api/posts", {
+        method: editing ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),
@@ -236,7 +256,13 @@ export default function PostForm() {
           disabled={saving || title.trim().length < 3 || body.trim().length === 0}
           className="btn-y2k btn-y2k-primary disabled:opacity-50"
         >
-          {saving ? "Posting…" : "Publish Post"}
+          {saving
+            ? editing
+              ? "Saving…"
+              : "Posting…"
+            : editing
+              ? "Save Changes"
+              : "Publish Post"}
         </button>
 
         <button

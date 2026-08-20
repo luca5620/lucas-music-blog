@@ -489,6 +489,13 @@ body {
   z-index: 40;
 }
 
+/* ...and the footer, which must never paint OVER dropdowns hanging
+   down from page content (the catalog search results list on the
+   review/post forms reaches the bottom of short pages). */
+.crt-screen > footer {
+  z-index: 0;
+}
+
 /* ============================================================
    ATMOSPHERE LAYERS — grain, scanlines, aperture grille.
    Deliberately subtle: texture you feel, not a filter you see,

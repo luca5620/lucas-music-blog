@@ -1,9 +1,136 @@
 import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { getPostById, deletePost } from "@/lib/db/posts";
-import { isUuid } from "@/lib/validate";
+import { getPostById, deletePost, updatePost } from "@/lib/db/posts";
+import { getReleaseById } from "@/lib/db/releases";
+import {
+  parseVideoUrl,
+  isTikTokShortLink,
+  type ParsedVideo,
+} from "@/lib/video";
+import { rateLimit } from "@/lib/rate-limit";
+import { isText, isUuid } from "@/lib/validate";
 import type { Profile } from "@/lib/types/database";
+
+/**
+ * PATCH /api/posts/[postId]
+ *
+ * Author-only edit. Same validation pipeline as creation: the client
+ * sends { title, body, video_url?, release_id? } and the (kind, id)
+ * pair is re-derived HERE — the raw pasted URL is never stored. The
+ * slug never changes on edit, so existing links keep working.
+ */
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ postId: string }> }
+) {
+  const user = await getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Same budget as edits elsewhere — 10 per 5 minutes.
+  const limited = rateLimit(`posts-edit:${user.id}`, 10, 300_000);
+  if (limited) return limited;
+
+  const { postId } = await params;
+  if (!isUuid(postId)) {
+    return NextResponse.json({ error: "Invalid post id" }, { status: 400 });
+  }
+
+  const existing = await getPostById(postId);
+  if (!existing) {
+    return NextResponse.json({ error: "Post not found." }, { status: 404 });
+  }
+  if (existing.user_id !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  try {
+    const payload = await request.json();
+    const { title, body, video_url, release_id } = payload;
+
+    if (!isText(title, 120) || title.trim().length < 3) {
+      return NextResponse.json(
+        { error: "Title must be 3–120 characters." },
+        { status: 400 }
+      );
+    }
+
+    if (!isText(body, 10000)) {
+      return NextResponse.json(
+        { error: "Body must be 1–10,000 characters." },
+        { status: 400 }
+      );
+    }
+
+    let video: ParsedVideo | null = null;
+    if (video_url != null && video_url !== "") {
+      if (typeof video_url !== "string") {
+        return NextResponse.json(
+          { error: "Invalid video URL." },
+          { status: 400 }
+        );
+      }
+      if (isTikTokShortLink(video_url)) {
+        return NextResponse.json(
+          {
+            error:
+              "vm.tiktok.com share links can't be embedded — open the link and paste the full tiktok.com/@user/video/… URL.",
+          },
+          { status: 400 }
+        );
+      }
+      video = parseVideoUrl(video_url);
+      if (!video) {
+        return NextResponse.json(
+          {
+            error:
+              "That doesn't look like a YouTube or TikTok video link. Paste a youtube.com/watch, youtu.be, YouTube Shorts, or tiktok.com/@user/video URL.",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    let releaseId: string | null = null;
+    if (release_id != null && release_id !== "") {
+      if (!isUuid(release_id)) {
+        return NextResponse.json(
+          { error: "Invalid release." },
+          { status: 400 }
+        );
+      }
+      const release = await getReleaseById(release_id);
+      if (!release) {
+        return NextResponse.json(
+          { error: "Release not found." },
+          { status: 400 }
+        );
+      }
+      releaseId = release.id;
+    }
+
+    const post = await updatePost(postId, {
+      title: title.trim(),
+      body,
+      video,
+      releaseId,
+    });
+
+    if (!post) {
+      return NextResponse.json(
+        { error: "Failed to update post." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ post });
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+}
 
 /**
  * DELETE /api/posts/[postId]

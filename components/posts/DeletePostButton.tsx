@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation";
 interface DeletePostButtonProps {
   postId: string;
   postTitle: string;
+  /** true when used in a LIST (e.g. /reviews/mine): stay put and
+      refresh instead of leaving for /posts — the page still exists. */
+  stayOnPage?: boolean;
 }
 
-/** Mirrors DeleteReviewButton, but a deleted post's page is gone —
-    so on success we leave for the index instead of refreshing. */
+/** Mirrors DeleteReviewButton, but a deleted post's DETAIL page is
+    gone — so from there we leave for the index on success. */
 export default function DeletePostButton({
   postId,
   postTitle,
+  stayOnPage = false,
 }: DeletePostButtonProps) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -27,7 +31,7 @@ export default function DeletePostButton({
       });
 
       if (res.ok) {
-        router.push("/posts");
+        if (!stayOnPage) router.push("/posts");
         router.refresh();
         return;
       }

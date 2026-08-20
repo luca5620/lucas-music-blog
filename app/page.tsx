@@ -22,6 +22,7 @@ import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
 import LiveBadge from "@/components/rooms/LiveBadge";
 import ChromeDisc from "@/components/ui/ChromeDisc";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import { BreadcrumbSchema } from "@/app/schema";
 
 // The dashboard is per-viewer and realtime-ish — always render fresh.
@@ -66,44 +67,38 @@ function Splash() {
     <>
       {/* ===== Hero — the chrome disc floating on liquid light,
              then the big title, tagline, CTAs ===== */}
-      <section className="panel-xbox-glow p-6 sm:p-12 text-center relative overflow-hidden">
+      <section className="panel-xbox-glow p-6 sm:p-12 text-center space-y-5 relative isolate overflow-hidden">
         {/* Molten iridescent atmosphere drifting behind everything */}
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          <div className="liquid-blob liquid-a w-[420px] h-[420px] -top-32 -left-24" />
-          <div className="liquid-blob liquid-b w-[380px] h-[380px] top-1/3 -right-28" />
-          <div className="liquid-blob liquid-c w-[340px] h-[340px] -bottom-28 left-1/4" />
-        </div>
+        <LiquidAtmosphere />
 
-        <div className="relative space-y-5">
-          <div className="absolute top-0 left-0 glow-orb" />
-          <div className="absolute top-0 right-0 glow-orb" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute top-4 left-4 glow-orb" />
+        <div className="absolute top-4 right-4 glow-orb" style={{ animationDelay: "1.5s" }} />
 
-          {/* The product render: a chrome CD in perspective, crossed
-              by neon lasers. Negative margins absorb the empty space
-              the perspective tilt leaves in its square layout box. */}
-          <ChromeDisc className="w-52 sm:w-72 mx-auto -my-8 sm:-my-12" />
+        {/* The product render: a big chrome CD in perspective, crossed
+            by neon lasers. Negative margins absorb the empty space the
+            perspective tilt leaves in its square layout box. */}
+        <ChromeDisc className="w-72 sm:w-[26rem] mx-auto -mt-6 -mb-12 sm:-mt-8 sm:-mb-20" />
 
-          <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
+        <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
 
-          <p className="pixel-text text-lg sm:text-2xl text-accent-glow">
-            every album. every leak. every argument.
-          </p>
+        <p className="pixel-text text-lg sm:text-2xl text-accent-glow">
+          every album. every leak. every argument.
+        </p>
 
-          <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
-            The music social network. Rate what you hear, build lists, follow
-            people with taste (or terrible taste — more fun to argue with),
-            and pile into live rooms when the album of the year drops at
-            midnight.
-          </p>
+        <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
+          The music social network. Rate what you hear, build lists, follow
+          people with taste (or terrible taste — more fun to argue with),
+          and pile into live rooms when the album of the year drops at
+          midnight.
+        </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
-            <Link href="/signup" className="btn-y2k btn-y2k-primary">
-              Create Account
-            </Link>
-            <Link href="/reviews" className="btn-y2k btn-y2k-outline">
-              Browse Reviews
-            </Link>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
+          <Link href="/signup" className="btn-y2k btn-y2k-primary">
+            Create Account
+          </Link>
+          <Link href="/reviews" className="btn-y2k btn-y2k-outline">
+            Browse Reviews
+          </Link>
         </div>
 
         <div className="scan-bar" />
@@ -159,21 +154,26 @@ async function Dashboard({ userId }: { userId: string }) {
 
   return (
     <>
-      {/* ===== Action row — the two things you came here to do ===== */}
-      <section className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div className="flex-1 flex items-center gap-3">
-          {/* Now-playing punctuation: a small spinning chrome disc */}
-          <ChromeDisc variant="mini" />
-          <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
+      {/* ===== Hero band — HOME + actions on liquid light, with the
+             chrome disc spinning on the right ===== */}
+      <section className="panel-xbox-glow p-6 sm:p-8 relative isolate overflow-hidden">
+        <LiquidAtmosphere />
+        <div className="flex flex-col sm:flex-row items-center gap-6">
+          <div className="flex-1 space-y-4 text-center sm:text-left">
+            <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
+              <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
+                ✚ Write a Review
+              </Link>
+              <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
+                ⚔ Start a Debate
+              </Link>
+            </div>
+          </div>
+          {/* The disc — hidden on phones so the actions stay compact */}
+          <ChromeDisc className="hidden sm:block w-48 md:w-60 shrink-0 -my-8 md:-my-12" />
         </div>
-        <div className="flex gap-3">
-          <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
-            ✚ Write a Review
-          </Link>
-          <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
-            ⚔ Start a Debate
-          </Link>
-        </div>
+        <div className="scan-bar" />
       </section>
 
       {/* ===== ON AIR — rooms with a pulse right now ===== */}

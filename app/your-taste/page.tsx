@@ -28,6 +28,7 @@ import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getRatingHex, formatRating } from "@/lib/rating";
 import FeaturedVideo from "@/components/taste/FeaturedVideo";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou, affinityFor } from "@/lib/taste";
 
@@ -290,7 +291,9 @@ export default async function YourTastePage() {
     anticipated.length > 0;
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-8 pb-12 relative isolate">
+      {/* Molten light across the top of the page */}
+      <LiquidAtmosphere variant="page" />
       {/* Header — same treatment as HOME */}
       <div className="space-y-1">
         <h1 className="crt-title text-3xl sm:text-4xl">YOUR TASTE</h1>

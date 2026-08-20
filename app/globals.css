@@ -1610,8 +1610,8 @@ a.card-y2k:hover { transform: translateY(-2px); }
 .liquid-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(64px);
-  opacity: 0.4;
+  filter: blur(56px);
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -1653,8 +1653,10 @@ a.card-y2k:hover { transform: translateY(-2px); }
   perspective: 900px;
 }
 
+/* Gentle tilt — enough perspective to read as a floating object,
+   not so much that the disc collapses into a gray sliver */
 .cd-tilt {
-  transform: rotateX(52deg) rotateZ(-12deg);
+  transform: rotateX(34deg) rotateZ(-14deg);
   transform-style: preserve-3d;
 }
 
@@ -1683,9 +1685,10 @@ a.card-y2k:hover { transform: translateY(-2px); }
     #b9bcc2 360deg
   );
   box-shadow:
-    0 0 40px rgba(255, 255, 255, 0.1),
+    0 0 60px rgba(255, 255, 255, 0.16),
+    0 0 120px rgba(160, 224, 171, 0.08),
     inset 0 0 30px rgba(0, 0, 0, 0.3);
-  animation: cd-spin 16s linear infinite;
+  animation: cd-spin 14s linear infinite;
 }
 
 /* Track grooves + radial sheen over the chrome */

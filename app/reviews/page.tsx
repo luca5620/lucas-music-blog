@@ -13,6 +13,7 @@ import {
   ItemListSchema,
 } from "@/app/schema";
 import FAQSchema from "@/components/seo/FAQSchema";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import { reviewsFAQs } from "@/lib/faq-data";
 
 export const metadata = {
@@ -33,7 +34,9 @@ export default async function Reviews() {
   })) as ReviewWithAuthor[];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative isolate">
+      {/* Molten light across the top of the page */}
+      <LiquidAtmosphere variant="page" />
       {/* JSON-LD Structured Data */}
       <BreadcrumbSchema
         items={[

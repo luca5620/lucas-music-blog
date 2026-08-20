@@ -28,6 +28,7 @@ import {
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import ChatPanel, {
   type ChatMessageWithProfile,
 } from "@/components/rooms/ChatPanel";
@@ -249,7 +250,9 @@ function ReleaseContent({
   artistSlug,
 }: ReleaseContentProps) {
   return (
-    <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 relative overflow-hidden">
+    <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 relative isolate overflow-hidden">
+      {/* Molten light drifting behind the whole release panel */}
+      <LiquidAtmosphere />
       {/* On desktop (xl+) the page splits: identity + community stats
           on the left, tracks / live chat / reviews on the right. On
           phones everything stacks exactly like before. */}

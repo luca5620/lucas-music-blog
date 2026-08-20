@@ -99,6 +99,8 @@ export default function ThemeBackdrop({ theme }: { theme: ProfileTheme }) {
         <>
           <div className="bd-og-orb" />
           <div className="bd-og-ring" />
+          <div className="bd-og-ring bd-og-ring2" />
+          <div className="bd-og-ring bd-og-ring3" />
         </>
       )}
 

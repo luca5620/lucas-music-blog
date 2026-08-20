@@ -634,7 +634,10 @@ body {
   50% { translate: 5% 2%; opacity: 1; }
 }
 
-/* --- Original Xbox: the breathing green energy orb --- */
+/* --- Original Xbox: the boot-screen energy core. A white-hot green
+   heart breathing hard and fast, with ripple rings continuously
+   pulsing outward — unmistakably the OG orb, not another liquid
+   blob. --- */
 .bd-og-orb {
   position: absolute;
   top: 20%;
@@ -645,12 +648,13 @@ body {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(93, 194, 30, 0.28) 0%,
-    rgba(93, 194, 30, 0.1) 40%,
+    rgba(220, 255, 190, 0.5) 0%,
+    rgba(93, 194, 30, 0.4) 22%,
+    rgba(93, 194, 30, 0.14) 45%,
     transparent 68%
   );
-  filter: blur(24px);
-  animation: bd-og-breathe 6s ease-in-out infinite;
+  filter: blur(18px);
+  animation: bd-og-breathe 3.2s ease-in-out infinite;
 }
 
 .bd-og-ring {
@@ -661,18 +665,24 @@ body {
   height: 480px;
   margin-left: -240px;
   border-radius: 50%;
-  border: 1px solid rgba(93, 194, 30, 0.25);
-  animation: bd-og-ring 6s ease-in-out infinite;
+  border: 2px solid rgba(93, 194, 30, 0.55);
+  box-shadow: 0 0 18px rgba(93, 194, 30, 0.35), inset 0 0 18px rgba(93, 194, 30, 0.2);
+  animation: bd-og-ripple 3.2s ease-out infinite;
 }
+
+.bd-og-ring2 { animation-delay: -1.1s; }
+.bd-og-ring3 { animation-delay: -2.2s; }
 
 @keyframes bd-og-breathe {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.14); opacity: 1; }
+  0%, 100% { transform: scale(0.9); opacity: 0.65; }
+  50% { transform: scale(1.3); opacity: 1; }
 }
 
-@keyframes bd-og-ring {
-  0%, 100% { transform: scale(0.9); opacity: 0; }
-  50% { transform: scale(1.05); opacity: 0.5; }
+/* Rings are born at the core and race outward, fading as they go */
+@keyframes bd-og-ripple {
+  0% { transform: scale(0.5); opacity: 0; }
+  20% { opacity: 0.75; }
+  100% { transform: scale(1.65); opacity: 0; }
 }
 
 /* --- Xbox 360: sweeping blade waves --- */

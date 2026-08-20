@@ -21,6 +21,7 @@ import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
 import LiveBadge from "@/components/rooms/LiveBadge";
+import ChromeDisc from "@/components/ui/ChromeDisc";
 import { BreadcrumbSchema } from "@/app/schema";
 
 // The dashboard is per-viewer and realtime-ish — always render fresh.
@@ -63,31 +64,46 @@ const FEATURES = [
 function Splash() {
   return (
     <>
-      {/* ===== Hero — big title, tagline, CTAs ===== */}
-      <section className="panel-xbox-glow p-6 sm:p-12 text-center space-y-5 relative overflow-hidden">
-        <div className="absolute top-4 left-4 glow-orb" />
-        <div className="absolute top-4 right-4 glow-orb" style={{ animationDelay: "1.5s" }} />
+      {/* ===== Hero — the chrome disc floating on liquid light,
+             then the big title, tagline, CTAs ===== */}
+      <section className="panel-xbox-glow p-6 sm:p-12 text-center relative overflow-hidden">
+        {/* Molten iridescent atmosphere drifting behind everything */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="liquid-blob liquid-a w-[420px] h-[420px] -top-32 -left-24" />
+          <div className="liquid-blob liquid-b w-[380px] h-[380px] top-1/3 -right-28" />
+          <div className="liquid-blob liquid-c w-[340px] h-[340px] -bottom-28 left-1/4" />
+        </div>
 
-        <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
+        <div className="relative space-y-5">
+          <div className="absolute top-0 left-0 glow-orb" />
+          <div className="absolute top-0 right-0 glow-orb" style={{ animationDelay: "1.5s" }} />
 
-        <p className="pixel-text text-lg sm:text-2xl text-accent-glow">
-          every album. every leak. every argument.
-        </p>
+          {/* The product render: a chrome CD in perspective, crossed
+              by neon lasers. Negative margins absorb the empty space
+              the perspective tilt leaves in its square layout box. */}
+          <ChromeDisc className="w-52 sm:w-72 mx-auto -my-8 sm:-my-12" />
 
-        <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
-          The music social network. Rate what you hear, build lists, follow
-          people with taste (or terrible taste — more fun to argue with),
-          and pile into live rooms when the album of the year drops at
-          midnight.
-        </p>
+          <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
-          <Link href="/signup" className="btn-y2k btn-y2k-primary">
-            Create Account
-          </Link>
-          <Link href="/reviews" className="btn-y2k btn-y2k-outline">
-            Browse Reviews
-          </Link>
+          <p className="pixel-text text-lg sm:text-2xl text-accent-glow">
+            every album. every leak. every argument.
+          </p>
+
+          <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
+            The music social network. Rate what you hear, build lists, follow
+            people with taste (or terrible taste — more fun to argue with),
+            and pile into live rooms when the album of the year drops at
+            midnight.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
+            <Link href="/signup" className="btn-y2k btn-y2k-primary">
+              Create Account
+            </Link>
+            <Link href="/reviews" className="btn-y2k btn-y2k-outline">
+              Browse Reviews
+            </Link>
+          </div>
         </div>
 
         <div className="scan-bar" />
@@ -145,7 +161,9 @@ async function Dashboard({ userId }: { userId: string }) {
     <>
       {/* ===== Action row — the two things you came here to do ===== */}
       <section className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div className="flex-1">
+        <div className="flex-1 flex items-center gap-3">
+          {/* Now-playing punctuation: a small spinning chrome disc */}
+          <ChromeDisc variant="mini" />
           <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
         </div>
         <div className="flex gap-3">

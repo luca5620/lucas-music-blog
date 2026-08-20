@@ -49,9 +49,13 @@
   --scanline-opacity: 0.03;
   --grille-opacity: 0.02;
 
-  --font-heading: var(--font-chakra-petch), system-ui, sans-serif;
+  /* v7.1 editorial type: Inter for headings (serious, geometric-
+     humanist — the Roobert stand-in from the style reference) and
+     stamped system monospace for micro-labels. Chakra Petch + VT323
+     stay loaded for profile themes and legacy accents. */
+  --font-heading: var(--font-inter), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-pixel: var(--font-vt323), monospace;
+  --font-pixel: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 
   /* Legacy alias — older components reference the Space Grotesk var
      directly; route them all to the current heading face. */
@@ -1591,6 +1595,174 @@ a.card-y2k:hover { transform: translateY(-2px); }
   color: var(--accent-glow);
   border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 0.4rem;
+}
+
+/* ============================================================
+   CHROME DISC + LIQUID LIGHT — the hero life (v7.1).
+   Desktop.fm's 3D chrome CD crossed by neon lasers, floating on
+   monopo's molten iridescent atmosphere. All pure CSS: conic
+   chrome, radial grooves, blurred drifting color blobs. Cheap on
+   phones — transform/opacity animations only.
+   ============================================================ */
+
+/* --- The liquid atmosphere: three blurred blobs of sage, molten
+   amber, and oxblood drifting slowly behind hero content --- */
+.liquid-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.liquid-a {
+  background: radial-gradient(circle, rgba(160, 224, 171, 0.6) 0%, transparent 70%);
+  animation: liquid-drift-a 18s ease-in-out infinite;
+}
+
+.liquid-b {
+  background: radial-gradient(circle, rgba(255, 172, 46, 0.5) 0%, transparent 70%);
+  animation: liquid-drift-b 23s ease-in-out infinite;
+}
+
+.liquid-c {
+  background: radial-gradient(circle, rgba(165, 45, 37, 0.55) 0%, transparent 70%);
+  animation: liquid-drift-c 27s ease-in-out infinite;
+}
+
+@keyframes liquid-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(9%, 14%) scale(1.25); }
+}
+
+@keyframes liquid-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1.1); }
+  50% { transform: translate(-12%, -8%) scale(0.9); }
+}
+
+@keyframes liquid-drift-c {
+  0%, 100% { transform: translate(0, 0) scale(0.95); }
+  50% { transform: translate(7%, -12%) scale(1.2); }
+}
+
+/* --- The disc: tilted, spinning, chromed. The tilt wrapper adds
+   perspective; the disc itself carries the chrome + diffraction
+   rainbow in a conic gradient that rotates. --- */
+.cd-stage {
+  position: relative;
+  perspective: 900px;
+}
+
+.cd-tilt {
+  transform: rotateX(52deg) rotateZ(-12deg);
+  transform-style: preserve-3d;
+}
+
+.cd-disc {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #b9bcc2 0deg,
+    #f4f6f8 28deg,
+    #9fa3ab 58deg,
+    #e6e9ee 92deg,
+    /* diffraction sliver — the CD rainbow */
+    rgba(160, 224, 171, 0.85) 118deg,
+    rgba(255, 200, 90, 0.8) 138deg,
+    rgba(233, 100, 90, 0.7) 158deg,
+    #cfd3da 182deg,
+    #f8fafc 214deg,
+    #a7abb4 248deg,
+    /* second, cooler sliver */
+    rgba(140, 180, 255, 0.75) 274deg,
+    rgba(255, 160, 220, 0.6) 294deg,
+    #c2c6cd 318deg,
+    #b9bcc2 360deg
+  );
+  box-shadow:
+    0 0 40px rgba(255, 255, 255, 0.1),
+    inset 0 0 30px rgba(0, 0, 0, 0.3);
+  animation: cd-spin 16s linear infinite;
+}
+
+/* Track grooves + radial sheen over the chrome */
+.cd-disc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle at center,
+    transparent 0px,
+    transparent 3px,
+    rgba(255, 255, 255, 0.05) 4px,
+    transparent 5px
+  );
+}
+
+/* Hub: clear plastic ring around the spindle hole (site-black
+   center reads as the hole on the true-black canvas) */
+.cd-disc::after {
+  content: "";
+  position: absolute;
+  inset: 33%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--bg-screen) 0% 24%,
+    rgba(255, 255, 255, 0.4) 25% 29%,
+    rgba(205, 210, 220, 0.95) 30% 55%,
+    rgba(255, 255, 255, 0.3) 56% 60%,
+    transparent 61%
+  );
+}
+
+@keyframes cd-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Neon green lasers crossing the scene (Desktop.fm's grid) --- */
+.cd-laser {
+  position: absolute;
+  height: 2px;
+  left: -14%;
+  right: -14%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #39ff5e 30%,
+    #c9ffd6 50%,
+    #39ff5e 70%,
+    transparent 100%
+  );
+  box-shadow: 0 0 8px rgba(57, 255, 94, 0.8), 0 0 26px rgba(57, 255, 94, 0.35);
+  pointer-events: none;
+}
+
+.cd-laser-1 {
+  top: 44%;
+  transform: rotate(-14deg);
+}
+
+.cd-laser-2 {
+  top: 62%;
+  transform: rotate(9deg);
+  opacity: 0.75;
+}
+
+/* Mini variant — a small spinning disc beside section titles */
+.cd-mini {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cd-disc { animation: none; }
+  .liquid-a, .liquid-b, .liquid-c { animation: none; }
 }
 
 /* ============================================================

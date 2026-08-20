@@ -152,6 +152,18 @@ export default async function RootLayout({
           antialiased
         `}
       >
+        {/* The room: liquid light filling the black space around the
+            bezel — the side bars glow on wide screens. Painted first
+            so the TV sits on top of it. */}
+        <div className="liquid-room" aria-hidden="true">
+          <div className="liquid-blob liquid-a w-[520px] h-[520px] top-[6%] -left-48" />
+          <div className="liquid-blob liquid-c w-[460px] h-[460px] top-[42%] -left-40" />
+          <div className="liquid-blob liquid-b w-[480px] h-[480px] top-[76%] -left-44" />
+          <div className="liquid-blob liquid-b w-[500px] h-[500px] top-[14%] -right-48" />
+          <div className="liquid-blob liquid-a w-[440px] h-[440px] top-[52%] -right-40" />
+          <div className="liquid-blob liquid-c w-[480px] h-[480px] top-[84%] -right-44" />
+        </div>
+
         {/* CRT atmosphere: grain, scanlines, grille */}
         <GrainOverlay />
         {/* Tags <html> when running inside the native app shell */}

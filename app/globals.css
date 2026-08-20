@@ -1691,8 +1691,38 @@ a.card-y2k:hover { transform: translateY(-2px); }
 }
 
 .crt-liquid .liquid-blob {
-  filter: blur(95px);
-  opacity: 0.2;
+  filter: blur(85px);
+  opacity: 0.4;
+}
+
+/* --- The ROOM: liquid filling the black space AROUND the bezel —
+   the side bars on wide screens glow with drifting molten light so
+   the whole viewport is immersive, not just the tube. Fixed to the
+   viewport; the opaque bezel + screen paint over it, so it reads as
+   light behind the television. --- */
+.liquid-room {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.liquid-room .liquid-blob {
+  filter: blur(72px);
+  opacity: 0.55;
+}
+
+/* Phones have no side bars (bezel is full-bleed) and the app shell
+   never shows the room — skip the GPU work there. */
+@media (max-width: 640px) {
+  .liquid-room {
+    display: none;
+  }
+}
+
+.native-app .liquid-room {
+  display: none;
 }
 
 @keyframes liquid-drift-a {

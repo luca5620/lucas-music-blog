@@ -241,6 +241,11 @@ export type TunedItem =
       rating: number;
       cover_image: string | null;
       username: string;
+      display_name: string | null;
+      avatar_url: string | null;
+      /** The review's words (summary, falling back to snippet) —
+          shown right on the pager card, no extra click. */
+      body: string | null;
       reason: string | null;
     }
   | {
@@ -298,7 +303,7 @@ export async function getTunedToYou(
     supabase
       .from("reviews")
       .select(
-        "id, user_id, slug, title, artist, rating, cover_image, created_at, release_id, releases(primary_artist_id), profiles!reviews_user_id_fkey!inner(username)"
+        "id, user_id, slug, title, artist, rating, cover_image, snippet, summary, created_at, release_id, releases(primary_artist_id), profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)"
       )
       .eq("is_published", true)
       .neq("user_id", viewerId)
@@ -363,6 +368,11 @@ export async function getTunedToYou(
 
   const candidates: Candidate[] = [];
 
+  type ReviewProfile = {
+    username: string;
+    display_name: string | null;
+    avatar_url: string | null;
+  };
   type ReviewRow = {
     id: string;
     user_id: string;
@@ -371,9 +381,11 @@ export async function getTunedToYou(
     artist: string;
     rating: number;
     cover_image: string | null;
+    snippet: string | null;
+    summary: string | null;
     created_at: string;
     releases: { primary_artist_id: string | null } | { primary_artist_id: string | null }[] | null;
-    profiles: { username: string } | { username: string }[] | null;
+    profiles: ReviewProfile | ReviewProfile[] | null;
   };
   for (const r of (reviewsRes.data ?? []) as unknown as ReviewRow[]) {
     const artistId = first(r.releases)?.primary_artist_id ?? null;
@@ -381,7 +393,8 @@ export async function getTunedToYou(
     const taste =
       affinityFor(profile, artistId, r.artist) +
       (fromFollow ? W_FOLLOWED_AUTHOR : 0);
-    const username = first(r.profiles)?.username ?? "";
+    const author = first(r.profiles);
+    const username = author?.username ?? "";
     // A followed author beats an artist-affinity reason: "your person
     // rated this" is the cleaner explanation of the two.
     const reason = fromFollow
@@ -398,6 +411,9 @@ export async function getTunedToYou(
         rating: Number(r.rating),
         cover_image: r.cover_image,
         username,
+        display_name: author?.display_name ?? null,
+        avatar_url: author?.avatar_url ?? null,
+        body: r.summary ?? r.snippet,
         reason: null,
       },
       artistKey: artistId ?? r.artist.toLowerCase(),

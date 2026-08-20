@@ -6,8 +6,8 @@
  *
  * One piece of content fills the frame at a time; the next is a swipe
  * away on touch (CSS scroll-snap does the physics) or a ▼ click /
- * arrow-key press on desktop. A channel readout ("03 / 12") tracks the
- * position — fitting the CRT theme, flipping channels on a TV.
+ * arrow-key press on desktop. Reviews show the reviewer + their words
+ * right on the card (Luca 2026-08-20: no extra click to read a take).
  *
  * Purely presentational: cards come pre-ranked from lib/taste.ts.
  */
@@ -64,7 +64,43 @@ function SurfCard({ item }: { item: TunedItem }) {
           {typeLabel}
         </span>
 
-        <span className="poster w-40 sm:w-48 shrink-0">
+        {/* Reviews lead with the person: avatar + name above the work */}
+        {item.type === "review" && (
+          <span className="flex items-center gap-2.5">
+            {safeImage(item.avatar_url) ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={safeImage(item.avatar_url)!}
+                alt=""
+                className="w-8 h-8 rounded-full object-cover border border-white/10"
+              />
+            ) : (
+              <span className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-xs font-bold text-accent-primary uppercase">
+                {(item.username || "U")[0]}
+              </span>
+            )}
+            <span className="text-sm text-text-secondary">
+              <span className="font-bold text-text-primary">
+                {item.display_name || item.username}
+              </span>{" "}
+              rated it{" "}
+              <span
+                className="font-bold tabular-nums"
+                style={{ color: getRatingHex(item.rating) }}
+              >
+                {formatRating(item.rating)}
+              </span>
+            </span>
+          </span>
+        )}
+
+        <span
+          className={`poster shrink-0 ${
+            item.type === "review" && item.body
+              ? "w-28 sm:w-32" /* smaller cover — their words get the room */
+              : "w-40 sm:w-48"
+          }`}
+        >
           {cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={cover} alt={`${item.title} cover`} />
@@ -91,11 +127,7 @@ function SurfCard({ item }: { item: TunedItem }) {
             {item.title}
           </span>
           <span className="block text-sm text-text-secondary">
-            {item.type === "review" && (
-              <>
-                @{item.username} · {item.artist}
-              </>
-            )}
+            {item.type === "review" && item.artist}
             {item.type === "debate" && (
               <>
                 {item.side_a_label} vs {item.side_b_label} · {item.activity} in
@@ -110,6 +142,14 @@ function SurfCard({ item }: { item: TunedItem }) {
             </span>
           )}
         </span>
+
+        {/* The review itself, right on the card — clamped to fit the
+            frame; the full page is one click away */}
+        {item.type === "review" && item.body && (
+          <span className="block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line line-clamp-4 sm:line-clamp-6">
+            {item.body}
+          </span>
+        )}
       </div>
     </Link>
   );
@@ -168,11 +208,6 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
         {items.map((item) => (
           <SurfCard key={`${item.type}:${item.slug}`} item={item} />
         ))}
-      </div>
-
-      {/* Channel readout */}
-      <div className="absolute top-3 right-3 osd-text text-xs tabular-nums pointer-events-none">
-        CH {String(index + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
       </div>
 
       {/* Desktop surf buttons */}

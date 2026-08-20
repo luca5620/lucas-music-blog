@@ -20,7 +20,9 @@ export default function LiquidAtmosphere({
 }) {
   return (
     <div
-      className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
+      className={`absolute inset-0 -z-10 overflow-hidden pointer-events-none ${
+        variant === "page" ? "liquid-veil" : ""
+      }`}
       aria-hidden="true"
     >
       {variant === "panel" ? (

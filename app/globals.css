@@ -1610,9 +1610,22 @@ a.card-y2k:hover { transform: translateY(-2px); }
 .liquid-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(56px);
-  opacity: 0.55;
+  filter: blur(68px);
+  opacity: 0.45;
   pointer-events: none;
+}
+
+/* Page-level washes wear a veil: a radial mask fades the whole layer
+   toward its edges so clipped blobs dissolve into black instead of
+   ending in a hard line, and the blobs themselves run softer. */
+.liquid-veil {
+  -webkit-mask-image: radial-gradient(130% 110% at 50% 22%, black 35%, transparent 74%);
+  mask-image: radial-gradient(130% 110% at 50% 22%, black 35%, transparent 74%);
+}
+
+.liquid-veil .liquid-blob {
+  filter: blur(84px);
+  opacity: 0.38;
 }
 
 .liquid-a {

@@ -130,12 +130,14 @@ function Splash() {
 
       <div className="divider-glow" />
 
-      {/* Even logged out, show the community pulse so the site feels alive */}
-      <Suspense fallback={null}>
-        <ReleasesFeed />
-      </Suspense>
+      {/* Even logged out, show the community pulse so the site feels
+          alive — reviews FIRST (Luca: greet people with the takes),
+          then the release wall */}
       <Suspense fallback={null}>
         <DiscoveryFeed />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ReleasesFeed />
       </Suspense>
     </>
   );
@@ -256,17 +258,18 @@ async function Dashboard({ userId }: { userId: string }) {
 
       <div className="divider-glow" />
 
-      {/* ===== New releases / lists / community reviews ===== */}
+      {/* ===== Community reviews / new releases / lists =====
+          Reviews lead — people land on takes, not just covers */}
+      <Suspense fallback={null}>
+        <DiscoveryFeed />
+      </Suspense>
+
       <Suspense fallback={null}>
         <ReleasesFeed />
       </Suspense>
 
       <Suspense fallback={null}>
         <ListsRail />
-      </Suspense>
-
-      <Suspense fallback={null}>
-        <DiscoveryFeed />
       </Suspense>
 
       {/* ===== Your Taste teaser ===== */}

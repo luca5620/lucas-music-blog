@@ -44,6 +44,13 @@
   --border-medium: #333338;
   --border-bright: #444448;
 
+  /* Liquid-atmosphere trio (RGB triplets) — the sage/amber/oxblood
+     molten light. Profile theme presets override these so a themed
+     profile's liquid glows in ITS colors. */
+  --liquid-1: 160, 224, 171;
+  --liquid-2: 255, 172, 46;
+  --liquid-3: 165, 45, 37;
+
   --glow-primary: rgba(var(--accent-rgb), 0.25);
   /* CRT ambience, dialed back — texture, not a filter over the site */
   --scanline-opacity: 0.03;
@@ -78,6 +85,9 @@
   --accent-glow: #b8e4f5;
   --accent-dim: #4a93b3;
   --accent-rgb: 126, 201, 232;
+  --liquid-1: 126, 201, 232;
+  --liquid-2: 184, 228, 245;
+  --liquid-3: 74, 147, 179;
   --font-heading: 'PlayStation', var(--font-jost), system-ui, sans-serif;
 }
 .theme-ps3 .panel-xbox,
@@ -96,6 +106,9 @@
   --accent-glow: #7fb3e8;
   --accent-dim: #2e6db4;
   --accent-rgb: 74, 144, 217;
+  --liquid-1: 74, 144, 217;
+  --liquid-2: 127, 179, 232;
+  --liquid-3: 32, 80, 150;
   --font-heading: var(--font-jost), system-ui, sans-serif;
 }
 .theme-ps4 .panel-xbox,
@@ -110,6 +123,9 @@
   --accent-glow: #8fe84f;
   --accent-dim: #3f8a12;
   --accent-rgb: 93, 194, 30;
+  --liquid-1: 93, 194, 30;
+  --liquid-2: 143, 232, 79;
+  --liquid-3: 45, 110, 15;
   --font-heading: var(--font-michroma), system-ui, sans-serif;
 }
 .theme-xbox-og .panel-xbox,
@@ -129,6 +145,9 @@
   --accent-glow: #b8e26e;
   --accent-dim: #6a9a24;
   --accent-rgb: 146, 200, 62;
+  --liquid-1: 146, 200, 62;
+  --liquid-2: 184, 226, 110;
+  --liquid-3: 90, 130, 35;
 }
 .theme-xbox-360 .panel-xbox,
 .theme-xbox-360 .panel-xbox-glow {
@@ -143,6 +162,9 @@
   --accent-glow: #6fd2ea;
   --accent-dim: #2189a3;
   --accent-rgb: 53, 183, 216;
+  --liquid-1: 53, 183, 216;
+  --liquid-2: 111, 210, 234;
+  --liquid-3: 160, 205, 235;
   --font-heading: var(--font-quicksand), system-ui, sans-serif;
   --bg-card: #f2f3f5;
   --bg-elevated: #ffffff;
@@ -168,6 +190,9 @@
   --accent-glow: #66e766;
   --accent-dim: #1f9e1f;
   --accent-rgb: 50, 205, 50;
+  --liquid-1: 50, 205, 50;
+  --liquid-2: 102, 231, 102;
+  --liquid-3: 32, 140, 32;
   --font-heading: Verdana, Tahoma, "Segoe UI", sans-serif;
   --font-body: Verdana, Tahoma, "Segoe UI", sans-serif;
   --bg-card: #ece9d8;
@@ -201,6 +226,9 @@
   --accent-glow: #ff5a4f;
   --accent-dim: #a32420;
   --accent-rgb: 227, 52, 47;
+  --liquid-1: 227, 52, 47;
+  --liquid-2: 232, 230, 227;
+  --liquid-3: 122, 22, 18;
   --border-subtle: #2a2a2e;
   --border-medium: #3d3d42;
   --border-bright: #e8e6e3;
@@ -231,6 +259,9 @@
   --accent-glow: #ffd76e;
   --accent-dim: #b8871f;
   --accent-rgb: 240, 185, 60;
+  --liquid-1: 240, 185, 60;
+  --liquid-2: 255, 215, 110;
+  --liquid-3: 150, 100, 22;
   --font-heading: var(--font-michroma), system-ui, sans-serif;
 }
 .theme-daft-punk .panel-xbox,
@@ -1629,18 +1660,39 @@ a.card-y2k:hover { transform: translateY(-2px); }
 }
 
 .liquid-a {
-  background: radial-gradient(circle, rgba(160, 224, 171, 0.6) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--liquid-1), 0.6) 0%, transparent 70%);
   animation: liquid-drift-a 18s ease-in-out infinite;
 }
 
 .liquid-b {
-  background: radial-gradient(circle, rgba(255, 172, 46, 0.5) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--liquid-2), 0.5) 0%, transparent 70%);
   animation: liquid-drift-b 23s ease-in-out infinite;
 }
 
 .liquid-c {
-  background: radial-gradient(circle, rgba(165, 45, 37, 0.55) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--liquid-3), 0.55) 0%, transparent 70%);
   animation: liquid-drift-c 27s ease-in-out infinite;
+}
+
+/* --- Site-wide canvas wash: blobs spread down the whole tube,
+   behind every panel and page. Much dimmer and blurrier than the
+   boxed heroes so content always wins. --- */
+.crt-liquid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Must outrank the `.crt-screen > *` z-index:1 rule so the wash
+   truly sits behind everything on the screen. */
+.crt-screen > .crt-liquid {
+  z-index: 0;
+}
+
+.crt-liquid .liquid-blob {
+  filter: blur(95px);
+  opacity: 0.2;
 }
 
 @keyframes liquid-drift-a {

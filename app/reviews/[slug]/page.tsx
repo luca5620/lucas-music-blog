@@ -108,7 +108,7 @@ export default async function ReviewPage({
   }
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto overflow-hidden">
+    <div className="space-y-6 max-w-3xl lg:max-w-5xl mx-auto overflow-hidden">
       {/* JSON-LD Structured Data */}
       <BreadcrumbSchema
         items={[
@@ -158,8 +158,11 @@ export default async function ReviewPage({
 
       {/* Main content card */}
       <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">
+        {/* Header: cover beside the metadata on desktop, stacked on
+            phones — the review text then gets the full width below. */}
+        <div className="lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-8 lg:items-start">
         {/* Cover from the catalog */}
-        <div className="aspect-square max-w-sm mx-auto rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border border-[rgba(var(--accent-rgb),0.15)] relative">
+        <div className="aspect-square max-w-sm mx-auto lg:mx-0 lg:max-w-none rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border border-[rgba(var(--accent-rgb),0.15)] relative">
           {review.cover_image ? (
             <img
               src={review.cover_image}
@@ -174,6 +177,8 @@ export default async function ReviewPage({
           )}
         </div>
 
+        {/* Right column of the header grid on desktop */}
+        <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 lg:mt-0">
         {/* Release type + Rating */}
         <div className="flex items-center justify-between">
           <span className="label-xbox text-[0.6rem]">
@@ -267,6 +272,8 @@ export default async function ReviewPage({
             View release page + all reviews →
           </Link>
         )}
+        </div>
+        </div>
 
         {/* Divider */}
         <div className="divider-glow" />

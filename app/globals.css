@@ -363,6 +363,18 @@ body {
   box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
 }
 
+/* Wide desktop — let the tube fill big monitors so the site feels
+   immersive instead of a narrow strip down the middle. Kicks in at
+   1440px+ only; laptops and phones keep the classic 1240px set. */
+@media (min-width: 1440px) {
+  .crt-tv {
+    max-width: min(1680px, calc(100vw - 4rem));
+  }
+  .crt-screen {
+    padding: 2rem 3.25rem 3.5rem;
+  }
+}
+
 /* Phosphor bloom behind everything on the tube */
 .crt-screen::before {
   content: "";
@@ -871,7 +883,7 @@ body {
   border-radius: 8px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.18s ease-out;
 }
 
 .panel-xbox::before {
@@ -1004,7 +1016,7 @@ body {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
-.hover-glow { transition: all 0.3s ease; }
+.hover-glow { transition: all 0.18s ease-out; }
 .hover-glow:hover {
   box-shadow:
     0 0 20px rgba(var(--accent-rgb), 0.15),
@@ -1039,6 +1051,35 @@ body {
   );
   animation: scan-bar 3s ease-in-out infinite;
 }
+
+/* ============================================================
+   CLICK FEEL — every interactive surface acknowledges the press.
+   Hover says "you can click this", active says "you did".
+   ============================================================ */
+
+/* No gray tap flash anywhere (was native-app only) */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Keyboard users get a clean accent ring instead of browser default */
+:focus-visible {
+  outline: 2px solid rgba(var(--accent-rgb), 0.55);
+  outline-offset: 2px;
+}
+.form-input:focus-visible { outline: none; } /* has its own focus ring */
+
+/* Press-down states — a quick physical dip on click */
+.btn-y2k:active { transform: translateY(1px) scale(0.985); }
+.tab-y2k:active { transform: scale(0.96); }
+.tab-bar-item:active { transform: scale(0.92); }
+.poster:active { transform: translateY(-1px) scale(0.98); }
+a.panel-xbox:active,
+a.card-y2k:active { transform: scale(0.99); }
+
+/* Clickable cards lift on hover; static panels stay put */
+a.panel-xbox:hover,
+a.card-y2k:hover { transform: translateY(-2px); }
 
 /* ============================================================
    CONTROLS

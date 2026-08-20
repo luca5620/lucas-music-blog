@@ -167,7 +167,7 @@ export default async function ReleasePage({ params }: Props) {
 
   return (
     <div
-      className="space-y-6 max-w-3xl mx-auto overflow-hidden"
+      className="space-y-6 max-w-3xl xl:max-w-6xl mx-auto overflow-hidden"
       style={
         {
           "--release-accent": accentColor,
@@ -249,10 +249,15 @@ function ReleaseContent({
   artistSlug,
 }: ReleaseContentProps) {
   return (
-    <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">
+    <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 relative overflow-hidden">
+      {/* On desktop (xl+) the page splits: identity + community stats
+          on the left, tracks / live chat / reviews on the right. On
+          phones everything stacks exactly like before. */}
+      <div className="xl:grid xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)] xl:gap-10 xl:items-start">
+      <div className="space-y-5 sm:space-y-6">
         {/* Cover Image */}
         <div
-          className="aspect-square max-w-md mx-auto rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border-2"
+          className="aspect-square max-w-md mx-auto xl:mx-0 rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border-2"
           style={{
             borderColor: `${accentColor}40`,
             boxShadow: `0 0 32px ${accentColor}30, 0 0 64px ${accentColor}15`,
@@ -272,7 +277,7 @@ function ReleaseContent({
 
         {/* Title + Artist */}
         <div className="space-y-1">
-          <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-5xl font-extrabold text-text-primary break-words">
+          <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-5xl xl:text-4xl font-extrabold text-text-primary break-words">
             {release.title}
           </h1>
           {artistSlug ? (
@@ -299,31 +304,42 @@ function ReleaseContent({
           )}
         </div>
 
-        {/* Stats row: rating + reviews + followers */}
-        <div className="flex flex-wrap items-center gap-4">
+        {/* Community pulse: everyone's ratings in one picture —
+            average, review count, and the spread of scores. */}
+        <div className="card-y2k p-4 space-y-3">
           {stats.avg_rating !== null ? (
-            <div className="flex items-center gap-2">
-              <div
-                className={`rating-badge text-2xl ${getRatingColor(stats.avg_rating)}`}
-              >
-                {formatRating(stats.avg_rating)}
+            <>
+              <div className="flex items-center gap-3">
+                <div
+                  className={`rating-badge text-2xl ${getRatingColor(stats.avg_rating)}`}
+                >
+                  {formatRating(stats.avg_rating)}
+                </div>
+                <div className="space-y-0.5">
+                  <p className="pixel-text text-xs text-text-muted uppercase tracking-widest">
+                    Community average
+                  </p>
+                  <p className="text-xs text-text-secondary">
+                    from {stats.review_count}{" "}
+                    {stats.review_count === 1 ? "review" : "reviews"} ·{" "}
+                    {stats.follower_count}{" "}
+                    {stats.follower_count === 1 ? "follower" : "followers"}
+                  </p>
+                </div>
               </div>
+              <RatingHistogram ratings={reviews.map((r) => r.rating)} />
+            </>
+          ) : (
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="text-xs text-text-muted italic">
+                No reviews yet — the community average starts with the first one.
+              </span>
               <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-                Avg rating
+                {stats.follower_count}{" "}
+                {stats.follower_count === 1 ? "follower" : "followers"}
               </span>
             </div>
-          ) : (
-            <span className="text-xs text-text-muted italic">No reviews yet</span>
           )}
-
-          <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-            {stats.review_count}{" "}
-            {stats.review_count === 1 ? "review" : "reviews"}
-          </span>
-          <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-            {stats.follower_count}{" "}
-            {stats.follower_count === 1 ? "follower" : "followers"}
-          </span>
         </div>
 
         {/* Follow button */}
@@ -347,11 +363,13 @@ function ReleaseContent({
             </p>
           </>
         )}
+      </div>
 
+      <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0">
         {/* Tracks */}
         {tracks.length > 0 && (
           <>
-            <div className="divider-glow" />
+            <div className="divider-glow xl:hidden" />
             <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
@@ -429,14 +447,18 @@ function ReleaseContent({
           </>
         )}
 
-        {/* Top Reviews — highest-rated first (getReleaseReviews sorts
-            by rating, then recency), with a persistent "add yours" */}
+        {/* Community Reviews — every take on this release in full,
+            highest-rated first (getReleaseReviews sorts by rating,
+            then recency), with a persistent "add yours" */}
         <div className="divider-glow" />
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="glow-orb" />
-              <span className="label-xbox">Top Reviews</span>
+              <span className="label-xbox">
+                Community Reviews
+                {reviews.length > 0 && ` (${reviews.length})`}
+              </span>
             </div>
             {reviews.length > 0 && (
               <Link
@@ -462,9 +484,9 @@ function ReleaseContent({
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-3">
               {reviews.map((r) => (
-                <ReleaseReviewCard key={r.id} review={r} />
+                <ReleaseReviewEntry key={r.id} review={r} />
               ))}
             </div>
           )}
@@ -515,6 +537,8 @@ function ReleaseContent({
             </div>
           </>
         )}
+      </div>
+      </div>
 
         {/* Scan bar */}
         <div className="scan-bar" />
@@ -522,7 +546,54 @@ function ReleaseContent({
   );
 }
 
-/* ─────────────────────────  Review card  ───────────────────────── */
+/* ─────────────────────────  Rating histogram  ───────────────────────── */
+
+/**
+ * The community's spread of scores, Letterboxd-style: eleven bars
+ * (0–10, each review rounded to the nearest whole number), colored
+ * with the same rating colors used everywhere else on the site.
+ * Pure server-rendered divs — no chart library.
+ */
+function RatingHistogram({ ratings }: { ratings: number[] }) {
+  const bins = Array.from({ length: 11 }, () => 0);
+  for (const r of ratings) {
+    const bin = Math.min(10, Math.max(0, Math.round(r)));
+    bins[bin]++;
+  }
+  const max = Math.max(...bins, 1);
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-end gap-[3px] h-14">
+        {bins.map((count, score) => (
+          <div
+            key={score}
+            title={`${score}: ${count} ${count === 1 ? "review" : "reviews"}`}
+            className="flex-1 rounded-t-sm"
+            style={
+              count === 0
+                ? { height: "3px", background: "rgba(255,255,255,0.08)" }
+                : {
+                    height: `${Math.max(10, (count / max) * 100)}%`,
+                    background: getRatingHex(score),
+                    opacity: 0.9,
+                  }
+            }
+          />
+        ))}
+      </div>
+      <div className="flex justify-between">
+        <span className="pixel-text text-[0.65rem] text-text-muted">0</span>
+        <span className="pixel-text text-[0.65rem] text-text-muted uppercase tracking-widest">
+          rating spread
+        </span>
+        <span className="pixel-text text-[0.65rem] text-text-muted">10</span>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────  Review entry  ───────────────────────── */
 
 interface ReviewWithProfile {
   id: string;
@@ -532,6 +603,8 @@ interface ReviewWithProfile {
   rating: number;
   cover_image: string | null;
   snippet: string | null;
+  summary: string | null;
+  created_at: string;
   profiles: {
     username: string;
     display_name: string | null;
@@ -540,52 +613,110 @@ interface ReviewWithProfile {
   } | null;
 }
 
-function ReleaseReviewCard({ review }: { review: ReviewWithProfile }) {
+/**
+ * A full review, right on the release page — who wrote it front and
+ * center, their words in full, not just a floating number. The rating
+ * only makes sense next to the person behind it.
+ */
+function ReleaseReviewEntry({ review }: { review: ReviewWithProfile }) {
   const ratingColor = getRatingHex(review.rating);
   const profile = Array.isArray(review.profiles)
     ? review.profiles[0]
     : review.profiles;
   const reviewerName = profile?.display_name ?? profile?.username ?? "anonymous";
+  const body = review.summary ?? review.snippet;
+
+  let reviewedOn: string | null = null;
+  try {
+    reviewedOn = new Date(review.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    reviewedOn = null;
+  }
 
   return (
-    <Link
-      href={`/reviews/${review.slug}`}
-      className="panel-xbox p-3 sm:p-4 space-y-3 group cursor-pointer hover-glow relative overflow-hidden block"
-    >
-      <div className="flex items-start gap-3">
-        <div className="aspect-square w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center overflow-hidden shrink-0">
-          {review.cover_image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={review.cover_image}
-              alt={review.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-            />
-          ) : (
-            <span className="text-2xl text-text-muted">{"//"}</span>
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0 space-y-1">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="font-[family-name:var(--font-heading)] text-sm sm:text-base font-bold text-[#e8e6e3] group-hover:text-accent-primary transition-colors line-clamp-2">
-              {review.title}
-            </h3>
-            <div
-              className={`rating-badge text-xs w-9 h-9 shrink-0 ${getRatingColor(review.rating)}`}
-              style={{ color: ratingColor, borderColor: ratingColor }}
-            >
-              {formatRating(review.rating)}
-            </div>
+    <article className="panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden">
+      {/* Reviewer header: avatar + name lead, rating rides along */}
+      <div className="flex items-center gap-3">
+        {profile?.username ? (
+          <Link
+            href={`/profile/${profile.username}`}
+            className="flex items-center gap-3 min-w-0 group"
+          >
+            <ReviewerAvatar profile={profile} ratingColor={ratingColor} />
+            <span className="min-w-0">
+              <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors truncate">
+                {reviewerName}
+              </span>
+              <span className="block text-xs text-text-muted truncate">
+                @{profile.username}
+                {reviewedOn && ` · ${reviewedOn}`}
+              </span>
+            </span>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3 min-w-0">
+            <ReviewerAvatar profile={profile} ratingColor={ratingColor} />
+            <span className="text-sm font-bold text-text-primary">
+              {reviewerName}
+            </span>
           </div>
-          <p className="text-xs text-text-muted truncate">by {reviewerName}</p>
-          {review.snippet && (
-            <p className="text-xs text-text-secondary line-clamp-2">
-              {review.snippet}
-            </p>
-          )}
+        )}
+
+        <div
+          className={`rating-badge text-sm w-11 h-11 shrink-0 ml-auto ${getRatingColor(review.rating)}`}
+          style={{ color: ratingColor, borderColor: ratingColor }}
+        >
+          {formatRating(review.rating)}
         </div>
       </div>
-    </Link>
+
+      {/* The review itself, in full */}
+      {body ? (
+        <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
+          {body}
+        </p>
+      ) : (
+        <p className="text-sm text-text-muted italic">
+          Rated, no words — the number speaks for itself.
+        </p>
+      )}
+
+      {/* Likes + comments live on the review's own page */}
+      <Link
+        href={`/reviews/${review.slug}`}
+        className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors inline-flex items-center gap-1"
+      >
+        Likes + comments →
+      </Link>
+    </article>
+  );
+}
+
+function ReviewerAvatar({
+  profile,
+  ratingColor,
+}: {
+  profile: ReviewWithProfile["profiles"];
+  ratingColor: string;
+}) {
+  const name = profile?.display_name ?? profile?.username ?? "anonymous";
+  return profile?.avatar_url ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={profile.avatar_url}
+      alt={name}
+      className="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0"
+    />
+  ) : (
+    <span
+      className="w-10 h-10 rounded-full inline-flex items-center justify-center text-sm font-bold shrink-0"
+      style={{ background: `${ratingColor}20`, color: ratingColor }}
+    >
+      {name[0]?.toUpperCase()}
+    </span>
   );
 }

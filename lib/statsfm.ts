@@ -50,6 +50,10 @@ async function cachedFetch(
     const res = await fetch(`${BASE}${path}`, {
       headers: { "User-Agent": "peakmusicreviews.com profile widget" },
       cache: "no-store",
+      // Hard deadline: this API is unofficial and sometimes hangs from
+      // datacenter IPs — without it, ONE slow call held the entire
+      // profile page hostage for 10+ seconds.
+      signal: AbortSignal.timeout(2500),
     });
     // 204 = "nothing playing"; 403/404 = private or unknown user.
     const data = res.ok && res.status !== 204 ? await res.json() : null;

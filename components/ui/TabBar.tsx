@@ -16,8 +16,8 @@ import { isNativeApp, hapticTap } from "@/lib/native";
  * in the app the top link strip hides (.app-hide in globals.css)
  * and this takes over as primary navigation.
  *
- * Tabs are Luca's spec: Home / Releases / Reviews / Debates / Profile.
- * Lists, Friends and Your Taste stay reachable in-app via the avatar
+ * Tabs: Home / For You (Your Taste) / Releases / Reviews / Debates /
+ * Profile. Lists and Friends stay reachable in-app via the avatar
  * dropdown (app-only links) and the homepage.
  */
 
@@ -35,6 +35,14 @@ const icons = {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 10.5 12 3l9 7.5" />
       <path d="M5 9.5V21h5v-6h4v6h5V9.5" />
+    </svg>
+  ),
+  taste: (
+    // Sparkles — the personalized feed
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 4 13.9 9.1 19 11l-5.1 1.9L12 18l-1.9-5.1L5 11l5.1-1.9L12 4z" />
+      <path d="M19 3v3M17.5 4.5h3" />
+      <path d="M5 17v3M3.5 18.5h3" />
     </svg>
   ),
   releases: (
@@ -67,11 +75,28 @@ export default function TabBar() {
   const pathname = usePathname();
   const { user, profile } = useAuth();
   const [native, setNative] = useState(false);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   // Bridge check must wait for mount — SSR can't know it's the app.
   useEffect(() => {
     setNative(isNativeApp());
   }, []);
+
+  // When the on-screen keyboard is up, position:fixed pins to the
+  // LAYOUT viewport (which the keyboard doesn't shrink on iOS) — the
+  // bar detached and floated over mid-screen content while typing +
+  // scrolling. Watch the VISUAL viewport instead: a big height drop
+  // means keyboard, and native apps hide tab bars under keyboards.
+  useEffect(() => {
+    if (!native) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const onResize = () => {
+      setKeyboardOpen(vv.height < window.innerHeight * 0.75);
+    };
+    vv.addEventListener("resize", onResize);
+    return () => vv.removeEventListener("resize", onResize);
+  }, [native]);
 
   if (!native) return null;
 
@@ -81,6 +106,7 @@ export default function TabBar() {
 
   const tabs: Tab[] = [
     { href: "/", label: "Home", icon: icons.home },
+    { href: "/your-taste", label: "For You", icon: icons.taste },
     { href: "/releases", label: "Releases", icon: icons.releases },
     { href: "/reviews", label: "Reviews", icon: icons.reviews },
     { href: "/debates", label: "Debates", icon: icons.debates },
@@ -88,7 +114,10 @@ export default function TabBar() {
   ];
 
   return (
-    <nav className="tab-bar" aria-label="App navigation">
+    <nav
+      className={`tab-bar${keyboardOpen ? " keyboard-open" : ""}`}
+      aria-label="App navigation"
+    >
       {tabs.map((tab) => {
         const match = tab.match ?? tab.href;
         const isActive =

@@ -12,6 +12,7 @@
  * so switching needs no client JS.
  */
 
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -181,24 +182,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       VALID_SHOWCASES.includes(s as ShowcaseType) && rawShowcases.indexOf(s) === i
   );
 
-  const [currentUser, stats, reviews, favorites] = await Promise.all([
-    getUser(),
-    getProfileStats(profile.id),
-    getProfileReviews(profile.id),
-    getProfileFavorites(profile.id),
-  ]);
-
-  const isOwnProfile = currentUser?.id === profile.id;
-  const userFollows =
-    currentUser && !isOwnProfile
-      ? await isFollowing(currentUser.id, profile.id)
-      : false;
-  // Has the viewer blocked this profile? Drives the Block/Unblock button.
-  const viewerHasBlocked =
-    currentUser && !isOwnProfile
-      ? await isBlocked(currentUser.id, profile.id)
-      : false;
-
   // --- Showcase data: fetch only what the arrangement needs. ---
   const supabase = await createClient();
 
@@ -210,45 +193,71 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const needsLists = showcases.includes("lists") || activeTab === "lists";
   const needsAnticipated = showcases.includes("anticipated");
 
-  // Posts tab data — only fetched when that tab is open.
-  const profilePosts =
-    activeTab === "posts" ? await getUserPosts(profile.id) : [];
-
-  const [distributionRes, featuredRes, profileLists, anticipatedRes] =
-    await Promise.all([
-      needsDistribution
-        ? supabase.rpc("get_rating_distribution", {
-            user_uuid: profile.id,
-          } as never)
-        : Promise.resolve({ data: null }),
-      needsFeatured
-        ? profile.featured_review_id
-          ? supabase
-              .from("reviews")
-              .select("*")
-              .eq("id", profile.featured_review_id)
-              .eq("is_published", true)
-              .maybeSingle()
-          : supabase
-              .from("reviews")
-              .select("*")
-              .eq("user_id", profile.id)
-              .eq("is_published", true)
-              .order("rating", { ascending: false })
-              .order("created_at", { ascending: false })
-              .limit(1)
-              .maybeSingle()
-        : Promise.resolve({ data: null }),
-      needsLists ? getListsByUsername(profile.username) : Promise.resolve([]),
-      needsAnticipated
+  // ONE batch for everything that only needs the profile row. This
+  // page used to do these across four sequential awaits — on a phone
+  // over cell data every extra round trip is felt, and profiles were
+  // the slowest pages on the site because of it.
+  const [
+    currentUser,
+    stats,
+    reviews,
+    favorites,
+    profilePosts,
+    distributionRes,
+    featuredRes,
+    profileLists,
+    anticipatedRes,
+  ] = await Promise.all([
+    getUser(),
+    getProfileStats(profile.id),
+    getProfileReviews(profile.id),
+    getProfileFavorites(profile.id),
+    // Posts tab data — only fetched when that tab is open.
+    activeTab === "posts" ? getUserPosts(profile.id) : Promise.resolve([]),
+    needsDistribution
+      ? supabase.rpc("get_rating_distribution", {
+          user_uuid: profile.id,
+        } as never)
+      : Promise.resolve({ data: null }),
+    needsFeatured
+      ? profile.featured_review_id
         ? supabase
-            .from("release_follows")
-            .select("releases!inner(id, slug, title, cover_image, is_unreleased)")
-            .eq("follower_id", profile.id)
+            .from("reviews")
+            .select("*")
+            .eq("id", profile.featured_review_id)
+            .eq("is_published", true)
+            .maybeSingle()
+        : supabase
+            .from("reviews")
+            .select("*")
+            .eq("user_id", profile.id)
+            .eq("is_published", true)
+            .order("rating", { ascending: false })
             .order("created_at", { ascending: false })
-            .limit(8)
-        : Promise.resolve({ data: null }),
-    ]);
+            .limit(1)
+            .maybeSingle()
+      : Promise.resolve({ data: null }),
+    needsLists ? getListsByUsername(profile.username) : Promise.resolve([]),
+    needsAnticipated
+      ? supabase
+          .from("release_follows")
+          .select("releases!inner(id, slug, title, cover_image, is_unreleased)")
+          .eq("follower_id", profile.id)
+          .order("created_at", { ascending: false })
+          .limit(8)
+      : Promise.resolve({ data: null }),
+  ]);
+
+  const isOwnProfile = currentUser?.id === profile.id;
+  // Viewer-relative flags need currentUser, so they get a second
+  // (small) batch — still one round trip for both together.
+  const [userFollows, viewerHasBlocked] =
+    currentUser && !isOwnProfile
+      ? await Promise.all([
+          isFollowing(currentUser.id, profile.id),
+          isBlocked(currentUser.id, profile.id),
+        ])
+      : [false, false];
 
   const ratingDistribution: RatingBucket[] = Array.isArray(distributionRes.data)
     ? (distributionRes.data as RatingBucket[])
@@ -798,38 +807,43 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
             case "listening":
               // ON ROTATION — now playing / last played (stats.fm).
+              // Suspense: this block awaits an EXTERNAL API — it must
+              // stream in after the page, never hold the page back.
               return (
-                <ListeningShowcase
-                  key={type}
-                  mode="track"
-                  statsfmUrl={profile.statsfm_url}
-                  isOwner={isOwnProfile}
-                  accentColor={accentColor}
-                />
+                <Suspense key={type} fallback={<ShowcaseSkeleton />}>
+                  <ListeningShowcase
+                    mode="track"
+                    statsfmUrl={profile.statsfm_url}
+                    isOwner={isOwnProfile}
+                    accentColor={accentColor}
+                  />
+                </Suspense>
               );
 
             case "listening_stats":
               // ALL-TIME LISTENING — lifetime minutes + streams (stats.fm).
               return (
-                <ListeningShowcase
-                  key={type}
-                  mode="stats"
-                  statsfmUrl={profile.statsfm_url}
-                  isOwner={isOwnProfile}
-                  accentColor={accentColor}
-                />
+                <Suspense key={type} fallback={<ShowcaseSkeleton />}>
+                  <ListeningShowcase
+                    mode="stats"
+                    statsfmUrl={profile.statsfm_url}
+                    isOwner={isOwnProfile}
+                    accentColor={accentColor}
+                  />
+                </Suspense>
               );
 
             case "sotd":
               // SONG OF THE DAY — daily pick + animated streak
               // (migrations 009 + 010).
               return (
-                <SongOfDayShowcase
-                  key={type}
-                  userId={profile.id}
-                  isOwner={isOwnProfile}
-                  streakIcon={(profile.streak_icon ?? "flame") as StreakIcon}
-                />
+                <Suspense key={type} fallback={<ShowcaseSkeleton />}>
+                  <SongOfDayShowcase
+                    userId={profile.id}
+                    isOwner={isOwnProfile}
+                    streakIcon={(profile.streak_icon ?? "flame") as StreakIcon}
+                  />
+                </Suspense>
               );
 
             default:
@@ -947,6 +961,18 @@ function EmptyState({ text }: { text: string }) {
     <div className="panel-xbox p-8 text-center">
       <p className="osd-text text-sm opacity-70">{text}</p>
     </div>
+  );
+}
+
+/** Streaming placeholder for the slow (external-data) showcases. */
+function ShowcaseSkeleton() {
+  return (
+    <section className="space-y-3" aria-hidden="true">
+      <div className="vhs-label inline-block text-sm opacity-50">TUNING…</div>
+      <div className="panel-xbox p-5">
+        <div className="h-10 rounded bg-white/5 animate-pulse" />
+      </div>
+    </section>
   );
 }
 

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type {
   Profile,
@@ -5,7 +6,9 @@ import type {
   ProfileStats,
 } from "@/lib/types/database";
 
-export async function getProfileByUsername(
+/* cache(): generateMetadata AND the page both call this for the same
+   username in the same request — dedupe it to one DB round trip. */
+export const getProfileByUsername = cache(async function getProfileByUsername(
   username: string
 ): Promise<Profile | null> {
   const supabase = await createClient();
@@ -17,7 +20,7 @@ export async function getProfileByUsername(
 
   if (error || !data) return null;
   return data as Profile;
-}
+});
 
 export async function getProfileById(id: string): Promise<Profile | null> {
   const supabase = await createClient();

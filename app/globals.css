@@ -520,6 +520,25 @@ body {
   100% { background-position: 0 0; }
 }
 
+/* ---- Phone + app-shell performance mode ----
+   The grain animation invalidates a full-viewport mix-blend-mode
+   layer twice a second, and the site-wide liquid wash keeps six
+   blur(80px) blobs in perpetual motion. Desktops shrug; phone GPUs
+   drop scroll frames over it (and a fixed tab bar visibly lags when
+   the compositor is that busy). The TEXTURE all stays — grain,
+   scanlines, grille, liquid glow are still painted — only the
+   perpetual motion stops. Nothing is stripped, it just holds still. */
+@media (max-width: 768px) {
+  .grain-overlay,
+  .crt-liquid .liquid-blob {
+    animation: none;
+  }
+}
+.native-app .grain-overlay,
+.native-app .crt-liquid .liquid-blob {
+  animation: none;
+}
+
 .scanlines {
   position: fixed;
   inset: 0;
@@ -969,11 +988,24 @@ body {
   z-index: 60;
   display: flex;
   align-items: stretch;
-  background: rgba(0, 0, 0, 0.92);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  /* SOLID black, no backdrop-filter. The old blur(16px) glass forced
+     WKWebView to re-filter the page under the bar on every scroll
+     frame — the bar visibly lagged and "floated" off the bottom
+     during momentum scrolls. On a true-black site, solid black looks
+     identical and stays glued. */
+  background: #000;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Own compositor layer: the bar never repaints with page content */
+  transform: translateZ(0);
+}
+
+/* While the iOS keyboard is up, position:fixed pins to the LAYOUT
+   viewport — the bar would ride up and sit mid-screen. TabBar.tsx
+   watches visualViewport and tags this class; native apps hide their
+   tab bars under the keyboard anyway. */
+.tab-bar.keyboard-open {
+  display: none;
 }
 
 .tab-bar-item {

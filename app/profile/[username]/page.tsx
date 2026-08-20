@@ -36,6 +36,7 @@ import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
 import ProfileReviewsGrid from "@/components/profile/ProfileReviewsGrid";
 import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
+import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
 import type { StreakIcon } from "@/components/profile/StreakIndicator";
 import ListCard from "@/components/lists/ListCard";
 import type { Metadata } from "next";
@@ -305,6 +306,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     >
       {/* Animated console-dashboard atmosphere for this theme */}
       <ThemeBackdrop theme={theme} />
+      {/* Recolor the site-wide liquid (room glow + canvas wash) to
+          this profile's theme while the page is open */}
+      <ThemeLiquidSync theme={theme} />
 
       {/* ========== BANNER ========== */}
       <div className="relative h-44 sm:h-80 w-full" style={bannerStyle}>

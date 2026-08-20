@@ -1661,17 +1661,17 @@ a.card-y2k:hover { transform: translateY(-2px); }
 
 .liquid-a {
   background: radial-gradient(circle, rgba(var(--liquid-1), 0.6) 0%, transparent 70%);
-  animation: liquid-drift-a 18s ease-in-out infinite;
+  animation: liquid-drift-a 13s ease-in-out infinite;
 }
 
 .liquid-b {
   background: radial-gradient(circle, rgba(var(--liquid-2), 0.5) 0%, transparent 70%);
-  animation: liquid-drift-b 23s ease-in-out infinite;
+  animation: liquid-drift-b 17s ease-in-out infinite;
 }
 
 .liquid-c {
   background: radial-gradient(circle, rgba(var(--liquid-3), 0.55) 0%, transparent 70%);
-  animation: liquid-drift-c 27s ease-in-out infinite;
+  animation: liquid-drift-c 21s ease-in-out infinite;
 }
 
 /* --- Site-wide canvas wash: blobs spread down the whole tube,
@@ -1691,8 +1691,8 @@ a.card-y2k:hover { transform: translateY(-2px); }
 }
 
 .crt-liquid .liquid-blob {
-  filter: blur(85px);
-  opacity: 0.4;
+  filter: blur(80px);
+  opacity: 0.55;
 }
 
 /* --- The ROOM: liquid filling the black space AROUND the bezel —
@@ -1725,20 +1725,33 @@ a.card-y2k:hover { transform: translateY(-2px); }
   display: none;
 }
 
+/* Real wandering, not a gentle shiver: each blob roams a wide loop
+   through four waypoints so the light visibly travels. */
 @keyframes liquid-drift-a {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(9%, 14%) scale(1.25); }
+  25% { transform: translate(24%, 16%) scale(1.3); }
+  50% { transform: translate(10%, 34%) scale(1.1); }
+  75% { transform: translate(-16%, 12%) scale(0.85); }
 }
 
 @keyframes liquid-drift-b {
   0%, 100% { transform: translate(0, 0) scale(1.1); }
-  50% { transform: translate(-12%, -8%) scale(0.9); }
+  25% { transform: translate(-26%, -14%) scale(0.85); }
+  50% { transform: translate(-8%, -30%) scale(1.25); }
+  75% { transform: translate(18%, -10%) scale(1); }
 }
 
 @keyframes liquid-drift-c {
   0%, 100% { transform: translate(0, 0) scale(0.95); }
-  50% { transform: translate(7%, -12%) scale(1.2); }
+  25% { transform: translate(16%, -24%) scale(1.2); }
+  50% { transform: translate(30%, 2%) scale(1); }
+  75% { transform: translate(10%, 20%) scale(1.3); }
 }
+
+/* Desynchronize siblings so the field never moves in lockstep */
+.liquid-blob:nth-child(2n) { animation-delay: -7s; }
+.liquid-blob:nth-child(3n) { animation-delay: -13s; }
+.liquid-blob:nth-child(4n) { animation-delay: -4s; }
 
 /* --- The disc: tilted, spinning, chromed. The tilt wrapper adds
    perspective; the disc itself carries the chrome + diffraction

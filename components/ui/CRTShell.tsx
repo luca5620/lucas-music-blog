@@ -24,8 +24,11 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
               canvas behind everything, spread down the full page */}
           <div className="crt-liquid" aria-hidden="true">
             <div className="liquid-blob liquid-a w-[560px] h-[560px] -top-40 -left-32" />
+            <div className="liquid-blob liquid-c w-[500px] h-[500px] top-[10%] left-1/3" />
             <div className="liquid-blob liquid-b w-[480px] h-[480px] top-[22%] -right-40" />
+            <div className="liquid-blob liquid-a w-[520px] h-[520px] top-[38%] left-1/2" />
             <div className="liquid-blob liquid-c w-[520px] h-[520px] top-[48%] -left-44" />
+            <div className="liquid-blob liquid-b w-[500px] h-[500px] top-[62%] left-1/4" />
             <div className="liquid-blob liquid-a w-[460px] h-[460px] top-[72%] -right-32" />
             <div className="liquid-blob liquid-b w-[500px] h-[500px] -bottom-40 left-1/4" />
           </div>

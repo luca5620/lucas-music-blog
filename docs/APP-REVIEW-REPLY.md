@@ -85,11 +85,15 @@ configuration required. Demo account (also entered in Sign-In
 Information): username `applereview`, password [PASSWORD]. Reviewers may
 also register freely — registration requires only an email address
 (with confirmation link) and a username. Main features are reachable
-from the bottom navigation: Home (feed), Search (catalog → write a
-review from any release page), Lists, Debates, Profile. Content
-reporting is available via the 🚩 button on any review, comment, or
-chat message; user blocking via the Block button on any profile;
-account deletion via Settings → Profile → Delete Account.
+from the bottom navigation — Home, Taste (personalized feed), Search
+(universal search across users, artists, releases, reviews, debates,
+and lists), Friends (activity feed), Profile — plus a browse bar at
+the top of the Home screen linking Reviews, Releases, Debates, and
+Lists. New content (reviews, posts, lists) is created via the
++ CREATE button in the header. Content reporting is available via
+the 🚩 button on any review, comment, or chat message; user blocking
+via the Block button on any profile; account deletion via Settings →
+Profile → Delete Account.
 
 **5. External services used** —
 - Supabase: user authentication (email/password), database, and file

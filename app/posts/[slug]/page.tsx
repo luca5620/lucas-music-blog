@@ -12,10 +12,15 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPostBySlug, postReleaseArtistName } from "@/lib/db/posts";
+import {
+  getPostBySlug,
+  getPostLikeState,
+  postReleaseArtistName,
+} from "@/lib/db/posts";
 import { createClient } from "@/lib/supabase/server";
 import ReportButton from "@/components/moderation/ReportButton";
 import DeletePostButton from "@/components/posts/DeletePostButton";
+import PostLikeButton from "@/components/posts/PostLikeButton";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 // Community content changes constantly — always render fresh.
@@ -56,6 +61,12 @@ export default async function PostPage({
 
   const post = await getPostBySlug(slug);
   if (!post) notFound();
+
+  // Like count + viewer heart state (zeros before migration 016).
+  const likes = await getPostLikeState(post.id, user?.id).catch(() => ({
+    count: 0,
+    viewerHasLiked: false,
+  }));
 
   const author = post.author;
   const release = post.release;
@@ -119,8 +130,14 @@ export default async function PostPage({
           </span>
         </div>
 
-        {/* Report (viewers) / edit + delete (author) */}
-        <div className="flex items-center gap-3">
+        {/* Like + report (viewers) / edit + delete (author) */}
+        <div className="flex items-center gap-4">
+          <PostLikeButton
+            postId={post.id}
+            initialCount={likes.count}
+            initialLiked={likes.viewerHasLiked}
+            size="md"
+          />
           {isAuthor ? (
             <>
               <Link

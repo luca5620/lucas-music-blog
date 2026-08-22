@@ -266,3 +266,91 @@ export async function deletePost(id: string): Promise<boolean> {
   const { error } = await supabase.from("posts").delete().eq("id", id);
   return !error;
 }
+
+/* ================================================================
+   Likes (migration 016) — mirrors lib/db/reviews.likeReview.
+   Every helper degrades to zeros if the table doesn't exist yet
+   (pre-migration), so nothing crashes before 016 is applied.
+   ================================================================ */
+
+/** Toggle the viewer's like on a post. Returns the new state. */
+export async function likePost(
+  userId: string,
+  postId: string
+): Promise<{ liked: boolean; count: number }> {
+  const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("post_likes")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("post_id", postId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase
+      .from("post_likes")
+      .delete()
+      .eq("user_id", userId)
+      .eq("post_id", postId);
+  } else {
+    await supabase
+      .from("post_likes")
+      .insert({ user_id: userId, post_id: postId } as never);
+  }
+
+  const { count } = await supabase
+    .from("post_likes")
+    .select("id", { count: "exact", head: true })
+    .eq("post_id", postId);
+
+  return { liked: !existing, count: count ?? 0 };
+}
+
+/** Like count + whether the viewer has liked, for one post. */
+export async function getPostLikeState(
+  postId: string,
+  viewerId?: string
+): Promise<{ count: number; viewerHasLiked: boolean }> {
+  const supabase = await createClient();
+
+  const [countRes, mineRes] = await Promise.all([
+    supabase
+      .from("post_likes")
+      .select("id", { count: "exact", head: true })
+      .eq("post_id", postId),
+    viewerId
+      ? supabase
+          .from("post_likes")
+          .select("id")
+          .eq("post_id", postId)
+          .eq("user_id", viewerId)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  return {
+    count: countRes.count ?? 0,
+    viewerHasLiked: !!mineRes.data,
+  };
+}
+
+/** Like counts for a batch of posts (feeds + taste ranking). */
+export async function getPostLikeCounts(
+  postIds: string[]
+): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  if (postIds.length === 0) return counts;
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("post_likes")
+    .select("post_id")
+    .in("post_id", postIds);
+
+  for (const row of data ?? []) {
+    const id = (row as { post_id: string }).post_id;
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  return counts;
+}

@@ -169,12 +169,13 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
       )}
 
       {/* ===== Detailed cards (default) =====
-          The review itself lives ON the card — reviewer, rating, and
-          their words together, no extra click to read. The cover and
-          title click through to the release's community page (all
-          ratings + the histogram); the review page is one small link
-          away for comments. 4–5 cards per row on desktop keeps the
-          covers album-sized instead of gigantic. */}
+          Format (Luca 2026-08-22): the card LEADS with the person and
+          the verdict — "{name} rated this release a {8.5}" — then the
+          album cover, then their words under it. Long reviews clamp
+          with an explicit "read the full review →". Cover + title
+          click through to the release's community page (all ratings +
+          the histogram); the review page holds comments. 4–5 cards per
+          row on desktop keeps the covers album-sized. */}
       {view === "detailed" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 items-start">
           {feed.map((review) => {
@@ -182,13 +183,58 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
             const ratingColor = getRatingHex(review.rating);
             const isVerified = profile.role !== "user";
             const body = review.summary ?? review.snippet;
+            // Clamp shows ~6 lines; past this the words are certainly
+            // cut off, so surface the full-review link.
+            const isLongRead = !!body && body.length > 320;
 
             return (
               <article
                 key={review.id}
                 className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
               >
-                {/* Cover + title row → the release page */}
+                {/* The verdict sentence — who, and what they gave it */}
+                <Link
+                  href={`/profile/${profile.username}`}
+                  className="flex items-center gap-2 group/author"
+                >
+                  {profile.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile.display_name || profile.username}
+                      className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center justify-center shrink-0">
+                      <span className="text-[10px] font-bold text-accent-primary uppercase">
+                        {(profile.username || "U")[0]}
+                      </span>
+                    </div>
+                  )}
+                  <span className="min-w-0 text-xs text-text-secondary leading-snug">
+                    <span className="font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
+                      {profile.display_name || profile.username}
+                    </span>
+                    {isVerified && (
+                      <>
+                        {" "}
+                        <VerifiedBadge role={profile.role} />
+                      </>
+                    )}{" "}
+                    rated this release a{" "}
+                    <span
+                      className="font-bold tabular-nums"
+                      style={{ color: ratingColor }}
+                    >
+                      {formatRating(review.rating)}
+                    </span>
+                  </span>
+                  <span className="ml-auto text-xs text-text-muted shrink-0">
+                    {timeAgo(review.created_at)}
+                  </span>
+                </Link>
+
+                {/* Cover + title → the release page */}
                 <Link href={releaseHref(review)} className="block group space-y-2">
                   <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-[rgba(255,255,255,0.3)] transition-all">
                     {review.cover_image ? (
@@ -204,61 +250,40 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                       </span>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-[#e8e6e3] group-hover:text-accent-primary transition-colors truncate">
-                        {review.title}
-                      </h3>
-                      <p className="text-xs text-[#9a9a9e] truncate">
-                        {review.artist}
-                        {review.release_date && review.release_date.length >= 4 &&
-                          ` · ${review.release_date.slice(0, 4)}`}
-                      </p>
-                    </div>
-                    <div
-                      className={`rating-badge text-xs w-9 h-9 shrink-0 ${getRatingColor(review.rating)}`}
+                    {/* Their number, stamped on the cover corner */}
+                    <span
+                      className={`absolute bottom-2 right-2 rating-badge text-xs w-9 h-9 bg-black/70 ${getRatingColor(review.rating)}`}
                       style={{ color: ratingColor, borderColor: ratingColor }}
                     >
                       {formatRating(review.rating)}
-                    </div>
+                    </span>
+                  </div>
+
+                  <div className="min-w-0">
+                    <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-[#e8e6e3] group-hover:text-accent-primary transition-colors truncate">
+                      {review.title}
+                    </h3>
+                    <p className="text-xs text-[#9a9a9e] truncate">
+                      {review.artist}
+                      {review.release_date && review.release_date.length >= 4 &&
+                        ` · ${review.release_date.slice(0, 4)}`}
+                    </p>
                   </div>
                 </Link>
 
-                {/* Reviewer */}
-                <Link
-                  href={`/profile/${profile.username}`}
-                  className="flex items-center gap-2 pt-2 border-t border-white/5 group/author"
-                >
-                  {profile.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.display_name || profile.username}
-                      className="w-6 h-6 rounded-full object-cover border border-white/10"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-accent-primary uppercase">
-                        {(profile.username || "U")[0]}
-                      </span>
-                    </div>
-                  )}
-                  <span className="text-xs text-text-muted group-hover/author:text-text-primary transition-colors flex items-center gap-1 truncate">
-                    {profile.display_name || profile.username}
-                    {isVerified && <VerifiedBadge role={profile.role} />}
-                  </span>
-                  <span className="ml-auto text-xs text-text-muted shrink-0">
-                    {timeAgo(review.created_at)}
-                  </span>
-                </Link>
-
-                {/* Their words, right here */}
+                {/* Their words, right under the record */}
                 {body && (
-                  <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-6">
+                  <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-6 pt-2 border-t border-white/5">
                     {body}
                   </p>
+                )}
+                {isLongRead && (
+                  <Link
+                    href={`/reviews/${review.slug}`}
+                    className="block pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+                  >
+                    Read the full review →
+                  </Link>
                 )}
 
                 {/* Likes + the review's own page for comments */}

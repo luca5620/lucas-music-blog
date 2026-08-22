@@ -998,11 +998,14 @@ body {
   background: #000;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  /* Side breathing room: without it the Home and Profile cells sat
-     flush against the screen edges and read as "pushed off to the
-     side" next to the evenly-gapped middle tabs. */
-  padding-left: max(10px, env(safe-area-inset-left, 0px));
-  padding-right: max(10px, env(safe-area-inset-right, 0px));
+  /* Side breathing room, sized so the gap from the screen edge to the
+     first/last icon EQUALS the gap between neighboring icons — that's
+     what reads as "uniform". On a ~390px phone: 6 equal cells ≈ 59px,
+     icons 24px → ~35px between icons; edge gap = pad + (59−24)/2, so
+     pad ≈ 18px makes them match. 10px looked like Home/Profile were
+     shoved into the corners. */
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
   /* Own compositor layer: the bar never repaints with page content */
   transform: translateZ(0);
 }

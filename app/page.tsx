@@ -79,7 +79,10 @@ function Splash() {
           className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
           aria-hidden="true"
         >
-          <ChromeDisc className="absolute left-1/2 -translate-x-1/2 -top-24 sm:-top-36 w-[26rem] sm:w-[38rem] opacity-60" />
+          {/* Phone size w-72 (was w-[26rem] — WIDER than the screen on
+              a 390px phone, Luca 2026-08-22: "way too big" in the app).
+              Desktop keeps the big chrome. */}
+          <ChromeDisc className="absolute left-1/2 -translate-x-1/2 -top-16 sm:-top-36 w-72 sm:w-[38rem] opacity-60" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.3)_28%,rgba(0,0,0,0.68)_52%,rgba(0,0,0,0.82)_100%)]" />
         </div>
 
@@ -87,7 +90,7 @@ function Splash() {
         <div className="absolute top-4 right-4 glow-orb" style={{ animationDelay: "1.5s" }} />
 
         {/* Breathing room so the title sits below the disc's center */}
-        <div className="h-24 sm:h-40" />
+        <div className="h-16 sm:h-40" />
 
         <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
 

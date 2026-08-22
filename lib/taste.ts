@@ -355,8 +355,9 @@ export async function getTunedToYou(
   const releaseIds = (releasesRes.data ?? []).map(
     (r) => (r as { id: string }).id
   );
+  const postIds = (postsRes.data ?? []).map((p) => (p as { id: string }).id);
 
-  const [likesRes, votesRes, followsRes] = await Promise.all([
+  const [likesRes, votesRes, followsRes, postLikesRes] = await Promise.all([
     reviewIds.length
       ? supabase.from("review_likes").select("review_id").in("review_id", reviewIds)
       : Promise.resolve({ data: [] }),
@@ -368,6 +369,11 @@ export async function getTunedToYou(
           .from("release_follows")
           .select("release_id")
           .in("release_id", releaseIds)
+      : Promise.resolve({ data: [] }),
+    // Post likes (migration 016). Before it's applied the query just
+    // errors → data null → every count 0, which is the right fallback.
+    postIds.length
+      ? supabase.from("post_likes").select("post_id").in("post_id", postIds)
       : Promise.resolve({ data: [] }),
   ]);
 
@@ -382,6 +388,7 @@ export async function getTunedToYou(
   const likeCounts = tally(likesRes.data, "review_id");
   const voteCounts = tally(votesRes.data, "debate_id");
   const followCounts = tally(followsRes.data, "release_id");
+  const postLikeCounts = tally(postLikesRes.data, "post_id");
 
   const now = Date.now();
   const ageDays = (iso: string) =>
@@ -497,11 +504,13 @@ export async function getTunedToYou(
       // flood the pager (same diversity guard as artists).
       artistKey: artistId ?? `post-author:${username}`,
       taste,
-      // Posts have no likes yet, so freshness stands in for popularity.
-      // A literal 0 made every post score 0 (0 taste × 0 popularity)
-      // and the `score <= 0` pick guard silently dropped ALL of them —
-      // posts never appeared in anyone's Tuned To You.
-      popularity: Math.pow(0.5, ageDays(p.created_at) / FRESH_HALF_LIFE_DAYS),
+      // Real hearts (migration 016) lead; freshness (0..1) is the
+      // tiebreaker so a brand-new zero-like post still scores above
+      // zero. (A literal 0 here once dropped ALL posts from the pager
+      // — the `score <= 0` pick guard ate them.)
+      popularity:
+        (postLikeCounts.get(p.id) ?? 0) +
+        Math.pow(0.5, ageDays(p.created_at) / FRESH_HALF_LIFE_DAYS),
       ageDays: ageDays(p.created_at),
       reason,
     });

@@ -201,12 +201,27 @@ export default function ReleaseViews({
             </div>
 
             <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
+              {/* Reviewed → the community's average (a plain mean over
+                  every published rating, so ten 10s and one 5 land near
+                  10 — each VOTE weighs the same, not each value).
+                  Untouched → the standing invitation. */}
               {hasRating ? (
-                <div
-                  className={`rating-badge text-sm w-10 h-10 ${ratingClass}`}
-                  style={{ color: ratingColor, borderColor: ratingColor }}
-                >
-                  {formatRating(item.avgRating!)}
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`rating-badge text-sm w-10 h-10 shrink-0 ${ratingClass}`}
+                    style={{ color: ratingColor, borderColor: ratingColor }}
+                  >
+                    {formatRating(item.avgRating!)}
+                  </div>
+                  <span className="min-w-0">
+                    <span className="block pixel-text text-[10px] uppercase tracking-widest text-text-muted">
+                      Community Avg
+                    </span>
+                    <span className="block text-xs text-text-muted">
+                      {item.reviewCount ?? 0}{" "}
+                      {(item.reviewCount ?? 0) === 1 ? "review" : "reviews"}
+                    </span>
+                  </span>
                 </div>
               ) : (
                 <span className="text-xs text-text-muted italic">
@@ -214,19 +229,12 @@ export default function ReleaseViews({
                 </span>
               )}
 
-              <div className="flex flex-col items-end gap-0.5 text-right">
-                {(item.reviewCount ?? 0) > 0 && (
-                  <span className="text-xs text-text-muted">
-                    {item.reviewCount} {item.reviewCount === 1 ? "review" : "reviews"}
-                  </span>
-                )}
-                {(item.followerCount ?? 0) > 0 && (
-                  <span className="text-xs text-text-muted">
-                    {item.followerCount}{" "}
-                    {item.followerCount === 1 ? "follower" : "followers"}
-                  </span>
-                )}
-              </div>
+              {(item.followerCount ?? 0) > 0 && (
+                <span className="text-xs text-text-muted text-right shrink-0">
+                  {item.followerCount}{" "}
+                  {item.followerCount === 1 ? "follower" : "followers"}
+                </span>
+              )}
             </div>
 
             <div className="scan-bar" />

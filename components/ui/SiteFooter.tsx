@@ -20,6 +20,16 @@ export default function SiteFooter() {
         </a>
       </p>
       <p className="font-[family-name:var(--font-vt323)] text-sm text-text-muted text-center mt-1">
+        {/* About lives here so it's reachable from EVERY page — the
+            dashboard's About button only exists when signed in, which
+            read as "the button disappeared" to logged-out visitors. */}
+        <Link
+          href="/about"
+          className="text-text-secondary hover:text-accent-primary transition-colors"
+        >
+          About Us
+        </Link>
+        {" · "}
         <Link
           href="/privacy"
           className="text-text-secondary hover:text-accent-primary transition-colors"

@@ -25,7 +25,22 @@ function safeImage(url: string | null): string | null {
 
 /* ─── One full-frame card ─── */
 
-function SurfCard({ item }: { item: TunedItem }) {
+/**
+ * Two reading modes (Luca 2026-08-22):
+ *   - In the page pager, the whole card is ONE link and the words are
+ *     clamped — it's a teaser row among other home-page sections.
+ *   - In FULLSCREEN the card is the destination: the full review/post
+ *     text renders right on the card (scrollable when long, no clamp,
+ *     no click-through needed), and the item's own page demotes to a
+ *     small "open →" chip for comments/likes.
+ */
+function SurfCard({
+  item,
+  fullscreen,
+}: {
+  item: TunedItem;
+  fullscreen: boolean;
+}) {
   // Posts without a tied release fall back to the video's thumbnail
   // (YouTube serves one per id; TikTok doesn't, so those show the icon).
   const cover =
@@ -51,11 +66,11 @@ function SurfCard({ item }: { item: TunedItem }) {
           ? "DEBATE"
           : "RELEASE";
 
-  return (
-    <Link
-      href={href}
-      className="relative block w-full h-full snap-start snap-always overflow-hidden group"
-    >
+  const frameClass =
+    "relative block w-full h-full snap-start snap-always overflow-hidden group";
+
+  const inner = (
+    <>
       {/* Blurred cover as the backdrop, dimmed for legibility. */}
       {cover && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -183,14 +198,44 @@ function SurfCard({ item }: { item: TunedItem }) {
           )}
         </span>
 
-        {/* The words themselves, right on the card — clamped to fit
-            the frame; the full page is one click away */}
+        {/* The words themselves, right on the card. Pager mode clamps
+            them (teaser); fullscreen shows EVERYTHING — left-aligned
+            for reading, scrolling inside its own box when long. When
+            that inner scroll runs out, the swipe chains to the pager
+            and flips the channel, TikTok-style. */}
         {(item.type === "review" || item.type === "post") && item.body && (
-          <span className="block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line line-clamp-4 sm:line-clamp-6">
+          <span
+            className={`block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
+              fullscreen
+                ? "w-full flex-shrink min-h-0 overflow-y-auto text-left px-1 [scrollbar-width:thin]"
+                : "line-clamp-4 sm:line-clamp-6"
+            }`}
+          >
             {item.body}
           </span>
         )}
+
+        {/* Fullscreen: the page itself is one small chip away
+            (comments, likes, the tied release) */}
+        {fullscreen && (
+          <Link
+            href={href}
+            className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors shrink-0"
+          >
+            Open {typeLabel.toLowerCase()} →
+          </Link>
+        )}
       </div>
+    </>
+  );
+
+  // Fullscreen = a reading surface (links are explicit); pager = one
+  // big click-through.
+  return fullscreen ? (
+    <div className={frameClass}>{inner}</div>
+  ) : (
+    <Link href={href} className={frameClass}>
+      {inner}
     </Link>
   );
 }
@@ -281,7 +326,11 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
         }`}
       >
         {items.map((item) => (
-          <SurfCard key={`${item.type}:${item.slug}`} item={item} />
+          <SurfCard
+            key={`${item.type}:${item.slug}`}
+            item={item}
+            fullscreen={fullscreen}
+          />
         ))}
       </div>
 

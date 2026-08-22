@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { updateComment, deleteComment } from "@/lib/db/comments";
+import type { Profile } from "@/lib/types/database";
 
 export async function PUT(
   request: NextRequest,
@@ -44,7 +46,20 @@ export async function DELETE(
   }
 
   const { commentId } = await params;
-  const success = await deleteComment(commentId, user.id);
+
+  // Staff (owner/admin) may delete ANY comment — moderation without
+  // waiting for a report. Same role gate as /api/admin/reports; the
+  // DB's 007 admin-delete policy backs it up at the RLS layer.
+  const supabase = await createClient();
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  const role = (profileData as Pick<Profile, "role"> | null)?.role;
+  const asStaff = role === "owner" || role === "admin";
+
+  const success = await deleteComment(commentId, user.id, { asStaff });
 
   if (!success) {
     return NextResponse.json(

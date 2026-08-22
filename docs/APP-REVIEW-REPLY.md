@@ -94,6 +94,8 @@ account deletion via Settings → Profile → Delete Account.
 **5. External services used** —
 - Supabase: user authentication (email/password), database, and file
   storage (avatars/banners).
+- Resend: transactional email delivery (account confirmation emails)
+  via SMTP.
 - Spotify Web API and Genius API: music release metadata and album
   artwork only, via their official developer APIs. The app does not
   stream, play, or download any audio.

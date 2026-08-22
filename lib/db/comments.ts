@@ -100,20 +100,34 @@ export async function updateComment(
 /**
  * Delete own comment.
  */
-export async function deleteComment(commentId: string, userId: string) {
+/**
+ * Delete a comment. Normal callers only ever match their own rows
+ * (the user_id filter); staff (owner/admin — the API route verifies
+ * the role) skip that filter and can remove ANY comment, authorized
+ * at the DB layer by 007's "Admins can delete any comment" policy.
+ *
+ * Returns true only when a row was ACTUALLY deleted — the returning
+ * select distinguishes "deleted" from "matched nothing" (a 0-row
+ * delete is not an error in PostgREST).
+ */
+export async function deleteComment(
+  commentId: string,
+  userId: string,
+  opts?: { asStaff?: boolean }
+) {
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("comments")
-    .delete()
-    .eq("id", commentId)
-    .eq("user_id", userId);
+  let query = supabase.from("comments").delete().eq("id", commentId);
+  if (!opts?.asStaff) {
+    query = query.eq("user_id", userId);
+  }
+  const { data, error } = await query.select("id");
 
   if (error) {
     console.error("Error deleting comment:", error);
     return false;
   }
 
-  return true;
+  return (data ?? []).length > 0;
 }
 
 /**

@@ -159,6 +159,7 @@ function CommentForm({
 function CommentItem({
   comment,
   currentUserId,
+  isStaff = false,
   onReply,
   onEdit,
   onDelete,
@@ -166,6 +167,8 @@ function CommentItem({
 }: {
   comment: CommentData;
   currentUserId: string | null;
+  /** owner/admin viewer — may delete ANY comment (moderation). */
+  isStaff?: boolean;
   onReply: (commentId: string) => void;
   onEdit: (commentId: string, content: string) => Promise<void>;
   onDelete: (commentId: string) => Promise<void>;
@@ -185,6 +188,11 @@ function CommentItem({
 
   const handleDelete = async () => {
     if (deleting) return;
+    // Removing someone ELSE's words is a moderation act — never let it
+    // happen on an accidental tap. Your own delete stays one-tap.
+    if (!isOwn && !window.confirm(`Delete ${displayName}'s comment?`)) {
+      return;
+    }
     setDeleting(true);
     try {
       await onDelete(comment.id);
@@ -245,21 +253,24 @@ function CommentItem({
               </button>
             )}
             {isOwn && (
-              <>
-                <button
-                  onClick={() => setEditing(true)}
-                  className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-rose transition-colors disabled:opacity-40"
-                >
-                  {deleting ? "..." : "Delete"}
-                </button>
-              </>
+              <button
+                onClick={() => setEditing(true)}
+                className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
+              >
+                Edit
+              </button>
+            )}
+            {/* Delete: your own comment, or any comment as staff —
+                the staff-on-others case is labeled MOD DELETE so a
+                moderation act never masquerades as a personal one. */}
+            {(isOwn || isStaff) && (
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-rose transition-colors disabled:opacity-40"
+              >
+                {deleting ? "..." : isOwn ? "Delete" : "Mod Delete"}
+              </button>
             )}
             {/* You can't report yourself — everyone else's comments get a flag. */}
             {!isOwn && (
@@ -275,7 +286,10 @@ function CommentItem({
 /* ─── Main CommentsSection ─── */
 
 export default function CommentsSection({ reviewId }: { reviewId: string }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
+  // Staff can mod-delete any comment (backed by 007's RLS policy +
+  // the role re-check in the DELETE route — this flag is UI only).
+  const isStaff = profile?.role === "owner" || profile?.role === "admin";
   const [comments, setComments] = useState<CommentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -446,6 +460,7 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
               <CommentItem
                 comment={comment}
                 currentUserId={user?.id ?? null}
+                isStaff={isStaff}
                 onReply={(id) =>
                   setReplyingTo(replyingTo === id ? null : id)
                 }
@@ -472,6 +487,7 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
                   key={reply.id}
                   comment={reply}
                   currentUserId={user?.id ?? null}
+                  isStaff={isStaff}
                   onReply={() => {}}
                   onEdit={handleEdit}
                   onDelete={handleDelete}

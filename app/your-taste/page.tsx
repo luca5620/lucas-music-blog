@@ -203,9 +203,6 @@ export default async function YourTastePage() {
       .slice(0, 12);
   }
 
-  const hasAnySignal =
-    becauseYouFollow.length > 0 || anticipated.length > 0;
-
   return (
     <div className="space-y-8 pb-12">
       {/* Header — boxed hero, same as HOME */}
@@ -221,25 +218,6 @@ export default async function YourTastePage() {
           <SectionHeader label="TUNED TO YOU" sub="swipe / arrow through your channel" />
           <ChannelSurf items={tunedItems} />
         </section>
-      )}
-
-      {/* ===== No signal at all? Help them tune in. ===== */}
-      {!hasAnySignal && (
-        <div className="panel-xbox-glow p-10 text-center space-y-4">
-          <p className="pixel-text text-2xl text-accent-glow">NO SIGNAL</p>
-          <p className="text-sm text-text-secondary max-w-md mx-auto">
-            This channel builds itself from who and what you follow. Follow
-            a few artists, releases, and people, and it starts broadcasting.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3 pt-2">
-            <Link href="/releases" className="btn-y2k btn-y2k-primary">
-              Browse Releases
-            </Link>
-            <Link href="/friends" className="btn-y2k btn-y2k-outline">
-              Find People
-            </Link>
-          </div>
-        </div>
       )}
 
       {/* ===== Because you follow ===== */}

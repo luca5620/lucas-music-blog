@@ -16,7 +16,7 @@ import { isNativeApp, hapticTap } from "@/lib/native";
  * in the app the top link strip hides (.app-hide in globals.css)
  * and this takes over as primary navigation.
  *
- * Tabs: Home / For You (Your Taste) / Releases / Reviews / Debates /
+ * Tabs: Home / Taste (Your Taste) / Releases / Reviews / Debates /
  * Profile. Lists and Friends stay reachable in-app via the avatar
  * dropdown (app-only links) and the homepage.
  */
@@ -58,8 +58,10 @@ const icons = {
     </svg>
   ),
   debates: (
+    // The bubble's circle centers on (13,12) — its tail eats the left
+    // margin — so the dots center on x=13 too, not the viewBox's 12.
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 12h.01M12 12h.01M16 12h.01" />
+      <path d="M9 12h.01M13 12h.01M17 12h.01" />
       <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
     </svg>
   ),
@@ -106,7 +108,9 @@ export default function TabBar() {
 
   const tabs: Tab[] = [
     { href: "/", label: "Home", icon: icons.home },
-    { href: "/your-taste", label: "For You", icon: icons.taste },
+    // "Taste", not "For You" — Luca 2026-08-22: don't copy TikTok's
+    // label, and the short form fits the narrow tab cell.
+    { href: "/your-taste", label: "Taste", icon: icons.taste },
     { href: "/releases", label: "Releases", icon: icons.releases },
     { href: "/reviews", label: "Reviews", icon: icons.reviews },
     { href: "/debates", label: "Debates", icon: icons.debates },

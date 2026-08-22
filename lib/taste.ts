@@ -497,7 +497,11 @@ export async function getTunedToYou(
       // flood the pager (same diversity guard as artists).
       artistKey: artistId ?? `post-author:${username}`,
       taste,
-      popularity: 0, // posts have no likes yet
+      // Posts have no likes yet, so freshness stands in for popularity.
+      // A literal 0 made every post score 0 (0 taste × 0 popularity)
+      // and the `score <= 0` pick guard silently dropped ALL of them —
+      // posts never appeared in anyone's Tuned To You.
+      popularity: Math.pow(0.5, ageDays(p.created_at) / FRESH_HALF_LIFE_DAYS),
       ageDays: ageDays(p.created_at),
       reason,
     });
@@ -589,7 +593,10 @@ export async function getTunedToYou(
     // Reason chip only where clean: a strong single-artist match for a
     // warmed-up profile, or plain popularity on cold start.
     if (coldStart) {
-      c.item.reason = popNorm >= 0.5 ? "popular right now" : null;
+      // Posts' popNorm is freshness, not real popularity — a "popular
+      // right now" chip on a brand-new post would be a lie. No chip.
+      c.item.reason =
+        c.item.type !== "post" && popNorm >= 0.5 ? "popular right now" : null;
     } else {
       c.item.reason = tasteNorm >= 0.5 && c.reason ? c.reason : null;
     }

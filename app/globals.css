@@ -970,9 +970,11 @@ body {
 }
 
 /* Room for the fixed tab bar so page bottoms are never covered.
-   3rem matches .crt-screen's own bottom padding. */
+   3rem matches .crt-screen's own bottom padding. 64px = the tab
+   bar's content height (keep in sync with .tab-bar-item sizing and
+   .surf-fullscreen's bottom offset). */
 .native-app .crt-screen {
-  padding-bottom: calc(3rem + 60px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(3rem + 64px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ============================================================
@@ -996,6 +998,11 @@ body {
   background: #000;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Side breathing room: without it the Home and Profile cells sat
+     flush against the screen edges and read as "pushed off to the
+     side" next to the evenly-gapped middle tabs. */
+  padding-left: max(10px, env(safe-area-inset-left, 0px));
+  padding-right: max(10px, env(safe-area-inset-right, 0px));
   /* Own compositor layer: the bar never repaints with page content */
   transform: translateZ(0);
 }
@@ -1009,16 +1016,21 @@ body {
 }
 
 .tab-bar-item {
-  flex: 1;
+  /* flex-basis 0 (not auto): every cell gets an IDENTICAL width
+     regardless of label length, so the six icons land on a perfectly
+     even grid. flex:1 alone divided only the LEFTOVER space, which
+     let "Releases" claim a wider cell than "Home". */
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 8px 0 7px;
+  gap: 4px;
+  padding: 10px 0 9px;
   color: var(--text-muted);
   font-family: var(--font-heading);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1027,8 +1039,8 @@ body {
 }
 
 .tab-bar-item svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 .tab-bar-item.active {
@@ -1038,6 +1050,26 @@ body {
 /* Active tab glows faintly — the CRT read of iOS's filled-icon state */
 .tab-bar-item.active svg {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-primary) 60%, transparent));
+}
+
+/* ============================================================
+   SURF FULLSCREEN — the Tuned To You pager gone full-channel
+   (ChannelSurf.tsx). Fixed over the page, under the tab bar
+   (z 55 < 60) so in the app the bottom icons stay usable and
+   you can always switch away.
+   ============================================================ */
+.surf-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: #000;
+}
+
+/* In the app the frame STOPS above the tab bar instead of sliding
+   under it — 64px matches the bar's content height (see the
+   .native-app .crt-screen padding note). */
+.native-app .surf-fullscreen {
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ============================================================

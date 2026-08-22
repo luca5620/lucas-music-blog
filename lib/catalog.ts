@@ -31,8 +31,8 @@ import type { Release, ReleaseTrack } from "@/lib/types/database";
 
 export interface CatalogResult {
   /** Where this result lives right now. Local = already in our DB.
-      spotify = an album; spotify_track = a single track (importing
-      it pulls in its parent album). */
+      spotify = an album; spotify_track = a single track (imported as
+      a standalone single-track release, like Genius songs). */
   source: "local" | "spotify" | "spotify_track" | "genius";
   /** Source-specific id: release uuid, Spotify album/track id, or Genius song id. */
   id: string;
@@ -330,6 +330,85 @@ async function ensureFromSpotify(albumId: string): Promise<Release> {
   });
 }
 
+interface SpotifyTrackFull {
+  id: string;
+  name: string;
+  duration_ms: number;
+  track_number?: number;
+  preview_url: string | null;
+  popularity?: number;
+  artists: { id: string; name: string }[];
+  album?: {
+    id: string;
+    images?: { url: string; width: number | null }[];
+    release_date?: string;
+    release_date_precision?: "year" | "month" | "day";
+  };
+}
+
+/**
+ * A song pick is always THE SONG the user clicked — a Spotify track
+ * imports as a standalone single-track release, exactly like a Genius
+ * song pick. (It used to import the parent ALBUM, which meant picking
+ * a song sometimes attached a whole album — while Genius picks gave
+ * you just the song. Luca 2026-08-22: singular-song picks must behave
+ * the same in every dropdown. The full album is still one search
+ * result away via its Spotify album hit.)
+ */
+async function ensureFromSpotifyTrack(trackId: string): Promise<Release> {
+  const track = (await spotifyFetch(`/tracks/${trackId}`)) as SpotifyTrackFull;
+
+  // Full artist objects for images/genres (cap at 5 to bound latency).
+  const artistRefs = (track.artists ?? []).slice(0, 5);
+  const fullArtists = await Promise.all(
+    artistRefs.map(async (a) => {
+      try {
+        return (await spotifyFetch(`/artists/${a.id}`)) as SpotifyArtistFull;
+      } catch {
+        return { id: a.id, name: a.name } as SpotifyArtistFull;
+      }
+    })
+  );
+
+  return importViaRpc({
+    release: {
+      slug:
+        slugify(`${track.name}-${track.artists?.[0]?.name ?? ""}`) ||
+        `track-${trackId.slice(-6)}`,
+      title: track.name,
+      release_type: "single",
+      release_date: coerceDate(
+        track.album?.release_date,
+        track.album?.release_date_precision
+      ),
+      cover_image: track.album?.images?.[0]?.url ?? null,
+      // The TRACK id keys the row — re-picking the same song returns
+      // this same single (RPC dedupes on spotify_id).
+      spotify_id: track.id,
+      is_unreleased: false,
+      tracks: [
+        {
+          position: 1,
+          title: track.name,
+          duration_ms: track.duration_ms,
+          spotify_id: track.id,
+          preview_url: track.preview_url ?? null,
+        },
+      ],
+      popularity: track.popularity ?? null,
+    },
+    artists: fullArtists.map((a, i) => ({
+      slug: slugify(a.name) || `artist-${a.id.slice(-6)}`,
+      name: a.name,
+      spotify_id: a.id,
+      image_url: a.images?.[0]?.url ?? null,
+      genres: a.genres ?? [],
+      popularity: a.popularity ?? null,
+      role: i === 0 ? "primary" : "feature",
+    })),
+  });
+}
+
 /**
  * A Genius pick is always THE SONG the user clicked, imported as a
  * standalone single-track release — same intent as the Spotify track
@@ -406,15 +485,12 @@ export async function ensureRelease(
   }
 
   if (source === "spotify_track") {
-    // A track pick imports its PARENT ALBUM — the caller then chooses
-    // the track from the release's tracklist (review standouts, song
-    // of the day, profile song all work track-level off the release).
+    // A track pick imports THAT TRACK as a standalone single — the
+    // universal "I clicked a song, give me that song" behavior (same
+    // as Genius picks). Track-level flows (song of the day, standout
+    // tracks, profile song) see a one-track tracklist and just work.
     if (!/^[A-Za-z0-9]{10,30}$/.test(id)) throw new Error("Bad Spotify id");
-    const track = (await spotifyFetch(`/tracks/${id}`)) as {
-      album?: { id?: string };
-    };
-    if (!track.album?.id) throw new Error("Track has no parent album");
-    return ensureFromSpotify(track.album.id);
+    return ensureFromSpotifyTrack(id);
   }
 
   const songId = Number(id);

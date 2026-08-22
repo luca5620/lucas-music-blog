@@ -14,6 +14,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Release } from "@/lib/types/database";
 
 interface CatalogResult {
@@ -61,13 +62,63 @@ export default function CatalogSearch({
   const [importing, setImporting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastQueryRef = useRef("");
 
-  // Close on outside click
+  // Where the portal dropdown should sit, in viewport coordinates.
+  // The results list renders into document.body (createPortal below),
+  // so NO ancestor can clip it (panel overflow:hidden) or paint over
+  // it (later siblings sharing a stacking context) — the fix is
+  // structural and applies to every form that uses this component.
+  const [anchor, setAnchor] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    maxHeight: number;
+  } | null>(null);
+
+  const measure = useCallback(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setAnchor({
+      left: r.left,
+      top: r.bottom + 8,
+      width: r.width,
+      // Never taller than the space under the input (12px breathing
+      // room) — the list scrolls internally instead of running off
+      // the bottom of the viewport.
+      maxHeight: Math.max(160, window.innerHeight - r.bottom - 20),
+    });
+  }, []);
+
+  // Keep the dropdown glued to the input while open: page scroll
+  // (capture — the scroller may be any ancestor), resizes, and the
+  // mobile keyboard showing/hiding all move the anchor.
+  useEffect(() => {
+    if (!open) return;
+    measure();
+    window.addEventListener("scroll", measure, true);
+    window.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("scroll", measure, true);
+      window.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("resize", measure);
+    };
+  }, [open, measure]);
+
+  // Close on outside click — the portal list lives outside boxRef in
+  // the DOM, so clicks inside it must count as inside.
   useEffect(() => {
     function onDown(e: MouseEvent) {
-      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
+      const t = e.target as Node;
+      if (
+        boxRef.current &&
+        !boxRef.current.contains(t) &&
+        !(listRef.current && listRef.current.contains(t))
+      ) {
         setOpen(false);
       }
     }
@@ -134,10 +185,10 @@ export default function CatalogSearch({
   }
 
   return (
-    // z-40 lifts the search box (and its results dropdown) above the
-    // form sections that come after it — without a z-index here, later
-    // siblings paint over the dropdown in DOM order and block clicks.
-    <div ref={boxRef} className="relative z-40">
+    // The results list itself renders through a portal (bottom of this
+    // file), so this wrapper needs no z-index games — it's just the
+    // measuring anchor for where the list should appear.
+    <div ref={boxRef} className="relative">
       {label && (
         <label className="block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]">
           {label}
@@ -164,8 +215,22 @@ export default function CatalogSearch({
 
       {error && <p className="mt-1.5 text-xs text-accent-rose">{error}</p>}
 
-      {open && results.length > 0 && (
-        <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-[65vh] overflow-y-auto rounded-lg border border-border-medium bg-[#0c0c0f] shadow-[0_16px_50px_rgba(0,0,0,0.8)]">
+      {/* Portal dropdown: fixed-position at the measured anchor, top
+          z-index — nothing on any page can cover or clip it. */}
+      {open && results.length > 0 && anchor &&
+        createPortal(
+        <div
+          ref={listRef}
+          style={{
+            position: "fixed",
+            left: anchor.left,
+            top: anchor.top,
+            width: anchor.width,
+            maxHeight: anchor.maxHeight,
+            zIndex: 100,
+          }}
+          className="overflow-y-auto rounded-lg border border-border-medium bg-[#0c0c0f] shadow-[0_16px_50px_rgba(0,0,0,0.8)]"
+        >
           {results.map((r) => {
             const key = `${r.source}:${r.id}`;
             const badge = SOURCE_BADGE[r.source];
@@ -214,7 +279,8 @@ export default function CatalogSearch({
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

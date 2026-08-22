@@ -25,6 +25,10 @@ const config: CapacitorConfig = {
     url: "https://peakmusicreviews.com",
     // Domains the WebView may navigate to without bouncing to Safari.
     allowNavigation: ["peakmusicreviews.com", "*.supabase.co"],
+    // No connection (or the site unreachable) → show the local
+    // NO SIGNAL page from mobile/www instead of a black screen.
+    // Without this the WebView just failed silently to black.
+    errorPath: "index.html",
   },
   ios: {
     // "never", NOT "automatic": automatic made UIScrollView add

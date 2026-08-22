@@ -11,6 +11,7 @@ import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import NativeMode from "@/components/ui/NativeMode";
+import OfflineOverlay from "@/components/ui/OfflineOverlay";
 import TabBar from "@/components/ui/TabBar";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
@@ -179,6 +180,8 @@ export default async function RootLayout({
           </CRTShell>
           {/* App-only bottom tabs — renders null on the web */}
           <TabBar />
+          {/* App-only NO SIGNAL screen for mid-session connection loss */}
+          <OfflineOverlay />
         </AuthProvider>
       </body>
     </html>

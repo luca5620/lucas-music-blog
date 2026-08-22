@@ -91,9 +91,13 @@ export default function Navigation() {
         <div className="flex items-center justify-end gap-1 sm:gap-2 min-w-0 w-full lg:flex-1">
           {/* Nav Links — can still scroll sideways on tiny screens,
               but the scrollbar itself is hidden (no-scrollbar).
-              app-hide: in the native shell the bottom TabBar is the
-              primary nav, so this strip disappears there. */}
-          <div className="app-hide flex flex-1 min-w-0 items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
+              justify-evenly: the tabs spread UNIFORMLY across the gap
+              between the site title and the CREATE button instead of
+              packing left (Luca 2026-08-22). Once space runs out the
+              strip overflows and evenly-ness naturally gives way to
+              scrolling. app-hide: in the native shell the bottom
+              TabBar is the primary nav, so this strip disappears. */}
+          <div className="app-hide flex flex-1 min-w-0 items-center justify-evenly gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (

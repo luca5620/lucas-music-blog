@@ -295,27 +295,30 @@ export default function Navigation() {
                         >
                           Settings
                         </Link>
-                        {/* App-only (display:none on web): these pages
-                            have no bottom tab, so the dropdown is how
-                            the app reaches them. */}
+                        {/* App-only (display:none on web): the browse
+                            sections, mirroring the home page's locked
+                            strip — Your Taste and Friends left when
+                            they got bottom tabs (Luca 2026-08-22). */}
                         <div className="app-only">
                           <div className="my-1 border-t border-white/5" />
-                          <Link
-                            href="/your-taste"
-                            onClick={() => setDropdownOpen(false)}
-                            className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-                          >
-                            Your Taste
-                          </Link>
-                          {/* Friends left this list 2026-08-22 — it
-                              has its own bottom tab now. */}
-                          <Link
-                            href="/lists"
-                            onClick={() => setDropdownOpen(false)}
-                            className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-                          >
-                            Lists
-                          </Link>
+                          {[
+                            { href: "/reviews", label: "Reviews" },
+                            { href: "/releases", label: "Releases" },
+                            { href: "/debates", label: "Debates" },
+                            { href: "/lists", label: "Lists" },
+                          ].map((item) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setDropdownOpen(false)}
+                              className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                          {/* Closing rule before Sign Out (or the
+                              admin block when present) */}
+                          <div className="my-1 border-t border-white/5" />
                         </div>
                         {(profile?.role === "owner" || profile?.role === "admin") && (
                           <>

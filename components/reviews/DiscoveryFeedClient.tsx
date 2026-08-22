@@ -196,9 +196,12 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                     box. The number lives HERE and only here (Luca
                     2026-08-22: bigger text up top, one small rating
                     box, none stamped on the artwork). */}
+                {/* Centered in the card; a long display name wraps to
+                    another line (break-words handles even a 20-char
+                    no-space username) instead of ever spilling out. */}
                 <Link
                   href={`/profile/${profile.username}`}
-                  className="flex items-center gap-2.5 group/author"
+                  className="flex items-center justify-center gap-2.5 group/author text-center"
                 >
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -214,7 +217,7 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                       </span>
                     </div>
                   )}
-                  <span className="min-w-0 flex-1 text-sm text-text-secondary leading-snug">
+                  <span className="min-w-0 text-sm text-text-secondary leading-snug break-words">
                     <span className="font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
                       {profile.display_name || profile.username}
                     </span>

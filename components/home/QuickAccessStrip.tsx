@@ -3,29 +3,27 @@
 /**
  * QuickAccessStrip — the app home's browse hub (Luca 2026-08-22).
  *
- * A swipeable chip row that starts in the page flow below the header
- * (site name, CREATE, avatar), then LOCKS to the top of the screen
- * once you scroll past it — the browse buttons ride along while the
- * header scrolls away. These chips replaced the Reviews/Debates
- * bottom tabs; the row is the only browse navigation in the app.
+ * Four equal text buttons — Reviews / Releases / Debates / Lists —
+ * all visible at once (no side-scroll, no glyphs; Posts cut). Sits
+ * right below the header (site name / CREATE / avatar), ABOVE the
+ * HOME hero band. Scroll past it and it locks FLUSH to the very top
+ * of the screen: the backdrop runs from y=0 (covering the status-bar
+ * region — pinning at the inset left the page visible above the bar,
+ * "tacky") with the liquid atmosphere drifting inside it, and the
+ * chips resting at the safe-area line.
  *
  * Mechanism (third attempt — the history matters):
  *  1. position:sticky — DEAD site-wide: WebKit disables sticky under
  *     html{overflow-x:clip}, which the wobble fix requires.
  *  2. window scroll listener + position:fixed — never fired on
- *     device. Every working scroll-tracker in this codebase listens
- *     with capture:true "because the scroller may be any ancestor";
- *     a plain window listener hears nothing if the document isn't
- *     the real scroller in the shell.
- *  3. THIS: an IntersectionObserver on a 1px sentinel at the row's
- *     slot — observers fire regardless of WHICH element scrolls,
- *     including mid-momentum, so they can't miss. rootMargin shifts
- *     the trigger line down by the status-bar inset (probe-measured
- *     env(); unreadable from JS directly). A capture-phase scroll
- *     listener stays as a redundant fallback. Pinned = the bar
- *     switches to position:fixed at the safe-area top (the tab
- *     bar's mechanism, provably fine in the shell) while the
- *     wrapper holds the slot's height so the page doesn't jump.
+ *     device: html+body overflow moves the real scroller off the
+ *     window, and element scrolls don't bubble.
+ *  3. THIS (works, Luca-verified): IntersectionObserver on a 1px
+ *     sentinel at the row's slot — observers fire regardless of
+ *     which element scrolls. rootMargin shifts the trigger line to
+ *     the probe-measured safe-area inset; a capture-phase scroll
+ *     listener stays as a redundant fallback. The wrapper holds the
+ *     slot's height while the bar is lifted out so nothing jumps.
  *
  * App-only (.app-only) — web keeps its top nav strip.
  */
@@ -33,13 +31,13 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { hapticTap } from "@/lib/native";
+import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 
 const CHIPS = [
-  { href: "/reviews", glyph: "★", label: "Reviews" },
-  { href: "/releases", glyph: "◉", label: "Releases" },
-  { href: "/debates", glyph: "⚔", label: "Debates" },
-  { href: "/lists", glyph: "≣", label: "Lists" },
-  { href: "/posts", glyph: "▶", label: "Posts" },
+  { href: "/reviews", label: "Reviews" },
+  { href: "/releases", label: "Releases" },
+  { href: "/debates", label: "Debates" },
+  { href: "/lists", label: "Lists" },
 ];
 
 /** env(safe-area-inset-top) in real pixels, via a fixed probe. */
@@ -71,7 +69,9 @@ export default function QuickAccessStrip() {
 
     const build = () => {
       safeTopRef.current = measureSafeTop();
-      if (bar.offsetHeight > 0) setBarHeight(bar.offsetHeight);
+      if (bar.offsetHeight > 0 && !bar.classList.contains("fixed")) {
+        setBarHeight(bar.offsetHeight);
+      }
 
       observer?.disconnect();
       observer = new IntersectionObserver(
@@ -83,7 +83,6 @@ export default function QuickAccessStrip() {
           setPinned(
             !entry.isIntersecting && entry.boundingClientRect.top < rootTop,
           );
-          if (bar.offsetHeight > 0) setBarHeight(bar.offsetHeight);
         },
         // Pull the top trigger line DOWN to the safe-area inset so the
         // pin happens exactly when the row reaches the notch line.
@@ -131,24 +130,27 @@ export default function QuickAccessStrip() {
       />
       <div
         ref={barRef}
-        style={pinned ? { top: "env(safe-area-inset-top, 0px)" } : undefined}
         className={
           pinned
-            ? "fixed left-0 right-0 z-40 px-4 py-2 bg-black border-b border-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            ? // Flush to y=0: opaque base + liquid drifting over it
+              // (negative-z child paints above the parent background,
+              // same layering as the PageHero boxes), chips resting
+              // at the safe-area line.
+              "fixed left-0 right-0 top-0 z-40 isolate overflow-hidden bg-black border-b border-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.6)] px-4 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)]"
             : // -mx-4/px-4 mirrors .crt-screen's 1rem phone padding so
               // the row reads full-bleed in the flow too.
               "-mx-4 px-4 py-2"
         }
       >
-        <div className="flex gap-2 overflow-x-auto no-scrollbar">
+        {pinned && <LiquidAtmosphere />}
+        <div className="grid grid-cols-4 gap-2">
           {CHIPS.map((chip) => (
             <Link
               key={chip.href}
               href={chip.href}
               onClick={() => hapticTap()}
-              className="shrink-0 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase text-text-secondary border border-border-medium bg-bg-elevated hover:text-accent-primary hover:border-accent-primary/40 transition-all font-[family-name:var(--font-heading)]"
+              className="text-center px-1 py-1.5 rounded-full text-[11px] font-bold tracking-wide uppercase text-text-secondary border border-border-medium bg-bg-elevated hover:text-accent-primary hover:border-accent-primary/40 transition-all font-[family-name:var(--font-heading)] whitespace-nowrap"
             >
-              <span className="text-accent-primary">{chip.glyph}</span>
               {chip.label}
             </Link>
           ))}

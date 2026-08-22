@@ -174,6 +174,13 @@ async function Dashboard({ userId }: { userId: string }) {
 
   return (
     <>
+      {/* ===== App-only quick access strip: FIRST thing on the page,
+             right below the site header, above the HOME band (Luca
+             2026-08-22). Locks flush to the screen top on scroll.
+             These four buttons replaced the Reviews/Debates bottom
+             tabs. Web hides it (nav strip covers it). ===== */}
+      <QuickAccessStrip />
+
       {/* ===== Hero band — HOME + actions on liquid light, with the
              chrome disc spinning on the right ===== */}
       <section className="panel-xbox-glow p-6 sm:p-8 relative isolate overflow-hidden">
@@ -202,13 +209,6 @@ async function Dashboard({ userId }: { userId: string }) {
         <div className="scan-bar" />
       </section>
 
-      {/* ===== App-only quick access strip (Luca 2026-08-22): the
-             browse sections live HERE, not on the tab bar — this strip
-             is what freed the bottom row down to Home / Taste / Search
-             / Friends / Profile. Starts below the header, then LOCKS
-             to the top of the screen while scrolling (sticky). Web
-             keeps its nav strip, so this hides there. ===== */}
-      <QuickAccessStrip />
 
       {/* ===== ON AIR — rooms with a pulse right now ===== */}
       {onAir.length > 0 && (

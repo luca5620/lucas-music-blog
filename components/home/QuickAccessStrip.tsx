@@ -132,17 +132,27 @@ export default function QuickAccessStrip() {
         ref={barRef}
         className={
           pinned
-            ? // Flush to y=0: opaque base + liquid drifting over it
-              // (negative-z child paints above the parent background,
-              // same layering as the PageHero boxes), chips resting
-              // at the safe-area line.
-              "fixed left-0 right-0 top-0 z-40 isolate overflow-hidden bg-black border-b border-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.6)] px-4 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)]"
+            ? // Flush to y=0, chips resting at the safe-area line.
+              // strip-pin-anim: the position swap itself can't
+              // animate, so a quick drop-in masks the teleport.
+              "fixed left-0 right-0 top-0 z-40 isolate px-4 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)] strip-pin-anim"
             : // -mx-4/px-4 mirrors .crt-screen's 1rem phone padding so
               // the row reads full-bleed in the flow too.
-              "-mx-4 px-4 py-2"
+              "relative isolate -mx-4 px-4 py-2"
         }
       >
-        {pinned && <LiquidAtmosphere />}
+        {/* Backdrop lives in BOTH states and fades rather than pops:
+            opaque base + liquid drifting over it (negative-z child
+            paints above the parent background, PageHero layering) +
+            the border/shadow, all riding one opacity transition. */}
+        <div
+          aria-hidden="true"
+          className={`absolute inset-0 -z-10 isolate overflow-hidden bg-black border-b border-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.6)] transition-opacity duration-300 ${
+            pinned ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <LiquidAtmosphere />
+        </div>
         <div className="grid grid-cols-4 gap-2">
           {CHIPS.map((chip) => (
             <Link

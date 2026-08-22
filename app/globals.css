@@ -1074,6 +1074,24 @@ body {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-primary) 60%, transparent));
 }
 
+/* Quick-access strip (QuickAccessStrip.tsx): the pin is a position
+   swap and can't animate, so the arriving bar drops in softly.
+   Runs once per pin — exempt from the mobile animation freeze, it's
+   not a perpetual scroll-time animation. */
+@keyframes strip-pin {
+  from {
+    transform: translateY(-10px);
+    opacity: 0.35;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.strip-pin-anim {
+  animation: strip-pin 0.28s ease;
+}
+
 /* ============================================================
    SURF FULLSCREEN — the Tuned To You pager gone full-channel
    (ChannelSurf.tsx). Fixed over the page, under the tab bar

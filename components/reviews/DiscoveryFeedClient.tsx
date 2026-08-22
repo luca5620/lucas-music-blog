@@ -192,26 +192,29 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                 key={review.id}
                 className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
               >
-                {/* The verdict sentence — who, and what they gave it */}
+                {/* The verdict line — who, then THE number in its own
+                    box. The number lives HERE and only here (Luca
+                    2026-08-22: bigger text up top, one small rating
+                    box, none stamped on the artwork). */}
                 <Link
                   href={`/profile/${profile.username}`}
-                  className="flex items-center gap-2 group/author"
+                  className="flex items-center gap-2.5 group/author"
                 >
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={profile.avatar_url}
                       alt={profile.display_name || profile.username}
-                      className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center justify-center shrink-0">
-                      <span className="text-[10px] font-bold text-accent-primary uppercase">
+                    <div className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-accent-primary uppercase">
                         {(profile.username || "U")[0]}
                       </span>
                     </div>
                   )}
-                  <span className="min-w-0 text-xs text-text-secondary leading-snug">
+                  <span className="min-w-0 flex-1 text-sm text-text-secondary leading-snug">
                     <span className="font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
                       {profile.display_name || profile.username}
                     </span>
@@ -221,16 +224,13 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                         <VerifiedBadge role={profile.role} />
                       </>
                     )}{" "}
-                    rated this release a{" "}
-                    <span
-                      className="font-bold tabular-nums"
-                      style={{ color: ratingColor }}
-                    >
-                      {formatRating(review.rating)}
-                    </span>
+                    rated this release
                   </span>
-                  <span className="ml-auto text-xs text-text-muted shrink-0">
-                    {timeAgo(review.created_at)}
+                  <span
+                    className={`rating-badge text-xs w-8 h-8 shrink-0 ${getRatingColor(review.rating)}`}
+                    style={{ color: ratingColor, borderColor: ratingColor }}
+                  >
+                    {formatRating(review.rating)}
                   </span>
                 </Link>
 
@@ -250,13 +250,6 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                       </span>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {/* Their number, stamped on the cover corner */}
-                    <span
-                      className={`absolute bottom-2 right-2 rating-badge text-xs w-9 h-9 bg-black/70 ${getRatingColor(review.rating)}`}
-                      style={{ color: ratingColor, borderColor: ratingColor }}
-                    >
-                      {formatRating(review.rating)}
-                    </span>
                   </div>
 
                   <div className="min-w-0">
@@ -286,14 +279,19 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                   </Link>
                 )}
 
-                {/* Likes + the review's own page for comments */}
+                {/* Likes + when + the review's own page for comments */}
                 <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
-                  <LikeButton
-                    reviewId={review.id}
-                    initialCount={review.like_count}
-                    initialLiked={review.viewer_has_liked}
-                    size="sm"
-                  />
+                  <span className="flex items-center gap-2">
+                    <LikeButton
+                      reviewId={review.id}
+                      initialCount={review.like_count}
+                      initialLiked={review.viewer_has_liked}
+                      size="sm"
+                    />
+                    <span className="text-xs text-text-muted">
+                      {timeAgo(review.created_at)}
+                    </span>
+                  </span>
                   <Link
                     href={`/reviews/${review.slug}`}
                     className="pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"

@@ -20,6 +20,7 @@ import { getFriendActivity, type ActivityItem } from "@/lib/db/activity";
 import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
+import PostsFeed from "@/components/posts/PostsFeed";
 import LiveBadge from "@/components/rooms/LiveBadge";
 import ChromeDisc from "@/components/ui/ChromeDisc";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
@@ -135,9 +136,12 @@ function Splash() {
 
       {/* Even logged out, show the community pulse so the site feels
           alive — reviews FIRST (Luca: greet people with the takes),
-          then the release wall */}
+          then posts, then the release wall */}
       <Suspense fallback={null}>
         <DiscoveryFeed />
+      </Suspense>
+      <Suspense fallback={null}>
+        <PostsFeed />
       </Suspense>
       <Suspense fallback={null}>
         <ReleasesFeed />
@@ -261,10 +265,17 @@ async function Dashboard({ userId }: { userId: string }) {
 
       <div className="divider-glow" />
 
-      {/* ===== Community reviews / new releases / lists =====
-          Reviews lead — people land on takes, not just covers */}
+      {/* ===== Community reviews / posts / new releases / lists =====
+          Reviews lead — people land on takes, not just covers.
+          Posts between the takes and the release wall (Luca
+          2026-08-22: posts were unfindable outside profiles and
+          Your Taste). */}
       <Suspense fallback={null}>
         <DiscoveryFeed />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <PostsFeed />
       </Suspense>
 
       <Suspense fallback={null}>

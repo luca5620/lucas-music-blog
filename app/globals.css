@@ -998,14 +998,15 @@ body {
   background: #000;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  /* Side breathing room, sized so the gap from the screen edge to the
-     first/last icon EQUALS the gap between neighboring icons — that's
-     what reads as "uniform". On a ~390px phone: 6 equal cells ≈ 59px,
-     icons 24px → ~35px between icons; edge gap = pad + (59−24)/2, so
-     pad ≈ 18px makes them match. 10px looked like Home/Profile were
-     shoved into the corners. */
-  padding-left: max(18px, env(safe-area-inset-left, 0px));
-  padding-right: max(18px, env(safe-area-inset-right, 0px));
+  /* space-evenly + content-width tabs (below): every gap on the bar —
+     screen edge → HOME, and between each neighboring tab — is the
+     SAME width. The earlier equal-width-cell approach centered the
+     icons uniformly, but wide labels (RELEASES) vs narrow ones (HOME)
+     left visibly unequal whitespace and the outer tabs hugging the
+     edges. The eye judges the whitespace, so that's what we equalize. */
+  justify-content: space-evenly;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   /* Own compositor layer: the bar never repaints with page content */
   transform: translateZ(0);
 }
@@ -1019,23 +1020,24 @@ body {
 }
 
 .tab-bar-item {
-  /* flex-basis 0 (not auto): every cell gets an IDENTICAL width
-     regardless of label length, so the six icons land on a perfectly
-     even grid. flex:1 alone divided only the LEFTOVER space, which
-     let "Releases" claim a wider cell than "Home". */
-  flex: 1 1 0;
-  min-width: 0;
+  /* Content-width, no grow/shrink: the bar's space-evenly does the
+     distribution, so all whitespace gaps come out identical. min-width
+     keeps narrow tabs (HOME) at a 44px+ tap target. */
+  flex: 0 0 auto;
+  min-width: 44px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 10px 0 9px;
+  padding: 10px 2px 9px;
   color: var(--text-muted);
   font-family: var(--font-heading);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  /* Tighter tracking slims the wide labels (RELEASES/DEBATES) so the
+     tabs' widths sit closer together and the bar reads calmer. */
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   -webkit-tap-highlight-color: transparent;
   transition: color 0.15s ease;

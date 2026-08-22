@@ -335,6 +335,27 @@ export async function getPostLikeState(
   };
 }
 
+/** Which of these posts the viewer has liked (heart fill-in state). */
+export async function getViewerLikedPostIds(
+  postIds: string[],
+  viewerId?: string
+): Promise<Set<string>> {
+  const liked = new Set<string>();
+  if (!viewerId || postIds.length === 0) return liked;
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("post_likes")
+    .select("post_id")
+    .eq("user_id", viewerId)
+    .in("post_id", postIds);
+
+  for (const row of data ?? []) {
+    liked.add((row as { post_id: string }).post_id);
+  }
+  return liked;
+}
+
 /** Like counts for a batch of posts (feeds + taste ranking). */
 export async function getPostLikeCounts(
   postIds: string[]

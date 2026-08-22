@@ -7,11 +7,11 @@ import { hapticTap } from "@/lib/native";
  * BrowseSwitch — app-only segmented control at the top of /reviews
  * and /releases.
  *
- * In the native shell the two browse pages share ONE bottom tab
- * (REVIEWS — the app is Peak Music Reviews, the reviews name leads),
- * freeing a tab slot for Friends. This switcher is how you move
- * between the two views inside that tab. Hidden on web (.app-only),
- * where the top nav still links Releases and Reviews separately.
+ * In the native shell the browse pages live on NO bottom tab (they
+ * moved to the home page's quick-access strip, 2026-08-22) — this
+ * switcher flips between the two catalogs without a round trip back
+ * to home. Hidden on web (.app-only), where the top nav still links
+ * Releases and Reviews separately.
  */
 
 interface BrowseSwitchProps {

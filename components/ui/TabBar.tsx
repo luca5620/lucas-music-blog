@@ -16,12 +16,12 @@ import { isNativeApp, hapticTap } from "@/lib/native";
  * in the app the top link strip hides (.app-hide in globals.css)
  * and this takes over as primary navigation.
  *
- * Tabs: Home / Taste (Your Taste) / Reviews / Friends / Debates /
- * Profile. Reviews and Releases share ONE tab (Luca 2026-08-22: bar
- * was full and Friends had no home; the app is Peak Music REVIEWS so
- * that name keeps the slot) — the tab lights up for both routes and
- * a BrowseSwitch segmented control on each page moves between them.
- * Lists stay reachable via the avatar dropdown (app-only links).
+ * Tabs: Home / Taste / Search (middle) / Friends / Profile — Luca's
+ * exact lineup, 2026-08-22. Reviews, Releases, Debates, Lists,
+ * Artists, and Posts all moved to the quick-access strip at the top
+ * of the home page (app-only chips); /search is the universal
+ * everything-search. The strip + search REPLACE browse tabs — don't
+ * re-add one without asking him.
  */
 
 type Tab = {
@@ -57,17 +57,10 @@ const icons = {
       <path d="M18.5 15.6c1.6.8 2.6 2.3 3 4.4" />
     </svg>
   ),
-  reviews: (
+  search: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="m12 3 2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17.2 6.5 20l1-6.1L3 9.5l6.3-.9L12 3z" />
-    </svg>
-  ),
-  debates: (
-    // The bubble's circle centers on (13,12) — its tail eats the left
-    // margin — so the dots center on x=13 too, not the viewBox's 12.
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 12h.01M13 12h.01M17 12h.01" />
-      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20.5 20.5-4.2-4.2" />
     </svg>
   ),
   profile: (
@@ -116,14 +109,7 @@ export default function TabBar() {
     // "Taste", not "For You" — Luca 2026-08-22: don't copy TikTok's
     // label, and the short form fits the narrow tab cell.
     { href: "/your-taste", label: "Taste", icon: icons.taste },
-    // One browse tab for both catalogs — BrowseSwitch on the pages
-    // flips between them, and /releases keeps this tab lit.
-    {
-      href: "/reviews",
-      label: "Reviews",
-      match: ["/reviews", "/releases"],
-      icon: icons.reviews,
-    },
+    { href: "/search", label: "Search", icon: icons.search },
     {
       href: "/friends",
       label: "Friends",
@@ -132,7 +118,6 @@ export default function TabBar() {
       match: ["/friends", "/connections"],
       icon: icons.friends,
     },
-    { href: "/debates", label: "Debates", icon: icons.debates },
     { href: profileHref, label: "Profile", icon: icons.profile },
   ];
 

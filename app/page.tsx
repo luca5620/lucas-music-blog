@@ -201,15 +201,17 @@ async function Dashboard({ userId }: { userId: string }) {
         <div className="scan-bar" />
       </section>
 
-      {/* ===== App-only quick access strip (Luca 2026-08-22): every
-             browse section in one swipeable row at the top — Reviews,
-             Releases, Lists (which lives on NO bottom tab), Artists,
-             Posts. Web keeps its nav strip, so this hides there. ===== */}
+      {/* ===== App-only quick access strip (Luca 2026-08-22): the
+             browse sections live HERE, not on the tab bar — this strip
+             is what freed the bottom row down to Home / Taste / Search
+             / Friends / Profile. Web keeps its nav strip, so this
+             hides there. ===== */}
       <div className="app-only">
         <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
           {[
             { href: "/reviews", glyph: "★", label: "Reviews" },
             { href: "/releases", glyph: "◉", label: "Releases" },
+            { href: "/debates", glyph: "⚔", label: "Debates" },
             { href: "/lists", glyph: "≣", label: "Lists" },
             { href: "/artists", glyph: "♪", label: "Artists" },
             { href: "/posts", glyph: "▶", label: "Posts" },

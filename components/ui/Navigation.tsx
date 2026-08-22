@@ -120,6 +120,22 @@ export default function Navigation() {
             })}
           </div>
 
+          {/* SEARCH — the universal /search page (users, artists,
+              releases, reviews, debates, lists, posts). Web-only up
+              here (app-hide): in the app it's the middle bottom tab. */}
+          <Link
+            href="/search"
+            title="Search everything"
+            aria-label="Search everything"
+            className="app-hide shrink-0 inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.8-3.8" />
+            </svg>
+            <span className="hidden sm:inline">Search</span>
+          </Link>
+
           {/* CREATE — one button for every content type (Luca
               2026-08-19: fold posts into the review button, pick a
               name that fits both; 2026-08-22: lists join it). Click →

@@ -137,10 +137,12 @@ export default function DebateRoom({
   initialReactionCounts,
   initialViewerReactions,
 }: DebateRoomProps) {
-  const { user } = useAuth();
+  const { user, profile: myProfile } = useAuth();
   const supabaseRef = useRef(createClient());
   const profileCacheRef = useRef<Map<string, DebateProfile>>(new Map());
   const isClosed = debate.status === "closed";
+  // Staff can mod-delete any take (RLS-backed; the API re-checks).
+  const isStaff = myProfile?.role === "owner" || myProfile?.role === "admin";
 
   // Seed the profile cache so realtime rows from known posters don't
   // need a lookup round-trip.
@@ -316,6 +318,23 @@ export default function DebateRoom({
             return [...filtered, enriched];
           });
           scrollIfNearBottom();
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          // Deliberately UNFILTERED: with default replica identity the
+          // DELETE payload only carries the primary key, so a
+          // debate_id filter would never match and the event would be
+          // dropped. We get deletes from all debates and match by id.
+          event: "DELETE",
+          schema: "public",
+          table: "debate_messages",
+        },
+        (payload: { old: { id?: string } | null }) => {
+          const id = payload.old?.id;
+          if (!id) return;
+          setMessages((prev) => prev.filter((m) => m.id !== id));
         }
       )
       .on(
@@ -507,6 +526,27 @@ export default function DebateRoom({
     [content, submitting, user, isClosed, debate.id, myVote, scrollIfNearBottom]
   );
 
+  /* ─── Delete a take: your own, or any as staff. Confirm guards the
+     moderation case; realtime DELETE echoes the removal to everyone
+     else in the room. ─── */
+  const handleDeleteMessage = useCallback(
+    async (m: DebateMessageWithProfile) => {
+      const isOwn = m.user_id === (user?.id ?? "");
+      if (!isOwn) {
+        const name = m.profile.display_name || m.profile.username;
+        if (!window.confirm(`Delete ${name}'s message?`)) return;
+      }
+      const res = await fetch(
+        `/api/debates/${debate.id}/messages/${m.id}`,
+        { method: "DELETE" }
+      );
+      if (res.ok) {
+        setMessages((prev) => prev.filter((x) => x.id !== m.id));
+      }
+    },
+    [user?.id, debate.id]
+  );
+
   const sideLabels = { a: debate.side_a_label, b: debate.side_b_label };
   // Hide messages from blocked authors (initial load AND realtime).
   const visibleMessages = messages.filter((m) => !blockedIds.has(m.user_id));
@@ -648,6 +688,24 @@ export default function DebateRoom({
                             small
                           />
                         </span>
+                      )}
+                    {/* Delete — your own take, or any take as staff.
+                        Always visible (hover doesn't exist on touch). */}
+                    {(m.user_id === (user?.id ?? "") || isStaff) &&
+                      !m.id.startsWith("temp-") && (
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteMessage(m)}
+                          aria-label="Delete message"
+                          title={
+                            m.user_id === (user?.id ?? "")
+                              ? "Delete your message"
+                              : "Mod delete"
+                          }
+                          className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-rose transition-colors"
+                        >
+                          ✕
+                        </button>
                       )}
                   </div>
                   <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">

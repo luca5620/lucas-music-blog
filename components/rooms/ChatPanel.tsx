@@ -121,6 +121,9 @@ function MessageRow({
   reactionCounts,
   myReactions,
   canReact,
+  canDelete,
+  isOwn,
+  onDelete,
   onToggleReaction,
   accentColor,
 }: {
@@ -130,6 +133,10 @@ function MessageRow({
   reactionCounts: Record<string, number>;
   myReactions: Set<string>;
   canReact: boolean;
+  /** Own message, or any message when the viewer is staff. */
+  canDelete: boolean;
+  isOwn: boolean;
+  onDelete: () => void;
   onToggleReaction: (emoji: string) => void;
   accentColor: string;
 }) {
@@ -154,6 +161,19 @@ function MessageRow({
           </span>
           {pending && (
             <span className="text-[10px] text-text-muted italic">sending…</span>
+          )}
+          {/* Delete — your own message, or any message as staff.
+              Always visible (hover doesn't exist on touch). */}
+          {canDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label="Delete message"
+              title={isOwn ? "Delete your message" : "Mod delete"}
+              className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-rose transition-colors"
+            >
+              ✕
+            </button>
           )}
         </div>
         <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">
@@ -181,9 +201,11 @@ export default function ChatPanel({
   initialReactionCounts,
   initialViewerReactions,
 }: ChatPanelProps) {
-  const { user } = useAuth();
+  const { user, profile: myProfile } = useAuth();
   const supabaseRef = useRef(createClient());
   const profileCacheRef = useRef<Map<string, ChatProfile>>(new Map());
+  // Staff can mod-delete any message (RLS-backed; the API re-checks).
+  const isStaff = myProfile?.role === "owner" || myProfile?.role === "admin";
 
   // Seed profile cache from initial messages.
   useMemo(() => {
@@ -338,6 +360,22 @@ export default function ChatPanel({
       .on(
         "postgres_changes" as never,
         {
+          // Deliberately UNFILTERED: room_messages has default replica
+          // identity, so DELETE payloads only carry the primary key —
+          // a room_id filter would never match. Match by id instead.
+          event: "DELETE",
+          schema: "public",
+          table: "room_messages",
+        },
+        (payload: { old: { id?: string } | null }) => {
+          const id = payload.old?.id;
+          if (!id) return;
+          setMessages((prev) => prev.filter((m) => m.id !== id));
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
           event: "INSERT",
           schema: "public",
           table: "room_messages",
@@ -481,6 +519,27 @@ export default function ChatPanel({
     [content, submitting, user, releaseId, initialRoom.id, appendMessage]
   );
 
+  /* ─── Delete a message: your own, or any as staff. Confirm guards
+     the moderation case; the realtime DELETE listener above echoes
+     the removal to everyone else in the room. ─── */
+  const handleDeleteMessage = useCallback(
+    async (m: ChatMessageWithProfile) => {
+      const isOwn = m.user_id === (user?.id ?? "");
+      if (!isOwn) {
+        const name = m.profile.display_name || m.profile.username;
+        if (!window.confirm(`Delete ${name}'s message?`)) return;
+      }
+      const res = await fetch(
+        `/api/rooms/${releaseId}/messages/${m.id}`,
+        { method: "DELETE" }
+      );
+      if (res.ok) {
+        setMessages((prev) => prev.filter((x) => x.id !== m.id));
+      }
+    },
+    [user?.id, releaseId]
+  );
+
   /* ─── Auto-grow textarea (max ~4 rows) ─── */
 
   const handleTextareaChange = (
@@ -559,6 +618,12 @@ export default function ChatPanel({
               reactionCounts={countsFor(m.id)}
               myReactions={mineFor(m.id)}
               canReact={!!user && !m.id.startsWith("temp-")}
+              canDelete={
+                (m.user_id === (user?.id ?? "") || isStaff) &&
+                !m.id.startsWith("temp-")
+              }
+              isOwn={m.user_id === (user?.id ?? "")}
+              onDelete={() => void handleDeleteMessage(m)}
               onToggleReaction={(emoji) => void toggleReaction(m.id, emoji)}
               accentColor={accentColor}
             />

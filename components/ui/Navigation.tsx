@@ -120,9 +120,10 @@ export default function Navigation() {
             })}
           </div>
 
-          {/* CREATE — one button for both content types (Luca 2026-08-19:
-              fold posts into the review button, pick a name that fits
-              both). Click → choose Review or Post. */}
+          {/* CREATE — one button for every content type (Luca
+              2026-08-19: fold posts into the review button, pick a
+              name that fits both; 2026-08-22: lists join it). Click →
+              choose Review, Post, or List. */}
           {!loading && user && (
             <div className="relative shrink-0" ref={createRef}>
               <button
@@ -172,6 +173,23 @@ export default function Navigation() {
                       </span>
                       <span className="block text-xs text-text-muted">
                         write it up — embed YouTube / TikTok
+                      </span>
+                    </span>
+                  </Link>
+                  <Link
+                    href="/lists/new"
+                    onClick={() => setCreateOpen(false)}
+                    className="group flex items-center gap-3 rounded-lg border border-white/10 px-3 py-2.5 transition-all hover:border-accent-primary/60 hover:bg-accent-primary/10 focus-visible:border-accent-primary/60 focus-visible:bg-accent-primary/10 focus:outline-none"
+                  >
+                    <span className="w-8 h-8 shrink-0 rounded-full border border-accent-primary/30 bg-accent-primary/10 flex items-center justify-center text-base group-hover:border-accent-primary/60 transition-colors">
+                      ≣
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
+                        List
+                      </span>
+                      <span className="block text-xs text-text-muted">
+                        stack and rank your picks
                       </span>
                     </span>
                   </Link>

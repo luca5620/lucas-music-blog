@@ -18,6 +18,7 @@ import { getUser } from "@/lib/auth";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
 import { getFriendActivity, type ActivityItem } from "@/lib/db/activity";
 import ReleasesFeed from "@/components/feed/ReleasesFeed";
+import QuickAccessStrip from "@/components/home/QuickAccessStrip";
 import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
 import PostsFeed from "@/components/posts/PostsFeed";
@@ -204,29 +205,10 @@ async function Dashboard({ userId }: { userId: string }) {
       {/* ===== App-only quick access strip (Luca 2026-08-22): the
              browse sections live HERE, not on the tab bar — this strip
              is what freed the bottom row down to Home / Taste / Search
-             / Friends / Profile. Web keeps its nav strip, so this
-             hides there. ===== */}
-      <div className="app-only">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
-          {[
-            { href: "/reviews", glyph: "★", label: "Reviews" },
-            { href: "/releases", glyph: "◉", label: "Releases" },
-            { href: "/debates", glyph: "⚔", label: "Debates" },
-            { href: "/lists", glyph: "≣", label: "Lists" },
-            { href: "/artists", glyph: "♪", label: "Artists" },
-            { href: "/posts", glyph: "▶", label: "Posts" },
-          ].map((chip) => (
-            <Link
-              key={chip.href}
-              href={chip.href}
-              className="shrink-0 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase text-text-secondary border border-border-medium bg-bg-elevated hover:text-accent-primary hover:border-accent-primary/40 transition-all font-[family-name:var(--font-heading)]"
-            >
-              <span className="text-accent-primary">{chip.glyph}</span>
-              {chip.label}
-            </Link>
-          ))}
-        </div>
-      </div>
+             / Friends / Profile. Starts below the header, then LOCKS
+             to the top of the screen while scrolling (sticky). Web
+             keeps its nav strip, so this hides there. ===== */}
+      <QuickAccessStrip />
 
       {/* ===== ON AIR — rooms with a pulse right now ===== */}
       {onAir.length > 0 && (

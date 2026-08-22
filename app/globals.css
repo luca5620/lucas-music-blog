@@ -937,6 +937,23 @@ body {
   font-size: 16px !important;
 }
 
+/* The rule above is UN-layered, and per the cascade-layers spec a
+   !important declaration inside a layer beats a !important one
+   outside — so any `!text-*` utility (Tailwind v4 emits utilities
+   into @layer utilities) still shrank its input and re-armed the
+   stuck-zoom trap (the report popover's `!text-xs` textarea froze
+   the whole app zoomed-in, 2026-08-22, mid App-Review recording).
+   Restating the guard INSIDE the utilities layer makes it compete
+   there on specificity, where .native-app textarea (0,1,1) beats
+   any single utility class (0,1,0). Keep BOTH copies. */
+@layer utilities {
+  .native-app input,
+  .native-app textarea,
+  .native-app select {
+    font-size: 16px !important;
+  }
+}
+
 /* Web-only chrome the app hides: the top nav link strip duplicates
    the bottom tab bar in the shell, so it goes. Logo + CREATE + avatar
    stay on top. */

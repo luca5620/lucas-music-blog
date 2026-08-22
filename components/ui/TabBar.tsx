@@ -16,16 +16,19 @@ import { isNativeApp, hapticTap } from "@/lib/native";
  * in the app the top link strip hides (.app-hide in globals.css)
  * and this takes over as primary navigation.
  *
- * Tabs: Home / Taste (Your Taste) / Releases / Reviews / Debates /
- * Profile. Lists and Friends stay reachable in-app via the avatar
- * dropdown (app-only links) and the homepage.
+ * Tabs: Home / Taste (Your Taste) / Reviews / Friends / Debates /
+ * Profile. Reviews and Releases share ONE tab (Luca 2026-08-22: bar
+ * was full and Friends had no home; the app is Peak Music REVIEWS so
+ * that name keeps the slot) — the tab lights up for both routes and
+ * a BrowseSwitch segmented control on each page moves between them.
+ * Lists stay reachable via the avatar dropdown (app-only links).
  */
 
 type Tab = {
   href: string;
   label: string;
-  /** Marks the tab active when the path starts with this (default: href). */
-  match?: string;
+  /** Marks the tab active when the path starts with any of these (default: [href]). */
+  match?: string[];
   icon: React.ReactNode;
 };
 
@@ -45,11 +48,13 @@ const icons = {
       <path d="M5 17v3M3.5 18.5h3" />
     </svg>
   ),
-  releases: (
-    // A record — fits "Releases" better than any generic icon
+  friends: (
+    // Two people — the friends activity feed
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="2.5" />
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c1.2-3.1 3.6-4.7 6.5-4.7s5.3 1.6 6.5 4.7" />
+      <path d="M16 5a3.5 3.5 0 0 1 0 6.6" />
+      <path d="M18.5 15.6c1.6.8 2.6 2.3 3 4.4" />
     </svg>
   ),
   reviews: (
@@ -111,8 +116,22 @@ export default function TabBar() {
     // "Taste", not "For You" — Luca 2026-08-22: don't copy TikTok's
     // label, and the short form fits the narrow tab cell.
     { href: "/your-taste", label: "Taste", icon: icons.taste },
-    { href: "/releases", label: "Releases", icon: icons.releases },
-    { href: "/reviews", label: "Reviews", icon: icons.reviews },
+    // One browse tab for both catalogs — BrowseSwitch on the pages
+    // flips between them, and /releases keeps this tab lit.
+    {
+      href: "/reviews",
+      label: "Reviews",
+      match: ["/reviews", "/releases"],
+      icon: icons.reviews,
+    },
+    {
+      href: "/friends",
+      label: "Friends",
+      // /connections is reached from the friends/profile flow — keep
+      // the tab lit there too.
+      match: ["/friends", "/connections"],
+      icon: icons.friends,
+    },
     { href: "/debates", label: "Debates", icon: icons.debates },
     { href: profileHref, label: "Profile", icon: icons.profile },
   ];
@@ -123,9 +142,10 @@ export default function TabBar() {
       aria-label="App navigation"
     >
       {tabs.map((tab) => {
-        const match = tab.match ?? tab.href;
-        const isActive =
-          match === "/" ? pathname === "/" : pathname.startsWith(match);
+        const matches = tab.match ?? [tab.href];
+        const isActive = matches.some((m) =>
+          m === "/" ? pathname === "/" : pathname.startsWith(m),
+        );
         return (
           <Link
             key={tab.label}

@@ -14,6 +14,7 @@ import { listReleases } from "@/lib/db/releases";
 import ReleasesIndexClient from "@/components/releases/ReleasesIndexClient";
 import { BreadcrumbSchema } from "@/app/schema";
 import PageHero from "@/components/ui/PageHero";
+import BrowseSwitch from "@/components/ui/BrowseSwitch";
 
 const PAGE_SIZE = 24;
 
@@ -81,6 +82,10 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
         title="RELEASES"
         sub="Albums, EPs, mixtapes, and singles. Follow a release to be in the live room when it drops."
       />
+
+      {/* App-only: Reviews + Releases share one bottom tab — this
+          flips between them. Hidden on web (top nav covers both). */}
+      <BrowseSwitch active="releases" />
 
       {/* Sort tabs */}
       <div className="flex flex-wrap gap-2">

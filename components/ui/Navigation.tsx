@@ -273,19 +273,14 @@ export default function Navigation() {
                           >
                             Your Taste
                           </Link>
+                          {/* Friends left this list 2026-08-22 — it
+                              has its own bottom tab now. */}
                           <Link
                             href="/lists"
                             onClick={() => setDropdownOpen(false)}
                             className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                           >
                             Lists
-                          </Link>
-                          <Link
-                            href="/friends"
-                            onClick={() => setDropdownOpen(false)}
-                            className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-                          >
-                            Friends
                           </Link>
                         </div>
                         {(profile?.role === "owner" || profile?.role === "admin") && (

@@ -14,6 +14,7 @@ import {
 } from "@/app/schema";
 import FAQSchema from "@/components/seo/FAQSchema";
 import PageHero from "@/components/ui/PageHero";
+import BrowseSwitch from "@/components/ui/BrowseSwitch";
 import { reviewsFAQs } from "@/lib/faq-data";
 
 export const metadata = {
@@ -59,6 +60,10 @@ export default async function Reviews() {
         title="REVIEWS"
         sub="Honest takes from the whole community. Every review is tied to a real release — no filler, no fake entries."
       />
+
+      {/* App-only: Reviews + Releases share one bottom tab — this
+          flips between them. Hidden on web (top nav covers both). */}
+      <BrowseSwitch active="reviews" />
 
       {/* Interactive filter + review list */}
       <ReviewsList reviews={reviews} />

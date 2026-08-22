@@ -26,6 +26,7 @@ import {
 import Link from "next/link";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
+import ReportButton from "@/components/moderation/ReportButton";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LiveBadge from "@/components/rooms/LiveBadge";
 import PresencePile from "@/components/rooms/PresencePile";
@@ -162,8 +163,9 @@ function MessageRow({
           {pending && (
             <span className="text-[10px] text-text-muted italic">sending…</span>
           )}
-          {/* Delete — your own message, or any message as staff.
-              Always visible (hover doesn't exist on touch). */}
+          {/* Universal action order for chat rows: ✕ (delete) first,
+              then 🚩 (report). Both always visible — hover doesn't
+              exist on touch. Neither shows on optimistic temp rows. */}
           {canDelete && (
             <button
               type="button"
@@ -174,6 +176,13 @@ function MessageRow({
             >
               ✕
             </button>
+          )}
+          {!isOwn && !message.id.startsWith("temp-") && (
+            <ReportButton
+              targetType="room_message"
+              targetId={message.id}
+              small
+            />
           )}
         </div>
         <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">

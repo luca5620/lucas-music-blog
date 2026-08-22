@@ -95,7 +95,11 @@ export default function ReportButton({
   }
 
   return (
-    <div ref={boxRef} className="relative inline-block">
+    // inline-flex + items-center (was inline-block with padding): the
+    // emoji now vertically centers with the pixel-text action buttons
+    // it sits beside in comment/chat rows instead of drifting off the
+    // baseline.
+    <div ref={boxRef} className="relative inline-flex items-center">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -103,7 +107,7 @@ export default function ReportButton({
         aria-label="Report this content"
         className={`text-text-muted hover:text-accent-rose transition-colors ${
           small
-            ? "text-[10px] px-1"
+            ? "text-[10px] leading-none inline-flex items-center"
             : "text-xs px-2 py-1 rounded border border-transparent hover:border-accent-rose/30"
         }`}
       >

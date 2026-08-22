@@ -676,21 +676,10 @@ export default function DebateRoom({
                         sending…
                       </span>
                     )}
-                    {/* Report flag — appears on hover, never on your own
-                        takes, never on optimistic temp rows (no real id
-                        to report yet). */}
-                    {m.user_id !== (user?.id ?? "") &&
-                      !m.id.startsWith("temp-") && (
-                        <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ReportButton
-                            targetType="debate_message"
-                            targetId={m.id}
-                            small
-                          />
-                        </span>
-                      )}
-                    {/* Delete — your own take, or any take as staff.
-                        Always visible (hover doesn't exist on touch). */}
+                    {/* Universal action order for chat rows: ✕ (delete)
+                        first, then 🚩 (report). Both always visible —
+                        hover doesn't exist on touch. Neither shows on
+                        optimistic temp rows (no real id yet). */}
                     {(m.user_id === (user?.id ?? "") || isStaff) &&
                       !m.id.startsWith("temp-") && (
                         <button
@@ -706,6 +695,14 @@ export default function DebateRoom({
                         >
                           ✕
                         </button>
+                      )}
+                    {m.user_id !== (user?.id ?? "") &&
+                      !m.id.startsWith("temp-") && (
+                        <ReportButton
+                          targetType="debate_message"
+                          targetId={m.id}
+                          small
+                        />
                       )}
                   </div>
                   <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">

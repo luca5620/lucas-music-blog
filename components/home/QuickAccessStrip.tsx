@@ -9,16 +9,25 @@
  * header scrolls away. These chips replaced the Reviews/Debates
  * bottom tabs; the row is the only browse navigation in the app.
  *
- * Pinning is JS + position:fixed, NOT position:sticky — WebKit
- * breaks sticky whenever html has non-visible overflow, and the
- * horizontal-wobble fix REQUIRES html{overflow-x:clip} (body-only
- * clip is ignored for viewport panning). Verified broken on device
- * 2026-08-22; fixed elements work fine in the shell (the tab bar is
- * one). A placeholder keeps the row's slot in the page while the
- * bar is lifted out, so nothing jumps at the pin moment. Pinned
- * top = the status-bar inset (probe-measured env()) so the bar sits
- * below the iPhone notch, never under it. App-only (.app-only) —
- * web keeps its top nav strip.
+ * Mechanism (third attempt — the history matters):
+ *  1. position:sticky — DEAD site-wide: WebKit disables sticky under
+ *     html{overflow-x:clip}, which the wobble fix requires.
+ *  2. window scroll listener + position:fixed — never fired on
+ *     device. Every working scroll-tracker in this codebase listens
+ *     with capture:true "because the scroller may be any ancestor";
+ *     a plain window listener hears nothing if the document isn't
+ *     the real scroller in the shell.
+ *  3. THIS: an IntersectionObserver on a 1px sentinel at the row's
+ *     slot — observers fire regardless of WHICH element scrolls,
+ *     including mid-momentum, so they can't miss. rootMargin shifts
+ *     the trigger line down by the status-bar inset (probe-measured
+ *     env(); unreadable from JS directly). A capture-phase scroll
+ *     listener stays as a redundant fallback. Pinned = the bar
+ *     switches to position:fixed at the safe-area top (the tab
+ *     bar's mechanism, provably fine in the shell) while the
+ *     wrapper holds the slot's height so the page doesn't jump.
+ *
+ * App-only (.app-only) — web keeps its top nav strip.
  */
 
 import Link from "next/link";
@@ -33,8 +42,20 @@ const CHIPS = [
   { href: "/posts", glyph: "▶", label: "Posts" },
 ];
 
+/** env(safe-area-inset-top) in real pixels, via a fixed probe. */
+function measureSafeTop(): number {
+  const probe = document.createElement("div");
+  probe.style.cssText =
+    "position:fixed;top:env(safe-area-inset-top,0px);height:0;visibility:hidden;pointer-events:none";
+  document.body.appendChild(probe);
+  const top = probe.getBoundingClientRect().top;
+  probe.remove();
+  return top;
+}
+
 export default function QuickAccessStrip() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(false);
   const [barHeight, setBarHeight] = useState(0);
@@ -42,43 +63,54 @@ export default function QuickAccessStrip() {
 
   useEffect(() => {
     const wrap = wrapRef.current;
+    const sentinel = sentinelRef.current;
     const bar = barRef.current;
-    if (!wrap || !bar) return;
+    if (!wrap || !sentinel || !bar) return;
 
-    // env() can't be read from JS directly — park a probe at the
-    // safe-area top and measure where it lands.
-    const measure = () => {
-      const probe = document.createElement("div");
-      probe.style.cssText =
-        "position:fixed;top:env(safe-area-inset-top,0px);height:0;visibility:hidden;pointer-events:none";
-      document.body.appendChild(probe);
-      safeTopRef.current = probe.getBoundingClientRect().top;
-      probe.remove();
-      setBarHeight(bar.offsetHeight);
+    let observer: IntersectionObserver | null = null;
+
+    const build = () => {
+      safeTopRef.current = measureSafeTop();
+      if (bar.offsetHeight > 0) setBarHeight(bar.offsetHeight);
+
+      observer?.disconnect();
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          // Pinned = the sentinel left through the TOP of the (inset-
+          // shrunk) viewport. Leaving through the bottom (page opens
+          // pre-scrolled, sentinel below the fold) must not pin.
+          const rootTop = entry.rootBounds?.top ?? safeTopRef.current;
+          setPinned(
+            !entry.isIntersecting && entry.boundingClientRect.top < rootTop,
+          );
+          if (bar.offsetHeight > 0) setBarHeight(bar.offsetHeight);
+        },
+        // Pull the top trigger line DOWN to the safe-area inset so the
+        // pin happens exactly when the row reaches the notch line.
+        { rootMargin: `-${Math.ceil(safeTopRef.current) + 1}px 0px 0px 0px` },
+      );
+      observer.observe(sentinel);
     };
 
-    let raf = 0;
-    const check = () => {
-      raf = 0;
-      // The wrapper never leaves the flow, so its position is a
-      // stable readout of where the row's slot is.
-      setPinned(wrap.getBoundingClientRect().top <= safeTopRef.current + 1);
-    };
+    // Fallback lane: capture-phase scroll (observers make this mostly
+    // redundant, but it costs one rect read and catches any IO gap).
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(check);
+      setPinned(
+        wrap.getBoundingClientRect().top <= safeTopRef.current + 1 &&
+          wrap.getBoundingClientRect().height > 0,
+      );
     };
-    const onResize = () => {
-      measure();
-      onScroll();
-    };
+    const onResize = () => build();
 
-    measure();
-    check();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    build();
+    window.addEventListener("scroll", onScroll, {
+      passive: true,
+      capture: true,
+    });
     window.addEventListener("resize", onResize);
     return () => {
-      if (raf) cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
+      observer?.disconnect();
+      window.removeEventListener("scroll", onScroll, { capture: true });
       window.removeEventListener("resize", onResize);
     };
   }, []);
@@ -88,9 +120,15 @@ export default function QuickAccessStrip() {
     // pinned so the page below doesn't jump up.
     <div
       ref={wrapRef}
-      className="app-only"
+      className="app-only relative"
       style={pinned && barHeight ? { height: barHeight } : undefined}
     >
+      {/* 1px trigger line at the slot's top edge */}
+      <div
+        ref={sentinelRef}
+        aria-hidden="true"
+        className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+      />
       <div
         ref={barRef}
         style={pinned ? { top: "env(safe-area-inset-top, 0px)" } : undefined}

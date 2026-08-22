@@ -235,6 +235,8 @@ export function affinityFor(
 export type TunedItem =
   | {
       type: "review";
+      /** Row id — the fullscreen rail's like button posts against it. */
+      id: string;
       slug: string;
       title: string;
       artist: string;
@@ -246,10 +248,14 @@ export type TunedItem =
       /** The review's words (summary, falling back to snippet) —
           shown right on the pager card, no extra click. */
       body: string | null;
+      like_count: number;
+      viewer_has_liked: boolean;
       reason: string | null;
     }
   | {
       type: "post";
+      /** Row id — the fullscreen rail's like button posts against it. */
+      id: string;
       slug: string;
       title: string;
       username: string;
@@ -261,6 +267,8 @@ export type TunedItem =
       video_id: string | null;
       /** Tied release cover, if the post is catalog-attached. */
       cover_image: string | null;
+      like_count: number;
+      viewer_has_liked: boolean;
       reason: string | null;
     }
   | {
@@ -357,25 +365,42 @@ export async function getTunedToYou(
   );
   const postIds = (postsRes.data ?? []).map((p) => (p as { id: string }).id);
 
-  const [likesRes, votesRes, followsRes, postLikesRes] = await Promise.all([
-    reviewIds.length
-      ? supabase.from("review_likes").select("review_id").in("review_id", reviewIds)
-      : Promise.resolve({ data: [] }),
-    debateIds.length
-      ? supabase.from("debate_votes").select("debate_id").in("debate_id", debateIds)
-      : Promise.resolve({ data: [] }),
-    releaseIds.length
-      ? supabase
-          .from("release_follows")
-          .select("release_id")
-          .in("release_id", releaseIds)
-      : Promise.resolve({ data: [] }),
-    // Post likes (migration 016). Before it's applied the query just
-    // errors → data null → every count 0, which is the right fallback.
-    postIds.length
-      ? supabase.from("post_likes").select("post_id").in("post_id", postIds)
-      : Promise.resolve({ data: [] }),
-  ]);
+  const [likesRes, votesRes, followsRes, postLikesRes, myLikesRes, myPostLikesRes] =
+    await Promise.all([
+      reviewIds.length
+        ? supabase.from("review_likes").select("review_id").in("review_id", reviewIds)
+        : Promise.resolve({ data: [] }),
+      debateIds.length
+        ? supabase.from("debate_votes").select("debate_id").in("debate_id", debateIds)
+        : Promise.resolve({ data: [] }),
+      releaseIds.length
+        ? supabase
+            .from("release_follows")
+            .select("release_id")
+            .in("release_id", releaseIds)
+        : Promise.resolve({ data: [] }),
+      // Post likes (migration 016). Before it's applied the query just
+      // errors → data null → every count 0, which is the right fallback.
+      postIds.length
+        ? supabase.from("post_likes").select("post_id").in("post_id", postIds)
+        : Promise.resolve({ data: [] }),
+      // The viewer's OWN hearts — the fullscreen rail's like buttons
+      // need their initial pressed state.
+      reviewIds.length
+        ? supabase
+            .from("review_likes")
+            .select("review_id")
+            .eq("user_id", viewerId)
+            .in("review_id", reviewIds)
+        : Promise.resolve({ data: [] }),
+      postIds.length
+        ? supabase
+            .from("post_likes")
+            .select("post_id")
+            .eq("user_id", viewerId)
+            .in("post_id", postIds)
+        : Promise.resolve({ data: [] }),
+    ]);
 
   const tally = (rows: unknown[] | null, key: string) => {
     const m = new Map<string, number>();
@@ -389,6 +414,12 @@ export async function getTunedToYou(
   const voteCounts = tally(votesRes.data, "debate_id");
   const followCounts = tally(followsRes.data, "release_id");
   const postLikeCounts = tally(postLikesRes.data, "post_id");
+  const myReviewLikes = new Set(
+    (myLikesRes.data ?? []).map((r) => (r as { review_id: string }).review_id),
+  );
+  const myPostLikes = new Set(
+    (myPostLikesRes.data ?? []).map((r) => (r as { post_id: string }).post_id),
+  );
 
   const now = Date.now();
   const ageDays = (iso: string) =>
@@ -435,6 +466,7 @@ export async function getTunedToYou(
     candidates.push({
       item: {
         type: "review",
+        id: r.id,
         slug: r.slug,
         title: r.title,
         artist: r.artist,
@@ -444,6 +476,8 @@ export async function getTunedToYou(
         display_name: author?.display_name ?? null,
         avatar_url: author?.avatar_url ?? null,
         body: r.summary ?? r.snippet,
+        like_count: likeCounts.get(r.id) ?? 0,
+        viewer_has_liked: myReviewLikes.has(r.id),
         reason: null,
       },
       artistKey: artistId ?? r.artist.toLowerCase(),
@@ -489,6 +523,7 @@ export async function getTunedToYou(
     candidates.push({
       item: {
         type: "post",
+        id: p.id,
         slug: p.slug,
         title: p.title,
         username,
@@ -498,6 +533,8 @@ export async function getTunedToYou(
         video_kind: p.video_kind,
         video_id: p.video_id,
         cover_image: rel?.cover_image ?? null,
+        like_count: postLikeCounts.get(p.id) ?? 0,
+        viewer_has_liked: myPostLikes.has(p.id),
         reason: null,
       },
       // Untied posts key on the author so one prolific poster can't

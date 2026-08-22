@@ -9,18 +9,121 @@
  * arrow-key press on desktop. Reviews show the reviewer + their words
  * right on the card (Luca 2026-08-20: no extra click to read a take).
  *
+ * FULLSCREEN (rebuilt 2026-08-22, Luca's spec):
+ *  - The overlay renders through a PORTAL to document.body. In the
+ *    page column it sat inside `.crt-screen > *` stacking contexts,
+ *    so the site nav (deliberately layered above page content for
+ *    its dropdowns) floated OVER the overlay — header visible over
+ *    long reviews, ✕ colliding with the avatar dropdown.
+ *  - Right-edge action rail on review/post cards: heart (optimistic
+ *    like, same endpoints as LikeButton/PostLikeButton), comments,
+ *    open — replaces the old bottom "Open →" chip.
+ *  - Post videos are TAP-TO-PLAY: thumbnail with a big ▶, tapping
+ *    mounts the YouTube/TikTok embed; swiping the card mostly out of
+ *    view unmounts it (IntersectionObserver) so audio never leaks
+ *    into the next channel.
+ *  - Enter/exit: fade + slight zoom (surf-anim-in/out in globals).
+ *  - Swipe-down on a card that's scrolled to its top exits, like
+ *    every native fullscreen surface. Esc and ✕ still work.
+ *
  * Purely presentational: cards come pre-ranked from lib/taste.ts.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
 import { getRatingHex, formatRating } from "@/lib/rating";
+import { hapticTap } from "@/lib/native";
 
 /** Only https:// or local /path images (stored-XSS defense). */
 function safeImage(url: string | null): string | null {
   if (!url) return null;
   return url.startsWith("https://") || url.startsWith("/") ? url : null;
+}
+
+const EXIT_ANIM_MS = 170;
+
+/* ─── Fullscreen action rail ─── */
+
+const railBtnClass =
+  "w-11 h-11 rounded-full border border-white/15 bg-black/50 flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors";
+
+/** Vertical heart — optimistic toggle against the same endpoints the
+    feed like buttons use. */
+function RailLike({
+  kind,
+  id,
+  initialCount,
+  initialLiked,
+}: {
+  kind: "review" | "post";
+  id: string;
+  initialCount: number;
+  initialLiked: boolean;
+}) {
+  const { user } = useAuth();
+  const router = useRouter();
+  const [liked, setLiked] = useState(initialLiked);
+  const [count, setCount] = useState(initialCount);
+  const [pending, setPending] = useState(false);
+
+  const toggle = async () => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (pending) return;
+    hapticTap();
+    const prevLiked = liked;
+    const prevCount = count;
+    setLiked(!prevLiked);
+    setCount(prevCount + (prevLiked ? -1 : 1));
+    setPending(true);
+    try {
+      const res = await fetch(
+        `/api/${kind === "review" ? "reviews" : "posts"}/${id}/like`,
+        { method: "POST" },
+      );
+      if (!res.ok) throw new Error("like failed");
+      const data = (await res.json()) as { liked: boolean; count: number };
+      setLiked(data.liked);
+      setCount(data.count);
+    } catch {
+      setLiked(prevLiked);
+      setCount(prevCount);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <span className="flex flex-col items-center gap-1">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={liked ? "Unlike" : "Like"}
+        className={`${railBtnClass} ${liked ? "!text-accent-rose !border-accent-rose/60" : ""}`}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="w-5 h-5"
+          fill={liked ? "currentColor" : "none"}
+          stroke="currentColor"
+          strokeWidth={1.8}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 20.5 4.7 13a4.8 4.8 0 0 1 0-6.8 4.7 4.7 0 0 1 6.7 0l.6.6.6-.6a4.7 4.7 0 0 1 6.7 0 4.8 4.8 0 0 1 0 6.8L12 20.5z" />
+        </svg>
+      </button>
+      <span className="pixel-text text-xs text-text-secondary tabular-nums">
+        {count}
+      </span>
+    </span>
+  );
 }
 
 /* ─── One full-frame card ─── */
@@ -30,9 +133,9 @@ function safeImage(url: string | null): string | null {
  *   - In the page pager, the whole card is ONE link and the words are
  *     clamped — it's a teaser row among other home-page sections.
  *   - In FULLSCREEN the card is the destination: the full review/post
- *     text renders right on the card (scrollable when long, no clamp,
- *     no click-through needed), and the item's own page demotes to a
- *     small "open →" chip for comments/likes.
+ *     text renders right on the card (scrollable when long, no clamp),
+ *     the action rail carries like/comments/open, and post videos
+ *     play in place.
  */
 function SurfCard({
   item,
@@ -41,6 +144,9 @@ function SurfCard({
   item: TunedItem;
   fullscreen: boolean;
 }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [playing, setPlaying] = useState(false);
+
   // Posts without a tied release fall back to the video's thumbnail
   // (YouTube serves one per id; TikTok doesn't, so those show the icon).
   const cover =
@@ -66,6 +172,30 @@ function SurfCard({
           ? "DEBATE"
           : "RELEASE";
 
+  const hasVideo =
+    item.type === "post" && !!item.video_kind && !!item.video_id;
+
+  // A playing embed must stop when its card leaves the frame — audio
+  // bleeding over the next channel is the one unforgivable bug here.
+  useEffect(() => {
+    if (!playing) return;
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio < 0.5) setPlaying(false);
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [playing]);
+
+  // Leaving fullscreen kills playback too.
+  useEffect(() => {
+    if (!fullscreen) setPlaying(false);
+  }, [fullscreen]);
+
   const frameClass =
     "relative block w-full h-full snap-start snap-always overflow-hidden group";
 
@@ -83,8 +213,12 @@ function SurfCard({
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
 
-      {/* Foreground */}
-      <div className="relative h-full flex flex-col items-center justify-center gap-3 p-5 text-center">
+      {/* Foreground — fullscreen reserves the right edge for the rail */}
+      <div
+        className={`relative h-full flex flex-col items-center justify-center gap-3 p-5 text-center ${
+          fullscreen ? "pr-16" : ""
+        }`}
+      >
         <span className="pixel-text text-[10px] uppercase px-1.5 py-px rounded border border-border-medium text-text-muted">
           {typeLabel}
         </span>
@@ -149,33 +283,77 @@ function SurfCard({
           </span>
         )}
 
-        <span
-          className={`poster shrink-0 ${
-            (item.type === "review" || item.type === "post") && item.body
-              ? "w-28 sm:w-32" /* smaller cover — their words get the room */
-              : "w-40 sm:w-48"
-          }`}
-        >
-          {cover ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={cover} alt={`${item.title} cover`} />
+        {/* The picture slot: playing embed > tappable video poster >
+            plain poster. Embeds exist only in fullscreen. */}
+        {fullscreen && hasVideo && playing && item.type === "post" ? (
+          item.video_kind === "youtube" ? (
+            <span className="block w-full max-w-md aspect-video rounded-lg overflow-hidden border border-border-subtle bg-black shrink-0">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${item.video_id}?autoplay=1&playsinline=1`}
+                title={item.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </span>
           ) : (
-            <span className="w-full h-full flex items-center justify-center text-5xl">
-              {item.type === "debate" ? "🎙️" : item.type === "post" ? "📺" : "💿"}
+            <span className="block w-full max-w-[280px] flex-shrink min-h-0 rounded-lg overflow-hidden border border-border-subtle bg-black">
+              <iframe
+                src={`https://www.tiktok.com/embed/v2/${item.video_id}`}
+                title={item.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="w-full h-[420px] max-h-full"
+              />
             </span>
-          )}
-          {item.type === "review" && (
-            <span
-              className="poster-rating"
-              style={{ color: getRatingHex(item.rating) }}
-            >
-              {formatRating(item.rating)}
-            </span>
-          )}
-          {item.type === "release" && item.is_unreleased && (
-            <span className="poster-unreleased">UNRELEASED</span>
-          )}
-        </span>
+          )
+        ) : (
+          <span
+            className={`poster shrink-0 relative ${
+              (item.type === "review" || item.type === "post") && item.body
+                ? "w-28 sm:w-32" /* smaller cover — their words get the room */
+                : "w-40 sm:w-48"
+            }`}
+          >
+            {cover ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={cover} alt={`${item.title} cover`} />
+            ) : (
+              <span className="w-full h-full flex items-center justify-center text-5xl">
+                {item.type === "debate" ? "🎙️" : item.type === "post" ? "📺" : "💿"}
+              </span>
+            )}
+            {item.type === "review" && (
+              <span
+                className="poster-rating"
+                style={{ color: getRatingHex(item.rating) }}
+              >
+                {formatRating(item.rating)}
+              </span>
+            )}
+            {item.type === "release" && item.is_unreleased && (
+              <span className="poster-unreleased">UNRELEASED</span>
+            )}
+            {/* Tap-to-play (fullscreen only): big ▶ over the poster */}
+            {fullscreen && hasVideo && (
+              <button
+                type="button"
+                onClick={() => {
+                  hapticTap();
+                  setPlaying(true);
+                }}
+                aria-label="Play video"
+                className="absolute inset-0 flex items-center justify-center bg-black/35 hover:bg-black/20 transition-colors"
+              >
+                <span className="w-14 h-14 rounded-full bg-black/70 border border-white/30 flex items-center justify-center text-2xl text-white pl-1">
+                  ▶
+                </span>
+              </button>
+            )}
+          </span>
+        )}
 
         <span className="block max-w-md space-y-1">
           <span className="block text-lg sm:text-xl font-bold text-text-primary font-[family-name:var(--font-heading)] leading-snug group-hover:text-accent-primary transition-colors">
@@ -203,10 +381,7 @@ function SurfCard({
             the reading treatment — left-aligned, scrolling inside
             their own box (when that inner scroll runs out, the swipe
             chains to the pager and flips the channel, TikTok-style).
-            SHORT reviews stay centered like the rest of the card —
-            the full-width left-aligned box made a one-liner hug the
-            left edge and threw the whole card off-center (Luca
-            2026-08-22). */}
+            SHORT reviews stay centered like the rest of the card. */}
         {(item.type === "review" || item.type === "post") && item.body && (
           <span
             className={`block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
@@ -220,25 +395,69 @@ function SurfCard({
             {item.body}
           </span>
         )}
+      </div>
 
-        {/* Fullscreen: the page itself is one small chip away
-            (comments, likes, the tied release) */}
-        {fullscreen && (
+      {/* Action rail — fullscreen only. Heart + comments on cards
+          that support them; every card gets "open the page". */}
+      {fullscreen && (
+        <div className="absolute right-2.5 bottom-16 z-10 flex flex-col items-center gap-4">
+          {(item.type === "review" || item.type === "post") && (
+            <>
+              <RailLike
+                kind={item.type}
+                id={item.id}
+                initialCount={item.like_count}
+                initialLiked={item.viewer_has_liked}
+              />
+              <Link
+                href={`${href}#comments`}
+                onClick={() => hapticTap()}
+                aria-label="Comments"
+                className={railBtnClass}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
+                </svg>
+              </Link>
+            </>
+          )}
           <Link
             href={href}
-            className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors shrink-0"
+            onClick={() => hapticTap()}
+            aria-label={`Open ${typeLabel.toLowerCase()}`}
+            className={railBtnClass}
           >
-            Open {typeLabel.toLowerCase()} →
+            <svg
+              viewBox="0 0 24 24"
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M7 17 17 7M9 7h8v8" />
+            </svg>
           </Link>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 
   // Fullscreen = a reading surface (links are explicit); pager = one
   // big click-through.
   return fullscreen ? (
-    <div className={frameClass}>{inner}</div>
+    <div ref={rootRef} className={frameClass}>
+      {inner}
+    </div>
   ) : (
     <Link href={href} className={frameClass}>
       {inner}
@@ -251,14 +470,27 @@ function SurfCard({
 export default function ChannelSurf({ items }: { items: TunedItem[] }) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
-  // Mirror of `index` for the resize listener — it re-registers never,
-  // so it must not close over stale state.
-  const indexRef = useRef(0);
   // Fullscreen "channel" mode — the pager takes the whole screen for
   // the reels/TikTok-style immersion (Luca 2026-08-22). In the app
   // the bottom tab bar stays visible (the fixed frame stops above it
   // — .surf-fullscreen in globals.css), so you're never stuck here.
   const [fullscreen, setFullscreen] = useState(false);
+  const [closing, setClosing] = useState(false);
+  // Swipe-down-to-exit bookkeeping
+  const touchStartY = useRef(0);
+  const touchAtTop = useRef(false);
+
+  // Exit plays the fade-out first, then unmounts the portal.
+  const close = useCallback(() => {
+    setClosing((already) => {
+      if (already) return already;
+      window.setTimeout(() => {
+        setFullscreen(false);
+        setClosing(false);
+      }, EXIT_ANIM_MS);
+      return true;
+    });
+  }, []);
 
   const surf = useCallback((dir: 1 | -1) => {
     const el = frameRef.current;
@@ -276,7 +508,7 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
     const prevBody = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFullscreen(false);
+      if (e.key === "Escape") close();
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -291,33 +523,10 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
   const handleScroll = useCallback(() => {
     const el = frameRef.current;
     if (!el || el.clientHeight === 0) return;
-    const next = Math.max(
-      0,
-      Math.min(items.length - 1, Math.round(el.scrollTop / el.clientHeight)),
+    setIndex(
+      Math.max(0, Math.min(items.length - 1, Math.round(el.scrollTop / el.clientHeight)))
     );
-    indexRef.current = next;
-    setIndex(next);
   }, [items.length]);
-
-  // Cards are exactly frame-height, so ANY height change (mobile URL
-  // bar collapsing, rotation, desktop window resize, the app keyboard)
-  // silently un-aligns scrollTop from the card grid — the current card
-  // ends up straddling the frame, half of it and half of the next one
-  // showing ("not centered", Luca 2026-08-22; iOS doesn't reliably
-  // re-snap on resize). Re-pin the frame to the card the viewer was on.
-  useEffect(() => {
-    const realign = () => {
-      const el = frameRef.current;
-      if (!el || el.clientHeight === 0) return;
-      el.scrollTo({ top: indexRef.current * el.clientHeight });
-    };
-    window.addEventListener("resize", realign);
-    window.visualViewport?.addEventListener("resize", realign);
-    return () => {
-      window.removeEventListener("resize", realign);
-      window.visualViewport?.removeEventListener("resize", realign);
-    };
-  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -332,13 +541,29 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
     [surf]
   );
 
+  // Swipe-down exits, but ONLY when the pager is already at its very
+  // top (first card, no inner scroll) — otherwise the gesture is just
+  // scrolling back up through the channels.
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+    touchAtTop.current = (frameRef.current?.scrollTop ?? 1) <= 0;
+  }, []);
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!fullscreen || closing || !touchAtTop.current) return;
+      if ((frameRef.current?.scrollTop ?? 1) > 0) return;
+      if (e.touches[0].clientY - touchStartY.current > 90) close();
+    },
+    [fullscreen, closing, close]
+  );
+
   if (items.length === 0) return null;
 
-  return (
+  const content = (
     <div
       className={
         fullscreen
-          ? "surf-fullscreen"
+          ? `surf-fullscreen ${closing ? "surf-anim-out" : "surf-anim-in"}`
           : "panel-xbox relative overflow-hidden"
       }
     >
@@ -347,6 +572,8 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
         ref={frameRef}
         onScroll={handleScroll}
         onKeyDown={handleKeyDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         tabIndex={0}
         role="region"
         aria-roledescription="carousel"
@@ -369,7 +596,7 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
       {/* Fullscreen toggle — enter for the immersive channel, ✕ out */}
       <button
         type="button"
-        onClick={() => setFullscreen((f) => !f)}
+        onClick={() => (fullscreen ? close() : setFullscreen(true))}
         aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
         className={`absolute right-3 z-10 w-9 h-9 rounded-full border border-border-medium bg-black/50 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-all flex items-center justify-center ${
           // Fullscreen: clear the notch/status bar in the app shell.
@@ -387,8 +614,13 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
         )}
       </button>
 
-      {/* Desktop surf buttons */}
-      <div className="absolute bottom-3 right-3 hidden sm:flex flex-col gap-1.5">
+      {/* Desktop surf buttons — left side in fullscreen so they never
+          fight the action rail on the right edge */}
+      <div
+        className={`absolute bottom-3 hidden sm:flex flex-col gap-1.5 ${
+          fullscreen ? "left-3" : "right-3"
+        }`}
+      >
         <button
           type="button"
           onClick={() => surf(-1)}
@@ -412,4 +644,9 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
       {!fullscreen && <div className="scan-bar" />}
     </div>
   );
+
+  // Fullscreen escapes the page's stacking contexts through a portal —
+  // rendered in the page column, the site nav painted OVER the overlay
+  // (header visible, ✕ fighting the avatar dropdown).
+  return fullscreen ? createPortal(content, document.body) : content;
 }

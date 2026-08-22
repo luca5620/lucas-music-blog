@@ -1157,6 +1157,20 @@ body {
   bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
+/* Enter/exit: fade + slight zoom (Luca's pick, 2026-08-22 — CRT
+   power-on was offered and vetoed). Enter runs once on mount; the
+   exit class is applied ~170ms before unmount so it can finish. */
+@keyframes surf-enter {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes surf-exit {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.97); }
+}
+.surf-fullscreen.surf-anim-in { animation: surf-enter 0.22s ease-out; }
+.surf-fullscreen.surf-anim-out { animation: surf-exit 0.18s ease-in forwards; }
+
 /* ============================================================
    TYPE TREATMENTS
    ============================================================ */

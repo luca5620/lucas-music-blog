@@ -351,7 +351,10 @@ export default async function ReviewPage({
       </div>
 
       {/* Comments Section */}
-      <CommentsSection reviewId={review.id} />
+      {/* id anchors the Taste fullscreen rail's 💬 deep link */}
+      <div id="comments">
+        <CommentsSection reviewId={review.id} />
+      </div>
     </div>
   );
 }

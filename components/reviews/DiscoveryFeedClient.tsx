@@ -217,7 +217,9 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                       </span>
                     </div>
                   )}
-                  <span className="min-w-0 text-sm text-text-secondary leading-snug break-words">
+                  {/* text-base (16px) matches the 16px verified
+                      checkmark so the line reads as one piece. */}
+                  <span className="min-w-0 text-base text-text-secondary leading-snug break-words">
                     <span className="font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
                       {profile.display_name || profile.username}
                     </span>

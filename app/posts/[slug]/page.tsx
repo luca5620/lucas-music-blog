@@ -12,6 +12,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import BackLink from "@/components/ui/BackLink";
 import {
   getPostBySlug,
   getPostLikeState,
@@ -77,12 +78,11 @@ export default async function PostPage({
   return (
     <div className="space-y-6 max-w-3xl mx-auto overflow-hidden">
       {/* Back link */}
-      <Link
-        href="/posts"
+      <BackLink
+        fallback="/posts"
+        label="Back"
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
-      >
-        ← Back to Posts
-      </Link>
+      />
 
       {/* Main content card */}
       <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">

@@ -5,6 +5,7 @@
  */
 
 import Link from "next/link";
+import BackLink from "@/components/ui/BackLink";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
@@ -291,12 +292,11 @@ export default async function ArtistPage({ params }: PageProps) {
 
       {/* ========== BROWSE LINK ========== */}
       <div className="px-4 sm:px-8 pb-8">
-        <Link
-          href="/artists"
+        <BackLink
+          fallback="/artists"
+          label="Back"
           className="pixel-text text-sm text-text-muted hover:text-accent-primary transition-colors"
-        >
-          ← Back to Artists
-        </Link>
+        />
       </div>
     </div>
   );

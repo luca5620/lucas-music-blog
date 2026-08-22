@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getReleaseDescription } from "@/lib/descriptions";
 
 /**
  * The Your Taste engine (v1) — designed with Luca 2026-08-19.
@@ -250,6 +251,9 @@ export type TunedItem =
       body: string | null;
       like_count: number;
       viewer_has_liked: boolean;
+      /** Direct link to the exact track/album (fullscreen card CTA —
+          Luca 2026-08-22: "check out immediately, no extra clicks"). */
+      spotify_url: string | null;
       reason: string | null;
     }
   | {
@@ -288,6 +292,17 @@ export type TunedItem =
       artist: string;
       cover_image: string | null;
       is_unreleased: boolean;
+      /** Letterboxd-style synopsis (manual → Genius → Wikipedia) —
+          filled ONLY for the final picked items, on the card to
+          entice the tap (Luca 2026-08-22). */
+      description: string | null;
+      description_source: "manual" | "genius" | "wikipedia" | null;
+      description_url: string | null;
+      /** Carried through so the post-pick enrichment can resolve. */
+      release_type: string;
+      genius_id: string | null;
+      /** Direct link to the exact track/album on Spotify. */
+      spotify_url: string | null;
       reason: string | null;
     };
 
@@ -326,7 +341,7 @@ export async function getTunedToYou(
     supabase
       .from("reviews")
       .select(
-        "id, user_id, slug, title, artist, rating, cover_image, snippet, summary, created_at, release_id, releases(primary_artist_id), profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)"
+        "id, user_id, slug, title, artist, rating, cover_image, snippet, summary, created_at, release_id, releases(primary_artist_id, spotify_id, release_type, tracks), profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)"
       )
       .eq("is_published", true)
       .neq("user_id", viewerId)
@@ -343,7 +358,7 @@ export async function getTunedToYou(
     supabase
       .from("releases")
       .select(
-        "id, slug, title, cover_image, is_unreleased, created_at, primary_artist_id, artists!releases_primary_artist_id_fkey(name)"
+        "id, slug, title, cover_image, is_unreleased, created_at, primary_artist_id, genius_id, spotify_id, release_type, description, tracks, artists!releases_primary_artist_id_fkey(name)"
       )
       .order("created_at", { ascending: false })
       .limit(30),
@@ -427,6 +442,27 @@ export async function getTunedToYou(
   const first = <T,>(joined: T | T[] | null): T | null =>
     Array.isArray(joined) ? joined[0] ?? null : joined;
 
+  /* Exact Spotify link for a release row. Singles link the TRACK:
+     tracks[0].spotify_id holds it on both import paths (track-keyed
+     singles reuse the row's own id there; album-sourced singles
+     store the real track id). Everything else links the album.
+     Genius-only releases have neither → null. */
+  type SpotifyRef = {
+    spotify_id: string | null;
+    release_type: string;
+    tracks: { spotify_id?: string | null }[] | null;
+  };
+  const spotifyUrlFor = (r: SpotifyRef | null): string | null => {
+    if (!r) return null;
+    if (r.release_type === "single") {
+      const trackId = r.tracks?.[0]?.spotify_id ?? r.spotify_id;
+      return trackId ? `https://open.spotify.com/track/${trackId}` : null;
+    }
+    return r.spotify_id
+      ? `https://open.spotify.com/album/${r.spotify_id}`
+      : null;
+  };
+
   const candidates: Candidate[] = [];
 
   type ReviewProfile = {
@@ -445,7 +481,20 @@ export async function getTunedToYou(
     snippet: string | null;
     summary: string | null;
     created_at: string;
-    releases: { primary_artist_id: string | null } | { primary_artist_id: string | null }[] | null;
+    releases:
+      | {
+          primary_artist_id: string | null;
+          spotify_id: string | null;
+          release_type: string;
+          tracks: { spotify_id?: string | null }[] | null;
+        }
+      | {
+          primary_artist_id: string | null;
+          spotify_id: string | null;
+          release_type: string;
+          tracks: { spotify_id?: string | null }[] | null;
+        }[]
+      | null;
     profiles: ReviewProfile | ReviewProfile[] | null;
   };
   for (const r of (reviewsRes.data ?? []) as unknown as ReviewRow[]) {
@@ -478,6 +527,7 @@ export async function getTunedToYou(
         body: r.summary ?? r.snippet,
         like_count: likeCounts.get(r.id) ?? 0,
         viewer_has_liked: myReviewLikes.has(r.id),
+        spotify_url: spotifyUrlFor(first(r.releases)),
         reason: null,
       },
       artistKey: artistId ?? r.artist.toLowerCase(),
@@ -597,6 +647,11 @@ export async function getTunedToYou(
     is_unreleased: boolean;
     created_at: string;
     primary_artist_id: string | null;
+    genius_id: string | null;
+    spotify_id: string | null;
+    release_type: string;
+    description: string | null;
+    tracks: { spotify_id?: string | null }[] | null;
     artists: { name: string } | { name: string }[] | null;
   };
   for (const r of (releasesRes.data ?? []) as unknown as ReleaseRow[]) {
@@ -609,6 +664,12 @@ export async function getTunedToYou(
         artist: artistName,
         cover_image: r.cover_image,
         is_unreleased: r.is_unreleased ?? false,
+        description: r.description?.trim() || null,
+        description_source: r.description?.trim() ? "manual" : null,
+        description_url: null,
+        release_type: r.release_type,
+        genius_id: r.genius_id,
+        spotify_url: spotifyUrlFor(r),
         reason: null,
       },
       artistKey: r.primary_artist_id ?? artistName.toLowerCase(),
@@ -662,6 +723,28 @@ export async function getTunedToYou(
     perArtist.set(c.artistKey, (perArtist.get(c.artistKey) ?? 0) + 1);
     perType.set(c.item.type, (perType.get(c.item.type) ?? 0) + 1);
   }
+
+  /* ── Synopses for the PICKED release cards only (a handful, never
+     the whole 30-candidate pool) — manual → Genius → Wikipedia via
+     lib/descriptions, 30-day cached, timeout-guarded. The blurb is
+     the enticement to tap (Luca 2026-08-22). ── */
+  await Promise.all(
+    picked.map(async (item) => {
+      if (item.type !== "release" || item.description) return;
+      const desc = await getReleaseDescription({
+        title: item.title,
+        release_type: item.release_type,
+        genius_id: item.genius_id,
+        description: null,
+        artistName: item.artist,
+      }).catch(() => null);
+      if (desc) {
+        item.description = desc.text;
+        item.description_source = desc.source;
+        item.description_url = desc.url;
+      }
+    }),
+  );
 
   return picked;
 }

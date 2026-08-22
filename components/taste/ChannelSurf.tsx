@@ -37,6 +37,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
 import { getRatingHex, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
+import CommentsSection from "@/components/reviews/CommentsSection";
 
 /** Only https:// or local /path images (stored-XSS defense). */
 function safeImage(url: string | null): string | null {
@@ -140,9 +141,12 @@ function RailLike({
 function SurfCard({
   item,
   fullscreen,
+  onOpenComments,
 }: {
   item: TunedItem;
   fullscreen: boolean;
+  /** Opens the in-place comments sheet (reviews only). */
+  onOpenComments?: () => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -213,10 +217,12 @@ function SurfCard({
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
 
-      {/* Foreground — fullscreen reserves the right edge for the rail */}
+      {/* Foreground — fullscreen pads BOTH sides equally (the rail
+          hangs over the right padding) so content stays visually
+          centered; pr-only shoved everything left (Luca 2026-08-22). */}
       <div
-        className={`relative h-full flex flex-col items-center justify-center gap-3 p-5 text-center ${
-          fullscreen ? "pr-16" : ""
+        className={`relative h-full flex flex-col items-center justify-center gap-3 text-center ${
+          fullscreen ? "px-14 py-5" : "p-5"
         }`}
       >
         <span className="pixel-text text-[10px] uppercase px-1.5 py-px rounded border border-border-medium text-text-muted">
@@ -395,6 +401,61 @@ function SurfCard({
             {item.body}
           </span>
         )}
+
+        {/* Release synopsis — manual → Genius → Wikipedia (enriched in
+            lib/taste.ts for the picked cards). The blurb IS the pitch
+            to check the release out (Luca 2026-08-22). */}
+        {item.type === "release" && item.description && (
+          <>
+            <span
+              className={`block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
+                fullscreen
+                  ? item.description.length > 280
+                    ? "w-full flex-shrink min-h-0 overflow-y-auto text-left px-1 [scrollbar-width:thin]"
+                    : "text-center"
+                  : "line-clamp-3 sm:line-clamp-4"
+              }`}
+            >
+              {item.description}
+            </span>
+            {fullscreen && item.description_source && item.description_source !== "manual" && (
+              item.description_url ? (
+                <a
+                  href={item.description_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors shrink-0"
+                >
+                  via {item.description_source === "genius" ? "Genius" : "Wikipedia"} ↗
+                </a>
+              ) : (
+                <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
+                  via {item.description_source === "genius" ? "Genius" : "Wikipedia"}
+                </span>
+              )
+            )}
+          </>
+        )}
+
+        {/* Straight to the music — the exact track/album on Spotify,
+            zero extra clicks (Luca 2026-08-22). Fullscreen only; the
+            pager card is one big link to the item's page. */}
+        {fullscreen &&
+          (item.type === "review" || item.type === "release") &&
+          item.spotify_url && (
+            <a
+              href={item.spotify_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => hapticTap()}
+              className="shrink-0 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#1DB954]/50 bg-[#1DB954]/10 text-[#1DB954] hover:bg-[#1DB954]/20 transition-colors text-xs font-bold uppercase tracking-wider font-[family-name:var(--font-heading)]"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm4.6 14.5a.62.62 0 0 1-.86.2c-2.36-1.44-5.33-1.77-8.82-.97a.62.62 0 1 1-.28-1.21c3.82-.88 7.1-.5 9.75 1.12.3.18.39.57.21.86zm1.23-2.73a.78.78 0 0 1-1.07.26c-2.7-1.66-6.82-2.14-10.01-1.17a.78.78 0 1 1-.45-1.49c3.65-1.11 8.18-.57 11.28 1.33.36.22.48.7.25 1.07zm.1-2.85C14.7 9 9.35 8.82 6.26 9.76a.93.93 0 1 1-.54-1.79c3.55-1.08 9.45-.87 13.18 1.34a.93.93 0 0 1-.95 1.6z" />
+              </svg>
+              Listen on Spotify
+            </a>
+          )}
       </div>
 
       {/* Action rail — fullscreen only. Heart + comments on cards
@@ -402,32 +463,39 @@ function SurfCard({
       {fullscreen && (
         <div className="absolute right-2.5 bottom-16 z-10 flex flex-col items-center gap-4">
           {(item.type === "review" || item.type === "post") && (
-            <>
-              <RailLike
-                kind={item.type}
-                id={item.id}
-                initialCount={item.like_count}
-                initialLiked={item.viewer_has_liked}
-              />
-              <Link
-                href={`${href}#comments`}
-                onClick={() => hapticTap()}
-                aria-label="Comments"
-                className={railBtnClass}
+            <RailLike
+              kind={item.type}
+              id={item.id}
+              initialCount={item.like_count}
+              initialLiked={item.viewer_has_liked}
+            />
+          )}
+          {/* Comments open IN PLACE (bottom sheet, read + write)
+              without leaving the channel — a redirect here just
+              duplicated the open button (Luca 2026-08-22). Reviews
+              only; posts have no comment system. */}
+          {item.type === "review" && onOpenComments && (
+            <button
+              type="button"
+              onClick={() => {
+                hapticTap();
+                onOpenComments();
+              }}
+              aria-label="Comments"
+              className={railBtnClass}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.8}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
-                </svg>
-              </Link>
-            </>
+                <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
+              </svg>
+            </button>
           )}
           <Link
             href={href}
@@ -476,12 +544,17 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
   // — .surf-fullscreen in globals.css), so you're never stuck here.
   const [fullscreen, setFullscreen] = useState(false);
   const [closing, setClosing] = useState(false);
+  // The review whose comments sheet is open (fullscreen only).
+  const [commentsFor, setCommentsFor] = useState<string | null>(null);
+  const commentsForRef = useRef<string | null>(null);
+  commentsForRef.current = commentsFor;
   // Swipe-down-to-exit bookkeeping
   const touchStartY = useRef(0);
   const touchAtTop = useRef(false);
 
   // Exit plays the fade-out first, then unmounts the portal.
   const close = useCallback(() => {
+    setCommentsFor(null);
     setClosing((already) => {
       if (already) return already;
       window.setTimeout(() => {
@@ -508,7 +581,10 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
     const prevBody = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key !== "Escape") return;
+      // Esc peels one layer at a time: sheet first, then fullscreen.
+      if (commentsForRef.current) setCommentsFor(null);
+      else close();
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -589,9 +665,44 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
             key={`${item.type}:${item.slug}`}
             item={item}
             fullscreen={fullscreen}
+            onOpenComments={
+              item.type === "review"
+                ? () => setCommentsFor(item.id)
+                : undefined
+            }
           />
         ))}
       </div>
+
+      {/* Comments sheet — read AND write without leaving the channel
+          (Luca 2026-08-22). Bottom sheet over the pager; backdrop or
+          ✕ (or Esc) drops you back exactly where you were. */}
+      {fullscreen && commentsFor && (
+        <>
+          <div
+            className="absolute inset-0 z-20 bg-black/60"
+            onClick={() => setCommentsFor(null)}
+          />
+          <div className="absolute inset-x-0 bottom-0 top-[18%] z-30 bg-[#0c0c0f] border-t border-border-medium rounded-t-2xl flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 shrink-0">
+              <span className="label-xbox">Comments</span>
+              <button
+                type="button"
+                onClick={() => setCommentsFor(null)}
+                aria-label="Close comments"
+                className="w-8 h-8 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
+              >
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 [scrollbar-width:thin]">
+              <CommentsSection reviewId={commentsFor} />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Fullscreen toggle — enter for the immersive channel, ✕ out */}
       <button

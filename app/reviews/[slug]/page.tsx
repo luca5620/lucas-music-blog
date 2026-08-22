@@ -13,6 +13,7 @@ import { getRatingColor, getGenreColor, formatRating } from "@/lib/rating";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
 import CommentsSection from "@/components/reviews/CommentsSection";
+import BackLink from "@/components/ui/BackLink";
 import LikeButton from "@/components/reviews/LikeButton";
 import ReportButton from "@/components/moderation/ReportButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
@@ -141,12 +142,11 @@ export default async function ReviewPage({
       />
 
       {/* Back link */}
-      <Link
-        href="/reviews"
+      <BackLink
+        fallback="/reviews"
+        label="Back"
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
-      >
-        ← Back to Reviews
-      </Link>
+      />
 
       {/* Draft banner (only the owner ever sees a draft) */}
       {!review.is_published && (

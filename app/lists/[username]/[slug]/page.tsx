@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BackLink from "@/components/ui/BackLink";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getUser } from "@/lib/auth";
@@ -50,12 +51,11 @@ export default async function ListDetailPage({ params }: PageParams) {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Back link */}
-      <Link
-        href="/lists"
+      <BackLink
+        fallback="/lists"
+        label="Back"
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
-      >
-        ← Back to Lists
-      </Link>
+      />
 
       {/* --- Header --- */}
       <div className="panel-xbox-glow p-4 sm:p-6 space-y-4 relative overflow-hidden">

@@ -9,8 +9,11 @@
  */
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getReleaseDescription } from "@/lib/descriptions";
+import BackLink from "@/components/ui/BackLink";
 import {
   getReleaseBySlug,
   getReleaseStats,
@@ -43,6 +46,54 @@ import type {
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+/** Letterboxd-style synopsis: manual → Genius → Wikipedia, with a
+    source credit + link when the words came from outside. */
+async function DescriptionBlock({
+  release,
+  artistName,
+}: {
+  release: Release;
+  artistName: string;
+}) {
+  const desc = await getReleaseDescription({
+    title: release.title,
+    release_type: release.release_type,
+    genius_id: release.genius_id,
+    description: release.description,
+    artistName,
+  });
+  if (!desc) return null;
+
+  return (
+    <>
+      <div className="divider-glow" />
+      <p className="text-text-secondary leading-relaxed text-sm md:text-base whitespace-pre-line">
+        {desc.text}
+      </p>
+      {desc.source !== "manual" && (
+        <p className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">
+          {desc.url ? (
+            <a
+              href={desc.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent-primary transition-colors"
+            >
+              {desc.source === "genius"
+                ? "via Genius — lyrics & more ↗"
+                : "via Wikipedia ↗"}
+            </a>
+          ) : desc.source === "genius" ? (
+            "via Genius"
+          ) : (
+            "via Wikipedia"
+          )}
+        </p>
+      )}
+    </>
+  );
 }
 
 /* ─────────────────────────  Metadata  ───────────────────────── */
@@ -187,12 +238,11 @@ export default async function ReleasePage({ params }: Props) {
       />
 
       {/* Back link */}
-      <Link
-        href="/releases"
+      <BackLink
+        fallback="/releases"
+        label="Back"
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
-      >
-        ← Back to Releases
-      </Link>
+      />
 
       <ReleaseContent
         release={release}
@@ -357,15 +407,12 @@ function ReleaseContent({
           />
         </div>
 
-        {/* Description */}
-        {release.description && (
-          <>
-            <div className="divider-glow" />
-            <p className="text-text-secondary leading-relaxed text-sm md:text-base">
-              {release.description}
-            </p>
-          </>
-        )}
+        {/* Description — Letterboxd-style synopsis. Manual column →
+            Genius about → Wikipedia intro (lib/descriptions.ts).
+            Streamed so a slow external lookup never delays the page. */}
+        <Suspense fallback={null}>
+          <DescriptionBlock release={release} artistName={artistName} />
+        </Suspense>
       </div>
 
       <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0">

@@ -35,12 +35,6 @@ import type {
   ShowcaseType,
 } from "@/lib/types/database";
 
-const GENRE_OPTIONS = [
-  "Hip-Hop", "Pop", "R&B", "Alternative", "Rock", "Electronic", "Jazz",
-  "Classical", "Country", "Latin", "Metal", "Indie", "Folk", "Soul",
-  "Funk", "Punk", "Blues", "K-Pop", "J-Pop", "Reggaeton",
-];
-
 /* Theme presets — "vintage consoles". Ids and hexes must match the
    theme-* classes in globals.css AND the DB constraint from migration
    006. The swatch shows the accent; the theme-* class does the real
@@ -122,7 +116,6 @@ export default function ProfileSettingsPage() {
   const [soundcloudUrl, setSoundcloudUrl] = useState("");
   const [statsfmUrl, setStatsfmUrl] = useState("");
   const [appleMusicUrl, setAppleMusicUrl] = useState("");
-  const [favoriteGenres, setFavoriteGenres] = useState<string[]>([]);
 
   const themeHex = THEMES.find((t) => t.id === theme)?.hex ?? "#1e90ff";
 
@@ -179,7 +172,6 @@ export default function ProfileSettingsPage() {
         setSoundcloudUrl(p.soundcloud_url ?? "");
         setStatsfmUrl(p.statsfm_url ?? "");
         setAppleMusicUrl(p.apple_music_url ?? "");
-        setFavoriteGenres(p.favorite_genres ?? []);
       }
 
       setMyReviews(
@@ -191,12 +183,6 @@ export default function ProfileSettingsPage() {
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
-
-  const toggleGenre = useCallback((genre: string) => {
-    setFavoriteGenres((prev) =>
-      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
-    );
-  }, []);
 
   /* --- Showcase helpers: toggle on/off + reorder with arrows --- */
 
@@ -274,19 +260,6 @@ export default function ProfileSettingsPage() {
     setError(null);
     setSaved(false);
 
-    // Username rules match the DB constraint from migration 006:
-    // 3-20 chars, letters/numbers/underscore.
-    if (!username.trim()) {
-      setError("Username is required.");
-      setSaving(false);
-      return;
-    }
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      setError("Username must be 3-20 characters: letters, numbers, underscores.");
-      setSaving(false);
-      return;
-    }
-
     // Streaming links must come from their actual services — these
     // render as clickable links on your PUBLIC profile, so nothing
     // else is allowed (the database enforces the same rule).
@@ -325,9 +298,9 @@ export default function ProfileSettingsPage() {
       }
     }
 
+    // username deliberately absent — permanent after signup.
     const updates: Partial<Profile> = {
       display_name: displayName || null,
-      username,
       tagline: tagline || null,
       pronouns: pronouns || null,
       location: location || null,
@@ -344,7 +317,6 @@ export default function ProfileSettingsPage() {
       soundcloud_url: soundcloudUrl || null,
       statsfm_url: statsfmUrl || null,
       apple_music_url: appleMusicUrl || null,
-      favorite_genres: favoriteGenres,
       updated_at: new Date().toISOString(),
     };
 
@@ -445,7 +417,7 @@ export default function ProfileSettingsPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-6">
+      <form id="profile-settings-form" onSubmit={handleSave} className="space-y-6">
         {/* ========== IDENTITY ========== */}
         <fieldset className="panel-xbox p-5 space-y-4">
           <legend className="label-xbox">Identity</legend>
@@ -462,17 +434,15 @@ export default function ProfileSettingsPage() {
               />
             </FormField>
 
+            {/* Username is PERMANENT (Luca 2026-08-22) — it's the
+                profile URL and the login identifier; only the display
+                name is editable. Shown, not editable. */}
             <FormField label="Username">
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                placeholder="your_username"
-                maxLength={20}
-                className="form-input"
-              />
+              <p className="form-input opacity-60 cursor-not-allowed select-none">
+                @{username}
+              </p>
               <p className="text-xs text-text-muted mt-1">
-                3-20 characters: letters, numbers, underscores
+                Usernames are permanent — change your display name instead.
               </p>
             </FormField>
           </div>
@@ -887,80 +857,6 @@ export default function ProfileSettingsPage() {
           </div>
         </fieldset>
 
-        {/* ========== FAVORITE GENRES ========== */}
-        <fieldset className="panel-xbox p-5 space-y-4">
-          <legend className="label-xbox">Favorite Genres</legend>
-
-          <div className="flex flex-wrap gap-2">
-            {GENRE_OPTIONS.map((genre) => {
-              const selected = favoriteGenres.includes(genre);
-              return (
-                <button
-                  key={genre}
-                  type="button"
-                  onClick={() => toggleGenre(genre)}
-                  className="px-3 py-1.5 rounded-full uppercase tracking-wider transition-all font-[family-name:var(--font-vt323)] text-sm"
-                  style={
-                    selected
-                      ? {
-                          background: `${themeHex}25`,
-                          border: `2px solid ${themeHex}`,
-                          color: themeHex,
-                          boxShadow: `0 0 8px ${themeHex}30`,
-                        }
-                      : {
-                          background: "rgba(255,255,255,0.03)",
-                          border: "2px solid rgba(255,255,255,0.1)",
-                          color: "#5a5a60",
-                        }
-                  }
-                >
-                  {genre}
-                </button>
-              );
-            })}
-          </div>
-          <p className="text-xs text-text-muted">
-            Click to select your favorite genres. They appear on your profile.
-          </p>
-        </fieldset>
-
-        {/* ========== SAVE ========== */}
-        {error && (
-          <div className="panel-xbox p-4 border-red-500/30 bg-red-500/5">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        )}
-
-        {saved && (
-          <div
-            className="panel-xbox p-4"
-            style={{ borderColor: `${themeHex}30`, background: `${themeHex}08` }}
-          >
-            <p style={{ color: themeHex }} className="text-sm font-bold">
-              Saved. Your channel is updated.
-            </p>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn-y2k btn-y2k-primary disabled:opacity-50"
-            style={{ background: themeHex, borderColor: themeHex, color: "#0a0a0c" }}
-          >
-            {saving ? "Saving..." : "Save Channel"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push(`/profile/${username}`)}
-            className="btn-y2k btn-y2k-outline"
-          >
-            View Profile
-          </button>
-        </div>
       </form>
 
       {/* ========== FOUR FAVORITES ==========
@@ -971,9 +867,52 @@ export default function ProfileSettingsPage() {
         <FavoritesEditor />
       </fieldset>
 
-      {/* ========== DANGER ZONE ==========
+      {/* ========== SAVE ==========
+          At the bottom, after everything editable (Luca 2026-08-22),
+          but ABOVE account deletion. Outside the <form> element, so
+          the submit button reaches it via form= (favorite-genres UI
+          removed the same day — the editor and the profile pill row;
+          old favorite_genres rows just sit untouched in the DB). */}
+      {error && (
+        <div className="panel-xbox p-4 border-red-500/30 bg-red-500/5">
+          <p className="text-red-400 text-sm">{error}</p>
+        </div>
+      )}
+
+      {saved && (
+        <div
+          className="panel-xbox p-4"
+          style={{ borderColor: `${themeHex}30`, background: `${themeHex}08` }}
+        >
+          <p style={{ color: themeHex }} className="text-sm font-bold">
+            Saved. Your channel is updated.
+          </p>
+        </div>
+      )}
+
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          form="profile-settings-form"
+          disabled={saving}
+          className="btn-y2k btn-y2k-primary disabled:opacity-50"
+          style={{ background: themeHex, borderColor: themeHex, color: "#0a0a0c" }}
+        >
+          {saving ? "Saving..." : "Save Changes"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => router.push(`/profile/${username}`)}
+          className="btn-y2k btn-y2k-outline"
+        >
+          View Profile
+        </button>
+      </div>
+
+      {/* ========== ACCOUNT DELETION ==========
           In-app account deletion — App Store guideline 5.1.1(v)
-          requires it wherever account creation exists. */}
+          requires it wherever account creation exists. Always LAST. */}
       <DeleteAccountSection username={username} />
     </div>
   );

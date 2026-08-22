@@ -56,7 +56,7 @@ export default function DeleteAccountSection({
 
   return (
     <fieldset className="panel-xbox p-5 space-y-4 border-[#e0557540]">
-      <legend className="label-xbox text-accent-rose">Danger Zone</legend>
+      <legend className="label-xbox text-accent-rose">Account Deletion</legend>
 
       <p className="text-sm text-text-secondary leading-relaxed">
         Deleting your account removes your profile and{" "}

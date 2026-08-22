@@ -518,26 +518,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           )}
         </div>
 
-        {/* Favorite genres — pill row. Trigger-created accounts have
-            NULL here (they never picked genres), not an empty array —
-            this crashed every fresh signup's profile until guarded. */}
-        {(profile.favorite_genres?.length ?? 0) > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {(profile.favorite_genres ?? []).map((genre) => (
-              <span
-                key={genre}
-                className="px-3 py-1 rounded-full font-[family-name:var(--font-vt323)] text-sm uppercase tracking-wider"
-                style={{
-                  background: `${accentColor}15`,
-                  border: `1px solid ${accentColor}30`,
-                  color: accentColor,
-                }}
-              >
-                {genre}
-              </span>
-            ))}
-          </div>
-        )}
+        {/* Favorite genres removed 2026-08-22 (Luca) — the editor and
+            this pill row both; old favorite_genres rows just sit
+            untouched in the DB. */}
       </div>
 
       {/* ========== SHOWCASES — rendered in the user's chosen order ========== */}

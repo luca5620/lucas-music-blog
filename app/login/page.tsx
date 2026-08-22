@@ -15,8 +15,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  // Email OR username (Luca 2026-08-22) — never display name.
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  // The address the sign-in actually ran against — a username entry
+  // resolves to this, and the confirmation-resend needs it.
+  const [resolvedEmail, setResolvedEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
@@ -37,6 +41,26 @@ export default function LoginPage() {
     setLoading(true);
 
     const supabase = createClient();
+
+    // "@" means it's an email; anything else is treated as a
+    // username and resolved server-side (migration 017's
+    // email_for_login — it only answers when the password is right,
+    // so usernames can't be turned into emails).
+    let email = identifier.trim();
+    if (!email.includes("@")) {
+      const { data: resolved } = await supabase.rpc("email_for_login", {
+        identifier: email,
+        pass: password,
+      } as never);
+      if (!resolved) {
+        setError("Wrong username or password.");
+        setLoading(false);
+        return;
+      }
+      email = resolved as string;
+    }
+    setResolvedEmail(email);
+
     const { error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -47,7 +71,7 @@ export default function LoginPage() {
       if (/email not confirmed/i.test(authError.message)) {
         setNeedsConfirmation(true);
       } else if (/invalid login credentials/i.test(authError.message)) {
-        setError("Wrong email or password.");
+        setError("Wrong email/username or password.");
       } else {
         setError(authError.message);
       }
@@ -60,6 +84,7 @@ export default function LoginPage() {
   };
 
   const handleResend = async () => {
+    const email = resolvedEmail || (identifier.includes("@") ? identifier.trim() : "");
     if (resendCooldown > 0 || !email) return;
     setResendNote(null);
     const supabase = createClient();
@@ -121,20 +146,22 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label
-                htmlFor="email"
+                htmlFor="identifier"
                 className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
-                Email
+                Email or Username
               </label>
               <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="identifier"
+                type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 required
                 className="form-input"
-                placeholder="you@example.com"
-                autoComplete="email"
+                placeholder="you@example.com or username"
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
               />
             </div>
 

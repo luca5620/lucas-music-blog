@@ -1433,6 +1433,15 @@ a.card-y2k:hover { transform: translateY(-2px); }
   box-shadow: 0 0 16px var(--glow-primary);
 }
 
+/* Fieldsets ship with min-inline-size:min-content — a <select> with
+   one long option (the pinned-review picker holds full review
+   titles) makes the whole panel wider than a phone screen, and the
+   page's overflow clip slices it off on the right (Luca 2026-08-22,
+   settings Showcases section). Let them shrink like normal divs. */
+fieldset {
+  min-inline-size: 0;
+}
+
 .form-input {
   width: 100%;
   padding: 0.625rem 0.875rem;

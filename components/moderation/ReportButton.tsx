@@ -181,11 +181,29 @@ export default function ReportButton({
       {open &&
         anchor &&
         createPortal(
-          <div
-            ref={popRef}
-            style={{ left: anchor.left, top: anchor.top, width: POPOVER_WIDTH }}
-            className="fixed z-[90] rounded-lg border border-border-medium bg-[#141418] p-3 shadow-[0_16px_50px_rgba(0,0,0,0.8)] space-y-2"
-          >
+          /* Phones: a fixed top sheet + dimmed backdrop. The anchored
+             popover kept losing to the iOS keyboard — when it slides
+             up, iOS pans the VISUAL viewport to the focused textarea,
+             and a box placed in layout-viewport coordinates can land
+             entirely outside the visible region (Luca had to close
+             the keyboard to find it). Pinned at 12vh from the top,
+             the sheet sits above the keyboard by construction — no
+             coordinate math to get wrong. md+: anchored popover. */
+          <>
+            <div
+              className="fixed inset-0 z-[89] bg-black/60 md:hidden"
+              onClick={() => setOpen(false)}
+            />
+            <div
+              ref={popRef}
+              style={
+                {
+                  "--pop-left": `${anchor.left}px`,
+                  "--pop-top": `${anchor.top}px`,
+                } as React.CSSProperties
+              }
+              className="fixed z-[90] left-4 right-4 top-[12vh] max-w-sm mx-auto md:left-[var(--pop-left)] md:right-auto md:top-[var(--pop-top)] md:mx-0 md:w-64 rounded-lg border border-border-medium bg-[#141418] p-3 shadow-[0_16px_50px_rgba(0,0,0,0.8)] space-y-2"
+            >
             {needsLogin ? (
               <p className="text-xs text-text-secondary">
                 <Link href="/login" className="text-accent-primary hover:underline">
@@ -227,7 +245,8 @@ export default function ReportButton({
                 </div>
               </>
             )}
-          </div>,
+          </div>
+          </>,
           document.body,
         )}
     </div>

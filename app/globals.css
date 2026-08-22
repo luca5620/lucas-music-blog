@@ -205,17 +205,62 @@
 }
 .theme-limewire .panel-xbox,
 .theme-limewire .panel-xbox-glow {
-  background: #ece9d8;
-  border: 2px outset #f5f3e9; /* the beveled 2002 freeware look */
-  border-radius: 2px;
+  /* Frutiger-aero gloss along the top of every beveled panel — the
+     2002 freeware look, but shinier (theme glow-up, Luca 2026-08-22) */
+  background: linear-gradient(180deg, #fbfaf2 0%, #ece9d8 16%, #ece9d8 100%);
+  border: 2px outset #f5f3e9;
+  border-radius: 3px;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 .theme-limewire .panel-xbox::before,
 .theme-limewire .panel-xbox-glow::before { display: none; }
-.theme-limewire .btn-y2k { border-radius: 3px; }
+
+/* Section labels become glossy installer-green title bars — white
+   bold text, highlight bead on top, exactly the LimeWire chrome. */
+.theme-limewire .vhs-label {
+  background: linear-gradient(180deg, #a5e878 0%, #46cd32 45%, #1f9e1f 100%);
+  border: 1px solid #187a18;
+  border-radius: 3px;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Real Windows buttons: raised beige bevels that physically press
+   IN on tap; the primary action gets the lime installer gradient. */
+.theme-limewire .btn-y2k {
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fdfcf6 0%, #e6e2cf 100%);
+  border: 2px outset #f5f3e9;
+  color: #1c1c1c;
+  text-shadow: none;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+.theme-limewire .btn-y2k:active {
+  border-style: inset;
+  box-shadow: none;
+}
+.theme-limewire .btn-y2k-primary {
+  background: linear-gradient(180deg, #a5e878 0%, #2fb52f 100%);
+  border: 2px outset #8fdc5a;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Sunken white fields, like every 2002 search box */
+.theme-limewire .form-input,
+.theme-limewire textarea.form-input {
+  background: #ffffff;
+  border: 2px inset #f5f3e9;
+  border-radius: 2px;
+  color: #1c1c1c;
+}
+
 .theme-limewire h1, .theme-limewire h2, .theme-limewire h3 {
   letter-spacing: 0;
+  font-weight: 700;
 }
 
 /* Soul Reaper — Bleach manga ink. Stark black & white, a blood-red

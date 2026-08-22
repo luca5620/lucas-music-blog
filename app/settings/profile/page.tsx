@@ -354,7 +354,7 @@ export default function ProfileSettingsPage() {
     <div className="space-y-6 max-w-2xl">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="crt-title text-3xl sm:text-4xl">Customize Your Channel</h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">Customize Your Profile</h1>
         <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
           pick a theme, arrange your showcases, make it yours
         </p>
@@ -378,9 +378,8 @@ export default function ProfileSettingsPage() {
           }
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <span className="osd-text absolute top-2 right-3 text-xs">
-            CH·{(username || "you").slice(0, 8).toUpperCase()}
-          </span>
+          {/* CH·USERNAME OSD tag removed here too (Luca 2026-08-22) —
+              same green-kitsch cut as the real profile banner. */}
           <div className="absolute bottom-3 left-3 flex items-center gap-3">
             {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -885,7 +884,7 @@ export default function ProfileSettingsPage() {
           style={{ borderColor: `${themeHex}30`, background: `${themeHex}08` }}
         >
           <p style={{ color: themeHex }} className="text-sm font-bold">
-            Saved. Your channel is updated.
+            Saved. Your profile is updated.
           </p>
         </div>
       )}

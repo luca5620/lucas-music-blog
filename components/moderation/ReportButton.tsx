@@ -3,15 +3,23 @@
 /**
  * ReportButton — the 🚩 on every piece of user content.
  *
- * Click → inline popover with a reason box → POST /api/reports.
+ * Click → popover with a reason box → POST /api/reports.
  * On success the button becomes a muted "Reported ✓" so the same
  * viewer can't spam-file against one target from the UI.
+ *
+ * The popover renders into document.body (createPortal) in viewport
+ * coordinates, clamped to the screen edges — anchored `right-0` it
+ * extended 256px to the LEFT of the flag, so any flag sitting near
+ * the left edge of a comment/chat row pushed the box mostly
+ * off-screen (and card overflow could clip it too). Same structural
+ * fix as CatalogSearch's portal dropdown.
  *
  * Required by App Store guideline 1.2: UGC apps must give users a
  * way to flag objectionable content.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 
 interface ReportButtonProps {
@@ -29,6 +37,13 @@ interface ReportButtonProps {
   small?: boolean;
 }
 
+const POPOVER_WIDTH = 256; // w-64
+// Worst-case rendered height (header + textarea + error line + buttons),
+// used only to decide whether to flip above the flag near the bottom of
+// the screen.
+const POPOVER_EST_HEIGHT = 200;
+const EDGE_GAP = 8;
+
 export default function ReportButton({
   targetType,
   targetId,
@@ -41,12 +56,61 @@ export default function ReportButton({
   const [error, setError] = useState<string | null>(null);
   const [needsLogin, setNeedsLogin] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
+  const popRef = useRef<HTMLDivElement>(null);
 
-  // Close the popover on outside click.
+  // Popover position in viewport coordinates, clamped so the full
+  // box is always on screen no matter where the flag sits.
+  const [anchor, setAnchor] = useState<{ left: number; top: number } | null>(
+    null,
+  );
+
+  const measure = useCallback(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const left = Math.min(
+      Math.max(r.right - POPOVER_WIDTH, EDGE_GAP),
+      Math.max(vw - POPOVER_WIDTH - EDGE_GAP, EDGE_GAP),
+    );
+    // Prefer below the flag; flip above when the bottom of the screen
+    // (visualViewport when the keyboard is up) leaves no room.
+    const vh = window.visualViewport?.height ?? window.innerHeight;
+    const below = r.bottom + 8;
+    const top =
+      below + POPOVER_EST_HEIGHT > vh - EDGE_GAP
+        ? Math.max(r.top - 8 - POPOVER_EST_HEIGHT, EDGE_GAP)
+        : below;
+    setAnchor({ left, top });
+  }, []);
+
+  // Keep the popover glued to the flag while open: page scroll
+  // (capture — the scroller may be any ancestor), resizes, and the
+  // mobile keyboard showing/hiding all move the anchor.
+  useEffect(() => {
+    if (!open) return;
+    measure();
+    window.addEventListener("scroll", measure, true);
+    window.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("scroll", measure, true);
+      window.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("resize", measure);
+    };
+  }, [open, measure]);
+
+  // Close on outside click — the portal box lives outside boxRef in
+  // the DOM, so clicks inside it must count as inside.
   useEffect(() => {
     if (!open) return;
     function onDown(e: MouseEvent) {
-      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
+      const t = e.target as Node;
+      if (
+        boxRef.current &&
+        !boxRef.current.contains(t) &&
+        !(popRef.current && popRef.current.contains(t))
+      ) {
         setOpen(false);
       }
     }
@@ -114,51 +178,58 @@ export default function ReportButton({
         🚩{!small && <span className="ml-1 uppercase tracking-wider">Report</span>}
       </button>
 
-      {open && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-lg border border-border-medium bg-[#141418] p-3 shadow-[0_16px_50px_rgba(0,0,0,0.8)] space-y-2">
-          {needsLogin ? (
-            <p className="text-xs text-text-secondary">
-              <Link href="/login" className="text-accent-primary hover:underline">
-                Sign in
-              </Link>{" "}
-              to report content.
-            </p>
-          ) : (
-            <>
-              <p className="text-xs font-bold text-text-primary uppercase tracking-wider font-[family-name:var(--font-heading)]">
-                Report this
+      {open &&
+        anchor &&
+        createPortal(
+          <div
+            ref={popRef}
+            style={{ left: anchor.left, top: anchor.top, width: POPOVER_WIDTH }}
+            className="fixed z-[90] rounded-lg border border-border-medium bg-[#141418] p-3 shadow-[0_16px_50px_rgba(0,0,0,0.8)] space-y-2"
+          >
+            {needsLogin ? (
+              <p className="text-xs text-text-secondary">
+                <Link href="/login" className="text-accent-primary hover:underline">
+                  Sign in
+                </Link>{" "}
+                to report content.
               </p>
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                maxLength={500}
-                rows={3}
-                autoFocus
-                placeholder="What's wrong with it? (3–500 chars)"
-                className="form-input !text-xs resize-none"
-              />
-              {error && <p className="text-[11px] text-accent-rose">{error}</p>}
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="text-[11px] uppercase tracking-wider text-text-muted hover:text-text-primary px-2 py-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={submit}
-                  disabled={reason.trim().length < 3 || submitting}
-                  className="text-[11px] uppercase tracking-wider font-bold text-accent-rose border border-accent-rose/40 rounded px-2 py-1 hover:bg-accent-rose/10 disabled:opacity-40 transition-colors"
-                >
-                  {submitting ? "…" : "Submit"}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
+            ) : (
+              <>
+                <p className="text-xs font-bold text-text-primary uppercase tracking-wider font-[family-name:var(--font-heading)]">
+                  Report this
+                </p>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  maxLength={500}
+                  rows={3}
+                  autoFocus
+                  placeholder="What's wrong with it? (3–500 chars)"
+                  className="form-input !text-xs resize-none"
+                />
+                {error && <p className="text-[11px] text-accent-rose">{error}</p>}
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="text-[11px] uppercase tracking-wider text-text-muted hover:text-text-primary px-2 py-1"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={submit}
+                    disabled={reason.trim().length < 3 || submitting}
+                    className="text-[11px] uppercase tracking-wider font-bold text-accent-rose border border-accent-rose/40 rounded px-2 py-1 hover:bg-accent-rose/10 disabled:opacity-40 transition-colors"
+                  >
+                    {submitting ? "…" : "Submit"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

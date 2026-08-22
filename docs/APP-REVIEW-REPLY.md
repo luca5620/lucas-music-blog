@@ -57,12 +57,14 @@ There are no purchases, subscriptions, or sensitive-permission prompts
 
 Thank you for the review. Responses to each requested item:
 
-**1. Screen recording** — Attached. Captured on a physical iPhone running
-the latest iOS. It begins at app launch and shows: account registration
-with email confirmation, writing and publishing a review, browsing feeds
-and lists, voting and chatting in a debate, profile themes,
-user-generated-content moderation (reporting content and blocking /
-unblocking a user), in-app account deletion, and login.
+**1. Screen recording** — Two recordings attached, both captured on a
+physical iPhone running the latest iOS. The first begins at app launch
+and shows: account registration with email confirmation, writing and
+publishing a review, browsing feeds and lists, voting and chatting in
+a debate, profile themes, user-generated-content moderation (reporting
+content and blocking / unblocking a user), and in-app account
+deletion. The second shows signing in with the demo account
+(`applereview`).
 
 **2. Devices and operating systems tested** — Physical device: iPhone
 [YOUR MODEL, e.g. iPhone 15 Pro], iOS [VERSION]. Additionally tested in

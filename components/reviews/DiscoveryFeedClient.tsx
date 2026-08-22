@@ -41,14 +41,16 @@ export interface FeedReview {
   releases?: { slug: string } | { slug: string }[] | null;
 }
 
-/** The card's main click-through: the release page (all ratings +
-    the histogram) when the review is catalog-attached, otherwise
-    the review's own page. */
-function releaseHref(review: FeedReview): string {
+/** The tied release's page, when the review is catalog-attached —
+    surfaced as a secondary footer link. The card's artwork + title
+    go to the REVIEW itself (Luca 2026-08-22: "that's what I'm
+    clicking on it for" — the earlier artwork→release routing left
+    the review reachable only through the comments link). */
+function releaseSlug(review: FeedReview): string | null {
   const rel = Array.isArray(review.releases)
     ? review.releases[0]
     : review.releases;
-  return rel?.slug ? `/releases/${rel.slug}` : `/reviews/${review.slug}`;
+  return rel?.slug ?? null;
 }
 
 function timeAgo(dateStr: string): string {
@@ -115,6 +117,26 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                 <span className="block text-xs text-text-secondary truncate">
                   {review.artist}
                 </span>
+                {/* Same person-first identity as the detailed card,
+                    shrunk to one quiet line — the stamp on the poster
+                    is THEIR verdict, so say whose. */}
+                <span className="flex items-center gap-1.5 pt-0.5 min-w-0">
+                  {review.profiles.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={review.profiles.avatar_url}
+                      alt=""
+                      className="w-4 h-4 rounded-full object-cover border border-white/10 shrink-0"
+                    />
+                  ) : (
+                    <span className="w-4 h-4 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-[8px] font-bold text-accent-primary uppercase shrink-0">
+                      {(review.profiles.username || "U")[0]}
+                    </span>
+                  )}
+                  <span className="text-[11px] text-text-muted truncate">
+                    {review.profiles.display_name || review.profiles.username}
+                  </span>
+                </span>
               </span>
             </Link>
           ))}
@@ -152,9 +174,25 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                   </span>
                   <span className="text-text-secondary"> — {review.artist}</span>
                 </span>
-                <span className="hidden sm:flex items-center gap-1 text-xs text-text-muted shrink-0">
-                  {author.display_name || author.username}
-                  {author.role !== "user" && <VerifiedBadge role={author.role} />}
+                {/* Reviewer identity on EVERY size: the avatar always
+                    shows (costs ~20px), the name joins it from sm up. */}
+                <span className="flex items-center gap-1.5 text-xs text-text-muted shrink-0">
+                  {author.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={author.avatar_url}
+                      alt={author.display_name || author.username}
+                      className="w-5 h-5 rounded-full object-cover border border-white/10"
+                    />
+                  ) : (
+                    <span className="w-5 h-5 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-[9px] font-bold text-accent-primary uppercase">
+                      {(author.username || "U")[0]}
+                    </span>
+                  )}
+                  <span className="hidden sm:flex items-center gap-1">
+                    {author.display_name || author.username}
+                    {author.role !== "user" && <VerifiedBadge role={author.role} />}
+                  </span>
                 </span>
                 <span
                   className="pixel-text text-sm font-bold tabular-nums shrink-0 w-9 text-right"
@@ -173,9 +211,10 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
           the verdict — "{name} rated this release a {8.5}" — then the
           album cover, then their words under it. Long reviews clamp
           with an explicit "read the full review →". Cover + title
-          click through to the release's community page (all ratings +
-          the histogram); the review page holds comments. 4–5 cards per
-          row on desktop keeps the covers album-sized. */}
+          click through to the REVIEW (it's the thing the card is
+          about); the release's community page (all ratings + the
+          histogram) is the footer link. 4–5 cards per row on desktop
+          keeps the covers album-sized. */}
       {view === "detailed" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 items-start">
           {feed.map((review) => {
@@ -239,8 +278,9 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                   </span>
                 </Link>
 
-                {/* Cover + title → the release page */}
-                <Link href={releaseHref(review)} className="block group space-y-2">
+                {/* Cover + title → THE REVIEW (the release page is the
+                    footer link below) */}
+                <Link href={`/reviews/${review.slug}`} className="block group space-y-2">
                   <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-[rgba(255,255,255,0.3)] transition-all">
                     {review.cover_image ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -284,7 +324,9 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                   </Link>
                 )}
 
-                {/* Likes + when + the review's own page for comments */}
+                {/* Likes + when + the release's community page (the
+                    artwork goes to the review now, so this is where
+                    the histogram/all-ratings view lives) */}
                 <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
                   <span className="flex items-center gap-2">
                     <LikeButton
@@ -297,12 +339,14 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                       {timeAgo(review.created_at)}
                     </span>
                   </span>
-                  <Link
-                    href={`/reviews/${review.slug}`}
-                    className="pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
-                  >
-                    Comments →
-                  </Link>
+                  {releaseSlug(review) && (
+                    <Link
+                      href={`/releases/${releaseSlug(review)}`}
+                      className="pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+                    >
+                      Release →
+                    </Link>
+                  )}
                 </div>
 
                 <div className="scan-bar" />

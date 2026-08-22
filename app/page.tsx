@@ -301,15 +301,8 @@ async function Dashboard({ userId }: { userId: string }) {
         </Link>
       </section>
 
-      {/* ===== About Us — the story behind the station ===== */}
-      <section className="flex justify-center pt-2">
-        <Link
-          href="/about"
-          className="px-6 py-2.5 rounded-full text-sm font-bold tracking-wide uppercase bg-accent-primary/15 text-accent-primary border border-accent-primary/30 hover:bg-accent-primary/25 hover:border-accent-primary/50 transition-all font-[family-name:var(--font-heading)]"
-        >
-          About Us
-        </Link>
-      </section>
+      {/* About Us moved to the universal SiteFooter (Luca 2026-08-22:
+          the blue pill duplicated it once the footer link shipped). */}
     </>
   );
 }

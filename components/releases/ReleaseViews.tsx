@@ -62,12 +62,21 @@ export default function ReleaseViews({
                     💿
                   </span>
                 )}
-                {hasRating && (
+                {/* The stamp is the COMMUNITY average, not one person's
+                    score — say so (Luca 2026-08-22: nothing indicated
+                    what the number was, or which drops nobody had rated
+                    yet). Unrated gets an explicit muted stamp. */}
+                {hasRating ? (
                   <span
                     className="poster-rating"
                     style={{ color: getRatingHex(item.avgRating!) }}
                   >
+                    <span className="text-[0.55rem] font-normal text-text-muted mr-1">AVG</span>
                     {formatRating(item.avgRating!)}
+                  </span>
+                ) : (
+                  <span className="poster-rating !text-[0.55rem] !font-normal text-text-muted tracking-wider">
+                    UNRATED
                   </span>
                 )}
               </span>
@@ -126,16 +135,23 @@ export default function ReleaseViews({
               <span className="hidden sm:inline pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
                 {item.release_type.toUpperCase()}
               </span>
+              {/* Same honesty as the detailed card's "Community Avg"
+                  block, folded into a right-aligned micro-stack. */}
               {hasRating ? (
-                <span
-                  className="pixel-text text-sm font-bold tabular-nums shrink-0 w-9 text-right"
-                  style={{ color: getRatingHex(item.avgRating!) }}
-                >
-                  {formatRating(item.avgRating!)}
+                <span className="shrink-0 w-11 text-right leading-none">
+                  <span
+                    className="block pixel-text text-sm font-bold tabular-nums"
+                    style={{ color: getRatingHex(item.avgRating!) }}
+                  >
+                    {formatRating(item.avgRating!)}
+                  </span>
+                  <span className="block pixel-text text-[8px] uppercase tracking-widest text-text-muted mt-0.5">
+                    AVG
+                  </span>
                 </span>
               ) : (
-                <span className="pixel-text text-xs text-text-muted shrink-0 w-9 text-right">
-                  —
+                <span className="pixel-text text-[9px] uppercase tracking-widest text-text-muted shrink-0 w-11 text-right leading-tight">
+                  UNRATED
                 </span>
               )}
             </Link>

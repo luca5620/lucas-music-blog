@@ -199,15 +199,21 @@ function SurfCard({
         </span>
 
         {/* The words themselves, right on the card. Pager mode clamps
-            them (teaser); fullscreen shows EVERYTHING — left-aligned
-            for reading, scrolling inside its own box when long. When
-            that inner scroll runs out, the swipe chains to the pager
-            and flips the channel, TikTok-style. */}
+            them (teaser); fullscreen shows EVERYTHING. Long reads get
+            the reading treatment — left-aligned, scrolling inside
+            their own box (when that inner scroll runs out, the swipe
+            chains to the pager and flips the channel, TikTok-style).
+            SHORT reviews stay centered like the rest of the card —
+            the full-width left-aligned box made a one-liner hug the
+            left edge and threw the whole card off-center (Luca
+            2026-08-22). */}
         {(item.type === "review" || item.type === "post") && item.body && (
           <span
             className={`block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
               fullscreen
-                ? "w-full flex-shrink min-h-0 overflow-y-auto text-left px-1 [scrollbar-width:thin]"
+                ? item.body.length > 280
+                  ? "w-full flex-shrink min-h-0 overflow-y-auto text-left px-1 [scrollbar-width:thin]"
+                  : "text-center"
                 : "line-clamp-4 sm:line-clamp-6"
             }`}
           >
@@ -245,6 +251,9 @@ function SurfCard({
 export default function ChannelSurf({ items }: { items: TunedItem[] }) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
+  // Mirror of `index` for the resize listener — it re-registers never,
+  // so it must not close over stale state.
+  const indexRef = useRef(0);
   // Fullscreen "channel" mode — the pager takes the whole screen for
   // the reels/TikTok-style immersion (Luca 2026-08-22). In the app
   // the bottom tab bar stays visible (the fixed frame stops above it
@@ -282,10 +291,33 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
   const handleScroll = useCallback(() => {
     const el = frameRef.current;
     if (!el || el.clientHeight === 0) return;
-    setIndex(
-      Math.max(0, Math.min(items.length - 1, Math.round(el.scrollTop / el.clientHeight)))
+    const next = Math.max(
+      0,
+      Math.min(items.length - 1, Math.round(el.scrollTop / el.clientHeight)),
     );
+    indexRef.current = next;
+    setIndex(next);
   }, [items.length]);
+
+  // Cards are exactly frame-height, so ANY height change (mobile URL
+  // bar collapsing, rotation, desktop window resize, the app keyboard)
+  // silently un-aligns scrollTop from the card grid — the current card
+  // ends up straddling the frame, half of it and half of the next one
+  // showing ("not centered", Luca 2026-08-22; iOS doesn't reliably
+  // re-snap on resize). Re-pin the frame to the card the viewer was on.
+  useEffect(() => {
+    const realign = () => {
+      const el = frameRef.current;
+      if (!el || el.clientHeight === 0) return;
+      el.scrollTo({ top: indexRef.current * el.clientHeight });
+    };
+    window.addEventListener("resize", realign);
+    window.visualViewport?.addEventListener("resize", realign);
+    return () => {
+      window.removeEventListener("resize", realign);
+      window.visualViewport?.removeEventListener("resize", realign);
+    };
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {

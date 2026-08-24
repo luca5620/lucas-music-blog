@@ -56,6 +56,13 @@ interface Props {
   searchParams: Promise<{ tab?: string }>;
 }
 
+/** Alpha mask for the banner's edge fade: full image through the
+    middle, eased falloff, gone only AT the edges — so the banner
+    dissolves into whatever moves behind it instead of drowning under
+    a painted black band. Twin constant on the artist page. */
+const BANNER_FADE_MASK =
+  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 6%, rgba(0,0,0,0.92) 12%, black 18%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.65) 85%, rgba(0,0,0,0.34) 93%, transparent 100%)";
+
 /** The two profile tabs. Anything else falls back to "reviews". */
 type ProfileTab = "reviews" | "lists" | "posts";
 
@@ -325,14 +332,24 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       <ThemeLiquidSync theme={theme} />
 
       {/* ========== BANNER ========== */}
-      <div className="relative h-44 sm:h-80 w-full" style={bannerStyle}>
-        {/* Fade the banner into the page at BOTH edges (top + bottom)
-            so it doesn't start with a hard line — black normally, the
-            light wash on Wii/LimeWire. */}
+      <div className="relative h-44 sm:h-80 w-full">
+        {/* The edge fade is a MASK on the banner itself, not a dark
+            paint-over: the old overlay ramped to opaque page color
+            across the bottom 45%, which buried the image under a dead
+            black band that then sat against the moving liquid behind
+            the page (Luca 2026-08-24: covers too much, awkward
+            cutoff). Masking the alpha instead lets the banner keep
+            its brightness until ~2/3 down and then genuinely dissolve
+            into whatever is behind — liquid, theme backdrop, light
+            theme washes — with no color seam possible. Eased stops so
+            the falloff reads photographic, not banded. (Twin fade on
+            the artist page — keep them in step.) */}
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(to bottom, ${pageBg ?? "#000000"} 0%, transparent 30%, transparent 55%, ${pageBg ?? "#000000"} 100%)`,
+            ...bannerStyle,
+            WebkitMaskImage: BANNER_FADE_MASK,
+            maskImage: BANNER_FADE_MASK,
           }}
         />
 

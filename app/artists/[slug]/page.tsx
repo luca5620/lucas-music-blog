@@ -26,6 +26,11 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+/** Alpha mask for the banner's edge fade — twin of the profile
+    page's BANNER_FADE_MASK, keep them in step. */
+const BANNER_FADE_MASK =
+  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 6%, rgba(0,0,0,0.92) 12%, black 18%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.65) 85%, rgba(0,0,0,0.34) 93%, transparent 100%)";
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const artist = await getArtistBySlug(slug);
@@ -104,9 +109,18 @@ export default async function ArtistPage({ params }: PageProps) {
     >
       {/* ========== BANNER ========== */}
       <div className="relative h-48 sm:h-64 w-full overflow-hidden">
-        <div className="absolute inset-0" style={bannerStyle} />
-        {/* Gradient fade to page bg */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0c]" />
+        {/* Edge fade is an alpha MASK, not a paint-over — the banner
+            dissolves into the liquid/page behind it with no solid
+            band or color seam. Twin of BANNER_FADE_MASK on the
+            profile page — keep them in step. */}
+        <div
+          className="absolute inset-0"
+          style={{
+            ...bannerStyle,
+            WebkitMaskImage: BANNER_FADE_MASK,
+            maskImage: BANNER_FADE_MASK,
+          }}
+        />
 
         {/* Scan bar */}
         <div className="absolute bottom-0 left-0 right-0 h-[1px] overflow-hidden">

@@ -351,8 +351,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             theme washes — with no color seam possible. Eased stops so
             the falloff reads photographic, not banded. (Twin fade on
             the artist page — keep them in step.) */}
+        {/* rounded-2xl: the fade starts from a curved silhouette, so
+            the corners sweep instead of meeting square (Luca) — 16px
+            reads at banner scale where the panels' 8px wouldn't. */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 rounded-2xl"
           style={{
             ...bannerStyle,
             WebkitMaskImage: `${BANNER_FADE_MASK_Y}, ${BANNER_FADE_MASK_X}`,

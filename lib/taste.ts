@@ -651,11 +651,15 @@ export async function getTunedToYou(
     spotify_id: string | null;
     release_type: string;
     description: string | null;
-    tracks: { spotify_id?: string | null }[] | null;
+    tracks: { spotify_id?: string | null; title?: string | null }[] | null;
     artists: { name: string } | { name: string }[] | null;
   };
+  // First-track titles by release slug — anchors the Genius album
+  // description lookup during post-pick enrichment below.
+  const firstTrackBySlug = new Map<string, string | null>();
   for (const r of (releasesRes.data ?? []) as unknown as ReleaseRow[]) {
     const artistName = first(r.artists)?.name ?? "";
+    firstTrackBySlug.set(r.slug, r.tracks?.[0]?.title ?? null);
     candidates.push({
       item: {
         type: "release",
@@ -737,6 +741,7 @@ export async function getTunedToYou(
         genius_id: item.genius_id,
         description: null,
         artistName: item.artist,
+        firstTrack: firstTrackBySlug.get(item.slug) ?? null,
       }).catch(() => null);
       if (desc) {
         item.description = desc.text;

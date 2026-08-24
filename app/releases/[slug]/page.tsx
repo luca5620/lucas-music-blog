@@ -63,6 +63,7 @@ async function DescriptionBlock({
     genius_id: release.genius_id,
     description: release.description,
     artistName,
+    firstTrack: release.tracks?.[0]?.title ?? null,
   });
   if (!desc) return null;
 

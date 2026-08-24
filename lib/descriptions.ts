@@ -46,13 +46,24 @@ function clean(raw: string | null | undefined): string | null {
     : text;
 }
 
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
 /** Loose string match: lowercase alphanumerics, containment either way. */
 function matches(a: string, b: string): boolean {
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
   const na = norm(a);
   const nb = norm(b);
   if (!na || !nb) return false;
   return na.includes(nb) || nb.includes(na);
+}
+
+/** Strict match: normalized EQUALITY. Album names need this — by
+    containment, "MM..FOOD (20th Anniversary Edition)" matches
+    "MM..FOOD" and the reissue's blurb replaces the album's (Luca
+    2026-08-24, the MM..FOOD review). */
+function sameName(a: string, b: string): boolean {
+  const na = norm(a);
+  const nb = norm(b);
+  return !!na && na === nb;
 }
 
 async function fetchJson(
@@ -158,15 +169,18 @@ async function geniusSearchBestHit(
   const hits = raw?.response?.hits ?? [];
   // Both title AND artist must match (Luca 2026-08-23: an artist-only
   // match let any song by the artist supply a wrong description).
-  // Genius titles often carry "Song by Artist" / feat. suffixes, so
-  // containment-matching the title is the right looseness.
-  const hit = hits.find(
+  // Prefer an exact title; fall back to containment, which covers
+  // Genius's feat./version suffixes but can also net "The Making of X"
+  // pages — callers guard against those downstream.
+  const songHits = hits.filter(
     (h) =>
       h.type === "song" &&
       h.result.primary_artist?.name &&
-      matches(h.result.primary_artist.name, artistName) &&
-      matches(h.result.title, title),
+      matches(h.result.primary_artist.name, artistName),
   );
+  const hit =
+    songHits.find((h) => sameName(h.result.title, title)) ??
+    songHits.find((h) => matches(h.result.title, title));
   return hit?.result.id ?? null;
 }
 
@@ -219,32 +233,58 @@ const externalDescription = unstable_cache(
     artistName: string,
     releaseType: string,
     geniusId: string | null,
+    firstTrack: string | null,
   ): Promise<ReleaseDescription | null> => {
     const isSingle = releaseType === "single";
 
     /* Genius first (Luca: their deep dives cover a wide range). */
-    // Direct id (Genius-imported releases store the SONG id). These
-    // are the unreleased/leaked/deep-catalog imports — Wikipedia has
-    // no article for them, so its fallback can only ever match some
-    // OTHER work with the same name. Genius or nothing (Luca
-    // 2026-08-23, after an unreleased song wore a wrong synopsis).
+    // Genius-imported releases (catalog stores the SONG id as
+    // "song:<id>" — pass the bare id or the API 404s, which is how
+    // Hold It Down lost its bio). These are the unreleased/leaked/
+    // deep-catalog imports — Wikipedia has no article for them, so
+    // its fallback can only ever match some OTHER work with the same
+    // name. Genius or nothing (Luca 2026-08-23).
     if (geniusId) {
-      const song = await geniusSongDescription(geniusId);
+      const songId = geniusId.replace(/^song:/, "");
+      const song = await geniusSongDescription(songId);
       if (song.text) return { text: song.text, source: "genius", url: song.url };
+      // Leaks often have duplicate Genius pages; if the imported page
+      // is blank, search may land on the twin that carries the bio.
+      // Still Genius-only — never Wikipedia for these.
+      const hitId = await geniusSearchBestHit(title, artistName);
+      if (hitId && String(hitId) !== songId) {
+        const dup = await geniusSongDescription(hitId);
+        if (dup.text) return { text: dup.text, source: "genius", url: dup.url };
+      }
       return null;
-    } else {
+    }
+
+    if (isSingle) {
       const hitId = await geniusSearchBestHit(title, artistName);
       if (hitId) {
         const song = await geniusSongDescription(hitId);
-        if (isSingle && song.text) {
+        if (song.text) {
           return { text: song.text, source: "genius", url: song.url };
         }
-        // Album-shaped release: hop from the matched song to its album.
-        if (!isSingle && song.albumId && song.albumName && matches(song.albumName, title)) {
+      }
+    } else {
+      // Album-shaped release. Searching the album TITLE returns junk
+      // (making-of pages, users' listening logs), so anchor on the
+      // first track when we have one — its song page points straight
+      // at the real album. Either way the landed-on album's name must
+      // EQUAL the release title, so a "(20th Anniversary Edition)"
+      // page can never describe the original.
+      const anchors = firstTrack ? [firstTrack, title] : [title];
+      for (const anchor of anchors) {
+        const hitId = await geniusSearchBestHit(anchor, artistName);
+        if (!hitId) continue;
+        const song = await geniusSongDescription(hitId);
+        if (song.albumId && song.albumName && sameName(song.albumName, title)) {
           const album = await geniusAlbumDescription(song.albumId);
           if (album.text) {
             return { text: album.text, source: "genius", url: album.url };
           }
+          break; // right album found, it just has no text — don't re-hop
         }
       }
     }
@@ -255,9 +295,9 @@ const externalDescription = unstable_cache(
 
     return null;
   },
-  // v2: keeps the pre-2026-08-23 mismatched descriptions from being
-  // served out of the old cache entries.
-  ["release-description-v2"],
+  // v3: flushes the anniversary-edition / wrong-match blurbs cached
+  // by earlier versions.
+  ["release-description-v3"],
   { revalidate: 60 * 60 * 24 * 30 }, // 30 days per (title, artist, …) tuple
 );
 
@@ -271,6 +311,8 @@ export async function getReleaseDescription(release: {
   genius_id: string | null;
   description: string | null;
   artistName: string;
+  /** First track's title — anchors the Genius album lookup (albums only). */
+  firstTrack?: string | null;
 }): Promise<ReleaseDescription | null> {
   if (release.description?.trim()) {
     return { text: release.description.trim(), source: "manual", url: null };
@@ -282,6 +324,7 @@ export async function getReleaseDescription(release: {
       release.artistName,
       release.release_type,
       release.genius_id,
+      release.firstTrack ?? null,
     );
   } catch {
     return null;

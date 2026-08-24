@@ -368,7 +368,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           }}
         />
 
-        <div className="absolute bottom-0 left-0 right-0 h-[1px] overflow-hidden">
+        {/* Inset by the card radius (left/right-4 = 16px = rounded-2xl)
+            so the streak lives only on the STRAIGHT span of the bottom
+            edge — full-width it shot straight through the corner
+            curves and looked detached from the card (Luca). */}
+        <div className="absolute bottom-0 left-4 right-4 h-[1px] overflow-hidden rounded-full">
           <div
             className="h-full w-1/2 animate-[scan-bar_3s_ease-in-out_infinite]"
             style={{

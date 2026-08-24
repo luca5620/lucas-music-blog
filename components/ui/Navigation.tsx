@@ -349,6 +349,17 @@ export default function Navigation() {
                             >
                               Reports
                             </Link>
+                            {/* Founder-only (the page itself turns
+                                admins away — don't tease the link) */}
+                            {profile?.role === "owner" && (
+                              <Link
+                                href="/admin/badges"
+                                onClick={() => setDropdownOpen(false)}
+                                className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
+                              >
+                                Badge Tool
+                              </Link>
+                            )}
                             <div className="my-1 border-t border-white/5" />
                           </>
                         )}

@@ -218,6 +218,23 @@ export default function Navigation() {
                       </span>
                     </span>
                   </Link>
+                  <Link
+                    href="/debates/new"
+                    onClick={() => setCreateOpen(false)}
+                    className="group flex items-center gap-3 rounded-lg border border-white/10 px-3 py-2.5 transition-all hover:border-accent-primary/60 hover:bg-accent-primary/10 focus-visible:border-accent-primary/60 focus-visible:bg-accent-primary/10 focus:outline-none"
+                  >
+                    <span className="w-8 h-8 shrink-0 rounded-full border border-accent-primary/30 bg-accent-primary/10 flex items-center justify-center text-base group-hover:border-accent-primary/60 transition-colors">
+                      ⚔
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
+                        Debate
+                      </span>
+                      <span className="block text-xs text-text-muted">
+                        pick a fight, let the votes decide
+                      </span>
+                    </span>
+                  </Link>
                 </div>
               )}
             </div>

@@ -353,7 +353,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           image layer alone, the square container's corner notches
           were bare windows to the liquid behind, glowing awkwardly
           next to the curved image. */}
-      <div className="relative h-44 sm:h-80 w-full rounded-2xl overflow-hidden bg-[rgba(9,11,15,0.45)]">
+      <div
+        className="relative h-44 sm:h-80 w-full rounded-2xl overflow-hidden border bg-[rgba(9,11,15,0.45)]"
+        // The same faint accent hairline every panel wears — without
+        // it the card floated chrome-less next to bordered modules
+        // and read slightly unfinished.
+        style={{ borderColor: `${accentColor}2e` }}
+      >
         <div
           className="absolute inset-0"
           style={{

@@ -30,6 +30,42 @@ import { BreadcrumbSchema } from "@/app/schema";
 // The dashboard is per-viewer and realtime-ish — always render fresh.
 export const dynamic = "force-dynamic";
 
+/* App Store link for the web-only download badge in the HOME band.
+   TODO(Luca): replace with the real listing URL once the app is live
+   — App Store Connect → App Information → the Apple ID number gives
+   https://apps.apple.com/us/app/peak-music-reviews/id<number>. */
+const APP_STORE_URL = "https://apps.apple.com/us/app/peak-music-reviews/id0000000000";
+
+/** The bitten apple (Font Awesome path, CC BY 4.0) + the classic
+    two-line badge text. Web-only via .app-hide — if you can see the
+    app shell you already have the app. */
+function AppStoreBadge() {
+  return (
+    <a
+      href={APP_STORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="app-hide inline-flex items-center gap-2.5 rounded-xl border border-white/25 bg-black/60 px-4 py-2 transition-colors hover:border-white/50 hover:bg-black/80"
+    >
+      <svg
+        viewBox="0 0 384 512"
+        className="w-5 h-5 fill-current text-text-primary"
+        aria-hidden="true"
+      >
+        <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.9-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+      </svg>
+      <span className="text-left leading-tight">
+        <span className="block text-[9px] uppercase tracking-widest text-text-muted">
+          Download on the
+        </span>
+        <span className="block text-sm font-bold text-text-primary">
+          App Store
+        </span>
+      </span>
+    </a>
+  );
+}
+
 export default async function Home() {
   const user = await getUser();
 
@@ -204,6 +240,11 @@ async function Dashboard({ userId }: { userId: string }) {
             <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
               ⚔ Start a Debate
             </Link>
+          </div>
+          {/* Web only — get the iOS app (always shown here, Luca
+              2026-08-24; the shell hides it, they already have it) */}
+          <div className="app-hide flex justify-center sm:justify-start">
+            <AppStoreBadge />
           </div>
         </div>
         <div className="scan-bar" />

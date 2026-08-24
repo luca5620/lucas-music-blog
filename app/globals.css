@@ -402,6 +402,9 @@ body {
 .crt-body {
   display: flex;
   border-radius: 10px;
+  /* Positioned so it paints ABOVE .crt-bezel-liquid (both positioned,
+     body comes later in the DOM) — the glow only shows in the ring. */
+  position: relative;
 }
 
 /* ============================================================
@@ -567,20 +570,20 @@ body {
 
 /* ---- Phone + app-shell performance mode ----
    The grain animation invalidates a full-viewport mix-blend-mode
-   layer twice a second, and the site-wide liquid wash keeps six
-   blur(80px) blobs in perpetual motion. Desktops shrug; phone GPUs
-   drop scroll frames over it (and a fixed tab bar visibly lags when
-   the compositor is that busy). The TEXTURE all stays — grain,
-   scanlines, grille, liquid glow are still painted — only the
-   perpetual motion stops. Nothing is stripped, it just holds still. */
+   layer twice a second — that repaint is what dropped scroll frames
+   on phones, so grain holds still there (texture stays painted).
+   The liquid wash used to be frozen too, but its blobs are now
+   promoted composited layers (see .liquid-blob) whose transform-only
+   drift never repaints — so the molten light moves in the app again
+   (Luca 2026-08-24: alive edges, same scrolling). If jank ever
+   returns on device, THIS is the first dial: re-add
+   .crt-liquid .liquid-blob { animation: none; } below. */
 @media (max-width: 768px) {
-  .grain-overlay,
-  .crt-liquid .liquid-blob {
+  .grain-overlay {
     animation: none;
   }
 }
-.native-app .grain-overlay,
-.native-app .crt-liquid .liquid-blob {
+.native-app .grain-overlay {
   animation: none;
 }
 
@@ -1833,6 +1836,12 @@ fieldset {
   filter: blur(68px);
   opacity: 0.45;
   pointer-events: none;
+  /* Each blob gets its own composited layer: the blur rasterizes ONCE
+     and the drift is pure compositor transform work. This is what
+     lets the motion run on phones/the app shell without the scroll
+     jank that froze it before. */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Page-level washes wear a veil: a radial mask fades the whole layer
@@ -1848,19 +1857,22 @@ fieldset {
   opacity: 0.38;
 }
 
+/* Durations were 13/17/21s — trimmed ~25% (Luca 2026-08-24: "a bit
+   more alive but not too alive"). More alive = faster travel, NOT
+   bigger opacity/blur, so readability is untouched. */
 .liquid-a {
   background: radial-gradient(circle, rgba(var(--liquid-1), 0.6) 0%, transparent 70%);
-  animation: liquid-drift-a 13s ease-in-out infinite;
+  animation: liquid-drift-a 10s ease-in-out infinite;
 }
 
 .liquid-b {
   background: radial-gradient(circle, rgba(var(--liquid-2), 0.5) 0%, transparent 70%);
-  animation: liquid-drift-b 17s ease-in-out infinite;
+  animation: liquid-drift-b 13s ease-in-out infinite;
 }
 
 .liquid-c {
   background: radial-gradient(circle, rgba(var(--liquid-3), 0.55) 0%, transparent 70%);
-  animation: liquid-drift-c 21s ease-in-out infinite;
+  animation: liquid-drift-c 16s ease-in-out infinite;
 }
 
 /* --- Site-wide canvas wash: blobs spread down the whole tube,
@@ -1882,6 +1894,27 @@ fieldset {
 .crt-liquid .liquid-blob {
   filter: blur(80px);
   opacity: 0.55;
+}
+
+/* --- BEZEL LIQUID: the molten light bleeding through the gray
+   plastic ring around the screen, so the app's borders are as alive
+   as the modules. The layer spans the whole TV; .crt-body (spine +
+   screen, both opaque and positioned later in the DOM) paints over
+   it, so only the bezel ring — and the status-bar band in the app
+   shell — actually glows. --- */
+.crt-bezel-liquid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Tighter blur than the room: the visible ring is thin, so the light
+   needs enough edge definition to read as movement, not a tint. */
+.crt-bezel-liquid .liquid-blob {
+  filter: blur(48px);
+  opacity: 0.5;
 }
 
 /* --- The ROOM: liquid filling the black space AROUND the bezel —

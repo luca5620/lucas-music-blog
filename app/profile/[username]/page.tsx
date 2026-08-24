@@ -57,18 +57,24 @@ interface Props {
 }
 
 /** Alpha masks for the banner's edge fade: full image through the
-    middle, eased falloff, gone only AT the edges — so the banner
-    dissolves into whatever moves behind it instead of drowning under
-    a painted black band. The TOP mirrors the bottom's long dissolve
-    (and the nav drops its separator line here), and the SIDES fade
-    too (tighter stops — the banner is much wider than tall), the two
-    gradients intersected via mask-composite so all four edges
-    dissolve. PROFILES ONLY per Luca 2026-08-24; the artist page
-    keeps its tighter top-only treatment. */
+    middle, eased falloff toward every edge — so the banner blends
+    into whatever moves behind it instead of drowning under a painted
+    black band. The TOP mirrors the bottom's long dissolve (and the
+    nav drops its separator line here), and the SIDES fade too
+    (tighter stops — the banner is much wider than tall), the two
+    gradients intersected via mask-composite so all four edges soften.
+    PROFILES ONLY per Luca 2026-08-24; the artist page keeps its
+    tighter top-only treatment. */
+/* The edges bottom out at ~0.5 alpha instead of 0: a full
+   dissolve-to-nothing erased the silhouette entirely, so the curved
+   corners Luca asked for could never show (clipping invisible pixels
+   does nothing). With an opacity floor, the border-radius cuts a
+   visible curved edge while everything inside it still fades softly
+   into the moving background. */
 const BANNER_FADE_MASK_Y =
-  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.34) 7%, rgba(0,0,0,0.65) 15%, rgba(0,0,0,0.9) 24%, black 34%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.65) 85%, rgba(0,0,0,0.34) 93%, transparent 100%)";
+  "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.62) 7%, rgba(0,0,0,0.76) 15%, rgba(0,0,0,0.9) 24%, black 34%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.76) 85%, rgba(0,0,0,0.62) 93%, rgba(0,0,0,0.5) 100%)";
 const BANNER_FADE_MASK_X =
-  "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.34) 3%, rgba(0,0,0,0.65) 6%, rgba(0,0,0,0.9) 10%, black 14%, black 86%, rgba(0,0,0,0.9) 90%, rgba(0,0,0,0.65) 94%, rgba(0,0,0,0.34) 97%, transparent 100%)";
+  "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.68) 3%, rgba(0,0,0,0.8) 6%, rgba(0,0,0,0.92) 10%, black 14%, black 86%, rgba(0,0,0,0.92) 90%, rgba(0,0,0,0.8) 94%, rgba(0,0,0,0.68) 97%, rgba(0,0,0,0.55) 100%)";
 
 /** The two profile tabs. Anything else falls back to "reviews". */
 type ProfileTab = "reviews" | "lists" | "posts";

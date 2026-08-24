@@ -3,9 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Song of the Day — data helpers.
  *
- * One pick per user per UTC calendar day; consecutive days build a
- * streak (computed by the get_sotd_streak SQL function so it can
- * never drift out of sync with the actual rows).
+ * One pick per user per PACIFIC calendar day (America/Los_Angeles —
+ * Luca 2026-08-23: the old UTC boundary reset streaks at 5pm his
+ * time); consecutive days build a streak (computed by the
+ * get_sotd_streak SQL function so it can never drift out of sync
+ * with the actual rows).
  */
 
 export interface SongOfDay {
@@ -46,7 +48,18 @@ export async function getSotdStreak(userId: string): Promise<number> {
   return typeof data === "number" ? data : Number(data) || 0;
 }
 
-/** True if `picked_on` is today's UTC date (streak already extended). */
-export function isTodayUtc(pickedOn: string): boolean {
-  return pickedOn === new Date().toISOString().slice(0, 10);
+/** YYYY-MM-DD in Pacific time, shifted by whole days (0 = today,
+    -1 = yesterday). en-CA is the locale whose date format IS ISO. */
+export function pacificDate(offsetDays = 0): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(Date.now() + offsetDays * 86_400_000));
+}
+
+/** True if `picked_on` is today's Pacific date (streak already extended). */
+export function isTodayPacific(pickedOn: string): boolean {
+  return pickedOn === pacificDate();
 }

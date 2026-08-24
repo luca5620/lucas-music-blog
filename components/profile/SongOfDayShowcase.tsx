@@ -7,7 +7,12 @@
  * is the eye-catcher of the module.
  */
 
-import { getLatestSotd, getSotdStreak, isTodayUtc } from "@/lib/db/sotd";
+import {
+  getLatestSotd,
+  getSotdStreak,
+  isTodayPacific,
+  pacificDate,
+} from "@/lib/db/sotd";
 import StreakIndicator, {
   type StreakIcon,
 } from "@/components/profile/StreakIndicator";
@@ -20,9 +25,8 @@ interface Props {
 }
 
 function dayLabel(pickedOn: string): string {
-  if (isTodayUtc(pickedOn)) return "Today";
-  const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
-  if (pickedOn === yesterday) return "Yesterday";
+  if (isTodayPacific(pickedOn)) return "Today";
+  if (pickedOn === pacificDate(-1)) return "Yesterday";
   try {
     return new Date(pickedOn + "T00:00:00Z").toLocaleDateString("en-US", {
       month: "short",
@@ -47,7 +51,7 @@ export default async function SongOfDayShowcase({
   // Nothing ever picked and it's not your profile: skip the section.
   if (!latest && !isOwner) return null;
 
-  const hasToday = !!latest && isTodayUtc(latest.picked_on);
+  const hasToday = !!latest && isTodayPacific(latest.picked_on);
 
   return (
     <section className="space-y-3">

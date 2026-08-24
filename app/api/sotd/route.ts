@@ -4,6 +4,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { isUuid, isText } from "@/lib/validate";
 import { getReleaseById } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
+import { pacificDate } from "@/lib/db/sotd";
 
 /**
  * POST /api/sotd  { release_id, track_title }
@@ -72,9 +73,8 @@ export async function POST(request: NextRequest) {
       : `/releases/${release.slug}`);
 
   // Yesterday's pick must differ (same release AND same track = lazy).
-  const yesterday = new Date(Date.now() - 86_400_000)
-    .toISOString()
-    .slice(0, 10);
+  // Days are Pacific calendar days — same boundary as get_sotd_streak.
+  const yesterday = pacificDate(-1);
   const { data: prev } = await supabase
     .from("song_of_day")
     .select("release_id, track_title")
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Upsert today's row: setting it again just changes today's pick.
-  const today = new Date().toISOString().slice(0, 10);
+  const today = pacificDate();
   const { error } = await supabase.from("song_of_day").upsert(
     {
       user_id: user.id,

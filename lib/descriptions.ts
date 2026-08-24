@@ -7,6 +7,10 @@
  * SQL editor) → Genius "about" text (song for singles / Genius
  * imports, album for LPs — community-written, wide coverage) →
  * Wikipedia article intro (clean synopses for notable albums).
+ * Genius-imported releases (genius_id set — the unreleased/deep-
+ * catalog stuff) NEVER fall through to Wikipedia: if Genius has no
+ * description we show none rather than someone else's (Luca
+ * 2026-08-23).
  *
  * External lookups are cached with unstable_cache for 30 days per
  * release — NOTHING external is ever written to the database, so
@@ -152,11 +156,16 @@ async function geniusSearchBestHit(
     headers,
   )) as GeniusSearchPayload | null;
   const hits = raw?.response?.hits ?? [];
+  // Both title AND artist must match (Luca 2026-08-23: an artist-only
+  // match let any song by the artist supply a wrong description).
+  // Genius titles often carry "Song by Artist" / feat. suffixes, so
+  // containment-matching the title is the right looseness.
   const hit = hits.find(
     (h) =>
       h.type === "song" &&
       h.result.primary_artist?.name &&
-      matches(h.result.primary_artist.name, artistName),
+      matches(h.result.primary_artist.name, artistName) &&
+      matches(h.result.title, title),
   );
   return hit?.result.id ?? null;
 }
@@ -193,9 +202,10 @@ async function wikipediaDescription(
     if (!text) continue;
     const mentionsArtist = matches(text, artistName) ||
       text.toLowerCase().includes(artistName.toLowerCase());
-    // The qualified titles already pinned the topic; the bare title
-    // needs the intro itself to prove it's about this artist's work.
-    if (candidate === title && !mentionsArtist) continue;
+    // Only the artist-qualified title pins the topic by itself; the
+    // "(song)"/"(album)" and bare-title candidates can be a different
+    // artist's work entirely, so their intro must prove the artist.
+    if (candidate !== candidates[0] && !mentionsArtist) continue;
     return { text, url: raw.content_urls?.desktop?.page ?? null };
   }
   return null;
@@ -213,10 +223,15 @@ const externalDescription = unstable_cache(
     const isSingle = releaseType === "single";
 
     /* Genius first (Luca: their deep dives cover a wide range). */
-    // Direct id (Genius-imported releases store the SONG id).
+    // Direct id (Genius-imported releases store the SONG id). These
+    // are the unreleased/leaked/deep-catalog imports — Wikipedia has
+    // no article for them, so its fallback can only ever match some
+    // OTHER work with the same name. Genius or nothing (Luca
+    // 2026-08-23, after an unreleased song wore a wrong synopsis).
     if (geniusId) {
       const song = await geniusSongDescription(geniusId);
       if (song.text) return { text: song.text, source: "genius", url: song.url };
+      return null;
     } else {
       const hitId = await geniusSearchBestHit(title, artistName);
       if (hitId) {
@@ -240,7 +255,9 @@ const externalDescription = unstable_cache(
 
     return null;
   },
-  ["release-description"],
+  // v2: keeps the pre-2026-08-23 mismatched descriptions from being
+  // served out of the old cache entries.
+  ["release-description-v2"],
   { revalidate: 60 * 60 * 24 * 30 }, // 30 days per (title, artist, …) tuple
 );
 

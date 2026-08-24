@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import FavoritesEditor from "@/components/profile/FavoritesEditor";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
+import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
@@ -908,6 +909,9 @@ export default function ProfileSettingsPage() {
           View Profile
         </button>
       </div>
+
+      {/* ========== PASSWORD ========== */}
+      <ChangePasswordSection />
 
       {/* ========== ACCOUNT DELETION ==========
           In-app account deletion — App Store guideline 5.1.1(v)

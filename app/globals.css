@@ -1929,6 +1929,14 @@ fieldset {
   overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
+  /* APP-ONLY (Luca 2026-08-24): on the web the gray plastic ring
+     stays plain and still — the glow-through only suits the app's
+     seamless black surface. */
+  display: none;
+}
+
+.native-app .crt-bezel-liquid {
+  display: block;
 }
 
 /* Tighter blur than the room: the visible ring is thin, so the light

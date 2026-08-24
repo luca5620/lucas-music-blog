@@ -1047,9 +1047,18 @@ body {
 .native-app .crt-screen {
   border-color: transparent;
 }
-/* ...and the ring's glow softens to match the screen wash exactly
-   (blur/opacity of .crt-liquid), so bezel light and canvas light
-   read as ONE field, not two layers meeting at an edge. */
+/* ...and there is only ONE liquid field: the screen goes transparent
+   (the TV behind it is the same black), so the tv-level liquid layer
+   shows through ring AND modules alike, and the screen's own clipped
+   wash turns off. No edge exists for a blob to get cut off by —
+   round 2's matched-blur trick still left two fields meeting at the
+   screen border and drifting light died on that line (Luca). */
+.native-app .crt-screen {
+  background: transparent;
+}
+.native-app .crt-screen > .crt-liquid {
+  display: none;
+}
 .native-app .crt-bezel-liquid .liquid-blob {
   filter: blur(72px);
   opacity: 0.55;

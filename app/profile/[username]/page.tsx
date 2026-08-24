@@ -59,9 +59,12 @@ interface Props {
 /** Alpha mask for the banner's edge fade: full image through the
     middle, eased falloff, gone only AT the edges — so the banner
     dissolves into whatever moves behind it instead of drowning under
-    a painted black band. Twin constant on the artist page. */
+    a painted black band. The TOP mirrors the bottom's long dissolve
+    (and the nav drops its separator line here) so the whole header
+    area blends as one — PROFILES ONLY per Luca 2026-08-24; the
+    artist page keeps its tighter top fade. */
 const BANNER_FADE_MASK =
-  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 6%, rgba(0,0,0,0.92) 12%, black 18%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.65) 85%, rgba(0,0,0,0.34) 93%, transparent 100%)";
+  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.34) 7%, rgba(0,0,0,0.65) 15%, rgba(0,0,0,0.9) 24%, black 34%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.65) 85%, rgba(0,0,0,0.34) 93%, transparent 100%)";
 
 /** The two profile tabs. Anything else falls back to "reviews". */
 type ProfileTab = "reviews" | "lists" | "posts";

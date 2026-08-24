@@ -56,11 +56,20 @@ export default function Navigation() {
     await signOut();
   };
 
+  // Profile pages lose the separator line under the header: the
+  // banner's top fade blends the whole area instead (Luca 2026-08-24
+  // — profiles ONLY, every other page keeps the line).
+  const onProfilePage = pathname?.startsWith("/profile/") ?? false;
+
   return (
     // relative z-40 lifts the whole nav above later page sections —
     // .crt-screen gives every direct child z-index:1, so without this
     // the avatar dropdown painted UNDER content further down the DOM.
-    <nav className="border-b border-border-subtle pb-4 mb-6 relative z-40">
+    <nav
+      className={`${
+        onProfilePage ? "" : "border-b border-border-subtle"
+      } pb-4 mb-6 relative z-40`}
+    >
       {/* Two rows below lg: with 7 nav links plus the spine eating
           width, a single row crushed the account button. On lg+ it's
           the classic one-line bar again. */}

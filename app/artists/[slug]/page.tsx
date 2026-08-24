@@ -26,8 +26,10 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-/** Alpha mask for the banner's edge fade — twin of the profile
-    page's BANNER_FADE_MASK, keep them in step. */
+/** Alpha mask for the banner's edge fade — sibling of the profile
+    page's BANNER_FADE_MASK. Bottom halves match; the top stays a
+    TIGHT fade here on purpose (the long mirrored top dissolve is
+    profiles-only, Luca 2026-08-24). */
 const BANNER_FADE_MASK =
   "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 6%, rgba(0,0,0,0.92) 12%, black 18%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.65) 85%, rgba(0,0,0,0.34) 93%, transparent 100%)";
 

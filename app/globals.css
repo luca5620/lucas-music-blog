@@ -1034,6 +1034,27 @@ body {
   padding-top: max(12px, env(safe-area-inset-top, 0px));
 }
 
+/* One continuous surface in the app: the bezel drops its gray
+   plastic and wears the screen's own black, no seam lines, so the
+   borders and the modules flow together with the liquid drifting
+   across both (Luca 2026-08-24: "same color as the main module").
+   The web keeps the gray TV plastic — there it IS the television. */
+.native-app .crt-tv {
+  background: var(--bg-screen);
+  border-color: transparent;
+  box-shadow: none;
+}
+.native-app .crt-screen {
+  border-color: transparent;
+}
+/* ...and the ring's glow softens to match the screen wash exactly
+   (blur/opacity of .crt-liquid), so bezel light and canvas light
+   read as ONE field, not two layers meeting at an edge. */
+.native-app .crt-bezel-liquid .liquid-blob {
+  filter: blur(72px);
+  opacity: 0.55;
+}
+
 /* Room for the fixed tab bar so page bottoms are never covered.
    3rem matches .crt-screen's own bottom padding. 64px = the tab
    bar's content height (keep in sync with .tab-bar-item sizing and

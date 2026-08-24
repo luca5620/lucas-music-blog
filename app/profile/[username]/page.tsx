@@ -344,24 +344,18 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           this profile's theme while the page is open */}
       <ThemeLiquidSync theme={theme} />
 
-      {/* ========== BANNER ========== */}
-      <div className="relative h-44 sm:h-80 w-full">
-        {/* The edge fade is a MASK on the banner itself, not a dark
-            paint-over: the old overlay ramped to opaque page color
-            across the bottom 45%, which buried the image under a dead
-            black band that then sat against the moving liquid behind
-            the page (Luca 2026-08-24: covers too much, awkward
-            cutoff). Masking the alpha instead lets the banner keep
-            its brightness until ~2/3 down and then genuinely dissolve
-            into whatever is behind — liquid, theme backdrop, light
-            theme washes — with no color seam possible. Eased stops so
-            the falloff reads photographic, not banded. (Twin fade on
-            the artist page — keep them in step.) */}
-        {/* rounded-2xl: the fade starts from a curved silhouette, so
-            the corners sweep instead of meeting square (Luca) — 16px
-            reads at banner scale where the panels' 8px wouldn't. */}
+      {/* ========== BANNER ==========
+          A rounded CARD (radius + clip + faint dark ground on the
+          container, final banner form per Luca 2026-08-24): the image
+          fades toward the card's own ground via the alpha masks, so
+          there's no hard cutoff, and the curve is the card edge
+          itself. The ground matters — when the radius lived on the
+          image layer alone, the square container's corner notches
+          were bare windows to the liquid behind, glowing awkwardly
+          next to the curved image. */}
+      <div className="relative h-44 sm:h-80 w-full rounded-2xl overflow-hidden bg-[rgba(9,11,15,0.45)]">
         <div
-          className="absolute inset-0 rounded-2xl"
+          className="absolute inset-0"
           style={{
             ...bannerStyle,
             WebkitMaskImage: `${BANNER_FADE_MASK_Y}, ${BANNER_FADE_MASK_X}`,

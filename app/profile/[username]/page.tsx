@@ -56,15 +56,19 @@ interface Props {
   searchParams: Promise<{ tab?: string }>;
 }
 
-/** Alpha mask for the banner's edge fade: full image through the
+/** Alpha masks for the banner's edge fade: full image through the
     middle, eased falloff, gone only AT the edges — so the banner
     dissolves into whatever moves behind it instead of drowning under
     a painted black band. The TOP mirrors the bottom's long dissolve
-    (and the nav drops its separator line here) so the whole header
-    area blends as one — PROFILES ONLY per Luca 2026-08-24; the
-    artist page keeps its tighter top fade. */
-const BANNER_FADE_MASK =
+    (and the nav drops its separator line here), and the SIDES fade
+    too (tighter stops — the banner is much wider than tall), the two
+    gradients intersected via mask-composite so all four edges
+    dissolve. PROFILES ONLY per Luca 2026-08-24; the artist page
+    keeps its tighter top-only treatment. */
+const BANNER_FADE_MASK_Y =
   "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.34) 7%, rgba(0,0,0,0.65) 15%, rgba(0,0,0,0.9) 24%, black 34%, black 66%, rgba(0,0,0,0.9) 76%, rgba(0,0,0,0.65) 85%, rgba(0,0,0,0.34) 93%, transparent 100%)";
+const BANNER_FADE_MASK_X =
+  "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.34) 3%, rgba(0,0,0,0.65) 6%, rgba(0,0,0,0.9) 10%, black 14%, black 86%, rgba(0,0,0,0.9) 90%, rgba(0,0,0,0.65) 94%, rgba(0,0,0,0.34) 97%, transparent 100%)";
 
 /** The two profile tabs. Anything else falls back to "reviews". */
 type ProfileTab = "reviews" | "lists" | "posts";
@@ -351,8 +355,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           className="absolute inset-0"
           style={{
             ...bannerStyle,
-            WebkitMaskImage: BANNER_FADE_MASK,
-            maskImage: BANNER_FADE_MASK,
+            WebkitMaskImage: `${BANNER_FADE_MASK_Y}, ${BANNER_FADE_MASK_X}`,
+            maskImage: `${BANNER_FADE_MASK_Y}, ${BANNER_FADE_MASK_X}`,
+            // Intersect, not add: a pixel survives only where BOTH
+            // gradients are opaque, so every edge fades. (source-in
+            // is WebKit's spelling of intersect.)
+            WebkitMaskComposite: "source-in",
+            maskComposite: "intersect",
           }}
         />
 

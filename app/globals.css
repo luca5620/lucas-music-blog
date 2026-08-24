@@ -1492,6 +1492,69 @@ a.panel-xbox:hover,
 a.card-y2k:hover { transform: translateY(-2px); }
 
 /* ============================================================
+   TOUCH FEEL — phones and the app have no cursor, so the press
+   does both jobs (Luca 2026-08-24): an instant dim on ANYTHING
+   tappable says "you hit it", and holding a finger down replays
+   the element's hover treatment — glow, accent border, lift —
+   like a cursor parked on it. hover:none targets touch screens
+   only; desktop keeps its separate hover/active split above.
+   ============================================================ */
+@media (hover: none) {
+  /* Generic tap acknowledgment for plain links/buttons/rows.
+     transition-duration only inside :active = press-in is instant,
+     release eases back at the element's normal speed. */
+  a:active,
+  button:active,
+  [role="button"]:active,
+  summary:active {
+    opacity: 0.7;
+    transition-duration: 0.05s;
+  }
+
+  /* The styled controls skip the dim — they get the full
+     hover-replay treatment below instead. */
+  .btn-y2k:active,
+  .tab-y2k:active,
+  .tab-bar-item:active,
+  .poster:active,
+  a.panel-xbox:active,
+  a.card-y2k:active {
+    opacity: 1;
+  }
+
+  /* Hold = hover. Each rule mirrors its :hover twin, on top of the
+     press-down transforms already defined in CLICK FEEL. */
+  .btn-y2k-primary:active {
+    background: var(--accent-glow);
+  }
+  .btn-y2k-outline:active {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    box-shadow: 0 0 16px var(--glow-primary);
+  }
+  .poster:active {
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 16px var(--glow-primary);
+  }
+  a.panel-xbox:active {
+    border-color: rgba(var(--accent-rgb), 0.4);
+    box-shadow:
+      0 0 20px rgba(var(--accent-rgb), 0.1),
+      inset 0 0 30px rgba(var(--accent-rgb), 0.03);
+  }
+  a.card-y2k:active {
+    border-color: var(--border-medium);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  .hover-glow:active {
+    box-shadow:
+      0 0 20px rgba(var(--accent-rgb), 0.15),
+      0 0 40px rgba(var(--accent-rgb), 0.05);
+    border-color: rgba(var(--accent-rgb), 0.5);
+  }
+}
+
+/* ============================================================
    CONTROLS
    ============================================================ */
 .btn-y2k {

@@ -15,10 +15,23 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
-- **2026-08-24 (MacBook):** CocoaPods run on the Mac — Podfile.lock +
-  Xcode workspace committed. CLAUDE.md created for cross-machine
-  workflow. Next: GitHub push auth on the MacBook, then continue App
-  Store launch week (item 1 below).
+- **2026-08-24 (MacBook):** CocoaPods + push auth set up on the Mac;
+  CLAUDE.md created. Touch feedback (TOUCH FEEL in globals.css) and
+  inline App Store badge on both home variants shipped. Next: continue
+  App Store launch week (item 1 below).
+
+---
+
+## 📌 Parked — future rebrand (do NOT start until Luca says go)
+
+*Decided 2026-08-24, waiting until it "feels ready."*
+
+- New name: **Peak Music** — used almost everywhere (site title, in-app
+  branding, most copy).
+- App Store **listing** name keeps the colon: **"Peak Music: Music
+  Reviewing"** (discoverability subtitle baked into the name).
+- Home-screen app name (under the icon): just **"Peak Music"** so it
+  fits without truncating.
 
 ---
 

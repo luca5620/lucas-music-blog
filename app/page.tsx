@@ -44,7 +44,7 @@ function AppStoreBadge() {
       href={APP_STORE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="app-hide inline-flex items-center gap-2.5 rounded-xl border border-white/25 bg-black/60 px-4 py-2 transition-colors hover:border-white/50 hover:bg-black/80"
+      className="app-hide inline-flex items-center justify-center sm:justify-start gap-2.5 rounded-xl border border-white/25 bg-black/60 px-4 py-2 transition-colors hover:border-white/50 hover:bg-black/80"
     >
       <svg
         viewBox="0 0 384 512"
@@ -142,13 +142,18 @@ function Splash() {
           midnight.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2">
+        {/* CTAs + the App Store badge on ONE line (Luca 2026-08-24:
+            "not under the blue button") — the badge stacks with the
+            buttons on phones like everything else, and app-hide keeps
+            it web-only. */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 justify-center pt-2">
           <Link href="/signup" className="btn-y2k btn-y2k-primary">
             Create Account
           </Link>
           <Link href="/reviews" className="btn-y2k btn-y2k-outline">
             Browse Reviews
           </Link>
+          <AppStoreBadge />
         </div>
 
         <div className="scan-bar" />
@@ -232,17 +237,16 @@ async function Dashboard({ userId }: { userId: string }) {
         </div>
         <div className="space-y-4 text-center sm:text-left">
           <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
+          {/* Badge rides the same line as the buttons (Luca 2026-08-24:
+              "not under the blue button"); app-hide keeps it web-only —
+              the shell already IS the app. */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-center sm:justify-start">
             <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
               ✚ Write a Review
             </Link>
             <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
               ⚔ Start a Debate
             </Link>
-          </div>
-          {/* Web only — get the iOS app (always shown here, Luca
-              2026-08-24; the shell hides it, they already have it) */}
-          <div className="app-hide flex justify-center sm:justify-start">
             <AppStoreBadge />
           </div>
         </div>

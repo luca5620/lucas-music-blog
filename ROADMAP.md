@@ -9,6 +9,19 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ⏳ In progress
+
+*(Session handoff between the Windows desktop and the MacBook — see
+CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
+session ends mid-task; clear it when the work lands under Done.)*
+
+- **2026-08-24 (MacBook):** CocoaPods run on the Mac — Podfile.lock +
+  Xcode workspace committed. CLAUDE.md created for cross-machine
+  workflow. Next: GitHub push auth on the MacBook, then continue App
+  Store launch week (item 1 below).
+
+---
+
 ## ✅ Done
 
 ### Phases 1–2 (2025 → 2026-08-08)

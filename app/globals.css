@@ -939,6 +939,14 @@ body {
 .native-app {
   /* No gray flash when tapping things */
   -webkit-tap-highlight-color: transparent;
+  /* Everything a notch bigger (Luca 2026-08-24: "we are looking at
+     the app through another screen" — with the frame gone, content
+     scales up to fill the real one). The whole layout is rem-based,
+     so raising the root size grows text, modules, banner, and gaps
+     PROPORTIONALLY — placement and format hold, nothing individually
+     drifts. 17px ≈ +6%; matches iOS's native body size. (Tailwind
+     breakpoints are em-of-browser-default, so they don't shift.) */
+  font-size: 17px;
 }
 
 /* No long-press callout sheets (link/image "Open in..." menus) and
@@ -1026,26 +1034,33 @@ body {
   display: block;
 }
 
-/* Notch/status-bar breathing room: env() is 0 outside the shell, so
-   web layouts are untouched. max(), NOT +: stacking the inset on top
-   of the bezel padding made the page taller than the viewport — you
-   could scroll up into a dead black band. The inset IS the padding. */
+/* FLUSH APP SURFACE (Luca 2026-08-24): on a phone it shouldn't be a
+   screen within a screen — the TV frame vanishes entirely in the
+   shell. No ring padding, no borders, no rounded corners, spine gone:
+   content and banner stretch to the physical glass, and the only top
+   inset is the notch/status bar itself (env() is 0 outside the shell,
+   so web layouts are untouched; max() NOT + — stacking the inset on
+   the padding once made the page taller than the viewport). The web
+   keeps the full gray TV plastic — there the frame IS the site. */
 .native-app .crt-tv {
+  margin: 0;
+  padding: 0;
   padding-top: max(12px, env(safe-area-inset-top, 0px));
-}
-
-/* One continuous surface in the app: the bezel drops its gray
-   plastic and wears the screen's own black, no seam lines, so the
-   borders and the modules flow together with the liquid drifting
-   across both (Luca 2026-08-24: "same color as the main module").
-   The web keeps the gray TV plastic — there it IS the television. */
-.native-app .crt-tv {
   background: var(--bg-screen);
-  border-color: transparent;
+  border: none;
+  border-radius: 0;
   box-shadow: none;
+  max-width: none;
+}
+.native-app .crt-body,
+.native-app .crt-screen {
+  border-radius: 0;
 }
 .native-app .crt-screen {
   border-color: transparent;
+}
+.native-app .crt-spine {
+  display: none;
 }
 /* ...and there is only ONE liquid field: the screen goes transparent
    (the TV behind it is the same black), so the tv-level liquid layer

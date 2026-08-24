@@ -30,11 +30,10 @@ import { BreadcrumbSchema } from "@/app/schema";
 // The dashboard is per-viewer and realtime-ish — always render fresh.
 export const dynamic = "force-dynamic";
 
-/* App Store link for the web-only download badge in the HOME band.
-   TODO(Luca): replace with the real listing URL once the app is live
-   — App Store Connect → App Information → the Apple ID number gives
-   https://apps.apple.com/us/app/peak-music-reviews/id<number>. */
-const APP_STORE_URL = "https://apps.apple.com/us/app/peak-music-reviews/id0000000000";
+/* App Store link for the web-only download badge in the HOME band
+   (Apple ID 6803279876, provided by Luca 2026-08-24). The listing
+   goes live at this URL the moment Apple approves the app. */
+const APP_STORE_URL = "https://apps.apple.com/us/app/peak-music-reviews/id6803279876";
 
 /** The bitten apple (Font Awesome path, CC BY 4.0) + the classic
     two-line badge text. Web-only via .app-hide — if you can see the

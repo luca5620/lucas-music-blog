@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest) {
 
   // Favorites rarely change — 20 saves/minute is generous and still
   // stops a runaway client loop.
-  const limited = rateLimit(`favorites:${user.id}`, 20, 60_000);
+  const limited = await rateLimit(`favorites:${user.id}`, 20, 60_000);
   if (limited) return limited;
 
   try {

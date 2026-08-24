@@ -59,7 +59,7 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const limited = rateLimit(`reviews-edit:${user.id}`, 20, 300_000);
+  const limited = await rateLimit(`reviews-edit:${user.id}`, 20, 300_000);
   if (limited) return limited;
 
   const { reviewId } = await params;

@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Imports hit external APIs — keep the ceiling low.
-  const limited = rateLimit(`catalog-ensure:${user.id}`, 10, 60_000);
+  const limited = await rateLimit(`catalog-ensure:${user.id}`, 10, 60_000);
   if (limited) return limited;
 
   let body: unknown;

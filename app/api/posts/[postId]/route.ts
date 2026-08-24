@@ -31,7 +31,7 @@ export async function PATCH(
   }
 
   // Same budget as edits elsewhere — 10 per 5 minutes.
-  const limited = rateLimit(`posts-edit:${user.id}`, 10, 300_000);
+  const limited = await rateLimit(`posts-edit:${user.id}`, 10, 300_000);
   if (limited) return limited;
 
   const { postId } = await params;

@@ -35,7 +35,7 @@ export async function POST(
   }
 
   // Generous — switching sides mid-argument is part of the fun.
-  const limited = rateLimit(`debate-vote:${user.id}`, 30, 60_000);
+  const limited = await rateLimit(`debate-vote:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
   let body: unknown;

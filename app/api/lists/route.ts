@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   }
 
   // Max 10 new lists per user per 5 minutes.
-  const limited = rateLimit(`lists:${user.id}`, 10, 300_000);
+  const limited = await rateLimit(`lists:${user.id}`, 10, 300_000);
   if (limited) return limited;
 
   try {

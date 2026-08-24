@@ -35,7 +35,7 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const limited = rateLimit(`debate-msg:${user.id}`, 20, 60_000);
+  const limited = await rateLimit(`debate-msg:${user.id}`, 20, 60_000);
   if (limited) return limited;
 
   let body: unknown;

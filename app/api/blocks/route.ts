@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const limited = rateLimit(`blocks:${user.id}`, 30, 3_600_000);
+  const limited = await rateLimit(`blocks:${user.id}`, 30, 3_600_000);
   if (limited) return limited;
 
   const target = await parseTargetUserId(request);
@@ -83,7 +83,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const limited = rateLimit(`blocks:${user.id}`, 30, 3_600_000);
+  const limited = await rateLimit(`blocks:${user.id}`, 30, 3_600_000);
   if (limited) return limited;
 
   const target = await parseTargetUserId(request);

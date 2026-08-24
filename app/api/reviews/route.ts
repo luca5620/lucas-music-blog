@@ -67,7 +67,7 @@ export async function POST(request: Request) {
   }
 
   // Max 5 new reviews per user per 5 minutes.
-  const limited = rateLimit(`reviews:${user.id}`, 5, 300_000);
+  const limited = await rateLimit(`reviews:${user.id}`, 5, 300_000);
   if (limited) return limited;
 
   try {

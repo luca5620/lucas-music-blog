@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const limited = rateLimit(`admin-badge:${user.id}`, 30, 60_000);
+  const limited = await rateLimit(`admin-badge:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
   let body: unknown;

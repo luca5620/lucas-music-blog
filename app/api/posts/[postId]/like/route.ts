@@ -24,7 +24,7 @@ export async function POST(
 
   // Shares the review-like bucket: 30 like toggles per user per minute
   // across both content types.
-  const limited = rateLimit(`like:${user.id}`, 30, 60_000);
+  const limited = await rateLimit(`like:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
   const { postId } = await params;

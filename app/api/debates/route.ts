@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   }
 
   // Opening a debate is a big action — 5 per user per hour.
-  const limited = rateLimit(`debates:${user.id}`, 5, 3_600_000);
+  const limited = await rateLimit(`debates:${user.id}`, 5, 3_600_000);
   if (limited) return limited;
 
   let body: unknown;

@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const limited = rateLimit(`catalog-search:${user.id}`, 30, 60_000);
+  const limited = await rateLimit(`catalog-search:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
   const q = (request.nextUrl.searchParams.get("q") ?? "").trim();

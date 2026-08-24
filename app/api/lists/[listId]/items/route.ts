@@ -75,7 +75,7 @@ export async function POST(
   // Guard is only reached when signed in, so key the limiter on the
   // list owner. 60 item-adds per minute is plenty for a human.
   const owner = guard.list.user_id;
-  const limited = rateLimit(`list-items:${owner}`, 60, 60_000);
+  const limited = await rateLimit(`list-items:${owner}`, 60, 60_000);
   if (limited) return limited;
 
   try {

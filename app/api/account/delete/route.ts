@@ -27,7 +27,7 @@ export async function POST() {
 
   // Deletion is irreversible — a tight limit still leaves room for
   // a retry after a transient failure.
-  const limited = rateLimit(`account-delete:${user.id}`, 3, 3_600_000);
+  const limited = await rateLimit(`account-delete:${user.id}`, 3, 3_600_000);
   if (limited) return limited;
 
   // Uploads first, via the Storage API with the user's own session

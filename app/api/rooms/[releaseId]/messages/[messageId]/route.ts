@@ -30,7 +30,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const limited = rateLimit(`msg-delete:${user.id}`, 30, 60_000);
+  const limited = await rateLimit(`msg-delete:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
   const { data: profileData } = await supabase

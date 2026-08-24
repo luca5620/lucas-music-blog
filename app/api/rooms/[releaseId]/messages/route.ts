@@ -40,7 +40,7 @@ export async function POST(
   }
 
   // Max 20 chat messages per user per minute.
-  const limited = rateLimit(`room-messages:${user.id}`, 20, 60_000);
+  const limited = await rateLimit(`room-messages:${user.id}`, 20, 60_000);
   if (limited) return limited;
 
   const release = await getReleaseById(releaseId);

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Max 10 comments per user per minute.
-  const limited = rateLimit(`comments:${user.id}`, 10, 60_000);
+  const limited = await rateLimit(`comments:${user.id}`, 10, 60_000);
   if (limited) return limited;
 
   let body: unknown;

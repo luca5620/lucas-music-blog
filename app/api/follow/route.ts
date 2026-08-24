@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Max 30 follow actions per user per minute (stops follow-spam loops).
-  const limited = rateLimit(`follow:${user.id}`, 30, 60_000);
+  const limited = await rateLimit(`follow:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
   const body = await request.json();

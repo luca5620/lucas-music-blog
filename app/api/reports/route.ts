@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 10 reports per hour is plenty for good-faith use and starves spam.
-  const limited = rateLimit(`reports:${user.id}`, 10, 3_600_000);
+  const limited = await rateLimit(`reports:${user.id}`, 10, 3_600_000);
   if (limited) return limited;
 
   let body: unknown;

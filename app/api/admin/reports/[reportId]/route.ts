@@ -56,7 +56,7 @@ export async function POST(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const limited = rateLimit(`admin-reports:${user.id}`, 60, 60_000);
+  const limited = await rateLimit(`admin-reports:${user.id}`, 60, 60_000);
   if (limited) return limited;
 
   // 3. Validate input

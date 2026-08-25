@@ -97,15 +97,23 @@ function extractTrio(img: HTMLImageElement): string[] | null {
     if (picked.length === 3) break;
   }
 
-  // Brighten each pick so it reads as light, not pigment: scale the
-  // strongest channel up to ~220 (capped at 3× so black-ish picks
-  // don't blow out into noise).
+  // Make each pick read as LIGHT, not pigment. Two steps:
+  // 1. Saturation boost — push channels away from their own gray
+  //    average so the hue comes through vividly ("a little more
+  //    color", Luca 2026-08-25).
+  // 2. Brighten — scale the strongest channel up to ~235 (capped at
+  //    3× so black-ish picks don't blow out into noise).
   return picked.map((c) => {
-    const max = Math.max(c.r, c.g, c.b, 1);
-    const scale = Math.min(220 / max, 3);
-    const r = Math.round(Math.min(255, c.r * scale));
-    const g = Math.round(Math.min(255, c.g * scale));
-    const b = Math.round(Math.min(255, c.b * scale));
+    const mean = (c.r + c.g + c.b) / 3;
+    const sat = (v: number) => Math.min(255, Math.max(0, mean + (v - mean) * 1.4));
+    const r1 = sat(c.r);
+    const g1 = sat(c.g);
+    const b1 = sat(c.b);
+    const max = Math.max(r1, g1, b1, 1);
+    const scale = Math.min(235 / max, 3);
+    const r = Math.round(Math.min(255, r1 * scale));
+    const g = Math.round(Math.min(255, g1 * scale));
+    const b = Math.round(Math.min(255, b1 * scale));
     return `${r}, ${g}, ${b}`;
   });
 }

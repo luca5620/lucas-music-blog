@@ -16,7 +16,8 @@ import { isNativeApp } from "@/lib/native";
 export default function NativeMode() {
   useEffect(() => {
     if (!isNativeApp()) return;
-    document.documentElement.classList.add("native-app");
+    const root = document.documentElement;
+    root.classList.add("native-app");
 
     // Lock zoom in the shell only. Apps don't pinch-zoom their chrome;
     // WKWebView honors maximum-scale/user-scalable (unlike Safari, which
@@ -27,6 +28,30 @@ export default function NativeMode() {
       "content",
       "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
     );
+
+    // THERMAL MODE round 2: decorative motion follows the finger.
+    // Any touch/scroll turns the animations on; 12 idle seconds
+    // later they pause in place (see the .motion-on rules at the
+    // bottom of globals.css). While the set holds still the GPU can
+    // finally nap — that idle burn was what warmed the phone.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const wake = () => {
+      root.classList.add("motion-on");
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => root.classList.remove("motion-on"), 12_000);
+    };
+    wake(); // launch alive — first stillness comes after first idle
+
+    // capture:true so scrolls inside nested containers (chat panels,
+    // dropdown lists) count as activity too.
+    window.addEventListener("touchstart", wake, { passive: true });
+    window.addEventListener("scroll", wake, { passive: true, capture: true });
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener("touchstart", wake);
+      window.removeEventListener("scroll", wake, { capture: true });
+    };
   }, []);
 
   return null;

@@ -2317,3 +2317,49 @@ fieldset {
 .liquid-blob.liquid-still {
   animation: none;
 }
+
+/* ------------------------------------------------------------
+   THERMAL MODE round 2 (Luca 2026-08-25: still warm, even on
+   profile pages) — motion only while interacting.
+
+   Round 1 stilled the in-screen washes, but plenty kept moving
+   forever: the 9 live bezel blobs, every theme backdrop (ribbons,
+   orb rings, sparkles, bubbles), the badge glow pulses (which
+   animate box-shadow — that's a REPAINT every frame, the priciest
+   kind), streak flicker, scan-bars, the CD. The physics: while even
+   ONE animation runs, the phone recomposites at up to 120Hz and the
+   GPU never naps — that constant idle burn is the warmth. (TikTok
+   stays cool because its UI is static; video goes through a
+   hardware decoder.)
+
+   So in the app, decorative motion now follows the finger:
+   NativeMode adds .motion-on to <html> on any touch/scroll and
+   drops it after 12 idle seconds. Everything below PAUSES in place
+   when idle (paused, not none — the light stays painted mid-pose
+   and resumes where it stood). While you're actually touching the
+   app, it breathes exactly like before.
+
+   !important because the badge glows set `animation: ... !important`
+   themselves, which would otherwise out-rank this play-state.
+   ------------------------------------------------------------ */
+.native-app:not(.motion-on) .crt-bezel-liquid .liquid-blob,
+.native-app:not(.motion-on) .cd-disc,
+.native-app:not(.motion-on) .scan-bar::after,
+.native-app:not(.motion-on) .glow-orb,
+.native-app:not(.motion-on) .bd-ps3-ribbon,
+.native-app:not(.motion-on) .bd-spark,
+.native-app:not(.motion-on) .bd-ps4-ray,
+.native-app:not(.motion-on) .bd-og-orb,
+.native-app:not(.motion-on) .bd-og-ring,
+.native-app:not(.motion-on) .bd-360-wave,
+.native-app:not(.motion-on) .bd-bleach-slash,
+.native-app:not(.motion-on) .bd-dp-pyramid,
+.native-app:not(.motion-on) .bd-bubble,
+.native-app:not(.motion-on) .streak-spin,
+.native-app:not(.motion-on) .streak-flicker,
+.native-app:not(.motion-on) .rating-badge.rating-elite,
+.native-app:not(.motion-on) .rating-badge.rating-perfect,
+.native-app:not(.motion-on) .animate-pulse,
+.native-app:not(.motion-on) .animate-spin {
+  animation-play-state: paused !important;
+}

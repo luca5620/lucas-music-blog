@@ -32,6 +32,7 @@ import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
 import ChatPanel, {
   type ChatMessageWithProfile,
 } from "@/components/rooms/ChatPanel";
@@ -337,7 +338,10 @@ function ReleaseContent({
 }: ReleaseContentProps) {
   return (
     <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 relative isolate overflow-hidden">
-      {/* Molten light drifting behind the whole release panel */}
+      {/* Molten light drifting behind the whole release panel — and
+          the whole site's liquid takes this album's palette while
+          you're here (Luca 2026-08-25: cover-colored immersion). */}
+      <CoverLiquidSync coverUrl={release.cover_image} />
       <LiquidAtmosphere />
       {/* On desktop (xl+) the page splits: identity + community stats
           on the left, tracks / live chat / reviews on the right. On

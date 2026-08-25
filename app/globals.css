@@ -1068,8 +1068,18 @@ body {
 .native-app .crt-screen {
   border-radius: 0;
 }
+/* FLUSH TOP (Luca 2026-08-25: "awkward border" where the status-bar
+   band met the content): the screen's 1px frame border, its inset
+   vignette shadow, and the phosphor-bloom tint all drew a faint edge
+   right at the top of the content area — invisible inside the web's
+   TV frame, an obvious seam on the app's frameless surface. All
+   three go; band and modules are now one continuous black. */
 .native-app .crt-screen {
-  border-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+.native-app .crt-screen::before {
+  display: none;
 }
 .native-app .crt-spine {
   display: none;
@@ -1092,11 +1102,12 @@ body {
 }
 
 /* Room for the fixed tab bar so page bottoms are never covered.
-   3rem matches .crt-screen's own bottom padding. 64px = the tab
+   3rem matches .crt-screen's own bottom padding. 52px = the tab
    bar's content height (keep in sync with .tab-bar-item sizing and
-   .surf-fullscreen's bottom offset). */
+   .surf-fullscreen's bottom offset — slimmed from 64px, Luca
+   2026-08-25: more room for the actual page). */
 .native-app .crt-screen {
-  padding-bottom: calc(3rem + 64px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(3rem + 52px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ============================================================
@@ -1120,12 +1131,12 @@ body {
   background: #000;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  /* space-evenly + content-width tabs (below): every gap on the bar —
-     screen edge → HOME, and between each neighboring tab — is the
-     SAME width. The earlier equal-width-cell approach centered the
-     icons uniformly, but wide labels (RELEASES) vs narrow ones (HOME)
-     left visibly unequal whitespace and the outer tabs hugging the
-     edges. The eye judges the whitespace, so that's what we equalize. */
+  /* Equal-width cells (flex:1 on the items) so the five icons land on
+     a perfectly even grid, each centered in its fifth of the bar.
+     The old space-evenly + content-width scheme equalized WHITESPACE
+     instead — right call back when tab labels ranged from HOME to
+     RELEASES, but with today's short uniform set it just read as
+     off-center icons (Luca 2026-08-25). */
   justify-content: space-evenly;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
@@ -1142,17 +1153,17 @@ body {
 }
 
 .tab-bar-item {
-  /* Content-width, no grow/shrink: the bar's space-evenly does the
-     distribution, so all whitespace gaps come out identical. min-width
-     keeps narrow tabs (HOME) at a 44px+ tap target. */
-  flex: 0 0 auto;
-  min-width: 44px;
+  /* One equal cell per tab — see the .tab-bar comment. Trimmed
+     paddings slim the whole bar (content height 52px, was ~64):
+     the icons sit lower and the page gets the reclaimed room. */
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 10px 2px 9px;
+  padding: 5px 2px 6px;
   color: var(--text-muted);
   font-family: var(--font-heading);
   font-size: 10px;
@@ -1211,10 +1222,10 @@ body {
 }
 
 /* In the app the frame STOPS above the tab bar instead of sliding
-   under it — 64px matches the bar's content height (see the
+   under it — 52px matches the bar's content height (see the
    .native-app .crt-screen padding note). */
 .native-app .surf-fullscreen {
-  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(52px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Enter/exit: fade + slight zoom (Luca's pick, 2026-08-22 — CRT

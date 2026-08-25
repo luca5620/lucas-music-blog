@@ -17,6 +17,7 @@ import BackLink from "@/components/ui/BackLink";
 import LikeButton from "@/components/reviews/LikeButton";
 import ReportButton from "@/components/moderation/ReportButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 
 // Community content changes constantly — always render fresh.
@@ -159,7 +160,9 @@ export default async function ReviewPage({
 
       {/* Main content card */}
       <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative isolate overflow-hidden">
-        {/* Molten light drifting behind the review */}
+        {/* Molten light drifting behind the review — recolored to
+            this album's cover palette while you're on the page. */}
+        <CoverLiquidSync coverUrl={review.cover_image} />
         <LiquidAtmosphere />
         {/* Header: cover beside the metadata on desktop, stacked on
             phones — the review text then gets the full width below. */}

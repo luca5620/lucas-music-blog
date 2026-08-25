@@ -19,15 +19,15 @@ session ends mid-task; clear it when the work lands under Done.)*
   (@sentry/nextjs; errors-only, no tracing/replay, PII off, disabled
   in dev, browser reports tunneled through /monitoring so CSP and
   ad-blockers are non-issues; app/global-error.tsx = branded SIGNAL
-  LOST crash screen). Dormant until the DSN exists. **Luca's hands:**
-  (1) sentry.io → sign up free → Create Project → platform Next.js →
-  name it peak-music-reviews; (2) copy the DSN it shows; (3) Vercel →
-  project → Settings → Environment Variables → add
-  `NEXT_PUBLIC_SENTRY_DSN` = that DSN (all environments) → redeploy.
-  Optional later, for readable stack traces: Sentry → Settings → Auth
-  Tokens → create org token → add to Vercel as `SENTRY_AUTH_TOKEN`
-  plus `SENTRY_ORG` (org slug) + `SENTRY_PROJECT`
-  (peak-music-reviews). Vercel Web Analytics: Luca flipped the
+  LOST crash screen). Sentry account CREATED by Luca 2026-08-25: org
+  `peak-music-reviews`, project `javascript-nextjs` (skip the wizard —
+  manual setup is already in the repo). **Luca's one remaining step:**
+  Vercel → project → Settings → Environment Variables → add
+  `NEXT_PUBLIC_SENTRY_DSN` = the DSN from the Sentry project page
+  (all environments) → redeploy. Optional later, for readable stack
+  traces: Sentry → Settings → Auth Tokens → create org token → add to
+  Vercel as `SENTRY_AUTH_TOKEN` plus `SENTRY_ORG=peak-music-reviews`
+  + `SENTRY_PROJECT=javascript-nextjs`. Vercel Web Analytics: Luca flipped the
   dashboard toggle same day and the required `<Analytics />` component
   is now in app/layout.tsx (the toggle alone records nothing on
   Next.js) — page views flow as soon as this deploys, nothing else to

@@ -50,6 +50,9 @@ export default async function Reviews() {
           title: r.title,
           artist: r.artist,
           rating: r.rating,
+          authorName: r.profiles?.display_name ?? r.profiles?.username ?? "Peak Music Reviews member",
+          authorUsername: r.profiles?.username ?? null,
+          datePublished: r.review_date ?? r.created_at ?? null,
         }))}
         listName="Community Music Reviews"
       />

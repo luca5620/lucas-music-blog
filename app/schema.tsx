@@ -399,6 +399,11 @@ export interface ItemListReview {
   title: string;
   artist: string;
   rating: number;
+  /** Google REQUIRES an author on every Review for rich results —
+      omitting it flags the whole page's items as invalid in GSC. */
+  authorName: string;
+  authorUsername: string | null;
+  datePublished: string | null;
 }
 
 export function ItemListSchema({
@@ -422,6 +427,16 @@ export function ItemListSchema({
         "@type": "Review",
         name: `${review.title} by ${review.artist} — Review`,
         url: `${SITE_URL}/reviews/${review.slug}`,
+        author: {
+          "@type": "Person",
+          name: review.authorName,
+          ...(review.authorUsername && {
+            url: `${SITE_URL}/profile/${review.authorUsername}`,
+          }),
+        },
+        ...(review.datePublished && {
+          datePublished: review.datePublished.slice(0, 10),
+        }),
         reviewRating: {
           "@type": "Rating",
           ratingValue: review.rating,

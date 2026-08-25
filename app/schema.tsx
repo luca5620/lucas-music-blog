@@ -12,6 +12,8 @@
  *  - WebSiteSchema        — Site-wide sitelinks searchbox & identity
  *  - BreadcrumbSchema     — Breadcrumb navigation trail
  *  - ReviewSchema         — Individual review (MusicAlbum + Review)
+ *  - ReleaseSchema        — Release page (MusicAlbum + aggregateRating + reviews)
+ *  - ArtistSchema         — Artist page (MusicGroup + discography)
  *  - CollectionPageSchema — Reviews listing page
  *  - ItemListSchema       — List of review items (for home + reviews pages)
  */
@@ -120,6 +122,34 @@ export interface ReviewSchemaInput {
   standout_tracks: { title: string; spotifyUrl: string }[];
 }
 
+/** Map our release_type to schema.org MusicAlbumProductionType */
+function toAlbumProductionType(releaseType: string | null): string {
+  switch (releaseType) {
+    case "album":
+      return "StudioAlbum";
+    case "EP":
+      return "EP";
+    case "mixtape":
+      return "MixtapeAlbum";
+    case "single":
+      return "SingleRelease";
+    default:
+      return "StudioAlbum";
+  }
+}
+
+/** Map our release_type to schema.org MusicAlbumReleaseType */
+function toAlbumReleaseType(releaseType: string | null): string {
+  switch (releaseType) {
+    case "single":
+      return "SingleRelease";
+    case "EP":
+      return "EPRelease";
+    default:
+      return "AlbumRelease";
+  }
+}
+
 export function ReviewSchema({
   review,
   authorName,
@@ -129,32 +159,8 @@ export function ReviewSchema({
   authorName: string;
   authorUrl: string;
 }) {
-  // Map release_type to schema.org MusicAlbumProductionType
-  const albumProductionType = (() => {
-    switch (review.release_type) {
-      case "album":
-        return "StudioAlbum";
-      case "EP":
-        return "EP";
-      case "mixtape":
-        return "MixtapeAlbum";
-      case "single":
-        return "SingleRelease";
-      default:
-        return "StudioAlbum";
-    }
-  })();
-
-  const albumReleaseType = (() => {
-    switch (review.release_type) {
-      case "single":
-        return "SingleRelease";
-      case "EP":
-        return "EPRelease";
-      default:
-        return "AlbumRelease";
-    }
-  })();
+  const albumProductionType = toAlbumProductionType(review.release_type);
+  const albumReleaseType = toAlbumReleaseType(review.release_type);
 
   const reviewUrl = `${SITE_URL}/reviews/${review.slug}`;
 
@@ -209,6 +215,145 @@ export function ReviewSchema({
         },
       }),
     },
+  };
+
+  return <JsonLd data={schema} />;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Release Schema — MusicAlbum + aggregateRating for release pages.  */
+/*  This is the star-snippet play: Google shows rating stars for      */
+/*  MusicAlbum pages that carry aggregateRating + Review objects.     */
+/* ------------------------------------------------------------------ */
+
+export interface ReleaseSchemaTrack {
+  position: number;
+  title: string;
+  spotify_id: string | null;
+}
+
+export interface ReleaseSchemaReview {
+  slug: string;
+  rating: number;
+  summary: string | null;
+  snippet: string | null;
+  created_at: string;
+  authorName: string;
+  authorUsername: string | null;
+}
+
+export function ReleaseSchema({
+  release,
+  artistName,
+  artistSlug,
+  stats,
+  reviews,
+}: {
+  release: {
+    slug: string;
+    title: string;
+    release_type: string | null;
+    release_date: string | null;
+    cover_image: string | null;
+    description: string | null;
+  };
+  artistName: string;
+  artistSlug?: string;
+  stats: { review_count: number; avg_rating: number | null };
+  reviews: ReleaseSchemaReview[];
+}) {
+  const releaseUrl = `${SITE_URL}/releases/${release.slug}`;
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "MusicAlbum",
+    name: release.title,
+    url: releaseUrl,
+    ...(release.cover_image && { image: release.cover_image }),
+    ...(release.release_date && { datePublished: release.release_date }),
+    ...(release.description && { description: release.description }),
+    albumProductionType: `https://schema.org/${toAlbumProductionType(release.release_type)}`,
+    albumReleaseType: `https://schema.org/${toAlbumReleaseType(release.release_type)}`,
+    byArtist: {
+      "@type": "MusicGroup",
+      name: artistName,
+      ...(artistSlug && { url: `${SITE_URL}/artists/${artistSlug}` }),
+    },
+    // Google requires aggregateRating or review for rating rich results;
+    // emit them only when real community activity exists.
+    ...(stats.review_count > 0 &&
+      stats.avg_rating !== null && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: Math.round(stats.avg_rating * 10) / 10,
+          reviewCount: stats.review_count,
+          bestRating: 10,
+          worstRating: 0,
+        },
+      }),
+    ...(reviews.length > 0 && {
+      review: reviews.slice(0, 5).map((r) => ({
+        "@type": "Review",
+        url: `${SITE_URL}/reviews/${r.slug}`,
+        datePublished: r.created_at.slice(0, 10),
+        ...((r.summary || r.snippet) && {
+          reviewBody: (r.summary ?? r.snippet ?? "").slice(0, 500),
+        }),
+        author: {
+          "@type": "Person",
+          name: r.authorName,
+          ...(r.authorUsername && {
+            url: `${SITE_URL}/profile/${r.authorUsername}`,
+          }),
+        },
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: r.rating,
+          bestRating: 10,
+          worstRating: 0,
+        },
+      })),
+    }),
+  };
+
+  return <JsonLd data={schema} />;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Artist Schema — MusicGroup + discography for artist pages          */
+/* ------------------------------------------------------------------ */
+
+export function ArtistSchema({
+  artist,
+  releases,
+}: {
+  artist: {
+    slug: string;
+    name: string;
+    bio: string | null;
+    image_url: string | null;
+    genres: string[] | null;
+  };
+  releases: { slug: string; title: string }[];
+}) {
+  const artistUrl = `${SITE_URL}/artists/${artist.slug}`;
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    name: artist.name,
+    url: artistUrl,
+    ...(artist.image_url && { image: artist.image_url }),
+    ...(artist.bio && { description: artist.bio }),
+    ...(artist.genres &&
+      artist.genres.length > 0 && { genre: artist.genres }),
+    ...(releases.length > 0 && {
+      album: releases.map((r) => ({
+        "@type": "MusicAlbum",
+        name: r.title,
+        url: `${SITE_URL}/releases/${r.slug}`,
+      })),
+    }),
   };
 
   return <JsonLd data={schema} />;

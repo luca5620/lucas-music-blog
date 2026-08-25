@@ -20,6 +20,7 @@ import { getUser } from "@/lib/auth";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import ReleaseCard from "@/components/releases/ReleaseCard";
 import FansGrid from "@/components/artists/FansGrid";
+import { ArtistSchema, BreadcrumbSchema } from "@/app/schema";
 import type { Release } from "@/lib/types/database";
 
 interface PageProps {
@@ -41,13 +42,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Artist Not Found" };
   }
 
+  const description =
+    artist.bio?.replace(/\s+/g, " ").trim().slice(0, 160) ??
+    `${artist.name} on Peak Music Reviews — albums ranked by the community, reviews, and followers.`;
+
   return {
-    title: artist.name,
-    description:
-      artist.bio ??
-      `${artist.name} on Peak Music Reviews — releases, reviews, and followers.`,
+    title: `${artist.name} — Albums & Reviews`,
+    description,
     alternates: {
       canonical: `https://peakmusicreviews.com/artists/${slug}`,
+    },
+    openGraph: {
+      type: "profile",
+      url: `https://peakmusicreviews.com/artists/${slug}`,
+      title: `${artist.name} — Peak Music Reviews`,
+      description,
+      ...(artist.image_url && {
+        images: [{ url: artist.image_url, alt: artist.name }],
+      }),
     },
   };
 }
@@ -109,6 +121,21 @@ export default async function ArtistPage({ params }: PageProps) {
         } as React.CSSProperties
       }
     >
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", href: "/" },
+          { name: "Artists", href: "/artists" },
+          { name: artist.name, href: `/artists/${artist.slug}` },
+        ]}
+      />
+      <ArtistSchema
+        artist={artist}
+        releases={releases.map((r: Release) => ({
+          slug: r.slug,
+          title: r.title,
+        }))}
+      />
+
       {/* ========== BANNER ========== */}
       <div className="relative h-48 sm:h-64 w-full overflow-hidden">
         {/* Edge fade is an alpha MASK, not a paint-over — the banner

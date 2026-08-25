@@ -35,7 +35,7 @@ import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import ChatPanel, {
   type ChatMessageWithProfile,
 } from "@/components/rooms/ChatPanel";
-import { BreadcrumbSchema } from "@/app/schema";
+import { BreadcrumbSchema, ReleaseSchema } from "@/app/schema";
 import type {
   Profile,
   Release,
@@ -104,14 +104,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const release = await getReleaseBySlug(slug);
   if (!release) return { title: "Release Not Found" };
 
-  const artist = await getArtistById(release.primary_artist_id);
+  const [artist, stats] = await Promise.all([
+    getArtistById(release.primary_artist_id),
+    getReleaseStats(release.id).catch(() => null),
+  ]);
   const artistName = artist?.name ?? "Unknown Artist";
-  const description =
-    release.description ??
+
+  // Meta description: lead with the community rating when one exists,
+  // then the synopsis. Collapse whitespace and cap near Google's
+  // ~160-char snippet limit so long Genius blurbs don't get dumped raw.
+  const ratingLead =
+    stats && stats.review_count > 0 && stats.avg_rating !== null
+      ? `Rated ${formatRating(stats.avg_rating)}/10 from ${stats.review_count} ${
+          stats.review_count === 1 ? "review" : "reviews"
+        }. `
+      : "";
+  const synopsis =
+    release.description?.replace(/\s+/g, " ").trim() ||
     `${release.title} by ${artistName} — listen, follow, and read reviews on Peak Music Reviews.`;
+  let description = ratingLead + synopsis;
+  if (description.length > 160) {
+    description = description.slice(0, 157).replace(/\s+\S*$/, "") + "…";
+  }
 
   return {
-    title: `${release.title} by ${artistName}`,
+    title: `${release.title} by ${artistName} — Reviews & Ratings`,
     description,
     openGraph: {
       type: "music.album",
@@ -236,6 +253,24 @@ export default async function ReleasePage({ params }: Props) {
             href: `/releases/${release.slug}`,
           },
         ]}
+      />
+      <ReleaseSchema
+        release={release}
+        artistName={artistName}
+        artistSlug={artistSlug}
+        stats={stats}
+        reviews={reviews.map((r) => {
+          const p = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
+          return {
+            slug: r.slug,
+            rating: r.rating,
+            summary: r.summary,
+            snippet: r.snippet,
+            created_at: r.created_at,
+            authorName: p?.display_name ?? p?.username ?? "Anonymous",
+            authorUsername: p?.username ?? null,
+          };
+        })}
       />
 
       {/* Back link */}

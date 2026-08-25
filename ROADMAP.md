@@ -47,6 +47,14 @@ session ends mid-task; clear it when the work lands under Done.)*
   rename listing to "Peak Music: Rate & Review Albums" (not "Music
   Reviewing"), keyword field incl. musicboard,rateyourmusic,aoty.
   Sitemap index split as content grows (Task 3).
+  SHIPPED 2026-08-24 late: /musicboard-alternative live (answer-first
+  copy, comparison table, FAQPage schema, footer link + sitemap
+  entry) — GSC review-snippet criticals fixed (ItemList Review
+  author) + Luca clicked Validate Fix. Next content plays, in order:
+  "letterboxd for music" comparison page, "rateyourmusic
+  alternative" page, per-artist unreleased hubs. Musicboard
+  importer: promised NOTHING (no public export exists) — build only
+  if switchers ask via contact email.
 
 ---
 

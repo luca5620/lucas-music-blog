@@ -31,6 +31,37 @@ export const aboutFAQs: FAQItem[] = [
   },
 ];
 
+/* /musicboard-alternative — the questions displaced Musicboard users
+   are actually typing into Google. Keep answers factual and dated;
+   this page's credibility is the whole play. */
+export const musicboardFAQs: FAQItem[] = [
+  {
+    question: "Is Musicboard shutting down?",
+    answer:
+      "Nothing official has been announced, but the signals are not good: TechCrunch reported in February 2026 that Musicboard had suffered repeated multi-day outages with no communication from its founders, the Android app is no longer available on Google Play, and the iOS app has not shipped an update since May 2025. Users have organized community campaigns asking for data exports.",
+  },
+  {
+    question: "What is the best Musicboard alternative?",
+    answer:
+      "Peak Music Reviews is the closest like-for-like replacement: 0–10.0 decimal album ratings, written reviews, lists, and social profiles — plus things Musicboard never had, like live release-night chat rooms, two-sided debates, a For You feed, and a catalog that includes unreleased tracks via Genius. It is free, actively updated, and works fully on the web as well as iOS. RateYourMusic and Album of the Year are solid web-only databases if you mainly want charts rather than a social app.",
+  },
+  {
+    question: "Can I import my Musicboard ratings into Peak Music Reviews?",
+    answer:
+      "There is no automatic importer yet — Musicboard does not offer a public data export. Rebuilding your top albums on Peak takes a few minutes: the universal search covers the entire Spotify catalog plus Genius deep cuts, and rating an album is two taps. If enough switchers ask, a dedicated import tool is on the table — tell us at contact@peakmusicreviews.com.",
+  },
+  {
+    question: "Is Peak Music Reviews free?",
+    answer:
+      "Yes. Every feature — rating, reviews, lists, live release rooms, debates, posts, profile themes — is free. There is no Pro tier and no paywall.",
+  },
+  {
+    question: "Does Peak Music Reviews have a mobile app?",
+    answer:
+      "Yes — an iOS app on the App Store, with the exact same content and account as the website, so you are never locked to one platform. Unlike app-only services, everything also works in any browser.",
+  },
+];
+
 export const reviewsFAQs: FAQItem[] = [
   {
     question: "Who writes the reviews on Peak Music Reviews?",

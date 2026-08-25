@@ -43,6 +43,15 @@ export default function SiteFooter() {
         >
           Terms of Use
         </Link>
+        {" · "}
+        {/* Switcher landing page — footer link on every page gives it
+            crawlable internal linking (it's in no nav menu). */}
+        <Link
+          href="/musicboard-alternative"
+          className="text-text-secondary hover:text-accent-primary transition-colors"
+        >
+          Switching from Musicboard?
+        </Link>
       </p>
     </footer>
   );

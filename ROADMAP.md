@@ -15,6 +15,15 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-25: Sentry is LIVE and verified end-to-end** — DSN in
+  Vercel, server + browser (tunnel) delivery both confirmed with test
+  events on prod, temp test route removed. Org `peak-music-reviews`,
+  project `javascript-nextjs`. Luca: resolve/delete the leftover test
+  issues in the Sentry feed (SENTRY TEST A/B, TUNNEL TEST, and the
+  `views.js updateFrom` one — that last one is Sentry's own sample,
+  not a real bug). Still optional later: SENTRY_AUTH_TOKEN + org/
+  project env vars in Vercel for readable stack traces.
+
 - **2026-08-25 (Windows, later): Sentry error tracking wired in**
   (@sentry/nextjs; errors-only, no tracing/replay, PII off, disabled
   in dev, browser reports tunneled through /monitoring so CSP and

@@ -39,9 +39,9 @@ Dashboard → **Authentication → Sign In / Up → Email**:
 - Authentication → **URL Configuration**: Site URL =
   `https://peakmusicreviews.com`; add
   `https://peakmusicreviews.com/**` to Redirect URLs.
-- Heads-up: Supabase's built-in email sender is limited (~2/hour) and
-  fine for now. When real users show up, plug in a free Resend account
-  under Authentication → SMTP Settings (ask Claude when you get there).
+- ✅ DONE: Resend is plugged in as the custom SMTP sender
+  (Authentication → SMTP Settings), so auth email isn't capped at the
+  built-in sender's ~2/hour anymore.
 
 ## 4. Apple Developer Program — $99/year ⏰ starts a 24–48h clock
 

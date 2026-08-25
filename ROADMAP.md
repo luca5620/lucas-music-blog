@@ -26,15 +26,15 @@ session ends mid-task; clear it when the work lands under Done.)*
   (3) **OSD green → classic blue** everywhere (.osd-text, TUNING…/NO
   SIGNAL, Spotify badge, "username free", preview/video-detected,
   offline overlay).
-  **Luca's hands, in order:** (a) Supabase dashboard → Auth → Email
+  Migration 021 RUN ✓ (Luca, 2026-08-25). Spotify badge returned to
+  brand-green same day (the recolor skips it on purpose).
+  **Still Luca's hands:** Supabase dashboard → Auth → Email
   Templates → "Magic Link": add `{{ .Token }}` so the mail carries
   the 6-digit code (until then the emailed LINK still signs you in —
-  no lockout). (b) AFTER this deploy is live, run
-  `supabase/migrations/021-admin-email-code.sql` in the SQL Editor.
-  (c) Your existing signed-in sessions are password-only, so /admin
-  will bounce you to re-login once — that's the feature working.
-  Heads-up: admin sign-ins consume Supabase's built-in email quota
-  (~2/hr) until custom SMTP/Resend is set up.
+  no lockout). Existing signed-in staff sessions are password-only,
+  so /admin bounces to re-login once — that's the feature working.
+  Email goes out via Resend SMTP (already live), so no send-quota
+  worry.
 
 - **2026-08-24 (MacBook):** CocoaPods + push auth set up on the Mac;
   CLAUDE.md created. Touch feedback (TOUCH FEEL in globals.css) and

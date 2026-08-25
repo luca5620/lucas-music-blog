@@ -140,7 +140,7 @@ export default function ReviewsList({
             >
               <span className="poster">
                 {review.cover_image ? (
-                  <img src={review.cover_image} alt={`${review.title} cover`} />
+                  <img src={review.cover_image} alt={`${review.title} cover`} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -177,6 +177,8 @@ export default function ReviewsList({
                     <img
                       src={review.cover_image}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -233,6 +235,8 @@ export default function ReviewsList({
                       <img
                         src={review.cover_image}
                         alt={`${review.title} cover`}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
                     ) : (
@@ -273,6 +277,8 @@ export default function ReviewsList({
                           <img
                             src={author.avatar_url}
                             alt=""
+                            loading="lazy"
+                            decoding="async"
                             className="w-4 h-4 rounded-full object-cover border border-white/10"
                           />
                         ) : (

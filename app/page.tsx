@@ -273,7 +273,7 @@ async function Dashboard({ userId }: { userId: string }) {
                 <span className="poster">
                   {r.cover_image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={r.cover_image} alt={`${r.title} cover`} />
+                    <img src={r.cover_image} alt={`${r.title} cover`} loading="lazy" decoding="async" />
                   ) : (
                     <span className="w-full h-full flex items-center justify-center text-4xl">💿</span>
                   )}

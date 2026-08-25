@@ -52,6 +52,8 @@ export default function ReleaseCard({
           <img
             src={release.cover_image}
             alt={`${release.title} cover`}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
           />
         ) : (

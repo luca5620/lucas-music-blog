@@ -72,6 +72,8 @@ export default function ListCard({ list }: { list: ListSummary }) {
               <img
                 src={author.avatar_url}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             ) : (

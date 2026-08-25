@@ -95,6 +95,8 @@ export default async function PostsFeed() {
                   <img
                     src={author.avatar_url}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
                   />
                 ) : (
@@ -130,6 +132,8 @@ export default async function PostsFeed() {
                       <img
                         src={post.release.cover_image}
                         alt=""
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
                     ) : (

@@ -102,7 +102,7 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
               <span className="poster">
                 {review.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={review.cover_image} alt={`${review.title} cover`} />
+                  <img src={review.cover_image} alt={`${review.title} cover`} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -126,6 +126,8 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                     <img
                       src={review.profiles.avatar_url}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="w-4 h-4 rounded-full object-cover border border-white/10 shrink-0"
                     />
                   ) : (
@@ -160,6 +162,8 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                     <img
                       src={review.cover_image}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -182,6 +186,8 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                     <img
                       src={author.avatar_url}
                       alt={author.display_name || author.username}
+                      loading="lazy"
+                      decoding="async"
                       className="w-5 h-5 rounded-full object-cover border border-white/10"
                     />
                   ) : (
@@ -247,6 +253,8 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                     <img
                       src={profile.avatar_url}
                       alt={profile.display_name || profile.username}
+                      loading="lazy"
+                      decoding="async"
                       className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
                     />
                   ) : (
@@ -287,6 +295,8 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                       <img
                         src={review.cover_image}
                         alt={`${review.title} cover`}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
                     ) : (

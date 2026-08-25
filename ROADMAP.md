@@ -20,6 +20,17 @@ session ends mid-task; clear it when the work lands under Done.)*
   inline App Store badge on both home variants shipped. Next: continue
   App Store launch week (item 1 below).
 
+- **2026-08-24 (Windows, SEO sprint):** Working through
+  `peakmusicreviews-seo-ux-handoff.md` (expert audit, repo root).
+  Audit Task 1 (unique titles) was ALREADY live — audit stale there.
+  Shipped + verified live: MusicAlbum JSON-LD with aggregateRating +
+  top-5 Review objects on /releases/[slug] (star snippets), MusicGroup
+  + breadcrumbs on /artists/[slug], rating-led ≤160-char meta
+  descriptions, "Reviews & Ratings" title pattern. Next SEO steps:
+  Task 2 perf (Lighthouse baseline being measured), Google Search
+  Console verification + sitemap submit (needs Luca's hands),
+  keyword/competitor research, sitemap index split (Task 3).
+
 ---
 
 ## 📌 Parked — future rebrand (do NOT start until Luca says go)

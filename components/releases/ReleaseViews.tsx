@@ -56,7 +56,7 @@ export default function ReleaseViews({
               <span className="poster">
                 {item.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.cover_image} alt={`${item.title} cover`} />
+                  <img src={item.cover_image} alt={`${item.title} cover`} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -116,6 +116,8 @@ export default function ReleaseViews({
                   <img
                     src={item.cover_image}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -183,6 +185,8 @@ export default function ReleaseViews({
                 <img
                   src={item.cover_image}
                   alt={`${item.title} cover`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />
               ) : (

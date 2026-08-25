@@ -28,11 +28,33 @@ import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import FAQSchema from "@/components/seo/FAQSchema";
 import { BreadcrumbSchema } from "@/app/schema";
-import { musicboardFAQs } from "@/lib/faq-data";
+import { getMusicboardFAQs } from "@/lib/faq-data";
 
 /* Same listing as the home-page badge (Apple ID 6803279876). */
-const APP_STORE_URL =
-  "https://apps.apple.com/us/app/peak-music-reviews/id6803279876";
+const APP_STORE_ID = "6803279876";
+const APP_STORE_URL = `https://apps.apple.com/us/app/peak-music-reviews/id${APP_STORE_ID}`;
+
+/**
+ * Is the iOS app actually live on the App Store yet? Apple's public
+ * lookup API returns resultCount 0 until the listing exists, so the
+ * page never has to claim an app that isn't there — and flips to
+ * "on the App Store" automatically the day approval lands (result
+ * cached for an hour; on any error we assume not-live, the safe
+ * claim). No hand-edit, no redeploy.
+ */
+async function isAppStoreLive(): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `https://itunes.apple.com/lookup?id=${APP_STORE_ID}&country=us`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!res.ok) return false;
+    const data = (await res.json()) as { resultCount?: number };
+    return (data.resultCount ?? 0) > 0;
+  } catch {
+    return false;
+  }
+}
 
 export const metadata: Metadata = {
   title: "Musicboard Alternative — what to switch to in 2026",
@@ -56,21 +78,24 @@ export const metadata: Metadata = {
    `peak` / `mb` cells: string = plain text, true = yes-check,
    false = no-cross. */
 type Cell = string | boolean;
-const COMPARISON: { feature: string; peak: Cell; mb: Cell }[] = [
-  { feature: "Album ratings", peak: "0–10.0, one decimal", mb: "Half-star scale" },
-  { feature: "Written reviews", peak: true, mb: true },
-  { feature: "Lists", peak: true, mb: true },
-  { feature: "Live release-night chat rooms", peak: true, mb: false },
-  { feature: "Two-sided debates with votes", peak: true, mb: false },
-  { feature: "Posts + For You feed", peak: true, mb: false },
-  { feature: "Unreleased / leaked tracks in catalog", peak: "Via Genius deep library", mb: false },
-  { feature: "Profile customization", peak: "Themes, showcases, favorites", mb: "Basic" },
-  { feature: "Full web app", peak: true, mb: "Limited — app-first" },
-  { feature: "iOS app", peak: true, mb: "Last updated May 2025" },
-  { feature: "Android", peak: "Web app (native planned)", mb: "Removed from Google Play" },
-  { feature: "Price", peak: "Free — everything", mb: "Free + Pro subscription" },
-  { feature: "Actively developed", peak: "Updates ship weekly", mb: "No updates since May 2025" },
-];
+/** Built per-request so the iOS row reflects the real App Store state. */
+function buildComparison(appLive: boolean): { feature: string; peak: Cell; mb: Cell }[] {
+  return [
+    { feature: "Album ratings", peak: "0–10.0, one decimal", mb: "Half-star scale" },
+    { feature: "Written reviews", peak: true, mb: true },
+    { feature: "Lists", peak: true, mb: true },
+    { feature: "Live release-night chat rooms", peak: true, mb: false },
+    { feature: "Two-sided debates with votes", peak: true, mb: false },
+    { feature: "Posts + For You feed", peak: true, mb: false },
+    { feature: "Unreleased / leaked tracks in catalog", peak: "Via Genius deep library", mb: false },
+    { feature: "Profile customization", peak: "Themes, showcases, favorites", mb: "Basic" },
+    { feature: "Full web app", peak: true, mb: "Limited — app-first" },
+    { feature: "iOS app", peak: appLive ? "On the App Store" : "Work in progress", mb: "Last updated May 2025" },
+    { feature: "Android", peak: "Future release coming soon", mb: "Removed from Google Play" },
+    { feature: "Price", peak: "Core free — patron perks planned", mb: "Free + Pro subscription" },
+    { feature: "Actively developed", peak: "Updates ship weekly", mb: "No updates since May 2025" },
+  ];
+}
 
 /** Render a comparison cell: strings verbatim, booleans as ✓/✕. */
 function CellValue({ value, accent }: { value: Cell; accent?: boolean }) {
@@ -107,7 +132,11 @@ const OTHERS = [
   },
 ];
 
-export default function MusicboardAlternativePage() {
+export default async function MusicboardAlternativePage() {
+  const appLive = await isAppStoreLive();
+  const faqs = getMusicboardFAQs(appLive);
+  const comparison = buildComparison(appLive);
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <BreadcrumbSchema
@@ -116,7 +145,7 @@ export default function MusicboardAlternativePage() {
           { name: "Musicboard Alternative", href: "/musicboard-alternative" },
         ]}
       />
-      <FAQSchema items={musicboardFAQs} />
+      <FAQSchema items={faqs} />
 
       <PageHero
         title="MUSICBOARD ALTERNATIVE"
@@ -132,16 +161,24 @@ export default function MusicboardAlternativePage() {
           scale, written reviews, lists, and social profiles — and it adds
           what Musicboard never had: live release-night chat rooms, two-sided
           debates, a For You feed, and a catalog that includes unreleased
-          tracks. It&apos;s free, works fully on the web and on{" "}
-          <a
-            href={APP_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent-primary hover:text-accent-glow transition-colors"
-          >
-            iOS
-          </a>
-          , and ships updates weekly.
+          tracks. It&apos;s free, works fully on the web
+          {appLive ? (
+            <>
+              {" "}and on{" "}
+              <a
+                href={APP_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent-primary hover:text-accent-glow transition-colors"
+              >
+                iOS
+              </a>
+              ,
+            </>
+          ) : (
+            <> — with an iOS app in the works —</>
+          )}{" "}
+          and ships updates weekly.
         </p>
         <p className="text-text-secondary leading-relaxed text-sm">
           As for Musicboard itself: as of August 2026 its iOS app hasn&apos;t
@@ -186,7 +223,7 @@ export default function MusicboardAlternativePage() {
               </tr>
             </thead>
             <tbody>
-              {COMPARISON.map((row) => (
+              {comparison.map((row) => (
                 <tr
                   key={row.feature}
                   className="border-b border-border-subtle last:border-0"
@@ -284,7 +321,7 @@ export default function MusicboardAlternativePage() {
           <span className="label-xbox">Questions switchers ask</span>
         </div>
         <div className="space-y-3">
-          {musicboardFAQs.map((faq) => (
+          {faqs.map((faq) => (
             <details key={faq.question} className="card-y2k p-4 group">
               <summary className="cursor-pointer font-[family-name:var(--font-heading)] font-bold text-sm text-text-primary group-open:text-accent-primary transition-colors">
                 {faq.question}

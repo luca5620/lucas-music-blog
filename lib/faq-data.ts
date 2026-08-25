@@ -33,8 +33,13 @@ export const aboutFAQs: FAQItem[] = [
 
 /* /musicboard-alternative — the questions displaced Musicboard users
    are actually typing into Google. Keep answers factual and dated;
-   this page's credibility is the whole play. */
-export const musicboardFAQs: FAQItem[] = [
+   this page's credibility is the whole play.
+
+   A function, not a const: the iOS-app answer flips automatically
+   the moment the App Store listing goes live (the page checks
+   Apple's lookup API) — no hand-edit, no stale claims either way. */
+export function getMusicboardFAQs(appStoreLive: boolean): FAQItem[] {
+  return [
   {
     question: "Is Musicboard shutting down?",
     answer:
@@ -53,14 +58,16 @@ export const musicboardFAQs: FAQItem[] = [
   {
     question: "Is Peak Music Reviews free?",
     answer:
-      "Yes. Every feature — rating, reviews, lists, live release rooms, debates, posts, profile themes — is free. There is no Pro tier and no paywall.",
+      "Yes — all core functionality is free: rating, reviews, lists, live release rooms, debates, posts, and profile themes. An optional patron subscription with extra perks is planned, but the core experience stays free.",
   },
   {
     question: "Does Peak Music Reviews have a mobile app?",
-    answer:
-      "Yes — an iOS app on the App Store, with the exact same content and account as the website, so you are never locked to one platform. Unlike app-only services, everything also works in any browser.",
+    answer: appStoreLive
+      ? "Yes — an iOS app on the App Store, with the exact same content and account as the website, so you are never locked to one platform. An Android release is planned. Unlike app-only services, everything also works in any browser."
+      : "An iOS app is in the works, and an Android release is planned after it. In the meantime everything works fully in any mobile or desktop browser — same content, same account, nothing gated to an app.",
   },
-];
+  ];
+}
 
 export const reviewsFAQs: FAQItem[] = [
   {

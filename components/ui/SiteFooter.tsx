@@ -6,12 +6,15 @@
  * purpose: it's a service hatch, not a section.
  */
 import Link from "next/link";
+import PressTapTarget from "@/components/ui/PressTapTarget";
 
 export default function SiteFooter() {
   return (
     <footer className="mt-12 pt-4 border-t border-border-subtle">
       <p className="font-[family-name:var(--font-vt323)] text-sm text-text-muted text-center">
-        Found a problem?{" "}
+        {/* 5 quick taps on this text = press mode (screenshot blur) —
+            the app shell has no URL bar for ?press=1 */}
+        <PressTapTarget>Found a problem?</PressTapTarget>{" "}
         <a
           href="mailto:contact@peakmusicreviews.com"
           className="text-text-secondary hover:text-accent-primary transition-colors"

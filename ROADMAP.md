@@ -15,6 +15,21 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-25 evening (Windows): app polish + immersion batch, all
+  verified by Luca on device where applicable.** Thermal saga
+  RESOLVED (3 rounds; round 3 structural — phone atmosphere is a
+  designed still, no blur layers/full-screen overlays; Luca: "barely
+  even gets warm... smoother than before"). Your Taste app pager got
+  a hardware-decoded ambient video loop (public/backdrops/taste.mp4,
+  ffmpeg-rendered seamless 24s, 1.2MB; per-card CSS blur covers off
+  in app). App flush top (screen border/vignette/bloom off in shell),
+  tab bar recentered on equal fifths + slimmed 64→52px. NEW:
+  CoverLiquidSync — release/review pages recolor the site liquid to
+  the album cover's palette (canvas sampling, saturation-boosted;
+  Genius-hosted covers may fail soft to defaults). If Luca wants
+  more: same treatment per-card in the fullscreen pager; video loops
+  for profile theme backdrops (slots already exist).
+
 - **2026-08-25: Sentry is LIVE and verified end-to-end** — DSN in
   Vercel, server + browser (tunnel) delivery both confirmed with test
   events on prod, temp test route removed. Org `peak-music-reviews`,

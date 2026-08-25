@@ -43,16 +43,21 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
         {/* The screen — all site content */}
         <div className="crt-screen">
           {/* Site-wide liquid wash: molten light drifting on the black
-              canvas behind everything, spread down the full page */}
+              canvas behind everything, spread down the full page.
+              Anchored in vh (NOT %): percentage tops resolve against
+              the final page height, so every blob slid down when the
+              streamed feeds arrived — Lighthouse scored that as a 0.65
+              layout shift on an invisible backdrop. vh offsets never
+              move; blobs past a short page's bottom just clip. */}
           <div className="crt-liquid" aria-hidden="true">
             <div className="liquid-blob liquid-a w-[560px] h-[560px] -top-40 -left-32" />
-            <div className="liquid-blob liquid-c w-[500px] h-[500px] top-[10%] left-1/3" />
-            <div className="liquid-blob liquid-b w-[480px] h-[480px] top-[22%] -right-40" />
-            <div className="liquid-blob liquid-a w-[520px] h-[520px] top-[38%] left-1/2" />
-            <div className="liquid-blob liquid-c w-[520px] h-[520px] top-[48%] -left-44" />
-            <div className="liquid-blob liquid-b w-[500px] h-[500px] top-[62%] left-1/4" />
-            <div className="liquid-blob liquid-a w-[460px] h-[460px] top-[72%] -right-32" />
-            <div className="liquid-blob liquid-b w-[500px] h-[500px] -bottom-40 left-1/4" />
+            <div className="liquid-blob liquid-c w-[500px] h-[500px] top-[55vh] left-1/3" />
+            <div className="liquid-blob liquid-b w-[480px] h-[480px] top-[115vh] -right-40" />
+            <div className="liquid-blob liquid-a w-[520px] h-[520px] top-[190vh] left-1/2" />
+            <div className="liquid-blob liquid-c w-[520px] h-[520px] top-[245vh] -left-44" />
+            <div className="liquid-blob liquid-b w-[500px] h-[500px] top-[310vh] left-1/4" />
+            <div className="liquid-blob liquid-a w-[460px] h-[460px] top-[365vh] -right-32" />
+            <div className="liquid-blob liquid-b w-[500px] h-[500px] top-[430vh] left-1/4" />
           </div>
           {children}
         </div>

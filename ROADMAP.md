@@ -34,10 +34,19 @@ session ends mid-task; clear it when the work lands under Done.)*
   near-viewport covers still load — next levers: investigate the
   crt-title repaint, serve Spotify 300px covers (swap
   ab67616d0000b273→ab67616d00001e02 in small contexts), audit JS.
-  Also next: GSC verification + sitemap submit (LUCA'S HANDS:
-  search.google.com/search-console → Domain property → DNS TXT →
-  submit sitemap.xml), keyword/competitor research (RYM, AOTY,
-  Musicboard), sitemap index split as content grows (Task 3).
+  GSC: already verified months ago (Luca) — use its Performance →
+  queries report for page-2 keywords. Keyword/competitor research
+  DONE 2026-08-24 (agent run): headline finding = Musicboard is
+  collapsing (TechCrunch 2026-02-09: outages, Android app pulled,
+  founders gone, no iOS update since May 2025) — displaced community
+  looking for a home. Top plays: /musicboard-alternative comparison
+  page + import guide, "letterboxd for music"/"rateyourmusic
+  alternative" comparison pages (weak SERPs), per-artist unreleased
+  discography pages (metadata+ratings only, never files), later
+  /best-albums/{year} + "{artist} albums ranked" templates. ASO:
+  rename listing to "Peak Music: Rate & Review Albums" (not "Music
+  Reviewing"), keyword field incl. musicboard,rateyourmusic,aoty.
+  Sitemap index split as content grows (Task 3).
 
 ---
 

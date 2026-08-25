@@ -16,6 +16,7 @@ import {
   postReleaseArtistName,
 } from "@/lib/db/posts";
 import { createClient } from "@/lib/supabase/server";
+import { smallCover } from "@/lib/images";
 import PostLikeButton from "@/components/posts/PostLikeButton";
 
 /** Card-sized excerpt: first ~180 chars, cut at a word boundary. */
@@ -130,7 +131,7 @@ export default async function PostsFeed() {
                     {post.release.cover_image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={post.release.cover_image}
+                        src={smallCover(post.release.cover_image)}
                         alt=""
                         loading="lazy"
                         decoding="async"

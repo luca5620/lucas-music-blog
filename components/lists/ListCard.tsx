@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { ListSummary } from "@/lib/db/lists";
+import { smallCover } from "@/lib/images";
 
 export default function ListCard({ list }: { list: ListSummary }) {
   const { author } = list;
@@ -38,10 +39,11 @@ export default function ListCard({ list }: { list: ListSummary }) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={cover}
+                src={smallCover(cover)}
                 alt=""
                 className="w-full h-full object-cover"
                 loading="lazy"
+                decoding="async"
               />
             </div>
           ))

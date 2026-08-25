@@ -13,6 +13,7 @@ import Link from "next/link";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LikeButton from "@/components/reviews/LikeButton";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
+import { smallCover } from "@/lib/images";
 import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
 
 export interface FeedReview {
@@ -102,7 +103,7 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
               <span className="poster">
                 {review.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={review.cover_image} alt={`${review.title} cover`} loading="lazy" decoding="async" />
+                  <img src={smallCover(review.cover_image)} alt={`${review.title} cover`} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -160,7 +161,7 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                   {review.cover_image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={review.cover_image}
+                      src={smallCover(review.cover_image)}
                       alt=""
                       loading="lazy"
                       decoding="async"
@@ -294,6 +295,10 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={review.cover_image}
+                        // Let the browser pick: 300px file for grid-sized
+                        // slots, the full 640 when the card is phone-wide.
+                        srcSet={`${smallCover(review.cover_image)} 300w, ${review.cover_image} 640w`}
+                        sizes="(min-width: 1536px) 18vw, (min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
                         alt={`${review.title} cover`}
                         loading="lazy"
                         decoding="async"

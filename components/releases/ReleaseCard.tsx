@@ -9,6 +9,7 @@
 import Link from "next/link";
 import type { Release } from "@/lib/types/database";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
+import { smallCover } from "@/lib/images";
 import LiveBadge from "@/components/rooms/LiveBadge";
 
 interface ReleaseCardProps {
@@ -51,6 +52,10 @@ export default function ReleaseCard({
         {release.cover_image ? (
           <img
             src={release.cover_image}
+            // Browser picks: 300px file at grid sizes, 640 when the
+            // card spans a phone screen.
+            srcSet={`${smallCover(release.cover_image)} 300w, ${release.cover_image} 640w`}
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
             alt={`${release.title} cover`}
             loading="lazy"
             decoding="async"

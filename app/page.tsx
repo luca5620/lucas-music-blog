@@ -13,6 +13,7 @@
 
 import Link from "next/link";
 import { formatRating } from "@/lib/rating";
+import { smallCover } from "@/lib/images";
 import { Suspense } from "react";
 import { getUser } from "@/lib/auth";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
@@ -273,7 +274,7 @@ async function Dashboard({ userId }: { userId: string }) {
                 <span className="poster">
                   {r.cover_image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={r.cover_image} alt={`${r.title} cover`} loading="lazy" decoding="async" />
+                    <img src={smallCover(r.cover_image)} alt={`${r.title} cover`} loading="lazy" decoding="async" />
                   ) : (
                     <span className="w-full h-full flex items-center justify-center text-4xl">💿</span>
                   )}

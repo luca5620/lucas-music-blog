@@ -10,6 +10,7 @@
 
 import Link from "next/link";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
+import { smallCover } from "@/lib/images";
 import LiveBadge from "@/components/rooms/LiveBadge";
 import type { ReviewView } from "@/components/reviews/ViewToggle";
 
@@ -56,7 +57,7 @@ export default function ReleaseViews({
               <span className="poster">
                 {item.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.cover_image} alt={`${item.title} cover`} loading="lazy" decoding="async" />
+                  <img src={smallCover(item.cover_image)} alt={`${item.title} cover`} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -114,7 +115,7 @@ export default function ReleaseViews({
                 {item.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={item.cover_image}
+                    src={smallCover(item.cover_image)}
                     alt=""
                     loading="lazy"
                     decoding="async"
@@ -184,6 +185,10 @@ export default function ReleaseViews({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={item.cover_image}
+                  // Browser picks: 300px file at grid sizes, 640 when the
+                  // card spans a phone screen.
+                  srcSet={`${smallCover(item.cover_image)} 300w, ${item.cover_image} 640w`}
+                  sizes="(min-width: 1536px) 18vw, (min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
                   alt={`${item.title} cover`}
                   loading="lazy"
                   decoding="async"

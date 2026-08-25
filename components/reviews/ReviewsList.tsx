@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { ReviewWithAuthor } from "@/lib/db/reviews";
 import { getGenreColor, getRatingColor, getRatingHex, formatRating } from "@/lib/rating";
+import { smallCover } from "@/lib/images";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
 
@@ -140,7 +141,7 @@ export default function ReviewsList({
             >
               <span className="poster">
                 {review.cover_image ? (
-                  <img src={review.cover_image} alt={`${review.title} cover`} loading="lazy" decoding="async" />
+                  <img src={smallCover(review.cover_image)} alt={`${review.title} cover`} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -175,7 +176,7 @@ export default function ReviewsList({
                 <span className="w-9 h-9 rounded overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
                   {review.cover_image ? (
                     <img
-                      src={review.cover_image}
+                      src={smallCover(review.cover_image)}
                       alt=""
                       loading="lazy"
                       decoding="async"
@@ -233,7 +234,7 @@ export default function ReviewsList({
                   <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0 overflow-hidden">
                     {review.cover_image ? (
                       <img
-                        src={review.cover_image}
+                        src={smallCover(review.cover_image)}
                         alt={`${review.title} cover`}
                         loading="lazy"
                         decoding="async"

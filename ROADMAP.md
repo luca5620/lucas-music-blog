@@ -26,10 +26,18 @@ session ends mid-task; clear it when the work lands under Done.)*
   Shipped + verified live: MusicAlbum JSON-LD with aggregateRating +
   top-5 Review objects on /releases/[slug] (star snippets), MusicGroup
   + breadcrumbs on /artists/[slug], rating-led ≤160-char meta
-  descriptions, "Reviews & Ratings" title pattern. Next SEO steps:
-  Task 2 perf (Lighthouse baseline being measured), Google Search
-  Console verification + sitemap submit (needs Luca's hands),
-  keyword/competitor research, sitemap index split (Task 3).
+  descriptions, "Reviews & Ratings" title pattern. Perf (Task 2):
+  baseline mobile Lighthouse 69/LCP 18.3s/CLS 0→0.68 (flaky);
+  shipped lazy-loading on all feed covers+avatars (-1.2MB) and
+  vh-anchored liquid blobs (CLS now 0 flat). LCP still 7-14s
+  simulated: the H1 repaints ~2.3s in (font swap?) and 2.4MB of
+  near-viewport covers still load — next levers: investigate the
+  crt-title repaint, serve Spotify 300px covers (swap
+  ab67616d0000b273→ab67616d00001e02 in small contexts), audit JS.
+  Also next: GSC verification + sitemap submit (LUCA'S HANDS:
+  search.google.com/search-console → Domain property → DNS TXT →
+  submit sitemap.xml), keyword/competitor research (RYM, AOTY,
+  Musicboard), sitemap index split as content grows (Task 3).
 
 ---
 

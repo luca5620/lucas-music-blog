@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
+import { sessionUsedEmailCode } from "@/lib/auth/amr";
 import { getReportById, setReportStatus } from "@/lib/db/moderation";
 import type { Profile } from "@/lib/types/database";
 
@@ -54,6 +55,18 @@ export async function POST(
   const role = (profileData as Pick<Profile, "role"> | null)?.role;
   if (role !== "owner" && role !== "admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // 2b. Email-code gate — staff sessions must have gone through the
+  // emailed code, not just a password (see lib/auth/amr.ts).
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!sessionUsedEmailCode(session?.access_token)) {
+    return NextResponse.json(
+      { error: "Sign in again with your email code to use admin tools." },
+      { status: 403 }
+    );
   }
 
   const limited = await rateLimit(`admin-reports:${user.id}`, 60, 60_000);

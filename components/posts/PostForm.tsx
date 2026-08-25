@@ -161,7 +161,7 @@ export default function PostForm({
 
         {/* Live parse feedback */}
         {parsedVideo && (
-          <p className="pixel-text text-xs text-osd-green">
+          <p className="pixel-text text-xs text-accent-primary">
             ✓ {parsedVideo.kind === "youtube" ? "YouTube" : "TikTok"} video
             detected — it&apos;ll embed on your post.
           </p>

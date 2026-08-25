@@ -15,17 +15,20 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
           for a blob to get clipped by (Luca 2026-08-24). Edge blobs
           feed the ring, mid-canvas blobs cover where the old screen
           wash lived. Colors ride --liquid-1/2/3, so profile themes
-          recolor it like every other liquid layer. */}
+          recolor it like every other liquid layer.
+          THERMAL MODE (2026-08-25): the three biggest mid-canvas
+          blobs carry .liquid-still — painted but parked, so the
+          alive ring costs a fraction of the GPU (see globals.css). */}
       <div className="crt-bezel-liquid" aria-hidden="true">
         <div className="liquid-blob liquid-a w-[340px] h-[340px] -top-24 left-[10%]" />
         <div className="liquid-blob liquid-b w-[300px] h-[300px] -top-20 right-[18%]" />
         <div className="liquid-blob liquid-c w-[320px] h-[320px] top-[14%] -left-28" />
-        <div className="liquid-blob liquid-a w-[500px] h-[500px] top-[8%] left-1/3" />
+        <div className="liquid-blob liquid-still liquid-a w-[500px] h-[500px] top-[8%] left-1/3" />
         <div className="liquid-blob liquid-b w-[320px] h-[320px] top-[26%] -right-28" />
-        <div className="liquid-blob liquid-c w-[480px] h-[480px] top-[36%] left-1/2" />
+        <div className="liquid-blob liquid-still liquid-c w-[480px] h-[480px] top-[36%] left-1/2" />
         <div className="liquid-blob liquid-a w-[300px] h-[300px] top-[46%] -left-24" />
         <div className="liquid-blob liquid-c w-[300px] h-[300px] top-[58%] -right-24" />
-        <div className="liquid-blob liquid-b w-[480px] h-[480px] top-[64%] left-1/4" />
+        <div className="liquid-blob liquid-still liquid-b w-[480px] h-[480px] top-[64%] left-1/4" />
         <div className="liquid-blob liquid-b w-[320px] h-[320px] top-[76%] -left-28" />
         <div className="liquid-blob liquid-a w-[300px] h-[300px] top-[88%] -right-24" />
         <div className="liquid-blob liquid-c w-[320px] h-[320px] -bottom-24 left-[22%]" />

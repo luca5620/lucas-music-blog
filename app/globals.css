@@ -572,12 +572,9 @@ body {
    The grain animation invalidates a full-viewport mix-blend-mode
    layer twice a second — that repaint is what dropped scroll frames
    on phones, so grain holds still there (texture stays painted).
-   The liquid wash used to be frozen too, but its blobs are now
-   promoted composited layers (see .liquid-blob) whose transform-only
-   drift never repaints — so the molten light moves in the app again
-   (Luca 2026-08-24: alive edges, same scrolling). If jank ever
-   returns on device, THIS is the first dial: re-add
-   .crt-liquid .liquid-blob { animation: none; } below. */
+   The rest of the phone/app savings (frozen in-screen liquid,
+   solid panels) live in the THERMAL MODE section at the very
+   bottom of this file — it sits last so it wins the cascade. */
 @media (max-width: 768px) {
   .grain-overlay {
     animation: none;
@@ -1255,13 +1252,16 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* OSD-style utility text (timestamps, counters, meta) */
+/* OSD-style utility text (timestamps, counters, meta).
+   Was OSD green; recolored to the classic accent blue (Luca
+   2026-08-25 — "any tuning text that is green → our classic blue").
+   Riding the accent tokens means profile themes recolor it too. */
 .osd-text {
   font-family: var(--font-pixel);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--osd-green);
-  text-shadow: 0 0 6px rgba(47, 255, 94, 0.5);
+  color: var(--accent-primary);
+  text-shadow: 0 0 6px rgba(var(--accent-rgb), 0.5);
 }
 
 /* Section label — VHS spine sticker energy */
@@ -2254,4 +2254,66 @@ fieldset {
     padding: 0.6rem 1rem !important;
     font-size: 0.75rem !important;
   }
+}
+
+/* ============================================================
+   THERMAL MODE — phone + app-shell GPU diet (Luca 2026-08-25:
+   iPhone 16 Pro Max runs warm in the app).
+
+   Why the phone heats up: every ANIMATING blurred blob is a
+   composited layer the GPU has to re-blend on every frame — and
+   ProMotion runs that at up to 120fps. A typical app screen had
+   ~29 layers in perpetual motion (bezel liquid ×12, page wash ×8,
+   panel atmospheres ×3 each) plus a backdrop-filter re-sampling
+   the scene behind EVERY .panel-xbox card during scroll. None of
+   that repaints the DOM, so it never showed as jank — it showed
+   as heat.
+
+   The diet, on phones and in the app shell only (desktop keeps
+   everything):
+   1. In-screen liquid holds still. A static blob costs ~nothing
+      after its first paint — the molten light stays PAINTED,
+      it just stops drifting behind content you're reading anyway.
+   2. The app's bezel liquid keeps moving (Luca 2026-08-24: alive
+      edges), minus its three biggest mid-canvas blobs
+      (.liquid-still in CRTShell) — the ring stays alive at a
+      fraction of the overdraw.
+   3. Panels drop backdrop-filter for a slightly more opaque solid
+      smoke — visually a hair less glassy, massively cheaper to
+      scroll. Themed panels (limewire/bleach/…) outrank these
+      rules and keep their own look.
+
+   If it still runs warm, the next dial is the spinning .cd-disc
+   on the home hero (pause it in .native-app).
+   ============================================================ */
+
+/* 1 + 3 — mobile web */
+@media (max-width: 768px) {
+  .crt-screen .liquid-blob {
+    animation: none;
+  }
+
+  .panel-xbox,
+  .panel-xbox-glow {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(12, 14, 22, 0.92);
+  }
+}
+
+/* 1 + 3 — the app shell (tablets included). :where() keeps the
+   panel selector at base specificity so theme skins still win. */
+.native-app .crt-screen .liquid-blob {
+  animation: none;
+}
+
+.native-app :where(.panel-xbox, .panel-xbox-glow) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(12, 14, 22, 0.92);
+}
+
+/* 2 — bezel blobs marked still in CRTShell stay painted, parked */
+.liquid-blob.liquid-still {
+  animation: none;
 }

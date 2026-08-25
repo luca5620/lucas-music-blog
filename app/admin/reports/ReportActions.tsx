@@ -56,7 +56,7 @@ export default function ReportActions({ reportId, deletable }: ReportActionsProp
           type="button"
           onClick={() => run("resolve")}
           disabled={!!busy}
-          className={`${base} text-osd-green border-osd-green/40 hover:bg-osd-green/10`}
+          className={`${base} text-accent-primary border-accent-primary/40 hover:bg-accent-primary/10`}
         >
           {busy === "resolve" ? "…" : "Resolve"}
         </button>

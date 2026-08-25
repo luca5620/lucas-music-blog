@@ -225,7 +225,7 @@ export default function SignUpPage() {
     availability === "checking" ? (
       <p className="mt-1.5 text-xs osd-text animate-pulse">CHECKING…</p>
     ) : availability === "free" && !usernameError && username ? (
-      <p className="mt-1.5 text-xs text-osd-green">✓ @{username} is free</p>
+      <p className="mt-1.5 text-xs text-accent-primary">✓ @{username} is free</p>
     ) : availability === "taken" ? (
       <p className="mt-1.5 text-xs text-accent-rose">@{username} is taken</p>
     ) : null;

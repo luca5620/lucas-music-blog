@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
+import { sessionUsedEmailCode } from "@/lib/auth/amr";
 import type { Profile } from "@/lib/types/database";
 
 /**
@@ -32,6 +33,20 @@ export async function POST(request: NextRequest) {
   const role = (profileData as Pick<Profile, "role"> | null)?.role;
   if (role !== "owner") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Email-code gate: staff sessions must have gone through the
+  // emailed code, not just a password (see lib/auth/amr.ts). The
+  // middleware and the grant_badge RPC (021) enforce this too —
+  // three layers, same rule.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!sessionUsedEmailCode(session?.access_token)) {
+    return NextResponse.json(
+      { error: "Sign in again with your email code to use admin tools." },
+      { status: 403 }
+    );
   }
 
   const limited = await rateLimit(`admin-badge:${user.id}`, 30, 60_000);

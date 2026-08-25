@@ -44,8 +44,8 @@ interface CatalogSearchProps {
 
 const SOURCE_BADGE: Record<CatalogResult["source"], { text: string; cls: string }> = {
   local: { text: "ON PMR", cls: "text-accent-glow border-accent-primary/40" },
-  spotify: { text: "SPOTIFY", cls: "text-osd-green border-osd-green/40" },
-  spotify_track: { text: "SPOTIFY", cls: "text-osd-green border-osd-green/40" },
+  spotify: { text: "SPOTIFY", cls: "text-accent-primary border-accent-primary/40" },
+  spotify_track: { text: "SPOTIFY", cls: "text-accent-primary border-accent-primary/40" },
   genius: { text: "GENIUS", cls: "text-osd-amber border-osd-amber/40" },
 };
 

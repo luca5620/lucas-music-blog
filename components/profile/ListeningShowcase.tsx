@@ -137,7 +137,7 @@ export default async function ListeningShowcase({
           <div className="min-w-0 flex-1">
             <p className="pixel-text text-[11px] uppercase tracking-widest">
               {track.isPlaying ? (
-                <span className="text-osd-green">
+                <span className="text-accent-primary">
                   <span className="animate-pulse">●</span> Listening now
                 </span>
               ) : (

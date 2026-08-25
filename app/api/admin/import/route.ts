@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sessionUsedEmailCode } from "@/lib/auth/amr";
 import { parseSpotifyUrl } from "@/lib/spotify/auth";
 import {
   importArtistFromSpotify,
@@ -41,6 +42,18 @@ export async function POST(request: Request) {
   const role = (profileData as Pick<Profile, "role"> | null)?.role;
   if (role !== "owner" && role !== "admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // 2b. Email-code gate — staff sessions must have gone through the
+  // emailed code, not just a password (see lib/auth/amr.ts).
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!sessionUsedEmailCode(session?.access_token)) {
+    return NextResponse.json(
+      { error: "Sign in again with your email code to use admin tools." },
+      { status: 403 }
+    );
   }
 
   // 3. Parse body

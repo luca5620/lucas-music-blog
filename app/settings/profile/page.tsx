@@ -787,7 +787,7 @@ export default function ProfileSettingsPage() {
                     </span>
                     <span className="text-text-primary truncate">{t.title}</span>
                     {t.preview_url && (
-                      <span className="ml-auto pixel-text text-[10px] text-osd-green shrink-0">
+                      <span className="ml-auto pixel-text text-[10px] text-accent-primary shrink-0">
                         ▶ PREVIEW
                       </span>
                     )}

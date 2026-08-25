@@ -45,9 +45,10 @@ export default function OfflineOverlay() {
       <p
         className="pixel-text text-3xl"
         style={{
-          color: "#2fff5e",
+          // Classic accent blue (was OSD green — recolored 2026-08-25)
+          color: "#1e90ff",
           textShadow:
-            "0 0 8px rgba(47,255,94,0.8), 0 0 24px rgba(47,255,94,0.35)",
+            "0 0 8px rgba(30,144,255,0.8), 0 0 24px rgba(30,144,255,0.35)",
         }}
       >
         NO SIGNAL

@@ -11,6 +11,7 @@ import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import NativeMode from "@/components/ui/NativeMode";
+import PressMode from "@/components/ui/PressMode";
 import OfflineOverlay from "@/components/ui/OfflineOverlay";
 import TabBar from "@/components/ui/TabBar";
 import SiteFooter from "@/components/ui/SiteFooter";
@@ -169,6 +170,9 @@ export default async function RootLayout({
         <GrainOverlay />
         {/* Tags <html> when running inside the native app shell */}
         <NativeMode />
+        {/* Hidden ?press=1 screenshot mode — blurs catalog artwork
+            for App Store listing assets (Guideline 5.2.1) */}
+        <PressMode />
 
         <AuthProvider initialUser={user} initialProfile={profile}>
           {/* Everything renders on the tube */}

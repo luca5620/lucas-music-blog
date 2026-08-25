@@ -587,6 +587,21 @@ body {
   animation: none;
 }
 
+/* ============================================================
+   PRESS MODE — hidden screenshot mode (?press=1 / ?press=0).
+   Blurs every catalog image (Spotify + Genius CDNs) beyond
+   recognition for App Store screenshots — Guideline 5.2.1 flags
+   protected album art in LISTING assets, not in the app itself.
+   Scale keeps the blur from showing hard transparent edges.
+   Avatars (Supabase) and local assets stay sharp.
+   ============================================================ */
+.press-mode img[src*="scdn.co"],
+.press-mode img[src*="genius.com"],
+.press-mode img[src*="rapgenius.com"] {
+  filter: blur(18px) saturate(1.3);
+  transform: scale(1.15);
+}
+
 .scanlines {
   position: fixed;
   inset: 0;

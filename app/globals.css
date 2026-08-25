@@ -2363,3 +2363,63 @@ fieldset {
 .native-app:not(.motion-on) .animate-spin {
   animation-play-state: paused !important;
 }
+
+/* ------------------------------------------------------------
+   THERMAL MODE round 3 (Luca 2026-08-25: warm within a minute of
+   ACTIVE use, and round 2's pause froze blobs in wonky mid-poses).
+
+   Rounds 1-2 targeted animation; the remaining burn is STRUCTURE.
+   While scrolling, every frame recomposites the whole layer tower:
+   ~30 blurred blob textures (each `filter` + `will-change` forces
+   its own GPU layer) plus three full-viewport fixed overlays —
+   grain (mix-blend-mode, the priciest compositing feature there
+   is), scanlines, and the grille. Native apps stay cool because
+   their effect budget is a fraction of this; ours has to match it
+   on phones.
+
+   So on phones + in the app the atmosphere becomes a designed
+   STILL: same blobs, same theme colors, same authored positions,
+   but drawn as plain soft radial gradients — no blur filter, no
+   forced layer, no animation — which lets the browser collapse the
+   whole wash into one painted texture. (The gradients already fade
+   to transparent; the 48-84px blurs were doing little the fade
+   wasn't.) No mid-pose freezes possible: nothing moves, by design.
+   The three full-screen overlays turn off here too — at phone size
+   and 0.02-0.03 opacity they were texture nobody could see, at
+   full-viewport-per-frame cost.
+
+   Desktop keeps the full cinema. Theme backdrops, the CD, and the
+   badge glows still run under round 2's motion-on rules (move while
+   touching, sleep after 12s idle).
+
+   !important is deliberate: blob variants (.liquid-veil, .crt-liquid,
+   .crt-bezel-liquid) set filter at higher specificity, and this is a
+   terminal hardware override, not a styling opinion.
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  .grain-overlay,
+  .scanlines,
+  .aperture-grille {
+    display: none;
+  }
+
+  .liquid-blob {
+    filter: none !important;
+    will-change: auto !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+.native-app .grain-overlay,
+.native-app .scanlines,
+.native-app .aperture-grille {
+  display: none;
+}
+
+.native-app .liquid-blob {
+  filter: none !important;
+  will-change: auto !important;
+  transform: none !important;
+  animation: none !important;
+}

@@ -17,6 +17,7 @@ import TabBar from "@/components/ui/TabBar";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { Analytics } from "@vercel/analytics/next";
 import { WebSiteSchema } from "@/app/schema";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
@@ -187,6 +188,12 @@ export default async function RootLayout({
           {/* App-only NO SIGNAL screen for mid-session connection loss */}
           <OfflineOverlay />
         </AuthProvider>
+        {/* Vercel Web Analytics (enabled in the dashboard 2026-08-25).
+            The dashboard toggle alone records nothing on Next.js —
+            this component is what actually sends the page views.
+            Same-origin (/_vercel/insights), so CSP stays untouched;
+            cookieless, no personal data. */}
+        <Analytics />
       </body>
     </html>
   );

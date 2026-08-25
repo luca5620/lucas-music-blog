@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 /**
  * Security headers applied to every response.
@@ -60,4 +61,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * Sentry wrapper (error tracking, 2026-08-25). Two jobs:
+ * - tunnelRoute: browser error reports POST to our own /monitoring
+ *   path and Vercel forwards them to Sentry — same-origin, so the
+ *   strict CSP above needs no new hosts and ad-blockers can't eat
+ *   the reports.
+ * - source-map upload at build time, so Sentry shows real component
+ *   names instead of minified goo. Only happens when SENTRY_AUTH_TOKEN
+ *   is set (Vercel env); without it the build just skips the upload.
+ */
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true, // keep build logs readable
+  tunnelRoute: "/monitoring",
+  disableLogger: true, // strips Sentry's debug logger from the bundle
+  telemetry: false,
+});

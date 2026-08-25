@@ -36,8 +36,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
 import { getRatingHex, formatRating } from "@/lib/rating";
-import { hapticTap } from "@/lib/native";
+import { hapticTap, isNativeApp } from "@/lib/native";
 import CommentsSection from "@/components/reviews/CommentsSection";
+import BackdropVideo from "@/components/profile/BackdropVideo";
 
 /** Only https:// or local /path images (stored-XSS defense). */
 function safeImage(url: string | null): string | null {
@@ -141,10 +142,15 @@ function RailLike({
 function SurfCard({
   item,
   fullscreen,
+  ambient,
   onOpenComments,
 }: {
   item: TunedItem;
   fullscreen: boolean;
+  /** App shell: the pager plays one hardware-decoded ambient video
+      behind ALL cards, so each card skips its own CSS-blurred cover
+      backdrop (blur-2xl per card was real GPU cost on phones). */
+  ambient?: boolean;
   /** Opens the in-place comments sheet (reviews only). */
   onOpenComments?: () => void;
 }) {
@@ -205,8 +211,9 @@ function SurfCard({
 
   const inner = (
     <>
-      {/* Blurred cover as the backdrop, dimmed for legibility. */}
-      {cover && (
+      {/* Blurred cover as the backdrop, dimmed for legibility. In the
+          app the shared ambient video plays instead (see ambient). */}
+      {cover && !ambient && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={cover}
@@ -546,6 +553,16 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
   const [closing, setClosing] = useState(false);
   // The review whose comments sheet is open (fullscreen only).
   const [commentsFor, setCommentsFor] = useState<string | null>(null);
+  // App shell only: swap the per-card CSS-blurred cover backdrops for
+  // ONE hardware-decoded ambient loop behind the whole pager
+  // (public/backdrops/taste.mp4 — the molten liquid, rendered as
+  // video). Same trick TikTok leans on: the rich layer is a video
+  // the decoder chip plays for near-zero GPU/CPU. Bridge check must
+  // wait for mount, same pattern as TabBar.
+  const [ambient, setAmbient] = useState(false);
+  useEffect(() => {
+    setAmbient(isNativeApp());
+  }, []);
   const commentsForRef = useRef<string | null>(null);
   commentsForRef.current = commentsFor;
   // Swipe-down-to-exit bookkeeping
@@ -643,7 +660,15 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
           : "panel-xbox relative overflow-hidden"
       }
     >
-      {/* Snap frame */}
+      {/* App-only ambient: the molten liquid as a looping video the
+          hardware decoder plays behind every card. */}
+      {ambient && (
+        <div className="absolute inset-0" aria-hidden="true">
+          <BackdropVideo theme="taste" />
+        </div>
+      )}
+
+      {/* Snap frame — `relative` so it stacks above the ambient video */}
       <div
         ref={frameRef}
         onScroll={handleScroll}
@@ -654,7 +679,7 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
         role="region"
         aria-roledescription="carousel"
         aria-label="Tuned to you — scroll for the next pick"
-        className={`overflow-y-auto snap-y snap-mandatory focus:outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+        className={`relative overflow-y-auto snap-y snap-mandatory focus:outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
           fullscreen
             ? "h-full"
             : "h-[70vh] min-h-[420px] max-h-[640px]"
@@ -665,6 +690,7 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
             key={`${item.type}:${item.slug}`}
             item={item}
             fullscreen={fullscreen}
+            ambient={ambient}
             onOpenComments={
               item.type === "review"
                 ? () => setCommentsFor(item.id)

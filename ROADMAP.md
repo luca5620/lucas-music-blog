@@ -15,19 +15,6 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
-- **2026-08-26 (MacBook): admin code-entry bug hunt.** Luca added
-  `{{ .Token }}` to the Magic Link template ✓ — email now carries the
-  6-digit code — but TYPING the code is rejected while the email's
-  LINK signs in fine. Suspected cause: the code is verified by
-  hashing code+email, so a casing/whitespace mismatch in the typed
-  email breaks codes but not links. Shipped: login page lowercases
-  the email + the code screen now shows Supabase's real error in
-  parentheses. ROOT CAUSE FOUND same session: this Supabase project
-  sends **8-digit** codes (dashboard OTP-length setting) and the
-  input's maxLength={6} silently cut off the last two digits — no
-  code could ever be typed in full. Input now accepts 6–10 digits.
-  Waiting on Luca's confirming retest.
-
 - **2026-08-26 SESSION CLOSE — ENTIRE upcoming-releases batch
   VERIFIED LIVE by Luca ("all works and looks great" → "all looks
   good").** Everything below dated 2026-08-25/26 about upcoming
@@ -310,6 +297,18 @@ session ends mid-task; clear it when the work lands under Done.)*
 ---
 
 ## ✅ Done
+
+### Admin email-code login — WORKING END TO END (2026-08-26, MacBook)
+Luca added `{{ .Token }}` to the Magic Link template, then we fixed
+why typing the code failed while the emailed link worked: this
+Supabase project sends **8-digit** codes (dashboard OTP-length
+setting) and the input's `maxLength={6}` silently ate the last two
+digits. Input now accepts 6–10 digits, the email is lowercased before
+issue/verify (codes hash code+email; links don't care), and the
+staff-only code screen shows Supabase's real rejection reason.
+**Verified live by Luca ("ok it works").** The whole staff flow —
+password → emailed code → aal enforcement in middleware, /api/admin,
+and Postgres (migration 021) — is now confirmed working.
 
 ### Phases 1–2 (2025 → 2026-08-08)
 Personal blog era → release-first platform: reviews, artists/releases

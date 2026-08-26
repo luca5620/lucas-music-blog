@@ -15,6 +15,15 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-25 (Windows): home/friends cleanup (Luca's ask).** The
+  "WHO YOU FOLLOW" ticker is REMOVED from the home dashboard — the
+  Friends tab already carries the richer full feed, so home no longer
+  fetches friend activity at all (app/page.tsx). And in the Friends
+  tab, the "Popular With Friends" covers now LINK to their release
+  page: getPopularWithFriends joins releases(slug) and each poster
+  renders as a Link to /releases/[slug] (old reviews that predate
+  release_id fall back to the unlinked poster). Build ✓; no migration.
+
 - **2026-08-25 night (Windows): descriptions transient-failure bug
   FIXED + VERIFIED LIVE (b92a42f).** Graduation (Kanye West) showed
   no description though Genius+Wikipedia both have one: a cold

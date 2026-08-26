@@ -180,14 +180,12 @@ export default async function FriendsPage() {
 
 function PopularPoster({ item }: { item: PopularItem }) {
   const cover = safeImage(item.cover_image);
+  const label = `${item.title} — ${item.artist} · ${item.count} ${
+    item.count === 1 ? "listen" : "listens"
+  } from friends`;
 
-  return (
-    <div
-      className="poster"
-      title={`${item.title} — ${item.artist} · ${item.count} ${
-        item.count === 1 ? "listen" : "listens"
-      } from friends`}
-    >
+  const inner = (
+    <>
       {cover ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={cover} alt={`${item.title} by ${item.artist}`} />
@@ -205,6 +203,22 @@ function PopularPoster({ item }: { item: PopularItem }) {
           {formatRating(item.avg_rating)}
         </span>
       )}
+    </>
+  );
+
+  // Old reviews can predate release_id, so a tile may have no page
+  // to point at — those stay a plain poster instead of a dead link.
+  if (item.release_slug) {
+    return (
+      <Link href={`/releases/${item.release_slug}`} className="poster" title={label}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="poster" title={label}>
+      {inner}
     </div>
   );
 }

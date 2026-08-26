@@ -3,21 +3,19 @@
  *
  * Logged OUT → the test-card splash: what Peak Music Reviews is, why you'd join.
  * Logged IN  → the social dashboard: what's ON AIR right now,
- *              friends' activity, fresh drops, lists, and the
- *              community review wall. Dense and poster-first,
- *              Letterboxd-style.
+ *              fresh drops, lists, and the community review wall.
+ *              Dense and poster-first, Letterboxd-style. (Friends'
+ *              activity lives in the Friends tab, not here.)
  *
  * Server component: auth is checked with the cookie-aware Supabase
  * client so there's no loading flash.
  */
 
 import Link from "next/link";
-import { formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
 import { Suspense } from "react";
 import { getUser } from "@/lib/auth";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
-import { getFriendActivity, type ActivityItem } from "@/lib/db/activity";
 import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import QuickAccessStrip from "@/components/home/QuickAccessStrip";
 import ListsRail from "@/components/feed/ListsRail";
@@ -71,7 +69,7 @@ export default async function Home() {
   return (
     <div className="space-y-8 circuit-bg">
       <BreadcrumbSchema items={[{ name: "Home", href: "/" }]} />
-      {user ? <Dashboard userId={user.id} /> : <Splash />}
+      {user ? <Dashboard /> : <Splash />}
     </div>
   );
 }
@@ -195,13 +193,9 @@ function Splash() {
    LOGGED IN — the dashboard
    ============================================================ */
 
-async function Dashboard({ userId }: { userId: string }) {
-  // Fetch the ON AIR candidates and friend activity in parallel —
-  // both degrade to empty arrays on any error.
-  const [feed, activity] = await Promise.all([
-    getReleaseDiscoveryFeed(12).catch(() => []),
-    getFriendActivity(userId, { limit: 6 }).catch(() => [] as ActivityItem[]),
-  ]);
+async function Dashboard() {
+  // ON AIR candidates — degrades to an empty array on any error.
+  const feed = await getReleaseDiscoveryFeed(12).catch(() => []);
 
   // "On air" = releases whose live room saw activity in the last 24h.
   const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
@@ -295,26 +289,8 @@ async function Dashboard({ userId }: { userId: string }) {
         </section>
       )}
 
-      {/* ===== Friends' recent activity — compact ticker ===== */}
-      {activity.length > 0 && (
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="vhs-label text-sm">WHO YOU FOLLOW</span>
-            <div className="flex-1 divider-glow" />
-            <Link
-              href="/friends"
-              className="pixel-text text-sm text-accent-glow hover:text-accent-primary transition-colors uppercase tracking-widest"
-            >
-              Full feed →
-            </Link>
-          </div>
-          <div className="panel-xbox divide-y divide-white/5">
-            {activity.map((item, i) => (
-              <CompactActivityRow key={`${item.type}-${item.created_at}-${i}`} item={item} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* WHO YOU FOLLOW ticker removed (Luca 2026-08-25) — the
+          Friends tab already has the richer full-size version. */}
 
       <div className="divider-glow" />
 
@@ -357,45 +333,5 @@ async function Dashboard({ userId }: { userId: string }) {
       {/* About Us moved to the universal SiteFooter (Luca 2026-08-22:
           the blue pill duplicated it once the footer link shipped). */}
     </>
-  );
-}
-
-/** One-line activity row for the home dashboard (terser than /friends). */
-function CompactActivityRow({ item }: { item: ActivityItem }) {
-  const name = item.actor.display_name || item.actor.username;
-
-  // Sentence + link target per activity type.
-  let verb: string;
-  let object: string;
-  let href: string;
-  switch (item.type) {
-    case "review":
-      verb = "reviewed";
-      object = `${item.payload.title} — ${formatRating(item.payload.rating)}`;
-      href = `/reviews/${item.payload.slug}`;
-      break;
-    case "list":
-      verb = "made a list:";
-      object = item.payload.title;
-      href = `/lists/${item.actor.username}/${item.payload.slug}`;
-      break;
-    case "like":
-      verb = "liked a review of";
-      object = item.payload.review_title;
-      href = `/reviews/${item.payload.review_slug}`;
-      break;
-    case "debate":
-      verb = "started a debate:";
-      object = item.payload.title;
-      href = `/debates/${item.payload.slug}`;
-      break;
-  }
-
-  return (
-    <Link href={href} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-bg-elevated transition-colors">
-      <span className="font-bold text-text-primary shrink-0">{name}</span>
-      <span className="text-text-muted shrink-0">{verb}</span>
-      <span className="text-text-secondary truncate">{object}</span>
-    </Link>
   );
 }

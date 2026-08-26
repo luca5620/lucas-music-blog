@@ -74,6 +74,10 @@ export interface PopularItem {
   title: string;
   artist: string;
   cover_image: string | null;
+  /** Slug of the release page the tile links to — null when every
+      review in the group predates release_id (old rows), in which
+      case the tile renders as a plain (unlinked) poster. */
+  release_slug: string | null;
   /** How many friend reviews it got in the last 30 days. */
   count: number;
   /** Average of whatever ratings those carried (null if none rated). */
@@ -316,10 +320,12 @@ export async function getPopularWithFriends(
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
   // 300 rows is far more than a friend group produces in a month,
-  // while still bounding the query.
+  // while still bounding the query. The releases join gives each
+  // tile its /releases/[slug] link target (null on old rows that
+  // predate release_id).
   const { data } = await supabase
     .from("reviews")
-    .select("title, artist, cover_image, rating")
+    .select("title, artist, cover_image, rating, releases(slug)")
     .in("user_id", followedIds)
     .eq("is_published", true)
     .gte("created_at", since)
@@ -330,9 +336,11 @@ export async function getPopularWithFriends(
     artist: string;
     cover_image: string | null;
     rating: number | null;
+    // Supabase types joined rows loosely — object or one-element array.
+    releases: { slug: string } | { slug: string }[] | null;
   }
 
-  const rows: SourceRow[] = (data ?? []) as SourceRow[];
+  const rows: SourceRow[] = (data ?? []) as unknown as SourceRow[];
 
   // Group by lowercase "title|artist" so "Damn" and "DAMN." by the
   // same artist still merge when the casing differs.
@@ -340,6 +348,7 @@ export async function getPopularWithFriends(
     title: string;
     artist: string;
     cover_image: string | null;
+    release_slug: string | null;
     count: number;
     ratingSum: number;
     ratingCount: number;
@@ -354,6 +363,7 @@ export async function getPopularWithFriends(
         title: row.title,
         artist: row.artist,
         cover_image: null,
+        release_slug: null,
         count: 0,
         ratingSum: 0,
         ratingCount: 0,
@@ -364,6 +374,11 @@ export async function getPopularWithFriends(
     // Keep the first cover we see (any is fine — same release).
     if (!group.cover_image && row.cover_image) {
       group.cover_image = row.cover_image;
+    }
+    // Same for the release slug — first review with a release_id wins.
+    if (!group.release_slug) {
+      const release = Array.isArray(row.releases) ? row.releases[0] : row.releases;
+      if (release?.slug) group.release_slug = release.slug;
     }
     if (row.rating !== null && row.rating !== undefined) {
       group.ratingSum += Number(row.rating);
@@ -384,6 +399,7 @@ export async function getPopularWithFriends(
       title: g.title,
       artist: g.artist,
       cover_image: g.cover_image,
+      release_slug: g.release_slug,
       count: g.count,
       // One decimal, matching the site's 1–10.0 rating convention.
       avg_rating: g.ratingCount

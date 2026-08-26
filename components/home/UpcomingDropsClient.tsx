@@ -31,10 +31,20 @@ export interface UpcomingItem {
 
 export default function UpcomingDropsClient({
   items,
+  canAdd = true,
 }: {
   items: UpcomingItem[];
+  /** Show the paste-a-Spotify-link slot. The logged-out splash sets
+      this false (adding needs an account) so guests still get the
+      countdowns + live-room links, just not the add box
+      (Luca 2026-08-26). */
+  canAdd?: boolean;
 }) {
   const [view, setView] = useReviewView();
+
+  // Guests with nothing upcoming would see a header floating over
+  // nothing — the add box is what earns the empty state its keep.
+  if (!canAdd && items.length === 0) return null;
 
   return (
     <section className="space-y-4">
@@ -205,14 +215,17 @@ export default function UpcomingDropsClient({
         </div>
       )}
 
-      {/* The add slot — Spotify album links only, future drops only */}
-      <div className="panel-xbox p-4 sm:p-5 space-y-3 border-osd-amber/30">
-        <p className="text-xs text-text-secondary">
-          Know an album that&apos;s coming? Paste its Spotify link and the
-          countdown page + live room open before the album does.
-        </p>
-        <UpcomingDropBox />
-      </div>
+      {/* The add slot — Spotify album links only, future drops only.
+          Signed-in only: the ensure route wants a session. */}
+      {canAdd && (
+        <div className="panel-xbox p-4 sm:p-5 space-y-3 border-osd-amber/30">
+          <p className="text-xs text-text-secondary">
+            Know an album that&apos;s coming? Paste its Spotify link and the
+            countdown page + live room open before the album does.
+          </p>
+          <UpcomingDropBox />
+        </div>
+      )}
     </section>
   );
 }

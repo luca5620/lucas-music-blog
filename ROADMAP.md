@@ -298,6 +298,14 @@ session ends mid-task; clear it when the work lands under Done.)*
 
 ## ✅ Done
 
+### Dropping Soon on the logged-out splash (2026-08-26, MacBook)
+Guests now see the DROPPING SOON countdown module on the splash
+(between the feature cards and the review feed) — same three views,
+same live clocks, linking to the release pages / live rooms. The
+paste-a-Spotify-link box is signed-in only (`canAdd` prop through
+UpcomingDrops → UpcomingDropsClient); with no upcoming items a guest
+sees nothing rather than an empty header.
+
 ### Admin email-code login — WORKING END TO END (2026-08-26, MacBook)
 Luca added `{{ .Token }}` to the Magic Link template, then we fixed
 why typing the code failed while the emailed link worked: this

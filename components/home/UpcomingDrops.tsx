@@ -14,7 +14,13 @@ import UpcomingDropsClient, {
   type UpcomingItem,
 } from "@/components/home/UpcomingDropsClient";
 
-export default async function UpcomingDrops() {
+export default async function UpcomingDrops({
+  canAdd = true,
+}: {
+  /** Passed through to the client half — the logged-out splash
+      hides the paste box (adding needs an account). */
+  canAdd?: boolean;
+} = {}) {
   let upcoming: Awaited<ReturnType<typeof listUpcomingReleases>> = [];
   try {
     upcoming = await listUpcomingReleases(8);
@@ -34,5 +40,5 @@ export default async function UpcomingDrops() {
       artistName: r.artists?.name ?? null,
     }));
 
-  return <UpcomingDropsClient items={items} />;
+  return <UpcomingDropsClient items={items} canAdd={canAdd} />;
 }

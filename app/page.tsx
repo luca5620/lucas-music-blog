@@ -174,6 +174,14 @@ function Splash() {
 
       <div className="divider-glow" />
 
+      {/* Dropping Soon rides the splash too (Luca 2026-08-26): the
+          countdowns + release-page links lead straight to the live
+          rooms, and that's the pitch. canAdd=false hides the
+          paste-a-link box — adding needs an account. */}
+      <Suspense fallback={null}>
+        <UpcomingDrops canAdd={false} />
+      </Suspense>
+
       {/* Even logged out, show the community pulse so the site feels
           alive — reviews FIRST (Luca: greet people with the takes),
           then posts, then the release wall */}

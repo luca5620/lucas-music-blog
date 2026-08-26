@@ -69,6 +69,44 @@ export function getMusicboardFAQs(appStoreLive: boolean): FAQItem[] {
   ];
 }
 
+/* /letterboxd-for-music — "letterboxd for music" is the single
+   biggest how-people-ask-for-us query (Musicboard, RYM and AOTY all
+   get described this way in their SERPs). Same rules as the
+   Musicboard set: factual, dated, honest about what we don't have.
+
+   A function for the same reason as getMusicboardFAQs: the app
+   answer flips automatically when the App Store listing goes live. */
+export function getLetterboxdFAQs(appStoreLive: boolean): FAQItem[] {
+  return [
+    {
+      question: "Is there a Letterboxd for music?",
+      answer:
+        "Yes. Peak Music Reviews is a Letterboxd-style social platform for albums: members rate releases from 0 to 10.0, write reviews, build shareable lists, pin four favorite albums to a customizable profile, and follow people whose taste they trust. It also adds music-native features Letterboxd has no equivalent for — live chat rooms on release nights and two-sided community debates. RateYourMusic and Album of the Year are the older web-only databases if you want charts more than a community.",
+    },
+    {
+      question: "Is Peak Music Reviews affiliated with Letterboxd?",
+      answer:
+        "No. Letterboxd is a film platform and has no connection to Peak Music Reviews. “Letterboxd for music” is simply how people describe what they're looking for — a social rating-and-review platform with the same spirit, built for albums instead of films.",
+    },
+    {
+      question: "What about Musicboard — isn't that the Letterboxd for music?",
+      answer:
+        "Musicboard held that title for a while, but as of August 2026 it is in visible decline: TechCrunch reported repeated multi-day outages in February 2026, its Android app is no longer on Google Play, and its iOS app hasn't been updated since May 2025. Peak Music Reviews is the actively-built alternative — there's a full comparison at peakmusicreviews.com/musicboard-alternative.",
+    },
+    {
+      question: "Is Peak Music Reviews free?",
+      answer:
+        "Yes — all core functionality is free: rating, reviews, lists, live release rooms, debates, posts, and profile themes. An optional patron subscription with extra perks is planned, but the core experience stays free.",
+    },
+    {
+      question: "Does the Letterboxd for music have an app?",
+      answer: appStoreLive
+        ? "Peak Music Reviews has an iOS app on the App Store with the exact same content and account as the website, so you're never locked to one platform. An Android release is planned. Everything also works fully in any browser."
+        : "An iOS app for Peak Music Reviews is in the works, with an Android release planned after it. In the meantime everything works fully in any mobile or desktop browser — same content, same account, nothing gated to an app.",
+    },
+  ];
+}
+
 export const reviewsFAQs: FAQItem[] = [
   {
     question: "Who writes the reviews on Peak Music Reviews?",

@@ -27,14 +27,13 @@ import LiveBadge from "@/components/rooms/LiveBadge";
 import ChromeDisc from "@/components/ui/ChromeDisc";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import { BreadcrumbSchema } from "@/app/schema";
+/* App Store link for the web-only download badge in the HOME band —
+   shared constant in lib/app-store.ts (also used by the SEO landing
+   pages). The listing goes live the moment Apple approves the app. */
+import { APP_STORE_URL } from "@/lib/app-store";
 
 // The dashboard is per-viewer and realtime-ish — always render fresh.
 export const dynamic = "force-dynamic";
-
-/* App Store link for the web-only download badge in the HOME band
-   (Apple ID 6803279876, provided by Luca 2026-08-24). The listing
-   goes live at this URL the moment Apple approves the app. */
-const APP_STORE_URL = "https://apps.apple.com/us/app/peak-music-reviews/id6803279876";
 
 /** The bitten apple (Font Awesome path, CC BY 4.0) + the classic
     two-line badge text. Web-only via .app-hide — if you can see the

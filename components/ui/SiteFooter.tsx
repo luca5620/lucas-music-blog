@@ -55,6 +55,15 @@ export default function SiteFooter() {
         >
           Switching from Musicboard?
         </Link>
+        {" · "}
+        {/* Second SEO landing page — same crawlable-from-everywhere
+            reasoning as the Musicboard link above. */}
+        <Link
+          href="/letterboxd-for-music"
+          className="text-text-secondary hover:text-accent-primary transition-colors"
+        >
+          The Letterboxd for music
+        </Link>
       </p>
     </footer>
   );

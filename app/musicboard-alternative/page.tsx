@@ -29,32 +29,9 @@ import PageHero from "@/components/ui/PageHero";
 import FAQSchema from "@/components/seo/FAQSchema";
 import { BreadcrumbSchema } from "@/app/schema";
 import { getMusicboardFAQs } from "@/lib/faq-data";
-
-/* Same listing as the home-page badge (Apple ID 6803279876). */
-const APP_STORE_ID = "6803279876";
-const APP_STORE_URL = `https://apps.apple.com/us/app/peak-music-reviews/id${APP_STORE_ID}`;
-
-/**
- * Is the iOS app actually live on the App Store yet? Apple's public
- * lookup API returns resultCount 0 until the listing exists, so the
- * page never has to claim an app that isn't there — and flips to
- * "on the App Store" automatically the day approval lands (result
- * cached for an hour; on any error we assume not-live, the safe
- * claim). No hand-edit, no redeploy.
- */
-async function isAppStoreLive(): Promise<boolean> {
-  try {
-    const res = await fetch(
-      `https://itunes.apple.com/lookup?id=${APP_STORE_ID}&country=us`,
-      { next: { revalidate: 3600 } }
-    );
-    if (!res.ok) return false;
-    const data = (await res.json()) as { resultCount?: number };
-    return (data.resultCount ?? 0) > 0;
-  } catch {
-    return false;
-  }
-}
+/* Shared App Store state (lib/app-store.ts) — same listing as the
+   home-page badge; isAppStoreLive() auto-flips claims on approval. */
+import { APP_STORE_URL, isAppStoreLive } from "@/lib/app-store";
 
 export const metadata: Metadata = {
   title: "Musicboard Alternative — what to switch to in 2026",

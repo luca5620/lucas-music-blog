@@ -358,8 +358,11 @@ async function Dashboard() {
         <ListsRail />
       </Suspense>
 
-      {/* ===== Your Taste teaser ===== */}
-      <section className="panel-xbox p-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
+      {/* ===== Your Taste teaser ===== Web only (app-hide): the app
+          has the Your Taste tab right in the bottom bar, and with the
+          website plug below, two end-of-scroll modules crowded the
+          shell (Luca 2026-08-26). */}
+      <section className="app-hide panel-xbox p-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
         <div>
           <p className="pixel-text text-lg text-accent-glow">
             Want a channel tuned to just you?

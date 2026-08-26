@@ -22,8 +22,11 @@ session ends mid-task; clear it when the work lands under Done.)*
   hashing code+email, so a casing/whitespace mismatch in the typed
   email breaks codes but not links. Shipped: login page lowercases
   the email + the code screen now shows Supabase's real error in
-  parentheses. WAITING ON: Luca retesting; if it still fails, the
-  parenthesized message says why.
+  parentheses. ROOT CAUSE FOUND same session: this Supabase project
+  sends **8-digit** codes (dashboard OTP-length setting) and the
+  input's maxLength={6} silently cut off the last two digits — no
+  code could ever be typed in full. Input now accepts 6–10 digits.
+  Waiting on Luca's confirming retest.
 
 - **2026-08-26 SESSION CLOSE — ENTIRE upcoming-releases batch
   VERIFIED LIVE by Luca ("all works and looks great" → "all looks

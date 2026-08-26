@@ -223,7 +223,7 @@ export default function LoginPage() {
             <div className="text-center mb-8 space-y-2">
               <h1 className="crt-title text-3xl">CHECK YOUR EMAIL</h1>
               <p className="text-text-secondary text-sm">
-                Admin accounts need the 6-digit code we just sent to{" "}
+                Admin accounts need the sign-in code we just sent to{" "}
                 <span className="text-text-primary">{resolvedEmail}</span>
               </p>
             </div>
@@ -251,8 +251,13 @@ export default function LoginPage() {
                   onChange={(e) => setCode(e.target.value)}
                   required
                   className="form-input text-center tracking-[0.5em] text-lg"
-                  placeholder="000000"
-                  maxLength={6}
+                  placeholder="00000000"
+                  /* Supabase's OTP length is a dashboard setting
+                     (6–10 digits) and this project sends 8 — the old
+                     maxLength={6} silently cut off the last two
+                     digits, so no code could ever be entered (Luca
+                     2026-08-26). Accept the whole range. */
+                  maxLength={10}
                   autoFocus
                 />
               </div>

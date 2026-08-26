@@ -71,9 +71,18 @@ async function DescriptionBlock({
   });
   if (!desc) return null;
 
+  // Singles are songs; everything else (album/EP/mixtape/compilation)
+  // reads as an album — the heading says which one this bio is for.
+  const bioLabel =
+    release.release_type === "single" ? "Song Bio" : "Album Bio";
+
   return (
     <>
       <div className="divider-glow" />
+      <div className="flex items-center gap-2">
+        <span className="glow-orb" />
+        <span className="label-xbox">{bioLabel}</span>
+      </div>
       <p className="text-text-secondary leading-relaxed text-sm md:text-base whitespace-pre-line">
         {desc.text}
       </p>
@@ -485,10 +494,16 @@ function ReleaseContent({
 
         {/* Description — Letterboxd-style synopsis. Manual column →
             Genius about → Wikipedia intro (lib/descriptions.ts).
-            Streamed so a slow external lookup never delays the page. */}
-        <Suspense fallback={null}>
-          <DescriptionBlock release={release} artistName={artistName} />
-        </Suspense>
+            Streamed so a slow external lookup never delays the page.
+            PHONE ONLY here — on desktop the text leaves this narrow
+            column and runs horizontally across the full-width band
+            below (Luca 2026-08-26); the lookup is cached, so the
+            second render costs nothing. */}
+        <div className="xl:hidden space-y-5 sm:space-y-6">
+          <Suspense fallback={null}>
+            <DescriptionBlock release={release} artistName={artistName} />
+          </Suspense>
+        </div>
       </div>
 
       {/* Middle column, row 1: the listening surface. The Spotify
@@ -566,18 +581,15 @@ function ReleaseContent({
         <SpotifyEmbed release={release} tracks={tracks} />
       </div>
 
-      {/* Live Room — its own grid column on desktop, spanning both
-          rows so it owns the whole right side; the inner wrapper is
-          sticky + viewport-height so the chat follows you down the
-          reviews. On phones it stacks here, between the preview and
-          the reviews, same as always. */}
-      <div className="mt-5 sm:mt-6 xl:mt-0 xl:col-start-3 xl:row-start-1 xl:row-span-2 xl:self-stretch">
+      {/* Live Room — its own grid column on desktop, filling row 1 so
+          its bottom edge lines up flush with the other columns; the
+          full-width reviews band runs underneath all three. On phones
+          it stacks here, between the preview and the reviews. */}
+      <div className="mt-5 sm:mt-6 xl:mt-0 xl:col-start-3 xl:row-start-1 xl:self-stretch">
         {room && (
           <>
             <div className="divider-glow xl:hidden mb-5 sm:mb-6" />
-            {/* Shorter than full viewport (Luca 2026-08-26) — the
-                clamp keeps it reasonable on very tall monitors too. */}
-            <div className="xl:sticky xl:top-4 xl:h-[min(calc(100vh-9rem),44rem)]">
+            <div className="xl:h-full">
               <ChatPanel
                 releaseId={release.id}
                 initialMessages={initialMessages}
@@ -591,8 +603,18 @@ function ReleaseContent({
         )}
       </div>
 
-      {/* Lower band (cols 1–2 on desktop): reviews + followers */}
-      <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0 xl:col-start-1 xl:col-span-2 xl:row-start-2">
+      {/* Lower band — reviews + followers filling the WHOLE bottom
+          width (all three columns) so the page reads flush. */}
+      <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0 xl:col-start-1 xl:col-span-3 xl:row-start-2">
+        {/* Description, DESKTOP position: the Genius/Wikipedia text
+            runs horizontally across the whole page width instead of
+            stacking tall in the narrow left column. */}
+        <div className="hidden xl:block space-y-4">
+          <Suspense fallback={null}>
+            <DescriptionBlock release={release} artistName={artistName} />
+          </Suspense>
+        </div>
+
         {/* Community Reviews — every take on this release in full,
             highest-rated first (getReleaseReviews sorts by rating,
             then recency), with a persistent "add yours" */}

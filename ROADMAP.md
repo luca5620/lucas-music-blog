@@ -15,6 +15,19 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-26 (Windows): release page flush bottom + bio band.**
+  Desktop release page rework (Luca's asks): the reviews+followers
+  band now spans ALL THREE columns (full page width) instead of
+  stopping under column 2; the chat column fills just row 1 (h-full,
+  no more sticky/row-span — its bottom edge lines up flush with the
+  other columns); and the Genius/Wikipedia description LEAVES the
+  narrow left column on xl and runs horizontally across the full-
+  width band above Community Reviews (phone keeps it in the left-
+  column spot; the lookup is cached so the dual render is free).
+  The description also gained a labeled header everywhere: "Song
+  Bio" for singles, "Album Bio" for everything else (glow-orb +
+  label-xbox style). Build ✓.
+
 - **2026-08-26 (Windows): DROPPING SOON header + view switcher.**
   The home module's header now matches the other modules exactly
   (label-xbox "Countdown" tag + font-heading "Dropping Soon" title +

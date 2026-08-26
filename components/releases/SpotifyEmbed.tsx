@@ -37,7 +37,11 @@ export default function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
   const height = isTrackId ? 152 : 550;
 
   return (
-    <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
+    // xl: the card grows to fill its grid column so the preview box
+    // is always exactly as tall as the live room box beside it —
+    // universal across every release page (the iframe absorbs the
+    // extra height; Spotify's player scales its layout to fit).
+    <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden xl:flex-1 xl:flex xl:flex-col">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="glow-orb" />
@@ -50,12 +54,14 @@ export default function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
       <iframe
         src={`https://open.spotify.com/embed/${kind}/${release.spotify_id}?theme=0`}
         width="100%"
+        // The height attribute rules on phones; at xl the flex-1
+        // class overrides it and the player fills the column.
         height={height}
         frameBorder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"
         title={`Spotify preview of ${release.title}`}
-        className="rounded-lg"
+        className="rounded-lg xl:flex-1 xl:min-h-0"
       />
     </div>
   );

@@ -509,8 +509,10 @@ function ReleaseContent({
       {/* Middle column, row 1: the listening surface. The Spotify
           embed REPLACES the hand-rolled tracklist wherever it can
           render (same tracks, but playable) — the plain list only
-          survives for Genius-only imports with no Spotify id. */}
-      <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0">
+          survives for Genius-only imports with no Spotify id.
+          xl: flex column + self-stretch so the preview card fills
+          the row and its bottom edge matches the live room's. */}
+      <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0 xl:self-stretch xl:flex xl:flex-col">
         {!release.spotify_id && tracks.length > 0 && (
           <>
             <div className="divider-glow xl:hidden" />

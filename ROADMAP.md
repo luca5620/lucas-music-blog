@@ -26,7 +26,10 @@ session ends mid-task; clear it when the work lands under Done.)*
   column spot; the lookup is cached so the dual render is free).
   The description also gained a labeled header everywhere: "Song
   Bio" for singles, "Album Bio" for everything else (glow-orb +
-  label-xbox style). Build ✓.
+  label-xbox style). Follow-up same session: preview box now
+  self-stretches at xl (flex column + iframe flex-1) so it's always
+  EXACTLY as tall as the live room box beside it, on every release
+  page; phones keep fixed 550/152 player heights. Build ✓.
 
 - **2026-08-26 (Windows): DROPPING SOON header + view switcher.**
   The home module's header now matches the other modules exactly

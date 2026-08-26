@@ -15,6 +15,19 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-26 SESSION CLOSE — ENTIRE upcoming-releases batch
+  VERIFIED LIVE by Luca ("all works and looks great" → "all looks
+  good").** Everything below dated 2026-08-25/26 about upcoming
+  albums, countdowns, the home DROPPING SOON module, the 3-column
+  release page, Spotify embeds, and the flush bottom band is
+  eyeballed and approved on prod. Late additions in the final
+  round: preview box self-stretches to exactly match the live-room
+  box height at xl (universal, every release page), and review
+  pages got a "Song Review" / "Album Review" glow-orb heading above
+  the body (mirrors the Song/Album Bio heading; plain "Review" for
+  old rows with no release_type). Nothing left in-flight from this
+  feature; next session starts clean.
+
 - **2026-08-26 (Windows): release page flush bottom + bio band.**
   Desktop release page rework (Luca's asks): the reviews+followers
   band now spans ALL THREE columns (full page width) instead of

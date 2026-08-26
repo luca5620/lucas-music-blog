@@ -15,6 +15,19 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-25 night (Windows): descriptions transient-failure bug
+  FIXED + VERIFIED LIVE (b92a42f).** Graduation (Kanye West) showed
+  no description though Genius+Wikipedia both have one: a cold
+  Genius call once blew the 2.5s timeout, the resolver returned
+  null, and unstable_cache froze that null for 30 days. Fix in
+  lib/descriptions.ts, all paths (albums, singles/songs, Genius
+  imports, Wikipedia): LookupCtx marks transient failures (timeout/
+  network/5xx/429 — other 4xx stay definitive), a transient-failure
+  null now THROWS inside the cached fn so nothing is stored and the
+  next visit retries; timeout 2.5s→4s; cache key v3→v4 flushed every
+  frozen null (stuck releases/songs heal on next page view).
+  Verified on prod: Graduation page now renders the Genius blurb.
+
 - **2026-08-25 night (Windows): non-Latin catalog-import crash
   FIXED.** Luca hit "Couldn't import that release" on a Japanese
   release (artist 阿保剛): slugify() empties on fully non-Latin

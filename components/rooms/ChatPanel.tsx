@@ -573,8 +573,11 @@ export default function ChatPanel({
   const isEmpty = messages.length === 0;
 
   return (
+    // xl: fills its grid column (the release page gives it the whole
+    // right side, sticky + viewport-height) — flex column so the
+    // message list absorbs the extra height and scrolls internally.
     <div
-      className="panel-xbox p-4 sm:p-5 space-y-4 relative overflow-hidden"
+      className="panel-xbox p-4 sm:p-5 space-y-4 relative overflow-hidden xl:h-full xl:flex xl:flex-col"
       style={{ borderColor: `${accentColor}30` }}
     >
       {/* Header */}
@@ -598,11 +601,10 @@ export default function ChatPanel({
         role="log"
         aria-live="polite"
         aria-label="Live room messages"
-        className="overflow-y-auto pr-1 space-y-3"
-        style={{
-          maxHeight: "min(60vh, 500px)",
-          minHeight: "240px",
-        }}
+        // Phone: capped height, page scrolls past the room. Desktop
+        // (xl, the full-height column): the cap lifts and the list
+        // flexes to fill whatever the viewport gives it.
+        className="overflow-y-auto pr-1 space-y-3 max-h-[min(60vh,500px)] min-h-[240px] xl:max-h-none xl:flex-1 xl:min-h-0"
       >
         {isEmpty ? (
           <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center gap-3 py-8">

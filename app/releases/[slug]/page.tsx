@@ -241,7 +241,10 @@ export default async function ReleasePage({ params }: Props) {
 
   return (
     <div
-      className="space-y-6 max-w-3xl xl:max-w-6xl mx-auto overflow-hidden"
+      // overflow-x-clip (not hidden): clips sideways bleed WITHOUT
+      // creating a scroll container, which would kill the sticky
+      // chat column on desktop. max-w-7xl fits the third column.
+      className="space-y-6 max-w-3xl xl:max-w-7xl mx-auto overflow-x-clip"
       style={
         {
           "--release-accent": accentColor,
@@ -344,7 +347,11 @@ function ReleaseContent({
   const upcoming = isUpcoming(release.release_date);
 
   return (
-    <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 relative isolate overflow-hidden">
+    // release-unclip: at xl the panel switches to overflow:visible so
+    // the sticky chat column works (sticky dies inside overflow:
+    // hidden). Safe because LiquidAtmosphere clips its own blobs and
+    // CoverLiquidSync renders nothing. See globals.css.
+    <div className="panel-xbox-glow release-unclip p-4 sm:p-6 md:p-8 relative isolate">
       {/* Molten light drifting behind the whole release panel — and
           the whole site's liquid takes this album's palette while
           you're here (Luca 2026-08-25: cover-colored immersion). */}
@@ -363,16 +370,15 @@ function ReleaseContent({
             />
             {releaseDateFormatted ? ` — ${releaseDateFormatted}` : ""}
           </span>
-          <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
-            The live room is already open
-          </span>
         </div>
       )}
       <LiquidAtmosphere />
-      {/* On desktop (xl+) the page splits: identity + community stats
-          on the left, tracks / live chat / reviews on the right. On
-          phones everything stacks exactly like before. */}
-      <div className="xl:grid xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)] xl:gap-10 xl:items-start">
+      {/* On desktop (xl+) the page splits three ways: identity on the
+          left, preview + reviews in the middle, and the LIVE CHAT as
+          its own column running down the whole right side (sticky,
+          viewport-height — it rides along while you scroll reviews).
+          On phones everything stacks exactly like before. */}
+      <div className="xl:grid xl:grid-cols-[minmax(0,340px)_minmax(0,1fr)_minmax(0,380px)] xl:gap-8 xl:items-start">
       <div className="space-y-5 sm:space-y-6">
         {/* Cover Image */}
         <div
@@ -485,9 +491,12 @@ function ReleaseContent({
         </Suspense>
       </div>
 
+      {/* Middle column, row 1: the listening surface. The Spotify
+          embed REPLACES the hand-rolled tracklist wherever it can
+          render (same tracks, but playable) — the plain list only
+          survives for Genius-only imports with no Spotify id. */}
       <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0">
-        {/* Tracks */}
-        {tracks.length > 0 && (
+        {!release.spotify_id && tracks.length > 0 && (
           <>
             <div className="divider-glow xl:hidden" />
             <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
@@ -555,22 +564,33 @@ function ReleaseContent({
         {/* Spotify preview player — 30s snippets, streamed by Spotify
             under their licenses (we host no audio). */}
         <SpotifyEmbed release={release} tracks={tracks} />
+      </div>
 
-        {/* Live Room */}
+      {/* Live Room — its own grid column on desktop, spanning both
+          rows so it owns the whole right side; the inner wrapper is
+          sticky + viewport-height so the chat follows you down the
+          reviews. On phones it stacks here, between the preview and
+          the reviews, same as always. */}
+      <div className="mt-5 sm:mt-6 xl:mt-0 xl:col-start-3 xl:row-start-1 xl:row-span-2 xl:self-stretch">
         {room && (
           <>
-            <div className="divider-glow" />
-            <ChatPanel
-              releaseId={release.id}
-              initialMessages={initialMessages}
-              initialRoom={room}
-              accentColor={accentColor}
-              initialReactionCounts={initialReactionCounts}
-              initialViewerReactions={initialViewerReactions}
-            />
+            <div className="divider-glow xl:hidden mb-5 sm:mb-6" />
+            <div className="xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)]">
+              <ChatPanel
+                releaseId={release.id}
+                initialMessages={initialMessages}
+                initialRoom={room}
+                accentColor={accentColor}
+                initialReactionCounts={initialReactionCounts}
+                initialViewerReactions={initialViewerReactions}
+              />
+            </div>
           </>
         )}
+      </div>
 
+      {/* Lower band (cols 1–2 on desktop): reviews + followers */}
+      <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 xl:mt-0 xl:col-start-1 xl:col-span-2 xl:row-start-2">
         {/* Community Reviews — every take on this release in full,
             highest-rated first (getReleaseReviews sorts by rating,
             then recency), with a persistent "add yours" */}

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isUpcoming, todayEastern } from "@/lib/upcoming";
 import type {
   Profile,
   Release,
@@ -332,12 +333,15 @@ export async function listUpcomingReleases(limit = 12): Promise<
   (Release & { artists: { name: string; slug: string } | null })[]
 > {
   const supabase = await createClient();
-  const today = new Date().toISOString().slice(0, 10);
 
+  // Date filter at Eastern-day granularity (release day itself stays
+  // in the query), then the exact drop-moment check — midnight ET,
+  // via lib/upcoming — trims anything already out. This keeps a
+  // release on the shelf until the second it actually drops.
   const { data, error } = await supabase
     .from("releases")
     .select("*, artists!releases_primary_artist_id_fkey(name, slug)")
-    .gt("release_date", today)
+    .gte("release_date", todayEastern())
     .order("release_date", { ascending: true })
     .limit(limit);
 
@@ -349,10 +353,12 @@ export async function listUpcomingReleases(limit = 12): Promise<
       | { name: string; slug: string }[]
       | null;
   };
-  return (data as unknown as Row[]).map((r) => ({
-    ...r,
-    artists: Array.isArray(r.artists) ? r.artists[0] ?? null : r.artists,
-  }));
+  return (data as unknown as Row[])
+    .filter((r) => isUpcoming(r.release_date))
+    .map((r) => ({
+      ...r,
+      artists: Array.isArray(r.artists) ? r.artists[0] ?? null : r.artists,
+    }));
 }
 
 export async function listReleases(opts?: {

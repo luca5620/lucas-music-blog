@@ -3,9 +3,10 @@
 /**
  * LiveCountdown — a ticking DD:HH:MM:SS clock to a release date.
  *
- * The catalog stores dates only (YYYY-MM-DD), so the clock counts
- * down to midnight UTC of release day — same anchor lib/upcoming.ts
- * uses everywhere, so the tick and the D–x badges always agree.
+ * Counts down to MIDNIGHT EASTERN of release day (the US drop
+ * moment) via lib/upcoming's easternMidnightUtcMs — the one shared
+ * anchor, so the tick and every D–x badge always agree. Never do
+ * date math here directly.
  *
  * Hydration-safe: the server renders a static "D–x" placeholder and
  * the ticking clock only takes over after mount (a live clock can
@@ -14,6 +15,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { easternMidnightUtcMs } from "@/lib/upcoming";
 
 interface LiveCountdownProps {
   /** YYYY-MM-DD release date (longer ISO strings are truncated). */
@@ -22,7 +24,7 @@ interface LiveCountdownProps {
 }
 
 function remaining(releaseDate: string): number {
-  const target = Date.parse(`${releaseDate.slice(0, 10)}T00:00:00Z`);
+  const target = easternMidnightUtcMs(releaseDate);
   if (Number.isNaN(target)) return 0;
   return Math.max(0, Math.floor((target - Date.now()) / 1000));
 }

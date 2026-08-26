@@ -1,37 +1,70 @@
 /**
  * Upcoming-release date helpers.
  *
- * A release is "upcoming" when its release_date is strictly after
- * today (UTC). Dates in the catalog are plain YYYY-MM-DD strings, so
- * all comparisons happen on date strings / UTC midnights — no
- * timezone math, no Date-parsing surprises. The moment the calendar
- * flips past release day, every countdown UI disappears on its own.
+ * THE TIMEZONE RULE (Luca 2026-08-26): music drops at MIDNIGHT
+ * EASTERN (US release convention — Spotify/Apple flip at 12:00 AM
+ * ET), so every countdown and every "is it out yet?" check in the
+ * app anchors to 00:00 America/New_York on release day — never UTC
+ * midnight (that made clocks run 4–5 hours ahead). DST is handled
+ * (EDT −4 / EST −5 picked per-date via Intl), and ANY new feature
+ * that needs "when does it drop" must call easternMidnightUtcMs /
+ * isUpcoming from this file instead of rolling its own date math.
+ *
+ * Dates in the catalog are plain YYYY-MM-DD strings. These helpers
+ * run on both server (Vercel, full ICU) and client (browsers ship
+ * Intl with timezone data).
  */
 
-/** Today as a YYYY-MM-DD string (UTC). */
-export function todayUtc(): string {
-  return new Date().toISOString().slice(0, 10);
+/**
+ * The exact UTC timestamp (ms) of midnight Eastern on the given
+ * date — i.e. the moment the release actually drops. Tries both
+ * possible Eastern offsets and keeps the one that really lands on
+ * 00:00 of that date in America/New_York, so DST just works.
+ * Returns NaN for unparseable input.
+ */
+export function easternMidnightUtcMs(
+  releaseDate: string | null | undefined
+): number {
+  if (!releaseDate || releaseDate.length < 10) return NaN;
+  const day = releaseDate.slice(0, 10);
+
+  for (const offset of ["-04:00", "-05:00"]) {
+    const ts = Date.parse(`${day}T00:00:00${offset}`);
+    if (Number.isNaN(ts)) return NaN;
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/New_York",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(ts);
+    const get = (type: string) =>
+      parts.find((p) => p.type === type)?.value ?? "";
+    const rendered = `${get("year")}-${get("month")}-${get("day")}`;
+    if (rendered === day && get("hour") === "00") return ts;
+  }
+  // Fallback (should never hit for a valid date): EST offset.
+  return Date.parse(`${day}T00:00:00-05:00`);
 }
 
-/** True when the release date is in the future (strictly after today). */
+/** True when the release hasn't dropped yet (now < midnight ET). */
 export function isUpcoming(releaseDate: string | null | undefined): boolean {
-  if (!releaseDate || releaseDate.length < 10) return false;
-  return releaseDate.slice(0, 10) > todayUtc();
+  const target = easternMidnightUtcMs(releaseDate);
+  return !Number.isNaN(target) && target > Date.now();
 }
 
 /**
- * Whole days from today until the release date (1 = tomorrow).
- * Returns null when the date is missing or not in the future.
+ * Whole days (rounded up) from now until the drop moment.
+ * Returns null when the date is missing or already past.
  */
 export function daysUntil(releaseDate: string | null | undefined): number | null {
-  if (!isUpcoming(releaseDate)) return null;
-  const target = Date.parse(`${releaseDate!.slice(0, 10)}T00:00:00Z`);
-  const today = Date.parse(`${todayUtc()}T00:00:00Z`);
-  if (Number.isNaN(target)) return null;
-  return Math.round((target - today) / 86_400_000);
+  const target = easternMidnightUtcMs(releaseDate);
+  if (Number.isNaN(target) || target <= Date.now()) return null;
+  return Math.ceil((target - Date.now()) / 86_400_000);
 }
 
-/** "in 10 days" / "tomorrow" / "today" — countdown phrasing for UI. */
+/** "in 10 days" / "tomorrow" — countdown phrasing for UI. */
 export function dropsInLabel(releaseDate: string | null | undefined): string | null {
   const days = daysUntil(releaseDate);
   if (days === null) return null;
@@ -50,4 +83,14 @@ export function formatDropDate(releaseDate: string | null | undefined): string |
     year: "numeric",
     timeZone: "UTC",
   });
+}
+
+/** Today's date (YYYY-MM-DD) in Eastern time — for SQL date filters. */
+export function todayEastern(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
 }

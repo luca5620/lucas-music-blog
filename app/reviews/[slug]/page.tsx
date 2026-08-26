@@ -269,11 +269,13 @@ export default async function ReviewPage({
           )}
         </div>
 
-        {/* Link to the canonical release page */}
+        {/* Link to the canonical release page — a full boxed button
+            (like the like button) so it stands out, not a text link
+            (Luca 2026-08-26). */}
         {release && (
           <Link
             href={`/releases/${release.slug}`}
-            className="inline-flex items-center gap-2 text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest pixel-text"
+            className="btn-y2k btn-y2k-outline inline-flex items-center gap-2"
           >
             View release page + all reviews →
           </Link>

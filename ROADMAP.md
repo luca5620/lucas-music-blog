@@ -15,6 +15,30 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-26 (Windows): upcoming-albums round 3 (Luca's asks,
+  after eyeballing round 2 live — "all works and looks great").**
+  (1) Spotify embed now REPLACES the Tracks card whenever the
+  release has a spotify_id (it repeated the tracklist twice); the
+  hand-rolled list survives only for Genius-only imports. (2) THE
+  TIMEZONE RULE: countdowns were 4h ahead — music drops at MIDNIGHT
+  EASTERN, so lib/upcoming.ts now anchors everything to 00:00
+  America/New_York via easternMidnightUtcMs (DST-proof, tested both
+  boundaries); LiveCountdown + isUpcoming/daysUntil +
+  listUpcomingReleases all run through it — any future drop-time
+  feature MUST use these helpers, never raw UTC date math. (3) Web
+  release page is now a 3-column xl grid: identity | preview +
+  reviews | LIVE CHAT as its own column spanning both rows, sticky
+  + viewport-height so it rides down the whole right side; enabled
+  by .release-unclip (panel overflow:visible at xl only — sticky
+  dies inside overflow:hidden; LiquidAtmosphere self-clips so
+  nothing leaks) and the page wrapper switching to overflow-x-clip.
+  Phones stack exactly as before. (4) "The live room is already
+  open" banner text removed. (5) Review page: "View release page +
+  all reviews" is now a real boxed btn-y2k button. Build ✓; NO
+  migration. Eyeball: desktop release page (chat column + sticky
+  behavior + short-reviews case), phone release page unchanged,
+  clocks now agree with Spotify's own countdown.
+
 - **2026-08-26 (Windows): upcoming-albums round 2 (Luca's asks).**
   (1) HOME gets a "DROPPING SOON" module right below the community
   feed (UpcomingDrops + UpcomingDropBox): countdown shelf with LIVE

@@ -1447,6 +1447,16 @@ body {
   overflow: visible;
 }
 
+/* Release page, desktop only: the live-chat column is position:
+   sticky, and sticky dies inside an overflow:hidden ancestor — so
+   at xl the release panel unclips itself. Mobile keeps the normal
+   clip. Safe: LiquidAtmosphere clips its own blobs internally. */
+@media (min-width: 80rem) {
+  .panel-xbox-glow.release-unclip {
+    overflow: visible;
+  }
+}
+
 /* Hero panel — stronger bloom */
 .panel-xbox-glow {
   background: rgba(12, 14, 22, 0.62);

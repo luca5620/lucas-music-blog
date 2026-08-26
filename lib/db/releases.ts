@@ -323,6 +323,38 @@ export async function getReleaseDiscoveryFeed(
   });
 }
 
+/**
+ * Releases whose release_date is still in the future — the countdown
+ * albums people pre-added via a pasted Spotify link. Soonest first,
+ * primary artist name joined in for the "Dropping Soon" rail.
+ */
+export async function listUpcomingReleases(limit = 12): Promise<
+  (Release & { artists: { name: string; slug: string } | null })[]
+> {
+  const supabase = await createClient();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { data, error } = await supabase
+    .from("releases")
+    .select("*, artists!releases_primary_artist_id_fkey(name, slug)")
+    .gt("release_date", today)
+    .order("release_date", { ascending: true })
+    .limit(limit);
+
+  if (error || !data) return [];
+
+  type Row = Release & {
+    artists:
+      | { name: string; slug: string }
+      | { name: string; slug: string }[]
+      | null;
+  };
+  return (data as unknown as Row[]).map((r) => ({
+    ...r,
+    artists: Array.isArray(r.artists) ? r.artists[0] ?? null : r.artists,
+  }));
+}
+
 export async function listReleases(opts?: {
   sort?: "recent" | "popularity" | "alpha";
   limit?: number;

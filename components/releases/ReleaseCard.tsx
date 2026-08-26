@@ -10,6 +10,7 @@ import Link from "next/link";
 import type { Release } from "@/lib/types/database";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
+import { daysUntil } from "@/lib/upcoming";
 import LiveBadge from "@/components/rooms/LiveBadge";
 
 interface ReleaseCardProps {
@@ -72,16 +73,26 @@ export default function ReleaseCard({
         </div>
       </div>
 
-      {/* Type + Year */}
+      {/* Type + Year (or countdown when the date is still ahead) */}
       <div className="flex items-center justify-between">
         <span className="label-xbox text-[0.6rem]">
           {release.release_type.toUpperCase()}
         </span>
-        {year && (
-          <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-            {year}
-          </span>
-        )}
+        {(() => {
+          const days = daysUntil(release.release_date);
+          if (days !== null) {
+            return (
+              <span className="pixel-text text-xs text-osd-amber uppercase tracking-widest animate-pulse">
+                {days === 1 ? "Tomorrow" : `D–${days}`}
+              </span>
+            );
+          }
+          return year ? (
+            <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
+              {year}
+            </span>
+          ) : null;
+        })()}
       </div>
 
       {/* Title + Artist */}

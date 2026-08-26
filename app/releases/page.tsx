@@ -12,6 +12,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listReleases } from "@/lib/db/releases";
 import ReleasesIndexClient from "@/components/releases/ReleasesIndexClient";
+import DroppingSoonRail from "@/components/releases/DroppingSoonRail";
 import { BreadcrumbSchema } from "@/app/schema";
 import PageHero from "@/components/ui/PageHero";
 import BrowseSwitch from "@/components/ui/BrowseSwitch";
@@ -86,6 +87,11 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
       {/* App-only: Reviews + Releases share one bottom tab — this
           flips between them. Hidden on web (top nav covers both). */}
       <BrowseSwitch active="releases" />
+
+      {/* Albums with a future release date — countdown shelf. Only on
+          the first page so deep pagination stays clean; renders
+          nothing when no upcoming releases exist. */}
+      {pageNum === 1 && <DroppingSoonRail />}
 
       {/* Sort tabs */}
       <div className="flex flex-wrap gap-2">

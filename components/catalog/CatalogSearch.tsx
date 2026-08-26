@@ -27,6 +27,8 @@ interface CatalogResult {
   kind: string;
   slug?: string;
   unreleased?: boolean;
+  /** Release date is in the future — a countdown/pre-save album. */
+  upcoming?: boolean;
 }
 
 export interface CatalogPick {
@@ -53,7 +55,10 @@ const SOURCE_BADGE: Record<CatalogResult["source"], { text: string; cls: string 
 
 export default function CatalogSearch({
   onPick,
-  placeholder = "Search any album, song, or artist…",
+  // The Spotify-link mention is load-bearing: pasting an album link is
+  // the ONLY way to add an UPCOMING album (search hides those until
+  // release day), so the input itself has to teach the trick.
+  placeholder = "Search anything — or paste a Spotify link…",
   autoFocus = false,
   label,
 }: CatalogSearchProps) {
@@ -63,6 +68,9 @@ export default function CatalogSearch({
   const [searching, setSearching] = useState(false);
   const [importing, setImporting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Server-sent hint (e.g. "that's a countdown link, paste the album
+  // link instead") — informational, styled softer than an error.
+  const [notice, setNotice] = useState<string | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -132,6 +140,7 @@ export default function CatalogSearch({
     lastQueryRef.current = q;
     if (q.trim().length < 2) {
       setResults([]);
+      setNotice(null);
       setSearching(false);
       return;
     }
@@ -140,10 +149,14 @@ export default function CatalogSearch({
     try {
       const res = await fetch(`/api/search/catalog?q=${encodeURIComponent(q)}`);
       if (!res.ok) throw new Error("search failed");
-      const data = (await res.json()) as { results: CatalogResult[] };
+      const data = (await res.json()) as {
+        results: CatalogResult[];
+        notice?: string;
+      };
       // A slower response for an older query must never clobber results.
       if (lastQueryRef.current === q) {
         setResults(data.results);
+        setNotice(data.notice ?? null);
         setOpen(true);
       }
     } catch {
@@ -216,6 +229,9 @@ export default function CatalogSearch({
       </div>
 
       {error && <p className="mt-1.5 text-xs text-accent-rose">{error}</p>}
+      {!error && notice && (
+        <p className="mt-1.5 text-xs text-osd-amber">{notice}</p>
+      )}
 
       {/* Portal dropdown: fixed-position at the measured anchor, top
           z-index — nothing on any page can cover or clip it. */}
@@ -270,6 +286,13 @@ export default function CatalogSearch({
                 {r.unreleased && (
                   <span className="pixel-text text-[10px] text-osd-amber border border-osd-amber/40 rounded px-1 py-0.5 shrink-0">
                     UNRELEASED
+                  </span>
+                )}
+
+                {/* Future release_date — the countdown-album case. */}
+                {r.upcoming && (
+                  <span className="pixel-text text-[10px] text-osd-amber border border-osd-amber/40 rounded px-1 py-0.5 shrink-0 animate-pulse">
+                    DROPS SOON
                   </span>
                 )}
 

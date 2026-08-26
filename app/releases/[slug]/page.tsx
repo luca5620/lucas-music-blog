@@ -30,6 +30,7 @@ import {
 } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
+import { isUpcoming, dropsInLabel } from "@/lib/upcoming";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
@@ -336,12 +337,32 @@ function ReleaseContent({
   artistName,
   artistSlug,
 }: ReleaseContentProps) {
+  // Countdown album: the page (and its live room) exists BEFORE the
+  // music does. isUpcoming flips to false on release day by itself.
+  const upcoming = isUpcoming(release.release_date);
+  const countdown = dropsInLabel(release.release_date);
+
   return (
     <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 relative isolate overflow-hidden">
       {/* Molten light drifting behind the whole release panel — and
           the whole site's liquid takes this album's palette while
           you're here (Luca 2026-08-25: cover-colored immersion). */}
       <CoverLiquidSync coverUrl={release.cover_image} />
+
+      {/* Countdown banner — big OSD-amber broadcast strip. This is the
+          "waiting room" signal: follow the release, sit in the chat,
+          be here when it drops. */}
+      {upcoming && (
+        <div className="mb-5 sm:mb-6 border border-osd-amber/50 rounded-lg bg-osd-amber/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+          <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest animate-pulse">
+            ⏳ Dropping {countdown}
+            {releaseDateFormatted ? ` — ${releaseDateFormatted}` : ""}
+          </span>
+          <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
+            The live room is already open
+          </span>
+        </div>
+      )}
       <LiquidAtmosphere />
       {/* On desktop (xl+) the page splits: identity + community stats
           on the left, tracks / live chat / reviews on the right. On
@@ -391,8 +412,12 @@ function ReleaseContent({
             {release.release_type.toUpperCase()}
           </span>
           {releaseDateFormatted && (
-            <span className="text-text-muted text-xs">
-              Released {releaseDateFormatted}
+            <span
+              className={
+                upcoming ? "text-osd-amber text-xs" : "text-text-muted text-xs"
+              }
+            >
+              {upcoming ? "Drops" : "Released"} {releaseDateFormatted}
             </span>
           )}
         </div>

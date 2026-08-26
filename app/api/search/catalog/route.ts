@@ -31,8 +31,10 @@ export async function GET(request: NextRequest) {
   const limited = await rateLimit(`catalog-search:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
+  // 250 (not 120) so a full pasted Spotify link — intl path + ?si=
+  // tracking param — never gets silently dropped.
   const q = (request.nextUrl.searchParams.get("q") ?? "").trim();
-  if (q.length < 2 || q.length > 120) {
+  if (q.length < 2 || q.length > 250) {
     return NextResponse.json({ results: [], geniusEnabled: true });
   }
 

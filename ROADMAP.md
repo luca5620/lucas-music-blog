@@ -15,6 +15,32 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-25 night (Windows): UPCOMING ALBUMS + countdown rooms
+  (Luca's ask — the "live chatroom before the album drops" selling
+  point).** Spotify search HIDES pre-release albums, but GET
+  /albums/{id} returns them in full (verified against Ellie
+  Goulding's "I Know Too Much", drops 2026-09-04, all 10 tracks +
+  cover + future date) — so the door in is PASTING THE SPOTIFY LINK.
+  Shipped: (1) lib/catalog.ts parseSpotifyLink — album/track/URI
+  links (intl paths, ?si= junk) resolve directly in catalog search;
+  /prerelease/ countdown links get an explanatory notice (their ids
+  aren't in the public API — copy the album link off the artist
+  page instead). (2) CatalogSearch: notice line, amber DROPS SOON
+  badge, placeholder now teaches "or paste a Spotify link".
+  (3) /search page: new "Add to the station" box (AddToCatalog) —
+  logged-in users import anything and land straight on its page,
+  no review required; the room auto-opens with the page
+  (getOrCreateRoom already did this). (4) /releases: "Dropping
+  Soon" amber rail (DroppingSoonRail + listUpcomingReleases),
+  soonest first, D–x countdown stamps. (5) Release page: amber
+  countdown banner ("Dropping in N days — the live room is already
+  open") + "Drops {date}" instead of "Released"; ReleaseCard shows
+  D–x instead of year. All countdown UI self-clears on release day
+  (lib/upcoming.ts compares date strings, UTC). Build ✓; NO
+  migration (RPC already accepts future dates). NOT yet clicked
+  through by a human — Luca: log in, paste the Ellie link into
+  /search's add box, confirm the page + room + rail appear.
+
 - **2026-08-25 (Windows): home/friends cleanup (Luca's ask).** The
   "WHO YOU FOLLOW" ticker is REMOVED from the home dashboard — the
   Friends tab already carries the richer full feed, so home no longer

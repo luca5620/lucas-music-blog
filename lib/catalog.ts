@@ -16,7 +16,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { spotifyFetch, slugify } from "@/lib/spotify-import";
-import { searchReleases } from "@/lib/db/releases";
+import { searchReleases, getReleaseBySpotifyId } from "@/lib/db/releases";
+import { isUpcoming } from "@/lib/upcoming";
 import {
   searchGeniusSongs,
   getGeniusSong,
@@ -44,6 +45,128 @@ export interface CatalogResult {
   /** Present for local rows so the UI can deep-link immediately. */
   slug?: string;
   unreleased?: boolean;
+  /** Release date is in the future — a countdown/pre-save album. */
+  upcoming?: boolean;
+}
+
+/* ---------------------------------------------------------------
+   Spotify link paste — the door for UPCOMING albums.
+
+   Spotify's search API hides albums that haven't dropped yet, but
+   GET /albums/{id} happily returns them (full tracklist, cover,
+   future release_date) — verified against a real countdown album.
+   So the way to get a pre-release album onto the platform is:
+   paste its Spotify link into the catalog search. We detect the
+   link, resolve it directly, and hand back a single result.
+   --------------------------------------------------------------- */
+
+export interface SpotifyLinkRef {
+  kind: "album" | "track" | "prerelease";
+  id: string;
+}
+
+/**
+ * Recognize a pasted Spotify link/URI. Handles:
+ *   https://open.spotify.com/album/{id}   (+ /intl-xx/ paths, ?si= params)
+ *   https://open.spotify.com/track/{id}
+ *   https://open.spotify.com/prerelease/{id}  (countdown page — see below)
+ *   spotify:album:{id} / spotify:track:{id}
+ * Returns null for anything that isn't a Spotify link.
+ */
+export function parseSpotifyLink(raw: string): SpotifyLinkRef | null {
+  const q = raw.trim();
+
+  // spotify:album:xyz URI form
+  const uri = q.match(/^spotify:(album|track):([A-Za-z0-9]{10,30})$/);
+  if (uri) return { kind: uri[1] as "album" | "track", id: uri[2] };
+
+  if (!/^https?:\/\/(open\.)?spotify\.com\//i.test(q)) return null;
+
+  const path = q.match(
+    /spotify\.com\/(?:intl-[a-z-]+\/)?(album|track|prerelease)\/([A-Za-z0-9]{10,30})/i
+  );
+  if (!path) return null;
+  return { kind: path[1].toLowerCase() as SpotifyLinkRef["kind"], id: path[2] };
+}
+
+/**
+ * Resolve a pasted link straight to catalog results — no text search.
+ * Already-imported rows come back as `local` (they have a slug); fresh
+ * ones come back as spotify/spotify_track picks that import on click.
+ */
+async function resolveSpotifyLink(
+  ref: SpotifyLinkRef
+): Promise<{ results: CatalogResult[]; notice?: string }> {
+  // Countdown pages (/prerelease/…) use their own id namespace that the
+  // public API can't look up — only the real album link works here.
+  if (ref.kind === "prerelease") {
+    return {
+      results: [],
+      notice:
+        "That's a Spotify countdown link, which can't be read directly. Open the ARTIST's Spotify page, find the upcoming album in their discography, and share/copy that album link here instead.",
+    };
+  }
+
+  // Already on PMR? Hand back the local row (it deep-links via slug).
+  const existing = await getReleaseBySpotifyId(ref.id);
+  if (existing) {
+    return {
+      results: [
+        {
+          source: "local",
+          id: existing.id,
+          title: existing.title,
+          artist: "", // detail page carries the artist; search UI tolerates blank
+          cover: existing.cover_image,
+          year: existing.release_date?.slice(0, 4) ?? null,
+          kind: existing.release_type,
+          slug: existing.slug,
+          unreleased: existing.is_unreleased,
+          upcoming: isUpcoming(existing.release_date),
+        },
+      ],
+    };
+  }
+
+  if (ref.kind === "album") {
+    const album = (await spotifyFetch(`/albums/${ref.id}`)) as SpotifyAlbumFull;
+    return {
+      results: [
+        {
+          source: "spotify",
+          id: album.id,
+          title: album.name,
+          artist:
+            album.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
+          cover: album.images?.[0]?.url ?? null,
+          year: album.release_date?.slice(0, 4) ?? null,
+          kind:
+            album.album_type === "single" && album.tracks.items.length > 3
+              ? "EP"
+              : album.album_type,
+          upcoming: isUpcoming(album.release_date ?? null),
+        },
+      ],
+    };
+  }
+
+  // track link
+  const track = (await spotifyFetch(`/tracks/${ref.id}`)) as SpotifyTrackFull;
+  return {
+    results: [
+      {
+        source: "spotify_track",
+        id: track.id,
+        title: track.name,
+        artist:
+          track.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
+        cover: track.album?.images?.[0]?.url ?? null,
+        year: track.album?.release_date?.slice(0, 4) ?? null,
+        kind: "song",
+        upcoming: isUpcoming(track.album?.release_date ?? null),
+      },
+    ],
+  };
 }
 
 interface SpotifyAlbumHit {
@@ -153,6 +276,7 @@ async function searchLocal(query: string, limit = 6): Promise<CatalogResult[]> {
       kind: r.release_type,
       slug: r.slug,
       unreleased: r.is_unreleased,
+      upcoming: isUpcoming(r.release_date),
     };
   });
 }
@@ -165,7 +289,30 @@ async function searchLocal(query: string, limit = 6): Promise<CatalogResult[]> {
 export async function searchCatalog(query: string): Promise<{
   results: CatalogResult[];
   geniusEnabled: boolean;
+  /** Human hint shown under the search box (e.g. countdown-link help). */
+  notice?: string;
 }> {
+  // Pasted Spotify link? Resolve it directly — this is how UPCOMING
+  // albums get in, since Spotify search hides them until release day.
+  const linkRef = parseSpotifyLink(query);
+  if (linkRef) {
+    try {
+      const resolved = await resolveSpotifyLink(linkRef);
+      return { ...resolved, geniusEnabled: geniusConfigured() };
+    } catch (err) {
+      console.warn(
+        "Spotify link resolve failed:",
+        err instanceof Error ? err.message : err
+      );
+      return {
+        results: [],
+        geniusEnabled: geniusConfigured(),
+        notice:
+          "Couldn't read that Spotify link — double-check it, or try searching by name.",
+      };
+    }
+  }
+
   const [local, spotify, spotifyTracks, genius] = await Promise.all([
     searchLocal(query),
     searchSpotifyAlbums(query, 6),

@@ -113,17 +113,16 @@ session ends mid-task; clear it when the work lands under Done.)*
   SHIPPED 2026-08-24 late: /musicboard-alternative live (answer-first
   copy, comparison table, FAQPage schema, footer link + sitemap
   entry) — GSC review-snippet criticals fixed (ItemList Review
-  author) + Luca clicked Validate Fix. SHIPPED 2026-08-25 night:
-  /letterboxd-for-music (same playbook — answer-first block,
-  Letterboxd-idea→Peak mapping table with two honest "not yet" rows,
-  claimants cards incl. internal link to /musicboard-alternative,
-  FAQPage schema, footer + sitemap); App Store URL/auto-flip logic
-  extracted to lib/app-store.ts (home badge + both landing pages now
-  share it). "rateyourmusic alternative" page: CUT by Luca
-  2026-08-25 ("we dont need that page") — don't re-pitch. Remaining
-  content play: per-artist unreleased hubs. Musicboard importer:
-  promised NOTHING (no public export exists) — build only if
-  switchers ask via contact email.
+  author) + Luca clicked Validate Fix. **Comparison-page play is
+  OVER per Luca 2026-08-25**: a /letterboxd-for-music page was built
+  that night and he had it REMOVED same night ("you didnt need to
+  make that one"), and the "rateyourmusic alternative" page is cut
+  too — /musicboard-alternative stays, but do NOT build or re-pitch
+  further comparison landing pages. Kept from that work: App Store
+  URL/auto-flip logic extracted to lib/app-store.ts (shared by home
+  badge + musicboard page). Remaining content play: per-artist
+  unreleased hubs. Musicboard importer: promised NOTHING (no public
+  export exists) — build only if switchers ask via contact email.
 
 ---
 

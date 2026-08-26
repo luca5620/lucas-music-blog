@@ -21,8 +21,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/artists`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
     // Switcher landing page — targets "musicboard alternative" queries.
     { url: `${BASE_URL}/musicboard-alternative`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    // "Letterboxd for music" — the biggest how-people-ask-for-us query.
-    { url: `${BASE_URL}/letterboxd-for-music`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
   ];
 
   try {

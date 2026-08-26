@@ -298,6 +298,15 @@ session ends mid-task; clear it when the work lands under Done.)*
 
 ## ✅ Done
 
+### Spotify player on Your Taste cards (2026-08-26, MacBook)
+The release page's Spotify embed comes to TUNED TO YOU: on fullscreen
+review + release cards the "Listen on Spotify" pill is now "Play
+Preview" — tapping mounts Spotify's compact player (152px, dark) right
+on the card. Reuses the card's `playing` state, so swiping away or
+exiting fullscreen unmounts it (no audio bleed). URLs that don't map
+to a track/album embed keep the external link. Poster grids stay
+plain links — their release pages carry the full-size embed.
+
 ### Dropping Soon on the logged-out splash (2026-08-26, MacBook)
 Guests now see the DROPPING SOON countdown module on the splash
 (between the feature cards and the review feed) — same three views,

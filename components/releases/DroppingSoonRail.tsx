@@ -14,8 +14,9 @@
 
 import Link from "next/link";
 import { listUpcomingReleases } from "@/lib/db/releases";
-import { daysUntil, formatDropDate } from "@/lib/upcoming";
+import { formatDropDate } from "@/lib/upcoming";
 import { smallCover } from "@/lib/images";
+import LiveCountdown from "@/components/releases/LiveCountdown";
 
 export default async function DroppingSoonRail() {
   const upcoming = await listUpcomingReleases(12);
@@ -37,7 +38,6 @@ export default async function DroppingSoonRail() {
       {/* Horizontal shelf of countdown covers */}
       <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1">
         {upcoming.map((release) => {
-          const days = daysUntil(release.release_date);
           const dropDate = formatDropDate(release.release_date);
           return (
             <Link
@@ -60,10 +60,11 @@ export default async function DroppingSoonRail() {
                     {"//"}
                   </span>
                 )}
-                {/* Big countdown stamp — the decorative gesture IS the info */}
-                {days !== null && (
-                  <span className="absolute bottom-2 left-2 pixel-text text-[11px] text-osd-amber bg-black/80 border border-osd-amber/50 rounded px-1.5 py-0.5 tracking-widest animate-pulse">
-                    {days === 1 ? "TOMORROW" : `D–${days}`}
+                {/* Big countdown stamp — live-ticking, the decorative
+                    gesture IS the info */}
+                {release.release_date && (
+                  <span className="absolute bottom-2 left-2 pixel-text text-[11px] text-osd-amber bg-black/80 border border-osd-amber/50 rounded px-1.5 py-0.5 tracking-widest">
+                    <LiveCountdown releaseDate={release.release_date} />
                   </span>
                 )}
               </div>

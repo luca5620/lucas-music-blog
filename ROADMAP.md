@@ -15,6 +15,26 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-26 (Windows): upcoming-albums round 2 (Luca's asks).**
+  (1) HOME gets a "DROPPING SOON" module right below the community
+  feed (UpcomingDrops + UpcomingDropBox): countdown shelf with LIVE
+  ticking DD HH:MM:SS clocks + a paste slot that accepts ONLY
+  Spotify album links and ONLY albums not yet out — released albums
+  get turned away with a "find it through search" message; success
+  jumps straight to the new release page/room. (2) The /search "Add
+  to the station" box is REMOVED (AddToCatalog.tsx deleted) — the
+  home module replaces it. (3) LiveCountdown.tsx: hydration-safe
+  ticking clock to midnight-UTC of release day, flips to OUT NOW at
+  zero; also live in the release-page banner and the /releases rail
+  stamps. (4) Spotify EMBED player tried out: SpotifyEmbed.tsx on
+  release pages (under Tracks) — official open.spotify.com/embed
+  iframe, 30s previews streamed by Spotify (album player, or track
+  player for single-track imports); CSP frame-src now allows
+  open.spotify.com (next.config.ts). Build ✓; NO migration. Not yet
+  human-eyeballed: paste the Ellie link on HOME, watch the clock
+  tick, and check how the embed looks (esp. on a not-yet-released
+  album — Spotify may show a disabled/pre-save card there).
+
 - **2026-08-25 night (Windows): UPCOMING ALBUMS + countdown rooms
   (Luca's ask — the "live chatroom before the album drops" selling
   point).** Spotify search HIDES pre-release albums, but GET

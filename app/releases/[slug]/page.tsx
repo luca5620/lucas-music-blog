@@ -30,7 +30,9 @@ import {
 } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
-import { isUpcoming, dropsInLabel } from "@/lib/upcoming";
+import { isUpcoming } from "@/lib/upcoming";
+import LiveCountdown from "@/components/releases/LiveCountdown";
+import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
@@ -340,7 +342,6 @@ function ReleaseContent({
   // Countdown album: the page (and its live room) exists BEFORE the
   // music does. isUpcoming flips to false on release day by itself.
   const upcoming = isUpcoming(release.release_date);
-  const countdown = dropsInLabel(release.release_date);
 
   return (
     <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 relative isolate overflow-hidden">
@@ -352,10 +353,14 @@ function ReleaseContent({
       {/* Countdown banner — big OSD-amber broadcast strip. This is the
           "waiting room" signal: follow the release, sit in the chat,
           be here when it drops. */}
-      {upcoming && (
+      {upcoming && release.release_date && (
         <div className="mb-5 sm:mb-6 border border-osd-amber/50 rounded-lg bg-osd-amber/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-          <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest animate-pulse">
-            ⏳ Dropping {countdown}
+          <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest">
+            ⏳ DROPS IN{" "}
+            <LiveCountdown
+              releaseDate={release.release_date}
+              className="animate-pulse"
+            />
             {releaseDateFormatted ? ` — ${releaseDateFormatted}` : ""}
           </span>
           <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
@@ -546,6 +551,10 @@ function ReleaseContent({
             </div>
           </>
         )}
+
+        {/* Spotify preview player — 30s snippets, streamed by Spotify
+            under their licenses (we host no audio). */}
+        <SpotifyEmbed release={release} tracks={tracks} />
 
         {/* Live Room */}
         {room && (

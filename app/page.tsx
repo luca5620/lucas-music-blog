@@ -18,6 +18,7 @@ import { getUser } from "@/lib/auth";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
 import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import QuickAccessStrip from "@/components/home/QuickAccessStrip";
+import UpcomingDrops from "@/components/home/UpcomingDrops";
 import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
 import PostsFeed from "@/components/posts/PostsFeed";
@@ -301,6 +302,12 @@ async function Dashboard() {
           Your Taste). */}
       <Suspense fallback={null}>
         <DiscoveryFeed />
+      </Suspense>
+
+      {/* DROPPING SOON — countdown shelf + paste-a-Spotify-link slot,
+          right below the community feed (Luca 2026-08-26). */}
+      <Suspense fallback={null}>
+        <UpcomingDrops />
       </Suspense>
 
       <Suspense fallback={null}>

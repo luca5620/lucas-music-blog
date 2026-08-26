@@ -30,9 +30,11 @@ export default function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
   const isTrackId =
     tracks.length === 1 && tracks[0]?.spotify_id === release.spotify_id;
   const kind = isTrackId ? "track" : "album";
-  // Spotify's compact player is 152px; the album player gets room for
-  // its tracklist. theme=0 = dark, matching the CRT.
-  const height = isTrackId ? 152 : 352;
+  // Spotify's compact player is 152px; the album player gets real
+  // room for its tracklist (Luca 2026-08-26: extend the preview —
+  // it replaced the Tracks card, so it should show the tracks).
+  // theme=0 = dark, matching the CRT.
+  const height = isTrackId ? 152 : 550;
 
   return (
     <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">

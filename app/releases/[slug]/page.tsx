@@ -575,7 +575,9 @@ function ReleaseContent({
         {room && (
           <>
             <div className="divider-glow xl:hidden mb-5 sm:mb-6" />
-            <div className="xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)]">
+            {/* Shorter than full viewport (Luca 2026-08-26) — the
+                clamp keeps it reasonable on very tall monitors too. */}
+            <div className="xl:sticky xl:top-4 xl:h-[min(calc(100vh-9rem),44rem)]">
               <ChatPanel
                 releaseId={release.id}
                 initialMessages={initialMessages}

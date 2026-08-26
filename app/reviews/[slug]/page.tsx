@@ -286,7 +286,19 @@ export default async function ReviewPage({
         {/* Divider */}
         <div className="divider-glow" />
 
-        {/* Review body */}
+        {/* Review body — labeled like the release page's Song/Album
+            Bio heading, so it's obvious at a glance whether this is
+            a song or an album being reviewed. */}
+        <div className="flex items-center gap-2">
+          <span className="glow-orb" />
+          <span className="label-xbox">
+            {review.release_type === "single"
+              ? "Song Review"
+              : review.release_type
+              ? "Album Review"
+              : "Review"}
+          </span>
+        </div>
         <div className="space-y-4">
           {review.summary ? (
             <p className="text-text-secondary leading-relaxed text-sm md:text-base whitespace-pre-line">

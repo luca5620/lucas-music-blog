@@ -292,10 +292,12 @@ export default function ReviewForm({
         </FormField>
       </fieldset>
 
-      {/* ========== STEP 3: STANDOUT TRACKS (checkbox picks) ========== */}
+      {/* ========== STEP 3: PERSONAL FAVORITES (checkbox picks) ==========
+          (Renamed from "Standout Tracks" 2026-08-25 — display label
+          only; the DB column and API field stay standout_tracks.) */}
       {release && tracks.length > 0 && (
         <fieldset className="panel-xbox p-5 space-y-3">
-          <legend className="label-xbox">Standout Tracks</legend>
+          <legend className="label-xbox">Personal Favorites</legend>
           <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
             check the ones that hit — picked straight from the tracklist
           </p>

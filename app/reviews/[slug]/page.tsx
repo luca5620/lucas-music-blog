@@ -301,7 +301,8 @@ export default async function ReviewPage({
           )}
         </div>
 
-        {/* Standout Tracks */}
+        {/* Personal Favorites (the standout_tracks column keeps its
+            name — this is a display-label rename only) */}
         {review.standout_tracks.length > 0 && (
           <>
             <div className="divider-glow" />
@@ -309,7 +310,7 @@ export default async function ReviewPage({
             <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
-                <span className="label-xbox">Standout Tracks</span>
+                <span className="label-xbox">Personal Favorites</span>
               </div>
 
               <div className="space-y-2">

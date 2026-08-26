@@ -95,7 +95,7 @@ export async function PUT(
     const parsedTracks = parseTrackPicks(standout_tracks);
     if (parsedTracks === null) {
       return NextResponse.json(
-        { error: "Invalid standout tracks." },
+        { error: "Invalid favorite tracks." },
         { status: 400 }
       );
     }
@@ -106,7 +106,7 @@ export async function PUT(
       const titles = new Set((release?.tracks ?? []).map((t) => t.title));
       if (parsedTracks.some((t) => !titles.has(t.title))) {
         return NextResponse.json(
-          { error: "Standout tracks must come from the release's track list." },
+          { error: "Personal favorites must come from the release's track list." },
           { status: 400 }
         );
       }

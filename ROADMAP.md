@@ -32,11 +32,13 @@ session ends mid-task; clear it when the work lands under Done.)*
   silvery-indigo accents, blue+violet nebula clouds + haze sweep +
   silver dust backdrop (bd-ps2-* in globals.css, wired into
   ThemeBackdrop/ThemeLiquidSync/settings picker/profile maps, both
-  perf lists so it pauses like every backdrop). **MIGRATION 022
-  (022-theme-ps2.sql) NOT YET RUN — Luca must paste it in the
-  Supabase SQL Editor; until then saving the PS2 theme fails the
-  theme check constraint.** A public/backdrops/ps2.webm video loop
-  can be added later — BackdropVideo picks it up automatically.
+  perf lists so it pauses like every backdrop). Migration 022 RUN ✓
+  (Luca, 2026-08-25 — ALL migrations through 022 now applied). A
+  public/backdrops/ps2.webm video loop can be added later —
+  BackdropVideo picks it up automatically. Same night: the non-Latin
+  import fix CONFIRMED WORKING by Luca, and "Standout Tracks"
+  renamed to "Personal Favorites" (display labels + API error copy
+  only; the standout_tracks column/field name stays).
 
 - **2026-08-25 evening (Windows): app polish + immersion batch, all
   verified by Luca on device where applicable.** Thermal saga

@@ -34,7 +34,7 @@ Field limits are noted; all copy below fits.
 > **RATE ANYTHING**
 > Every review is tied to a real release. Search the full streaming
 > catalog plus a deep library of unreleased tracks, leaks, and loosies
-> that never hit streaming. Score it 0–10, call out standout tracks,
+> that never hit streaming. Score it 0–10, pick your personal favorites,
 > and say what you actually think — no pretentious jargon required.
 >
 > **BUILD YOUR SHELF**

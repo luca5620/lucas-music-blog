@@ -24,9 +24,25 @@
 
 import { unstable_cache } from "next/cache";
 
-const TIMEOUT_MS = 2500;
+// 4s: cold Genius calls regularly blow past 2.5s (a timeout here is
+// what left Graduation description-less — see LookupCtx below). The
+// description block streams via Suspense, so a slow lookup delays
+// only itself, never the page.
+const TIMEOUT_MS = 4000;
 const MAX_CHARS = 900;
 const GENIUS_API = "https://api.genius.com";
+
+/**
+ * Tracks whether any external call failed TRANSIENTLY (timeout,
+ * network error, 5xx/429) during one resolve. A null result with a
+ * transient failure must NOT be cached — unstable_cache would freeze
+ * it for 30 days, which is exactly how Graduation showed nothing for
+ * weeks while both Genius and Wikipedia had it. Definitive misses
+ * (every source answered, none had text — 404s included) still cache.
+ */
+interface LookupCtx {
+  transientFailure: boolean;
+}
 
 export interface ReleaseDescription {
   text: string;
@@ -68,6 +84,7 @@ function sameName(a: string, b: string): boolean {
 
 async function fetchJson(
   url: string,
+  ctx: LookupCtx,
   headers?: Record<string, string>,
 ): Promise<unknown | null> {
   try {
@@ -76,9 +93,15 @@ async function fetchJson(
       cache: "no-store", // unstable_cache owns caching; see below
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      // 5xx/429 = the source hiccupped (retry next visit); other 4xx
+      // (wiki 404s a nonexistent page title, etc.) = definitive no.
+      if (res.status >= 500 || res.status === 429) ctx.transientFailure = true;
+      return null;
+    }
     return await res.json();
   } catch {
+    ctx.transientFailure = true; // timeout / network error
     return null;
   }
 }
@@ -124,11 +147,13 @@ function geniusHeaders(): Record<string, string> | null {
 
 async function geniusSongDescription(
   songId: string | number,
+  ctx: LookupCtx,
 ): Promise<{ text: string | null; url: string | null; albumId: number | null; albumName: string | null }> {
   const headers = geniusHeaders();
   if (!headers) return { text: null, url: null, albumId: null, albumName: null };
   const raw = (await fetchJson(
     `${GENIUS_API}/songs/${songId}?text_format=plain`,
+    ctx,
     headers,
   )) as GeniusSongPayload | null;
   const song = raw?.response?.song;
@@ -142,11 +167,13 @@ async function geniusSongDescription(
 
 async function geniusAlbumDescription(
   albumId: number,
+  ctx: LookupCtx,
 ): Promise<{ text: string | null; url: string | null }> {
   const headers = geniusHeaders();
   if (!headers) return { text: null, url: null };
   const raw = (await fetchJson(
     `${GENIUS_API}/albums/${albumId}?text_format=plain`,
+    ctx,
     headers,
   )) as GeniusAlbumPayload | null;
   const album = raw?.response?.album;
@@ -159,11 +186,13 @@ async function geniusAlbumDescription(
 async function geniusSearchBestHit(
   title: string,
   artistName: string,
+  ctx: LookupCtx,
 ): Promise<number | null> {
   const headers = geniusHeaders();
   if (!headers) return null;
   const raw = (await fetchJson(
     `${GENIUS_API}/search?q=${encodeURIComponent(`${title} ${artistName}`)}`,
+    ctx,
     headers,
   )) as GeniusSearchPayload | null;
   const hits = raw?.response?.hits ?? [];
@@ -196,6 +225,7 @@ async function wikipediaDescription(
   title: string,
   artistName: string,
   isSingle: boolean,
+  ctx: LookupCtx,
 ): Promise<{ text: string; url: string | null } | null> {
   const kind = isSingle ? "song" : "album";
   // "Blonde (Frank Ocean album)" → "Blonde (album)" → "Blonde"; the
@@ -209,6 +239,7 @@ async function wikipediaDescription(
   for (const candidate of candidates) {
     const raw = (await fetchJson(
       `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(candidate)}`,
+      ctx,
       { accept: "application/json" },
     )) as WikiSummary | null;
     if (!raw || raw.type !== "standard") continue;
@@ -227,6 +258,75 @@ async function wikipediaDescription(
 
 /* ─── The resolver ─── */
 
+async function resolveDescription(
+  title: string,
+  artistName: string,
+  releaseType: string,
+  geniusId: string | null,
+  firstTrack: string | null,
+  ctx: LookupCtx,
+): Promise<ReleaseDescription | null> {
+  const isSingle = releaseType === "single";
+
+  /* Genius first (Luca: their deep dives cover a wide range). */
+  // Genius-imported releases (catalog stores the SONG id as
+  // "song:<id>" — pass the bare id or the API 404s, which is how
+  // Hold It Down lost its bio). These are the unreleased/leaked/
+  // deep-catalog imports — Wikipedia has no article for them, so
+  // its fallback can only ever match some OTHER work with the same
+  // name. Genius or nothing (Luca 2026-08-23).
+  if (geniusId) {
+    const songId = geniusId.replace(/^song:/, "");
+    const song = await geniusSongDescription(songId, ctx);
+    if (song.text) return { text: song.text, source: "genius", url: song.url };
+    // Leaks often have duplicate Genius pages; if the imported page
+    // is blank, search may land on the twin that carries the bio.
+    // Still Genius-only — never Wikipedia for these.
+    const hitId = await geniusSearchBestHit(title, artistName, ctx);
+    if (hitId && String(hitId) !== songId) {
+      const dup = await geniusSongDescription(hitId, ctx);
+      if (dup.text) return { text: dup.text, source: "genius", url: dup.url };
+    }
+    return null;
+  }
+
+  if (isSingle) {
+    const hitId = await geniusSearchBestHit(title, artistName, ctx);
+    if (hitId) {
+      const song = await geniusSongDescription(hitId, ctx);
+      if (song.text) {
+        return { text: song.text, source: "genius", url: song.url };
+      }
+    }
+  } else {
+    // Album-shaped release. Searching the album TITLE returns junk
+    // (making-of pages, users' listening logs), so anchor on the
+    // first track when we have one — its song page points straight
+    // at the real album. Either way the landed-on album's name must
+    // EQUAL the release title, so a "(20th Anniversary Edition)"
+    // page can never describe the original.
+    const anchors = firstTrack ? [firstTrack, title] : [title];
+    for (const anchor of anchors) {
+      const hitId = await geniusSearchBestHit(anchor, artistName, ctx);
+      if (!hitId) continue;
+      const song = await geniusSongDescription(hitId, ctx);
+      if (song.albumId && song.albumName && sameName(song.albumName, title)) {
+        const album = await geniusAlbumDescription(song.albumId, ctx);
+        if (album.text) {
+          return { text: album.text, source: "genius", url: album.url };
+        }
+        break; // right album found, it just has no text — don't re-hop
+      }
+    }
+  }
+
+  /* Wikipedia fallback — the cleaner synopsis when it exists. */
+  const wiki = await wikipediaDescription(title, artistName, isSingle, ctx);
+  if (wiki) return { text: wiki.text, source: "wikipedia", url: wiki.url };
+
+  return null;
+}
+
 const externalDescription = unstable_cache(
   async (
     title: string,
@@ -235,69 +335,29 @@ const externalDescription = unstable_cache(
     geniusId: string | null,
     firstTrack: string | null,
   ): Promise<ReleaseDescription | null> => {
-    const isSingle = releaseType === "single";
-
-    /* Genius first (Luca: their deep dives cover a wide range). */
-    // Genius-imported releases (catalog stores the SONG id as
-    // "song:<id>" — pass the bare id or the API 404s, which is how
-    // Hold It Down lost its bio). These are the unreleased/leaked/
-    // deep-catalog imports — Wikipedia has no article for them, so
-    // its fallback can only ever match some OTHER work with the same
-    // name. Genius or nothing (Luca 2026-08-23).
-    if (geniusId) {
-      const songId = geniusId.replace(/^song:/, "");
-      const song = await geniusSongDescription(songId);
-      if (song.text) return { text: song.text, source: "genius", url: song.url };
-      // Leaks often have duplicate Genius pages; if the imported page
-      // is blank, search may land on the twin that carries the bio.
-      // Still Genius-only — never Wikipedia for these.
-      const hitId = await geniusSearchBestHit(title, artistName);
-      if (hitId && String(hitId) !== songId) {
-        const dup = await geniusSongDescription(hitId);
-        if (dup.text) return { text: dup.text, source: "genius", url: dup.url };
-      }
-      return null;
+    const ctx: LookupCtx = { transientFailure: false };
+    const result = await resolveDescription(
+      title,
+      artistName,
+      releaseType,
+      geniusId,
+      firstTrack,
+      ctx,
+    );
+    // A miss caused (even possibly) by a timeout/outage must not be
+    // frozen for 30 days — throwing here keeps unstable_cache from
+    // storing it, and getReleaseDescription's catch turns it into a
+    // no-description render for THIS view only; the next visit
+    // retries. Genuine "no source has text" misses still cache.
+    if (!result && ctx.transientFailure) {
+      throw new Error("transient external-lookup failure — not caching");
     }
-
-    if (isSingle) {
-      const hitId = await geniusSearchBestHit(title, artistName);
-      if (hitId) {
-        const song = await geniusSongDescription(hitId);
-        if (song.text) {
-          return { text: song.text, source: "genius", url: song.url };
-        }
-      }
-    } else {
-      // Album-shaped release. Searching the album TITLE returns junk
-      // (making-of pages, users' listening logs), so anchor on the
-      // first track when we have one — its song page points straight
-      // at the real album. Either way the landed-on album's name must
-      // EQUAL the release title, so a "(20th Anniversary Edition)"
-      // page can never describe the original.
-      const anchors = firstTrack ? [firstTrack, title] : [title];
-      for (const anchor of anchors) {
-        const hitId = await geniusSearchBestHit(anchor, artistName);
-        if (!hitId) continue;
-        const song = await geniusSongDescription(hitId);
-        if (song.albumId && song.albumName && sameName(song.albumName, title)) {
-          const album = await geniusAlbumDescription(song.albumId);
-          if (album.text) {
-            return { text: album.text, source: "genius", url: album.url };
-          }
-          break; // right album found, it just has no text — don't re-hop
-        }
-      }
-    }
-
-    /* Wikipedia fallback — the cleaner synopsis when it exists. */
-    const wiki = await wikipediaDescription(title, artistName, isSingle);
-    if (wiki) return { text: wiki.text, source: "wikipedia", url: wiki.url };
-
-    return null;
+    return result;
   },
-  // v3: flushes the anniversary-edition / wrong-match blurbs cached
-  // by earlier versions.
-  ["release-description-v3"],
+  // v4: flushes the nulls frozen by transient failures under v3 (the
+  // Graduation bug) — and before that, v3 flushed the wrong-match
+  // blurbs of earlier versions.
+  ["release-description-v4"],
   { revalidate: 60 * 60 * 24 * 30 }, // 30 days per (title, artist, …) tuple
 );
 

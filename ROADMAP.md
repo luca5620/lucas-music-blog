@@ -15,6 +15,17 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-26 (Windows): DROPPING SOON header + view switcher.**
+  The home module's header now matches the other modules exactly
+  (label-xbox "Countdown" tag + font-heading "Dropping Soon" title +
+  divider + View All → /releases) instead of the vhs-label style,
+  and it gets the same ViewToggle as Latest Drops / Community Feed —
+  detailed / posters / compact, sharing the sitewide persisted view
+  preference. All three views keep the live-ticking amber clock
+  (custom countdown flavors of ReleaseViews' layouts — no UNRATED
+  stamps on albums that can't have reviews yet). Split into
+  UpcomingDrops (server fetch) + UpcomingDropsClient. Build ✓.
+
 - **2026-08-26 (Windows): upcoming-albums round 3 (Luca's asks,
   after eyeballing round 2 live — "all works and looks great").**
   (1) Spotify embed now REPLACES the Tracks card whenever the

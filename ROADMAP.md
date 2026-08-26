@@ -119,10 +119,11 @@ session ends mid-task; clear it when the work lands under Done.)*
   claimants cards incl. internal link to /musicboard-alternative,
   FAQPage schema, footer + sitemap); App Store URL/auto-flip logic
   extracted to lib/app-store.ts (home badge + both landing pages now
-  share it). Next content plays, in order: "rateyourmusic
-  alternative" page, per-artist unreleased hubs. Musicboard
-  importer: promised NOTHING (no public export exists) — build only
-  if switchers ask via contact email.
+  share it). "rateyourmusic alternative" page: CUT by Luca
+  2026-08-25 ("we dont need that page") — don't re-pitch. Remaining
+  content play: per-artist unreleased hubs. Musicboard importer:
+  promised NOTHING (no public export exists) — build only if
+  switchers ask via contact email.
 
 ---
 

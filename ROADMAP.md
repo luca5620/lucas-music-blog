@@ -298,14 +298,23 @@ session ends mid-task; clear it when the work lands under Done.)*
 
 ## ✅ Done
 
+### App-only "check out our website" plug on home (2026-08-26, MacBook)
+End of the home scroll (both splash and dashboard), `.app-only`, OSD
+styling: "For a better experience, check out our website" +
+peakmusicreviews.com. Luca's community-building nudge — the big
+screen is where sit-down reviews get written. Not a link on purpose:
+the shell IS the site, tapping would just reload the page.
+
 ### Spotify player on Your Taste cards (2026-08-26, MacBook)
-The release page's Spotify embed comes to TUNED TO YOU: on fullscreen
-review + release cards the "Listen on Spotify" pill is now "Play
-Preview" — tapping mounts Spotify's compact player (152px, dark) right
-on the card. Reuses the card's `playing` state, so swiping away or
-exiting fullscreen unmounts it (no audio bleed). URLs that don't map
-to a track/album embed keep the external link. Poster grids stay
-plain links — their release pages carry the full-size embed.
+The release page's Spotify embed comes to TUNED TO YOU: fullscreen
+review + release cards mount Spotify's compact player (152px, dark)
+automatically while the card is on screen — no tap-to-load pill
+(Luca: the embed has its own play button, a pill first is a double
+press). An IntersectionObserver unmounts it as the card swipes away
+and remounts on return, so audio never bleeds between channels;
+verified by Luca. URLs that don't map to a track/album embed keep
+the external link. Poster grids stay plain links — their release
+pages carry the full-size embed.
 
 ### Dropping Soon on the logged-out splash (2026-08-26, MacBook)
 Guests now see the DROPPING SOON countdown module on the splash

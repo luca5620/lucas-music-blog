@@ -216,6 +216,32 @@ function SurfCard({
     if (!fullscreen) setPlaying(false);
   }, [fullscreen]);
 
+  // Spotify embed on review/release cards: no tap-to-load (Luca
+  // 2026-08-26 — the embed has its own play button, a pill first is
+  // a double press). Instead the player mounts while the card fills
+  // the frame and unmounts as it leaves — unmounting is what stops
+  // the audio when you swipe to the next channel.
+  const wantsEmbed =
+    fullscreen &&
+    (item.type === "review" || item.type === "release") &&
+    !!item.spotify_url &&
+    !!toSpotifyEmbed(item.spotify_url);
+  const [embedLive, setEmbedLive] = useState(false);
+  useEffect(() => {
+    if (!wantsEmbed) {
+      setEmbedLive(false);
+      return;
+    }
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setEmbedLive(entry.intersectionRatio >= 0.5),
+      { threshold: [0.5] },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [wantsEmbed]);
+
   const frameClass =
     "relative block w-full h-full snap-start snap-always overflow-hidden group";
 
@@ -454,42 +480,31 @@ function SurfCard({
           </>
         )}
 
-        {/* Straight to the music — tapping the pill now mounts
-            Spotify's own compact player right on the card (the same
-            sanctioned embed the release page uses; Luca 2026-08-26:
-            bring it to Your Taste's songs and albums). Reuses the
-            `playing` state, so the swipe-away IntersectionObserver
-            and the fullscreen-exit effect unmount it — audio never
-            leaks into the next channel. URLs that don't map to an
-            embed keep the old external link. Fullscreen only; the
-            pager card is one big link to the item's page. */}
+        {/* Straight to the music — Spotify's compact player, mounted
+            automatically while the card is on screen (see the
+            embedLive observer above; the same sanctioned embed the
+            release page uses). The fixed-height slot stays put so
+            mount/unmount never shifts the card's layout. URLs that
+            don't map to an embed keep the old external link.
+            Fullscreen only; the pager card is one big link to the
+            item's page. */}
         {fullscreen &&
           (item.type === "review" || item.type === "release") &&
           item.spotify_url &&
-          (playing && toSpotifyEmbed(item.spotify_url) ? (
-            <iframe
-              src={toSpotifyEmbed(item.spotify_url)!}
-              width="100%"
-              height={152}
-              frameBorder="0"
-              allow="autoplay; clipboard-write; encrypted-media"
-              title={`Spotify preview of ${item.title}`}
-              className="w-full max-w-md rounded-lg shrink-0"
-            />
-          ) : toSpotifyEmbed(item.spotify_url) ? (
-            <button
-              type="button"
-              onClick={() => {
-                hapticTap();
-                setPlaying(true);
-              }}
-              className="shrink-0 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#1DB954]/50 bg-[#1DB954]/10 text-[#1DB954] hover:bg-[#1DB954]/20 transition-colors text-xs font-bold uppercase tracking-wider font-[family-name:var(--font-heading)]"
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
-                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm4.6 14.5a.62.62 0 0 1-.86.2c-2.36-1.44-5.33-1.77-8.82-.97a.62.62 0 1 1-.28-1.21c3.82-.88 7.1-.5 9.75 1.12.3.18.39.57.21.86zm1.23-2.73a.78.78 0 0 1-1.07.26c-2.7-1.66-6.82-2.14-10.01-1.17a.78.78 0 1 1-.45-1.49c3.65-1.11 8.18-.57 11.28 1.33.36.22.48.7.25 1.07zm.1-2.85C14.7 9 9.35 8.82 6.26 9.76a.93.93 0 1 1-.54-1.79c3.55-1.08 9.45-.87 13.18 1.34a.93.93 0 0 1-.95 1.6z" />
-              </svg>
-              Play Preview
-            </button>
+          (wantsEmbed ? (
+            <div className="w-full max-w-md h-[152px] shrink-0">
+              {embedLive && (
+                <iframe
+                  src={toSpotifyEmbed(item.spotify_url)!}
+                  width="100%"
+                  height={152}
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media"
+                  title={`Spotify preview of ${item.title}`}
+                  className="w-full rounded-lg"
+                />
+              )}
+            </div>
           ) : (
             <a
               href={item.spotify_url}

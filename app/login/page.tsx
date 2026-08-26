@@ -74,7 +74,11 @@ export default function LoginPage() {
     // username and resolved server-side (migration 017's
     // email_for_login — it only answers when the password is right,
     // so usernames can't be turned into emails).
-    let email = identifier.trim();
+    // Lowercased because the 6-digit code is verified by hashing
+    // code+email together — "Vince@" vs "vince@" makes every code
+    // read as wrong, while the emailed LINK (token-hash only)
+    // still works (Luca 2026-08-26: exactly that symptom).
+    let email = identifier.trim().toLowerCase();
     if (!email.includes("@")) {
       const { data: resolved } = await supabase.rpc("email_for_login", {
         identifier: email,
@@ -162,7 +166,13 @@ export default function LoginPage() {
     });
 
     if (verifyError) {
-      setError("Wrong or expired code — check the newest email.");
+      // Only staff ever see this screen, so show Supabase's real
+      // reason next to the friendly line — "expired", "invalid",
+      // rate-limited, etc. — instead of leaving them (and us)
+      // guessing which one it was.
+      setError(
+        `Wrong or expired code — check the newest email. (${verifyError.message})`
+      );
       setLoading(false);
       return;
     }

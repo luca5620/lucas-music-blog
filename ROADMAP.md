@@ -15,6 +15,16 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-26 (MacBook): admin code-entry bug hunt.** Luca added
+  `{{ .Token }}` to the Magic Link template ✓ — email now carries the
+  6-digit code — but TYPING the code is rejected while the email's
+  LINK signs in fine. Suspected cause: the code is verified by
+  hashing code+email, so a casing/whitespace mismatch in the typed
+  email breaks codes but not links. Shipped: login page lowercases
+  the email + the code screen now shows Supabase's real error in
+  parentheses. WAITING ON: Luca retesting; if it still fails, the
+  parenthesized message says why.
+
 - **2026-08-26 SESSION CLOSE — ENTIRE upcoming-releases batch
   VERIFIED LIVE by Luca ("all works and looks great" → "all looks
   good").** Everything below dated 2026-08-25/26 about upcoming

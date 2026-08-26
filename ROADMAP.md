@@ -15,6 +15,18 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-25 night (Windows): non-Latin catalog-import crash
+  FIXED.** Luca hit "Couldn't import that release" on a Japanese
+  release (artist 阿保剛): slugify() empties on fully non-Latin
+  names, the fallback slug embedded a MIXED-CASE Spotify id
+  (`artist-lyaLqV`), and catalog_import_release's lowercase-only
+  slug regex rejected it — so EVERY release whose artist/title is
+  entirely non-Latin script failed to import. Fix: all id-derived
+  fallback slugs are lowercased (lib/catalog.ts ×4 +
+  lib/spotify-import.ts resolve helpers). Genius ids are numeric,
+  already safe. No migration needed. Luca should re-click a
+  Japanese result to confirm after deploy.
+
 - **2026-08-25 night (Windows): PS2 "Nebula" profile theme** (Luca's
   ask: "galaxy cloud/nebula like the console intro"). New `ps2` theme:
   silvery-indigo accents, blue+violet nebula clouds + haze sweep +

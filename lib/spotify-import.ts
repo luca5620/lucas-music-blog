@@ -145,22 +145,26 @@ async function resolveArtistSlug(
   base: string,
   spotifyId: string
 ): Promise<string> {
-  const candidate = base || `artist-${spotifyId.slice(-4)}`;
+  // Spotify ids are mixed-case; slugs are lowercase-only site-wide,
+  // so every id-derived piece gets lowercased.
+  const suffix = spotifyId.slice(-4).toLowerCase();
+  const candidate = base || `artist-${suffix}`;
   const existing = await getArtistBySlug(candidate);
   if (!existing) return candidate;
   if (existing.spotify_id === spotifyId) return candidate; // we own it
-  return `${candidate}-${spotifyId.slice(-4)}`;
+  return `${candidate}-${suffix}`;
 }
 
 async function resolveReleaseSlug(
   base: string,
   spotifyId: string
 ): Promise<string> {
-  const candidate = base || `release-${spotifyId.slice(-4)}`;
+  const suffix = spotifyId.slice(-4).toLowerCase();
+  const candidate = base || `release-${suffix}`;
   const existing = await getReleaseBySlug(candidate);
   if (!existing) return candidate;
   if (existing.spotify_id === spotifyId) return candidate;
-  return `${candidate}-${spotifyId.slice(-4)}`;
+  return `${candidate}-${suffix}`;
 }
 
 export async function importArtistFromSpotify(

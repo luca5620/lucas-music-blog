@@ -302,7 +302,11 @@ async function ensureFromSpotify(albumId: string): Promise<Release> {
 
   return importViaRpc({
     release: {
-      slug: slugify(`${album.name}-${album.artists?.[0]?.name ?? ""}`) || `release-${albumId.slice(-6)}`,
+      // Fallback ids MUST be lowercased: slugify() empties on fully
+      // non-Latin names (Japanese/Korean/Cyrillic/…), and Spotify ids
+      // are mixed-case while the RPC's slug regex is lowercase-only —
+      // an uppercase fallback slug fails the whole import.
+      slug: slugify(`${album.name}-${album.artists?.[0]?.name ?? ""}`) || `release-${albumId.slice(-6).toLowerCase()}`,
       title: album.name,
       release_type: releaseType,
       release_date: coerceDate(album.release_date, album.release_date_precision),
@@ -319,7 +323,9 @@ async function ensureFromSpotify(albumId: string): Promise<Release> {
       popularity: album.popularity ?? null,
     },
     artists: fullArtists.map((a, i) => ({
-      slug: slugify(a.name) || `artist-${a.id.slice(-6)}`,
+      // Lowercase for the same reason as the release slug above —
+      // this exact line is what broke every all-Japanese artist.
+      slug: slugify(a.name) || `artist-${a.id.slice(-6).toLowerCase()}`,
       name: a.name,
       spotify_id: a.id,
       image_url: a.images?.[0]?.url ?? null,
@@ -372,9 +378,11 @@ async function ensureFromSpotifyTrack(trackId: string): Promise<Release> {
 
   return importViaRpc({
     release: {
+      // Lowercased fallback — see ensureFromSpotify: mixed-case
+      // Spotify ids fail the RPC's lowercase-only slug regex.
       slug:
         slugify(`${track.name}-${track.artists?.[0]?.name ?? ""}`) ||
-        `track-${trackId.slice(-6)}`,
+        `track-${trackId.slice(-6).toLowerCase()}`,
       title: track.name,
       release_type: "single",
       release_date: coerceDate(
@@ -398,7 +406,7 @@ async function ensureFromSpotifyTrack(trackId: string): Promise<Release> {
       popularity: track.popularity ?? null,
     },
     artists: fullArtists.map((a, i) => ({
-      slug: slugify(a.name) || `artist-${a.id.slice(-6)}`,
+      slug: slugify(a.name) || `artist-${a.id.slice(-6).toLowerCase()}`,
       name: a.name,
       spotify_id: a.id,
       image_url: a.images?.[0]?.url ?? null,

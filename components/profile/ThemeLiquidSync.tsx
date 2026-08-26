@@ -16,6 +16,7 @@ import type { ProfileTheme } from "@/lib/types/database";
 
 const TRIOS: Record<ProfileTheme, [string, string, string]> = {
   "crt-blue": ["160, 224, 171", "255, 172, 46", "165, 45, 37"], // site default
+  ps2: ["100, 140, 220", "158, 130, 226", "36, 48, 112"],
   ps3: ["126, 201, 232", "184, 228, 245", "74, 147, 179"],
   ps4: ["74, 144, 217", "127, 179, 232", "32, 80, 150"],
   "xbox-og": ["93, 194, 30", "143, 232, 79", "45, 110, 15"],

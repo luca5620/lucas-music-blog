@@ -15,6 +15,17 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-25 night (Windows): PS2 "Nebula" profile theme** (Luca's
+  ask: "galaxy cloud/nebula like the console intro"). New `ps2` theme:
+  silvery-indigo accents, blue+violet nebula clouds + haze sweep +
+  silver dust backdrop (bd-ps2-* in globals.css, wired into
+  ThemeBackdrop/ThemeLiquidSync/settings picker/profile maps, both
+  perf lists so it pauses like every backdrop). **MIGRATION 022
+  (022-theme-ps2.sql) NOT YET RUN — Luca must paste it in the
+  Supabase SQL Editor; until then saving the PS2 theme fails the
+  theme check constraint.** A public/backdrops/ps2.webm video loop
+  can be added later — BackdropVideo picks it up automatically.
+
 - **2026-08-25 evening (Windows): app polish + immersion batch, all
   verified by Luca on device where applicable.** Thermal saga
   RESOLVED (3 rounds; round 3 structural — phone atmosphere is a

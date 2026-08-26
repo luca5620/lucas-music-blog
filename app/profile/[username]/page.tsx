@@ -88,6 +88,7 @@ function resolveTab(raw: string | undefined): ProfileTab {
        color once here and pass it down. Must match globals.css. --- */
 const THEME_ACCENT: Record<ProfileTheme, string> = {
   "crt-blue": "#1e90ff",
+  ps2: "#8ba7e8",
   ps3: "#7ec9e8",
   ps4: "#4a90d9",
   "xbox-og": "#5dc21e",
@@ -104,6 +105,7 @@ const THEME_ACCENT: Record<ProfileTheme, string> = {
    keep the normal black page. */
 const THEME_PAGE_BG: Record<ProfileTheme, string | null> = {
   "crt-blue": null,
+  ps2: null,
   ps3: null,
   ps4: null,
   "xbox-og": null,

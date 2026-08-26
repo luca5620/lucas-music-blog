@@ -39,6 +39,7 @@ export interface Profile {
 /** Profile theme presets — site default + vintage console dashboards. */
 export type ProfileTheme =
   | "crt-blue" // site default
+  | "ps2" // boot nebula: midnight indigo, galaxy clouds, silver dust
   | "ps3" // XMB: black void, silver-blue, thin type
   | "ps4" // deep PlayStation blue
   | "xbox-og" // acid green on black metal

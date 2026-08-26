@@ -42,6 +42,7 @@ import type {
    work (accents, heading font, panel styling). */
 const THEMES: { id: ProfileTheme; label: string; hex: string; desc: string }[] = [
   { id: "crt-blue", label: "Broadcast", hex: "#1e90ff", desc: "The standard Peak Music Reviews look" },
+  { id: "ps2", label: "PS2 · Nebula", hex: "#8ba7e8", desc: "The boot-screen galaxy — indigo clouds and silver dust" },
   { id: "ps3", label: "PS3 · XMB", hex: "#7ec9e8", desc: "Black void, silver-blue shimmer, thin airy type" },
   { id: "ps4", label: "PS4", hex: "#4a90d9", desc: "Deep PlayStation blue, clean and modern" },
   { id: "xbox-og", label: "Xbox OG", hex: "#5dc21e", desc: "Acid green on black metal, industrial type" },

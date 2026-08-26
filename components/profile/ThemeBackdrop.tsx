@@ -57,6 +57,26 @@ export default function ThemeBackdrop({ theme }: { theme: ProfileTheme }) {
           hides itself when the file is absent and the CSS scene below
           carries the theme instead. */}
       <BackdropVideo theme={theme} />
+      {theme === "ps2" && (
+        <>
+          <div className="bd-ps2-nebula" />
+          <div className="bd-ps2-nebula bd-ps2-nebula2" />
+          <div className="bd-ps2-haze" />
+          {SPARKS.map((s, i) => (
+            <span
+              key={i}
+              className="bd-spark bd-spark-silver"
+              style={{
+                left: s.left,
+                top: s.top,
+                animationDelay: s.delay,
+                animationDuration: s.dur,
+              }}
+            />
+          ))}
+        </>
+      )}
+
       {theme === "ps3" && (
         <>
           <div className="bd-ps3-ribbon" />

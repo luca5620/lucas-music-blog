@@ -64,6 +64,32 @@ function AppStoreBadge() {
   );
 }
 
+/** App-only mirror of the web-only App Store badge: a quiet
+    end-of-scroll plug for the website (Luca 2026-08-26 — the big
+    screen is where the proper sit-down reviews get written, and
+    nudging app users there builds the community). .app-only keeps
+    it invisible on web. Deliberately not a link: the shell IS the
+    site, so tapping would just reload this page — people carry the
+    address to a computer instead. */
+function WebsitePlug() {
+  return (
+    <div className="app-only">
+      <section className="panel-xbox p-5 text-center space-y-1.5 relative overflow-hidden">
+        <p className="osd-text text-sm">
+          For a better experience, check out our website
+        </p>
+        <p className="text-xs text-text-secondary">
+          <span className="text-text-primary font-bold">
+            peakmusicreviews.com
+          </span>{" "}
+          on a computer — the big-screen home for proper sit-down reviews.
+        </p>
+        <div className="scan-bar" />
+      </section>
+    </div>
+  );
+}
+
 export default async function Home() {
   const user = await getUser();
 
@@ -194,6 +220,8 @@ function Splash() {
       <Suspense fallback={null}>
         <ReleasesFeed />
       </Suspense>
+
+      <WebsitePlug />
     </>
   );
 }
@@ -347,6 +375,8 @@ async function Dashboard() {
 
       {/* About Us moved to the universal SiteFooter (Luca 2026-08-22:
           the blue pill duplicated it once the footer link shipped). */}
+
+      <WebsitePlug />
     </>
   );
 }

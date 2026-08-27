@@ -4,6 +4,7 @@ import { listDebates } from "@/lib/db/debates";
 import { getUser } from "@/lib/auth";
 import DebateCard from "@/components/debates/DebateCard";
 import PageHero from "@/components/ui/PageHero";
+import BackToHome from "@/components/ui/BackToHome";
 
 export const metadata: Metadata = {
   title: "Debates",
@@ -31,6 +32,9 @@ export default async function DebatesPage() {
 
   return (
     <div className="space-y-6 circuit-bg">
+      {/* App-only way back to the home page (this page has no tab) */}
+      <BackToHome />
+
       {/* ══════════ Header — boxed hero, same as HOME ══════════ */}
       <PageHero
         title="DEBATES"

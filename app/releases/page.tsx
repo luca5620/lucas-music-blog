@@ -16,6 +16,7 @@ import DroppingSoonRail from "@/components/releases/DroppingSoonRail";
 import { BreadcrumbSchema } from "@/app/schema";
 import PageHero from "@/components/ui/PageHero";
 import BrowseSwitch from "@/components/ui/BrowseSwitch";
+import BackToHome from "@/components/ui/BackToHome";
 
 const PAGE_SIZE = 24;
 
@@ -77,6 +78,9 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
           { name: "Releases", href: "/releases" },
         ]}
       />
+
+      {/* App-only way back to the home page (this page has no tab) */}
+      <BackToHome />
 
       {/* Page header — boxed hero, same as HOME */}
       <PageHero

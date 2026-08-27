@@ -194,9 +194,27 @@ export default function ReviewsList({
                   </span>
                   <span className="text-text-secondary"> — {review.artist}</span>
                 </span>
-                <span className="hidden sm:flex items-center gap-1 text-xs text-text-muted shrink-0">
-                  {author.display_name || author.username}
-                  {author.role !== "user" && <VerifiedBadge role={author.role} />}
+                {/* Reviewer identity, matching the home Community
+                    Feed's compact rows: the little avatar ALWAYS
+                    shows, the name joins it from sm up. */}
+                <span className="flex items-center gap-1.5 text-xs text-text-muted shrink-0">
+                  {author.avatar_url ? (
+                    <img
+                      src={author.avatar_url}
+                      alt={author.display_name || author.username}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-5 h-5 rounded-full object-cover border border-white/10"
+                    />
+                  ) : (
+                    <span className="w-5 h-5 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-[9px] font-bold text-accent-primary uppercase">
+                      {(author.username || "U")[0]}
+                    </span>
+                  )}
+                  <span className="hidden sm:flex items-center gap-1">
+                    {author.display_name || author.username}
+                    {author.role !== "user" && <VerifiedBadge role={author.role} />}
+                  </span>
                 </span>
                 <span
                   className="pixel-text text-sm font-bold tabular-nums shrink-0 w-9 text-right"

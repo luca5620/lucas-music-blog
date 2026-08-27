@@ -119,7 +119,7 @@ const FEATURES = [
   },
   {
     label: "A PROFILE THAT'S YOURS",
-    body: "CRT themes, four-favorites shelf, showcases you arrange yourself, verified badges. Your taste, your channel.",
+    body: "CRT themes, showcases you arrange yourself, verified badges. Your taste, your channel.",
     emoji: "🖥️",
   },
 ];

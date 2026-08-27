@@ -14,15 +14,19 @@ export default async function ListsRail() {
 
   return (
     <section className="space-y-4">
+      {/* Header matches the Community Feed module (Luca 2026-08-26:
+          every home module wears the same header). */}
       <div className="flex items-center gap-3">
         <span className="glow-orb" style={{ animationDelay: "1.2s" }} />
-        <span className="vhs-label text-sm">FRESH LISTS</span>
+        <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
+          Fresh Lists
+        </h2>
         <div className="flex-1 divider-glow" />
         <Link
           href="/lists"
-          className="pixel-text text-sm text-accent-glow hover:text-accent-primary transition-colors uppercase tracking-widest"
+          className="label-xbox hover:text-accent-primary transition-colors"
         >
-          All lists →
+          View All →
         </Link>
       </div>
 

@@ -5,12 +5,12 @@
  *
  * Steam-style: you don't just edit text fields, you SKIN your page.
  *  - Identity: name, tagline, pronouns, location, bio
- *  - Appearance: a "vintage consoles" theme preset (live preview —
- *    each preset swaps accents, fonts, AND panel styling) + real
- *    avatar/banner uploads to Supabase Storage (no more URL pasting)
+ *  - Appearance: theme presets (live preview — each preset swaps
+ *    accents, fonts, AND panel styling) + real avatar/banner
+ *    uploads to Supabase Storage (no more URL pasting)
  *  - Showcases: choose WHICH blocks appear on your profile and in
- *    what order (favorites, stats, recent reviews, featured review,
- *    badges, lists, anticipated)
+ *    what order (stats, recent reviews, featured review, badges,
+ *    lists, anticipated…)
  *  - Featured review, profile song, streaming links, genres
  *
  * Saves happen via the Supabase browser client updating your own
@@ -20,7 +20,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import FavoritesEditor from "@/components/profile/FavoritesEditor";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import CatalogSearch, {
@@ -36,7 +35,7 @@ import type {
   ShowcaseType,
 } from "@/lib/types/database";
 
-/* Theme presets — "vintage consoles". Ids and hexes must match the
+/* Theme presets. Ids and hexes must match the
    theme-* classes in globals.css AND the DB constraint from migration
    006. The swatch shows the accent; the theme-* class does the real
    work (accents, heading font, panel styling). */
@@ -53,9 +52,11 @@ const THEMES: { id: ProfileTheme; label: string; hex: string; desc: string }[] =
   { id: "daft-punk", label: "Robot Rock", hex: "#f0b93c", desc: "Helmet chrome and Discovery gold, neon horizon" },
 ];
 
-/* Every showcase block a profile can display. */
+/* Every showcase block a profile can display. Four Favorites was
+   removed from customization entirely (Luca 2026-08-26) — the load
+   filter below strips it from older rows on next save, and the
+   profile page no longer renders it. */
 const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string; hint: string }[] = [
-  { id: "favorites", label: "Four Favorites", hint: "Your Letterboxd-style top shelf" },
   { id: "stats", label: "Taste Readout", hint: "Review count, average, rating histogram" },
   { id: "recent_reviews", label: "Now Showing", hint: "Your latest 8 reviews as a poster wall" },
   { id: "featured_review", label: "Feature Presentation", hint: "One pinned review, front and center" },
@@ -103,7 +104,7 @@ export default function ProfileSettingsPage() {
 
   // --- Showcases (ordered list of ENABLED blocks) ---
   const [showcases, setShowcases] = useState<ShowcaseType[]>([
-    "favorites", "stats", "recent_reviews",
+    "stats", "recent_reviews",
   ]);
   const [featuredReviewId, setFeaturedReviewId] = useState<string>("");
   const [myReviews, setMyReviews] = useState<Pick<Review, "id" | "title" | "artist" | "rating">[]>([]);
@@ -165,7 +166,7 @@ export default function ProfileSettingsPage() {
             ? p.showcases.filter((s): s is ShowcaseType =>
                 SHOWCASE_OPTIONS.some((o) => o.id === s)
               )
-            : ["favorites", "stats", "recent_reviews"]
+            : ["stats", "recent_reviews"]
         );
         setFeaturedReviewId(p.featured_review_id ?? "");
         setProfileSongUrl(p.profile_song_url ?? "");
@@ -499,13 +500,14 @@ export default function ProfileSettingsPage() {
         <fieldset className="panel-xbox p-5 space-y-5">
           <legend className="label-xbox">Appearance</legend>
 
-          {/* Theme presets — one card per vintage console. Each card
-              wears its own theme-* class so the LABEL renders in that
-              preset's actual heading font: the picker doubles as a
-              type specimen. */}
+          {/* Theme presets — one card per preset. Each card wears its
+              own theme-* class so the LABEL renders in that preset's
+              actual heading font: the picker doubles as a type
+              specimen. ("Vintage Consoles" tag dropped 2026-08-26 —
+              LimeWire, Soul Reaper, and Robot Rock aren't consoles.) */}
           <div className="space-y-2">
             <p className="font-[family-name:var(--font-heading)] text-xs font-bold text-text-secondary uppercase tracking-wider">
-              Theme Presets — Vintage Consoles
+              Theme Presets
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {THEMES.map((t) => {
@@ -860,13 +862,10 @@ export default function ProfileSettingsPage() {
 
       </form>
 
-      {/* ========== FOUR FAVORITES ==========
-          Lives outside the main form because it saves through its own
-          API route (/api/profile/favorites) with its own button. */}
-      <fieldset className="panel-xbox p-5 space-y-4">
-        <legend className="label-xbox">Four Favorites</legend>
-        <FavoritesEditor />
-      </fieldset>
+      {/* Four Favorites editor removed 2026-08-26 (Luca) — the whole
+          module left customization; profile_favorites rows and the
+          /api/profile/favorites route sit untouched in case it ever
+          returns. */}
 
       {/* ========== SAVE ==========
           At the bottom, after everything editable (Luca 2026-08-22),

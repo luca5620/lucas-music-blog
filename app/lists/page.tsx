@@ -4,6 +4,7 @@ import { getUser } from "@/lib/auth";
 import { getPublicLists } from "@/lib/db/lists";
 import ListCard from "@/components/lists/ListCard";
 import PageHero from "@/components/ui/PageHero";
+import BackToHome from "@/components/ui/BackToHome";
 
 export const metadata: Metadata = {
   title: "Lists",
@@ -27,6 +28,9 @@ export default async function ListsPage() {
 
   return (
     <div className="space-y-6">
+      {/* App-only way back to the home page (this page has no tab) */}
+      <BackToHome />
+
       {/* --- Header — boxed hero, same as HOME --- */}
       <PageHero title="LISTS" sub="Albums, curated — rankings, moods, obsessions.">
         {/* Only signed-in users can start a list. */}

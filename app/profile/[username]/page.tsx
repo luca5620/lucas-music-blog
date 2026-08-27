@@ -2,11 +2,10 @@
  * Public User Profile Page — "Steam on a CRT"
  *
  * Every profile is a little owned space: the user picks a THEME
- * (a "vintage console" preset — the `theme-*` classes in globals.css
- * re-skin accents, heading fonts, and panel styling inside the
- * wrapper div) and arranges SHOWCASES (ordered blocks: favorites,
- * stats, recent reviews, featured review, badges, lists, anticipated
- * releases).
+ * (a preset — the `theme-*` classes in globals.css re-skin accents,
+ * heading fonts, and panel styling inside the wrapper div) and
+ * arranges SHOWCASES (ordered blocks: stats, recent reviews,
+ * featured review, badges, lists, anticipated releases…).
  *
  * Everything renders on the server; tabs are plain links (?tab=)
  * so switching needs no client JS.
@@ -18,7 +17,6 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
   getProfileByUsername,
-  getProfileFavorites,
   getProfileReviews,
   getProfileStats,
   isFollowing,
@@ -31,7 +29,6 @@ import BlockButton from "@/components/moderation/BlockButton";
 import { isBlocked } from "@/lib/db/moderation";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
-import FourFavorites from "@/components/profile/FourFavorites";
 import RatingHistogram from "@/components/profile/RatingHistogram";
 import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
@@ -118,11 +115,13 @@ const THEME_PAGE_BG: Record<ProfileTheme, string | null> = {
 
 const VALID_THEMES = Object.keys(THEME_ACCENT) as ProfileTheme[];
 
-/** Default showcase arrangement for rows created before migration 006. */
-const DEFAULT_SHOWCASES: ShowcaseType[] = ["favorites", "stats", "recent_reviews"];
+/** Default showcase arrangement for rows created before migration 006.
+    "favorites" removed 2026-08-26 (Luca) — dropping it from this list
+    and VALID_SHOWCASES is what hides the block on every profile,
+    including rows that still carry it in their showcases array. */
+const DEFAULT_SHOWCASES: ShowcaseType[] = ["stats", "recent_reviews"];
 
 const VALID_SHOWCASES: ShowcaseType[] = [
-  "favorites",
   "stats",
   "recent_reviews",
   "featured_review",
@@ -223,7 +222,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     currentUser,
     stats,
     reviews,
-    favorites,
     profilePosts,
     distributionRes,
     featuredRes,
@@ -233,7 +231,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     getUser(),
     getProfileStats(profile.id),
     getProfileReviews(profile.id),
-    getProfileFavorites(profile.id),
     // Posts tab data — only fetched when that tab is open.
     activeTab === "posts" ? getUserPosts(profile.id) : Promise.resolve([]),
     needsDistribution
@@ -571,16 +568,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       <div className="px-4 sm:px-8 space-y-8">
         {showcases.map((type) => {
           switch (type) {
-            case "favorites":
-              return (
-                <FourFavorites
-                  key={type}
-                  favorites={favorites}
-                  isOwner={isOwnProfile}
-                  accentColor={accentColor}
-                />
-              );
-
             case "stats":
               return (
                 <section key={type} className="space-y-3">

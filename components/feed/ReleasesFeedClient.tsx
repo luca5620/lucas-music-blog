@@ -21,9 +21,12 @@ export default function ReleasesFeedClient({
 
   return (
     <section className="space-y-4">
+      {/* The New Releases tag is desktop-only — on phones the extra
+          chip made the header row wider than the screen (same fix as
+          Dropping Soon: match the Community Feed's slim header). */}
       <div className="flex items-center gap-3">
         <span className="glow-orb" style={{ animationDelay: "2.5s" }} />
-        <span className="label-xbox">New Releases</span>
+        <span className="label-xbox hidden sm:inline">New Releases</span>
         <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
           Latest Drops
         </h2>

@@ -48,10 +48,13 @@ export default function UpcomingDropsClient({
 
   return (
     <section className="space-y-4">
-      {/* Header — same skeleton as Latest Drops */}
+      {/* Header — same skeleton as the Community Feed. The Countdown
+          tag is desktop-only: with it, the row overflowed the screen
+          on phones and dragged the whole page sideways (Luca
+          2026-08-26: "super messy, doesn't fit"). */}
       <div className="flex items-center gap-3">
         <span className="glow-orb" style={{ animationDelay: "1.2s" }} />
-        <span className="label-xbox">Countdown</span>
+        <span className="label-xbox hidden sm:inline">Countdown</span>
         <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
           Dropping Soon
         </h2>

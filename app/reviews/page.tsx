@@ -15,6 +15,7 @@ import {
 import FAQSchema from "@/components/seo/FAQSchema";
 import PageHero from "@/components/ui/PageHero";
 import BrowseSwitch from "@/components/ui/BrowseSwitch";
+import BackToHome from "@/components/ui/BackToHome";
 import { reviewsFAQs } from "@/lib/faq-data";
 
 export const metadata = {
@@ -57,6 +58,9 @@ export default async function Reviews() {
         listName="Community Music Reviews"
       />
       <FAQSchema items={reviewsFAQs} />
+
+      {/* App-only way back to the home page (this page has no tab) */}
+      <BackToHome />
 
       {/* Page Header — boxed hero, same as HOME */}
       <PageHero

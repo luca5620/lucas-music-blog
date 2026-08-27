@@ -30,11 +30,15 @@ interface ArtistHit {
   image_url: string | null;
 }
 interface ReleaseHit {
+  id: string;
   slug: string;
   title: string;
   cover_image: string | null;
   release_type: string;
   artists: { name: string } | { name: string }[] | null;
+  /** Community average (same RPC the release pages use) — attached
+      after the search query resolves; null when nobody's rated it. */
+  avg_rating?: number | null;
 }
 interface ReviewHit {
   slug: string;
@@ -142,11 +146,38 @@ export default function UniversalSearch() {
           supabase
             .from("releases")
             .select(
-              "slug, title, cover_image, release_type, artists!releases_primary_artist_id_fkey(name)",
+              "id, slug, title, cover_image, release_type, artists!releases_primary_artist_id_fkey(name)",
             )
             .ilike("title", pattern)
             .limit(PER_SECTION)
-            .then(({ data }) => (data as ReleaseHit[]) ?? []),
+            .then(async ({ data }) => {
+              const hits = (data as ReleaseHit[]) ?? [];
+              // Attach each release's community average so the number
+              // shown in results is labeled for what it is — the
+              // community's average, not one person's score (Luca
+              // 2026-08-26). Any RPC hiccup just drops the ratings.
+              try {
+                return await Promise.all(
+                  hits.map(async (h) => {
+                    const { data: s } = await supabase.rpc(
+                      "get_release_stats",
+                      { release_uuid: h.id } as never,
+                    );
+                    const row = (Array.isArray(s) ? s[0] : s) as {
+                      avg_rating: number | string | null;
+                    } | null;
+                    const avg = row?.avg_rating;
+                    return {
+                      ...h,
+                      avg_rating:
+                        avg === null || avg === undefined ? null : Number(avg),
+                    };
+                  }),
+                );
+              } catch {
+                return hits;
+              }
+            }),
           supabase
             .from("reviews")
             .select("slug, title, artist, rating, cover_image")
@@ -286,6 +317,21 @@ export default function UniversalSearch() {
                   {one(r.artists)?.name ?? ""}
                 </span>
               </span>
+              {/* Rated releases show the number WITH its meaning —
+                  it's the community average, not one person's take. */}
+              {typeof r.avg_rating === "number" && (
+                <span className="shrink-0 text-right">
+                  <span
+                    className="block pixel-text text-sm font-bold tabular-nums"
+                    style={{ color: getRatingHex(r.avg_rating) }}
+                  >
+                    {formatRating(r.avg_rating)}
+                  </span>
+                  <span className="block pixel-text text-[8px] uppercase tracking-widest text-text-muted">
+                    community avg
+                  </span>
+                </span>
+              )}
               <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
                 {r.release_type.toUpperCase()}
               </span>

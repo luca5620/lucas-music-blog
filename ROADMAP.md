@@ -51,6 +51,35 @@ session ends mid-task; clear it when the work lands under Done.)*
   Not done from the batch: nothing — the ads idea went to Next up
   as a far-future note (below), per "months down the road".
 
+- **2026-08-26 (Windows): mobile-app polish batch (Luca's list) —
+  BUILD ✓, NOT YET EYEBALLED on device.** Six changes in one push:
+  (1) Home modules match the Community Feed header on phones — the
+  Countdown / New Releases label-xbox chips are hidden below sm
+  (they made the header row wider than the screen and dragged the
+  whole page sideways: "super messy, doesn't fit"); Fresh Lists got
+  the full Community Feed header (h2 + View All) too; Posts left
+  alone per Luca. (2) App-only "← Back to Home" link (new
+  components/ui/BackToHome.tsx) at the top of /reviews, /releases,
+  /debates, /lists — the quick-access-strip pages had no way back.
+  (3) /reviews compact view now shows the reviewer's little avatar
+  on every row (name from sm up), same markup as the home feed's
+  compact rows. (4) CatalogSearch dropdown vs the mobile keyboard:
+  maxHeight now clamps to the VISUAL viewport (offsetTop + height),
+  a visualViewport scroll listener was added, and a settle burst of
+  delayed re-measures (80/200/350/600ms, also fired on input focus)
+  tracks the keyboard slide-in — was: list sized/positioned against
+  window.innerHeight, looked broken until keyboard closed+reopened.
+  (5) /search release hits show the community average (per-hit
+  get_release_stats RPC, max 5) labeled "COMMUNITY AVG" so a rating
+  in results is never mistaken for one person's score. (6) Four
+  Favorites removed from customization AND profile rendering
+  (settings fieldset, showcase option, profile case all gone;
+  profile_favorites data + /api/profile/favorites route left
+  intact); theme presets heading is now just "Theme Presets" — the
+  LimeWire/Soul Reaper/Robot Rock additions made "Vintage Consoles"
+  inaccurate. Taste-page improvement OPTIONS were sent to Luca to
+  pick from — nothing applied there yet.
+
 - **2026-08-26 SESSION CLOSE — ENTIRE upcoming-releases batch
   VERIFIED LIVE by Luca ("all works and looks great" → "all looks
   good").** Everything below dated 2026-08-25/26 about upcoming

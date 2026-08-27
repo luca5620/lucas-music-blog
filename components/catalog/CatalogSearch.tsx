@@ -92,32 +92,56 @@ export default function CatalogSearch({
     const el = boxRef.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
+    // The mobile keyboard does NOT shrink window.innerHeight — it
+    // shrinks the VISUAL viewport (offsetTop + height in layout
+    // coordinates = the lowest pixel actually on screen). Clamping
+    // to innerHeight let the list run on behind the keyboard, which
+    // is exactly the "looks off until I close the keyboard" bug
+    // (Luca 2026-08-26).
+    const vv = window.visualViewport;
+    const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
     setAnchor({
       left: r.left,
       top: r.bottom + 8,
       width: r.width,
       // Never taller than the space under the input (12px breathing
       // room) — the list scrolls internally instead of running off
-      // the bottom of the viewport.
-      maxHeight: Math.max(160, window.innerHeight - r.bottom - 20),
+      // the bottom of the visible area.
+      maxHeight: Math.max(120, visibleBottom - r.bottom - 20),
     });
   }, []);
+
+  // The keyboard slides in over ~250ms AFTER focus, and the WebView
+  // pans the page to keep the input visible — neither reliably fires
+  // resize/scroll mid-animation. A short burst of delayed re-measures
+  // glues the list to wherever things settle.
+  const settleTimersRef = useRef<number[]>([]);
+  const measureSettle = useCallback(() => {
+    measure();
+    settleTimersRef.current.forEach(clearTimeout);
+    settleTimersRef.current = [80, 200, 350, 600].map((ms) =>
+      window.setTimeout(measure, ms),
+    );
+  }, [measure]);
 
   // Keep the dropdown glued to the input while open: page scroll
   // (capture — the scroller may be any ancestor), resizes, and the
   // mobile keyboard showing/hiding all move the anchor.
   useEffect(() => {
     if (!open) return;
-    measure();
+    measureSettle();
     window.addEventListener("scroll", measure, true);
     window.addEventListener("resize", measure);
     window.visualViewport?.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("scroll", measure);
     return () => {
+      settleTimersRef.current.forEach(clearTimeout);
       window.removeEventListener("scroll", measure, true);
       window.removeEventListener("resize", measure);
       window.visualViewport?.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("scroll", measure);
     };
-  }, [open, measure]);
+  }, [open, measure, measureSettle]);
 
   // Close on outside click — the portal list lives outside boxRef in
   // the DOM, so clicks inside it must count as inside.
@@ -215,7 +239,13 @@ export default function CatalogSearch({
           type="text"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          onFocus={() => results.length > 0 && setOpen(true)}
+          onFocus={() => {
+            // Re-tapping the box reopens the keyboard — re-track the
+            // anchor through that animation even if the list was
+            // already open (the open effect only fires on the flip).
+            if (results.length > 0) setOpen(true);
+            measureSettle();
+          }}
           placeholder={placeholder}
           autoFocus={autoFocus}
           className="form-input pr-20"

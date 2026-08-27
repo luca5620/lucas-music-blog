@@ -414,6 +414,23 @@ export default function LoginPage() {
             >
               {loading ? "Tuning in…" : "Sign In"}
             </button>
+
+            {/* App Store 1.2 says the EULA is presented "before
+                registering or logging in" — signup has the required
+                checkbox; login carries the agreement notice so the
+                reviewer's demo-account path sees it too. */}
+            <p className="text-xs text-text-muted text-center">
+              By signing in you agree to the{" "}
+              <Link href="/terms" className="text-accent-primary hover:underline">
+                Terms of Use
+              </Link>{" "}
+              — zero tolerance for objectionable content or abusive users —
+              and the{" "}
+              <Link href="/privacy" className="text-accent-primary hover:underline">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </form>
 
           {/* Footer */}

@@ -336,20 +336,16 @@ export default function SignUpPage() {
                 className="mt-0.5 w-4 h-4 shrink-0 accent-[var(--accent-primary,#1e90ff)]"
               />
               <span className="text-xs text-text-secondary leading-relaxed">
+                {/* In-app navigation, NOT target="_blank": the app's
+                    WKWebView has no tabs, so _blank can silently
+                    no-op — a dead Terms link during the App Review
+                    demo would sink the whole EULA showing. */}
                 I agree to the{" "}
-                <Link
-                  href="/terms"
-                  target="_blank"
-                  className="text-accent-primary hover:underline"
-                >
+                <Link href="/terms" className="text-accent-primary hover:underline">
                   Terms of Use
                 </Link>{" "}
                 and{" "}
-                <Link
-                  href="/privacy"
-                  target="_blank"
-                  className="text-accent-primary hover:underline"
-                >
+                <Link href="/privacy" className="text-accent-primary hover:underline">
                   Privacy Policy
                 </Link>
                 , including the{" "}

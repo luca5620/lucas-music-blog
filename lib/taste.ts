@@ -337,6 +337,16 @@ export async function getTunedToYou(
   const supabase = await createClient();
   const followedAuthors = new Set(opts?.followedUserIds ?? []);
 
+  // Tuned To You is a feed, so blocked authors never appear in it
+  // (App Store 1.2 — same rule as the Community Feed / posts walls).
+  const { data: blocksData } = await supabase
+    .from("user_blocks")
+    .select("blocked_id")
+    .eq("blocker_id", viewerId);
+  const blockedAuthors = new Set(
+    ((blocksData ?? []) as { blocked_id: string }[]).map((b) => b.blocked_id)
+  );
+
   const [reviewsRes, debatesRes, releasesRes, postsRes] = await Promise.all([
     supabase
       .from("reviews")
@@ -498,6 +508,7 @@ export async function getTunedToYou(
     profiles: ReviewProfile | ReviewProfile[] | null;
   };
   for (const r of (reviewsRes.data ?? []) as unknown as ReviewRow[]) {
+    if (blockedAuthors.has(r.user_id)) continue;
     const artistId = first(r.releases)?.primary_artist_id ?? null;
     const fromFollow = followedAuthors.has(r.user_id);
     const taste =
@@ -557,6 +568,7 @@ export async function getTunedToYou(
       | null;
   };
   for (const p of (postsRes.data ?? []) as unknown as PostRowT[]) {
+    if (blockedAuthors.has(p.user_id)) continue;
     const rel = first(p.releases);
     const artistId = rel?.primary_artist_id ?? null;
     const author = first(p.profiles);

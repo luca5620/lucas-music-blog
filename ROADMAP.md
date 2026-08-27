@@ -51,6 +51,31 @@ session ends mid-task; clear it when the work lands under Done.)*
   Not done from the batch: nothing — the ads idea went to Next up
   as a far-future note (below), per "months down the road".
 
+- **2026-08-26 (Windows) ROUND 2 — Luca's corrections after
+  eyeballing round 1 live.** (1) Home module headers: the Countdown
+  / New Releases chips are DELETED (not hidden — Luca: "get rid of
+  them, just the white font with the blue dot"), and every module
+  header is phone-compact now (gap-2 + text-lg + slim ViewToggle
+  px-1.5 + shrink-0 View All, sm restores desktop scale) — round 1
+  only hid the chips below sm, but the row was STILL ~40px wider
+  than a 390px screen, which is why View All in Dropping Soon was
+  "90% cut off". (2) CatalogSearch dropdown REBUILT AS IN-FLOW —
+  round 1's re-measure burst was useless because WKWebView pans the
+  page NATIVELY when the keyboard is up (no DOM event, rects
+  unchanged) and body (not html) is the scroller, so fixed AND
+  absolute portals both float free of the pan; the list drew over
+  the input ("covers the entire search box"). Results now render in
+  normal flow under the input (max-h-80, internal scroll), exactly
+  like /search — cannot misplace, fixes every consumer (reviews,
+  posts, lists, debates, SOTD, profile song, upcoming box). Portal
+  machinery deleted. (3) Community avg was on /search only — Luca
+  meant the REVIEW-FORM search: local catalog hits now carry
+  avg_rating (one batched reviews query in searchLocal) and the
+  pick list shows it labeled "community avg". (4) Verified BOTH
+  MacBook migrations ARE applied (leaderboard_stats() answers,
+  posts.is_published exists — probed prod REST with anon key).
+  Build ✓, not yet eyeballed.
+
 - **2026-08-26 (Windows): mobile-app polish batch (Luca's list) —
   BUILD ✓, NOT YET EYEBALLED on device.** Six changes in one push:
   (1) Home modules match the Community Feed header on phones — the

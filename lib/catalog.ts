@@ -47,6 +47,9 @@ export interface CatalogResult {
   unreleased?: boolean;
   /** Release date is in the future — a countdown/pre-save album. */
   upcoming?: boolean;
+  /** Community average for local rows (null = no published reviews
+      yet) — the pick UI shows it labeled "community avg". */
+  avg_rating?: number | null;
 }
 
 /* ---------------------------------------------------------------
@@ -264,8 +267,39 @@ async function searchGenius(query: string, limit = 8): Promise<CatalogResult[]> 
 async function searchLocal(query: string, limit = 6): Promise<CatalogResult[]> {
   type Row = Release & { artists: { name: string } | { name: string }[] | null };
   const rows = (await searchReleases(query, limit)) as Row[];
+
+  // One batched query for the community averages of every hit (max 6
+  // rows — cheaper than six get_release_stats RPCs). Ratings are
+  // garnish: any failure here must never sink the search itself.
+  const avgByRelease = new Map<string, { sum: number; n: number }>();
+  if (rows.length > 0) {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase
+        .from("reviews")
+        .select("release_id, rating")
+        .eq("is_published", true)
+        .in(
+          "release_id",
+          rows.map((r) => r.id)
+        );
+      ((data ?? []) as { release_id: string | null; rating: number }[]).forEach(
+        (rev) => {
+          if (!rev.release_id) return;
+          const acc = avgByRelease.get(rev.release_id) ?? { sum: 0, n: 0 };
+          acc.sum += rev.rating;
+          acc.n += 1;
+          avgByRelease.set(rev.release_id, acc);
+        }
+      );
+    } catch {
+      /* averages stay null — the search result list still renders */
+    }
+  }
+
   return rows.map((r) => {
     const joined = Array.isArray(r.artists) ? r.artists[0] : r.artists;
+    const acc = avgByRelease.get(r.id);
     return {
       source: "local" as const,
       id: r.id,
@@ -277,6 +311,7 @@ async function searchLocal(query: string, limit = 6): Promise<CatalogResult[]> {
       slug: r.slug,
       unreleased: r.is_unreleased,
       upcoming: isUpcoming(r.release_date),
+      avg_rating: acc ? acc.sum / acc.n : null,
     };
   });
 }

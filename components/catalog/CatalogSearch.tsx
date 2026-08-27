@@ -14,8 +14,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import type { Release } from "@/lib/types/database";
+import { getRatingHex, formatRating } from "@/lib/rating";
 
 interface CatalogResult {
   source: "local" | "spotify" | "spotify_track" | "genius";
@@ -29,6 +29,9 @@ interface CatalogResult {
   unreleased?: boolean;
   /** Release date is in the future — a countdown/pre-save album. */
   upcoming?: boolean;
+  /** Community average for releases already on PMR — shown labeled
+      so the number can't be mistaken for one person's score. */
+  avg_rating?: number | null;
 }
 
 export interface CatalogPick {
@@ -72,87 +75,26 @@ export default function CatalogSearch({
   // link instead") — informational, styled softer than an error.
   const [notice, setNotice] = useState<string | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastQueryRef = useRef("");
 
-  // Where the portal dropdown should sit, in viewport coordinates.
-  // The results list renders into document.body (createPortal below),
-  // so NO ancestor can clip it (panel overflow:hidden) or paint over
-  // it (later siblings sharing a stacking context) — the fix is
-  // structural and applies to every form that uses this component.
-  const [anchor, setAnchor] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    maxHeight: number;
-  } | null>(null);
+  // The results list renders IN FLOW, right under the input — no
+  // portal, no coordinate math. History (it matters): v1 was an
+  // absolutely-positioned overlay (clipped by panel overflow), v2 a
+  // position:fixed portal measured off getBoundingClientRect — which
+  // iOS broke whenever the keyboard was up: WKWebView pans the page
+  // natively (no DOM event fires, no rect changes), so the list drew
+  // over the input itself until the keyboard closed (Luca
+  // 2026-08-26: "it covers the entire search box"). In-flow content
+  // is how /search already renders results, and it CANNOT misplace:
+  // it pans with the page like everything else. The form below just
+  // shifts down while the list is open (the keyboard covers it
+  // anyway on phones), and auto-height panels grow to fit.
 
-  const measure = useCallback(() => {
-    const el = boxRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    // The mobile keyboard does NOT shrink window.innerHeight — it
-    // shrinks the VISUAL viewport (offsetTop + height in layout
-    // coordinates = the lowest pixel actually on screen). Clamping
-    // to innerHeight let the list run on behind the keyboard, which
-    // is exactly the "looks off until I close the keyboard" bug
-    // (Luca 2026-08-26).
-    const vv = window.visualViewport;
-    const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
-    setAnchor({
-      left: r.left,
-      top: r.bottom + 8,
-      width: r.width,
-      // Never taller than the space under the input (12px breathing
-      // room) — the list scrolls internally instead of running off
-      // the bottom of the visible area.
-      maxHeight: Math.max(120, visibleBottom - r.bottom - 20),
-    });
-  }, []);
-
-  // The keyboard slides in over ~250ms AFTER focus, and the WebView
-  // pans the page to keep the input visible — neither reliably fires
-  // resize/scroll mid-animation. A short burst of delayed re-measures
-  // glues the list to wherever things settle.
-  const settleTimersRef = useRef<number[]>([]);
-  const measureSettle = useCallback(() => {
-    measure();
-    settleTimersRef.current.forEach(clearTimeout);
-    settleTimersRef.current = [80, 200, 350, 600].map((ms) =>
-      window.setTimeout(measure, ms),
-    );
-  }, [measure]);
-
-  // Keep the dropdown glued to the input while open: page scroll
-  // (capture — the scroller may be any ancestor), resizes, and the
-  // mobile keyboard showing/hiding all move the anchor.
-  useEffect(() => {
-    if (!open) return;
-    measureSettle();
-    window.addEventListener("scroll", measure, true);
-    window.addEventListener("resize", measure);
-    window.visualViewport?.addEventListener("resize", measure);
-    window.visualViewport?.addEventListener("scroll", measure);
-    return () => {
-      settleTimersRef.current.forEach(clearTimeout);
-      window.removeEventListener("scroll", measure, true);
-      window.removeEventListener("resize", measure);
-      window.visualViewport?.removeEventListener("resize", measure);
-      window.visualViewport?.removeEventListener("scroll", measure);
-    };
-  }, [open, measure, measureSettle]);
-
-  // Close on outside click — the portal list lives outside boxRef in
-  // the DOM, so clicks inside it must count as inside.
+  // Close on outside click/tap.
   useEffect(() => {
     function onDown(e: MouseEvent) {
-      const t = e.target as Node;
-      if (
-        boxRef.current &&
-        !boxRef.current.contains(t) &&
-        !(listRef.current && listRef.current.contains(t))
-      ) {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
@@ -224,10 +166,7 @@ export default function CatalogSearch({
   }
 
   return (
-    // The results list itself renders through a portal (bottom of this
-    // file), so this wrapper needs no z-index games — it's just the
-    // measuring anchor for where the list should appear.
-    <div ref={boxRef} className="relative">
+    <div ref={boxRef}>
       {label && (
         <label className="block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]">
           {label}
@@ -239,13 +178,7 @@ export default function CatalogSearch({
           type="text"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          onFocus={() => {
-            // Re-tapping the box reopens the keyboard — re-track the
-            // anchor through that animation even if the list was
-            // already open (the open effect only fires on the flip).
-            if (results.length > 0) setOpen(true);
-            measureSettle();
-          }}
+          onFocus={() => results.length > 0 && setOpen(true)}
           placeholder={placeholder}
           autoFocus={autoFocus}
           className="form-input pr-20"
@@ -263,21 +196,11 @@ export default function CatalogSearch({
         <p className="mt-1.5 text-xs text-osd-amber">{notice}</p>
       )}
 
-      {/* Portal dropdown: fixed-position at the measured anchor, top
-          z-index — nothing on any page can cover or clip it. */}
-      {open && results.length > 0 && anchor &&
-        createPortal(
+      {/* In-flow results — see the comment up top for why this is NOT
+          an overlay. max-h keeps long lists scrolling internally. */}
+      {open && results.length > 0 && (
         <div
-          ref={listRef}
-          style={{
-            position: "fixed",
-            left: anchor.left,
-            top: anchor.top,
-            width: anchor.width,
-            maxHeight: anchor.maxHeight,
-            zIndex: 100,
-          }}
-          className="overflow-y-auto rounded-lg border border-border-medium bg-[#0c0c0f] shadow-[0_16px_50px_rgba(0,0,0,0.8)]"
+          className="mt-2 max-h-80 overflow-y-auto rounded-lg border border-border-medium bg-[#0c0c0f] shadow-[0_16px_50px_rgba(0,0,0,0.8)]"
         >
           {results.map((r) => {
             const key = `${r.source}:${r.id}`;
@@ -313,6 +236,24 @@ export default function CatalogSearch({
                   </span>
                 </span>
 
+                {/* Releases already on PMR with ratings show the
+                    community average, labeled as exactly that (Luca
+                    2026-08-26: never let a bare number read like one
+                    person's score). */}
+                {typeof r.avg_rating === "number" && (
+                  <span className="text-right shrink-0">
+                    <span
+                      className="block pixel-text text-sm font-bold tabular-nums"
+                      style={{ color: getRatingHex(r.avg_rating) }}
+                    >
+                      {formatRating(r.avg_rating)}
+                    </span>
+                    <span className="block pixel-text text-[8px] uppercase tracking-widest text-text-muted">
+                      community avg
+                    </span>
+                  </span>
+                )}
+
                 {r.unreleased && (
                   <span className="pixel-text text-[10px] text-osd-amber border border-osd-amber/40 rounded px-1 py-0.5 shrink-0">
                     UNRELEASED
@@ -334,8 +275,7 @@ export default function CatalogSearch({
               </button>
             );
           })}
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   );

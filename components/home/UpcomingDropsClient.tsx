@@ -48,21 +48,21 @@ export default function UpcomingDropsClient({
 
   return (
     <section className="space-y-4">
-      {/* Header — same skeleton as the Community Feed. The Countdown
-          tag is desktop-only: with it, the row overflowed the screen
-          on phones and dragged the whole page sideways (Luca
-          2026-08-26: "super messy, doesn't fit"). */}
-      <div className="flex items-center gap-3">
-        <span className="glow-orb" style={{ animationDelay: "1.2s" }} />
-        <span className="label-xbox hidden sm:inline">Countdown</span>
-        <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
+      {/* Header — orb + white title ONLY, same as the Community Feed
+          (Luca 2026-08-26: the Countdown chip is gone for good, and
+          the phone sizes are compact so View All never gets cut off —
+          at the old text-xl/gap-3/full toggle padding the row was
+          ~40px wider than a 390px screen). */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <span className="glow-orb shrink-0" style={{ animationDelay: "1.2s" }} />
+        <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary min-w-0 truncate">
           Dropping Soon
         </h2>
         <div className="flex-1 divider-glow" />
         {items.length > 0 && <ViewToggle view={view} onChange={setView} />}
         <Link
           href="/releases"
-          className="label-xbox hover:text-accent-primary transition-colors"
+          className="label-xbox shrink-0 hover:text-accent-primary transition-colors"
         >
           View All →
         </Link>

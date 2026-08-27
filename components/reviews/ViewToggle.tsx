@@ -94,7 +94,9 @@ export function ViewToggle({
           aria-label={opt.label}
           aria-pressed={view === opt.id}
           onClick={() => onChange(opt.id)}
-          className={`px-2.5 py-2 transition-colors ${
+          // Slimmer on phones — the toggle shares a tight header row
+          // with the module title and View All link.
+          className={`px-1.5 py-1.5 sm:px-2.5 sm:py-2 transition-colors ${
             view === opt.id
               ? "bg-accent-primary/15 text-accent-primary"
               : "text-text-muted hover:text-text-primary hover:bg-bg-elevated"

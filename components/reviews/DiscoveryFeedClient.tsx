@@ -74,16 +74,19 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center gap-3">
-        <span className="glow-orb" style={{ animationDelay: "3s" }} />
-        <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
+      {/* Compact phone sizes (gap-2, text-lg, slim toggle) — at the
+          old sizes the row ran wider than a phone screen and clipped
+          View All. Desktop keeps the original scale. */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <span className="glow-orb shrink-0" style={{ animationDelay: "3s" }} />
+        <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary min-w-0 truncate">
           Community Feed
         </h2>
         <div className="flex-1 divider-glow" />
         <ViewToggle view={view} onChange={setView} />
         <Link
           href="/reviews"
-          className="label-xbox hover:text-accent-primary transition-colors"
+          className="label-xbox shrink-0 hover:text-accent-primary transition-colors"
         >
           View All →
         </Link>

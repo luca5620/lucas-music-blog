@@ -21,20 +21,19 @@ export default function ReleasesFeedClient({
 
   return (
     <section className="space-y-4">
-      {/* The New Releases tag is desktop-only — on phones the extra
-          chip made the header row wider than the screen (same fix as
-          Dropping Soon: match the Community Feed's slim header). */}
-      <div className="flex items-center gap-3">
-        <span className="glow-orb" style={{ animationDelay: "2.5s" }} />
-        <span className="label-xbox hidden sm:inline">New Releases</span>
-        <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
+      {/* Header — orb + white title only (New Releases chip removed
+          for good, Luca 2026-08-26), compact phone sizes so View All
+          never clips. Same skeleton as every other home module. */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <span className="glow-orb shrink-0" style={{ animationDelay: "2.5s" }} />
+        <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary min-w-0 truncate">
           Latest Drops
         </h2>
         <div className="flex-1 divider-glow" />
         <ViewToggle view={view} onChange={setView} />
         <Link
           href="/releases"
-          className="label-xbox hover:text-accent-primary transition-colors"
+          className="label-xbox shrink-0 hover:text-accent-primary transition-colors"
         >
           View All →
         </Link>

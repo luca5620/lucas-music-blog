@@ -208,6 +208,15 @@ export default function NewDebateForm() {
         >
           {submitting ? "Saving…" : "Save as Draft"}
         </button>
+
+        <button
+          type="button"
+          onClick={() => router.back()}
+          disabled={submitting}
+          className="btn-y2k btn-y2k-outline disabled:opacity-50"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   );

@@ -38,11 +38,26 @@ session ends mid-task; clear it when the work lands under Done.)*
      Feed, /reviews wall, home Posts module, /posts wall + existing
      client filters (comments, debates) + NEW live-room ChatPanel
      filter; BlockButton calls router.refresh() after blocking.
-  **Luca's hands next:** capture the screen recording on the iPhone
-  (EULA checkbox at signup → flag a piece of content → block a user
-  and watch their content vanish from the feed), attach it in App
-  Store Connect Notes, and reply to App Review. Draft reply text is
-  in the session summary / can be rewritten on ask.
+  Later same-day commits (b0b7025→5378e88): EULA notice on /login
+  (reviewer's demo-account path sees the terms too), ReportButton
+  reworked into a multi-select reason checklist (8 guideline-1.2
+  categories + Other w/ required text box; joins into the existing
+  plain-text reason — no API/DB change), comments now SURFACE server
+  rejections (were silently swallowed — filter message shows in a
+  red notice, text kept in the box), Tuned To You feed block-filtered
+  (it's a feed), signup terms links lost target=_blank (dead link in
+  the tabless WKWebView). Filter scope note: slurs (hard-r only, NOT
+  "nigga" — music-quoting site) + kys/kill yourself/go die; NO
+  ordinary profanity, and NO per-platform (web vs app) split — one
+  shared feed means one standard, loosen only by shrinking the list
+  for everyone. Luca verified on device: applereview login works,
+  terms/privacy reachable in app; age rating fine.
+  **Luca's hands next:** record the video on the iPhone (one take:
+  signup checkbox + terms → login notice → optional "kys" filter
+  bounce in a comment → flag w/ reason checklist → block + feed
+  empties), attach in ASC Notes, paste the reply (text in the
+  2026-08-27 session; regenerate on ask), resubmit. His timing data:
+  rejection-response reviews run 48h+, plan accordingly.
 
 - **2026-08-26 (MacBook): Luca's five-item batch — code complete,
   ⚠️ TWO MIGRATIONS TO RUN in the Supabase SQL Editor (023 then

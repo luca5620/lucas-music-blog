@@ -256,8 +256,18 @@ export default function ReviewForm({
                 hapticTap();
                 setRating(parseFloat(e.target.value));
               }}
-              className="w-full h-2 bg-[rgba(255,255,255,0.05)] rounded-full appearance-none cursor-pointer"
-              style={{ accentColor: ratingColor }}
+              // .rating-slider (globals.css) rebuilds the thumb that
+              // appearance:none removes — accentColor alone did
+              // nothing once the native look was stripped, so the
+              // ball was invisible. The inline gradient fills the
+              // track up to the current score in the rating color.
+              className="rating-slider"
+              style={
+                {
+                  "--slider-color": ratingColor,
+                  background: `linear-gradient(90deg, ${ratingColor}55 0%, ${ratingColor} ${rating * 10}%, rgba(255,255,255,0.08) ${rating * 10}%)`,
+                } as React.CSSProperties
+              }
               aria-label="Rating from 0 to 10"
             />
             <div className="flex justify-between text-xs text-text-muted font-[family-name:var(--font-vt323)]">

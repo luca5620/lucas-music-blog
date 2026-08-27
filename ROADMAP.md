@@ -51,6 +51,18 @@ session ends mid-task; clear it when the work lands under Done.)*
   Not done from the batch: nothing — the ads idea went to Next up
   as a far-future note (below), per "months down the road".
 
+- **2026-08-26 (Windows): rating-slider ball fix + glow-up.** The
+  review form's slider ran appearance:none with NO custom thumb
+  styles, so the drag ball never rendered at all (Luca, on web:
+  "the ball is not visible"). New .rating-slider class in
+  globals.css rebuilds both vendor thumbs (::-webkit-slider-thumb +
+  ::-moz-range-thumb) as a 22px glowing orb driven by
+  --slider-color, and the ReviewForm passes the live rating color
+  inline plus a track-fill gradient (colored up to the current
+  score). Hover/active scale the orb; Firefox track made
+  transparent so the fill shows. Only slider in the codebase.
+  Build ✓.
+
 - **2026-08-26 (Windows) ROUND 3 — Your Taste upgrades, Luca picked
   B/C/E/F/G from the offered list (A, the vhs-label→module-header
   swap, was NOT picked — leave those headers alone).** (B) ANTICIPATED

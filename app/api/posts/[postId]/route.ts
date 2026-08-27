@@ -10,6 +10,7 @@ import {
 } from "@/lib/video";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
+import { checkContent } from "@/lib/content-filter";
 import type { Profile } from "@/lib/types/database";
 
 /**
@@ -71,6 +72,10 @@ export async function PATCH(
         { status: 400 }
       );
     }
+
+    // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+    const dirty = checkContent(title, body);
+    if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
     let video: ParsedVideo | null = null;
     if (video_url != null && video_url !== "") {

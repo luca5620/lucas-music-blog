@@ -8,6 +8,7 @@ import {
   postRoomMessage,
 } from "@/lib/db/rooms";
 import { rateLimit } from "@/lib/rate-limit";
+import { checkContent } from "@/lib/content-filter";
 import type { Profile, RoomMessage } from "@/lib/types/database";
 
 type MessageProfile = Pick<
@@ -71,6 +72,10 @@ export async function POST(
       { status: 400 }
     );
   }
+
+  // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+  const dirty = checkContent(content);
+  if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   let trackPosition: number | undefined;
   if (parsed.track_position !== undefined && parsed.track_position !== null) {

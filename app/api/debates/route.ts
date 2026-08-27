@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isOptionalText, isUuid } from "@/lib/validate";
+import { checkContent } from "@/lib/content-filter";
 import { slugify } from "@/lib/spotify-import";
 
 /**
@@ -79,6 +80,10 @@ export async function POST(request: Request) {
   if (release_id != null && !isUuid(release_id)) {
     return NextResponse.json({ error: "Invalid release." }, { status: 400 });
   }
+
+  // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+  const dirty = checkContent(title as string, prompt as string, sideA, sideB);
+  if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const cleanTitle = (title as string).trim();
 

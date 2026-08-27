@@ -18,6 +18,8 @@ import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
 
 export interface FeedReview {
   id: string;
+  /** Author id — the server half filters out blocked authors by it. */
+  user_id: string;
   slug: string;
   title: string;
   artist: string;

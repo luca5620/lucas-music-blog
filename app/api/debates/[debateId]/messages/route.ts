@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
+import { checkContent } from "@/lib/content-filter";
 import { getUserVote } from "@/lib/db/debates";
 
 /**
@@ -52,6 +53,10 @@ export async function POST(
       { status: 400 }
     );
   }
+
+  // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+  const dirty = checkContent(content as string);
+  if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   // Room must exist and still be open.
   const { data: debate } = await supabase

@@ -24,8 +24,10 @@ export default function TermsPage() {
       <section className="space-y-3 text-sm leading-relaxed text-text-secondary">
         <h2 className="vhs-label text-base">The deal</h2>
         <p>
-          Peak Music Reviews is a free music community. By creating an account
-          or using the site or apps, you agree to these terms and to the{" "}
+          Peak Music Reviews is a free music community. These Terms of Use are
+          the end-user license agreement (EULA) for the site and apps. By
+          creating an account or using the site or apps, you agree to these
+          terms and to the{" "}
           <Link href="/privacy" className="text-accent-primary hover:text-accent-glow">
             Privacy Policy
           </Link>

@@ -237,6 +237,24 @@ export default function ChatPanel({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
 
+  // Authors this viewer has blocked. Filtering happens at render
+  // time, so realtime arrivals from blocked users never show either
+  // (same pattern as DebateRoom / CommentsSection — App Store 1.2).
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    fetch("/api/blocks")
+      .then((res) => (res.ok ? res.json() : { blocked: [] }))
+      .then((data: { blocked?: string[] }) => {
+        if (!cancelled) setBlockedIds(new Set(data.blocked ?? []));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -570,7 +588,9 @@ export default function ChatPanel({
 
   /* ─── Render ─── */
 
-  const isEmpty = messages.length === 0;
+  // Hide messages from blocked authors (initial load AND realtime).
+  const visibleMessages = messages.filter((m) => !blockedIds.has(m.user_id));
+  const isEmpty = visibleMessages.length === 0;
 
   return (
     // xl: fills its grid column (the release page gives it the whole
@@ -585,7 +605,7 @@ export default function ChatPanel({
         <span className="glow-orb" />
         <span className="label-xbox">Live Room</span>
         <span className="text-xs text-text-muted ml-1">
-          ({messages.filter((m) => !m.id.startsWith("temp-")).length})
+          ({visibleMessages.filter((m) => !m.id.startsWith("temp-")).length})
         </span>
         <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
         <div className="ml-auto">
@@ -620,7 +640,7 @@ export default function ChatPanel({
             </p>
           </div>
         ) : (
-          messages.map((m) => (
+          visibleMessages.map((m) => (
             <MessageRow
               key={m.id}
               message={m}

@@ -7,6 +7,7 @@
 
 import { getDiscoveryFeed } from "@/lib/db/reviews";
 import { createClient } from "@/lib/supabase/server";
+import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import DiscoveryFeedClient, {
   type FeedReview,
 } from "@/components/reviews/DiscoveryFeedClient";
@@ -23,7 +24,14 @@ export default async function DiscoveryFeed() {
     // Supabase may not be configured
   }
 
-  const feed = (await getDiscoveryFeed(9, viewerId)) as unknown as FeedReview[];
+  const [rawFeed, blocked] = await Promise.all([
+    getDiscoveryFeed(9, viewerId) as unknown as Promise<FeedReview[]>,
+    getViewerBlockedIdSet(),
+  ]);
+
+  // Blocked authors never reach the viewer's feed (App Store 1.2 —
+  // BlockButton calls router.refresh() so this re-runs instantly).
+  const feed = rawFeed.filter((r) => !blocked.has(r.user_id));
 
   if (feed.length === 0) return null;
 

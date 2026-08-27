@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { listPosts, postReleaseArtistName } from "@/lib/db/posts";
+import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 
 export const metadata: Metadata = {
   title: "Posts",
@@ -25,7 +26,12 @@ function excerpt(body: string): string {
  * real releases, optionally carrying one YouTube/TikTok embed.
  */
 export default async function PostsPage() {
-  const posts = await listPosts(48);
+  const [allPosts, blocked] = await Promise.all([
+    listPosts(48),
+    getViewerBlockedIdSet(),
+  ]);
+  // Blocked authors never reach the viewer's wall (App Store 1.2).
+  const posts = allPosts.filter((p) => !blocked.has(p.user_id));
 
   return (
     <div className="space-y-6 circuit-bg">

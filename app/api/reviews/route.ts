@@ -6,6 +6,7 @@ import { getReleaseById } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
 import { rateLimit } from "@/lib/rate-limit";
 import { isOptionalText, isUuid, parseRating } from "@/lib/validate";
+import { checkContent } from "@/lib/content-filter";
 
 /**
  * POST /api/reviews
@@ -97,6 +98,10 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+    const dirty = checkContent(snippet, summary);
+    if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
     const parsedTracks = parseTrackPicks(standout_tracks);
     if (parsedTracks === null) {

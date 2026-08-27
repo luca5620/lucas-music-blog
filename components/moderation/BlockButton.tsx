@@ -3,12 +3,15 @@
 /**
  * BlockButton — Block / Unblock another user from their profile.
  *
- * Blocking hides their comments and debate messages from you.
- * It's private — they're never notified. Required by App Store
- * guideline 1.2: UGC apps must let users block abusive users.
+ * Blocking removes ALL their content from your feeds instantly
+ * (the server filters them out and we refresh the route) and
+ * auto-files a report so moderators see it — App Store 1.2 wants
+ * both. It's private as far as the blocked user is concerned:
+ * THEY are never notified.
  */
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface BlockButtonProps {
   targetUserId: string;
@@ -25,6 +28,7 @@ export default function BlockButton({
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   async function toggle() {
     if (busy) return;
@@ -40,6 +44,10 @@ export default function BlockButton({
       if (!res.ok) throw new Error(data.error ?? "Failed");
       setBlocked(!blocked);
       setConfirming(false);
+      // Re-render the server components on this route so the
+      // blocked user's content disappears IMMEDIATELY — Apple's
+      // 1.2 wording is "remove it from the user's feed instantly".
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed");
     } finally {
@@ -65,8 +73,8 @@ export default function BlockButton({
     return (
       <span className="inline-flex flex-col items-end gap-1.5">
         <span className="text-xs text-text-secondary max-w-[16rem] text-right">
-          Really block @{targetUsername}? They won&apos;t be able to interact
-          with you and you won&apos;t see their takes.
+          Really block @{targetUsername}? Their content disappears from your
+          feeds immediately and our moderators are notified.
         </span>
         {error && <span className="text-[11px] text-accent-rose">{error}</span>}
         <span className="inline-flex gap-2">

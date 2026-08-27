@@ -6,6 +6,7 @@
  */
 
 import { getAllPublishedReviews, type ReviewWithAuthor } from "@/lib/db/reviews";
+import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import ReviewsList from "@/components/reviews/ReviewsList";
 import {
   BreadcrumbSchema,
@@ -31,9 +32,13 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Reviews() {
-  const reviews = (await getAllPublishedReviews({
-    limit: 100,
-  })) as ReviewWithAuthor[];
+  const [allReviews, blocked] = await Promise.all([
+    getAllPublishedReviews({ limit: 100 }) as Promise<ReviewWithAuthor[]>,
+    getViewerBlockedIdSet(),
+  ]);
+
+  // Blocked authors never reach the viewer's wall (App Store 1.2).
+  const reviews = allReviews.filter((r) => !blocked.has(r.user_id));
 
   return (
     <div className="space-y-8">

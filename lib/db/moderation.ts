@@ -134,6 +134,26 @@ export async function setReportStatus(
    Blocks
    --------------------------------------------------------------- */
 
+/**
+ * The signed-in viewer's block list as a Set, for server components
+ * that render feeds. Signed-out (or any error) → empty set, so feeds
+ * render unfiltered for anonymous visitors. Used with router.refresh()
+ * after blocking, this is what makes blocked content vanish from
+ * feeds instantly (App Store 1.2).
+ */
+export async function getViewerBlockedIdSet(): Promise<Set<string>> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return new Set();
+    return new Set(await getBlockedIds(user.id));
+  } catch {
+    return new Set();
+  }
+}
+
 /** Every user id this user has blocked. */
 export async function getBlockedIds(userId: string): Promise<string[]> {
   const supabase = await createClient();

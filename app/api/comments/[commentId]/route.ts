@@ -3,6 +3,7 @@ import { getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { updateComment, deleteComment } from "@/lib/db/comments";
 import type { Profile } from "@/lib/types/database";
+import { checkContent } from "@/lib/content-filter";
 
 export async function PUT(
   request: NextRequest,
@@ -23,6 +24,10 @@ export async function PUT(
       { status: 400 }
     );
   }
+
+  // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+  const dirty = checkContent(content);
+  if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const comment = await updateComment(commentId, user.id, content.trim());
 

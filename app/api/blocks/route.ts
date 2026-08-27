@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
-import { blockUser, unblockUser, getBlockedIds } from "@/lib/db/moderation";
+import {
+  blockUser,
+  unblockUser,
+  getBlockedIds,
+  createReport,
+} from "@/lib/db/moderation";
 
 /**
  * /api/blocks — the viewer's personal block list.
@@ -70,6 +75,22 @@ export async function POST(request: NextRequest) {
 
   try {
     await blockUser(user.id, target);
+
+    // App Store 1.2: blocking must also NOTIFY THE DEVELOPER. Every
+    // block auto-files a report against the blocked profile, so it
+    // lands in the /admin/reports queue alongside manual flags.
+    // Best-effort — a hiccup here must never un-block anyone.
+    try {
+      await createReport(
+        user.id,
+        "profile",
+        target,
+        "Auto-filed: this user was blocked for abusive or objectionable behavior."
+      );
+    } catch (reportErr) {
+      console.error("block auto-report failed:", reportErr);
+    }
+
     return NextResponse.json({ ok: true, blocked: true });
   } catch (err) {
     console.error("block failed:", err);

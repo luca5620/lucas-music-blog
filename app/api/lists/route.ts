@@ -6,6 +6,7 @@ import {
   getPublicLists,
 } from "@/lib/db/lists";
 import { rateLimit } from "@/lib/rate-limit";
+import { checkContent } from "@/lib/content-filter";
 
 /**
  * GET /api/lists — recent public lists, paginated.
@@ -82,6 +83,12 @@ export async function POST(request: Request) {
         { error: "Description must be 2000 characters or fewer." },
         { status: 400 }
       );
+    }
+
+    // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+    const dirtyList = checkContent(trimmedTitle, trimmedDescription);
+    if (dirtyList) {
+      return NextResponse.json({ error: dirtyList }, { status: 400 });
     }
 
     // --- Validate the two toggles: must be booleans when provided ---

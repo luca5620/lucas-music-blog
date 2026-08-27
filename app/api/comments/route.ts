@@ -3,6 +3,7 @@ import { getUser } from "@/lib/auth";
 import { createComment } from "@/lib/db/comments";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
+import { checkContent } from "@/lib/content-filter";
 
 // UUIDs only — anything else is rejected before touching the database.
 const UUID_RE =
@@ -52,6 +53,10 @@ export async function POST(request: NextRequest) {
   ) {
     return NextResponse.json({ error: "Invalid parentId" }, { status: 400 });
   }
+
+  // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+  const dirty = checkContent(content);
+  if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const supabase = await createClient();
 

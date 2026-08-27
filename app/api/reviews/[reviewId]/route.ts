@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import type { Review } from "@/lib/types/database";
 import { isOptionalText, parseRating } from "@/lib/validate";
+import { checkContent } from "@/lib/content-filter";
 
 /**
  * PUT /api/reviews/[reviewId]
@@ -91,6 +92,10 @@ export async function PUT(
         { status: 400 }
       );
     }
+
+    // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+    const dirty = checkContent(snippet, summary);
+    if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
     const parsedTracks = parseTrackPicks(standout_tracks);
     if (parsedTracks === null) {

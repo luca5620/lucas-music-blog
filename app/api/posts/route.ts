@@ -6,6 +6,7 @@ import { getReleaseById } from "@/lib/db/releases";
 import { parseVideoUrl, isTikTokShortLink, type ParsedVideo } from "@/lib/video";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
+import { checkContent } from "@/lib/content-filter";
 
 /**
  * POST /api/posts
@@ -53,6 +54,10 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
+    const dirty = checkContent(title, body);
+    if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
     // The optional video: parse or reject, never pass through.
     let video: ParsedVideo | null = null;

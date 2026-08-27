@@ -16,6 +16,7 @@ import {
   postReleaseArtistName,
 } from "@/lib/db/posts";
 import { createClient } from "@/lib/supabase/server";
+import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import { smallCover } from "@/lib/images";
 import PostLikeButton from "@/components/posts/PostLikeButton";
 
@@ -43,7 +44,12 @@ function timeAgo(dateStr: string): string {
 }
 
 export default async function PostsFeed() {
-  const posts = await listPosts(6);
+  const [allPosts, blocked] = await Promise.all([
+    listPosts(6),
+    getViewerBlockedIdSet(),
+  ]);
+  // Blocked authors never reach the viewer's feed (App Store 1.2).
+  const posts = allPosts.filter((p) => !blocked.has(p.user_id));
   if (posts.length === 0) return null;
 
   let viewerId: string | undefined;

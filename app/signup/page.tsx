@@ -39,6 +39,10 @@ export default function SignUpPage() {
   const [availability, setAvailability] = useState<Availability>("idle");
   const [loading, setLoading] = useState(false);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+  // Explicit EULA consent — App Store guideline 1.2 requires users
+  // to actively AGREE to the terms before registering (a passive
+  // "by signing up you agree" line got the app rejected).
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendNote, setResendNote] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -109,6 +113,10 @@ export default function SignUpPage() {
     }
     if (availability === "taken") {
       setUsernameError("That username is taken");
+      return;
+    }
+    if (!agreedToTerms) {
+      setError("You need to agree to the Terms of Use to create an account.");
       return;
     }
 
@@ -317,26 +325,53 @@ export default function SignUpPage() {
               />
             </div>
 
+            {/* EULA consent — an ACTIVE checkbox, not implied consent.
+                App Store 1.2: users must agree to terms that make the
+                zero-tolerance policy explicit before registering. */}
+            <label className="flex items-start gap-3 p-3 rounded border border-border-medium bg-bg-elevated/40 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="mt-0.5 w-4 h-4 shrink-0 accent-[var(--accent-primary,#1e90ff)]"
+              />
+              <span className="text-xs text-text-secondary leading-relaxed">
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="text-accent-primary hover:underline"
+                >
+                  Terms of Use
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="text-accent-primary hover:underline"
+                >
+                  Privacy Policy
+                </Link>
+                , including the{" "}
+                <span className="text-text-primary font-medium">
+                  zero-tolerance policy
+                </span>{" "}
+                for objectionable content and abusive users.
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={loading || !!usernameError || availability === "taken"}
+              disabled={
+                loading ||
+                !!usernameError ||
+                availability === "taken" ||
+                !agreedToTerms
+              }
               className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Tuning in…" : "Create Account"}
             </button>
-
-            {/* Legal consent — Apple + common sense both want this. */}
-            <p className="text-xs text-text-muted text-center">
-              By creating an account you agree to the{" "}
-              <Link href="/terms" className="text-accent-primary hover:underline">
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="text-accent-primary hover:underline">
-                Privacy Policy
-              </Link>
-              .
-            </p>
           </form>
 
           {/* Footer */}

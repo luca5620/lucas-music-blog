@@ -15,6 +15,35 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-27 (Windows): App Review 1.2 rejection response — code
+  complete, NO migration needed.** Apple rejected again on Guideline
+  1.2 (UGC precautions). Everything they listed is now implemented:
+  1. **Explicit EULA agreement at signup** — required checkbox on
+     /signup naming the zero-tolerance policy; submit stays disabled
+     until checked. /terms now explicitly calls itself the EULA.
+  2. **Objectionable-content filter** — new `lib/content-filter.ts`
+     (slurs + harassment phrases, leetspeak-normalized, word-boundary
+     matched; deliberately NOT ordinary profanity). Wired into every
+     text-accepting route: reviews (create+edit), comments
+     (create+edit), posts (create+edit), debates, debate messages,
+     room messages, lists (create+edit). Match → 400 with a
+     zero-tolerance message.
+  3. **Flagging** — already existed (ReportButton on all 8 content
+     types → /admin/reports queue). Unchanged.
+  4. **Blocking upgraded to Apple's exact wording** — blocking now
+     (a) auto-files a `content_reports` row against the blocked
+     profile so the developer is notified in /admin/reports, and
+     (b) removes their content from feeds INSTANTLY: server-side
+     filtering via new `getViewerBlockedIdSet()` in home Community
+     Feed, /reviews wall, home Posts module, /posts wall + existing
+     client filters (comments, debates) + NEW live-room ChatPanel
+     filter; BlockButton calls router.refresh() after blocking.
+  **Luca's hands next:** capture the screen recording on the iPhone
+  (EULA checkbox at signup → flag a piece of content → block a user
+  and watch their content vanish from the feed), attach it in App
+  Store Connect Notes, and reply to App Review. Draft reply text is
+  in the session summary / can be rewritten on ask.
+
 - **2026-08-26 (MacBook): Luca's five-item batch — code complete,
   ⚠️ TWO MIGRATIONS TO RUN in the Supabase SQL Editor (023 then
   024) before/right after this deploys.** The batch:

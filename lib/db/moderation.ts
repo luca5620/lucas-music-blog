@@ -174,6 +174,18 @@ export async function blockUser(blockerId: string, blockedId: string): Promise<v
   if (error) {
     throw new Error(`blockUser failed: ${error.message}`);
   }
+
+  // Blocking also unfollows (Instagram behavior): the Friends-tab
+  // feeds (Friend Activity, Popular with Friends) are built from
+  // who you follow, so severing the follow is what empties them
+  // instantly. Best-effort — RLS only lets us delete OUR follow
+  // (blocker→blocked); the reverse row is theirs and only affects
+  // their feeds, which the private-block model leaves alone.
+  await supabase
+    .from("follows")
+    .delete()
+    .eq("follower_id", blockerId)
+    .eq("following_id", blockedId);
 }
 
 export async function unblockUser(blockerId: string, blockedId: string): Promise<void> {

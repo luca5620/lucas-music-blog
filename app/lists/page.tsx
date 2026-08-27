@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getUser } from "@/lib/auth";
 import { getPublicLists } from "@/lib/db/lists";
+import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import ListCard from "@/components/lists/ListCard";
 import PageHero from "@/components/ui/PageHero";
 import BackToHome from "@/components/ui/BackToHome";
@@ -21,10 +22,13 @@ export const dynamic = "force-dynamic";
  * whether to show the "New list" button) and renders a card grid.
  */
 export default async function ListsPage() {
-  const [lists, user] = await Promise.all([
+  const [allLists, user, blocked] = await Promise.all([
     getPublicLists({ limit: 24 }),
     getUser(),
+    getViewerBlockedIdSet(),
   ]);
+  // Blocked authors never reach the viewer's wall (App Store 1.2).
+  const lists = allLists.filter((l) => !blocked.has(l.user_id));
 
   return (
     <div className="space-y-6">

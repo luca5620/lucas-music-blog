@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getBlockedIds } from "@/lib/db/moderation";
 
 /* ============================================
    Friends activity — data access layer
@@ -430,9 +431,13 @@ export async function getSuggestedProfiles(
   const limit = options?.limit ?? 6;
   const supabase = await createClient();
 
-  const followedIds = await getFollowedIds(viewerId);
-  // Exclude yourself and everyone you already follow.
-  const excluded = [viewerId, ...followedIds];
+  const [followedIds, blockedIds] = await Promise.all([
+    getFollowedIds(viewerId),
+    getBlockedIds(viewerId),
+  ]);
+  // Exclude yourself, everyone you already follow, and anyone you
+  // blocked — a blocked user must never come back as a suggestion.
+  const excluded = [viewerId, ...followedIds, ...blockedIds];
 
   const { data, error } = await supabase
     .from("profiles")

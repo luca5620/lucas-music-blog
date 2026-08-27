@@ -360,7 +360,7 @@ export async function getTunedToYou(
     supabase
       .from("debates")
       .select(
-        "id, slug, title, side_a_label, side_b_label, message_count, created_at, releases(primary_artist_id, cover_image, title)"
+        "id, created_by, slug, title, side_a_label, side_b_label, message_count, created_at, releases(primary_artist_id, cover_image, title)"
       )
       .eq("status", "open")
       .order("created_at", { ascending: false })
@@ -617,6 +617,7 @@ export async function getTunedToYou(
 
   type DebateRow = {
     id: string;
+    created_by: string;
     slug: string;
     title: string;
     side_a_label: string;
@@ -629,6 +630,7 @@ export async function getTunedToYou(
       | null;
   };
   for (const d of (debatesRes.data ?? []) as unknown as DebateRow[]) {
+    if (blockedAuthors.has(d.created_by)) continue;
     const release = first(d.releases);
     const artistId = release?.primary_artist_id ?? null;
     const votes = voteCounts.get(d.id) ?? 0;

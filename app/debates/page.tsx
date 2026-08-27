@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listDebates } from "@/lib/db/debates";
 import { getUser } from "@/lib/auth";
+import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import DebateCard from "@/components/debates/DebateCard";
 import PageHero from "@/components/ui/PageHero";
 import BackToHome from "@/components/ui/BackToHome";
@@ -20,7 +21,13 @@ export const dynamic = "force-dynamic";
  * Every debate is a two-sided room: vote a side, argue it live.
  */
 export default async function DebatesPage() {
-  const [allDebates, user] = await Promise.all([listDebates(24), getUser()]);
+  const [rawDebates, user, blocked] = await Promise.all([
+    listDebates(24),
+    getUser(),
+    getViewerBlockedIdSet(),
+  ]);
+  // Blocked authors never reach the viewer's wall (App Store 1.2).
+  const allDebates = rawDebates.filter((d) => !blocked.has(d.created_by));
 
   // RLS only ever hands back OTHER people's published debates, so the
   // unpublished rows here are necessarily the viewer's own drafts

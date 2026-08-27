@@ -19,6 +19,7 @@ import UserSearch from "@/components/friends/UserSearch";
 import Leaderboard from "@/components/friends/Leaderboard";
 import PageHero from "@/components/ui/PageHero";
 import { getLeaderboard } from "@/lib/db/leaderboard";
+import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import {
   getFriendActivity,
   getPopularWithFriends,
@@ -109,12 +110,16 @@ export default async function FriendsPage() {
   }
 
   // --- Logged in: fetch everything in parallel ---
-  const [activity, popular, suggestions, leaderboard] = await Promise.all([
-    getFriendActivity(user.id, { limit: 40 }),
-    getPopularWithFriends(user.id, { limit: 6 }),
-    getSuggestedProfiles(user.id, { limit: 6 }),
-    getLeaderboard(50),
-  ]);
+  const [activity, popular, suggestions, allLeaderboard, blocked] =
+    await Promise.all([
+      getFriendActivity(user.id, { limit: 40 }),
+      getPopularWithFriends(user.id, { limit: 6 }),
+      getSuggestedProfiles(user.id, { limit: 6 }),
+      getLeaderboard(50),
+      getViewerBlockedIdSet(),
+    ]);
+  // Blocked users stay off the viewer's charts (App Store 1.2).
+  const leaderboard = allLeaderboard.filter((r) => !blocked.has(r.user_id));
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">

@@ -20,7 +20,7 @@ import type { Release, Review } from "@/lib/types/database";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
-import { getRatingHex, formatRating } from "@/lib/rating";
+import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
 
 interface ReviewFormProps {
@@ -227,17 +227,13 @@ export default function ReviewForm({
         <legend className="label-xbox">Your Verdict</legend>
 
         <div className="flex items-center gap-5">
-          {/* Big live rating readout */}
+          {/* Big live rating readout — the SAME badge treatment the
+              home-page cards use (getRatingColor supplies the tier
+              classes, so 9.5+ pulses the purple elite glow and a 10
+              goes full rating-perfect), just scaled up a bit. */}
           <div
-            className="rating-badge shrink-0"
-            style={{
-              width: "4.5rem",
-              height: "4.5rem",
-              fontSize: "1.6rem",
-              color: ratingColor,
-              borderColor: ratingColor,
-              background: `${ratingColor}15`,
-            }}
+            className={`rating-badge shrink-0 w-14 h-14 text-2xl ${getRatingColor(rating)}`}
+            style={{ color: ratingColor, borderColor: ratingColor }}
           >
             {formatRating(rating)}
           </div>
@@ -261,7 +257,13 @@ export default function ReviewForm({
               // nothing once the native look was stripped, so the
               // ball was invisible. The inline gradient fills the
               // track up to the current score in the rating color.
-              className="rating-slider"
+              className={`rating-slider${
+                rating === 10
+                  ? " rating-slider-perfect"
+                  : rating >= 9.5
+                    ? " rating-slider-elite"
+                    : ""
+              }`}
               style={
                 {
                   "--slider-color": ratingColor,

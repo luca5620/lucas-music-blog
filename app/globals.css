@@ -1821,6 +1821,37 @@ fieldset {
 .rating-slider:focus-visible {
   box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.25);
 }
+/* 9.5+ territory: the dot pulses the same glow the rating badge
+   wears — purple for elite (9.5–9.9), theme accent for a perfect 10.
+   One parametrized keyframe; --glow-rgb picks the color. */
+@keyframes slider-thumb-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 6px rgba(var(--glow-rgb), 0.9),
+      0 0 14px rgba(var(--glow-rgb), 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(var(--glow-rgb), 1),
+      0 0 24px rgba(var(--glow-rgb), 0.7);
+  }
+}
+.rating-slider-elite::-webkit-slider-thumb {
+  --glow-rgb: 168, 85, 247;
+  animation: slider-thumb-glow 2.5s ease-in-out infinite;
+}
+.rating-slider-elite::-moz-range-thumb {
+  --glow-rgb: 168, 85, 247;
+  animation: slider-thumb-glow 2.5s ease-in-out infinite;
+}
+.rating-slider-perfect::-webkit-slider-thumb {
+  --glow-rgb: var(--accent-rgb);
+  animation: slider-thumb-glow 2.5s ease-in-out infinite;
+}
+.rating-slider-perfect::-moz-range-thumb {
+  --glow-rgb: var(--accent-rgb);
+  animation: slider-thumb-glow 2.5s ease-in-out infinite;
+}
 
 .tab-y2k {
   padding: 0.4rem 1rem;
@@ -2558,6 +2589,8 @@ fieldset {
 .native-app:not(.motion-on) .streak-flicker,
 .native-app:not(.motion-on) .rating-badge.rating-elite,
 .native-app:not(.motion-on) .rating-badge.rating-perfect,
+.native-app:not(.motion-on) .rating-slider-elite::-webkit-slider-thumb,
+.native-app:not(.motion-on) .rating-slider-perfect::-webkit-slider-thumb,
 .native-app:not(.motion-on) .animate-pulse,
 .native-app:not(.motion-on) .animate-spin {
   animation-play-state: paused !important;

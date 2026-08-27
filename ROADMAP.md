@@ -51,6 +51,25 @@ session ends mid-task; clear it when the work lands under Done.)*
   Not done from the batch: nothing — the ads idea went to Next up
   as a far-future note (below), per "months down the road".
 
+- **2026-08-26 (Windows) ROUND 3 — Your Taste upgrades, Luca picked
+  B/C/E/F/G from the offered list (A, the vhs-label→module-header
+  swap, was NOT picked — leave those headers alone).** (B) ANTICIPATED
+  posters with a future drop date wear the live amber LiveCountdown
+  badge (isUpcoming from lib/upcoming — the Eastern-midnight rule);
+  non-dated unreleased keeps the UNRELEASED stamp. (C) Both grids
+  now carry the /releases stamp convention — AVG n.n in rating color
+  / muted UNRATED — from ONE batched reviews query (avgByRelease in
+  page.tsx). (E) Empty sections no longer vanish: each renders a NO
+  SIGNAL panel saying why it's empty + a btn-y2k CTA (no artist
+  follows → /artists; all reviewed → /releases; no release follows
+  → /releases; empty pager → /releases). (F) Reason chips on grid
+  posters ("◈ you follow {artist}" / "◈ on your watchlist"), same ◈
+  style as the pager's chips. (G) TUNED TO YOU is full-bleed on
+  phones (-mx-4 wrapper + max-sm:rounded-none/border-x-0 on the
+  panel), taller (h-[75svh] uncapped; desktop keeps 70vh/640px),
+  with a bouncing "SWIPE ▼" hint on the first card (sm:hidden,
+  disappears once you surf). Build ✓, not yet eyeballed.
+
 - **2026-08-26 (Windows) ROUND 2 — Luca's corrections after
   eyeballing round 1 live.** (1) Home module headers: the Countdown
   / New Releases chips are DELETED (not hidden — Luca: "get rid of

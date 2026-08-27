@@ -27,6 +27,9 @@ import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import PageHero from "@/components/ui/PageHero";
 import ChannelSurf from "@/components/taste/ChannelSurf";
+import LiveCountdown from "@/components/releases/LiveCountdown";
+import { isUpcoming } from "@/lib/upcoming";
+import { getRatingHex, formatRating } from "@/lib/rating";
 import { buildTasteProfile, getTunedToYou, affinityFor } from "@/lib/taste";
 
 export const metadata = {
@@ -49,6 +52,10 @@ interface PosterRelease {
   artist_name: string;
   /** Viewer's taste score for the artist — used only for in-section order. */
   affinity: number;
+  /** Community average — attached in one batched query after the
+      section lists are built; the poster wears the same AVG/UNRATED
+      stamp as /releases. */
+  avg_rating?: number | null;
 }
 
 /** Only https:// or local /path images (stored-XSS defense). */
@@ -203,6 +210,35 @@ export default async function YourTastePage() {
       .slice(0, 12);
   }
 
+  /* ---- Community averages for every poster below (ONE batched
+     query) — the grids wear the same AVG / UNRATED stamps as the
+     /releases listings, so you can see how the community rates a
+     thing before you review it. ---- */
+  const posterIds = [...becauseYouFollow, ...anticipated].map((r) => r.id);
+  const avgByRelease = new Map<string, { sum: number; n: number }>();
+  if (posterIds.length > 0) {
+    const { data } = await supabase
+      .from("reviews")
+      .select("release_id, rating")
+      .eq("is_published", true)
+      .in("release_id", posterIds);
+    ((data ?? []) as { release_id: string | null; rating: number }[]).forEach(
+      (rev) => {
+        if (!rev.release_id) return;
+        const acc = avgByRelease.get(rev.release_id) ?? { sum: 0, n: 0 };
+        acc.sum += rev.rating;
+        acc.n += 1;
+        avgByRelease.set(rev.release_id, acc);
+      }
+    );
+  }
+  const withAvg = (r: PosterRelease): PosterRelease => {
+    const acc = avgByRelease.get(r.id);
+    return { ...r, avg_rating: acc ? acc.sum / acc.n : null };
+  };
+  becauseYouFollow = becauseYouFollow.map(withAvg);
+  anticipated = anticipated.map(withAvg);
+
   return (
     <div className="space-y-8 pb-12">
       {/* Header — boxed hero, same as HOME */}
@@ -212,37 +248,72 @@ export default async function YourTastePage() {
       />
 
       {/* ===== Tuned to you — the channel-surf pager, top of the
-             page and the only place reviews appear here ===== */}
-      {tunedItems.length > 0 && (
-        <section className="space-y-3">
-          <SectionHeader label="TUNED TO YOU" sub="swipe / arrow through your channel" />
-          <ChannelSurf items={tunedItems} />
-        </section>
-      )}
+             page and the only place reviews appear here. On phones
+             it runs FULL-BLEED (the -mx-4 cancels the page padding)
+             so the channel reads as the TikTok-style surface it is. ===== */}
+      <section className="space-y-3">
+        <SectionHeader label="TUNED TO YOU" sub="swipe / arrow through your channel" />
+        {tunedItems.length > 0 ? (
+          <div className="-mx-4 sm:mx-0">
+            <ChannelSurf items={tunedItems} />
+          </div>
+        ) : (
+          <EmptyState
+            text="Static, for now. Rate a few releases and follow some people — your channel tunes itself from what you love."
+            cta="Browse Releases"
+            href="/releases"
+          />
+        )}
+      </section>
 
-      {/* ===== Because you follow ===== */}
-      {becauseYouFollow.length > 0 && (
-        <section className="space-y-3">
-          <SectionHeader label="BECAUSE YOU FOLLOW THE ARTIST" sub="unreviewed — go on then" />
+      {/* ===== Because you follow =====
+          Empty sections don't vanish anymore (Luca picked the
+          cold-start treatment 2026-08-26): they say WHY they're
+          empty and where to go fix it. */}
+      <section className="space-y-3">
+        <SectionHeader label="BECAUSE YOU FOLLOW THE ARTIST" sub="unreviewed — go on then" />
+        {becauseYouFollow.length > 0 ? (
           <div className="poster-grid">
             {becauseYouFollow.map((r) => (
-              <ReleasePoster key={r.id} release={r} />
+              <ReleasePoster
+                key={r.id}
+                release={r}
+                reason={r.artist_name ? `you follow ${r.artist_name}` : undefined}
+              />
             ))}
           </div>
-        </section>
-      )}
+        ) : artistIds.length === 0 ? (
+          <EmptyState
+            text="You don't follow any artists yet. Follow one and every drop of theirs you haven't rated lines up right here."
+            cta="Browse Artists"
+            href="/artists"
+          />
+        ) : (
+          <EmptyState
+            text="You've rated everything from the artists you follow — the queue is clear. Follow more artists or dig through the latest drops."
+            cta="Latest Drops"
+            href="/releases"
+          />
+        )}
+      </section>
 
       {/* ===== Anticipated ===== */}
-      {anticipated.length > 0 && (
-        <section className="space-y-3">
-          <SectionHeader label="ANTICIPATED" sub="releases you're watching" />
+      <section className="space-y-3">
+        <SectionHeader label="ANTICIPATED" sub="releases you're watching" />
+        {anticipated.length > 0 ? (
           <div className="poster-grid">
             {anticipated.map((r) => (
-              <ReleasePoster key={r.id} release={r} />
+              <ReleasePoster key={r.id} release={r} reason="on your watchlist" />
             ))}
           </div>
-        </section>
-      )}
+        ) : (
+          <EmptyState
+            text="Follow a release to watch it here — the live room opens before the album does, countdown included."
+            cta="Browse Releases"
+            href="/releases"
+          />
+        )}
+      </section>
     </div>
   );
 }
@@ -261,8 +332,41 @@ function SectionHeader({ label, sub }: { label: string; sub: string }) {
   );
 }
 
-function ReleasePoster({ release }: { release: PosterRelease }) {
+/** Empty-section panel — says why there's nothing here and where to
+    go fix it, in the site's NO SIGNAL voice. */
+function EmptyState({
+  text,
+  cta,
+  href,
+}: {
+  text: string;
+  cta: string;
+  href: string;
+}) {
+  return (
+    <div className="panel-xbox p-6 sm:p-8 text-center space-y-4">
+      <p className="osd-text text-sm">NO SIGNAL</p>
+      <p className="text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
+        {text}
+      </p>
+      <Link href={href} className="btn-y2k btn-y2k-outline inline-block">
+        {cta}
+      </Link>
+    </div>
+  );
+}
+
+function ReleasePoster({
+  release,
+  reason,
+}: {
+  release: PosterRelease;
+  /** Why this pick is here — same "one clean signal" chips the
+      TUNED TO YOU pager uses, extended to the grids. */
+  reason?: string;
+}) {
   const cover = safeImage(release.cover_image);
+  const upcoming = isUpcoming(release.release_date);
   return (
     <Link
       href={`/releases/${release.slug}`}
@@ -276,8 +380,29 @@ function ReleasePoster({ release }: { release: PosterRelease }) {
         ) : (
           <span className="w-full h-full flex items-center justify-center text-4xl">💿</span>
         )}
-        {release.is_unreleased && (
+        {/* Stamp priority: a future drop gets the live amber clock
+            (same badge as the home Dropping Soon posters); other
+            unreleased stuff keeps the UNRELEASED stamp; everything
+            out in the world wears the /releases AVG / UNRATED
+            convention. */}
+        {upcoming && release.release_date ? (
+          <span className="absolute bottom-1.5 left-1.5 pixel-text text-[11px] text-osd-amber bg-black/80 border border-osd-amber/50 rounded px-1.5 py-0.5 tracking-widest">
+            <LiveCountdown releaseDate={release.release_date} />
+          </span>
+        ) : release.is_unreleased ? (
           <span className="poster-unreleased">UNRELEASED</span>
+        ) : typeof release.avg_rating === "number" ? (
+          <span
+            className="poster-rating"
+            style={{ color: getRatingHex(release.avg_rating) }}
+          >
+            <span className="text-[0.55rem] font-normal text-text-muted mr-1">AVG</span>
+            {formatRating(release.avg_rating)}
+          </span>
+        ) : (
+          <span className="poster-rating !text-[0.55rem] !font-normal text-text-muted tracking-wider">
+            UNRATED
+          </span>
         )}
       </span>
       <span className="block">
@@ -287,6 +412,11 @@ function ReleasePoster({ release }: { release: PosterRelease }) {
         <span className="block text-xs text-text-secondary truncate">
           {release.artist_name}
         </span>
+        {reason && (
+          <span className="block text-[10px] text-accent-primary/80 truncate pt-0.5">
+            ◈ {reason}
+          </span>
+        )}
       </span>
     </Link>
   );

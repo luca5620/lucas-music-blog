@@ -713,7 +713,10 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
       className={
         fullscreen
           ? `surf-fullscreen ${closing ? "surf-anim-out" : "surf-anim-in"}`
-          : "panel-xbox relative overflow-hidden"
+          : // Phones: the page wraps this in -mx-4 for a full-bleed
+            // channel, so the panel drops its side borders/rounding
+            // and reads edge-to-edge (Luca 2026-08-26).
+            "panel-xbox relative overflow-hidden max-sm:rounded-none max-sm:border-x-0"
       }
     >
       {/* App-only ambient: the molten liquid as a looping video the
@@ -738,7 +741,10 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
         className={`relative overflow-y-auto snap-y snap-mandatory focus:outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
           fullscreen
             ? "h-full"
-            : "h-[70vh] min-h-[420px] max-h-[640px]"
+            : // Phones run taller (75svh, uncapped) so the channel
+              // fills most of the screen; desktop keeps the old
+              // 70vh-capped-at-640 frame.
+              "h-[75svh] min-h-[420px] sm:h-[70vh] sm:max-h-[640px]"
         }`}
       >
         {items.map((item) => (
@@ -833,6 +839,21 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
           ▼
         </button>
       </div>
+
+      {/* Phone swipe hint — the desktop sub ("swipe / arrow through
+          your channel") is hidden below sm, so the first card wears
+          a bouncing chevron until you actually swipe. */}
+      {!fullscreen && !closing && index === 0 && items.length > 1 && (
+        <div
+          aria-hidden="true"
+          className="sm:hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex flex-col items-center animate-bounce text-accent-glow drop-shadow-[0_0_6px_rgba(0,0,0,0.9)]"
+        >
+          <span className="pixel-text text-[9px] uppercase tracking-widest">
+            swipe
+          </span>
+          <span className="text-sm leading-none">▼</span>
+        </div>
+      )}
 
       {!fullscreen && <div className="scan-bar" />}
     </div>

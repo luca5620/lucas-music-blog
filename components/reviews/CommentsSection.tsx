@@ -102,6 +102,9 @@ function CommentForm({
 }) {
   const [content, setContent] = useState(initialValue);
   const [submitting, setSubmitting] = useState(false);
+  // Server rejections (content filter, length, rate limit) surface
+  // here — the text stays in the box so nothing typed is lost.
+  const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -114,9 +117,14 @@ function CommentForm({
     e.preventDefault();
     if (!content.trim() || submitting) return;
     setSubmitting(true);
+    setError(null);
     try {
       await onSubmit(content.trim());
       setContent("");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Couldn't post that — try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -132,6 +140,11 @@ function CommentForm({
         rows={3}
         className="w-full px-4 py-3 rounded-lg bg-bg-elevated border border-border-subtle text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/25 transition-all resize-none"
       />
+      {error && (
+        <p className="text-xs text-accent-rose border border-accent-rose/30 bg-accent-rose/5 rounded px-3 py-2">
+          {error}
+        </p>
+      )}
       <div className="flex items-center gap-2 justify-end">
         {onCancel && (
           <button
@@ -345,15 +358,21 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
 
   /* ─── Handlers ─── */
 
+  /** Throw the server's message so CommentForm can show it — a
+      rejection (content filter, rate limit) must never fail silently. */
+  const throwServerError = async (res: Response, fallback: string) => {
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(data.error ?? fallback);
+  };
+
   const handlePost = async (content: string) => {
     const res = await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reviewId, content }),
     });
-    if (res.ok) {
-      await fetchComments();
-    }
+    if (!res.ok) await throwServerError(res, "Couldn't post your comment.");
+    await fetchComments();
   };
 
   const handleReply = async (parentId: string, content: string) => {
@@ -362,10 +381,9 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reviewId, content, parentId }),
     });
-    if (res.ok) {
-      setReplyingTo(null);
-      await fetchComments();
-    }
+    if (!res.ok) await throwServerError(res, "Couldn't post your reply.");
+    setReplyingTo(null);
+    await fetchComments();
   };
 
   const handleEdit = async (commentId: string, content: string) => {
@@ -374,9 +392,8 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content }),
     });
-    if (res.ok) {
-      await fetchComments();
-    }
+    if (!res.ok) await throwServerError(res, "Couldn't save your edit.");
+    await fetchComments();
   };
 
   const handleDelete = async (commentId: string) => {

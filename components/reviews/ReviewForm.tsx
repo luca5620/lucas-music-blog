@@ -140,16 +140,18 @@ export default function ReviewForm({
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      {/* Header */}
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Header — same centered module + plain-sentence intro as the
+          posts/debates create pages (Luca 2026-08-26: one consistent
+          format across everything the create button offers). */}
       <div className="space-y-2">
         <h1 className="crt-title text-3xl sm:text-4xl">
           {mode === "edit" ? "Edit Review" : "Write a Review"}
         </h1>
-        <p className="pixel-text text-lg text-text-secondary">
+        <p className="text-sm text-text-secondary">
           {mode === "edit"
-            ? "update your take — the release stays locked in"
-            : "find the record, drop your honest take"}
+            ? "Update your take — the release stays locked in."
+            : "Find the record, drop your honest take."}
         </p>
       </div>
 

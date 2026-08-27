@@ -33,14 +33,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { title, prompt, side_a_label, side_b_label, release_id } =
+  const { title, prompt, side_a_label, side_b_label, release_id, is_published } =
     (body ?? {}) as {
       title?: unknown;
       prompt?: unknown;
       side_a_label?: unknown;
       side_b_label?: unknown;
       release_id?: unknown;
+      is_published?: unknown;
     };
+
+  // Draft flag (migration 024): anything but an explicit false publishes.
+  if (is_published !== undefined && typeof is_published !== "boolean") {
+    return NextResponse.json({ error: "Invalid draft flag." }, { status: 400 });
+  }
 
   // --- Validation mirrors the DB check constraints so users get a
   //     friendly 400 instead of a raw Postgres error. ---
@@ -90,6 +96,10 @@ export async function POST(request: Request) {
       side_b_label: sideB,
       release_id: (release_id as string | undefined) ?? null,
       created_by: user.id,
+      // Only mention the column when saving a DRAFT — published is the
+      // column default, and omitting it keeps the publish path working
+      // even before migration 024 has been run in the SQL Editor.
+      ...(is_published === false ? { is_published: false } : {}),
     } as never)
     .select()
     .single();

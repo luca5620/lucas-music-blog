@@ -15,7 +15,7 @@ export default async function MyReviewsPage() {
   const user = await requireAuth();
   const [reviews, posts] = await Promise.all([
     getReviewsByUser(user.id, { includeUnpublished: true }),
-    getUserPosts(user.id),
+    getUserPosts(user.id, { includeUnpublished: true }),
   ]);
 
   return (
@@ -229,6 +229,19 @@ export default async function MyReviewsPage() {
                   </p>
 
                   <div className="flex items-center gap-3 mt-3">
+                    {/* Status badge — same green/yellow pair as reviews.
+                        Old rows without the 024 column count as published. */}
+                    {post.is_published !== false ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                        Published
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                        Draft
+                      </span>
+                    )}
                     {post.video_kind && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-accent-primary/10 text-accent-primary border border-accent-primary/20 font-[family-name:var(--font-vt323)]">
                         ▶ {post.video_kind === "youtube" ? "YouTube" : "TikTok"}

@@ -122,6 +122,8 @@ export async function createPost(input: {
   body: string;
   video: ParsedVideo | null;
   releaseId: string | null;
+  /** false = save as draft (migration 024). Defaults to published. */
+  isPublished?: boolean;
 }): Promise<Post | null> {
   // Belt-and-braces: even a pre-parsed video must be a coherent pair
   // with a sane id (the DB constraint would also reject it, but a
@@ -144,6 +146,10 @@ export async function createPost(input: {
       video_kind: input.video?.kind ?? null,
       video_id: input.video?.id ?? null,
       release_id: input.releaseId,
+      // Only mention the column when saving a DRAFT — published is the
+      // column default, and omitting it keeps publishing working even
+      // before migration 024 has been run in the SQL Editor.
+      ...(input.isPublished === false ? { is_published: false } : {}),
     } as never)
     .select()
     .single();
@@ -164,6 +170,10 @@ export async function updatePost(
     body: string;
     video: ParsedVideo | null;
     releaseId: string | null;
+    /** Omit to leave the publish state untouched. The API layer only
+        passes this when it would actually flip the row (so pre-024
+        databases never see the column in an UPDATE). */
+    isPublished?: boolean;
   }
 ): Promise<Post | null> {
   // Same belt-and-braces as createPost: a video must be a coherent pair.
@@ -183,6 +193,9 @@ export async function updatePost(
       video_kind: fields.video?.kind ?? null,
       video_id: fields.video?.id ?? null,
       release_id: fields.releaseId,
+      ...(fields.isPublished !== undefined
+        ? { is_published: fields.isPublished }
+        : {}),
     } as never)
     .eq("id", id)
     .select()
@@ -245,10 +258,20 @@ export async function listPosts(
 
   const { data, error } = await query;
   if (error || !data) return [];
-  return (data as unknown as PostRow[]).map(withContext);
+  // Drop drafts in JS, not with .eq(): RLS already hides OTHER
+  // people's drafts, so the only rows this can catch are the viewer's
+  // own — and a JS check keeps the feed alive on a database where
+  // migration 024 hasn't been run yet (the column simply isn't there,
+  // is_published is undefined, and everything passes).
+  return (data as unknown as PostRow[])
+    .filter((row) => row.is_published !== false)
+    .map(withContext);
 }
 
-export async function getUserPosts(userId: string): Promise<Post[]> {
+export async function getUserPosts(
+  userId: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<Post[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("posts")
@@ -257,7 +280,12 @@ export async function getUserPosts(userId: string): Promise<Post[]> {
     .order("created_at", { ascending: false });
 
   if (error) return [];
-  return data as Post[];
+  // Same JS draft filter as listPosts (see the comment there). The
+  // mine page opts in to drafts so they can be resumed/published.
+  const rows = data as Post[];
+  return options?.includeUnpublished
+    ? rows
+    : rows.filter((row) => row.is_published !== false);
 }
 
 /** RLS authorizes this: author always, staff via 007-style policy. */

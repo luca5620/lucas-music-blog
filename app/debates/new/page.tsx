@@ -17,7 +17,6 @@ export default async function NewDebatePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <section className="space-y-2">
-        <div className="vhs-label inline-block text-sm">NEW BROADCAST</div>
         <h1 className="crt-title text-3xl sm:text-4xl">Open a debate</h1>
         <p className="text-sm text-text-secondary">
           Frame the question, name the two sides, optionally pin the

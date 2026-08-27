@@ -70,7 +70,10 @@ export default function PostForm({
     setPickedArtist(pick.artist_name);
   }
 
-  async function handleSubmit() {
+  // isPublished false = the Save as Draft path (same split as
+  // ReviewForm): the post saves normally but only the author can see
+  // it, and it waits on the My Reviews & Posts page to be published.
+  async function handleSubmit(isPublished: boolean) {
     if (title.trim().length < 3) {
       setError("Give it a title — at least 3 characters.");
       return;
@@ -96,6 +99,7 @@ export default function PostForm({
           body,
           video_url: trimmedUrl || null,
           release_id: release?.id ?? null,
+          is_published: isPublished,
         }),
       });
 
@@ -107,7 +111,9 @@ export default function PostForm({
       }
 
       const data = (await res.json()) as { post: Post };
-      router.push(`/posts/${data.post.slug}`);
+      // Drafts live on the manage page (like review drafts); published
+      // posts jump straight to their public page.
+      router.push(isPublished ? `/posts/${data.post.slug}` : "/reviews/mine");
       router.refresh();
     } catch {
       setError("Network error. Please try again.");
@@ -252,7 +258,7 @@ export default function PostForm({
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={handleSubmit}
+          onClick={() => handleSubmit(true)}
           disabled={saving || title.trim().length < 3 || body.trim().length === 0}
           className="btn-y2k btn-y2k-primary disabled:opacity-50"
         >
@@ -261,8 +267,19 @@ export default function PostForm({
               ? "Saving…"
               : "Posting…"
             : editing
-              ? "Save Changes"
+              ? post!.is_published === false
+                ? "Update & Publish"
+                : "Save Changes"
               : "Publish Post"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSubmit(false)}
+          disabled={saving || title.trim().length < 3 || body.trim().length === 0}
+          className="btn-y2k btn-y2k-outline disabled:opacity-50"
+        >
+          {saving ? "Saving…" : "Save as Draft"}
         </button>
 
         <button

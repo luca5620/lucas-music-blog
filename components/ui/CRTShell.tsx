@@ -53,14 +53,27 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
               layout shift on an invisible backdrop. vh offsets never
               move; blobs past a short page's bottom just clip. */}
           <div className="crt-liquid" aria-hidden="true">
-            <div className="liquid-blob liquid-a w-[560px] h-[560px] -top-40 -left-32" />
-            <div className="liquid-blob liquid-c w-[500px] h-[500px] top-[55vh] left-1/3" />
-            <div className="liquid-blob liquid-b w-[480px] h-[480px] top-[115vh] -right-40" />
-            <div className="liquid-blob liquid-a w-[520px] h-[520px] top-[190vh] left-1/2" />
-            <div className="liquid-blob liquid-c w-[520px] h-[520px] top-[245vh] -left-44" />
-            <div className="liquid-blob liquid-b w-[500px] h-[500px] top-[310vh] left-1/4" />
-            <div className="liquid-blob liquid-a w-[460px] h-[460px] top-[365vh] -right-32" />
-            <div className="liquid-blob liquid-b w-[500px] h-[500px] top-[430vh] left-1/4" />
+            {/* md: sizes = DESKTOP PROMINENCE (Luca 2026-08-26, see
+                globals.css): the phone-tuned blobs looked lost on a
+                monitor, so at md+ every blob grows ~40% and the
+                hidden md:block string below doubles the density.
+                Phone sizes are untouched — small screens keep the
+                exact wash Luca already approved (and mobile web holds
+                these still anyway, so no extra GPU cost there). */}
+            <div className="liquid-blob liquid-a w-[560px] h-[560px] md:w-[800px] md:h-[800px] -top-40 -left-32" />
+            <div className="liquid-blob liquid-c w-[500px] h-[500px] md:w-[720px] md:h-[720px] top-[55vh] left-1/3" />
+            <div className="liquid-blob liquid-b w-[480px] h-[480px] md:w-[700px] md:h-[700px] top-[115vh] -right-40" />
+            <div className="liquid-blob liquid-a w-[520px] h-[520px] md:w-[760px] md:h-[760px] top-[190vh] left-1/2" />
+            <div className="liquid-blob liquid-c w-[520px] h-[520px] md:w-[760px] md:h-[760px] top-[245vh] -left-44" />
+            <div className="liquid-blob liquid-b w-[500px] h-[500px] md:w-[720px] md:h-[720px] top-[310vh] left-1/4" />
+            <div className="liquid-blob liquid-a w-[460px] h-[460px] md:w-[660px] md:h-[660px] top-[365vh] -right-32" />
+            <div className="liquid-blob liquid-b w-[500px] h-[500px] md:w-[720px] md:h-[720px] top-[430vh] left-1/4" />
+            {/* Desktop-only fillers, slotted into the vh gaps the
+                original string left open. */}
+            <div className="liquid-blob liquid-b hidden md:block w-[680px] h-[680px] top-[25vh] right-[12%]" />
+            <div className="liquid-blob liquid-a hidden md:block w-[640px] h-[640px] top-[85vh] left-[8%]" />
+            <div className="liquid-blob liquid-c hidden md:block w-[700px] h-[700px] top-[155vh] left-[55%]" />
+            <div className="liquid-blob liquid-a hidden md:block w-[660px] h-[660px] top-[275vh] right-[5%]" />
           </div>
           {children}
         </div>

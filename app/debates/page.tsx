@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { listDebates } from "@/lib/db/debates";
+import { getUser } from "@/lib/auth";
 import DebateCard from "@/components/debates/DebateCard";
 import PageHero from "@/components/ui/PageHero";
 
@@ -18,7 +19,15 @@ export const dynamic = "force-dynamic";
  * Every debate is a two-sided room: vote a side, argue it live.
  */
 export default async function DebatesPage() {
-  const debates = await listDebates(24);
+  const [allDebates, user] = await Promise.all([listDebates(24), getUser()]);
+
+  // RLS only ever hands back OTHER people's published debates, so the
+  // unpublished rows here are necessarily the viewer's own drafts
+  // (migration 024) — pull them out of the grid into a resume strip.
+  const drafts = allDebates.filter(
+    (d) => d.is_published === false && d.created_by === user?.id
+  );
+  const debates = allDebates.filter((d) => d.is_published !== false);
 
   return (
     <div className="space-y-6 circuit-bg">
@@ -33,6 +42,33 @@ export default async function DebatesPage() {
           </Link>
         </div>
       </PageHero>
+
+      {/* ══════════ Your drafts — hidden until you have one ══════════ */}
+      {drafts.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="label-xbox">Your Drafts</h2>
+          <div className="panel-xbox divide-y divide-border-subtle">
+            {drafts.map((d) => (
+              <Link
+                key={d.id}
+                href={`/debates/${d.slug}`}
+                className="flex items-center gap-3 px-3 py-2.5 hover:bg-bg-elevated transition-colors"
+              >
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)] shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                  Draft
+                </span>
+                <span className="min-w-0 flex-1 text-sm font-bold text-[#e8e6e3] truncate">
+                  {d.title}
+                </span>
+                <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
+                  open &amp; publish ►
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ══════════ Debate grid ══════════ */}
       {debates.length === 0 ? (

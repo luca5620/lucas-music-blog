@@ -49,7 +49,14 @@ export async function PATCH(
 
   try {
     const payload = await request.json();
-    const { title, body, video_url, release_id } = payload;
+    const { title, body, video_url, release_id, is_published } = payload;
+
+    if (is_published !== undefined && typeof is_published !== "boolean") {
+      return NextResponse.json(
+        { error: "Invalid draft flag." },
+        { status: 400 }
+      );
+    }
 
     if (!isText(title, 120) || title.trim().length < 3) {
       return NextResponse.json(
@@ -112,11 +119,25 @@ export async function PATCH(
       releaseId = release.id;
     }
 
+    // Only forward the publish state when it would actually FLIP the
+    // row. On a database that predates migration 024 the existing row
+    // has no is_published at all (undefined), the check below never
+    // fires, and the UPDATE never mentions the missing column — so
+    // plain edits keep working before the migration runs.
+    // (And when the client omits the flag entirely, leave the row's
+    // publish state alone — an edit is not an implicit publish.)
+    const wantsPublished = is_published as boolean | undefined;
+    const flip =
+      wantsPublished !== undefined &&
+      typeof existing.is_published === "boolean" &&
+      existing.is_published !== wantsPublished;
+
     const post = await updatePost(postId, {
       title: title.trim(),
       body,
       video,
       releaseId,
+      ...(flip ? { isPublished: wantsPublished } : {}),
     });
 
     if (!post) {

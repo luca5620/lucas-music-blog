@@ -17,7 +17,6 @@ export default async function NewPostPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <section className="space-y-2">
-        <div className="vhs-label inline-block text-sm">NEW TRANSMISSION</div>
         <h1 className="crt-title text-3xl sm:text-4xl">Write a post</h1>
         <p className="text-sm text-text-secondary">
           Longer than a review, looser than one too. Drop a YouTube or

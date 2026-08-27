@@ -16,7 +16,9 @@ import Link from "next/link";
 import { formatRating } from "@/lib/rating";
 import { getUser } from "@/lib/auth";
 import UserSearch from "@/components/friends/UserSearch";
+import Leaderboard from "@/components/friends/Leaderboard";
 import PageHero from "@/components/ui/PageHero";
+import { getLeaderboard } from "@/lib/db/leaderboard";
 import {
   getFriendActivity,
   getPopularWithFriends,
@@ -107,10 +109,11 @@ export default async function FriendsPage() {
   }
 
   // --- Logged in: fetch everything in parallel ---
-  const [activity, popular, suggestions] = await Promise.all([
+  const [activity, popular, suggestions, leaderboard] = await Promise.all([
     getFriendActivity(user.id, { limit: 40 }),
     getPopularWithFriends(user.id, { limit: 6 }),
     getSuggestedProfiles(user.id, { limit: 6 }),
+    getLeaderboard(50),
   ]);
 
   return (
@@ -123,6 +126,11 @@ export default async function FriendsPage() {
 
       {/* Find people — type a username, click through, hit Follow */}
       <UserSearch />
+
+      {/* ===== Leaderboard — the community charts (Luca 2026-08-26).
+             Empty until migration 023 runs; the section hides itself
+             rather than showing a bare header. ===== */}
+      {leaderboard.length > 0 && <Leaderboard rows={leaderboard} />}
 
       {/* ===== Popular with friends ===== */}
       {popular.length > 0 && (

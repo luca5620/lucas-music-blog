@@ -25,8 +25,10 @@ export default function NewDebateForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  // publish=false is the Save as Draft path (same QoL as reviews and
+  // posts): the room is created but only its creator can see it, and a
+  // Publish button on the debate page puts it on air later.
+  async function submit(publish: boolean) {
     if (submitting) return;
     setError(null);
 
@@ -55,6 +57,7 @@ export default function NewDebateForm() {
           side_a_label: sideA.trim(),
           side_b_label: sideB.trim(),
           release_id: attached?.release.id ?? null,
+          is_published: publish,
         }),
       });
       const data = (await res.json()) as {
@@ -72,7 +75,13 @@ export default function NewDebateForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        submit(true);
+      }}
+      className="space-y-5"
+    >
       {/* Topic */}
       <div>
         <label className="block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]">
@@ -182,13 +191,24 @@ export default function NewDebateForm() {
 
       {error && <p className="text-sm text-accent-rose">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="btn-y2k btn-y2k-primary disabled:opacity-50"
-      >
-        {submitting ? "OPENING…" : "OPEN THE FLOOR"}
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="btn-y2k btn-y2k-primary disabled:opacity-50"
+        >
+          {submitting ? "OPENING…" : "OPEN THE FLOOR"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => submit(false)}
+          disabled={submitting}
+          className="btn-y2k btn-y2k-outline disabled:opacity-50"
+        >
+          {submitting ? "Saving…" : "Save as Draft"}
+        </button>
+      </div>
     </form>
   );
 }

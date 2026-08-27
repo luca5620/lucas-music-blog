@@ -283,6 +283,10 @@ export interface Debate {
   created_by: string;
   status: "open" | "closed";
   message_count: number;
+  /** false = draft, visible only to the creator (migration 024).
+      Optional because rows predate the column until 024 runs —
+      treat undefined as published. */
+  is_published?: boolean;
   created_at: string;
 }
 
@@ -324,6 +328,10 @@ export interface Post {
   video_kind: "youtube" | "tiktok" | null;
   video_id: string | null;
   release_id: string | null;
+  /** false = draft, visible only to the author (migration 024).
+      Optional because rows predate the column until 024 runs —
+      treat undefined as published. */
+  is_published?: boolean;
   created_at: string;
   updated_at: string;
 }

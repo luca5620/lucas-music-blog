@@ -64,6 +64,21 @@ function clean(raw: string | null | undefined): string | null {
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
+/** "TITLE (Deluxe)" / "(Digital Deluxe)" / "[Deluxe Edition]" → the
+    base title, for LOOKUP only — display keeps the full name. Deluxe
+    releases share the base album's story, but the qualified name
+    strict-matches (sameName) nothing on Genius/Wikipedia, so their
+    bios came back empty (Luca 2026-08-26). Only parentheticals that
+    say "deluxe" are stripped — "(20th Anniversary Edition)" etc.
+    stay, those reissues are their own works with their own pages. */
+function stripDeluxe(title: string): string {
+  const stripped = title
+    .replace(/\s*[(\[][^()[\]]*deluxe[^()[\]]*[)\]]/gi, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  return stripped || title;
+}
+
 /** Loose string match: lowercase alphanumerics, containment either way. */
 function matches(a: string, b: string): boolean {
   const na = norm(a);
@@ -379,8 +394,10 @@ export async function getReleaseDescription(release: {
   }
   if (!release.artistName) return null;
   try {
+    // Deluxe variants look up under the base title (stripDeluxe) —
+    // the qualified name matches nothing external.
     return await externalDescription(
-      release.title,
+      stripDeluxe(release.title),
       release.artistName,
       release.release_type,
       release.genius_id,

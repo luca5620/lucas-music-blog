@@ -15,6 +15,42 @@ remnants: every piece of content is community-made and catalog-backed.
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*
 
+- **2026-08-26 (MacBook): Luca's five-item batch — code complete,
+  ⚠️ TWO MIGRATIONS TO RUN in the Supabase SQL Editor (023 then
+  024) before/right after this deploys.** The batch:
+  1. **Friends-tab leaderboard** — `components/friends/Leaderboard`
+     (tabs: most reviews / most likes received / most lists, top 10,
+     medal colors) fed by `leaderboard_stats()` from **migration
+     023**; section hides itself until the migration runs. Page
+     keeps the name "Friends" — Luca is still thinking about a
+     rename, revisit later.
+  2. **Album/Song Bio deluxe fix** — `lib/descriptions.ts` strips
+     "(…deluxe…)"/"[…deluxe…]" parentheticals from titles for the
+     Genius/Wikipedia lookup only (display keeps the full name), so
+     Deluxe/Digital Deluxe editions pull the base album's bio.
+  3. **Create-page consistency** — reviews + lists forms now use the
+     same centered `max-w-2xl mx-auto` module and header style as
+     posts/debates; the "NEW TRANSMISSION"/"NEW BROADCAST" vhs
+     labels are removed from posts/new and debates/new.
+  4. **Save as Draft everywhere** (QoL, mirrors reviews): posts and
+     debates get `is_published` via **migration 024** (column +
+     author-only RLS on drafts). Posts: draft button on PostForm,
+     drafts land on /reviews/mine with the same Draft/Published
+     badges as reviews, publish via edit. Debates: draft button on
+     NewDebateForm, draft page shows an amber banner + "Open the
+     floor" publish button (new `PATCH /api/debates/[debateId]`),
+     plus a "Your Drafts" strip on /debates. Lists: "Save as Draft"
+     saves with is_public=false (private lists already were drafts
+     in all but name). All read paths degrade gracefully pre-
+     migration — nothing breaks if 024 lags the deploy.
+  5. **Liquid blobs, web prominence** — desktop web (md+) wash blobs
+     grow ~40% (+4 filler blobs), the room around the TV grows ~25%
+     (+2 blobs), both run brighter/blurrier via a min-width media
+     block in globals.css ("DESKTOP PROMINENCE"). Phone web + app
+     shell keep the exact approved tuning.
+  Not done from the batch: nothing — the ads idea went to Next up
+  as a far-future note (below), per "months down the road".
+
 - **2026-08-26 SESSION CLOSE — ENTIRE upcoming-releases batch
   VERIFIED LIVE by Luca ("all works and looks great" → "all looks
   good").** Everything below dated 2026-08-25/26 about upcoming
@@ -386,3 +422,12 @@ between users ("92% compatible"), genre drift over time.
 Upstash rate limiting (replace in-memory), Resend SMTP for auth email,
 moderation tools (report queue, mute), phone 2FA for feature gates when
 scale demands it.
+
+### 6. Muted ads, WEB ONLY (Luca 2026-08-26 — months down the road)
+Once the userbase is bigger and usage is consistent: small, muted ad
+slots at the bottom and side of the WEBSITE only — never the apps
+(app-store ad SDKs are their own compliance world, and the CRT shell
+should stay clean there). Not in-your-face by design: think a dim
+"sponsored" VHS label in the room's side bars, matching the physical-
+media skin. Revenue trickle, not a business model. Do not start until
+Luca calls it.

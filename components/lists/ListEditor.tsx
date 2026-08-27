@@ -135,7 +135,12 @@ export default function ListEditor({
 
   /* --- Save --- */
 
-  async function handleSave() {
+  // asDraft=true is the Save as Draft path (Luca 2026-08-26: every
+  // create form gets the reviews-style draft button). Lists already
+  // had drafts in all but name — a private list is invisible to
+  // everyone but its owner — so drafting just forces is_public off;
+  // publish later by re-saving with the Public box ticked.
+  async function handleSave(asDraft = false) {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setError("Give your list a title.");
@@ -158,7 +163,7 @@ export default function ListEditor({
         title: trimmedTitle,
         description: description.trim() || null,
         is_ranked: isRanked,
-        is_public: isPublic,
+        is_public: asDraft ? false : isPublic,
       };
 
       if (mode === "create") {
@@ -309,16 +314,18 @@ export default function ListEditor({
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      {/* --- Header --- */}
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* --- Header — same centered module + plain-sentence intro as
+          the posts/debates create pages (Luca 2026-08-26: one
+          consistent format across the create button's options). --- */}
       <div className="space-y-2">
         <h1 className="crt-title text-3xl sm:text-4xl">
           {mode === "edit" ? "Edit List" : "New List"}
         </h1>
-        <p className="osd-text text-sm">
+        <p className="text-sm text-text-secondary">
           {mode === "edit"
-            ? "tweak the lineup"
-            : "gather albums into something worth sharing"}
+            ? "Tweak the lineup."
+            : "Gather albums into something worth sharing."}
         </p>
       </div>
 
@@ -509,11 +516,20 @@ export default function ListEditor({
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={handleSave}
+          onClick={() => handleSave()}
           disabled={saving}
           className="btn-y2k btn-y2k-primary disabled:opacity-50"
         >
           {saving ? "Saving..." : mode === "edit" ? "Save Changes" : "Create List"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSave(true)}
+          disabled={saving}
+          className="btn-y2k btn-y2k-outline disabled:opacity-50"
+        >
+          {saving ? "Saving..." : "Save as Draft"}
         </button>
 
         <button

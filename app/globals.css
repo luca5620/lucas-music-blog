@@ -2182,6 +2182,28 @@ fieldset {
   opacity: 0.55;
 }
 
+/* DESKTOP PROMINENCE (Luca 2026-08-26): on the web the wash read as
+   small and sparse — a big monitor swallowed the phone-tuned sizes.
+   So above the thermal-mode cutoff (where everything animates anyway)
+   the wash runs brighter and blurrier, CRTShell's blobs grow ~40% at
+   md: (travel scales with size — the drift keyframes move in % of the
+   blob's own box — so bigger blobs also visibly roam farther), and a
+   second string of md:-only blobs densifies the field. Phones and the
+   app shell keep the exact tuning Luca already approved.
+   (Must sit BELOW both base .liquid-blob rules: a media query adds no
+   specificity, so only source order lets these win.) */
+@media (min-width: 769px) {
+  .crt-liquid .liquid-blob {
+    filter: blur(96px);
+    opacity: 0.7;
+  }
+
+  .liquid-room .liquid-blob {
+    filter: blur(84px);
+    opacity: 0.7;
+  }
+}
+
 /* Phones have no side bars (bezel is full-bleed) and the app shell
    never shows the room — skip the GPU work there. */
 @media (max-width: 640px) {

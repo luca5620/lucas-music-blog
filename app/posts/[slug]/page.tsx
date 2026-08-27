@@ -86,6 +86,16 @@ export default async function PostPage({
 
       {/* Main content card */}
       <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative overflow-hidden">
+        {/* Draft notice — RLS means only the author can reach this page
+            at all while unpublished, so this is a reminder, not a gate.
+            Publish happens from the edit form or My Reviews & Posts. */}
+        {post.is_published === false && (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+            Draft — only you can see this
+          </span>
+        )}
+
         {/* Title */}
         <h1 className="crt-title text-2xl sm:text-3xl md:text-4xl break-words">
           {post.title}

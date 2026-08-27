@@ -30,9 +30,16 @@ export async function POST(request: Request) {
 
   try {
     const payload = await request.json();
-    const { title, body, video_url, release_id } = payload;
+    const { title, body, video_url, release_id, is_published } = payload;
 
     // --- Validate. Nothing in the body is trusted. ---
+    // Draft flag: anything other than an explicit false means publish.
+    if (is_published !== undefined && typeof is_published !== "boolean") {
+      return NextResponse.json(
+        { error: "Invalid draft flag." },
+        { status: 400 }
+      );
+    }
     if (!isText(title, 120) || title.trim().length < 3) {
       return NextResponse.json(
         { error: "Title must be 3–120 characters." },
@@ -115,6 +122,7 @@ export async function POST(request: Request) {
       body,
       video,
       releaseId,
+      isPublished: is_published !== false,
     });
 
     if (!post) {

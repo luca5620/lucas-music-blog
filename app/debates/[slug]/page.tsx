@@ -11,6 +11,7 @@ import {
 import { getUser } from "@/lib/auth";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import DebateRoom from "@/components/debates/DebateRoom";
+import PublishDebateButton from "@/components/debates/PublishDebateButton";
 
 // Live rooms: votes, messages, and reactions change second to second.
 export const dynamic = "force-dynamic";
@@ -62,6 +63,20 @@ export default async function DebatePage({ params }: PageProps) {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      {/* ══════════ Draft banner (migration 024) ══════════
+          RLS means only the creator can load an unpublished debate at
+          all, so no viewer check is needed — anyone seeing this IS the
+          author. Publish flips is_published and the room goes live. */}
+      {debate.is_published === false && (
+        <section className="panel-xbox p-4 border-yellow-500/30 bg-yellow-500/5 flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+            Draft — only you can see this
+          </span>
+          <PublishDebateButton debateId={debate.id} />
+        </section>
+      )}
+
       {/* ══════════ Debate header ══════════ */}
       <section className="space-y-3">
         <div className="flex items-center gap-2 flex-wrap">

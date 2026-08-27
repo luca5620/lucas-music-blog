@@ -265,7 +265,7 @@ export default function ReviewForm({
               style={
                 {
                   "--slider-color": ratingColor,
-                  background: `linear-gradient(90deg, ${ratingColor}55 0%, ${ratingColor} ${rating * 10}%, rgba(255,255,255,0.08) ${rating * 10}%)`,
+                  background: `linear-gradient(90deg, ${ratingColor}30 0%, ${ratingColor}99 ${rating * 10}%, rgba(255,255,255,0.08) ${rating * 10}%)`,
                 } as React.CSSProperties
               }
               aria-label="Rating from 0 to 10"

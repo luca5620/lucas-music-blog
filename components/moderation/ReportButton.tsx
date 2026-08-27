@@ -3,7 +3,9 @@
 /**
  * ReportButton — the 🚩 on every piece of user content.
  *
- * Click → popover with a reason box → POST /api/reports.
+ * Click → popover with a multi-select reason checklist (categories
+ * from App Store guideline 1.2 + our Terms house rules; "Other"
+ * opens a free-text box) → POST /api/reports.
  * On success the button becomes a muted "Reported ✓" so the same
  * viewer can't spam-file against one target from the UI.
  *
@@ -38,11 +40,32 @@ interface ReportButtonProps {
 }
 
 const POPOVER_WIDTH = 256; // w-64
-// Worst-case rendered height (header + textarea + error line + buttons),
-// used only to decide whether to flip above the flag near the bottom of
-// the screen.
-const POPOVER_EST_HEIGHT = 200;
+// Worst-case rendered height (header + reason checklist + error line +
+// buttons), used only to decide whether to flip above the flag near the
+// bottom of the screen.
+const POPOVER_EST_HEIGHT = 380;
 const EDGE_GAP = 8;
+
+/**
+ * Report reasons, drawn from App Store guideline 1.2's list of what
+ * makes UGC objectionable (bullying, threats, porn/shock content,
+ * objectification, IP infringement) merged with our own Terms house
+ * rules. Multi-select; "Other" opens a free-text box. The selection
+ * is joined into the plain-text `reason` the API already accepts —
+ * no server/DB change needed.
+ */
+const REPORT_REASONS = [
+  "Harassment or bullying",
+  "Hate speech or slurs",
+  "Threats or violence",
+  "Sexually explicit or shock content",
+  "Spam or scam",
+  "Impersonation",
+  "Sharing private information",
+  "Piracy or stolen content",
+] as const;
+
+const OTHER = "Other";
 
 export default function ReportButton({
   targetType,
@@ -50,7 +73,8 @@ export default function ReportButton({
   small = false,
 }: ReportButtonProps) {
   const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [otherText, setOtherText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -118,9 +142,28 @@ export default function ReportButton({
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
+  function toggleReason(label: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  }
+
+  // Valid = at least one reason picked, and "Other" (if picked)
+  // actually says something.
+  const otherNeedsText = selected.has(OTHER) && otherText.trim().length < 3;
+  const canSubmit = selected.size > 0 && !otherNeedsText && !submitting;
+
   async function submit() {
-    const trimmed = reason.trim();
-    if (trimmed.length < 3 || submitting) return;
+    if (!canSubmit) return;
+    // Join the picks into the plain-text reason the API stores.
+    // "Other" carries its free text; cap keeps us under the DB's
+    // 500-char reason limit no matter what.
+    const parts = REPORT_REASONS.filter((r) => selected.has(r)).map(String);
+    if (selected.has(OTHER)) parts.push(`Other: ${otherText.trim()}`);
+    const trimmed = parts.join("; ").slice(0, 500);
     setSubmitting(true);
     setError(null);
     try {
@@ -216,15 +259,43 @@ export default function ReportButton({
                 <p className="text-xs font-bold text-text-primary uppercase tracking-wider font-[family-name:var(--font-heading)]">
                   Report this
                 </p>
-                <textarea
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  maxLength={500}
-                  rows={3}
-                  autoFocus
-                  placeholder="What's wrong with it? (3–500 chars)"
-                  className="form-input !text-xs resize-none"
-                />
+                <p className="text-[11px] text-text-muted">
+                  What&apos;s wrong with it? Pick all that apply.
+                </p>
+
+                {/* Reason checklist — scrolls if the screen is short. */}
+                <div className="space-y-1 max-h-[45vh] overflow-y-auto pr-1">
+                  {[...REPORT_REASONS, OTHER].map((label) => (
+                    <label
+                      key={label}
+                      className="flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer select-none hover:bg-white/5"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected.has(label)}
+                        onChange={() => toggleReason(label)}
+                        className="w-3.5 h-3.5 shrink-0 accent-[#ff4455]"
+                      />
+                      <span className="text-xs text-text-secondary">
+                        {label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+
+                {/* Free text only when "Other" is picked. */}
+                {selected.has(OTHER) && (
+                  <textarea
+                    value={otherText}
+                    onChange={(e) => setOtherText(e.target.value)}
+                    maxLength={300}
+                    rows={2}
+                    autoFocus
+                    placeholder="Tell us what's wrong (3–300 chars)"
+                    className="form-input !text-xs resize-none"
+                  />
+                )}
+
                 {error && <p className="text-[11px] text-accent-rose">{error}</p>}
                 <div className="flex justify-end gap-2">
                   <button
@@ -237,10 +308,10 @@ export default function ReportButton({
                   <button
                     type="button"
                     onClick={submit}
-                    disabled={reason.trim().length < 3 || submitting}
+                    disabled={!canSubmit}
                     className="text-[11px] uppercase tracking-wider font-bold text-accent-rose border border-accent-rose/40 rounded px-2 py-1 hover:bg-accent-rose/10 disabled:opacity-40 transition-colors"
                   >
-                    {submitting ? "…" : "Submit"}
+                    {submitting ? "…" : "Submit Report"}
                   </button>
                 </div>
               </>

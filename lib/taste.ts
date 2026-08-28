@@ -403,9 +403,17 @@ export type TunedItem =
 
 // Sized for the channel-surf pager: enough cards to scroll through
 // without letting one artist or type take the feed over.
-const TUNED_MAX_ITEMS = 12;
+//
+// Mix-plan change 10 (WP10): 12→18 items / 6→8 per type, unlocked by
+// lazy images + the ±1 media window + the sign-off card, so the extra
+// channels cost nothing until scrolled to. Everything in the frame
+// (OSD "/{N}", tick column, EPG) renders dynamic counts, so this ONE
+// commit reverts independently — if dev-server eyeballing shows the
+// thinned pools under-filling 18, flip these two numbers back to
+// 12/6 and nothing else needs to change.
+const TUNED_MAX_ITEMS = 18;
 const TUNED_MAX_PER_ARTIST = 2;
-const TUNED_MAX_PER_TYPE = 6;
+const TUNED_MAX_PER_TYPE = 8;
 /** Reviews written by people the viewer follows get this taste boost. */
 const W_FOLLOWED_AUTHOR = 1.5;
 /** Half-strength freshness at two weeks; nothing goes fully to zero. */

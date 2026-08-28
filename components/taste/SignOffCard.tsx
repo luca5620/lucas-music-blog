@@ -44,7 +44,7 @@ export default function SignOffCard({
   channelName,
   onExit,
 }: {
-  /** "PEAK TV SIGNS OFF — THE {NAME} CHANNEL" */
+  /** "THE {NAME} CHANNEL SIGNS OFF" */
   channelName: string;
   /** Leave fullscreen (ChannelFrame passes its history peel). */
   onExit: () => void;
@@ -80,7 +80,7 @@ export default function SignOffCard({
               END OF BROADCAST
             </h2>
             <p className="osd-text text-[11px] sm:text-xs">
-              PEAK TV SIGNS OFF — THE {channelName} CHANNEL
+              THE {channelName} CHANNEL SIGNS OFF
             </p>
           </div>
 

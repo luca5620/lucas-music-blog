@@ -2,7 +2,7 @@
 
 /**
  * ChannelChrome — the shared shell every broadcast card wears
- * (taste overhaul round 3, "Peak TV").
+ * (taste overhaul round 3, the broadcast design).
  *
  * ChannelFrame owns the pager (snap, chrome strip, gestures); the
  * four card renderers (CriticSegment / MusicTvCard / OnAirCard /

@@ -60,7 +60,7 @@ function chNum(index: number): string {
 }
 
 /** The broadcast-format chip per content type — TV language, not
-    database language (Luca's Peak TV framing). */
+    database language (the broadcast framing). */
 const FORMAT_LABEL: Record<TunedItem["type"], string> = {
   review: "CRITIC SEGMENT",
   post: "MUSIC TV",

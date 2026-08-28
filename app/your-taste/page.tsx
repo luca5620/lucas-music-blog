@@ -1,10 +1,12 @@
 /**
- * /your-taste — PEAK TV: the station lobby.
+ * /your-taste — the station lobby.
  *
  * The page IS a TV station now (taste-overhaul round 3, "broadcast"
- * design). No more PageHero/section-label chrome — top to bottom:
+ * design; Luca 2026-08-27: NO "PEAK TV" branding — the identity is
+ * YOUR TASTE / the viewer's own channel). No more PageHero/section-
+ * label chrome — top to bottom:
  *
- *  1. STATION IDENT masthead — "PEAK TV" in CRT type with the chrome
+ *  1. STATION IDENT masthead — "YOUR TASTE" in CRT type with the chrome
  *     disc spinning behind it, subtitled with the viewer's own
  *     channel name.
  *  2. SIGNAL METER + transmitter receipts — an honest read of how
@@ -173,7 +175,7 @@ export default async function YourTastePage() {
         </div>
 
         <div className="space-y-3 text-center sm:text-left">
-          <h1 className="crt-title text-4xl sm:text-5xl">PEAK TV</h1>
+          <h1 className="crt-title text-4xl sm:text-5xl">YOUR TASTE</h1>
           {/* The viewer's own channel — osd-text uppercases it */}
           <p className="osd-text text-xs sm:text-sm">
             THE {channelName} CHANNEL — TUNED TO YOU

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * ChannelFrame — the fullscreen PEAK TV broadcast (taste overhaul
+ * ChannelFrame — the fullscreen broadcast (taste overhaul
  * round 3; replaces ChannelSurf's fullscreen mode wholesale).
  *
  * The lobby (TasteGuide) mounts this only while the viewer is LIVE —

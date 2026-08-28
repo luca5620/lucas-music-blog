@@ -743,10 +743,9 @@ export default function ChannelSurf({
       className={
         fullscreen
           ? `surf-fullscreen ${closing ? "surf-anim-out" : "surf-anim-in"}`
-          : // Phones: the page wraps this in -mx-4 for a full-bleed
-            // channel, so the panel drops its side borders/rounding
-            // and reads edge-to-edge (Luca 2026-08-26).
-            "panel-xbox relative overflow-hidden max-sm:rounded-none max-sm:border-x-0"
+          : // Same bordered panel at every size — matches the hero's
+            // width on phones too (Luca 2026-08-28: full-bleed out).
+            "panel-xbox relative overflow-hidden"
       }
     >
       {/* App-only ambient: the molten liquid as a looping video the

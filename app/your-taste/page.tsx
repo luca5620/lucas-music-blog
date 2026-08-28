@@ -56,9 +56,9 @@ export default async function YourTastePage() {
       />
 
       {/* ===== Tuned to you — the channel-surf pager, the whole
-             show. On phones it runs FULL-BLEED (the -mx-4 cancels
-             the page padding) so the channel reads as the
-             TikTok-style surface it is. ===== */}
+             show. Same panel width as the hero on EVERY size (Luca
+             2026-08-28: no more phone full-bleed — the pager and the
+             CD module line up like they do on the website). ===== */}
       <section className="space-y-3">
         <div className="flex items-center gap-3">
           <span className="vhs-label text-sm">TUNED TO YOU</span>
@@ -68,9 +68,7 @@ export default async function YourTastePage() {
           <div className="flex-1 divider-glow" />
         </div>
         {tunedItems.length > 0 ? (
-          <div className="-mx-4 sm:mx-0">
-            <ChannelSurf items={tunedItems} />
-          </div>
+          <ChannelSurf items={tunedItems} />
         ) : (
           <div className="panel-xbox p-6 sm:p-8 text-center space-y-4">
             <p className="osd-text text-sm">NO SIGNAL</p>

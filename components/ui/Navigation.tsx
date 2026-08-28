@@ -133,6 +133,13 @@ export default function Navigation() {
             })}
           </div>
 
+          {/* BELL — in-app notifications (likes, comments, follows).
+              Signed-in only; web AND app (the app has no other home
+              for it — the tab bar is full). Sits LEFT of Search on
+              the web (Luca 2026-08-28); in the app Search is hidden,
+              so the visual order there is unchanged. */}
+          {!loading && user && <NotificationsBell />}
+
           {/* SEARCH — the universal /search page (users, artists,
               releases, reviews, debates, lists, posts). Web-only up
               here (app-hide): in the app it's the middle bottom tab. */}
@@ -148,11 +155,6 @@ export default function Navigation() {
             </svg>
             <span className="hidden sm:inline">Search</span>
           </Link>
-
-          {/* BELL — in-app notifications (likes, comments, follows).
-              Signed-in only; web AND app (the app has no other home
-              for it — the tab bar is full). */}
-          {!loading && user && <NotificationsBell />}
 
           {/* CREATE — one button for every content type (Luca
               2026-08-19: fold posts into the review button, pick a

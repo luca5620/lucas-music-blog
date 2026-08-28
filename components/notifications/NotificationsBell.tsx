@@ -123,11 +123,14 @@ export default function NotificationsBell() {
         aria-label={
           unread > 0 ? `Notifications (${unread} unread)` : "Notifications"
         }
-        // Same pill as the CREATE button (Luca 2026-08-28: matching
-        // size + shape, one clean row) — identical paddings/radius,
-        // neutral coloring so CREATE stays the accented action.
-        // nav-pill-btn = the app's tightened padding, same as CREATE.
-        className="nav-pill-btn relative inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 transition-all duration-200"
+        // Same pill as SEARCH/CREATE (Luca 2026-08-28: matching size
+        // + shape) — identical paddings/radius/typography, and on the
+        // web the "Alerts" label at sm+ gives it the same height and
+        // width as its two neighbors. Neutral coloring so CREATE
+        // stays the accented action. nav-pill-btn = the app's
+        // tightened padding; the label is hidden below sm, so the
+        // approved app row is untouched.
+        className="nav-pill-btn relative inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase whitespace-nowrap text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 transition-all duration-200 font-[family-name:var(--font-heading)]"
       >
         {/* Bell — same 3.5 icon size as CREATE's plus */}
         <svg
@@ -142,6 +145,10 @@ export default function NotificationsBell() {
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
+        {/* Web-only label — gives the pill the same height/width as
+            Search and Create; below sm (and so in the app) the bell
+            stays icon-only. */}
+        <span className="hidden sm:inline">Alerts</span>
         {unread > 0 && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent-rose text-white text-[10px] font-bold flex items-center justify-center border border-black/40">
             {unread > 9 ? "9+" : unread}

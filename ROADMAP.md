@@ -34,10 +34,20 @@ remnants: every piece of content is community-made and catalog-backed.
   rows + a future device-token table. Admin delete+resolve one-tap
   already existed (queue's "Delete content" resolves too). STILL
   QUEUED: lint-error backlog (~11 pre-existing setState-in-effect +
-  Date.now-in-render), taste fullscreen rework (Luca will trigger
-  with ultracode + his picks), Your Taste option menu delivered in
-  chat. Luca's device checks pending: press ring, nebula density,
-  status-bar fix, PTR feel.
+  Date.now-in-render). Luca's device checks pending: press ring,
+  nebula density, status-bar fix, PTR feel.
+  **Round 2 same evening (fac3eb5): Your Taste STRIPPED to the
+  TUNED TO YOU pager alone — BECAUSE YOU FOLLOW + ANTICIPATED grids
+  removed per Luca. Empty-state pass (reviews wall + search join
+  the NO SIGNAL voice) + ShimmerLines skeletons on release-page bio
+  slots. AGREED SEQUENCE: (1) ✅ these initial changes → (2) Luca
+  runs ULTRACODE for the Your Taste overhaul, scope = fullscreen
+  rebuild + card fidelity + mix quality + page identity (NOT the
+  removed grids); he'll say what he dislikes about fullscreen →
+  (3) THEN rebuild the app's TOP AREA, which Luca reports as
+  colliding/broken after the bell+scrim additions ("messes with
+  functionality") — he wants tweaks of his own there anyway, get
+  his direction first.**
 
 *(Session handoff between the Windows desktop and the MacBook — see
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a

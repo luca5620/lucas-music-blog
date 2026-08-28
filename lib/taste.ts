@@ -50,8 +50,6 @@ export interface TasteProfile {
   interactedReleaseIds: Set<string>;
 }
 
-const COLD_START_MIN_SIGNALS = 3;
-
 /** Signal weights. Ratings map (rating−5)/2.5 → 10/10 = +2, 0/10 = −2. */
 const W_ARTIST_FOLLOW = 3;
 const W_RELEASE_FOLLOW = 1.5;
@@ -410,6 +408,36 @@ const W_FOLLOWED_AUTHOR = 1.5;
 /** Half-strength freshness at two weeks; nothing goes fully to zero. */
 const FRESH_HALF_LIFE_DAYS = 14;
 
+/** FNV-1a, folded to [0, 1). Tiny, dependency-free, and — the property
+    the day-seed jitter needs — DETERMINISTIC: the same string always
+    hashes to the same number, unlike Math.random(). */
+function hash01(s: string): number {
+  let h = 0x811c9dc5; // FNV offset basis
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193); // FNV prime, 32-bit wrap via imul
+  }
+  // >>> 0 makes the 32-bit int unsigned; dividing by 2^32 lands in [0,1).
+  return (h >>> 0) / 4_294_967_296;
+}
+
+/** Stable identity for a tuned item — the SAME strings the client
+    writes into the pmr_taste_seen cookie and sessionStorage, so the
+    server's seen-downrank and the lobby's watched-row dimming agree.
+    Change one side and rotation silently dies. */
+function tunedKeyOf(item: TunedItem): string {
+  switch (item.type) {
+    case "review":
+      return `review:${item.id}`;
+    case "post":
+      return `post:${item.id}`;
+    case "debate":
+      return `debate:${item.slug}`;
+    case "release":
+      return `release:${item.slug}`;
+  }
+}
+
 interface Candidate {
   item: TunedItem;
   artistKey: string; // artist id/name for the diversity guard
@@ -420,6 +448,14 @@ interface Candidate {
   releaseKey: string | null;
   taste: number;
   popularity: number;
+  /** TRUE engagement counts only (likes / follows / votes+messages),
+      no freshness pads — the "popular right now" chip gates on this
+      absolutely, because a chip earned by a freshness tiebreaker on a
+      zero-like item would be a lie. */
+  rawPop: number;
+  /** The reason is "you follow @x" — follow reasons always earn their
+      chip; affinity reasons need real taste weight behind them. */
+  reasonIsFollow: boolean;
   ageDays: number;
   reason: string | null;
   score?: number;
@@ -431,6 +467,12 @@ export async function getTunedToYou(
   opts?: {
     /** People the viewer follows — their reviews get boosted + a reason. */
     followedUserIds?: string[];
+    /** Item keys (tunedKeyOf format) the viewer already watched — read
+        from the pmr_taste_seen cookie by app/your-taste/page.tsx. Seen
+        items are DOWNRANKED ×0.35, never excluded: with a small pool a
+        hard exclusion could empty the feed, and a rerun favorite
+        should still be able to fight its way back on air. */
+    seenKeys?: string[];
   }
 ): Promise<TunedItem[]> {
   const supabase = await createClient();
@@ -673,6 +715,8 @@ export async function getTunedToYou(
       releaseKey: r.release_id,
       taste,
       popularity: likeCounts.get(r.id) ?? 0,
+      rawPop: likeCounts.get(r.id) ?? 0,
+      reasonIsFollow: fromFollow,
       ageDays: ageDays(r.created_at),
       reason,
     });
@@ -760,6 +804,10 @@ export async function getTunedToYou(
       popularity:
         (postLikeCounts.get(p.id) ?? 0) +
         Math.pow(0.5, ageDays(p.created_at) / FRESH_HALF_LIFE_DAYS),
+      // rawPop = hearts only — the freshness pad above must never earn
+      // a "popular right now" chip.
+      rawPop: postLikeCounts.get(p.id) ?? 0,
+      reasonIsFollow: fromFollow,
       ageDays: ageDays(p.created_at),
       reason,
     });
@@ -815,6 +863,10 @@ export async function getTunedToYou(
       releaseKey: d.release_id,
       taste: artistId ? affinityFor(profile, artistId, null) : 0,
       popularity: votes + d.message_count,
+      // Votes and messages are both real human actions — the whole
+      // activity number is honest popularity.
+      rawPop: votes + d.message_count,
+      reasonIsFollow: false,
       ageDays: ageDays(d.created_at),
       reason: artistId ? profile.reasonByArtistId.get(artistId) ?? null : null,
     });
@@ -895,6 +947,10 @@ export async function getTunedToYou(
       popularity:
         (followCounts.get(r.id) ?? 0) +
         Math.pow(0.5, age / FRESH_HALF_LIFE_DAYS),
+      // rawPop = real follows only, same rule as posts: the freshness
+      // pad keeps a release scoreable but can't earn it a chip.
+      rawPop: followCounts.get(r.id) ?? 0,
+      reasonIsFollow: false,
       ageDays: age,
       reason: r.primary_artist_id
         ? profile.reasonByArtistId.get(r.primary_artist_id) ?? null
@@ -910,11 +966,10 @@ export async function getTunedToYou(
      so a mild single-signal dip doesn't erase an artist forever. ── */
   const scored = candidates.filter((c) => c.taste > -1);
 
-  /* ── Score: 70% taste / 30% popularity (cold start: popularity only),
-     normalized per content type so no pool's raw scale dominates.
-     Per-type maxima in ONE pre-pass (two small Maps) instead of the
-     old per-candidate maxBy scan — same numbers, O(n) not O(n²). ── */
-  const coldStart = profile.signalCount < COLD_START_MIN_SIGNALS;
+  /* ── Score: 70% taste / 30% popularity, normalized per content type
+     so no pool's raw scale dominates. Per-type maxima in ONE pre-pass
+     (two small Maps) instead of the old per-candidate maxBy scan —
+     same numbers, O(n) not O(n²). ── */
   const maxTaste = new Map<string, number>();
   const maxPop = new Map<string, number>();
   for (const c of scored) {
@@ -925,30 +980,59 @@ export async function getTunedToYou(
     maxPop.set(t, Math.max(maxPop.get(t) ?? 1e-9, c.popularity));
   }
 
+  /* Cold start is a FADE, not a switch: w slides 0→1 over the first
+     ten signals, blending from pure popularity toward the full 70/30
+     taste mix. The old binary (3 signals flipped it all at once) made
+     one follow whiplash the whole feed. */
+  const w = Math.min(1, profile.signalCount / 10);
+
+  /* Day-seed jitter: ±15% deterministic noise, keyed on viewer + the
+     day in EASTERN time (en-CA formats as YYYY-MM-DD; midnight Eastern
+     is the site-wide day boundary, same as release drops) + the item's
+     stable key. The feed reshuffles a little every midnight, stays
+     rock-solid within a day, and differs between viewers — without a
+     single byte of stored state. */
+  const dayKey = new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/New_York",
+  });
+  const seen = new Set(opts?.seenKeys ?? []);
+
   for (const c of scored) {
     const tasteNorm = Math.max(0, c.taste) / (maxTaste.get(c.item.type) ?? 1e-9);
     const popNorm = c.popularity / (maxPop.get(c.item.type) ?? 1e-9);
-    const base = coldStart ? popNorm : 0.7 * tasteNorm + 0.3 * popNorm;
+    const base = w * (0.7 * tasteNorm + 0.3 * popNorm) + (1 - w) * popNorm;
     const fresh = Math.pow(0.5, c.ageDays / FRESH_HALF_LIFE_DAYS);
     // Freshness scales the score but never zeroes it — an old item the
     // viewer would love still beats a new one they wouldn't.
     c.score = base * (0.4 + 0.6 * fresh);
 
-    // Reason chip only where clean: a strong single-artist match for a
-    // warmed-up profile, or plain popularity on cold start.
-    if (coldStart) {
-      // Posts' popNorm is freshness, not real popularity — a "popular
-      // right now" chip on a brand-new post would be a lie. No chip.
-      c.item.reason =
-        c.item.type !== "post" && popNorm >= 0.5 ? "popular right now" : null;
-    } else {
-      c.item.reason = tasteNorm >= 0.5 && c.reason ? c.reason : null;
-    }
+    const key = tunedKeyOf(c.item);
+    // hash01 ∈ [0,1) → multiplier ∈ [0.85, 1.15).
+    c.score *= 0.85 + 0.3 * hash01(`${viewerId}|${dayKey}|${key}`);
+    // Watched recently (client cookie) → strong downrank, never an
+    // exclusion — see the seenKeys opt comment.
+    if (seen.has(key)) c.score *= 0.35;
+
+    // Reason chips gate on ABSOLUTE values now, not per-type ratios —
+    // "because you liked X" over a 0.4-affinity blip was a lie the
+    // normalized threshold used to tell when the pool was weak:
+    //   - follow reasons always earn their chip (explicit signal);
+    //   - affinity reasons need real weight (>= 2 = a 10/10 rating or
+    //     an artist follow, not residue);
+    //   - "popular right now" needs 3+ REAL interactions (rawPop has
+    //     no freshness pads), else no chip at all.
+    c.item.reason =
+      (c.reasonIsFollow || c.taste >= 2) && c.reason
+        ? c.reason
+        : c.rawPop >= 3
+          ? "popular right now"
+          : null;
   }
 
-  /* ── Greedy pick with diversity guards. ── */
+  /* ── Greedy pick with diversity guards. Collects CANDIDATES (not
+     bare items) because the interleave below still needs scores. ── */
   scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  const picked: TunedItem[] = [];
+  const pickedCands: Candidate[] = [];
   const perArtist = new Map<string, number>();
   const perType = new Map<string, number>();
   // One card per RELEASE across all types: a review of an album, a post
@@ -956,16 +1040,55 @@ export async function getTunedToYou(
   // the same thing — the broadcast airs only the strongest one.
   const pickedReleases = new Set<string>();
   for (const c of scored) {
-    if (picked.length >= TUNED_MAX_ITEMS) break;
+    if (pickedCands.length >= TUNED_MAX_ITEMS) break;
     if ((c.score ?? 0) <= 0) continue;
     if ((perArtist.get(c.artistKey) ?? 0) >= TUNED_MAX_PER_ARTIST) continue;
     if ((perType.get(c.item.type) ?? 0) >= TUNED_MAX_PER_TYPE) continue;
     if (c.releaseKey && pickedReleases.has(c.releaseKey)) continue;
-    picked.push(c.item);
+    pickedCands.push(c);
     perArtist.set(c.artistKey, (perArtist.get(c.artistKey) ?? 0) + 1);
     perType.set(c.item.type, (perType.get(c.item.type) ?? 0) + 1);
     if (c.releaseKey) pickedReleases.add(c.releaseKey);
   }
+
+  /* ── Type interleave: the greedy pick decides WHAT airs, this decides
+     the RUNNING ORDER. Pure score order tends to clump (three reviews
+     in a row, then three releases) — channel surfing should alternate
+     formats. Queue per type in picked (score) order, then round-robin:
+     always take the highest-scored head among the non-empty queues,
+     skipping the type we just aired whenever ANY other queue still has
+     items. Slot 1 stays the global top pick (first pass has no
+     last-type to skip), and within-type order is preserved (queues
+     only ever pop from the front). ── */
+  const queues = new Map<TunedItem["type"], Candidate[]>();
+  for (const c of pickedCands) {
+    const q = queues.get(c.item.type);
+    if (q) q.push(c);
+    else queues.set(c.item.type, [c]);
+  }
+  const ordered: Candidate[] = [];
+  let lastType: TunedItem["type"] | null = null;
+  while (ordered.length < pickedCands.length) {
+    let bestType: TunedItem["type"] | null = null;
+    let best: Candidate | null = null;
+    for (const [t, q] of queues) {
+      if (q.length === 0 || t === lastType) continue;
+      if (!best || (q[0].score ?? 0) > (best.score ?? 0)) {
+        best = q[0];
+        bestType = t;
+      }
+    }
+    if (!best || bestType === null) {
+      // Only the just-aired type has anything left — back-to-back is
+      // allowed when it's the sole option (e.g. a review-heavy mix).
+      bestType = lastType!;
+      best = queues.get(bestType)![0];
+    }
+    queues.get(bestType)!.shift();
+    ordered.push(best);
+    lastType = bestType;
+  }
+  const picked: TunedItem[] = ordered.map((c) => c.item);
 
   /* ── Post-pick enrichment, PICKED release cards only (≤6, never the
      whole 30-candidate pool). Two independent jobs share one

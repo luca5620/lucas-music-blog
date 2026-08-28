@@ -37,7 +37,13 @@ remnants: every piece of content is community-made and catalog-backed.
   clear). DEVICE CHECK PENDING: the ~12px shift amount + that the
   app name / bell no longer collide. Migration 025 CONFIRMED RUN by
   Luca 2026-08-28. Ultracode/multi-agent workflows: Luca says never
-  again — don't propose them.
+  again — don't propose them. **FOLLOW-UP (95f018b):** the revert
+  exposed the old solid status-bar scrim — Luca: the top band was
+  "literally black". Scrim DELETED for good: the app's top zone is
+  ONE surface with the liquid flowing through; content scrolling
+  under the clock is the accepted trade (soft gradient fade — never
+  a solid band — if legibility ever needs help). Device check
+  pending: seamless top band + the ~12px shift + name/bell fit.
 
 - **2026-08-27 (Windows, ULTRACODE session — paused at usage limit):
   branch `taste-and-top-overhaul` (13 commits, builds green, NOT

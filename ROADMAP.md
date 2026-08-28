@@ -42,8 +42,13 @@ remnants: every piece of content is community-made and catalog-backed.
   "literally black". Scrim DELETED for good: the app's top zone is
   ONE surface with the liquid flowing through; content scrolling
   under the clock is the accepted trade (soft gradient fade — never
-  a solid band — if legibility ever needs help). Device check
-  pending: seamless top band + the ~12px shift + name/bell fit.
+  a solid band — if legibility ever needs help). Luca approved the
+  scrim removal ("that was a good change"), then sent a screenshot
+  marking the header's target height → 85c2c90: phone top padding =
+  env(inset) - 12px, and the app row is collision-proof (rigid
+  action cluster, title clamps 11-16px w/ ellipsis last resort,
+  chevron app-hidden, tighter paddings). Device check pending:
+  header height vs his screenshot + full name fitting clean.
 
 - **2026-08-27 (Windows, ULTRACODE session — paused at usage limit):
   branch `taste-and-top-overhaul` (13 commits, builds green, NOT

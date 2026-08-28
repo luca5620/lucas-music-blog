@@ -1326,8 +1326,8 @@ body {
    the bar would leave the home module too low — the whole page
    rises together). Web keeps pb-4/mb-6. */
 .native-app .site-nav {
-  padding-bottom: 10px;
-  margin-bottom: 14px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 /* App-only elements (e.g. the Lists/Friends/Your Taste links in the

@@ -33,13 +33,10 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
         <div className="liquid-blob liquid-a w-[300px] h-[300px] top-[88%] -right-24" />
         <div className="liquid-blob liquid-c w-[320px] h-[320px] -bottom-24 left-[22%]" />
       </div>
-      {/* APP-ONLY: solid ground under the iOS status bar. Without it,
-          scrolled content slides up beneath the transparent status-bar
-          region and collides with the clock/battery (Luca 2026-08-27
-          screenshot: the reviews filter chips behind the clock). The
-          home page's pinned strip (z-40) covers this zone itself and
-          sits above. */}
-      <div className="app-statusbar-scrim" aria-hidden="true" />
+      {/* NO status-bar scrim (Luca 2026-08-28: the solid band read as
+          a flat black strip over the liquid). The status-bar zone is
+          the same surface as everything else — the wash flows through
+          it; scrolled content passes under the clock. */}
       <div className="crt-body">
         {/* Left spine — the disc-box edge */}
         <div className="crt-spine" aria-hidden="true">

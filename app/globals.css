@@ -1190,25 +1190,12 @@ body {
   to { rotate: 360deg; }
 }
 
-/* Solid ground under the iOS status bar (app only) — scrolled page
-   content otherwise shows through the transparent status-bar region
-   and collides with the clock/battery. Solid black, NOT backdrop
-   blur: WKWebView re-filters fixed blurred layers on every scroll
-   frame (the old tab-bar lag lesson). z-30 = above page content,
-   below the home page's pinned strip (z-40) and all sheets. */
-.app-statusbar-scrim { display: none; }
-.native-app .app-statusbar-scrim {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-top, 0px);
-  background: #000;
-  z-index: 30;
-  pointer-events: none;
-}
-
+/* The status-bar zone deliberately has NO scrim/band (removed
+   2026-08-28, Luca: the solid black strip broke the surface — the
+   whole top must be the SAME layer as the page, liquid flowing
+   through). Scrolled content passing under the clock is the accepted
+   trade. If legibility ever needs help there, use a soft gradient
+   fade, never a solid band. */
 .native-app {
   /* No gray flash when tapping things */
   -webkit-tap-highlight-color: transparent;

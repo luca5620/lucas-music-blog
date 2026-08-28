@@ -1,31 +1,75 @@
 "use client";
 
 /**
- * PremiereCard — the broadcast card for a RELEASE.
+ * PremiereCard — the broadcast card for a RELEASE (WP7 fidelity pass;
+ * replaces the faithful port of the old ChannelSurf rendering).
  *
- * FAITHFUL PORT (for now) of the old ChannelSurf fullscreen release
- * rendering: poster (UNRELEASED corner tag when applicable), title,
- * artist, the Letterboxd-style synopsis with its source line, and
- * the Spotify embed slot. The WP7 fidelity pass (AIRED/DROPPED line,
- * amber COMING SOON D-{n} countdown, tracks/runtime line, community
- * stats, 📡 TRACK follow button) replaces the internals next; the
- * contract stays.
- *
- * Description sourcing rules are untouched: the blurb arrives
- * pre-enriched from lib/taste.ts (getReleaseDescription, Genius
- * first) — this card only renders it and credits the source.
+ * The full program renderer:
+ *  - AIRED / DROPPED line: fresh records (≤30 days since the drop)
+ *    read "DROPPED {timeAgo}"; older ones read "AIRED {date}" — a
+ *    premiere vs a rerun, in the OSD voice.
+ *  - UNRELEASED = AMBER TAKEOVER: the chrome already tints the whole
+ *    card amber; here the `.poster-unreleased` corner tag + a big
+ *    amber pixel "COMING SOON · D-{n}" countdown take over the date
+ *    line. The countdown comes from lib/upcoming.ts helpers ONLY —
+ *    drops happen at midnight EASTERN (standing rule), never roll
+ *    your own date math.
+ *  - "{n} TRACKS · {m} MIN" from the tracks[] jsonb (WP1); runtime
+ *    drops cleanly when durations are unknown (Genius imports).
+ *  - COMMUNITY line from the post-pick get_release_stats RPC (WP1):
+ *    "{avg} FROM {n} REVIEWS", average colored by getRatingHex.
+ *  - Description keeps its source line (Genius-first sourcing rules
+ *    untouched — the card only renders what lib/taste.ts enriched).
+ *  - Spotify embed for released records; unreleased keep the link
+ *    pill (/prerelease/ links don't resolve to embeds — standing
+ *    rule, the link-paste door lives on the release page).
+ *  - Rail: 📡 TRACK (the existing release-follow endpoint, optimistic,
+ *    MEDIUM haptic — see RailTrack in ChannelChrome) + open arrow.
  */
 
 import { useState } from "react";
 import type { CardProps } from "./ChannelChrome";
 import ChannelChrome, {
   RailOpen,
+  RailTrack,
   TuningSlot,
   hrefOf,
   safeImage,
+  timeAgo,
   toSpotifyEmbed,
 } from "./ChannelChrome";
+import { getRatingHex, formatRating } from "@/lib/rating";
+import { smallCover } from "@/lib/images";
+import { daysUntil, easternMidnightUtcMs, formatDropDate } from "@/lib/upcoming";
 import { hapticTap } from "@/lib/native";
+
+/** A drop is still "DROPPED {timeAgo}" news for this many days;
+    after that the line flips to the calmer "AIRED {date}". */
+const DROPPED_WINDOW_DAYS = 30;
+
+/**
+ * The schedule line for a RELEASED record: "DROPPED {timeAgo}" while
+ * the record is still news, "AIRED {date}" once it's a rerun. Module
+ * helper (like the shared timeAgo) so the clock read happens outside
+ * the component body — measured from the actual drop MOMENT (midnight
+ * Eastern on release day, via lib/upcoming.ts), falling back to the
+ * import date when the catalog has no release_date.
+ */
+function airedLineFor(
+  releaseDate: string | null,
+  createdAt: string
+): string | null {
+  const dropMs = easternMidnightUtcMs(releaseDate);
+  if (!Number.isNaN(dropMs) && Date.now() >= dropMs) {
+    const daysAgo = Math.floor((Date.now() - dropMs) / 86_400_000);
+    return daysAgo <= DROPPED_WINDOW_DAYS
+      ? `DROPPED ${timeAgo(new Date(dropMs).toISOString())}`
+      : `AIRED ${formatDropDate(releaseDate)}`;
+  }
+  // No usable release_date — the import date is the only "aired"
+  // signal we have.
+  return `DROPPED ${timeAgo(createdAt)}`;
+}
 
 export default function PremiereCard({ item, near }: CardProps<"release">) {
   const cover = safeImage(item.cover_image);
@@ -37,6 +81,17 @@ export default function PremiereCard({ item, near }: CardProps<"release">) {
       ? toSpotifyEmbed(item.spotify_url)
       : null;
 
+  // The countdown — lib/upcoming.ts helpers ONLY (midnight-Eastern
+  // rule). daysUntil returns null once the drop moment passes, so an
+  // is_unreleased row whose date arrived mid-session degrades to the
+  // tag without a stale D-0.
+  const dDays = item.is_unreleased ? daysUntil(item.release_date) : null;
+
+  // AIRED vs DROPPED for released records (see airedLineFor above).
+  const airedLabel = item.is_unreleased
+    ? null
+    : airedLineFor(item.release_date, item.created_at);
+
   // TUNING… until the pre-mounted iframe paints (see CriticSegment —
   // same slot mechanics, one shared skeleton, same guarded
   // render-phase reset when the card leaves the ±1 window).
@@ -47,13 +102,31 @@ export default function PremiereCard({ item, near }: CardProps<"release">) {
     <ChannelChrome
       item={item}
       near={near}
-      rail={<RailOpen href={hrefOf(item)} label="release" />}
+      rail={
+        <>
+          <RailTrack releaseId={item.id} />
+          <RailOpen href={hrefOf(item)} label="release" />
+        </>
+      }
     >
-      <span className="poster shrink-0 relative w-40 sm:w-48">
+      {/* Schedule line: amber COMING SOON countdown for unreleased,
+          AIRED/DROPPED for everything out in the world. */}
+      {item.is_unreleased ? (
+        <span className="pixel-text text-base sm:text-lg uppercase tracking-widest text-osd-amber [text-shadow:0_0_10px_rgba(255,176,47,0.5)] shrink-0">
+          COMING SOON{dDays !== null ? ` · D-${dDays}` : ""}
+        </span>
+      ) : (
+        airedLabel && (
+          <span className="osd-text text-[11px] shrink-0">{airedLabel}</span>
+        )
+      )}
+
+      {/* Big poster — the premiere IS the picture */}
+      <span className="poster shrink-0 relative w-44 sm:w-56">
         {cover && near ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={cover}
+            src={smallCover(cover)}
             alt={`${item.title} cover`}
             loading="lazy"
             decoding="async"
@@ -69,7 +142,7 @@ export default function PremiereCard({ item, near }: CardProps<"release">) {
       </span>
 
       <span className="block max-w-md space-y-1">
-        <span className="block text-lg sm:text-xl font-bold text-text-primary font-[family-name:var(--font-heading)] leading-snug">
+        <span className="crt-title block text-xl sm:text-2xl leading-snug">
           {item.title}
         </span>
         <span className="block text-sm text-text-secondary">{item.artist}</span>
@@ -79,6 +152,33 @@ export default function PremiereCard({ item, near }: CardProps<"release">) {
           </span>
         )}
       </span>
+
+      {/* Format facts: tracks + runtime (runtime drops cleanly when
+          the durations are unknown — Genius imports store 0s). */}
+      {item.track_count > 0 && (
+        <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
+          {item.track_count} {item.track_count === 1 ? "TRACK" : "TRACKS"}
+          {item.total_runtime_min !== null
+            ? ` · ${item.total_runtime_min} MIN`
+            : ""}
+        </span>
+      )}
+
+      {/* What the room thinks — the WP1 post-pick RPC. Hidden until
+          real reviews exist; a fake 0.0 would poison the premiere. */}
+      {item.review_count > 0 && item.avg_rating !== null && (
+        <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
+          COMMUNITY:{" "}
+          <span
+            className="font-bold tabular-nums"
+            style={{ color: getRatingHex(item.avg_rating) }}
+          >
+            {formatRating(item.avg_rating)}
+          </span>{" "}
+          FROM {item.review_count}{" "}
+          {item.review_count === 1 ? "REVIEW" : "REVIEWS"}
+        </span>
+      )}
 
       {/* Release synopsis — enriched in lib/taste.ts for the picked
           cards. The blurb IS the pitch to check the release out. */}

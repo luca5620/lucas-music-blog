@@ -1684,6 +1684,122 @@ body {
       left top / 100% 75% no-repeat;
 }
 
+/* ------------------------------------------------------------
+   PROGRAM RENDERERS (WP7) — per-card chrome for the four
+   broadcast cards (CriticSegment / MusicTvCard / OnAirCard /
+   PremiereCard). Everything here is thermal-safe by construction:
+   static gradients + opacity, transform-only one-shots, and the
+   two looping glows follow the exact .native-app:not(.motion-on)
+   pause pattern the rest of the site's motion uses.
+   ------------------------------------------------------------ */
+
+/* CHYRON — the lower-third name bar every card's author line wears
+   (news-broadcast language: who's on screen, stamped over the
+   picture). Accent-EDGED, not accent-filled: a hard accent spine on
+   the left, glass fading right, so avatars and role badges stay
+   legible over any cover backdrop. */
+.cf-chyron {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  padding: 0.4rem 0.85rem 0.4rem 0.7rem;
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: linear-gradient(
+    to right,
+    rgba(var(--accent-rgb), 0.18),
+    rgba(0, 0, 0, 0.55) 70%
+  );
+}
+
+/* ELITE BLOOM — the static accent halo behind a 9.5+ review's
+   poster. A single radial gradient at fixed opacity: this is the
+   "thermal equivalent" half of the elite arrival (the pop below is
+   the motion half) — it's ALWAYS painted, so a phone with motion
+   idled still sees the card announce itself. --bloom-rgb is set
+   inline: purple for elite (9.5–9.9), theme accent for a 10. */
+.elite-bloom {
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(var(--bloom-rgb), 0.45),
+    transparent 70%
+  );
+}
+
+/* ELITE ARRIVAL — the one-shot badge pop when a snap SETTLES on a
+   9.5+ card (CriticSegment remounts the badge with this class, so
+   the animation restarts per arrival — no JS timing). Transform
+   only, runs once; under the app's idle-thermal state it pauses at
+   frame 0 = invisible, and the static bloom above carries the
+   moment instead. */
+@keyframes elite-arrival-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.elite-arrival {
+  animation: elite-arrival-pop 0.5s ease-out 1;
+}
+
+/* ON AIR orb — the debate card's pulsing red tally light. Same
+   8px orb geometry as .glow-orb, recolored to the live-red the
+   debate chrome uses; the resting box-shadow keeps a static red
+   dot with a soft halo when the pulse is paused (thermal), so
+   "ON AIR" never goes dark — it just stops breathing. */
+@keyframes on-air-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 4px #ff3344, 0 0 10px rgba(255, 51, 68, 0.5);
+  }
+  50% {
+    opacity: 0.65;
+    box-shadow: 0 0 8px #ff3344, 0 0 18px rgba(255, 51, 68, 0.5);
+  }
+}
+.glow-orb-red {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3344;
+  box-shadow: 0 0 4px #ff3344, 0 0 10px rgba(255, 51, 68, 0.5);
+  animation: on-air-pulse 1.6s ease-in-out infinite;
+}
+
+/* Thermal gate for the two loops above — identical mechanics to
+   the big motion-follows-touch list (pause in place while the app
+   sits idle; web/desktop always breathes). Kept HERE next to the
+   classes it governs instead of growing that faraway selector. */
+.native-app:not(.motion-on) .glow-orb-red,
+.native-app:not(.motion-on) .elite-arrival {
+  animation-play-state: paused !important;
+}
+
+/* READ MORE — the review body's two states on the CriticSegment
+   card. Collapsed: hard-capped at ~40% of the small viewport with
+   a mask fade so the cut never lands mid-word visually; expanded:
+   SAME height, but the box becomes its own scroller (contained so
+   a read-scroll never chains into the channel pager — the frame's
+   drag-to-exit also checks this scroller's scrollTop). */
+.cf-read-clamp {
+  max-height: 40vh; /* older-Safari fallback */
+  max-height: 40svh;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, black 68%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 68%, transparent 100%);
+}
+.cf-read-open {
+  max-height: 40vh;
+  max-height: 40svh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+}
+
 /* ============================================================
    TYPE TREATMENTS
    ============================================================ */

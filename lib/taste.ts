@@ -365,6 +365,9 @@ export type TunedItem =
     }
   | {
       type: "release";
+      /** Row id — the Premiere card's 📡 TRACK rail button posts to
+          the existing /api/releases/[releaseId]/follow toggle. */
+      id: string;
       slug: string;
       title: string;
       artist: string;
@@ -917,6 +920,7 @@ export async function getTunedToYou(
     candidates.push({
       item: {
         type: "release",
+        id: r.id,
         slug: r.slug,
         title: r.title,
         artist: artistName,

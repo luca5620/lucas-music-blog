@@ -61,7 +61,13 @@ export default function ThemeBackdrop({ theme }: { theme: ProfileTheme }) {
         <>
           <div className="bd-ps2-nebula" />
           <div className="bd-ps2-nebula bd-ps2-nebula2" />
+          {/* Cloud layers 3+4 and the second haze band — "more cloudy
+              immersion" (Luca 2026-08-27): a deep indigo floor mass, a
+              bright high wisp, and two smoke sweeps out of phase. */}
+          <div className="bd-ps2-nebula bd-ps2-nebula3" />
+          <div className="bd-ps2-nebula bd-ps2-nebula4" />
           <div className="bd-ps2-haze" />
+          <div className="bd-ps2-haze bd-ps2-haze2" />
           {SPARKS.map((s, i) => (
             <span
               key={i}

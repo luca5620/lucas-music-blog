@@ -229,7 +229,9 @@ export default function ReviewsList({
       )}
 
       {/* ===== DETAILED view (default) + shared empty state ===== */}
-      <div className={view === "detailed" ? "space-y-4" : filtered.length === 0 ? "space-y-4" : "hidden"}>
+      {/* space-y-6 (was 4): the cards' glow borders read as touching
+          at 1rem — Luca 2026-08-27 "they overlap a bit". */}
+      <div className={view === "detailed" ? "space-y-6" : filtered.length === 0 ? "space-y-6" : "hidden"}>
         {filtered.length === 0 ? (
           <div className="card-y2k p-8 text-center">
             <p className="text-text-muted pixel-text text-sm">

@@ -228,7 +228,7 @@ export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
           histogram) is the footer link. 4–5 cards per row on desktop
           keeps the covers album-sized. */}
       {view === "detailed" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 items-start">
           {feed.map((review) => {
             const profile = review.profiles;
             const ratingColor = getRatingHex(review.rating);

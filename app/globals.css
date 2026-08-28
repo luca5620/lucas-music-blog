@@ -788,6 +788,44 @@ body {
   animation-delay: -12s;
 }
 
+/* Third cloud: a deep indigo mass filling the bottom third, so the
+   void reads as a full nebula field instead of two floating puffs
+   (Luca 2026-08-27: "more cloudy immersion"). */
+.bd-ps2-nebula3 {
+  top: auto;
+  bottom: -8%;
+  left: 22%;
+  width: 720px;
+  height: 460px;
+  background: radial-gradient(
+    ellipse at 50% 55%,
+    rgba(96, 108, 210, 0.17) 0%,
+    rgba(70, 80, 170, 0.09) 45%,
+    transparent 72%
+  );
+  animation-duration: 40s;
+  animation-delay: -20s;
+}
+
+/* Fourth: a smaller, brighter violet wisp high in the frame — the
+   hot spot the boot screen's clouds gather around. */
+.bd-ps2-nebula4 {
+  top: 2%;
+  left: auto;
+  right: 16%;
+  width: 340px;
+  height: 260px;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(190, 170, 245, 0.2) 0%,
+    rgba(140, 120, 220, 0.1) 40%,
+    transparent 68%
+  );
+  filter: blur(26px);
+  animation-duration: 22s;
+  animation-delay: -8s;
+}
+
 /* Clouds breathe and lean rather than travel — nebula, not weather */
 @keyframes bd-ps2-swirl {
   0%, 100% { translate: 0 0; rotate: 0deg; scale: 1; }
@@ -812,6 +850,17 @@ body {
   filter: blur(30px);
   transform: skewY(5deg);
   animation: bd-drift-x 24s ease-in-out infinite;
+}
+
+/* Second smoke sweep, low in the frame and out of phase with the
+   first — the two bands crossing keeps the void alive. */
+.bd-ps2-haze2 {
+  top: 62%;
+  height: 150px;
+  transform: skewY(-4deg);
+  opacity: 0.8;
+  animation-duration: 32s;
+  animation-delay: -14s;
 }
 
 /* --- Original Xbox: the boot-screen energy core. A white-hot green
@@ -1631,57 +1680,69 @@ a.card-y2k:hover { transform: translateY(-2px); }
    only; desktop keeps its separate hover/active split above.
    ============================================================ */
 @media (hover: none) {
-  /* Generic tap acknowledgment for plain links/buttons/rows.
-     transition-duration only inside :active = press-in is instant,
-     release eases back at the element's normal speed. */
+  /* Generic tap acknowledgment: an accent HIGHLIGHT RING that hugs
+     the pressed element's own border-radius (Luca 2026-08-27: "a
+     highlight around the icon/button instead of a shadow effect" —
+     the old opacity dim read as a dark wash). Light-up, not
+     press-down. transition-duration only inside :active = press-in
+     is instant, release eases back at the element's normal speed. */
   a:active,
   button:active,
   [role="button"]:active,
   summary:active {
-    opacity: 0.7;
+    box-shadow:
+      0 0 0 2px rgba(var(--accent-rgb), 0.55),
+      0 0 16px rgba(var(--accent-rgb), 0.3);
     transition-duration: 0.05s;
   }
 
-  /* The styled controls skip the dim — they get the full
-     hover-replay treatment below instead. */
-  .btn-y2k:active,
-  .tab-y2k:active,
-  .tab-bar-item:active,
-  .poster:active,
-  a.panel-xbox:active,
-  a.card-y2k:active {
-    opacity: 1;
+  /* Tab bar: the pressed tab lights up as a glowing accent pill
+     around the icon (on top of its press-scale). */
+  .tab-bar-item:active {
+    background: rgba(var(--accent-rgb), 0.14);
+    border-radius: 12px;
+    box-shadow:
+      0 0 0 1.5px rgba(var(--accent-rgb), 0.45),
+      0 0 14px rgba(var(--accent-rgb), 0.35);
   }
 
   /* Hold = hover. Each rule mirrors its :hover twin, on top of the
-     press-down transforms already defined in CLICK FEEL. */
+     press-down transforms defined in CLICK FEEL — all rings + accent
+     glows now, no dark drop-shadows. */
   .btn-y2k-primary:active {
     background: var(--accent-glow);
   }
   .btn-y2k-outline:active {
     border-color: var(--accent-primary);
     color: var(--accent-primary);
-    box-shadow: 0 0 16px var(--glow-primary);
+    box-shadow:
+      0 0 0 2px rgba(var(--accent-rgb), 0.5),
+      0 0 16px var(--glow-primary);
   }
   .poster:active {
     border-color: var(--accent-primary);
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 16px var(--glow-primary);
+    box-shadow:
+      0 0 0 2px rgba(var(--accent-rgb), 0.5),
+      0 0 16px var(--glow-primary);
   }
   a.panel-xbox:active {
-    border-color: rgba(var(--accent-rgb), 0.4);
+    border-color: rgba(var(--accent-rgb), 0.5);
     box-shadow:
-      0 0 20px rgba(var(--accent-rgb), 0.1),
-      inset 0 0 30px rgba(var(--accent-rgb), 0.03);
+      0 0 0 2px rgba(var(--accent-rgb), 0.35),
+      0 0 20px rgba(var(--accent-rgb), 0.12);
   }
   a.card-y2k:active {
-    border-color: var(--border-medium);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(var(--accent-rgb), 0.45);
+    box-shadow:
+      0 0 0 2px rgba(var(--accent-rgb), 0.3),
+      0 0 18px rgba(var(--accent-rgb), 0.1);
   }
   .hover-glow:active {
+    border-color: rgba(var(--accent-rgb), 0.5);
     box-shadow:
+      0 0 0 2px rgba(var(--accent-rgb), 0.4),
       0 0 20px rgba(var(--accent-rgb), 0.15),
       0 0 40px rgba(var(--accent-rgb), 0.05);
-    border-color: rgba(var(--accent-rgb), 0.5);
   }
 }
 

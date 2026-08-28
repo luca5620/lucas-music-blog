@@ -37,6 +37,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
 import { getRatingHex, formatRating } from "@/lib/rating";
 import { hapticTap, isNativeApp } from "@/lib/native";
+import { useLikeState } from "@/lib/likeStore";
 import CommentsSection from "@/components/reviews/CommentsSection";
 import BackdropVideo from "@/components/profile/BackdropVideo";
 
@@ -64,7 +65,9 @@ const railBtnClass =
   "w-11 h-11 rounded-full border border-white/15 bg-black/50 flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors";
 
 /** Vertical heart — optimistic toggle against the same endpoints the
-    feed like buttons use. */
+    feed like buttons use. State lives in the shared like store
+    (lib/likeStore.ts), so this heart and any LikeButton/PostLikeButton
+    showing the same content stay in lockstep within a page visit. */
 function RailLike({
   kind,
   id,
@@ -78,8 +81,16 @@ function RailLike({
 }) {
   const { user } = useAuth();
   const router = useRouter();
-  const [liked, setLiked] = useState(initialLiked);
-  const [count, setCount] = useState(initialCount);
+  // Seed from server props (first writer wins), subscribe, and write
+  // optimistically through the store instead of private useState.
+  const { liked, count, write } = useLikeState(
+    kind,
+    id,
+    initialLiked,
+    initialCount
+  );
+  // In-flight guard stays per button — it throttles this button's own
+  // fetch, not the shared state.
   const [pending, setPending] = useState(false);
 
   const toggle = async () => {
@@ -91,8 +102,7 @@ function RailLike({
     hapticTap();
     const prevLiked = liked;
     const prevCount = count;
-    setLiked(!prevLiked);
-    setCount(prevCount + (prevLiked ? -1 : 1));
+    write({ liked: !prevLiked, count: prevCount + (prevLiked ? -1 : 1) });
     setPending(true);
     try {
       const res = await fetch(
@@ -101,11 +111,9 @@ function RailLike({
       );
       if (!res.ok) throw new Error("like failed");
       const data = (await res.json()) as { liked: boolean; count: number };
-      setLiked(data.liked);
-      setCount(data.count);
+      write({ liked: data.liked, count: data.count }); // server truth
     } catch {
-      setLiked(prevLiked);
-      setCount(prevCount);
+      write({ liked: prevLiked, count: prevCount }); // rollback
     } finally {
       setPending(false);
     }

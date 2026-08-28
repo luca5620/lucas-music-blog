@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap } from "@/lib/native";
+import { useLikeState } from "@/lib/likeStore";
 
 /**
  * PostLikeButton — the heart on a post (migration 016).
@@ -27,8 +28,17 @@ export default function PostLikeButton({
 }: PostLikeButtonProps) {
   const { user } = useAuth();
   const router = useRouter();
-  const [liked, setLiked] = useState(initialLiked);
-  const [count, setCount] = useState(initialCount);
+  // Shared like store (lib/likeStore.ts): every button for this post
+  // — feed card, post page, fullscreen rail — reads and writes the
+  // same entry, so hearts stay in lockstep within a page visit.
+  const { liked, count, write } = useLikeState(
+    "post",
+    postId,
+    initialLiked,
+    initialCount
+  );
+  // In-flight guard stays PER BUTTON: it throttles this button's own
+  // fetch, not the shared state.
   const [pending, setPending] = useState(false);
 
   const isMd = size === "md";
@@ -55,8 +65,9 @@ export default function PostLikeButton({
     const nextLiked = !prevLiked;
     const nextCount = prevCount + (nextLiked ? 1 : -1);
 
-    setLiked(nextLiked);
-    setCount(nextCount);
+    // Optimistic flip THROUGH the store, so every sibling button for
+    // this post updates in the same frame.
+    write({ liked: nextLiked, count: nextCount });
     setPending(true);
 
     try {
@@ -65,11 +76,9 @@ export default function PostLikeButton({
       });
       if (!res.ok) throw new Error("Failed to toggle like");
       const data = (await res.json()) as { liked: boolean; count: number };
-      setLiked(data.liked);
-      setCount(data.count);
+      write({ liked: data.liked, count: data.count }); // server truth
     } catch {
-      setLiked(prevLiked);
-      setCount(prevCount);
+      write({ liked: prevLiked, count: prevCount }); // rollback
     } finally {
       setPending(false);
     }

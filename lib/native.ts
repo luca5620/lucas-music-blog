@@ -52,6 +52,22 @@ export async function hapticTap(): Promise<void> {
 }
 
 /**
+ * Haptic with a chosen weight — the two-word vocabulary the fullscreen
+ * channel surfaces use: LIGHT for ambient ticks (a snap settling),
+ * MEDIUM for deliberate acts (like/follow/track, crossing the
+ * drag-to-exit threshold, entering/leaving fullscreen). Same
+ * fire-and-forget optional-bridge pattern as hapticTap: on the plain
+ * web there is no bridge and this silently no-ops.
+ */
+export async function hapticImpact(style: "LIGHT" | "MEDIUM"): Promise<void> {
+  try {
+    await bridge()?.Plugins?.Haptics?.impact({ style });
+  } catch {
+    /* haptics are garnish — never break the flow */
+  }
+}
+
+/**
  * Share via the native sheet when in-app; falls back to the Web
  * Share API, then to copying the URL to the clipboard.
  */

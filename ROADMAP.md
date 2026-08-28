@@ -45,8 +45,15 @@ remnants: every piece of content is community-made and catalog-backed.
   muteEpoch remount kills cross-channel audio; chrome strip
   pointer-events-none dead-band fix; stale history markers
   neutralized; comment_count block-filtered; RETUNE keeps the resume
-  session). Build green. REMAINING: Luca's preview (web + on-device:
-  keyboard composer gate, top area, gesture feel) → then merge.
+  session). Build green. ✅ MERGED TO MAIN + DEPLOYED at Luca's call
+  (2026-08-27, "just push it") — he skipped the dev-server preview,
+  so ALL device checks are still pending ON PRODUCTION: keyboard
+  composer gate (the WP9 ship-blocker test), top area (liquid band /
+  header under the island / bell), gesture feel (swipe-back, drag-
+  to-exit, static burst), and whether the 18-item mix under-fills
+  (revert c6b9a68 alone to go back to 12 if so). If anything's off
+  on device: fix forward same-day, production updates the apps
+  instantly and App Review is still pending.
 
 - **2026-08-27 (Windows, evening polish session while waiting on
   Apple): ⚠️ MIGRATION 025 TO RUN (notifications).** Shipped, all

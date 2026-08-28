@@ -11,6 +11,32 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-08-27 (Windows, ULTRACODE session — paused at usage limit):
+  branch `taste-and-top-overhaul` (13 commits, builds green, NOT
+  merged — Luca has NOT previewed anything yet).** Two work streams
+  complete on the branch: (1) the "PEAK TV" /your-taste overhaul —
+  Station Lobby page (masthead/signal meter/EPG/GO LIVE), new
+  ChannelFrame fullscreen pager (CH OSD, static-burst snaps, color
+  weather, drag-to-exit, history peeling, ±1 media windowing,
+  SignOffCard/RETUNE), four program cards, Switchboard comments
+  split (keyboard-safe: zero-input read sheet + ReportButton-style
+  top composer), taste-engine rewrite (rotation/interleave/dedup/
+  fade/honest chips, mix 12→18 in the last commit, independently
+  revertible), likeStore + hapticImpact. (2) App top-area rebuild —
+  ONE fixed header owns the status-bar band (scrim deleted, liquid
+  restored inside it), content raised to the Dynamic Island line,
+  bell/name collision fixed, strip repins under the header
+  (.strip-pinned), PTR disc re-anchored. NEXT SESSION: (a) run the
+  adversarial review over `git diff main...HEAD` (a review workflow
+  was killed mid-run at the limit — findings NOT harvested; redo or
+  review by hand), fix what's real; (b) `npm run dev` preview for
+  Luca (web + device), esp. WP9 keyboard gate (composer + keyboard
+  in the app = the ship-blocker test), top area on device, and
+  whether swipe-down-to-exit from any card should instead go back a
+  channel (spec-literal choice, flagged by the implementer); (c)
+  only after Luca's device pass: merge to main (deploys apps
+  instantly — App Review still pending, keep that in mind).
+
 - **2026-08-27 (Windows, evening polish session while waiting on
   Apple): ⚠️ MIGRATION 025 TO RUN (notifications).** Shipped, all
   verified building (through 93ca66b): (a) app status-bar scrim —

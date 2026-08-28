@@ -123,11 +123,15 @@ export default function NotificationsBell() {
         aria-label={
           unread > 0 ? `Notifications (${unread} unread)` : "Notifications"
         }
-        className="relative inline-flex items-center justify-center w-9 h-9 rounded-full text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 transition-all duration-200"
+        // Same pill as the CREATE button (Luca 2026-08-28: matching
+        // size + shape, one clean row) — identical paddings/radius,
+        // neutral coloring so CREATE stays the accented action.
+        // nav-pill-btn = the app's tightened padding, same as CREATE.
+        className="nav-pill-btn relative inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 transition-all duration-200"
       >
-        {/* Bell */}
+        {/* Bell — same 3.5 icon size as CREATE's plus */}
         <svg
-          className="w-4 h-4"
+          className="w-3.5 h-3.5"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

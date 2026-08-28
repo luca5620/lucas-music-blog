@@ -1294,21 +1294,40 @@ body {
 .native-app .nav-actions {
   width: auto;
   flex: 0 0 auto;
+  gap: 8px; /* one even rhythm across bell / create / avatar */
+}
+.native-app .app-nav-row {
+  gap: 8px;
 }
 .native-app .nav-logo {
   flex-shrink: 1;
   min-width: 0;
 }
+/* Title sized UP per Luca 2026-08-28 ("a bit bigger") — the width
+   for it comes from the tightened cluster below (pill paddings 8px,
+   account paddings 2px, ml-0 auth, 8px gaps). The clamp keeps the
+   full name fitting on base-width iPhones; ellipsis stays the
+   last-resort guard, overlap stays impossible. */
 .native-app .nav-app-title {
-  font-size: clamp(11px, 3.3vw, 16px);
+  font-size: clamp(12px, 3.6vw, 18px);
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.native-app .nav-create-btn {
+.native-app .nav-pill-btn {
   padding-inline: 8px;
 }
 .native-app .nav-account-btn {
-  padding-inline: 4px;
+  padding-inline: 2px;
+}
+.native-app .nav-auth {
+  margin-left: 0; /* the 8px gap already spaces it */
+}
+/* Raise EVERYTHING below the header (Luca 2026-08-28: lifting only
+   the bar would leave the home module too low — the whole page
+   rises together). Web keeps pb-4/mb-6. */
+.native-app .site-nav {
+  padding-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 /* App-only elements (e.g. the Lists/Friends/Your Taste links in the

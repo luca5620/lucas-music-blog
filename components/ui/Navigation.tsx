@@ -69,7 +69,7 @@ export default function Navigation() {
     <nav
       className={`${
         onProfilePage ? "" : "border-b border-border-subtle"
-      } pb-4 mb-6 relative z-40`}
+      } site-nav pb-4 mb-6 relative z-40`}
     >
       {/* Two rows below lg: with 7 nav links plus the spine eating
           width, a single row crushed the account button. On lg+ it's
@@ -164,7 +164,7 @@ export default function Navigation() {
                 onClick={() => setCreateOpen(!createOpen)}
                 aria-expanded={createOpen}
                 aria-haspopup="menu"
-                className="nav-create-btn inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-accent-primary hover:bg-accent-primary/10 border border-accent-primary/30 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
+                className="nav-pill-btn inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-accent-primary hover:bg-accent-primary/10 border border-accent-primary/30 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -251,7 +251,7 @@ export default function Navigation() {
 
           {/* Auth Section */}
           {!loading && (
-            <div className="ml-2 shrink-0">
+            <div className="nav-auth ml-2 shrink-0">
               {user ? (
                 /* Logged in — avatar + dropdown */
                 <div className="relative" ref={dropdownRef}>

@@ -31,8 +31,11 @@ function safeUrl(url: string | null): string | null {
   return url.startsWith("https://") || url.startsWith("/") ? url : null;
 }
 
-/** Extract up to three dominant, mutually-distinct colors. */
-function extractTrio(img: HTMLImageElement): string[] | null {
+/** Extract up to three dominant, mutually-distinct colors.
+    Exported: the fullscreen broadcast's per-card color weather
+    (components/taste/cards/ChannelChrome.tsx) reuses THIS extraction
+    path — one shared canvas pipeline, not a second one per card. */
+export function extractTrio(img: HTMLImageElement): string[] | null {
   const SIZE = 32;
   const canvas = document.createElement("canvas");
   canvas.width = SIZE;

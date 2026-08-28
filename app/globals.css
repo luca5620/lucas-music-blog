@@ -1504,6 +1504,154 @@ body {
 .surf-fullscreen.surf-anim-out { animation: surf-exit 0.18s ease-in forwards; }
 
 /* ============================================================
+   CHANNEL FRAME — the rebuilt fullscreen broadcast
+   (ChannelFrame.tsx, taste overhaul round 3). Everything here is
+   thermal-budgeted on purpose: no backdrop-filter, no animated
+   box-shadow, opacity/static-gradient effects only, and the only
+   perpetual-ish motion (the noise boil) is gated behind .motion-on
+   so it can't burn the phone while the screen sits idle.
+   ============================================================ */
+
+/* The shared TV-static tile — ONE ~2KB base64 grayscale PNG reused
+   by the channel-change burst, the TUNING… skeleton, and the
+   RETUNE pending screen. A data URI (not a /public file) so the
+   very first static burst never waits on a network fetch. */
+.tv-noise {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAGLUlEQVR42gXBCTsieAMA8P8nyXQhowOlZlI6TCOlUI5K6ZbSISQ6baLLkYgODSVFp/o6hmfHM7Mzs7PLzM7su7uzO8/7+4Hpgpygao9ZUnvOxF1vN7cA//xDXj7c26X9I5jyebPnuA7nUfQyCI5zLbC1yJxQMbtiN9zbkAcqdvkpb3l+lJN4Xj2QEDa53u07Ym4ZfExeXCwVUAmPJQi9FBI3Qo7qd3KjgiRHwrOLMXGV9yxVppsxE4Boe71BGXjgf6dTna/MyHnLX2Oh314iHu3ef3va8yrzGcMjirYG62DNSZFIO57f7knrp7+6W8xX1vVqn1DFTVBJ+9SCiU6V0ceHbKNcUIgcNlOjgj6x31p3nudUgdrSZi+Bta84LV/zdYhWMS6rH3IkOkHMOrA6vIMeHVYECe0HiAecntuxGo7HhQrdvDtKVKzfIejnzBEeUFZhdegWC85DuTGRRCIGWTw51A3R9pMLTw0rUodBw/EQHHCXBjAQsbdQpF6Ws+W5kUgah/MxFdUVKvp7wyg0N8K/m8zqvjUOMQWGFw5oZ5ljbxAbHIlm8TEWG9O3iJK46B1+yUFDlr4g8BOVaN8+WIJ2KYQL5+Q/1NR2ny4vyeTJQd2LzLhsj2zK5laW2b32KZphIAeyvHQvTI99MDuGMI/6POzpIM815uwMhjF20RFEkJ9KjRXp2+1CgOnyUmfNjlYcn43caek0CT5f1VyBQrFrOMsi4FSfNFOzuLSTRAQkeGvBgl4oWczGi55rhqVnGcNVrrEgBlY6+rdRFjqmQT8GtDgU2MqsMqWPme4iARL78Mr1umgWhPJXyArcOKMueRqmibWXzWZlnAZ09pIOM+iQoK3xV8pMPVUoHkSu2WmI4e51bA46L+Nj0B2d4+gbcOvpqbeUd+VoZjhOiildeWUbpRFfUsY+xjri89sjBMJsAt+9mgD+UKb5RuOOyaYZp26da3uSmn/pzGtWxUs51k3Stng5DsEXCm3fQFp02UCwyMTOu0SY9cZD68ISB6WKmumo+8zKMVr+Lvo2BNqtyTrohbePuXKqHSvc53jsWRD740lTK+wyKiJfFiYJYij/l6HO3tr8KEDKVtVj5+vDgo2rgqXhOQnFYc0+4XTAs906KN/p/6Ba+lUceR3bA3VDwBB8y5shFXnnX+i2M5e1A7E1iU59XjnIFhlf8FpJg9S41hXA0aceKmQqttFxbagZEPdXlq+S/shbWUpWG51abrRRjnZjG98/JCTAFWod7kcOXGZTNRiKcK2J8fb+u60+elebEFdjDh1ltrf4q8iUDJh8JHHbIPHiXhoIR7LyKPkN9l3O2EZFHn7Iw3xIdB4Sz9g1uHsgpq/FCALj3jnDoa2qBtz4ecxC+ZSKstRYdLgizlkqtiFRGr0QHPVk9UyThRSsVIbsg3iR7XQOE6eUhkoyqpX8rRnVPXEcx0Vf04B5wwgETg/gSd6sSvhnXfSVPzWzec5ZS75QjZGYIpEz5TWiYTgFUO7h14QzqPuavkGbXg74ykqL2kETeRwNhjr9U3izmQuaxzxeJViVleeW9gXvw9QMDiUlenwGaSFJ4mz5LRNHzLOzqSIlxHjaPRAGPfKEu3QBd4ZgNyLH4DexjVG03xp7tJISjamx2k458sDnXpTxErRwf2NHaNNuBFedS+kYer8jc4B0+3f6fetovg1PhrQuVZ6wtTZgeH4l11WK5um/5pQl0jth9aWViPVCRjQTMxO7Of7Ku5r/H5WLOgUSnEnhyUZzZsi/jPI+aKF2zvouJKuFLabuZqitaSmlzTOB/YRlgYJk6IRLPKpciyqTutDIats6JMXGYJebZN1ACfFJLTi1R++xM2XA/vHTjvoFCn0+sEx6hn3/zFyTH25eJSvTOK3ARWPjlXuJZ1KO2Qy+7Dw56aMNurvG07z3UaguuaaWtx/CjA/Tt7H/QVCo7FsvHToMgwN9l7eImbTiA97Df/dbuiLrv/f+TF/4j0K8ZiHnuiqn72f5prl+CBRM547T11xEUOx6zopp2NL1dZjjXQ6pXRheoU3uKOO3Ue7dPEwNAfybcmNF58w6Ko4Wg2N4cRfPYIxYEq8IdXz5y4+bkyeUP5OU+RLl/4U1xrpRclnDAAAAAElFTkSuQmCC");
+  background-repeat: repeat;
+  /* Rendered at 2× the tile's 40px so the grain reads chunky-analog
+     instead of fine digital dither. */
+  background-size: 80px 80px;
+}
+
+/* STATIC BURST — 150ms of channel-change snow on every SETTLED snap
+   (never per scroll frame; ChannelFrame remounts this div keyed per
+   settle, which is what restarts the animation). Composited: the
+   whole effect is one opacity keyframe on a pointer-events:none
+   layer, so it can never block or jank the swipe that caused it. */
+@keyframes static-burst-fade {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+.static-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  /* forwards: hold opacity 0 after the burst so the spent div is
+     invisible until the next settle remounts it. */
+  animation: static-burst-fade 150ms linear forwards;
+}
+.static-burst .tv-noise {
+  position: absolute;
+  inset: 0;
+}
+/* Second noise layer sits offset so its grain pattern doesn't line
+   up with the first — the two together are the boil's two frames. */
+.static-burst .tv-noise + .tv-noise {
+  opacity: 0;
+  background-position: 23px 41px;
+}
+/* The BOIL — app only, and only while the finger is active
+   (.motion-on, NativeMode's touch-follows-motion rule): the two
+   layers hard-swap once mid-burst via steps(2, jump-none), i.e. two
+   discrete frames of different snow = analog static that crawls.
+   Without .motion-on the burst is a single still noise frame
+   fading through — reads nearly the same at 150ms, costs nothing. */
+@keyframes static-flip-a {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes static-flip-b {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.motion-on .static-burst .tv-noise:first-child {
+  animation: static-flip-a 150ms steps(2, jump-none) forwards;
+}
+.motion-on .static-burst .tv-noise + .tv-noise {
+  animation: static-flip-b 150ms steps(2, jump-none) forwards;
+}
+
+/* TUNING… — the skeleton that fills a Spotify-embed slot until the
+   iframe actually paints (embeds are pre-mounted at ±1 but take a
+   beat to load; dead white rectangles read as broken). Static noise
+   + the amber OSD voice = a TV searching for signal. */
+.tuning-slot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #060606;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.tuning-slot .tv-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+}
+.tuning-label {
+  position: relative;
+  font-family: var(--font-pixel);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: var(--osd-amber);
+  text-shadow: 0 0 8px rgba(255, 176, 47, 0.5);
+}
+
+/* Drag-to-exit vignette — "the signal shrinking". A static radial
+   gradient whose OPACITY ChannelFrame drives inline, proportional
+   to the drag distance. Nothing here animates on its own. */
+.cf-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    120% 120% at 50% 50%,
+    transparent 38%,
+    rgba(0, 0, 0, 0.92) 78%
+  );
+}
+
+/* Desktop-only scanline overlay for the broadcast cards — a subtle
+   static CRT texture over the blurred backdrop. Phones/app never
+   see it (hidden sm:block in JSX + display:none under the app's
+   thermal rules — full-viewport texture per frame is exactly the
+   structural cost thermal round 3 removed). */
+.cf-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.028) 0 1px,
+    transparent 1px 3px
+  );
+}
+.native-app .cf-scanlines {
+  display: none;
+}
+
+/* The big green channel OSD — the one deliberate use of the classic
+   OSD green (everything else tuned text went accent blue): a TV's
+   channel number IS green, that's the whole gag. */
+.cf-ch-osd {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.08em;
+  color: var(--osd-green);
+  text-shadow: 0 0 10px rgba(47, 255, 94, 0.45);
+}
+
+/* ============================================================
    TYPE TREATMENTS
    ============================================================ */
 

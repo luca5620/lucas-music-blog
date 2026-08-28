@@ -20,55 +20,32 @@
  *
  * Watched-row dimming + resume both read sessionStorage
  * `pmr_taste_session` ({ itemKeys, index }) — the fullscreen frame's
- * persistence contract. Until the ChannelFrame rebuild lands (which
- * writes it on every settled snap), this component writes it itself
- * on fullscreen EXIT, so the lobby already remembers how far you got
- * within a visit. sessionStorage dies with the tab — a fresh visit is
+ * persistence contract. ChannelFrame writes it on every settled
+ * snap, so the lobby remembers how far you got even if the tab dies
+ * mid-broadcast. sessionStorage dies with the tab — a fresh visit is
  * a fresh broadcast, by design.
  *
- * Fullscreen itself is still the EXISTING ChannelSurf overlay,
- * mounted with startFullscreen + initialIndex (a thin prop addition —
- * see ChannelSurf). The full frame rebuild (ChannelFrame: CH OSD,
- * static bursts, drag-to-exit, windowed media) is the next stage and
- * swaps in behind this exact enterAt() contract.
+ * Fullscreen is the rebuilt ChannelFrame overlay (CH OSD, static
+ * bursts, drag-to-exit, windowed media), mounted with initialIndex
+ * behind this component's enterAt() contract.
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { TunedItem } from "@/lib/taste";
-import ChannelSurf from "@/components/taste/ChannelSurf";
+import ChannelFrame, { tunedItemKey } from "@/components/taste/ChannelFrame";
 import { thumbCover } from "@/lib/images";
 import { hapticImpact } from "@/lib/native";
 
 /**
- * sessionStorage key shared with the fullscreen frame — the saved
- * shape is { itemKeys: string[], index: number }. itemKeys is the
- * FULL key sequence of the mix that was playing, so a stale session
- * (day rotation, retune, different mix) is detected by comparison
- * and cleared instead of resuming into the wrong channel. Fail-soft
+ * sessionStorage key shared with the fullscreen frame (which owns the
+ * WRITES — see ChannelFrame's persistSession) — the saved shape is
+ * { itemKeys: string[], index: number }. itemKeys is the FULL key
+ * sequence of the mix that was playing, so a stale session (day
+ * rotation, retune, different mix) is detected by comparison and
+ * cleared instead of resuming into the wrong channel. Fail-soft
  * everywhere: storage errors just mean no resume.
  */
 const SESSION_KEY = "pmr_taste_session";
-
-/**
- * Stable identity for a tuned item — MIRRORS tunedKeyOf in
- * lib/taste.ts (that module imports the server Supabase client, so a
- * client component can't import the function itself). The same
- * strings also live in the pmr_taste_seen cookie the server
- * downranks on. Change one copy and rotation/resume silently dies —
- * keep all of them in sync.
- */
-function keyOf(item: TunedItem): string {
-  switch (item.type) {
-    case "review":
-      return `review:${item.id}`;
-    case "post":
-      return `post:${item.id}`;
-    case "debate":
-      return `debate:${item.slug}`;
-    case "release":
-      return `release:${item.slug}`;
-  }
-}
 
 /** Only https:// or local /path images (stored-XSS defense — same
     guard the pager cards use). */
@@ -119,10 +96,19 @@ function coverOf(item: TunedItem): string | null {
   return null;
 }
 
-export default function TasteGuide({ items }: { items: TunedItem[] }) {
+export default function TasteGuide({
+  items,
+  channelName,
+}: {
+  items: TunedItem[];
+  /** "THE {NAME} CHANNEL" — for the frame's NOW WATCHING splash and
+      the sign-off card (server-resolved in page.tsx). */
+  channelName: string;
+}) {
   // Key sequence of the served mix — computed once; every resume /
-  // watched decision compares against it.
-  const keys = useMemo(() => items.map(keyOf), [items]);
+  // watched decision compares against it. tunedItemKey is the ONE
+  // client-side copy of the key format (see ChannelFrame).
+  const keys = useMemo(() => items.map(tunedItemKey), [items]);
 
   // Which channel the viewer is LIVE on (null = lobby). Mounting the
   // fullscreen overlay is gated on this, so nothing heavy exists
@@ -173,9 +159,11 @@ export default function TasteGuide({ items }: { items: TunedItem[] }) {
     setLiveAt(index);
   }, []);
 
-  /** Fullscreen closed at `lastIndex` — save the session (interim
-      write until ChannelFrame persists per-snap, see file comment)
-      and update the lobby's watched/resume state in place. */
+  /** Fullscreen closed at `lastIndex` — update the lobby's
+      watched/resume state in place. The sessionStorage write is NOT
+      here anymore: ChannelFrame persists on every settled snap, so
+      the session is already saved (and survives even a killed tab
+      process mid-broadcast). */
   const handleExit = useCallback(
     (lastIndex: number) => {
       setLiveAt(null);
@@ -185,14 +173,6 @@ export default function TasteGuide({ items }: { items: TunedItem[] }) {
         for (let i = 0; i <= lastIndex && i < keys.length; i++) next.add(keys[i]);
         return next;
       });
-      try {
-        sessionStorage.setItem(
-          SESSION_KEY,
-          JSON.stringify({ itemKeys: keys, index: lastIndex })
-        );
-      } catch {
-        /* storage blocked — dimming still works from state this visit */
-      }
     },
     [keys]
   );
@@ -308,15 +288,14 @@ export default function TasteGuide({ items }: { items: TunedItem[] }) {
           : "GO LIVE — START AT CH 01"}
       </button>
 
-      {/* ===== The broadcast itself — mounted only while live. Still
-             the existing ChannelSurf overlay; the ChannelFrame
-             rebuild replaces this element without touching anything
-             above it. ===== */}
+      {/* ===== The broadcast itself — mounted only while live (the
+             frame is always-fullscreen; nothing heavy exists until
+             the viewer opts in via GO LIVE or an EPG row). ===== */}
       {liveAt !== null && (
-        <ChannelSurf
+        <ChannelFrame
           items={items}
-          startFullscreen
           initialIndex={liveAt}
+          channelName={channelName}
           onExit={handleExit}
         />
       )}

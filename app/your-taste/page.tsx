@@ -222,7 +222,9 @@ export default async function YourTastePage() {
       {/* ===== TONIGHT'S PROGRAMMING + GO LIVE (client), or the NO
              SIGNAL static panel when the mix came back empty ===== */}
       {tunedItems.length > 0 ? (
-        <TasteGuide items={tunedItems} />
+        /* channelName rides down to the fullscreen frame's NOW
+           WATCHING splash and the sign-off card. */
+        <TasteGuide items={tunedItems} channelName={channelName} />
       ) : (
         <div className="panel-xbox p-6 sm:p-8 text-center space-y-4">
           <p className="osd-text text-sm">NO SIGNAL</p>

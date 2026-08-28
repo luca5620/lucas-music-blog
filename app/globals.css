@@ -1651,6 +1651,39 @@ body {
   text-shadow: 0 0 10px rgba(47, 255, 94, 0.45);
 }
 
+/* SMPTE COLOR BARS — the sign-off card's full-bleed backdrop
+   (SignOffCard.tsx). The classic broadcast test pattern, drawn as
+   two stacked hard-stop linear gradients: the seven 75%-intensity
+   bars on top, the darker reverse-ish strip along the bottom. Pure
+   static CSS — huge, unmissable, zero cost (no image, no motion). */
+.smpte-bars {
+  background:
+    /* bottom strip: 25% of the height */
+    linear-gradient(
+        to right,
+        #0000c0 0 14.28%,
+        #131313 14.28% 28.57%,
+        #c000c0 28.57% 42.85%,
+        #131313 42.85% 57.14%,
+        #00c0c0 57.14% 71.42%,
+        #131313 71.42% 85.71%,
+        #c0c0c0 85.71% 100%
+      )
+      left bottom / 100% 25% no-repeat,
+    /* main bars: the top 75% */
+    linear-gradient(
+        to right,
+        #c0c0c0 0 14.28%,
+        #c0c000 14.28% 28.57%,
+        #00c0c0 28.57% 42.85%,
+        #00c000 42.85% 57.14%,
+        #c000c0 57.14% 71.42%,
+        #c00000 71.42% 85.71%,
+        #0000c0 85.71% 100%
+      )
+      left top / 100% 75% no-repeat;
+}
+
 /* ============================================================
    TYPE TREATMENTS
    ============================================================ */

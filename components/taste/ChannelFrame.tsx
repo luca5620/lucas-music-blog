@@ -65,6 +65,7 @@ import CriticSegment from "@/components/taste/cards/CriticSegment";
 import MusicTvCard from "@/components/taste/cards/MusicTvCard";
 import OnAirCard from "@/components/taste/cards/OnAirCard";
 import PremiereCard from "@/components/taste/cards/PremiereCard";
+import SignOffCard from "@/components/taste/SignOffCard";
 
 /** Exit animation length — the surf-anim-out CSS runs 180ms, the
     timeout runs a hair longer so the last frame always paints
@@ -181,9 +182,10 @@ export default function ChannelFrame({
       on — the lobby unmounts the frame and updates watched/RESUME. */
   onExit?: (lastIndex: number) => void;
 }) {
-  // Card count — the sign-off card (WP8) lands as card N+1 in the
-  // next commit; until then the last channel is the last card.
-  const cardCount = items.length;
+  // Card count includes the SIGN-OFF card at index N (END OF
+  // BROADCAST — WP8): clamps run against cardCount, item lookups
+  // against items.length.
+  const cardCount = items.length + 1;
   const clamp = useCallback(
     (i: number) => Math.max(0, Math.min(cardCount - 1, i)),
     [cardCount]
@@ -382,7 +384,14 @@ export default function ChannelFrame({
       setIndex(i);
       // Channel CHANGED — the full arrival package, exactly once:
       setBurstKey((k) => k + 1); // 150ms static snow (CSS-driven)
-      hapticImpact("LIGHT"); // the ambient tick of a snap settling
+      if (i === items.length) {
+        // Rubber-banding into the sign-off card: DOUBLE light tick —
+        // the "you've reached the end of the tape" signature.
+        hapticImpact("LIGHT");
+        window.setTimeout(() => hapticImpact("LIGHT"), 120);
+      } else {
+        hapticImpact("LIGHT"); // the ambient tick of a snap settling
+      }
       recordLanding(i);
     };
 
@@ -569,6 +578,9 @@ export default function ChannelFrame({
 
   /* ─── render ─── */
 
+  // On the sign-off card the CH OSD has no channel to name.
+  const onSignOff = index >= items.length;
+
   const content = (
     <div
       className={`surf-fullscreen ${closing ? "surf-anim-out" : "surf-anim-in"}`}
@@ -621,6 +633,12 @@ export default function ChannelFrame({
               </div>
             );
           })}
+
+          {/* Card N+1 — END OF BROADCAST: SMPTE bars + RETUNE / TV
+              GUIDE / BACK TO STATION. Pure CSS, no windowing needed. */}
+          <div className="relative w-full h-full snap-start snap-always overflow-hidden">
+            <SignOffCard channelName={channelName} onExit={peel} />
+          </div>
         </div>
       </div>
 
@@ -653,7 +671,9 @@ export default function ChannelFrame({
             }`}
           >
             <div className="flex items-baseline gap-1.5">
-              <span className="cf-ch-osd text-2xl">CH {chNum(index)}</span>
+              <span className="cf-ch-osd text-2xl">
+                {onSignOff ? "CH --" : `CH ${chNum(index)}`}
+              </span>
               <span className="pixel-text text-xs text-text-muted">
                 /{chNum(items.length - 1)}
               </span>

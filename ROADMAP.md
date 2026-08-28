@@ -71,9 +71,10 @@ session ends mid-task; clear it when the work lands under Done.)*
   same-day. Known parked native gap: cold offline launch white-
   screen (needs Mac rebuild w/ push + iOS 15 bump, post-approval).
 
-- **2026-08-26 (MacBook): Luca's five-item batch — code complete,
-  ⚠️ TWO MIGRATIONS TO RUN in the Supabase SQL Editor (023 then
-  024) before/right after this deploys.** The batch:
+- **2026-08-26 (MacBook): Luca's five-item batch — code complete.
+  ✅ Migrations 023 + 024 CONFIRMED APPLIED (verified live via REST
+  probe 2026-08-27: leaderboard_stats() answers, is_published exists
+  on posts + debates).** The batch:
   1. **Friends-tab leaderboard** — `components/friends/Leaderboard`
      (tabs: most reviews / most likes received / most lists, top 10,
      medal colors) fed by `leaderboard_stats()` from **migration

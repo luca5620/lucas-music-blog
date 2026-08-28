@@ -6,7 +6,6 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import NotificationsBell from "@/components/notifications/NotificationsBell";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 
 /**
  * Navigation — Inside the CRT frame.
@@ -72,19 +71,6 @@ export default function Navigation() {
         onProfilePage ? "" : "border-b border-border-subtle"
       } pb-4 mb-6 relative z-40`}
     >
-      {/* APP-ONLY backdrop (display:none on web): in the shell this
-          nav is position:fixed and owns the whole top band, status
-          bar included (globals.css APP HEADER block) — so it brings
-          its own ground: black base + the liquid field glowing
-          inside it, same recipe as the pinned home strip. Negative
-          z paints ABOVE the nav's background but UNDER the row
-          (PageHero layering trick). */}
-      <div
-        aria-hidden="true"
-        className="app-only absolute inset-0 -z-10 isolate overflow-hidden border-b border-white/10"
-      >
-        <LiquidAtmosphere />
-      </div>
       {/* Two rows below lg: with 7 nav links plus the spine eating
           width, a single row crushed the account button. On lg+ it's
           the classic one-line bar again. */}
@@ -96,15 +82,10 @@ export default function Navigation() {
           (globals.css forces flex-row + justify-between there). */}
       <div className="app-nav-row flex flex-col lg:flex-row lg:items-center gap-3">
         {/* Logo / Site Title */}
-        {/* min-w-0 (not shrink-0): when the app row runs out of width
-            the NAME truncates instead of the bell landing on top of
-            it — the right cluster is width-locked in the app
-            (globals.css) so it can no longer overflow leftward. The
-            penguin itself never shrinks. */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
-          <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shrink-0" />
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
+          <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
           {/* Full name at every size — Luca's preference over "PMR" */}
-          <span className="pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover whitespace-nowrap min-w-0 truncate">
+          <span className="pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover whitespace-nowrap">
             Peak Music Reviews
           </span>
         </Link>

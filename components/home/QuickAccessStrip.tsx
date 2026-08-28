@@ -5,12 +5,12 @@
  *
  * Four equal text buttons — Reviews / Releases / Debates / Lists —
  * all visible at once (no side-scroll, no glyphs; Posts cut). Sits
- * right below the header (site name / bell / CREATE / avatar), ABOVE
- * the HOME hero band. Scroll past it and it locks in directly under
- * the FIXED app header (which owns the status-bar band and its
- * liquid now — this bar no longer reaches y=0 itself): opaque base
- * on the bar (.strip-pinned) + border/shadow/liquid backdrop, chips
- * resting right at the header's bottom edge.
+ * right below the header (site name / CREATE / avatar), ABOVE the
+ * HOME hero band. Scroll past it and it locks FLUSH to the very top
+ * of the screen: the backdrop runs from y=0 (covering the status-bar
+ * region — pinning at the inset left the page visible above the bar,
+ * "tacky") with the liquid atmosphere drifting inside it, and the
+ * chips resting at the safe-area line.
  *
  * Mechanism (third attempt — the history matters):
  *  1. position:sticky — DEAD site-wide: WebKit disables sticky under
@@ -40,13 +40,11 @@ const CHIPS = [
   { href: "/lists", label: "Lists" },
 ];
 
-/** The pin line in real pixels: the fixed app header's bottom edge
- *  (safe-area inset + --app-header-h), measured via a fixed probe so
- *  env()/max()/var() all resolve exactly as the CSS does. */
-function measurePinTop(): number {
+/** env(safe-area-inset-top) in real pixels, via a fixed probe. */
+function measureSafeTop(): number {
   const probe = document.createElement("div");
   probe.style.cssText =
-    "position:fixed;top:calc(max(6px, env(safe-area-inset-top,0px)) + var(--app-header-h, 48px));height:0;visibility:hidden;pointer-events:none";
+    "position:fixed;top:env(safe-area-inset-top,0px);height:0;visibility:hidden;pointer-events:none";
   document.body.appendChild(probe);
   const top = probe.getBoundingClientRect().top;
   probe.remove();
@@ -59,7 +57,7 @@ export default function QuickAccessStrip() {
   const barRef = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(false);
   const [barHeight, setBarHeight] = useState(0);
-  const pinTopRef = useRef(0);
+  const safeTopRef = useRef(0);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -70,25 +68,25 @@ export default function QuickAccessStrip() {
     let observer: IntersectionObserver | null = null;
 
     const build = () => {
-      pinTopRef.current = measurePinTop();
-      if (bar.offsetHeight > 0 && !bar.classList.contains("strip-pinned")) {
+      safeTopRef.current = measureSafeTop();
+      if (bar.offsetHeight > 0 && !bar.classList.contains("fixed")) {
         setBarHeight(bar.offsetHeight);
       }
 
       observer?.disconnect();
       observer = new IntersectionObserver(
         ([entry]) => {
-          // Pinned = the sentinel left through the TOP of the (header-
+          // Pinned = the sentinel left through the TOP of the (inset-
           // shrunk) viewport. Leaving through the bottom (page opens
           // pre-scrolled, sentinel below the fold) must not pin.
-          const rootTop = entry.rootBounds?.top ?? pinTopRef.current;
+          const rootTop = entry.rootBounds?.top ?? safeTopRef.current;
           setPinned(
             !entry.isIntersecting && entry.boundingClientRect.top < rootTop,
           );
         },
-        // Pull the top trigger line DOWN to the fixed header's bottom
-        // edge so the pin happens exactly when the row meets it.
-        { rootMargin: `-${Math.ceil(pinTopRef.current) + 1}px 0px 0px 0px` },
+        // Pull the top trigger line DOWN to the safe-area inset so the
+        // pin happens exactly when the row reaches the notch line.
+        { rootMargin: `-${Math.ceil(safeTopRef.current) + 1}px 0px 0px 0px` },
       );
       observer.observe(sentinel);
     };
@@ -97,7 +95,7 @@ export default function QuickAccessStrip() {
     // redundant, but it costs one rect read and catches any IO gap).
     const onScroll = () => {
       setPinned(
-        wrap.getBoundingClientRect().top <= pinTopRef.current + 1 &&
+        wrap.getBoundingClientRect().top <= safeTopRef.current + 1 &&
           wrap.getBoundingClientRect().height > 0,
       );
     };
@@ -134,12 +132,10 @@ export default function QuickAccessStrip() {
         ref={barRef}
         className={
           pinned
-            ? // .strip-pinned (globals.css): fixed right under the app
-              // header with an always-on opaque base — position, top,
-              // and z live in plain CSS next to the header they must
-              // stay in sync with. strip-pin-anim: the position swap
-              // itself can't animate, so a drop-in masks the teleport.
-              "strip-pinned isolate px-4 py-2 strip-pin-anim"
+            ? // Flush to y=0, chips resting at the safe-area line.
+              // strip-pin-anim: the position swap itself can't
+              // animate, so a quick drop-in masks the teleport.
+              "fixed left-0 right-0 top-0 z-40 isolate px-4 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)] strip-pin-anim"
             : // -mx-4/px-4 mirrors .crt-screen's 1rem phone padding so
               // the row reads full-bleed in the flow too.
               "relative isolate -mx-4 px-4 py-2"

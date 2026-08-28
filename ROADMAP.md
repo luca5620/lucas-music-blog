@@ -11,6 +11,34 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
+  verdict — the /your-taste page is the pre-overhaul sliding pager
+  again, whole and only.** His specifics (standing design law now):
+  ONLY the sliding page — no lobby, no stats module, no EPG list, no
+  channel branding/OSD indicators, no static transition, no AV/exit
+  combo (plain ✕), text CENTERED, no reason labels ("critic segment"
+  / "rec Nd ago" chips are gone for good), no corner rating badge on
+  covers (the "{name} rated it {score}" line above the cover carries
+  the score). Direction: NO more CRT-gimmick features — the site is
+  going cleaner, with character coming from the liquid blobs + CD/
+  chrome-disc animations. What happened in code: restored
+  app/your-taste/page.tsx + components/taste/ChannelSurf.tsx from
+  pre-overhaul history (minus rating badge + reason chips); DELETED
+  TasteGuide, ChannelFrame, SignOffCard, SwitchboardSheet,
+  CallerComposer, taste/cards/*. KEPT: lib/taste.ts engine rewrite
+  (invisible mechanics — reasons still rank, silently), likeStore,
+  hapticImpact, CommentsSection sheet-variant plumbing (default
+  variant unchanged, which is what the pager uses), PTR fullscreen
+  guard. TOP AREA: fixed-header rebuild (0c46cd6) fully reverted —
+  Navigation/CRTShell/QuickAccessStrip/globals back to the scrim-era
+  look Luca asked to keep — plus the one thing he actually wanted:
+  content shifted UP (~12px) via `.native-app .crt-screen
+  { padding-top: 4px }` (status-bar band untouched, clock stays
+  clear). DEVICE CHECK PENDING: the ~12px shift amount + that the
+  app name / bell no longer collide. Migration 025 CONFIRMED RUN by
+  Luca 2026-08-28. Ultracode/multi-agent workflows: Luca says never
+  again — don't propose them.
+
 - **2026-08-27 (Windows, ULTRACODE session — paused at usage limit):
   branch `taste-and-top-overhaul` (13 commits, builds green, NOT
   merged — Luca has NOT previewed anything yet).** Two work streams

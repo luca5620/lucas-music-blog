@@ -47,8 +47,13 @@ remnants: every piece of content is community-made and catalog-backed.
   marking the header's target height → 85c2c90: phone top padding =
   env(inset) - 12px, and the app row is collision-proof (rigid
   action cluster, title clamps 11-16px w/ ellipsis last resort,
-  chevron app-hidden, tighter paddings). Device check pending:
-  header height vs his screenshot + full name fitting clean.
+  chevron app-hidden, tighter paddings). Height + collision fix
+  APPROVED on device ("yea ok this works now") → 0f4e1f0 polish
+  round per Luca: title clamp(12px,3.6vw,18px), bell restyled to
+  the exact CREATE pill (neutral color), one 8px gap rhythm across
+  the row, and the whole page raised in the app (.site-nav pb
+  16→10 / mb 24→14 so the quick-access bar and modules come up
+  together). Device check pending on that polish round.
 
 - **2026-08-27 (Windows, ULTRACODE session — paused at usage limit):
   branch `taste-and-top-overhaul` (13 commits, builds green, NOT

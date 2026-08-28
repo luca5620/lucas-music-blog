@@ -11,6 +11,34 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-08-27 (Windows, evening polish session while waiting on
+  Apple): ⚠️ MIGRATION 025 TO RUN (notifications).** Shipped, all
+  verified building (through 93ca66b): (a) app status-bar scrim —
+  scrolled content no longer collides with the iOS clock (Luca's
+  screenshot: reviews filter chips behind the battery); (b) touch
+  press feedback = accent highlight RING around the pressed element
+  (replaces the opacity dim; tab-bar taps glow as a pill; card holds
+  are accent rings not dark shadows); (c) reviews/releases/home card
+  spacing gap-4→6; (d) PS2 Nebula +2 cloud layers +1 haze band;
+  (e) pull-to-refresh in the app (chrome disc under the status bar,
+  haptic at the 64px threshold, router.refresh in a transition);
+  (f) review autosave to localStorage (create mode, "Draft restored"
+  notice, cleared on submit); (g) site-wide image blur-up
+  (ImageReveal one-shot fade+deblur on load, cached images exempt);
+  (h) **IN-APP NOTIFICATIONS: bell in the header (web+app), unread
+  badge, 60s poll, six events (follow, review/post/list likes,
+  comment, comment reply), like/follow dedup, mark-read on open —
+  DEAD until Luca pastes supabase/migrations/025-notifications.sql
+  into the SQL Editor (everything degrades silently pre-migration).**
+  Push notifications = post-approval Mac rebuild, rides these same
+  rows + a future device-token table. Admin delete+resolve one-tap
+  already existed (queue's "Delete content" resolves too). STILL
+  QUEUED: lint-error backlog (~11 pre-existing setState-in-effect +
+  Date.now-in-render), taste fullscreen rework (Luca will trigger
+  with ultracode + his picks), Your Taste option menu delivered in
+  chat. Luca's device checks pending: press ring, nebula density,
+  status-bar fix, PTR feel.
+
 *(Session handoff between the Windows desktop and the MacBook — see
 CLAUDE.md "Cross-machine workflow". Leave a dated note here when a
 session ends mid-task; clear it when the work lands under Done.)*

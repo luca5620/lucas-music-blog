@@ -16,7 +16,7 @@
  * first) — this card only renders it and credits the source.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CardProps } from "./ChannelChrome";
 import ChannelChrome, {
   RailOpen,
@@ -38,11 +38,10 @@ export default function PremiereCard({ item, near }: CardProps<"release">) {
       : null;
 
   // TUNING… until the pre-mounted iframe paints (see CriticSegment —
-  // same slot mechanics, one shared skeleton).
+  // same slot mechanics, one shared skeleton, same guarded
+  // render-phase reset when the card leaves the ±1 window).
   const [embedLoaded, setEmbedLoaded] = useState(false);
-  useEffect(() => {
-    if (!near) setEmbedLoaded(false);
-  }, [near]);
+  if (!near && embedLoaded) setEmbedLoaded(false);
 
   return (
     <ChannelChrome

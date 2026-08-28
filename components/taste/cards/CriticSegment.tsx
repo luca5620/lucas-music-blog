@@ -20,7 +20,7 @@
  * cuts any playing audio: audio-beyond-±1 is the invariant.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CardProps } from "./ChannelChrome";
 import ChannelChrome, {
   RailComments,
@@ -43,11 +43,12 @@ export default function CriticSegment({
   const embed = item.spotify_url ? toSpotifyEmbed(item.spotify_url) : null;
 
   // TUNING… shows until the pre-mounted iframe paints; leaving the
-  // ±1 window unmounts the iframe and re-arms the skeleton.
+  // ±1 window unmounts the iframe and re-arms the skeleton. Guarded
+  // RENDER-PHASE adjustment, not an effect: the reset settles before
+  // anything paints and never cascades (the guard makes it fire at
+  // most once per window exit).
   const [embedLoaded, setEmbedLoaded] = useState(false);
-  useEffect(() => {
-    if (!near) setEmbedLoaded(false);
-  }, [near]);
+  if (!near && embedLoaded) setEmbedLoaded(false);
 
   return (
     <ChannelChrome

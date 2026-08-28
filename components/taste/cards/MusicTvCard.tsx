@@ -57,20 +57,27 @@ export default function MusicTvCard({ item, active, near }: CardProps<"post">) {
   const ytRef = useRef<HTMLIFrameElement>(null);
 
   // Leaving the ±1 window unmounts EVERY player (audio hygiene's
-  // hard boundary). Also the YouTube fallback path when the
-  // keep-alive flag is off.
-  useEffect(() => {
-    if (!near) setPlaying(false);
-  }, [near]);
+  // hard boundary). Guarded RENDER-PHASE adjustments, not effects:
+  // the unmount must land in the same paint as the window change,
+  // and the guards make each fire at most once per transition.
+  if (!near && playing) setPlaying(false);
+  // Snapping away from the card: TikTok unmounts immediately (no
+  // pause API) — YouTube too when the keep-alive flag is off.
+  if (
+    playing &&
+    near &&
+    !active &&
+    (item.video_kind === "tiktok" || !YT_PAUSE_KEEPALIVE)
+  ) {
+    setPlaying(false);
+  }
 
-  // Snapping away from the card: TikTok unmounts (no pause API);
-  // YouTube pauses in place via postMessage and keeps its position.
+  // Snapping away from a mounted YouTube player: PAUSE in place via
+  // postMessage (an external system — this one is a real effect) and
+  // keep the iframe while near, so swiping back resumes position.
   useEffect(() => {
     if (active || !playing) return;
-    if (item.video_kind === "tiktok" || !YT_PAUSE_KEEPALIVE) {
-      setPlaying(false);
-      return;
-    }
+    if (item.video_kind !== "youtube" || !YT_PAUSE_KEEPALIVE) return;
     // enablejsapi=1 in the embed URL is what makes this listener
     // exist on YouTube's side.
     ytRef.current?.contentWindow?.postMessage(

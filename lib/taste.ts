@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getReleaseDescription } from "@/lib/descriptions";
+import { getReleaseStats } from "@/lib/db/releases";
 
 /**
  * The Your Taste engine (v1) — designed with Luca 2026-08-19.
@@ -36,6 +37,11 @@ export interface TasteProfile {
   reasonByArtistId: Map<string, string>;
   /** Total signal rows — gates the cold-start blend. */
   signalCount: number;
+  /** The viewer's top-3 artists by affinity (positive only, and only
+      where we actually resolved a display name) — the lobby masthead's
+      "transmitter receipts" strip renders these with their reason
+      strings so the algorithm shows its work instead of bare chips. */
+  topArtists: { id: string; name: string; weight: number }[];
 }
 
 const COLD_START_MIN_SIGNALS = 3;
@@ -78,6 +84,10 @@ export async function buildTasteProfile(
   // Track the strongest contribution per artist so the reason chip names
   // the signal that actually drove the pick.
   const bestSignal = new Map<string, { weight: number; reason: string }>();
+  // Display names as we learn them (follows carry one, the release
+  // lookup below carries another) — needed so topArtists can say
+  // "Björk", not a bare uuid.
+  const nameByArtistId = new Map<string, string>();
   let signalCount = 0;
 
   const addById = (
@@ -109,7 +119,10 @@ export async function buildTasteProfile(
       ? row.artists[0]?.name
       : row.artists?.name;
     addById(row.artist_id, W_ARTIST_FOLLOW, `you follow ${name ?? "them"}`);
-    if (name) addByName(name, W_ARTIST_FOLLOW);
+    if (name) {
+      addByName(name, W_ARTIST_FOLLOW);
+      nameByArtistId.set(row.artist_id, name);
+    }
     signalCount++;
   }
 
@@ -186,6 +199,7 @@ export async function buildTasteProfile(
         ? row.artists[0]?.name ?? null
         : row.artists?.name ?? null;
       artistOf.set(row.id, { id: row.primary_artist_id, name });
+      if (name) nameByArtistId.set(row.primary_artist_id, name);
     }
 
     for (const rid of followedReleaseIds) {
@@ -212,7 +226,17 @@ export async function buildTasteProfile(
     if (weight > 0) reasonByArtistId.set(artistId, reason);
   }
 
-  return { byArtistId, byArtistName, reasonByArtistId, signalCount };
+  /* The masthead receipts: top-3 artists by affinity. Positive weight
+     only (a hated artist is not a "receipt") and named only — an
+     unresolvable id would render as a blank row, so it's skipped and
+     the next-best artist takes the slot. */
+  const topArtists = [...byArtistId.entries()]
+    .filter(([id, weight]) => weight > 0 && nameByArtistId.has(id))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([id, weight]) => ({ id, name: nameByArtistId.get(id)!, weight }));
+
+  return { byArtistId, byArtistName, reasonByArtistId, signalCount, topArtists };
 }
 
 /** Affinity lookup that falls back from artist id to name. */
@@ -242,18 +266,30 @@ export type TunedItem =
       title: string;
       artist: string;
       rating: number;
+      /** Genre chip beside the artist line on the CriticSegment card. */
+      genre: string | null;
       cover_image: string | null;
       username: string;
       display_name: string | null;
       avatar_url: string | null;
+      /** Author's role — drives the "PEAK CRITIC" badge in the chyron
+          (reviewer/admin/owner get it, plain users don't). */
+      role: string | null;
       /** The review's words (summary, falling back to snippet) —
           shown right on the pager card, no extra click. */
       body: string | null;
+      /** The reviewer's picked tracks — the card renders them as pills
+          that load THAT track into the Spotify embed slot. */
+      standout_tracks: { title: string; spotifyUrl: string }[];
       like_count: number;
       viewer_has_liked: boolean;
+      /** Comment count for the rail button — conversation needs scent. */
+      comment_count: number;
       /** Direct link to the exact track/album (fullscreen card CTA —
           Luca 2026-08-22: "check out immediately, no extra clicks"). */
       spotify_url: string | null;
+      /** For the chyron's "REC {timeAgo}" stamp. */
+      created_at: string;
       reason: string | null;
     }
   | {
@@ -265,24 +301,48 @@ export type TunedItem =
       username: string;
       display_name: string | null;
       avatar_url: string | null;
+      /** Author's role — for the badge in the "PRESENTED BY" chyron. */
+      role: string | null;
       /** The post's words — shown right on the pager card. */
       body: string;
       video_kind: "youtube" | "tiktok" | null;
       video_id: string | null;
       /** Tied release cover, if the post is catalog-attached. */
       cover_image: string | null;
+      /** Tied release identity for the "FEATURING: {title} — {artist}"
+          caption line (null when the post isn't catalog-attached). */
+      release_title: string | null;
+      release_slug: string | null;
+      release_artist: string | null;
       like_count: number;
       viewer_has_liked: boolean;
+      /** For the chyron's timestamp. */
+      created_at: string;
       reason: string | null;
     }
   | {
       type: "debate";
       slug: string;
       title: string;
+      /** The debate's framing question — the OnAir card's pull-quote. */
+      prompt: string | null;
       side_a_label: string;
       side_b_label: string;
+      /** Tied release, if any — the mix engine's same-release dedup
+          keys on it so a debate and its album never both air. */
+      release_id: string | null;
       activity: number; // votes + messages
+      /** Messages alone — the card's "{n} TAKES" counter (activity
+          still bundles votes in for scoring). */
+      message_count: number;
+      /** Per-side vote tallies — feed the VoteBar's live A/B split. */
+      side_a_count: number;
+      side_b_count: number;
+      /** The host chyron: whoever opened the debate. */
+      creator_username: string | null;
+      creator_avatar_url: string | null;
       cover_image: string | null;
+      created_at: string;
       reason: string | null;
     }
   | {
@@ -292,6 +352,20 @@ export type TunedItem =
       artist: string;
       cover_image: string | null;
       is_unreleased: boolean;
+      /** Real release date — "AIRED {date}" on the Premiere card, and
+          the D-{n} countdown source for unreleased drops. */
+      release_date: string | null;
+      /** Derived from the tracks[] jsonb — "{n} TRACKS · {m} MIN". */
+      track_count: number;
+      /** Null when durations are unknown (Genius-only imports store
+          duration_ms 0) so the card can drop the runtime cleanly. */
+      total_runtime_min: number | null;
+      /** Community stats via get_release_stats — filled POST-PICK for
+          the ≤6 picked releases only, never the whole candidate pool.
+          Null/0 when the timeout-guarded RPC doesn't come back. */
+      avg_rating: number | null;
+      review_count: number;
+      created_at: string;
       /** Letterboxd-style synopsis (manual → Genius → Wikipedia) —
           filled ONLY for the final picked items, on the card to
           entice the tap (Luca 2026-08-22). */
@@ -351,7 +425,7 @@ export async function getTunedToYou(
     supabase
       .from("reviews")
       .select(
-        "id, user_id, slug, title, artist, rating, cover_image, snippet, summary, created_at, release_id, releases(primary_artist_id, spotify_id, release_type, tracks), profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)"
+        "id, user_id, slug, title, artist, rating, genre, cover_image, snippet, summary, standout_tracks, created_at, release_id, releases(primary_artist_id, spotify_id, release_type, tracks), profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role)"
       )
       .eq("is_published", true)
       .neq("user_id", viewerId)
@@ -360,7 +434,7 @@ export async function getTunedToYou(
     supabase
       .from("debates")
       .select(
-        "id, created_by, slug, title, side_a_label, side_b_label, message_count, created_at, releases(primary_artist_id, cover_image, title)"
+        "id, created_by, slug, title, prompt, side_a_label, side_b_label, release_id, message_count, created_at, releases(primary_artist_id, cover_image, title), profiles!debates_created_by_fkey(username, avatar_url)"
       )
       .eq("status", "open")
       .order("created_at", { ascending: false })
@@ -368,14 +442,14 @@ export async function getTunedToYou(
     supabase
       .from("releases")
       .select(
-        "id, slug, title, cover_image, is_unreleased, created_at, primary_artist_id, genius_id, spotify_id, release_type, description, tracks, artists!releases_primary_artist_id_fkey(name)"
+        "id, slug, title, cover_image, is_unreleased, release_date, created_at, primary_artist_id, genius_id, spotify_id, release_type, description, tracks, artists!releases_primary_artist_id_fkey(name)"
       )
       .order("created_at", { ascending: false })
       .limit(30),
     supabase
       .from("posts")
       .select(
-        "id, user_id, slug, title, body, video_kind, video_id, release_id, created_at, releases(primary_artist_id, cover_image), profiles!posts_user_id_fkey(username, display_name, avatar_url)"
+        "id, user_id, slug, title, body, video_kind, video_id, release_id, created_at, releases(primary_artist_id, cover_image, title, slug, artists!releases_primary_artist_id_fkey(name)), profiles!posts_user_id_fkey(username, display_name, avatar_url, role)"
       )
       .neq("user_id", viewerId)
       .order("created_at", { ascending: false })
@@ -390,13 +464,15 @@ export async function getTunedToYou(
   );
   const postIds = (postsRes.data ?? []).map((p) => (p as { id: string }).id);
 
-  const [likesRes, votesRes, followsRes, postLikesRes, myLikesRes, myPostLikesRes] =
+  const [likesRes, votesRes, followsRes, postLikesRes, myLikesRes, myPostLikesRes, commentsRes] =
     await Promise.all([
       reviewIds.length
         ? supabase.from("review_likes").select("review_id").in("review_id", reviewIds)
         : Promise.resolve({ data: [] }),
+      // `side` rides along so the OnAir card can show the live A/B
+      // split — the per-debate total alone can't feed a VoteBar.
       debateIds.length
-        ? supabase.from("debate_votes").select("debate_id").in("debate_id", debateIds)
+        ? supabase.from("debate_votes").select("debate_id, side").in("debate_id", debateIds)
         : Promise.resolve({ data: [] }),
       releaseIds.length
         ? supabase
@@ -425,6 +501,13 @@ export async function getTunedToYou(
             .eq("user_id", viewerId)
             .in("post_id", postIds)
         : Promise.resolve({ data: [] }),
+      // Comment counts for the candidate reviews — the rail's comment
+      // button shows the number so conversation has scent. Same JS-tally
+      // shape as the like counts (fine at this scale; revisit alongside
+      // the like tallies if row counts ever get big).
+      reviewIds.length
+        ? supabase.from("comments").select("review_id").in("review_id", reviewIds)
+        : Promise.resolve({ data: [] }),
     ]);
 
   const tally = (rows: unknown[] | null, key: string) => {
@@ -439,6 +522,16 @@ export async function getTunedToYou(
   const voteCounts = tally(votesRes.data, "debate_id");
   const followCounts = tally(followsRes.data, "release_id");
   const postLikeCounts = tally(postLikesRes.data, "post_id");
+  const commentCounts = tally(commentsRes.data, "review_id");
+  // Per-side tallies for the same vote rows — the OnAir card's VoteBar
+  // needs the A/B split, not just the total the scorer uses.
+  const voteSides = new Map<string, { a: number; b: number }>();
+  for (const row of (votesRes.data ?? []) as unknown as { debate_id: string; side: "a" | "b" }[]) {
+    const t = voteSides.get(row.debate_id) ?? { a: 0, b: 0 };
+    if (row.side === "b") t.b += 1;
+    else t.a += 1;
+    voteSides.set(row.debate_id, t);
+  }
   const myReviewLikes = new Set(
     (myLikesRes.data ?? []).map((r) => (r as { review_id: string }).review_id),
   );
@@ -479,6 +572,7 @@ export async function getTunedToYou(
     username: string;
     display_name: string | null;
     avatar_url: string | null;
+    role: string | null;
   };
   type ReviewRow = {
     id: string;
@@ -487,9 +581,12 @@ export async function getTunedToYou(
     title: string;
     artist: string;
     rating: number;
+    genre: string | null;
     cover_image: string | null;
     snippet: string | null;
     summary: string | null;
+    /** jsonb column — array of {title, spotifyUrl} picks. */
+    standout_tracks: { title: string; spotifyUrl: string }[] | null;
     created_at: string;
     releases:
       | {
@@ -531,14 +628,19 @@ export async function getTunedToYou(
         title: r.title,
         artist: r.artist,
         rating: Number(r.rating),
+        genre: r.genre,
         cover_image: r.cover_image,
         username,
         display_name: author?.display_name ?? null,
         avatar_url: author?.avatar_url ?? null,
+        role: author?.role ?? null,
         body: r.summary ?? r.snippet,
+        standout_tracks: r.standout_tracks ?? [],
         like_count: likeCounts.get(r.id) ?? 0,
         viewer_has_liked: myReviewLikes.has(r.id),
+        comment_count: commentCounts.get(r.id) ?? 0,
         spotify_url: spotifyUrlFor(first(r.releases)),
+        created_at: r.created_at,
         reason: null,
       },
       artistKey: artistId ?? r.artist.toLowerCase(),
@@ -559,12 +661,24 @@ export async function getTunedToYou(
     video_id: string | null;
     created_at: string;
     releases:
-      | { primary_artist_id: string | null; cover_image: string | null }
-      | { primary_artist_id: string | null; cover_image: string | null }[]
+      | {
+          primary_artist_id: string | null;
+          cover_image: string | null;
+          title: string;
+          slug: string;
+          artists: { name: string } | { name: string }[] | null;
+        }
+      | {
+          primary_artist_id: string | null;
+          cover_image: string | null;
+          title: string;
+          slug: string;
+          artists: { name: string } | { name: string }[] | null;
+        }[]
       | null;
     profiles:
-      | { username: string; display_name: string | null; avatar_url: string | null }
-      | { username: string; display_name: string | null; avatar_url: string | null }[]
+      | { username: string; display_name: string | null; avatar_url: string | null; role: string | null }
+      | { username: string; display_name: string | null; avatar_url: string | null; role: string | null }[]
       | null;
   };
   for (const p of (postsRes.data ?? []) as unknown as PostRowT[]) {
@@ -591,12 +705,19 @@ export async function getTunedToYou(
         username,
         display_name: author?.display_name ?? null,
         avatar_url: author?.avatar_url ?? null,
+        role: author?.role ?? null,
         body: p.body,
         video_kind: p.video_kind,
         video_id: p.video_id,
         cover_image: rel?.cover_image ?? null,
+        // Tied-release identity for the "FEATURING:" caption line —
+        // all three stay null together when the post is free-floating.
+        release_title: rel?.title ?? null,
+        release_slug: rel?.slug ?? null,
+        release_artist: rel ? first(rel.artists)?.name ?? null : null,
         like_count: postLikeCounts.get(p.id) ?? 0,
         viewer_has_liked: myPostLikes.has(p.id),
+        created_at: p.created_at,
         reason: null,
       },
       // Untied posts key on the author so one prolific poster can't
@@ -620,13 +741,19 @@ export async function getTunedToYou(
     created_by: string;
     slug: string;
     title: string;
+    prompt: string | null;
     side_a_label: string;
     side_b_label: string;
+    release_id: string | null;
     message_count: number;
     created_at: string;
     releases:
       | { primary_artist_id: string | null; cover_image: string | null; title: string }
       | { primary_artist_id: string | null; cover_image: string | null; title: string }[]
+      | null;
+    profiles:
+      | { username: string; avatar_url: string | null }
+      | { username: string; avatar_url: string | null }[]
       | null;
   };
   for (const d of (debatesRes.data ?? []) as unknown as DebateRow[]) {
@@ -634,15 +761,25 @@ export async function getTunedToYou(
     const release = first(d.releases);
     const artistId = release?.primary_artist_id ?? null;
     const votes = voteCounts.get(d.id) ?? 0;
+    const sides = voteSides.get(d.id) ?? { a: 0, b: 0 };
+    const creator = first(d.profiles);
     candidates.push({
       item: {
         type: "debate",
         slug: d.slug,
         title: d.title,
+        prompt: d.prompt,
         side_a_label: d.side_a_label,
         side_b_label: d.side_b_label,
+        release_id: d.release_id,
         activity: votes + d.message_count,
+        message_count: d.message_count,
+        side_a_count: sides.a,
+        side_b_count: sides.b,
+        creator_username: creator?.username ?? null,
+        creator_avatar_url: creator?.avatar_url ?? null,
         cover_image: release?.cover_image ?? null,
+        created_at: d.created_at,
         reason: null,
       },
       artistKey: artistId ?? `debate:${d.id}`,
@@ -659,21 +796,34 @@ export async function getTunedToYou(
     title: string;
     cover_image: string | null;
     is_unreleased: boolean;
+    release_date: string | null;
     created_at: string;
     primary_artist_id: string | null;
     genius_id: string | null;
     spotify_id: string | null;
     release_type: string;
     description: string | null;
-    tracks: { spotify_id?: string | null; title?: string | null }[] | null;
+    tracks: { spotify_id?: string | null; title?: string | null; duration_ms?: number | null }[] | null;
     artists: { name: string } | { name: string }[] | null;
   };
   // First-track titles by release slug — anchors the Genius album
   // description lookup during post-pick enrichment below.
   const firstTrackBySlug = new Map<string, string | null>();
+  // Row ids by slug — the post-pick get_release_stats RPC needs the
+  // uuid, but the payload only carries the slug.
+  const releaseIdBySlug = new Map<string, string>();
   for (const r of (releasesRes.data ?? []) as unknown as ReleaseRow[]) {
     const artistName = first(r.artists)?.name ?? "";
     firstTrackBySlug.set(r.slug, r.tracks?.[0]?.title ?? null);
+    releaseIdBySlug.set(r.slug, r.id);
+    // "{n} TRACKS · {m} MIN" straight from the tracks[] jsonb we already
+    // fetched for the Spotify link — no extra query. Genius-only imports
+    // store duration_ms 0 on every track, so a zero total means "we don't
+    // know", not "zero minutes" → null lets the card drop the runtime.
+    const runtimeMs = (r.tracks ?? []).reduce(
+      (sum, t) => sum + (t.duration_ms ?? 0),
+      0
+    );
     candidates.push({
       item: {
         type: "release",
@@ -682,6 +832,14 @@ export async function getTunedToYou(
         artist: artistName,
         cover_image: r.cover_image,
         is_unreleased: r.is_unreleased ?? false,
+        release_date: r.release_date,
+        track_count: r.tracks?.length ?? 0,
+        total_runtime_min: runtimeMs > 0 ? Math.round(runtimeMs / 60_000) : null,
+        // Community stats land post-pick (RPC below) — defaults mean
+        // "no data yet", and the card hides the community line.
+        avg_rating: null,
+        review_count: 0,
+        created_at: r.created_at,
         description: r.description?.trim() || null,
         description_source: r.description?.trim() ? "manual" : null,
         description_url: null,
@@ -742,26 +900,63 @@ export async function getTunedToYou(
     perType.set(c.item.type, (perType.get(c.item.type) ?? 0) + 1);
   }
 
-  /* ── Synopses for the PICKED release cards only (a handful, never
-     the whole 30-candidate pool) — manual → Genius → Wikipedia via
-     lib/descriptions, 30-day cached, timeout-guarded. The blurb is
-     the enticement to tap (Luca 2026-08-22). ── */
+  /* ── Post-pick enrichment, PICKED release cards only (≤6, never the
+     whole 30-candidate pool). Two independent jobs share one
+     Promise.all so they run in parallel:
+       1. Synopses — manual → Genius → Wikipedia via lib/descriptions,
+          30-day cached, timeout-guarded. The blurb is the enticement
+          to tap (Luca 2026-08-22).
+       2. Community stats — get_release_stats RPC per picked release
+          for the Premiere card's "COMMUNITY: {avg} FROM {n} REVIEWS"
+          line. Timeout-guarded here (the RPC helper itself only
+          swallows errors): a slow RPC loses the stats line, never
+          delays the feed. ── */
+  const RPC_TIMEOUT_MS = 2_500;
   await Promise.all(
-    picked.map(async (item) => {
-      if (item.type !== "release" || item.description) return;
-      const desc = await getReleaseDescription({
-        title: item.title,
-        release_type: item.release_type,
-        genius_id: item.genius_id,
-        description: null,
-        artistName: item.artist,
-        firstTrack: firstTrackBySlug.get(item.slug) ?? null,
-      }).catch(() => null);
-      if (desc) {
-        item.description = desc.text;
-        item.description_source = desc.source;
-        item.description_url = desc.url;
+    picked.flatMap((item) => {
+      if (item.type !== "release") return [];
+      const jobs: Promise<void>[] = [];
+      if (!item.description) {
+        jobs.push(
+          getReleaseDescription({
+            title: item.title,
+            release_type: item.release_type,
+            genius_id: item.genius_id,
+            description: null,
+            artistName: item.artist,
+            firstTrack: firstTrackBySlug.get(item.slug) ?? null,
+          })
+            .then((desc) => {
+              if (desc) {
+                item.description = desc.text;
+                item.description_source = desc.source;
+                item.description_url = desc.url;
+              }
+            })
+            .catch(() => {})
+        );
       }
+      const releaseId = releaseIdBySlug.get(item.slug);
+      if (releaseId) {
+        jobs.push(
+          Promise.race([
+            getReleaseStats(releaseId),
+            // Losing the race just leaves the defaults (null/0) — the
+            // card hides its community line, nothing breaks.
+            new Promise<null>((resolve) =>
+              setTimeout(() => resolve(null), RPC_TIMEOUT_MS)
+            ),
+          ])
+            .then((stats) => {
+              if (stats) {
+                item.avg_rating = stats.avg_rating;
+                item.review_count = stats.review_count;
+              }
+            })
+            .catch(() => {})
+        );
+      }
+      return jobs;
     }),
   );
 

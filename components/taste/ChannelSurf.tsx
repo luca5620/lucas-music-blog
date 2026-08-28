@@ -606,14 +606,38 @@ function SurfCard({
 
 /* ─── The pager frame ─── */
 
-export default function ChannelSurf({ items }: { items: TunedItem[] }) {
+export default function ChannelSurf({
+  items,
+  startFullscreen = false,
+  initialIndex = 0,
+  onExit,
+}: {
+  items: TunedItem[];
+  /** Station-lobby mode (TasteGuide): mount straight into fullscreen
+      instead of showing the inline pager first. The lobby's EPG rows
+      and GO LIVE button are the only entrances now. */
+  startFullscreen?: boolean;
+  /** Which card to open ON (random access from an EPG row / resume).
+      Clamped to the list, so a stale index can't scroll into space. */
+  initialIndex?: number;
+  /** Called AFTER the exit animation with the index the viewer was on
+      — the lobby uses it to unmount this overlay and to persist the
+      watched/resume state (sessionStorage pmr_taste_session). */
+  onExit?: (lastIndex: number) => void;
+}) {
   const frameRef = useRef<HTMLDivElement>(null);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() =>
+    Math.max(0, Math.min(items.length - 1, initialIndex))
+  );
   // Fullscreen "channel" mode — the pager takes the whole screen for
   // the reels/TikTok-style immersion (Luca 2026-08-22). In the app
   // the bottom tab bar stays visible (the fixed frame stops above it
   // — .surf-fullscreen in globals.css), so you're never stuck here.
-  const [fullscreen, setFullscreen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(startFullscreen);
+  // close() runs from a stale closure (setTimeout), so the exit
+  // callback reads the CURRENT index through a ref.
+  const indexRef = useRef(index);
+  indexRef.current = index;
   const [closing, setClosing] = useState(false);
   // The review whose comments sheet is open (fullscreen only).
   const [commentsFor, setCommentsFor] = useState<string | null>(null);
@@ -641,10 +665,15 @@ export default function ChannelSurf({ items }: { items: TunedItem[] }) {
       window.setTimeout(() => {
         setFullscreen(false);
         setClosing(false);
+        // Lobby mode: hand the final channel index back so the EPG
+        // can dim watched rows + offer RESUME. React batches these
+        // three updates, so the parent unmounts us before the inline
+        // pager ever paints.
+        onExit?.(indexRef.current);
       }, EXIT_ANIM_MS);
       return true;
     });
-  }, []);
+  }, [onExit]);
 
   const surf = useCallback((dir: 1 | -1) => {
     const el = frameRef.current;

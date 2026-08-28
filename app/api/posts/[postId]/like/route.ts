@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { likePost } from "@/lib/db/posts";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
+import { createNotification } from "@/lib/db/notifications";
 
 /**
  * POST /api/posts/[postId]/like — Toggle like on a post.
@@ -37,6 +38,27 @@ export async function POST(
   }
 
   const result = await likePost(user.id, postId);
+
+  // A LIKE rings the author's bell (see the review-like route).
+  if (result.liked) {
+    const { data: postRow } = await supabase
+      .from("posts")
+      .select("user_id, slug, title")
+      .eq("id", postId)
+      .maybeSingle();
+    const p = postRow as
+      | { user_id: string; slug: string; title: string }
+      | null;
+    if (p) {
+      await createNotification({
+        recipientId: p.user_id,
+        actorId: user.id,
+        type: "post_like",
+        href: `/posts/${p.slug}`,
+        title: p.title,
+      });
+    }
+  }
 
   return NextResponse.json(result);
 }

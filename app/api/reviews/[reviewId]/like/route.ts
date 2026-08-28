@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { likeReview } from "@/lib/db/reviews";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
+import { createNotification } from "@/lib/db/notifications";
 
 /**
  * POST /api/reviews/[reviewId]/like — Toggle like on a review.
@@ -35,6 +36,28 @@ export async function POST(
   }
 
   const result = await likeReview(user.id, reviewId);
+
+  // A LIKE rings the author's bell; an unlike never does. Dedup in
+  // createNotification keeps like/unlike loops from refilling it.
+  if (result.liked) {
+    const { data: reviewRow } = await supabase
+      .from("reviews")
+      .select("user_id, slug, title")
+      .eq("id", reviewId)
+      .maybeSingle();
+    const r = reviewRow as
+      | { user_id: string; slug: string; title: string }
+      | null;
+    if (r) {
+      await createNotification({
+        recipientId: r.user_id,
+        actorId: user.id,
+        type: "review_like",
+        href: `/reviews/${r.slug}`,
+        title: r.title,
+      });
+    }
+  }
 
   return NextResponse.json(result);
 }

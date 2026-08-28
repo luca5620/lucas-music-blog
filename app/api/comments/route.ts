@@ -4,6 +4,7 @@ import { createComment } from "@/lib/db/comments";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { checkContent } from "@/lib/content-filter";
+import { createNotification } from "@/lib/db/notifications";
 
 // UUIDs only — anything else is rejected before touching the database.
 const UUID_RE =
@@ -61,13 +62,20 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   // The review must exist and be visible to the commenter.
+  // (slug/title ride along for the notification below.)
   const { data: reviewRow } = await supabase
     .from("reviews")
-    .select("id, is_published, user_id")
+    .select("id, is_published, user_id, slug, title")
     .eq("id", reviewId)
     .maybeSingle();
   const review = reviewRow as
-    | { id: string; is_published: boolean; user_id: string }
+    | {
+        id: string;
+        is_published: boolean;
+        user_id: string;
+        slug: string;
+        title: string;
+      }
     | null;
   if (!review || (!review.is_published && review.user_id !== user.id)) {
     return NextResponse.json({ error: "Review not found" }, { status: 404 });
@@ -75,16 +83,20 @@ export async function POST(request: NextRequest) {
 
   // If replying, the parent comment must belong to the SAME review —
   // otherwise a reply could be grafted onto an unrelated thread.
+  let parentAuthorId: string | null = null;
   if (parentId) {
     const { data: parentRow } = await supabase
       .from("comments")
-      .select("id, review_id")
+      .select("id, review_id, user_id")
       .eq("id", parentId)
       .maybeSingle();
-    const parent = parentRow as { id: string; review_id: string } | null;
+    const parent = parentRow as
+      | { id: string; review_id: string; user_id: string }
+      | null;
     if (!parent || parent.review_id !== reviewId) {
       return NextResponse.json({ error: "Invalid parent comment" }, { status: 400 });
     }
+    parentAuthorId = parent.user_id;
   }
 
   const comment = await createComment(
@@ -99,6 +111,29 @@ export async function POST(request: NextRequest) {
       { error: "Failed to create comment" },
       { status: 500 }
     );
+  }
+
+  // Ring the bells (best-effort): the parent commenter gets "replied
+  // to your comment", the review's author gets "commented on your
+  // review" — but never twice for one comment, and never their own.
+  const href = `/reviews/${review.slug}`;
+  if (parentAuthorId) {
+    await createNotification({
+      recipientId: parentAuthorId,
+      actorId: user.id,
+      type: "comment_reply",
+      href,
+      title: review.title,
+    });
+  }
+  if (review.user_id !== parentAuthorId) {
+    await createNotification({
+      recipientId: review.user_id,
+      actorId: user.id,
+      type: "comment",
+      href,
+      title: review.title,
+    });
   }
 
   return NextResponse.json(comment, { status: 201 });

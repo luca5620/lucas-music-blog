@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getListById, toggleListLike } from "@/lib/db/lists";
+import { createNotification } from "@/lib/db/notifications";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -38,6 +39,26 @@ export async function POST(
   }
 
   const result = await toggleListLike(user.id, listId);
+
+  // A LIKE rings the owner's bell. List URLs carry the owner's
+  // username, so resolve it for the href.
+  if (result.liked) {
+    const { data: ownerRow } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", list.user_id)
+      .maybeSingle();
+    const ownerName = (ownerRow as { username?: string } | null)?.username;
+    if (ownerName) {
+      await createNotification({
+        recipientId: list.user_id,
+        actorId: user.id,
+        type: "list_like",
+        href: `/lists/${ownerName}/${list.slug}`,
+        title: list.title,
+      });
+    }
+  }
 
   return NextResponse.json(result);
 }

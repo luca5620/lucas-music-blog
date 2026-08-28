@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import NotificationsBell from "@/components/notifications/NotificationsBell";
 
 /**
  * Navigation — Inside the CRT frame.
@@ -144,6 +145,11 @@ export default function Navigation() {
             </svg>
             <span className="hidden sm:inline">Search</span>
           </Link>
+
+          {/* BELL — in-app notifications (likes, comments, follows).
+              Signed-in only; web AND app (the app has no other home
+              for it — the tab bar is full). */}
+          {!loading && user && <NotificationsBell />}
 
           {/* CREATE — one button for every content type (Luca
               2026-08-19: fold posts into the review button, pick a

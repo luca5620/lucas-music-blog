@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { followUser, unfollowUser, isFollowing } from "@/lib/db/profiles";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
+import { createNotification } from "@/lib/db/notifications";
 
 /**
  * POST /api/follow — Follow a user.
@@ -47,6 +48,21 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+
+  // Ring the new follower's bell (best-effort — the follow stands
+  // regardless). Links to the ACTOR's profile: "who followed me?"
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .single();
+  const username = (me as { username?: string } | null)?.username;
+  await createNotification({
+    recipientId: followingId,
+    actorId: user.id,
+    type: "follow",
+    href: username ? `/profile/${username}` : "/friends",
+  });
 
   return NextResponse.json({ following: true });
 }

@@ -228,10 +228,20 @@ export default function ReviewsList({
         </div>
       )}
 
-      {/* ===== DETAILED view (default) + shared empty state ===== */}
-      {/* space-y-6 (was 4): the cards' glow borders read as touching
-          at 1rem — Luca 2026-08-27 "they overlap a bit". */}
-      <div className={view === "detailed" ? "space-y-6" : filtered.length === 0 ? "space-y-6" : "hidden"}>
+      {/* ===== DETAILED view (default) + shared empty state =====
+          Same card + grid as the home Community Feed's detailed view
+          (Luca 2026-08-28: "make it like the big icon one") — the old
+          horizontal rows read gapless on phones; these cards carry
+          real gap-6 air between them at every size. */}
+      <div
+        className={
+          view === "detailed" && filtered.length > 0
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 items-start"
+            : filtered.length === 0
+              ? "space-y-6"
+              : "hidden"
+        }
+      >
         {filtered.length === 0 ? (
           /* Same NO SIGNAL voice as every other empty surface. */
           <div className="panel-xbox p-8 sm:p-10 text-center space-y-3">
@@ -246,95 +256,129 @@ export default function ReviewsList({
           filtered.map((review) => {
             const author = review.profiles;
             const isVerified = author.role !== "user";
+            const ratingColor = getRatingHex(review.rating);
+            // Same words-priority as the home feed card: the fuller
+            // summary when there is one, the snippet otherwise.
+            const body = review.summary ?? review.snippet;
+            const isLongRead = !!body && body.length > 320;
             return (
-              <Link href={`/reviews/${review.slug}`} key={review.id}>
-                <article
-                  className="card-y2k p-3 sm:p-5 flex gap-3 sm:gap-5 group cursor-pointer overflow-hidden"
-                  style={{ "--rating-color": getRatingHex(review.rating) } as React.CSSProperties}
+              <article
+                key={review.id}
+                className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
+                style={{ "--rating-color": ratingColor } as React.CSSProperties}
+              >
+                {/* The verdict line — who, then THE number in its own
+                    box, exactly like the home Community Feed card. */}
+                <Link
+                  href={`/profile/${author.username}`}
+                  className="flex items-center justify-center gap-2.5 group/author text-center"
                 >
-                  {/* Cover from the catalog */}
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0 overflow-hidden">
+                  {author.avatar_url ? (
+                    <img
+                      src={author.avatar_url}
+                      alt={author.display_name || author.username}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-accent-primary uppercase">
+                        {(author.username || "U")[0]}
+                      </span>
+                    </div>
+                  )}
+                  <span className="min-w-0 text-base text-text-secondary leading-snug break-words">
+                    <span className="font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
+                      {author.display_name || author.username}
+                    </span>
+                    {isVerified && (
+                      <>
+                        {" "}
+                        <VerifiedBadge role={author.role} />
+                      </>
+                    )}{" "}
+                    rated this release
+                  </span>
+                  <span
+                    className={`rating-badge text-xs w-8 h-8 shrink-0 ${getRatingColor(review.rating)}`}
+                    style={{ color: ratingColor, borderColor: ratingColor }}
+                  >
+                    {formatRating(review.rating)}
+                  </span>
+                </Link>
+
+                {/* Big cover + title → the review itself */}
+                <Link href={`/reviews/${review.slug}`} className="block group space-y-2">
+                  <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-[rgba(255,255,255,0.3)] transition-all">
                     {review.cover_image ? (
                       <img
-                        src={smallCover(review.cover_image)}
+                        src={review.cover_image}
+                        srcSet={`${smallCover(review.cover_image)} 300w, ${review.cover_image} 640w`}
+                        sizes="(min-width: 1536px) 18vw, (min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
                         alt={`${review.title} cover`}
                         loading="lazy"
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       />
                     ) : (
-                      <span className="text-3xl group-hover:scale-110 transition-transform">
+                      <span className="text-5xl group-hover:scale-110 transition-transform">
                         💿
                       </span>
                     )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
 
-                  {/* Review Content */}
-                  <div className="flex-1 space-y-2 min-w-0">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <h2 className={`font-[family-name:var(--font-heading)] text-base sm:text-xl font-bold text-text-primary transition-colors break-words rating-title-hover${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
-                          {review.title}
-                        </h2>
-                        <p className="text-sm text-text-secondary truncate">
-                          {review.artist}
-                        </p>
-                      </div>
-                      <div
-                        className={`rating-badge shrink-0 ${getRatingColor(review.rating)}`}
+                  <div className="min-w-0">
+                    <h2 className={`font-[family-name:var(--font-heading)] text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors truncate rating-title-hover${review.rating >= 9.5 ? " rating-title-glow-elite" : ""}`}>
+                      {review.title}
+                    </h2>
+                    <p className="text-xs text-text-secondary truncate">
+                      {review.artist}
+                    </p>
+                  </div>
+                </Link>
+
+                {/* Their words, right under the record */}
+                {body && (
+                  <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-6 pt-2 border-t border-white/5">
+                    {body}
+                  </p>
+                )}
+                {isLongRead && (
+                  <Link
+                    href={`/reviews/${review.slug}`}
+                    className="block pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+                  >
+                    Read the full review →
+                  </Link>
+                )}
+
+                {/* Genre + date footer (this page's rows don't carry
+                    like counts — the home feed keeps its LikeButton) */}
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
+                  <span className="flex items-center gap-3 min-w-0">
+                    {review.genre && (
+                      <span
+                        className={`pixel-text text-xs uppercase tracking-widest truncate ${getGenreColor(review.genre)}`}
                       >
-                        {formatRating(review.rating)}
-                      </div>
-                    </div>
-
-                    {review.snippet && (
-                      <p className="text-sm text-text-secondary leading-relaxed line-clamp-2">
-                        {review.snippet}
-                      </p>
+                        {review.genre}
+                      </span>
                     )}
+                    <span className="text-text-muted text-xs shrink-0">
+                      {review.review_date
+                        ? new Date(review.review_date + "T12:00:00").toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : ""}
+                    </span>
+                  </span>
+                </div>
 
-                    <div className="flex items-center gap-3 flex-wrap">
-                      {/* Reviewer attribution */}
-                      <span className="flex items-center gap-1.5 text-xs text-text-muted min-w-0">
-                        {author.avatar_url ? (
-                          <img
-                            src={author.avatar_url}
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            className="w-4 h-4 rounded-full object-cover border border-white/10"
-                          />
-                        ) : (
-                          <span className="w-4 h-4 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-[8px] font-bold text-accent-primary uppercase">
-                            {(author.username || "U")[0]}
-                          </span>
-                        )}
-                        <span className="truncate">
-                          {author.display_name || author.username}
-                        </span>
-                        {isVerified && <VerifiedBadge role={author.role} />}
-                      </span>
-
-                      {review.genre && (
-                        <span
-                          className={`pixel-text text-xs uppercase tracking-widest ${getGenreColor(review.genre)}`}
-                        >
-                          {review.genre}
-                        </span>
-                      )}
-                      <span className="text-text-muted text-xs">
-                        {review.review_date
-                          ? new Date(review.review_date + "T12:00:00").toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })
-                          : ""}
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              </Link>
+                <div className="scan-bar" />
+              </article>
             );
           })
         )}

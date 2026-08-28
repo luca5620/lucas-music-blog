@@ -1285,6 +1285,32 @@ body {
   justify-content: space-between;
 }
 
+/* App header row anti-collision (Luca 2026-08-28 screenshot: the
+   bell overlapped the site name). The action cluster is RIGID — it
+   sizes to its content and never slides over the title; the logo
+   side is the flexible one instead. The title scales slightly with
+   screen width so the full name fits on every phone; if a screen is
+   ever truly too narrow it ellipsizes — never overlaps. */
+.native-app .nav-actions {
+  width: auto;
+  flex: 0 0 auto;
+}
+.native-app .nav-logo {
+  flex-shrink: 1;
+  min-width: 0;
+}
+.native-app .nav-app-title {
+  font-size: clamp(11px, 3.3vw, 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.native-app .nav-create-btn {
+  padding-inline: 8px;
+}
+.native-app .nav-account-btn {
+  padding-inline: 4px;
+}
+
 /* App-only elements (e.g. the Lists/Friends/Your Taste links in the
    avatar dropdown — pages without a bottom tab). Invisible on web. */
 .app-only {
@@ -2969,9 +2995,11 @@ fieldset {
   }
 
   /* Phone + app shell: the status-bar inset replaces the 6px bezel
-     entirely (max, not sum — see the native-app section). */
+     entirely (max, not sum — see the native-app section). The -12px
+     matches Luca's 2026-08-28 screenshot: the header row rests just
+     under the clock line, not a full inset below it. */
   .native-app .crt-tv {
-    padding-top: max(6px, env(safe-area-inset-top, 0px));
+    padding-top: max(6px, calc(env(safe-area-inset-top, 0px) - 12px));
   }
 
   .crt-screen {

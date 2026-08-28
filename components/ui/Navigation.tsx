@@ -82,10 +82,13 @@ export default function Navigation() {
           (globals.css forces flex-row + justify-between there). */}
       <div className="app-nav-row flex flex-col lg:flex-row lg:items-center gap-3">
         {/* Logo / Site Title */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
-          <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover" />
+        {/* nav-logo/nav-app-title: in the app THIS side flexes and the
+            title scales/ellipsizes so the bell can never paint over
+            it (globals.css anti-collision block). Web unchanged. */}
+        <Link href="/" className="nav-logo flex items-center gap-2 sm:gap-3 group shrink-0">
+          <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shrink-0" />
           {/* Full name at every size — Luca's preference over "PMR" */}
-          <span className="pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover whitespace-nowrap">
+          <span className="nav-app-title pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover whitespace-nowrap">
             Peak Music Reviews
           </span>
         </Link>
@@ -98,7 +101,7 @@ export default function Navigation() {
         {/* justify-end is a no-op on web (the flex-1 strip eats all free
             space) but right-aligns CREATE + avatar in the app, where the
             strip is hidden. */}
-        <div className="flex items-center justify-end gap-1 sm:gap-2 min-w-0 w-full lg:flex-1">
+        <div className="nav-actions flex items-center justify-end gap-1 sm:gap-2 min-w-0 w-full lg:flex-1">
           {/* Nav Links — can still scroll sideways on tiny screens,
               but the scrollbar itself is hidden (no-scrollbar).
               justify-evenly: the tabs spread UNIFORMLY across the gap
@@ -161,7 +164,7 @@ export default function Navigation() {
                 onClick={() => setCreateOpen(!createOpen)}
                 aria-expanded={createOpen}
                 aria-haspopup="menu"
-                className="inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-accent-primary hover:bg-accent-primary/10 border border-accent-primary/30 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
+                className="nav-create-btn inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-accent-primary hover:bg-accent-primary/10 border border-accent-primary/30 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -254,7 +257,7 @@ export default function Navigation() {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-bg-elevated transition-colors border border-transparent hover:border-white/10"
+                    className="nav-account-btn flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-bg-elevated transition-colors border border-transparent hover:border-white/10"
                   >
                     {/* Avatar */}
                     {profile?.avatar_url ? (
@@ -280,9 +283,11 @@ export default function Navigation() {
                     {profile?.role && profile.role !== "user" && (
                       <VerifiedBadge role={profile.role} />
                     )}
-                    {/* Chevron */}
+                    {/* Chevron — web only (app-hide): in the app row
+                        it's dead width the title needs, and the
+                        avatar alone reads as the menu button. */}
                     <svg
-                      className={`w-3.5 h-3.5 text-text-muted transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                      className={`app-hide w-3.5 h-3.5 text-text-muted transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

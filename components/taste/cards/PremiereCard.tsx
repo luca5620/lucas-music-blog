@@ -71,7 +71,11 @@ function airedLineFor(
   return `DROPPED ${timeAgo(createdAt)}`;
 }
 
-export default function PremiereCard({ item, near }: CardProps<"release">) {
+export default function PremiereCard({
+  item,
+  active,
+  near,
+}: CardProps<"release">) {
   const cover = safeImage(item.cover_image);
   // Unreleased drops keep the plain link pill (below): /prerelease/
   // Spotify links don't resolve to embeds — standing rule, the
@@ -97,6 +101,18 @@ export default function PremiereCard({ item, near }: CardProps<"release">) {
   // render-phase reset when the card leaves the ±1 window).
   const [embedLoaded, setEmbedLoaded] = useState(false);
   if (!near && embedLoaded) setEmbedLoaded(false);
+  // AUDIO HYGIENE — same muteEpoch remount as CriticSegment: leaving
+  // the active slot reloads the embed so a playing album can't sound
+  // over the neighboring channel while still pre-mounted at ±1.
+  const [muteEpoch, setMuteEpoch] = useState(0);
+  const [wasActive, setWasActive] = useState(active);
+  if (active !== wasActive) {
+    setWasActive(active);
+    if (!active) {
+      setMuteEpoch((k) => k + 1);
+      setEmbedLoaded(false); // TUNING… covers the reload
+    }
+  }
 
   return (
     <ChannelChrome
@@ -219,6 +235,7 @@ export default function PremiereCard({ item, near }: CardProps<"release">) {
           {(!near || !embedLoaded) && <TuningSlot />}
           {near && (
             <iframe
+              key={`${embed}:${muteEpoch}`}
               src={embed}
               width="100%"
               height={152}

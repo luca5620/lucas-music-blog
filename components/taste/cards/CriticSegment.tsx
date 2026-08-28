@@ -106,10 +106,21 @@ export default function CriticSegment({
   // in the arrival paint itself, no effect cascade. Remounting the
   // badge via arrivalKey restarts its one-shot CSS pop.
   const [arrivalKey, setArrivalKey] = useState(0);
+  // AUDIO HYGIENE — Spotify's embed has no pause API, so a playing
+  // player would keep sounding over the NEXT channel while this card
+  // is still pre-mounted at ±1. Leaving the active slot remounts the
+  // iframe (muteEpoch in its key): fresh embed, silent; the play
+  // position is the lesser sacrifice ("audio bleeding over the next
+  // channel is the one unforgivable bug").
+  const [muteEpoch, setMuteEpoch] = useState(0);
   const [wasActive, setWasActive] = useState(active);
   if (active !== wasActive) {
     setWasActive(active);
     if (active && isElite) setArrivalKey((k) => k + 1);
+    if (!active) {
+      setMuteEpoch((k) => k + 1);
+      setEmbedLoaded(false); // TUNING… covers the reload
+    }
   }
   // The haptic is a real external system → a real effect, keyed on
   // the arrival counter: the vocabulary's DISTINCT MEDIUM for a 9.5+
@@ -300,7 +311,7 @@ export default function CriticSegment({
           {(!near || !embedLoaded) && <TuningSlot />}
           {near && (
             <iframe
-              key={embed}
+              key={`${embed}:${muteEpoch}`}
               src={embed}
               width="100%"
               height={152}

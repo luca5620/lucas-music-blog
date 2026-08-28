@@ -8,16 +8,16 @@
  * color bars (pure CSS gradients, see .smpte-bars in globals.css —
  * huge and unmissable, zero cost) and three ways forward:
  *
- *  - RETUNE: a fresh mix WITHOUT leaving the frame. Clears the
- *    session (the resume pointer is meaningless for a new mix) but
- *    deliberately KEEPS the pmr_taste_seen cookie — that cookie is
- *    what makes the server downrank everything just watched, so
- *    keeping it is literally what rotates the pool. Then
+ *  - RETUNE: a fresh mix WITHOUT leaving the frame, via
  *    router.refresh() inside a transition: the server re-picks (seen
  *    downrank + day jitter — no new API route needed), the new items
  *    flow into ChannelFrame's props, and its mix-signature effect
- *    snaps home to CH 01. While the refresh is in flight the whole
- *    card is TUNING… static — the TV searching for the new signal.
+ *    snaps home to CH 01 and rewrites the session there. The
+ *    pmr_taste_seen cookie is deliberately KEPT — it's what makes
+ *    the server downrank everything just watched, so keeping it is
+ *    literally what rotates the pool. While the refresh is in flight
+ *    the whole card is TUNING… static — the TV searching for the
+ *    new signal.
  *  - TV GUIDE: off to /releases to browse the catalog directly.
  *  - BACK TO STATION: exit fullscreen to the lobby (peels the
  *    history layer like every other exit).
@@ -36,10 +36,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { hapticTap } from "@/lib/native";
 
-/** Must match ChannelFrame/TasteGuide — the session being cleared is
-    the one the lobby would otherwise resume from. */
-const SESSION_KEY = "pmr_taste_session";
-
 export default function SignOffCard({
   channelName,
   onExit,
@@ -57,14 +53,14 @@ export default function SignOffCard({
 
   const retune = () => {
     hapticTap();
-    try {
-      // The resume pointer dies (new mix, old index meaningless); the
-      // SEEN COOKIE STAYS — it's what rotates the pool (see file
-      // comment). ChannelFrame snaps to CH 01 when the items change.
-      sessionStorage.removeItem(SESSION_KEY);
-    } catch {
-      /* storage blocked — refresh still works, resume just lingers */
-    }
+    // The session is NOT cleared here: on a thin, fully-seen pool the
+    // deterministic mix can come back byte-identical (the seen
+    // downrank is a multiplier, not an exclusion), and pre-clearing
+    // would silently delete the resume pointer for nothing (review
+    // finding). When the items DO change, ChannelFrame's mix-change
+    // effect snaps to CH 01 and rewrites the session itself — the old
+    // keys die there, exactly when they become meaningless. The SEEN
+    // COOKIE always stays — it's what rotates the pool.
     startTransition(() => {
       router.refresh();
     });

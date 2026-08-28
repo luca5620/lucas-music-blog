@@ -329,6 +329,14 @@ export default function ChannelFrame({
     // reacts to our own marked entries, so pops that happen after
     // unmount-worthy navigation are ignored by the (by then
     // unmounted) listener.
+    // Leaving via an in-frame Link strands our marked entries in the
+    // stack; if the viewer backs onto one and goes LIVE again, the
+    // stale marker would make the popstate math skip a layer (AV/EXIT
+    // appearing dead for one press). Neutralize any leftover marker
+    // before pushing our own.
+    if ((history.state as { pmr?: string } | null)?.pmr) {
+      history.replaceState({}, "");
+    }
     history.pushState({ pmr: "live" }, "");
     const onPop = () => {
       if (closingRef.current) return;
@@ -531,15 +539,24 @@ export default function ChannelFrame({
       crossed = false;
       translate = 0;
       if (fromStrip) {
-        armed = true;
+        // Never while a sheet is up: the strip stays touchable above
+        // the Switchboard's backdrop, and a "successful" exit drag
+        // there would only pop the SHEET's history layer — leaving
+        // the frame stuck mid-translate (review finding).
+        armed = !commentsForRef.current && !composerRef.current;
       } else {
-        // From a card: only when the scroller is SETTLED on a card's
-        // own top (mid-scroll pulls are just scrolling) and nothing
-        // under the finger is an inner reader that's scrolled down.
+        // From a card: FIRST CARD ONLY (same guard main's ChannelSurf
+        // had — anywhere else a downward swipe means "previous
+        // channel" and belongs to the snap scroller), when the
+        // scroller is SETTLED on the card's own top and nothing under
+        // the finger is an inner reader that's scrolled down.
         const settled =
           Math.abs(frame.scrollTop - settledRef.current * frame.clientHeight) <
           2;
-        armed = settled && !innerScrolled(e.target, frame);
+        armed =
+          settledRef.current === 0 &&
+          settled &&
+          !innerScrolled(e.target, frame);
       }
     };
 
@@ -577,6 +594,13 @@ export default function ChannelFrame({
       if (!wasDragging) return;
       if (t >= EXIT_DRAG_PX) {
         peel(); // → popstate → close() (which fires the exit MEDIUM)
+        // Defensive reset: if peel() didn't actually unmount the
+        // frame (stale history entry, sheet layer), the wrapper must
+        // not stay stuck translated behind a dark vignette.
+        wrap.style.transition = "transform 0.2s ease-out";
+        wrap.style.transform = "translateY(0)";
+        vig.style.transition = "opacity 0.2s ease-out";
+        vig.style.opacity = "0";
       } else {
         // Spring back — the signal survives.
         wrap.style.transition = "transform 0.2s ease-out";
@@ -699,18 +723,24 @@ export default function ChannelFrame({
       {/* Drag-to-exit vignette — opacity driven by the drag handler */}
       <div ref={vignetteRef} className="cf-vignette" aria-hidden="true" />
 
-      {/* ═══ CHROME STRIP — safe-area aware; ALSO the grab handle
-          (touch-none = the browser never scrolls from here, our drag
-          handler owns every touch). ═══ */}
+      {/* ═══ CHROME STRIP — safe-area aware. pointer-events-none on
+          the CONTAINER: it spans the full width (and grows with the
+          tick column — ~230px tall on an 18-mix notch phone), so as
+          a plain hit-target it swallowed card taps and up-flicks
+          across the whole top band (review finding). Only the OSD
+          cluster and AV/EXIT accept input; the OSD cluster is the
+          grab handle (touch-none there = the browser never scrolls
+          from it, our drag handler owns every touch — events bubble
+          to stripRef's listeners). ═══ */}
       <div
         ref={stripRef}
-        className="absolute top-0 inset-x-0 z-30 touch-none pt-[env(safe-area-inset-top)] px-3"
+        className="absolute top-0 inset-x-0 z-30 pointer-events-none pt-[env(safe-area-inset-top)] px-3"
       >
         <div className="flex items-start justify-between pt-2">
           {/* CH OSD + /{N} + tick column — flashes on settle, dims
-              to 40% after 1.2s (chromeLit). */}
+              to 40% after 1.2s (chromeLit). ALSO the drag handle. */}
           <div
-            className={`flex flex-col gap-2 transition-opacity duration-500 ${
+            className={`pointer-events-auto touch-none flex flex-col gap-2 transition-opacity duration-500 ${
               chromeLit ? "opacity-100" : "opacity-40"
             }`}
           >
@@ -753,12 +783,13 @@ export default function ChannelFrame({
           </div>
 
           {/* AV / EXIT — the 44px close control. Ring press feedback
-              comes from the global touch-feel rules (never shadows). */}
+              comes from the global touch-feel rules (never shadows).
+              pointer-events-auto: the container is inert (see above). */}
           <button
             type="button"
             onClick={exitAll}
             aria-label="Exit fullscreen"
-            className="h-11 min-w-11 px-2.5 rounded-lg border border-border-medium bg-black/60 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
+            className="pointer-events-auto h-11 min-w-11 px-2.5 rounded-lg border border-border-medium bg-black/60 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
           >
             <span className="pixel-text text-[10px] uppercase tracking-widest">
               AV / EXIT

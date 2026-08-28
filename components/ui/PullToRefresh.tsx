@@ -65,6 +65,12 @@ export default function PullToRefresh() {
     const onStart = (e: TouchEvent) => {
       const scroller = document.scrollingElement;
       if (!scroller || scroller.scrollTop > 0) return;
+      // Fullscreen broadcast up → this gesture belongs to the frame
+      // (its own drag-to-exit / snap surfing). The page behind is
+      // frozen at scrollTop 0, so without this check every pull
+      // inside the channel would arm a refresh the viewer can't even
+      // see — and a refreshed mix yanks the broadcast back to CH 01.
+      if (document.querySelector(".surf-fullscreen")) return;
       startYRef.current = e.touches[0].clientY;
       pullRef.current = 0;
       armedRef.current = false;

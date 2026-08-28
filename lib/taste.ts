@@ -582,9 +582,16 @@ export async function getTunedToYou(
       // Comment counts for the candidate reviews — the rail's comment
       // button shows the number so conversation has scent. Same JS-tally
       // shape as the like counts (fine at this scale; revisit alongside
-      // the like tallies if row counts ever get big).
+      // the like tallies if row counts ever get big). user_id comes
+      // along so blocked authors' comments can be excluded below —
+      // the sheet filters them out of the LIST client-side, and the
+      // count must agree with what the viewer will actually see
+      // (blocking is review-critical, Guideline 1.2).
       reviewIds.length
-        ? supabase.from("comments").select("review_id").in("review_id", reviewIds)
+        ? supabase
+            .from("comments")
+            .select("review_id, user_id")
+            .in("review_id", reviewIds)
         : Promise.resolve({ data: [] }),
     ]);
 
@@ -600,7 +607,15 @@ export async function getTunedToYou(
   const voteCounts = tally(votesRes.data, "debate_id");
   const followCounts = tally(followsRes.data, "release_id");
   const postLikeCounts = tally(postLikesRes.data, "post_id");
-  const commentCounts = tally(commentsRes.data, "review_id");
+  // Blocked commenters don't count — same standard as every other
+  // author-derived signal in this function.
+  const commentCounts = tally(
+    ((commentsRes.data ?? []) as unknown as {
+      review_id: string;
+      user_id: string;
+    }[]).filter((c) => !blockedAuthors.has(c.user_id)),
+    "review_id",
+  );
   // Per-side tallies for the same vote rows — the OnAir card's VoteBar
   // needs the A/B split, not just the total the scorer uses.
   const voteSides = new Map<string, { a: number; b: number }>();

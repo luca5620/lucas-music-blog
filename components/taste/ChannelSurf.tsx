@@ -537,15 +537,43 @@ function SurfCard({
           {/* Comments open IN PLACE (bottom sheet, read + write)
               without leaving the channel — a redirect here just
               duplicated the open button (Luca 2026-08-22). Reviews
-              only; posts have no comment system. */}
+              only; posts have no comment system. Count below the
+              bubble, same treatment as the heart (Luca 2026-08-28). */}
           {item.type === "review" && onOpenComments && (
-            <button
-              type="button"
-              onClick={() => {
-                hapticTap();
-                onOpenComments();
-              }}
-              aria-label="Comments"
+            <span className="flex flex-col items-center gap-1">
+              <button
+                type="button"
+                onClick={() => {
+                  hapticTap();
+                  onOpenComments();
+                }}
+                aria-label={`Comments (${item.comment_count})`}
+                className={railBtnClass}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
+                </svg>
+              </button>
+              <span className="pixel-text text-xs text-text-secondary tabular-nums">
+                {item.comment_count}
+              </span>
+            </span>
+          )}
+          {/* "VIEW" under the arrow (Luca 2026-08-28: a word saying
+              this one leaves the channel for the original page). */}
+          <span className="flex flex-col items-center gap-1">
+            <Link
+              href={href}
+              onClick={() => hapticTap()}
+              aria-label={`Open ${typeLabel.toLowerCase()}`}
               className={railBtnClass}
             >
               <svg
@@ -557,28 +585,13 @@ function SurfCard({
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
+                <path d="M7 17 17 7M9 7h8v8" />
               </svg>
-            </button>
-          )}
-          <Link
-            href={href}
-            onClick={() => hapticTap()}
-            aria-label={`Open ${typeLabel.toLowerCase()}`}
-            className={railBtnClass}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.8}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M7 17 17 7M9 7h8v8" />
-            </svg>
-          </Link>
+            </Link>
+            <span className="pixel-text text-[9px] uppercase tracking-widest text-text-secondary">
+              VIEW
+            </span>
+          </span>
         </div>
       )}
     </>

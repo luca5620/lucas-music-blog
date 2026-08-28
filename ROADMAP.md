@@ -53,7 +53,21 @@ remnants: every piece of content is community-made and catalog-backed.
   the exact CREATE pill (neutral color), one 8px gap rhythm across
   the row, and the whole page raised in the app (.site-nav pb
   16→10 / mb 24→14 so the quick-access bar and modules come up
-  together). Device check pending on that polish round.
+  together). Then per Luca same day: content raised another 10px
+  (5d791e2, "seems fine"), taste pager = hero width on phones + web
+  bell left of Search as a full "Alerts" pill (99f5bab), reviews
+  page detailed view = the home Community Feed big-cover card
+  (f722ef6), taste rail comment counter + VIEW label (e933673).
+  **SESSION END (Luca logging off, feeling good about the state):**
+  (a) he EVENTUALLY wants changes to DEBATES — no specifics yet,
+  he'll bring them, don't pitch preemptively; (b) a Your Taste
+  REVAMP is coming but HE is hitting the drawing board first — wait
+  for his brainstormed prompt, and hold whatever he brings against
+  his 2026-08-28 design law (sliding pager core, centered text,
+  plain ✕, no channel/CRT gimmicks, no stat modules, no reason
+  labels, clean covers; character = liquid blobs + CD animations;
+  fullscreen-only is on his mind); (c) App Review 1.2 resubmission
+  still pending — his hands: demo video + ASC reply.
 
 - **2026-08-27 (Windows, ULTRACODE session — paused at usage limit):
   branch `taste-and-top-overhaul` (13 commits, builds green, NOT

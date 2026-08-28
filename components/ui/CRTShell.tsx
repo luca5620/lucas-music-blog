@@ -33,13 +33,12 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
         <div className="liquid-blob liquid-a w-[300px] h-[300px] top-[88%] -right-24" />
         <div className="liquid-blob liquid-c w-[320px] h-[320px] -bottom-24 left-[22%]" />
       </div>
-      {/* APP-ONLY: solid ground under the iOS status bar. Without it,
-          scrolled content slides up beneath the transparent status-bar
-          region and collides with the clock/battery (Luca 2026-08-27
-          screenshot: the reviews filter chips behind the clock). The
-          home page's pinned strip (z-40) covers this zone itself and
-          sits above. */}
-      <div className="app-statusbar-scrim" aria-hidden="true" />
+      {/* The old .app-statusbar-scrim lived here — a solid black
+          strip over the status-bar band. Gone: the fixed app header
+          (Navigation.tsx + globals.css APP HEADER block) now owns
+          that band with the liquid glowing inside it, so scrolled
+          content still can't reach the clock but the band is no
+          longer a dead black bar (Luca 2026-08-27). */}
       <div className="crt-body">
         {/* Left spine — the disc-box edge */}
         <div className="crt-spine" aria-hidden="true">

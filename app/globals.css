@@ -1800,6 +1800,47 @@ body {
   scrollbar-width: thin;
 }
 
+/* ------------------------------------------------------------
+   THE SWITCHBOARD (WP9) — the broadcast's comments, split in two:
+   SwitchboardSheet (read, zero inputs, lives INSIDE the frame) and
+   CallerComposer (write, the ReportButton-pattern fixed top sheet
+   portaled over everything at z-90). Only the composer's input
+   needs CSS of its own — everything else is existing classes
+   (tv-noise, scan-bar, osd-text) recombined.
+   ------------------------------------------------------------ */
+
+/* The composer's textarea as a CRT OSD prompt: near-black glass
+   with an accent hairline. The PLACEHOLDER speaks pixel-font OSD
+   ("go ahead, caller…") but anything actually typed stays in the
+   readable body font — pixel type at paragraph length is torture.
+   Focus = the same accent ring .form-input draws (a box-shadow
+   SPREAD, i.e. a ring, not a drop shadow — the press-feedback rule
+   is about glow shadows, and nothing here animates). */
+.osd-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background: rgba(6, 6, 6, 0.9);
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.osd-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+}
+.osd-input::placeholder {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
 /* ============================================================
    TYPE TREATMENTS
    ============================================================ */

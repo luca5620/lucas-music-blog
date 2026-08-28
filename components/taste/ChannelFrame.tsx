@@ -37,16 +37,21 @@
  *  - Drag-to-exit with rubber resistance + closing vignette, from
  *    the chrome grab handle or a downward pull on any settled card
  *    whose inner reader sits at its top (120px threshold).
- *  - One history entry per layer ({pmr:'live'}, {pmr:'callers'}) so
- *    Android back / iOS edge-swipe / Esc peel one layer at a time
- *    instead of leaving the page.
+ *  - One history entry per layer ({pmr:'live'}, {pmr:'callers'},
+ *    {pmr:'composer'}) so Android back / iOS edge-swipe / Esc peel
+ *    one layer at a time instead of leaving the page.
  *  - sessionStorage session ({itemKeys, index}) written per settle
  *    for the lobby's watched-rows + RESUME, plus the pmr_taste_seen
  *    cookie write (the client half of the mix engine's seen-downrank
  *    rotation).
  *
- * The comments bottom sheet is the OLD one, temporarily kept wired —
- * WP9 (Switchboard read/write split) replaces it.
+ * Comments are THE SWITCHBOARD (WP9) — a read/write split: the
+ * SwitchboardSheet (zero-input bottom sheet, safe INSIDE the frame
+ * because no keyboard can ever open there) reads the line, and the
+ * CallerComposer (ReportButton-pattern fixed TOP sheet at z-90,
+ * keyboard-safe by construction) writes to it. This frame owns
+ * which layers are open — one history entry each, peeled by the
+ * single popstate listener below.
  */
 
 import {
@@ -60,7 +65,8 @@ import { createPortal } from "react-dom";
 import type { TunedItem } from "@/lib/taste";
 import { hapticImpact, isNativeApp } from "@/lib/native";
 import BackdropVideo from "@/components/profile/BackdropVideo";
-import CommentsSection from "@/components/reviews/CommentsSection";
+import SwitchboardSheet from "@/components/taste/SwitchboardSheet";
+import type { ComposerCtx } from "@/components/taste/CallerComposer";
 import CriticSegment from "@/components/taste/cards/CriticSegment";
 import MusicTvCard from "@/components/taste/cards/MusicTvCard";
 import OnAirCard from "@/components/taste/cards/OnAirCard";
@@ -218,11 +224,19 @@ export default function ChannelFrame({
   // NOW WATCHING splash — 1.5s on enter.
   const [splash, setSplash] = useState(true);
 
-  // The review whose comments sheet is open (temporary sheet — WP9
-  // replaces it with the Switchboard).
+  // The review whose Switchboard (read sheet) is open. The ref
+  // mirror lets stable callbacks (exitAll) count open layers
+  // without re-subscribing anything.
   const [commentsFor, setCommentsFor] = useState<string | null>(null);
   const commentsForRef = useRef<string | null>(null);
   commentsForRef.current = commentsFor;
+
+  // The CallerComposer's context when the WRITE layer is up —
+  // null parentId = fresh comment, non-null = replying (with the
+  // quoted parent riding along for the "REPLYING TO" header).
+  const [composer, setComposer] = useState<ComposerCtx | null>(null);
+  const composerRef = useRef<ComposerCtx | null>(null);
+  composerRef.current = composer;
 
   // App shell: ONE hardware-decoded ambient loop behind all cards
   // (public/backdrops/taste.mp4) instead of per-card CSS backdrops.
@@ -280,6 +294,7 @@ export default function ChannelFrame({
     if (closingRef.current) return;
     closingRef.current = true;
     hapticImpact("MEDIUM"); // leaving fullscreen is a deliberate act
+    setComposer(null);
     setCommentsFor(null);
     setClosing(true);
     window.setTimeout(() => {
@@ -295,30 +310,43 @@ export default function ChannelFrame({
     history.back();
   }, []);
 
-  /** AV/EXIT leaves the frame entirely, however many layers are up. */
+  /** AV/EXIT leaves the frame entirely, however many layers are up:
+      one history entry each for the frame, the read sheet, and the
+      composer — pop them all in one go. */
   const exitAll = useCallback(() => {
     if (closingRef.current) return;
-    history.go(commentsForRef.current ? -2 : -1);
+    const layers =
+      1 + (commentsForRef.current ? 1 : 0) + (composerRef.current ? 1 : 0);
+    history.go(-layers);
   }, []);
 
   /* ─── history: one entry per layer ─── */
 
   useEffect(() => {
-    // Entering fullscreen pushes exactly one state; the sheet pushes
-    // a second. The popstate handler peels by looking at where the
-    // pop LANDED — it only ever reacts to our own marked entries, so
-    // pops that happen after unmount-worthy navigation are ignored
-    // by the (by then unmounted) listener.
+    // Entering fullscreen pushes exactly one state; the read sheet
+    // pushes a second, the composer a third. The popstate handler
+    // peels by looking at where the pop LANDED — it only ever
+    // reacts to our own marked entries, so pops that happen after
+    // unmount-worthy navigation are ignored by the (by then
+    // unmounted) listener.
     history.pushState({ pmr: "live" }, "");
     const onPop = () => {
       if (closingRef.current) return;
       const s = history.state as { pmr?: string } | null;
-      if (s?.pmr === "live") {
-        // Landed back on the frame's own entry → the sheet was the
-        // top layer; close it.
+      if (s?.pmr === "callers") {
+        // Landed on the read sheet's entry → the composer was the
+        // top layer; close just it (the sheet stays up).
+        setComposer(null);
+      } else if (s?.pmr === "live") {
+        // Landed back on the frame's own entry → whatever sheets
+        // were above it come down.
+        setComposer(null);
         setCommentsFor(null);
-      } else if (s?.pmr !== "callers") {
-        // Popped past our entries → leave fullscreen.
+      } else if (s?.pmr !== "composer") {
+        // Popped past our entries entirely → leave fullscreen.
+        // ('composer' can't be LANDED on by going back — it's only
+        // ever the top of our stack — so anything else is foreign.)
+        setComposer(null);
         setCommentsFor(null);
         close();
       }
@@ -328,10 +356,17 @@ export default function ChannelFrame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /** Open the comments sheet (its own history layer). */
+  /** Open the Switchboard read sheet (its own history layer). */
   const openComments = useCallback((reviewId: string) => {
     setCommentsFor(reviewId);
     history.pushState({ pmr: "callers" }, "");
+  }, []);
+
+  /** Open the CallerComposer (the WRITE layer, stacked on the read
+      sheet) — from the WRITE pill or a Reply tap. */
+  const openComposer = useCallback((ctx: ComposerCtx) => {
+    setComposer(ctx);
+    history.pushState({ pmr: "composer" }, "");
   }, []);
 
   /* ─── mount: freeze the page, focus, splash, initial landing ─── */
@@ -581,6 +616,15 @@ export default function ChannelFrame({
   // On the sign-off card the CH OSD has no channel to name.
   const onSignOff = index >= items.length;
 
+  // The review whose Switchboard is open — its payload comment_count
+  // seeds the "CALLERS ON THE LINE · n" header (same number the rail
+  // button shows) until the live count loads.
+  const openReview = commentsFor
+    ? items.find((it) => it.type === "review" && it.id === commentsFor)
+    : undefined;
+  const openReviewCount =
+    openReview?.type === "review" ? openReview.comment_count : 0;
+
   const content = (
     <div
       className={`surf-fullscreen ${closing ? "surf-anim-out" : "surf-anim-in"}`}
@@ -758,34 +802,19 @@ export default function ChannelFrame({
         </button>
       </div>
 
-      {/* Comments sheet — the OLD read+write sheet, temporarily kept
-          wired (WP9's Switchboard replaces it). Backdrop / ✕ / Esc /
-          hardware back all peel this one layer via history. */}
+      {/* THE SWITCHBOARD (WP9) — the read sheet (zero inputs, safe
+          inside the frame) + the composer it patches callers through
+          to. Backdrop / ✕ / Esc / hardware back all peel ONE layer
+          via history: composer → read sheet → fullscreen. */}
       {commentsFor && (
-        <>
-          <div
-            className="absolute inset-0 z-20 bg-black/60"
-            onClick={peel}
-          />
-          <div className="absolute inset-x-0 bottom-0 top-[18%] z-30 bg-[#0c0c0f] border-t border-border-medium rounded-t-2xl flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 shrink-0">
-              <span className="label-xbox">Comments</span>
-              <button
-                type="button"
-                onClick={peel}
-                aria-label="Close comments"
-                className="w-8 h-8 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
-              >
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
-              </button>
-            </div>
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y px-4 py-4 [scrollbar-width:thin]">
-              <CommentsSection reviewId={commentsFor} />
-            </div>
-          </div>
-        </>
+        <SwitchboardSheet
+          key={commentsFor}
+          reviewId={commentsFor}
+          initialCount={openReviewCount}
+          composer={composer}
+          onOpenComposer={openComposer}
+          onPeel={peel}
+        />
       )}
     </div>
   );

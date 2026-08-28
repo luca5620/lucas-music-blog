@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import ReportButton from "@/components/moderation/ReportButton";
@@ -23,6 +30,15 @@ interface CommentData {
   created_at: string;
   updated_at: string;
   profiles: CommentProfile | null;
+}
+
+/** Throw the server's message so the calling form can show it — a
+    rejection (content filter, rate limit) must never fail silently.
+    Module-level because both the inline forms here AND the taste
+    broadcast's CallerComposer (via the `post` ref handle) need it. */
+async function throwServerError(res: Response, fallback: string): Promise<never> {
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  throw new Error(data.error ?? fallback);
 }
 
 /* ─── Time Ago Utility ─── */
@@ -177,6 +193,7 @@ function CommentItem({
   onEdit,
   onDelete,
   isReply = false,
+  sheetMode = false,
 }: {
   comment: CommentData;
   currentUserId: string | null;
@@ -186,6 +203,14 @@ function CommentItem({
   onEdit: (commentId: string, content: string) => Promise<void>;
   onDelete: (commentId: string) => Promise<void>;
   isReply?: boolean;
+  /** Rendered inside the taste broadcast's Switchboard read sheet —
+      which is only keyboard-safe because it contains ZERO inputs
+      (see SwitchboardSheet). So sheet mode hides the Edit button:
+      an inline edit form would put a textarea inside the fixed
+      sheet and reintroduce the exact iOS keyboard drift the
+      read/write split exists to kill. Editing still lives on the
+      review page itself. */
+  sheetMode?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -265,7 +290,7 @@ function CommentItem({
                 Reply
               </button>
             )}
-            {isOwn && (
+            {isOwn && !sheetMode && (
               <button
                 onClick={() => setEditing(true)}
                 className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
@@ -298,7 +323,48 @@ function CommentItem({
 
 /* ─── Main CommentsSection ─── */
 
-export default function CommentsSection({ reviewId }: { reviewId: string }) {
+/** Imperative surface for the taste broadcast's CallerComposer: the
+    composer lives in a separate fixed top sheet (keyboard-safe by
+    construction) but posts THROUGH this section so there's exactly
+    one comments write path in the codebase. */
+export interface CommentsSectionHandle {
+  /** POST a comment/reply and insert the server-confirmed row into
+      the local list (no refetch). Throws the server's message on
+      rejection so the composer can show it. */
+  post: (content: string, parentId: string | null) => Promise<void>;
+}
+
+interface CommentsSectionProps {
+  reviewId: string;
+  /** "default" — the review page's full panel (chrome + header +
+      its own CommentForm + inline reply forms). Unchanged.
+      "sheet" — the READ half of the taste broadcast's Switchboard
+      (WP9): no panel-xbox chrome, no duplicate header, NO forms and
+      no autoFocus anywhere — the sheet it sits in is absolutely
+      positioned inside `.surf-fullscreen`, which only works because
+      the keyboard can never open there. Reply taps are delegated
+      UP via onRequestReply instead of opening an inline form. */
+  variant?: "default" | "sheet";
+  /** Sheet variant: live visible-comment count, reported up because
+      the Switchboard's "CALLERS ON THE LINE · n" header renders
+      outside this component. */
+  onCountChange?: (n: number) => void;
+  /** Sheet variant: a Reply tap hands the parent-comment context to
+      the caller (which opens the CallerComposer) instead of
+      rendering a form here. */
+  onRequestReply?: (ctx: {
+    parentId: string;
+    replyToName: string;
+    quote: string;
+  }) => void;
+}
+
+const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
+  function CommentsSection(
+    { reviewId, variant = "default", onCountChange, onRequestReply },
+    ref
+  ) {
+  const sheet = variant === "sheet";
   const { user, profile, loading: authLoading } = useAuth();
   // Staff can mod-delete any comment (backed by 007's RLS policy +
   // the role re-check in the DELETE route — this flag is UI only).
@@ -358,13 +424,6 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
 
   /* ─── Handlers ─── */
 
-  /** Throw the server's message so CommentForm can show it — a
-      rejection (content filter, rate limit) must never fail silently. */
-  const throwServerError = async (res: Response, fallback: string) => {
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new Error(data.error ?? fallback);
-  };
-
   const handlePost = async (content: string) => {
     const res = await fetch("/api/comments", {
       method: "POST",
@@ -396,6 +455,35 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
     await fetchComments();
   };
 
+  /** The CallerComposer's submit path (exposed via ref): the SAME
+      endpoint handlePost/handleReply hit, but on success the
+      route's 201 response — the created row WITH its profiles join
+      — is inserted straight into local state instead of refetching
+      the whole thread. The comment must be visible the instant the
+      composer closes (it closes itself right after this resolves),
+      and a refetch round-trip would leave a beat of "where did my
+      comment go?". */
+  const postAndInsert = useCallback(
+    async (content: string, parentId: string | null) => {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          parentId ? { reviewId, content, parentId } : { reviewId, content }
+        ),
+      });
+      if (!res.ok) await throwServerError(res, "Couldn't post your comment.");
+      const created = (await res.json()) as CommentData;
+      // created_at-ascending order means appending keeps the list
+      // sorted; replies are re-grouped under their parent by the
+      // threading pass below regardless of array position.
+      setComments((prev) => [...prev, created]);
+    },
+    [reviewId]
+  );
+
+  useImperativeHandle(ref, () => ({ post: postAndInsert }), [postAndInsert]);
+
   const handleDelete = async (commentId: string) => {
     const res = await fetch(`/api/comments/${commentId}`, {
       method: "DELETE",
@@ -422,23 +510,39 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
 
   const commentCount = visible.length;
 
+  // Sheet variant: report the live VISIBLE count up (post-block-
+  // filter, so the Switchboard header never counts hidden authors).
+  // An effect, not a render call — setting parent state during a
+  // child's render is a React error.
+  useEffect(() => {
+    if (!loading) onCountChange?.(commentCount);
+  }, [loading, commentCount, onCountChange]);
+
   /* ─── Render ─── */
 
   return (
-    <div className="panel-xbox p-4 sm:p-6 space-y-5">
-      {/* Header */}
-      <div className="flex items-center gap-2">
-        <span className="glow-orb" />
-        <span className="label-xbox">Comments</span>
-        <span className="text-xs text-text-muted ml-1">
-          ({loading ? "--" : commentCount})
-        </span>
-      </div>
+    // Sheet variant sheds the panel chrome — the Switchboard sheet
+    // provides its own surface, header and WRITE affordance.
+    <div className={sheet ? "space-y-5" : "panel-xbox p-4 sm:p-6 space-y-5"}>
+      {/* Header — default only (the sheet has "CALLERS ON THE LINE") */}
+      {!sheet && (
+        <>
+          <div className="flex items-center gap-2">
+            <span className="glow-orb" />
+            <span className="label-xbox">Comments</span>
+            <span className="text-xs text-text-muted ml-1">
+              ({loading ? "--" : commentCount})
+            </span>
+          </div>
 
-      <div className="divider-glow" />
+          <div className="divider-glow" />
+        </>
+      )}
 
-      {/* New Comment Form or Sign In Prompt */}
-      {authLoading ? null : user ? (
+      {/* New Comment Form or Sign In Prompt — default only. The
+          sheet variant renders NO form at all: writing happens in
+          the CallerComposer (its own keyboard-safe top sheet). */}
+      {sheet ? null : authLoading ? null : user ? (
         <CommentForm
           onSubmit={handlePost}
           placeholder="Drop a comment..."
@@ -478,15 +582,31 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
                 comment={comment}
                 currentUserId={user?.id ?? null}
                 isStaff={isStaff}
-                onReply={(id) =>
-                  setReplyingTo(replyingTo === id ? null : id)
-                }
+                sheetMode={sheet}
+                onReply={(id) => {
+                  if (sheet) {
+                    // Switchboard: no inline form — hand the parent
+                    // context up so the CallerComposer opens with
+                    // the quoted comment ("REPLYING TO …").
+                    onRequestReply?.({
+                      parentId: id,
+                      replyToName:
+                        comment.profiles?.display_name ||
+                        comment.profiles?.username ||
+                        "Unknown",
+                      quote: comment.content,
+                    });
+                  } else {
+                    setReplyingTo(replyingTo === id ? null : id);
+                  }
+                }}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
 
-              {/* Reply Form */}
-              {replyingTo === comment.id && user && (
+              {/* Reply Form — default only (sheet replies go through
+                  the CallerComposer, never an inline textarea) */}
+              {!sheet && replyingTo === comment.id && user && (
                 <div className="ml-10 pl-4 border-l-2 border-accent-primary/15">
                   <CommentForm
                     onSubmit={(content) => handleReply(comment.id, content)}
@@ -505,6 +625,7 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
                   comment={reply}
                   currentUserId={user?.id ?? null}
                   isStaff={isStaff}
+                  sheetMode={sheet}
                   onReply={() => {}}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
@@ -517,4 +638,7 @@ export default function CommentsSection({ reviewId }: { reviewId: string }) {
       )}
     </div>
   );
-}
+  }
+);
+
+export default CommentsSection;

@@ -36,6 +36,17 @@ remnants: every piece of content is community-made and catalog-backed.
   channel (spec-literal choice, flagged by the implementer); (c)
   only after Luca's device pass: merge to main (deploys apps
   instantly — App Review still pending, keep that in mind).
+  **UPDATE (same day, after limit reset):** "PEAK TV" name stripped
+  per Luca (masthead = YOUR TASTE, sign-off = "THE {name} CHANNEL
+  SIGNS OFF"). Adversarial review COMPLETED (41 agents): 13 confirmed
+  findings deduped to 8, ALL FIXED in d4bea08 (drag-to-exit CH-01-only
+  guard restored — swipe-down = previous channel again; PTR disabled
+  inside fullscreen; strip-drag sheet guard + style reset; Spotify
+  muteEpoch remount kills cross-channel audio; chrome strip
+  pointer-events-none dead-band fix; stale history markers
+  neutralized; comment_count block-filtered; RETUNE keeps the resume
+  session). Build green. REMAINING: Luca's preview (web + on-device:
+  keyboard composer gate, top area, gesture feel) → then merge.
 
 - **2026-08-27 (Windows, evening polish session while waiting on
   Apple): ⚠️ MIGRATION 025 TO RUN (notifications).** Shipped, all

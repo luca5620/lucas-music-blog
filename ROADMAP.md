@@ -54,6 +54,21 @@ remnants: every piece of content is community-made and catalog-backed.
   (revert c6b9a68 alone to go back to 12 if so). If anything's off
   on device: fix forward same-day, production updates the apps
   instantly and App Review is still pending.
+  **⚠️ VERDICT (2026-08-27, right after the push): Luca does NOT
+  like the /your-taste overhaul.** He hasn't said what specifically
+  yet — conversation happens next session. DO NOT redesign or revert
+  preemptively; get his specifics first. Facts for that talk:
+  (a) it is LIVE on main right now; (b) the taste work is spread
+  across commits 40b0225..d4bea08 interleaved with the top-area
+  rebuild (0c46cd6) and review fixes touching BOTH streams
+  (d4bea08), so there is no single-commit revert — the old
+  ChannelSurf.tsx (pre-overhaul pager) is recoverable via
+  `git show b787100~1:components/taste/ChannelSurf.tsx` and the old
+  page.tsx via `git show 8659555~1:app/your-taste/page.tsx`;
+  (c) the top area was NOT judged — only the taste page; (d) the
+  lib/taste.ts ENGINE changes (rotation/dedup/interleave/honest
+  chips) are invisible mechanics and likely keepable regardless of
+  the UI verdict; likeStore/hapticImpact likewise.
 
 - **2026-08-27 (Windows, evening polish session while waiting on
   Apple): ⚠️ MIGRATION 025 TO RUN (notifications).** Shipped, all

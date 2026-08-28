@@ -14,6 +14,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getReleaseDescription } from "@/lib/descriptions";
 import BackLink from "@/components/ui/BackLink";
+import ShimmerLines from "@/components/ui/ShimmerLines";
 import {
   getReleaseBySlug,
   getReleaseStats,
@@ -500,7 +501,7 @@ function ReleaseContent({
             below (Luca 2026-08-26); the lookup is cached, so the
             second render costs nothing. */}
         <div className="xl:hidden space-y-5 sm:space-y-6">
-          <Suspense fallback={null}>
+          <Suspense fallback={<ShimmerLines lines={3} />}>
             <DescriptionBlock release={release} artistName={artistName} />
           </Suspense>
         </div>
@@ -612,7 +613,7 @@ function ReleaseContent({
             runs horizontally across the whole page width instead of
             stacking tall in the narrow left column. */}
         <div className="hidden xl:block space-y-4">
-          <Suspense fallback={null}>
+          <Suspense fallback={<ShimmerLines lines={2} />}>
             <DescriptionBlock release={release} artistName={artistName} />
           </Suspense>
         </div>

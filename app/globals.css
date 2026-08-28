@@ -1092,6 +1092,28 @@ body {
    when running inside the iOS/Android shell. Strips the
    "this is a webpage" tells; browser visitors are unaffected.
    ============================================================ */
+/* ── SHIMMER — placeholder bars for streamed-in text (ShimmerLines).
+   A soft highlight sweeps across dim bars; reduced-motion holds them
+   static. ── */
+.shimmer-line {
+  height: 0.8rem;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.11) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.4s ease-in-out infinite;
+}
+@keyframes shimmer-sweep {
+  to { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-line { animation: none; }
+}
+
 /* ── IMAGE BLUR-UP — applied by ImageReveal.tsx the moment an image
    finishes loading: covers fade in from a soft blur instead of
    popping. One-shot; the class is removed on animationend. ── */

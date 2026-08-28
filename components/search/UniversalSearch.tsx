@@ -264,9 +264,14 @@ export default function UniversalSearch() {
         </p>
       )}
       {searched && total === 0 && !searching && (
-        <p className="text-sm text-text-muted text-center py-8">
-          Nothing on any channel for &ldquo;{query.trim()}&rdquo;.
-        </p>
+        /* Same NO SIGNAL voice as every other empty surface. */
+        <div className="panel-xbox p-8 text-center space-y-3">
+          <p className="osd-text text-sm">NO SIGNAL</p>
+          <p className="text-sm text-text-secondary">
+            Nothing on any channel for &ldquo;{query.trim()}&rdquo;. Try an
+            artist, an album, or a username.
+          </p>
+        </div>
       )}
 
       {/* ===== Users ===== */}

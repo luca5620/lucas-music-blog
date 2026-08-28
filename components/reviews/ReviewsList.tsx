@@ -233,11 +233,13 @@ export default function ReviewsList({
           at 1rem — Luca 2026-08-27 "they overlap a bit". */}
       <div className={view === "detailed" ? "space-y-6" : filtered.length === 0 ? "space-y-6" : "hidden"}>
         {filtered.length === 0 ? (
-          <div className="card-y2k p-8 text-center">
-            <p className="text-text-muted pixel-text text-sm">
+          /* Same NO SIGNAL voice as every other empty surface. */
+          <div className="panel-xbox p-8 sm:p-10 text-center space-y-3">
+            <p className="osd-text text-sm">NO SIGNAL</p>
+            <p className="text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
               {reviews.length === 0
-                ? "No reviews yet. Be the first — hit Review in the nav."
-                : "No reviews match your filters."}
+                ? "No reviews on the wall yet. Be the first — pick a record and drop your take."
+                : "Nothing matches those filters. Loosen the rating or clear the search."}
             </p>
           </div>
         ) : view !== "detailed" ? null : (

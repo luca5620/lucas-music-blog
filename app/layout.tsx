@@ -13,6 +13,8 @@ import GrainOverlay from "@/components/ui/GrainOverlay";
 import NativeMode from "@/components/ui/NativeMode";
 import PressMode from "@/components/ui/PressMode";
 import OfflineOverlay from "@/components/ui/OfflineOverlay";
+import PullToRefresh from "@/components/ui/PullToRefresh";
+import ImageReveal from "@/components/ui/ImageReveal";
 import TabBar from "@/components/ui/TabBar";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
@@ -193,6 +195,10 @@ export default async function RootLayout({
           <TabBar />
           {/* App-only NO SIGNAL screen for mid-session connection loss */}
           <OfflineOverlay />
+          {/* App-only pull-down-to-refresh gesture */}
+          <PullToRefresh />
+          {/* Site-wide cover-art blur-up on image load */}
+          <ImageReveal />
         </AuthProvider>
         {/* Vercel Web Analytics (enabled in the dashboard 2026-08-25).
             The dashboard toggle alone records nothing on Next.js —

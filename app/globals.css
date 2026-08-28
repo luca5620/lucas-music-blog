@@ -1092,6 +1092,82 @@ body {
    when running inside the iOS/Android shell. Strips the
    "this is a webpage" tells; browser visitors are unaffected.
    ============================================================ */
+/* ── IMAGE BLUR-UP — applied by ImageReveal.tsx the moment an image
+   finishes loading: covers fade in from a soft blur instead of
+   popping. One-shot; the class is removed on animationend. ── */
+@keyframes img-reveal {
+  from {
+    opacity: 0.15;
+    filter: blur(14px) saturate(1.15);
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+.img-reveal {
+  animation: img-reveal 0.45s ease-out;
+}
+/* Press mode blurs artwork on purpose — never fight it. */
+.press-mode .img-reveal {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .img-reveal {
+    animation: none;
+  }
+}
+
+/* ── PULL TO REFRESH (app only — component renders null on web) ──
+   A chrome-rimmed disc that slides out from behind the status bar
+   as you pull, arms with an accent glow at the threshold, and spins
+   while the transition refreshes the server components. */
+.ptr-indicator {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  opacity: 0;
+  pointer-events: none;
+}
+.ptr-disc {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(var(--accent-rgb), 0.9);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(var(--accent-rgb), 0.18) 0%,
+    rgba(10, 10, 14, 0.9) 70%
+  );
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(var(--accent-rgb), 0.25);
+}
+.ptr-armed .ptr-disc {
+  border-color: rgba(var(--accent-rgb), 0.65);
+  border-top-color: var(--accent-primary);
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.6),
+    0 0 18px rgba(var(--accent-rgb), 0.55);
+}
+.ptr-refreshing {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(14px) !important;
+  transition: opacity 0.15s ease;
+}
+.ptr-refreshing .ptr-disc {
+  animation: ptr-spin 0.8s linear infinite;
+}
+@keyframes ptr-spin {
+  to { rotate: 360deg; }
+}
+
 /* Solid ground under the iOS status bar (app only) — scrolled page
    content otherwise shows through the transparent status-bar region
    and collides with the clock/battery. Solid black, NOT backdrop

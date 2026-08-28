@@ -14,7 +14,7 @@
  * no free-text track entry, so nothing can be misspelled or faked.
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Release, Review } from "@/lib/types/database";
 import CatalogSearch, {
@@ -56,6 +56,95 @@ export default function ReviewForm({
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  /* ── Autosave (create mode) — a swipe-back or closed tab should
+     never eat someone's essay (Luca 2026-08-27). Everything the form
+     holds mirrors into localStorage, debounced; a fresh visit offers
+     the draft back. Cleared on successful submit. All storage access
+     is try/catch'd — private mode etc. just means no net. ── */
+  const DRAFT_KEY = "pmr:review-draft";
+  const [restoredDraft, setRestoredDraft] = useState(false);
+  const skipNextSave = useRef(true); // don't re-save the restore itself
+
+  useEffect(() => {
+    if (mode !== "create" || fixedRelease) return;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw) as {
+        release?: Release | null;
+        pickedArtist?: string;
+        rating?: number;
+        summary?: string;
+        snippet?: string;
+        pickedTracks?: string[];
+      };
+      // Only offer drafts that actually contain words or a pick.
+      if (!d.release && !d.summary && !d.snippet) return;
+      if (d.release) setRelease(d.release);
+      if (d.pickedArtist) setPickedArtist(d.pickedArtist);
+      if (typeof d.rating === "number") setRating(d.rating);
+      setSummary(d.summary ?? "");
+      setSnippet(d.snippet ?? "");
+      setPickedTracks(new Set(d.pickedTracks ?? []));
+      setRestoredDraft(true);
+    } catch {
+      /* unreadable draft — start clean */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (mode !== "create") return;
+    if (skipNextSave.current) {
+      skipNextSave.current = false;
+      return;
+    }
+    const t = setTimeout(() => {
+      try {
+        // Nothing worth keeping → keep storage clean.
+        if (!release && !summary && !snippet) {
+          localStorage.removeItem(DRAFT_KEY);
+          return;
+        }
+        localStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({
+            release,
+            pickedArtist,
+            rating,
+            summary,
+            snippet,
+            pickedTracks: [...pickedTracks],
+            savedAt: Date.now(),
+          })
+        );
+      } catch {
+        /* storage full/blocked — autosave is garnish */
+      }
+    }, 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [release, pickedArtist, rating, summary, snippet, pickedTracks, mode]);
+
+  function clearDraft() {
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* fine */
+    }
+  }
+
+  function discardDraft() {
+    clearDraft();
+    setRelease(null);
+    setPickedArtist("");
+    setRating(7);
+    setSummary("");
+    setSnippet("");
+    setPickedTracks(new Set());
+    setRestoredDraft(false);
+  }
 
   const ratingColor = getRatingHex(rating);
   const tracks = release?.tracks ?? [];
@@ -131,6 +220,7 @@ export default function ReviewForm({
         return;
       }
 
+      clearDraft(); // the words made it to the DB — retire the backup
       router.push("/reviews/mine");
       router.refresh();
     } catch {
@@ -154,6 +244,25 @@ export default function ReviewForm({
             : "Find the record, drop your honest take."}
         </p>
       </div>
+
+      {/* Autosave pickup — quiet, dismissible, only after a restore */}
+      {restoredDraft && (
+        <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg border border-accent-primary/30 bg-accent-primary/5">
+          <p className="text-xs text-text-secondary">
+            <span className="text-accent-primary font-bold">
+              Draft restored
+            </span>{" "}
+            — picked up where you left off.
+          </p>
+          <button
+            type="button"
+            onClick={discardDraft}
+            className="text-[11px] uppercase tracking-wider text-text-muted hover:text-accent-rose shrink-0 transition-colors"
+          >
+            Discard
+          </button>
+        </div>
+      )}
 
       {/* ========== STEP 1: THE RELEASE ==========
           overflow-visible: this panel hosts the search dropdown —

@@ -42,6 +42,12 @@ export interface TasteProfile {
       "transmitter receipts" strip renders these with their reason
       strings so the algorithm shows its work instead of bare chips. */
   topArtists: { id: string; name: string; weight: number }[];
+  /** Releases the viewer already followed or reviewed — the mix engine
+      hard-excludes these from the PREMIERE pool ("recommending" an
+      album you rated last week is filler, not a recommendation).
+      Liked-review releases deliberately stay IN: liking someone's
+      review is a nudge toward an album, not proof you've digested it. */
+  interactedReleaseIds: Set<string>;
 }
 
 const COLD_START_MIN_SIGNALS = 3;
@@ -236,7 +242,21 @@ export async function buildTasteProfile(
     .slice(0, 3)
     .map(([id, weight]) => ({ id, name: nameByArtistId.get(id)!, weight }));
 
-  return { byArtistId, byArtistName, reasonByArtistId, signalCount, topArtists };
+  // Followed + self-reviewed releases (NOT liked-review ones — see the
+  // interface comment) for the mix engine's already-interacted filter.
+  const interactedReleaseIds = new Set([
+    ...followedReleaseIds,
+    ...reviewWeights.keys(),
+  ]);
+
+  return {
+    byArtistId,
+    byArtistName,
+    reasonByArtistId,
+    signalCount,
+    topArtists,
+    interactedReleaseIds,
+  };
 }
 
 /** Affinity lookup that falls back from artist id to name. */
@@ -393,6 +413,11 @@ const FRESH_HALF_LIFE_DAYS = 14;
 interface Candidate {
   item: TunedItem;
   artistKey: string; // artist id/name for the diversity guard
+  /** The release this item is ABOUT (review/post/debate → release_id,
+      release → its own id; null when untied). The pick loop dedups on
+      it so one album can't appear twice as, say, a review card AND a
+      premiere card in the same broadcast. */
+  releaseKey: string | null;
   taste: number;
   popularity: number;
   ageDays: number;
@@ -588,6 +613,7 @@ export async function getTunedToYou(
     /** jsonb column — array of {title, spotifyUrl} picks. */
     standout_tracks: { title: string; spotifyUrl: string }[] | null;
     created_at: string;
+    release_id: string | null;
     releases:
       | {
           primary_artist_id: string | null;
@@ -644,6 +670,7 @@ export async function getTunedToYou(
         reason: null,
       },
       artistKey: artistId ?? r.artist.toLowerCase(),
+      releaseKey: r.release_id,
       taste,
       popularity: likeCounts.get(r.id) ?? 0,
       ageDays: ageDays(r.created_at),
@@ -660,6 +687,7 @@ export async function getTunedToYou(
     video_kind: "youtube" | "tiktok" | null;
     video_id: string | null;
     created_at: string;
+    release_id: string | null;
     releases:
       | {
           primary_artist_id: string | null;
@@ -723,6 +751,7 @@ export async function getTunedToYou(
       // Untied posts key on the author so one prolific poster can't
       // flood the pager (same diversity guard as artists).
       artistKey: artistId ?? `post-author:${username}`,
+      releaseKey: p.release_id,
       taste,
       // Real hearts (migration 016) lead; freshness (0..1) is the
       // tiebreaker so a brand-new zero-like post still scores above
@@ -783,6 +812,7 @@ export async function getTunedToYou(
         reason: null,
       },
       artistKey: artistId ?? `debate:${d.id}`,
+      releaseKey: d.release_id,
       taste: artistId ? affinityFor(profile, artistId, null) : 0,
       popularity: votes + d.message_count,
       ageDays: ageDays(d.created_at),
@@ -813,9 +843,17 @@ export async function getTunedToYou(
   // uuid, but the payload only carries the slug.
   const releaseIdBySlug = new Map<string, string>();
   for (const r of (releasesRes.data ?? []) as unknown as ReleaseRow[]) {
+    // Already followed or reviewed by the viewer → not a recommendation,
+    // just filler. Out before it costs a candidate slot.
+    if (profile.interactedReleaseIds.has(r.id)) continue;
     const artistName = first(r.artists)?.name ?? "";
     firstTrackBySlug.set(r.slug, r.tracks?.[0]?.title ?? null);
     releaseIdBySlug.set(r.slug, r.id);
+    // Freshness runs off the REAL release date when we have one (an
+    // album imported today but released in 1997 is not "fresh"); the
+    // import date is the fallback. ageDays clamps future dates to 0 =
+    // maximally fresh, which is exactly right for unreleased drops.
+    const age = ageDays(r.release_date ?? r.created_at);
     // "{n} TRACKS · {m} MIN" straight from the tracks[] jsonb we already
     // fetched for the Spotify link — no extra query. Genius-only imports
     // store duration_ms 0 on every track, so a zero total means "we don't
@@ -849,24 +887,47 @@ export async function getTunedToYou(
         reason: null,
       },
       artistKey: r.primary_artist_id ?? artistName.toLowerCase(),
+      releaseKey: r.id,
       taste: affinityFor(profile, r.primary_artist_id, artistName),
-      popularity: followCounts.get(r.id) ?? 0,
-      ageDays: ageDays(r.created_at),
+      // Same starvation fix posts got: real follows lead, freshness
+      // (0..1) is the tiebreaker so a zero-follow release still scores
+      // above zero instead of being eaten by the `score <= 0` guard.
+      popularity:
+        (followCounts.get(r.id) ?? 0) +
+        Math.pow(0.5, age / FRESH_HALF_LIFE_DAYS),
+      ageDays: age,
       reason: r.primary_artist_id
         ? profile.reasonByArtistId.get(r.primary_artist_id) ?? null
         : null,
     });
   }
 
-  /* ── Score: 70% taste / 30% popularity (cold start: popularity only),
-     normalized per content type so no pool's raw scale dominates. ── */
-  const coldStart = profile.signalCount < COLD_START_MIN_SIGNALS;
-  const maxBy = (type: TunedItem["type"], pick: (c: Candidate) => number) =>
-    Math.max(1e-9, ...candidates.filter((c) => c.item.type === type).map(pick));
+  /* ── Hard filter: real negative affinity means the viewer told us
+     they DON'T want this artist (a sub-5 rating goes negative; one bad
+     album alone sits at −2 and only repeat offenders sink past it).
+     The 30% popularity half of the blend could otherwise float a hated
+     artist back into the feed — filter, don't just downrank. −1, not 0,
+     so a mild single-signal dip doesn't erase an artist forever. ── */
+  const scored = candidates.filter((c) => c.taste > -1);
 
-  for (const c of candidates) {
-    const tasteNorm = Math.max(0, c.taste) / maxBy(c.item.type, (x) => Math.max(0, x.taste));
-    const popNorm = c.popularity / maxBy(c.item.type, (x) => x.popularity);
+  /* ── Score: 70% taste / 30% popularity (cold start: popularity only),
+     normalized per content type so no pool's raw scale dominates.
+     Per-type maxima in ONE pre-pass (two small Maps) instead of the
+     old per-candidate maxBy scan — same numbers, O(n) not O(n²). ── */
+  const coldStart = profile.signalCount < COLD_START_MIN_SIGNALS;
+  const maxTaste = new Map<string, number>();
+  const maxPop = new Map<string, number>();
+  for (const c of scored) {
+    const t = c.item.type;
+    // Taste normalizes over max(0, taste) — negatives clamp to 0 here
+    // exactly like the old maxBy did.
+    maxTaste.set(t, Math.max(maxTaste.get(t) ?? 1e-9, Math.max(0, c.taste)));
+    maxPop.set(t, Math.max(maxPop.get(t) ?? 1e-9, c.popularity));
+  }
+
+  for (const c of scored) {
+    const tasteNorm = Math.max(0, c.taste) / (maxTaste.get(c.item.type) ?? 1e-9);
+    const popNorm = c.popularity / (maxPop.get(c.item.type) ?? 1e-9);
     const base = coldStart ? popNorm : 0.7 * tasteNorm + 0.3 * popNorm;
     const fresh = Math.pow(0.5, c.ageDays / FRESH_HALF_LIFE_DAYS);
     // Freshness scales the score but never zeroes it — an old item the
@@ -886,18 +947,24 @@ export async function getTunedToYou(
   }
 
   /* ── Greedy pick with diversity guards. ── */
-  candidates.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   const picked: TunedItem[] = [];
   const perArtist = new Map<string, number>();
   const perType = new Map<string, number>();
-  for (const c of candidates) {
+  // One card per RELEASE across all types: a review of an album, a post
+  // about it, a debate over it, and its premiere card are four takes on
+  // the same thing — the broadcast airs only the strongest one.
+  const pickedReleases = new Set<string>();
+  for (const c of scored) {
     if (picked.length >= TUNED_MAX_ITEMS) break;
     if ((c.score ?? 0) <= 0) continue;
     if ((perArtist.get(c.artistKey) ?? 0) >= TUNED_MAX_PER_ARTIST) continue;
     if ((perType.get(c.item.type) ?? 0) >= TUNED_MAX_PER_TYPE) continue;
+    if (c.releaseKey && pickedReleases.has(c.releaseKey)) continue;
     picked.push(c.item);
     perArtist.set(c.artistKey, (perArtist.get(c.artistKey) ?? 0) + 1);
     perType.set(c.item.type, (perType.get(c.item.type) ?? 0) + 1);
+    if (c.releaseKey) pickedReleases.add(c.releaseKey);
   }
 
   /* ── Post-pick enrichment, PICKED release cards only (≤6, never the

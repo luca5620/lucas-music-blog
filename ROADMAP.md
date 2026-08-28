@@ -52,12 +52,24 @@ session ends mid-task; clear it when the work lands under Done.)*
   shared feed means one standard, loosen only by shrinking the list
   for everyone. Luca verified on device: applereview login works,
   terms/privacy reachable in app; age rating fine.
-  **Luca's hands next:** record the video on the iPhone (one take:
-  signup checkbox + terms → login notice → optional "kys" filter
-  bounce in a comment → flag w/ reason checklist → block + feed
-  empties), attach in ASC Notes, paste the reply (text in the
-  2026-08-27 session; regenerate on ask), resubmit. His timing data:
-  rejection-response reviews run 48h+, plan accordingly.
+  ✅ **RESUBMITTED 2026-08-27 evening.** Luca recorded the new video
+  (iPhone 16 Pro Max, iOS 26.6.1), replied in the ASC thread with
+  the 4-point response + video, updated the App Review Information
+  Notes (evergreen text: app summary + native features + Spotify/
+  Genius licensing + demo creds + all four 1.2 precautions + account
+  deletion location) and attached the new video there too (field
+  takes ONE file — the new recording; old 2.1-round videos live in
+  the thread history, deleted locally, that's fine). Second sweep
+  same day (commits through ab610b3): lists/debates walls filtered,
+  taste debate lane filtered (created_by added to select), BLOCK NOW
+  UNFOLLOWS (empties Friend Activity/Popular with Friends),
+  suggestions + leaderboard exclude blocked, comments surface filter
+  rejections (were silent), signup terms links lost target=_blank.
+  Production-verified live via fetch (signup checkbox + EULA terms
+  page). WAITING on verdict — his estimate ~48-72h (their re-reviews
+  run slower than initial). If rejected again: paste it, fix
+  same-day. Known parked native gap: cold offline launch white-
+  screen (needs Mac rebuild w/ push + iOS 15 bump, post-approval).
 
 - **2026-08-26 (MacBook): Luca's five-item batch — code complete,
   ⚠️ TWO MIGRATIONS TO RUN in the Supabase SQL Editor (023 then

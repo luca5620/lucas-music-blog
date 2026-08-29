@@ -1416,13 +1416,23 @@ body {
   opacity: 0.55;
 }
 
+/* The tab bar's bottom breathing room: the safe-area inset MINUS a
+   16px shift-down (Luca 2026-08-28: "shift it down a decent
+   amount" — the bar hovered a full home-indicator inset above the
+   edge). One shared var so every surface that stacks on the bar
+   (crt-screen padding, surf-fullscreen, live-room sheet) stays
+   flush with its top; max() keeps zero-inset devices at zero. */
+:root {
+  --tab-bar-pad: max(0px, env(safe-area-inset-bottom, 0px) - 16px);
+}
+
 /* Room for the fixed tab bar so page bottoms are never covered.
    3rem matches .crt-screen's own bottom padding. 52px = the tab
    bar's content height (keep in sync with .tab-bar-item sizing and
    .surf-fullscreen's bottom offset — slimmed from 64px, Luca
    2026-08-25: more room for the actual page). */
 .native-app .crt-screen {
-  padding-bottom: calc(3rem + 52px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(3rem + 52px + var(--tab-bar-pad));
 }
 
 /* ============================================================
@@ -1445,7 +1455,7 @@ body {
      identical and stays glued. */
   background: #000;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(--tab-bar-pad);
   /* Equal-width cells (flex:1 on the items) so the five icons land on
      a perfectly even grid, each centered in its fifth of the bar.
      The old space-evenly + content-width scheme equalized WHITESPACE
@@ -1540,7 +1550,7 @@ body {
    under it — 52px matches the bar's content height (see the
    .native-app .crt-screen padding note). */
 .native-app .surf-fullscreen {
-  bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(52px + var(--tab-bar-pad));
 }
 
 /* Enter/exit: fade + slight zoom (Luca's pick, 2026-08-22 — CRT
@@ -1601,7 +1611,7 @@ body {
 /* In the app the bar/sheet sit ABOVE the tab bar (same offset as
    .surf-fullscreen — keep the 52px in sync with the tab bar). */
 .native-app .live-sheet-bottom {
-  bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(52px + var(--tab-bar-pad));
 }
 /* Web phones pad the home-indicator inset INSIDE the bar/sheet;
    the app already cleared it via the bottom offset above. */
@@ -1650,7 +1660,7 @@ body {
   height: 52dvh;
 }
 .native-app .live-sheet-half {
-  --live-sheet-gap: calc(52px + env(safe-area-inset-bottom, 0px));
+  --live-sheet-gap: calc(52px + var(--tab-bar-pad));
 }
 
 /* ============================================================

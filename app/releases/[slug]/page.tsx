@@ -37,9 +37,8 @@ import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
-import ChatPanel, {
-  type ChatMessageWithProfile,
-} from "@/components/rooms/ChatPanel";
+import ReleaseRoomChat from "@/components/rooms/ReleaseRoomChat";
+import { type ChatMessageWithProfile } from "@/components/rooms/ChatPanel";
 import { BreadcrumbSchema, ReleaseSchema } from "@/app/schema";
 import type {
   Profile,
@@ -254,7 +253,9 @@ export default async function ReleasePage({ params }: Props) {
       // overflow-x-clip (not hidden): clips sideways bleed WITHOUT
       // creating a scroll container, which would kill the sticky
       // chat column on desktop. max-w-7xl fits the third column.
-      className="space-y-6 max-w-3xl xl:max-w-7xl mx-auto overflow-x-clip"
+      // pb below xl: the fixed LIVE ROOM bar (ReleaseRoomChat) hugs
+      // the bottom on phones — without this it covers the last rows.
+      className="space-y-6 max-w-3xl xl:max-w-7xl mx-auto overflow-x-clip pb-14 xl:pb-0"
       style={
         {
           "--release-accent": accentColor,
@@ -586,23 +587,23 @@ function ReleaseContent({
 
       {/* Live Room — its own grid column on desktop, filling row 1 so
           its bottom edge lines up flush with the other columns; the
-          full-width reviews band runs underneath all three. On phones
-          it stacks here, between the preview and the reviews. */}
-      <div className="mt-5 sm:mt-6 xl:mt-0 xl:col-start-3 xl:row-start-1 xl:self-stretch">
+          full-width reviews band runs underneath all three. On PHONES
+          the chat leaves the flow entirely (Luca 2026-08-28):
+          ReleaseRoomChat renders a fixed bottom bar + slide-up sheet
+          instead, so the countdown / artwork / Spotify preview stay
+          in view while the chat is up. */}
+      <div className="xl:col-start-3 xl:row-start-1 xl:self-stretch">
         {room && (
-          <>
-            <div className="divider-glow xl:hidden mb-5 sm:mb-6" />
-            <div className="xl:h-full">
-              <ChatPanel
-                releaseId={release.id}
-                initialMessages={initialMessages}
-                initialRoom={room}
-                accentColor={accentColor}
-                initialReactionCounts={initialReactionCounts}
-                initialViewerReactions={initialViewerReactions}
-              />
-            </div>
-          </>
+          <div className="xl:h-full">
+            <ReleaseRoomChat
+              releaseId={release.id}
+              initialMessages={initialMessages}
+              initialRoom={room}
+              accentColor={accentColor}
+              initialReactionCounts={initialReactionCounts}
+              initialViewerReactions={initialViewerReactions}
+            />
+          </div>
         )}
       </div>
 

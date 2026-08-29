@@ -61,6 +61,14 @@ interface ChatPanelProps {
   initialReactionCounts: ReactionCountRow[];
   /** The viewer's own reactions on backlog messages. */
   initialViewerReactions: ViewerReactionRow[];
+  /** "panel" (default) = the bordered in-page card. "sheet" = fills
+      the phone live-room sheet (ReleaseRoomChat): no own border/
+      panel chrome, and the message list flexes to the sheet's
+      height instead of the capped phone height. */
+  variant?: "panel" | "sheet";
+  /** Sheet only: renders a collapse (chevron-down) button in the
+      header row so the room can be tucked back into its bar. */
+  onCollapse?: () => void;
 }
 
 /* ─── Time-ago, ticks each minute via panel-level interval ─── */
@@ -209,7 +217,10 @@ export default function ChatPanel({
   accentColor,
   initialReactionCounts,
   initialViewerReactions,
+  variant = "panel",
+  onCollapse,
 }: ChatPanelProps) {
+  const isSheet = variant === "sheet";
   const { user, profile: myProfile } = useAuth();
   const supabaseRef = useRef(createClient());
   const profileCacheRef = useRef<Map<string, ChatProfile>>(new Map());
@@ -593,12 +604,17 @@ export default function ChatPanel({
   const isEmpty = visibleMessages.length === 0;
 
   return (
-    // xl: fills its grid column (the release page gives it the whole
-    // right side, sticky + viewport-height) — flex column so the
-    // message list absorbs the extra height and scrolls internally.
+    // Panel: xl fills its grid column (the release page gives it the
+    // whole right side) — flex column so the message list absorbs the
+    // extra height and scrolls internally. Sheet: the live-room sheet
+    // brings its own chrome, so no panel border — just fill it.
     <div
-      className="panel-xbox p-4 sm:p-5 space-y-4 relative overflow-hidden xl:h-full xl:flex xl:flex-col"
-      style={{ borderColor: `${accentColor}30` }}
+      className={
+        isSheet
+          ? "h-full flex flex-col px-4 pb-3 space-y-3 relative overflow-hidden"
+          : "panel-xbox p-4 sm:p-5 space-y-4 relative overflow-hidden xl:h-full xl:flex xl:flex-col"
+      }
+      style={isSheet ? undefined : { borderColor: `${accentColor}30` }}
     >
       {/* Header */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -608,8 +624,28 @@ export default function ChatPanel({
           ({visibleMessages.filter((m) => !m.id.startsWith("temp-")).length})
         </span>
         <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           <PresencePile roomId={initialRoom.id} accentColor={accentColor} />
+          {onCollapse && (
+            <button
+              type="button"
+              onClick={onCollapse}
+              aria-label="Collapse the live room"
+              className="w-8 h-8 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
@@ -621,10 +657,14 @@ export default function ChatPanel({
         role="log"
         aria-live="polite"
         aria-label="Live room messages"
-        // Phone: capped height, page scrolls past the room. Desktop
-        // (xl, the full-height column): the cap lifts and the list
-        // flexes to fill whatever the viewport gives it.
-        className="overflow-y-auto pr-1 space-y-3 max-h-[min(60vh,500px)] min-h-[240px] xl:max-h-none xl:flex-1 xl:min-h-0"
+        // Panel on phone: capped height, page scrolls past the room.
+        // Panel on desktop (xl, the full-height column) and the sheet:
+        // the cap lifts and the list flexes to fill its container.
+        className={`overflow-y-auto pr-1 space-y-3 ${
+          isSheet
+            ? "flex-1 min-h-0"
+            : "max-h-[min(60vh,500px)] min-h-[240px] xl:max-h-none xl:flex-1 xl:min-h-0"
+        }`}
       >
         {isEmpty ? (
           <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center gap-3 py-8">
@@ -728,8 +768,9 @@ export default function ChatPanel({
         </div>
       )}
 
-      {/* Scan bar */}
-      <div className="scan-bar" />
+      {/* Scan bar — panel only; the sheet keeps its bottom edge
+          clean for the composer. */}
+      {!isSheet && <div className="scan-bar" />}
     </div>
   );
 }

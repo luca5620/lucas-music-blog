@@ -1566,6 +1566,38 @@ body {
 .sheet-dim-out { animation: sheet-dim 0.2s ease-in reverse forwards; }
 
 /* ============================================================
+   LIVE ROOM SHEET — phone release pages (ReleaseRoomChat.tsx).
+   The chat leaves the page flow: a slim fixed bar hugging the
+   bottom edge (above the app's tab bar) slides a half-screen
+   sheet up; while typing the sheet jumps to the TOP of the page
+   (the ReportButton pattern — the one placement the iOS keyboard
+   can never cover, since WKWebView pans fixed elements when the
+   keyboard is up). z 55 = under the tab bar (60), over content.
+   ============================================================ */
+.live-sheet-fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 55;
+}
+.live-sheet-bottom {
+  bottom: 0;
+}
+/* In the app the bar/sheet sit ABOVE the tab bar (same offset as
+   .surf-fullscreen — keep the 52px in sync with the tab bar). */
+.native-app .live-sheet-bottom {
+  bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+}
+/* Web phones pad the home-indicator inset INSIDE the bar/sheet;
+   the app already cleared it via the bottom offset above. */
+.live-sheet-pad {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.native-app .live-sheet-pad {
+  padding-bottom: 0px;
+}
+
+/* ============================================================
    CHANNEL FRAME — the rebuilt fullscreen broadcast
    (ChannelFrame.tsx, taste overhaul round 3). Everything here is
    thermal-budgeted on purpose: no backdrop-filter, no animated

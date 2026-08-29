@@ -268,6 +268,14 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   ]);
 
   const isOwnProfile = currentUser?.id === profile.id;
+  // Streaming-links privacy (migration 027, Settings checkbox): the
+  // links stay saved, visitors just don't see the icon row. The
+  // owner still sees it, tagged "hidden from visitors".
+  const linksHidden = profile.hide_streaming_links === true;
+  const hasStreamingLinks = streamingServices.some(({ key }) => {
+    const url = profile[key];
+    return !!url && url.startsWith("https://");
+  });
   // Viewer-relative flags need currentUser, so they get a second
   // (small) batch — still one round trip for both together.
   const [userFollows, viewerHasBlocked] =
@@ -525,7 +533,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
         {/* Streaming links + profile song */}
         <div className="flex flex-col sm:flex-row gap-4 items-start">
-          <div className="flex gap-2 flex-wrap">
+          {(!linksHidden || isOwnProfile) && (
+          <div className="flex gap-2 flex-wrap items-center">
             {streamingServices.map(({ key, label, icon: Icon }) => {
               const url = profile[key];
               // Only https links — a stored javascript: URI here would be XSS.
@@ -548,7 +557,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 </a>
               );
             })}
+            {/* Owner-only reminder that the row is private — visitors
+                never reach this branch when linksHidden is on. */}
+            {linksHidden && hasStreamingLinks && (
+              <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">
+                Hidden from visitors
+              </span>
+            )}
           </div>
+          )}
 
           {profile.profile_song_url && profile.profile_song_title && (
             <ProfileSongPlayer

@@ -119,6 +119,13 @@ export default function ProfileSettingsPage() {
   const [soundcloudUrl, setSoundcloudUrl] = useState("");
   const [statsfmUrl, setStatsfmUrl] = useState("");
   const [appleMusicUrl, setAppleMusicUrl] = useState("");
+  // "Don't show these on my profile" — links stay saved (and keep
+  // feeding the stats.fm showcases), visitors just don't see the icon
+  // row. supportsHideLinks gates the checkbox on migration 027 having
+  // run: before the column exists, saving it would fail the whole
+  // update, so the option simply doesn't appear yet.
+  const [hideStreamingLinks, setHideStreamingLinks] = useState(false);
+  const [supportsHideLinks, setSupportsHideLinks] = useState(false);
 
   const themeHex = THEMES.find((t) => t.id === theme)?.hex ?? "#1e90ff";
 
@@ -175,6 +182,8 @@ export default function ProfileSettingsPage() {
         setSoundcloudUrl(p.soundcloud_url ?? "");
         setStatsfmUrl(p.statsfm_url ?? "");
         setAppleMusicUrl(p.apple_music_url ?? "");
+        setHideStreamingLinks(p.hide_streaming_links ?? false);
+        setSupportsHideLinks("hide_streaming_links" in p);
       }
 
       setMyReviews(
@@ -320,6 +329,11 @@ export default function ProfileSettingsPage() {
       soundcloud_url: soundcloudUrl || null,
       statsfm_url: statsfmUrl || null,
       apple_music_url: appleMusicUrl || null,
+      // Only sent once migration 027 exists — an unknown column would
+      // fail the ENTIRE update, taking every other field with it.
+      ...(supportsHideLinks
+        ? { hide_streaming_links: hideStreamingLinks }
+        : {}),
       updated_at: new Date().toISOString(),
     };
 
@@ -858,6 +872,37 @@ export default function ProfileSettingsPage() {
               />
             </FormField>
           </div>
+
+          {/* Privacy toggle (Luca 2026-08-28): connect whatever you
+              want, choose whether visitors see it. Appears once
+              migration 027 has run — see supportsHideLinks above. */}
+          {supportsHideLinks && (
+            <label className="flex items-start gap-2.5 cursor-pointer select-none pt-1">
+              <input
+                type="checkbox"
+                checked={hideStreamingLinks}
+                onChange={(e) => {
+                  setHideStreamingLinks(e.target.checked);
+                  setSaved(false);
+                }}
+                className="w-4 h-4 mt-0.5 shrink-0 accent-current cursor-pointer"
+                style={{ color: themeHex }}
+              />
+              <span className="min-w-0">
+                <span
+                  className="block text-sm font-bold font-[family-name:var(--font-heading)]"
+                  style={{ color: hideStreamingLinks ? themeHex : "#c8c8cc" }}
+                >
+                  Don&apos;t show these on my profile
+                </span>
+                <span className="block text-xs text-text-muted">
+                  Your links stay saved and keep powering things like the
+                  stats.fm showcases — visitors just won&apos;t see the
+                  icon row on your profile.
+                </span>
+              </span>
+            </label>
+          )}
         </fieldset>
 
       </form>

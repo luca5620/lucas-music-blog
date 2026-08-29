@@ -32,6 +32,11 @@ export interface Profile {
   /** Animated streak icon choice (migration 010). May be absent
       until that migration runs — treat undefined as "flame". */
   streak_icon?: "flame" | "vinyl" | "cd";
+  /** Hide the streaming-links icon row from profile VISITORS
+      (migration 027). The links stay saved and keep powering
+      features that read them (stats.fm showcases). May be absent
+      until 027 runs — treat undefined as false. */
+  hide_streaming_links?: boolean;
   created_at: string;
   updated_at: string;
 }

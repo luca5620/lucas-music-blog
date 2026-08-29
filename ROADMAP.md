@@ -640,10 +640,12 @@ inherits it, failing 005's lowercase-only `chk_reviews_slug_format`.
 Also latent: the API cut slugs at 140 while the check caps at 120.
 Fixed: `uniqueReviewSlug` now normalizes the whole base (lowercase +
 strip + cap 116, 43e4237 + follow-up), `createReview` logs the real
-Supabase error to Vercel logs, and **⚠️ MIGRATION 026 NEEDS RUNNING
-in the SQL Editor** — it makes the catalog function lowercase its
-suffixes and lowercases already-minted uppercase slugs. Reviews save
-fine even before 026 runs (the API normalization covers it).
+Supabase error to Vercel logs, and migration 026 (catalog function
+lowercases its suffixes + repairs already-minted uppercase slugs) —
+**026 CONFIRMED RUN by Luca 2026-08-28**. Open thread: BBTM exists as
+TWO catalog rows (two Spotify editions, by design) — Luca hasn't said
+whether he wants the extra row gone. He logged off to restart with
+MORE CHANGES planned, unspecified — he'll bring them next session.
 Casualty: Luca's draft text was lost — the save kept failing, and the
 localStorage backup got discarded by accident before the fix landed.
 

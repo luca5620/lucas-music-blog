@@ -11,6 +11,47 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-08-28 (Windows, round 2 — Luca's batch, all shipped through
+  ac90363, builds green. ⚠️ MIGRATION 027 TO RUN (hide streaming
+  links) — one add-column, everything degrades gracefully until
+  then.** The batch:
+  1. **Taste fullscreen rail** (c5dfc72): heart/comments/VIEW now one
+     stack in the BOTTOM-RIGHT corner, buttons 44→36px, icons
+     20→16px, counts 10px.
+  2. **Taste comments sheet slides** (c5dfc72): IG/TikTok slide-up on
+     open, slide-down on dismiss (new sheet-up/sheet-down + dim
+     keyframes in globals.css, shared with item 4).
+  3. **Streaming-links privacy** (1b5764f): "Don't show these on my
+     profile" checkbox in Settings → Streaming Links; links stay
+     saved (stats.fm showcases keep working), visitors lose the icon
+     row, owner sees it tagged "hidden from visitors". Checkbox only
+     renders once migration 027 exists (unknown column would fail the
+     whole settings save). NOTE: display-level only — the links stay
+     in the world-readable profiles row, same as before.
+  4. **Live room → slide-up sheet on phone release pages** (f7d7055):
+     chat leaves the flow; slim LIVE ROOM bar above the tab bar, tap/
+     slide up → half-screen sheet (countdown/artwork/Spotify preview
+     stay visible above); while typing the sheet jumps to the TOP and
+     fills exactly the visible area above the keyboard
+     (visualViewport-tracked, the ReportButton pattern), snaps back on
+     blur. Desktop xl column unchanged; reviews untouched on purpose.
+     Structure: components/rooms/ReleaseRoomChat.tsx does a real
+     matchMedia fork — ChatPanel must mount ONCE (per-room realtime
+     topic; duplicate subscribe silently no-ops) — and portals bar+
+     sheet to document.body (CRT stacking contexts trap fixed).
+     ChatPanel grew variant="sheet" + onCollapse. live-sheet-* CSS
+     handles app tab-bar offset vs web home-indicator inset.
+  5. **App header** (ac90363): bell panel measured+shifted on open so
+     it can't clip the left edge (was anchored right-0 to the bell,
+     which sits left of CREATE/avatar), panel 20→19rem; bell/CREATE/
+     avatar cluster sized up in the app (pills 11px/8px padding, 17px
+     icons, 32px avatar) — app-only CSS, web untouched.
+  **DEVICE CHECKS PENDING — nothing eyeballed yet.** The big one is
+  the live-room sheet keyboard dance on the iPhone (open sheet → tap
+  composer → sheet fills top above keyboard → send → blur → back to
+  bottom half). Also: rail corner position, comments-sheet slide
+  feel, bell panel fit, header button sizes.
+
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager
   again, whole and only.** His specifics (standing design law now):

@@ -60,6 +60,9 @@ export default function NotificationsBell() {
   const [items, setItems] = useState<NotificationRow[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
+  // How far rightward (px) to shift the panel so it hugs the screen's
+  // right edge instead of the bell's — see toggle().
+  const [panelShift, setPanelShift] = useState(0);
   const boxRef = useRef<HTMLDivElement>(null);
 
   const fetchAll = useCallback(async () => {
@@ -105,6 +108,21 @@ export default function NotificationsBell() {
 
   function toggle() {
     const next = !open;
+    if (next) {
+      // The panel is anchored right-0 to the BELL, but in the app the
+      // bell sits left of CREATE + avatar — a 300px box extending
+      // left from there ran off the screen edge (Luca 2026-08-28:
+      // "cuts off a bit on the left"). Measure once on open and shift
+      // the panel right so its right edge lands 12px from the
+      // screen's; combined with the viewport-capped width below it
+      // can never clip on either side.
+      const r = boxRef.current?.getBoundingClientRect();
+      if (r) {
+        setPanelShift(
+          Math.max(0, Math.round(window.innerWidth - r.right - 12))
+        );
+      }
+    }
     setOpen(next);
     if (next && unread > 0) {
       // Optimistic: badge clears now, server catches up best-effort.
@@ -157,7 +175,10 @@ export default function NotificationsBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-[min(20rem,calc(100vw-2rem))] bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] z-50 overflow-hidden">
+        <div
+          className="absolute top-full mt-2 w-[min(19rem,calc(100vw-1.5rem))] bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] z-50 overflow-hidden"
+          style={{ right: -panelShift }}
+        >
           <p className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-text-secondary border-b border-white/10 font-[family-name:var(--font-heading)]">
             Notifications
           </p>

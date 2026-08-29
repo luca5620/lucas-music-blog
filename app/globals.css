@@ -1313,11 +1313,26 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Cluster sized UP a notch per Luca 2026-08-28 ("the buttons are a
+   little small"): roomier pill paddings, 17px icons (were 14), and
+   a 32px avatar (was 28). App-only — web keeps its own scale. The
+   title clamp above still guarantees no overlap: the logo side is
+   the flexible one and ellipsizes first. */
 .native-app .nav-pill-btn {
-  padding-inline: 8px;
+  padding-inline: 11px;
+  padding-block: 8px;
+}
+.native-app .nav-pill-btn svg {
+  width: 17px;
+  height: 17px;
 }
 .native-app .nav-account-btn {
   padding-inline: 2px;
+}
+.native-app .nav-account-btn img,
+.native-app .nav-account-btn > div {
+  width: 32px;
+  height: 32px;
 }
 .native-app .nav-auth {
   margin-left: 0; /* the 8px gap already spaces it */

@@ -1463,11 +1463,11 @@ body {
      The old space-evenly + content-width scheme equalized WHITESPACE
      instead — right call back when tab labels ranged from HOME to
      RELEASES, but with today's short uniform set it just read as
-     off-center icons (Luca 2026-08-25). 2026-08-28: cells now CAP at
-     76px (see .tab-bar-item) with the row centered — on wide phones
-     (Pro Max fifths ran ~86px) uncapped cells shoved Home/Profile
-     toward the screen edges, far from the middle three. */
-  justify-content: center;
+     off-center icons (Luca 2026-08-25). ⚠️ APPROVED GEOMETRY: full-
+     width uncapped fifths — a 76px cell cap was tried 2026-08-28 and
+     REVERTED same day (icons "too close"; Luca's screenshot matched
+     the uncapped grid). Don't cap or recenter these cells. */
+  justify-content: space-evenly;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   /* Own compositor layer: the bar never repaints with page content */
@@ -1489,11 +1489,6 @@ body {
      Symmetric padding (2026-08-28) so every icon+label block sits
      dead-center in its cell. */
   flex: 1 1 0;
-  /* Cap keeps the five cells from stretching across the whole width
-     of a big phone — Home/Profile stay near the middle three instead
-     of hugging the screen edges (Luca 2026-08-28, second round of
-     this complaint; the cap + centered row is the durable fix). */
-  max-width: 76px;
   min-width: 0;
   display: flex;
   flex-direction: column;

@@ -1621,11 +1621,21 @@ body {
   left: 0;
   right: 0;
   z-index: 55;
+  /* Closed = parked below the viewport. The slide is transform-based
+     and lives HERE, not in a Tailwind translate-y utility — v4's
+     translate-* classes drive the separate `translate` property,
+     which this transition list never covered, so open/close snapped
+     with no animation at all ("it kinda just pops"). The curve is
+     the iOS sheet ease; open/close ride it both ways. */
+  transform: translateY(112%);
   transition:
     top 0.28s ease,
     height 0.28s ease,
     border-radius 0.28s ease,
-    transform 0.34s cubic-bezier(0.32, 0.72, 0.33, 1);
+    transform 0.42s cubic-bezier(0.32, 0.72, 0.33, 1);
+}
+.live-sheet-panel.live-sheet-open {
+  transform: translateY(0);
 }
 /* Half-open geometry: bottom edge sits on the tab bar in the app /
    the screen edge on web, top edge ~half the page up. vh line =

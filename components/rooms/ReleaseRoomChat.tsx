@@ -171,7 +171,9 @@ function LiveRoomSheet({
         aria-label="Open the live room"
         aria-expanded={open}
         className={`live-sheet-fixed live-sheet-bottom live-sheet-pad w-full text-left bg-[#0c0c0f] border-t transition-opacity duration-200 ${
-          open ? "opacity-0 pointer-events-none" : "opacity-100"
+          // delay-150 on the return trip only: the bar fades back in
+          // while the closing sheet is already most of the way down.
+          open ? "opacity-0 pointer-events-none" : "opacity-100 delay-150"
         }`}
         style={{ borderColor: `${accentColor}30` }}
       >
@@ -221,7 +223,7 @@ function LiveRoomSheet({
           kb
             ? "border-b rounded-b-2xl"
             : "live-sheet-pad border-t rounded-t-2xl"
-        } ${open ? "translate-y-0" : "translate-y-[110%]"}`}
+        } ${open ? "live-sheet-open" : ""}`}
         style={
           kb
             ? {

@@ -1417,13 +1417,14 @@ body {
 }
 
 /* The tab bar's bottom breathing room: the safe-area inset MINUS a
-   16px shift-down (Luca 2026-08-28: "shift it down a decent
-   amount" — the bar hovered a full home-indicator inset above the
-   edge). One shared var so every surface that stacks on the bar
-   (crt-screen padding, surf-fullscreen, live-room sheet) stays
-   flush with its top; max() keeps zero-inset devices at zero. */
+   10px shift-down. One shared var so every surface that stacks on
+   the bar (crt-screen padding, surf-fullscreen, live-room sheet)
+   stays flush with its top; max() keeps zero-inset devices at zero.
+   ⚠️ APPROVED POSITION (Luca 2026-08-28): dropped 16px ("decent
+   amount"), then raised 6 → "perfect". Don't move it again without
+   his say-so. */
 :root {
-  --tab-bar-pad: max(0px, env(safe-area-inset-bottom, 0px) - 16px);
+  --tab-bar-pad: max(0px, env(safe-area-inset-bottom, 0px) - 10px);
 }
 
 /* Room for the fixed tab bar so page bottoms are never covered.

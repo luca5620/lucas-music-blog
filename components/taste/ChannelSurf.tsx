@@ -62,7 +62,7 @@ const EXIT_ANIM_MS = 170;
 /* ─── Fullscreen action rail ─── */
 
 const railBtnClass =
-  "w-11 h-11 rounded-full border border-white/15 bg-black/50 flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors";
+  "w-9 h-9 rounded-full border border-white/15 bg-black/50 flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors";
 
 /** Vertical heart — optimistic toggle against the same endpoints the
     feed like buttons use. State lives in the shared like store
@@ -129,7 +129,7 @@ function RailLike({
       >
         <svg
           viewBox="0 0 24 24"
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill={liked ? "currentColor" : "none"}
           stroke="currentColor"
           strokeWidth={1.8}
@@ -139,7 +139,7 @@ function RailLike({
           <path d="M12 20.5 4.7 13a4.8 4.8 0 0 1 0-6.8 4.7 4.7 0 0 1 6.7 0l.6.6.6-.6a4.7 4.7 0 0 1 6.7 0 4.8 4.8 0 0 1 0 6.8L12 20.5z" />
         </svg>
       </button>
-      <span className="pixel-text text-xs text-text-secondary tabular-nums">
+      <span className="pixel-text text-[10px] text-text-secondary tabular-nums">
         {count}
       </span>
     </span>
@@ -523,9 +523,11 @@ function SurfCard({
       </div>
 
       {/* Action rail — fullscreen only. Heart + comments on cards
-          that support them; every card gets "open the page". */}
+          that support them; every card gets "open the page". All
+          three sit as one stack in the BOTTOM-RIGHT corner (Luca
+          2026-08-28), clear of the home indicator on web phones. */}
       {fullscreen && (
-        <div className="absolute right-2.5 bottom-16 z-10 flex flex-col items-center gap-4">
+        <div className="absolute right-2.5 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] z-10 flex flex-col items-center gap-3">
           {(item.type === "review" || item.type === "post") && (
             <RailLike
               kind={item.type}
@@ -552,7 +554,7 @@ function SurfCard({
               >
                 <svg
                   viewBox="0 0 24 24"
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={1.8}
@@ -562,7 +564,7 @@ function SurfCard({
                   <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
                 </svg>
               </button>
-              <span className="pixel-text text-xs text-text-secondary tabular-nums">
+              <span className="pixel-text text-[10px] text-text-secondary tabular-nums">
                 {item.comment_count}
               </span>
             </span>
@@ -578,7 +580,7 @@ function SurfCard({
             >
               <svg
                 viewBox="0 0 24 24"
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.8}
@@ -647,6 +649,20 @@ export default function ChannelSurf({
   const [closing, setClosing] = useState(false);
   // The review whose comments sheet is open (fullscreen only).
   const [commentsFor, setCommentsFor] = useState<string | null>(null);
+  // Sheet dismissal plays the slide-down first, then unmounts —
+  // the IG/TikTok feel (Luca 2026-08-28: slides up from the bottom,
+  // so it slides back down too).
+  const [commentsClosing, setCommentsClosing] = useState(false);
+  const closeComments = useCallback(() => {
+    setCommentsClosing((already) => {
+      if (already) return already;
+      window.setTimeout(() => {
+        setCommentsFor(null);
+        setCommentsClosing(false);
+      }, 190);
+      return true;
+    });
+  }, []);
   // App shell only: swap the per-card CSS-blurred cover backdrops for
   // ONE hardware-decoded ambient loop behind the whole pager
   // (public/backdrops/taste.mp4 — the molten liquid, rendered as
@@ -699,7 +715,7 @@ export default function ChannelSurf({
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       // Esc peels one layer at a time: sheet first, then fullscreen.
-      if (commentsForRef.current) setCommentsFor(null);
+      if (commentsForRef.current) closeComments();
       else close();
     };
     window.addEventListener("keydown", onKey);
@@ -805,20 +821,27 @@ export default function ChannelSurf({
       </div>
 
       {/* Comments sheet — read AND write without leaving the channel
-          (Luca 2026-08-22). Bottom sheet over the pager; backdrop or
-          ✕ (or Esc) drops you back exactly where you were. */}
+          (Luca 2026-08-22). Slides up from the bottom edge like the
+          IG/TikTok comment sheets (Luca 2026-08-28); backdrop or
+          ✕ (or Esc) slides it back down to exactly where you were. */}
       {fullscreen && commentsFor && (
         <>
           <div
-            className="absolute inset-0 z-20 bg-black/60"
-            onClick={() => setCommentsFor(null)}
+            className={`absolute inset-0 z-20 bg-black/60 ${
+              commentsClosing ? "sheet-dim-out" : "sheet-dim-in"
+            }`}
+            onClick={closeComments}
           />
-          <div className="absolute inset-x-0 bottom-0 top-[18%] z-30 bg-[#0c0c0f] border-t border-border-medium rounded-t-2xl flex flex-col overflow-hidden">
+          <div
+            className={`absolute inset-x-0 bottom-0 top-[18%] z-30 bg-[#0c0c0f] border-t border-border-medium rounded-t-2xl flex flex-col overflow-hidden ${
+              commentsClosing ? "sheet-anim-out" : "sheet-anim-in"
+            }`}
+          >
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 shrink-0">
               <span className="label-xbox">Comments</span>
               <button
                 type="button"
-                onClick={() => setCommentsFor(null)}
+                onClick={closeComments}
                 aria-label="Close comments"
                 className="w-8 h-8 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
               >

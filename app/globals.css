@@ -1543,6 +1543,29 @@ body {
 .surf-fullscreen.surf-anim-out { animation: surf-exit 0.18s ease-in forwards; }
 
 /* ============================================================
+   BOTTOM SHEETS — the IG/TikTok-style slide-up used by the taste
+   pager's comments sheet and the release live-room sheet. The
+   exit class is applied ~200ms before unmount so the slide-down
+   can finish; the dim backdrop fades in step with the sheet.
+   ============================================================ */
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes sheet-down {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+.sheet-anim-in { animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0.33, 1); }
+.sheet-anim-out { animation: sheet-down 0.2s ease-in forwards; }
+@keyframes sheet-dim {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.sheet-dim-in { animation: sheet-dim 0.28s ease; }
+.sheet-dim-out { animation: sheet-dim 0.2s ease-in reverse forwards; }
+
+/* ============================================================
    CHANNEL FRAME — the rebuilt fullscreen broadcast
    (ChannelFrame.tsx, taste overhaul round 3). Everything here is
    thermal-budgeted on purpose: no backdrop-filter, no animated

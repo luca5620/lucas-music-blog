@@ -78,11 +78,17 @@ remnants: every piece of content is community-made and catalog-backed.
   now and then if its too low ill tell you to raise it back up").
   New :root --tab-bar-pad, used by the bar AND everything stacking
   on it (crt-screen padding, surf-fullscreen, live-room bar/sheet)
-  so they stay flush. ✅ FINAL (a831077): went down 16px, raised 6
-  back → inset − 10px = Luca's "perfect". ⚠️ STANDING RULE from him:
-  the app's TOP section and the TAB BAR are both in approved spots
-  now — do NOT touch either without his explicit ask. Session close:
-  "all changes have been great today".
+  so they stay flush. ✅ FINAL after several tuning rounds (through
+  c87bd49, Luca: "yup all good"): --tab-bar-pad = FLAT 28px (plain
+  number, no inset math), tab cells symmetric 6px padding, and
+  horizontal geometry = full-width UNCAPPED equal fifths (a 76px
+  cell cap was tried and reverted same day — his reference
+  screenshot matched the uncapped grid; capping read "too close").
+  ⚠️ STANDING RULE from him: the app's TOP section and the TAB BAR
+  are both in approved spots — do NOT touch either (position, size,
+  cell geometry) without his explicit ask; the approved values are
+  commented in globals.css. Session close: "all changes have been
+  great today".
 
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager

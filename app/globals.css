@@ -1421,10 +1421,11 @@ body {
    the bar (crt-screen padding, surf-fullscreen, live-room sheet)
    stays flush with its top; max() keeps zero-inset devices at zero.
    Position history (Luca 2026-08-28): original = full inset (~34px
-   on his iPhone) → −16px → −10px → −6px, his call each step. Don't
-   move it again without his say-so. */
+   on his iPhone) → −16px → −10px → −6px → FLAT 28px, his final
+   call — no more inset/max() math, the same plain number on every
+   device. Don't move it again without his say-so. */
 :root {
-  --tab-bar-pad: max(0px, env(safe-area-inset-bottom, 0px) - 6px);
+  --tab-bar-pad: 28px;
 }
 
 /* Room for the fixed tab bar so page bottoms are never covered.
@@ -1481,7 +1482,9 @@ body {
 .tab-bar-item {
   /* One equal cell per tab — see the .tab-bar comment. Trimmed
      paddings slim the whole bar (content height 52px, was ~64):
-     the icons sit lower and the page gets the reclaimed room. */
+     the icons sit lower and the page gets the reclaimed room.
+     Symmetric padding (2026-08-28) so every icon+label block sits
+     dead-center in its cell. */
   flex: 1 1 0;
   min-width: 0;
   display: flex;
@@ -1489,7 +1492,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 5px 2px 6px;
+  padding: 6px 2px;
   color: var(--text-muted);
   font-family: var(--font-heading);
   font-size: 10px;

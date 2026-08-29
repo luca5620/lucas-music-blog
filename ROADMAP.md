@@ -631,15 +631,21 @@ session ends mid-task; clear it when the work lands under Done.)*
 
 ## ✅ Done
 
-### Review save failing on long titles — slug cap fix (2026-08-28, Windows)
-Luca hit "Failed to create review." saving a draft. Cause: migration
-005's `chk_reviews_slug_format` caps review slugs at 120 chars, but
-`uniqueReviewSlug` cut its base at 140 and release slugs are uncapped,
-so a long album title + artist + `-by-username` blew the check and the
-insert died silently. Fixed (43e4237): base now cut at 116 (room for
-the `-N` collision suffix), no dangling hyphen, and `createReview`
-logs the real Supabase error to the Vercel function logs so the next
-insert failure isn't blind.
+### Review save failing — slug bugs, TWO of them (2026-08-28, Windows)
+Luca hit "Failed to create review." saving a draft. REAL cause (found
+by querying prod): `catalog_import_release` (006) appends a RAW
+mixed-case spotify-id tail on slug collisions — his BBTM copy got slug
+`beauty-behind-the-madness-the-weeknd-GL7s` — and the review slug
+inherits it, failing 005's lowercase-only `chk_reviews_slug_format`.
+Also latent: the API cut slugs at 140 while the check caps at 120.
+Fixed: `uniqueReviewSlug` now normalizes the whole base (lowercase +
+strip + cap 116, 43e4237 + follow-up), `createReview` logs the real
+Supabase error to Vercel logs, and **⚠️ MIGRATION 026 NEEDS RUNNING
+in the SQL Editor** — it makes the catalog function lowercase its
+suffixes and lowercases already-minted uppercase slugs. Reviews save
+fine even before 026 runs (the API normalization covers it).
+Casualty: Luca's draft text was lost — the save kept failing, and the
+localStorage backup got discarded by accident before the fix landed.
 
 ### App-only "check out our website" plug on home (2026-08-26, MacBook)
 End of the home scroll (both splash and dashboard), `.app-only`, OSD

@@ -52,10 +52,15 @@ async function uniqueReviewSlug(
 ): Promise<string | null> {
   const safeUser = username.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   // The DB enforces chk_reviews_slug_format: ^[a-z0-9-]{1,120}$. Release
-  // slugs are uncapped (long album title + artist name), so cut the base
-  // at 116 — room for the widest collision suffix ("-20") to still fit —
-  // and drop any hyphen the cut leaves dangling.
+  // slugs are uncapped AND can carry uppercase (catalog_import_release
+  // appended a raw spotify-id tail on slug collisions until migration
+  // 026 — e.g. "...-the-weeknd-GL7s"), so normalize the whole base to
+  // the check's alphabet, then cut at 116 — room for the widest
+  // collision suffix ("-20") — and drop any hyphen the cut leaves
+  // dangling.
   const base = `${releaseSlug}-by-${safeUser}`
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
     .slice(0, 116)
     .replace(/-+$/, "");
   if (!(await reviewSlugTaken(base))) return base;

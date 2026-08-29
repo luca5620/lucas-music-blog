@@ -73,6 +73,13 @@ remnants: every piece of content is community-made and catalog-backed.
   silent no-op) and the room header's "(n)" message counter is gone
   in both variants (the presence pile carries "N here"). Comment
   counts on reviews/posts/taste rail untouched per Luca.
+  **Follow-up ca3160b** — app tab bar shifted DOWN 16px (Luca: it
+  hovered the full home-indicator inset up; "do it a decent amount
+  now and then if its too low ill tell you to raise it back up").
+  New :root --tab-bar-pad = max(0, inset − 16px), used by the bar
+  AND everything stacking on it (crt-screen padding, surf-fullscreen,
+  live-room bar/sheet) so they stay flush. Tune the ONE var if he
+  wants it raised/lowered. Awaiting his verdict on the height.
 
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager

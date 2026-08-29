@@ -33,6 +33,11 @@ interface PresencePileProps {
   roomId: string;
   accentColor: string;
   maxVisible?: number;
+  /** Reports the live head-count (users + guests) upward whenever it
+      changes. The collapsed live-room bar shows this number — it
+      can't subscribe itself, since a duplicate presence topic would
+      silently no-op (see the header comment). */
+  onCountChange?: (count: number) => void;
 }
 
 interface UserPresenceMeta {
@@ -100,6 +105,7 @@ export default function PresencePile({
   roomId,
   accentColor,
   maxVisible = 5,
+  onCountChange,
 }: PresencePileProps) {
   const { user, profile } = useAuth();
   const supabaseRef = useRef(createClient());
@@ -184,6 +190,13 @@ export default function PresencePile({
   }, [roomId, user?.id]);
 
   const totalCount = snapshot.users.length + snapshot.anonCount;
+
+  // Report the head-count upward (must sit above the early return —
+  // hooks can't be conditional, and 0 is a real value to report).
+  useEffect(() => {
+    onCountChange?.(totalCount);
+  }, [totalCount, onCountChange]);
+
   if (totalCount === 0) return null;
 
   const visible = snapshot.users.slice(0, maxVisible);

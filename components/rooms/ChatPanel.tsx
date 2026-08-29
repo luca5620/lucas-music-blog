@@ -69,6 +69,10 @@ interface ChatPanelProps {
   /** Sheet only: renders a collapse (chevron-down) button in the
       header row so the room can be tucked back into its bar. */
   onCollapse?: () => void;
+  /** Live head-count relay (PresencePile → here → the collapsed bar).
+      The bar can't run its own presence subscription — a duplicate
+      topic subscribe is a silent no-op (see PresencePile's header). */
+  onPresenceChange?: (count: number) => void;
 }
 
 /* ─── Time-ago, ticks each minute via panel-level interval ─── */
@@ -219,6 +223,7 @@ export default function ChatPanel({
   initialViewerReactions,
   variant = "panel",
   onCollapse,
+  onPresenceChange,
 }: ChatPanelProps) {
   const isSheet = variant === "sheet";
   const { user, profile: myProfile } = useAuth();
@@ -616,16 +621,19 @@ export default function ChatPanel({
       }
       style={isSheet ? undefined : { borderColor: `${accentColor}30` }}
     >
-      {/* Header */}
+      {/* Header — no message counter here (Luca 2026-08-28: live
+          rooms surface PEOPLE, not comment tallies; the presence
+          pile on the right carries the "N here" head-count). */}
       <div className="flex items-center gap-2 flex-wrap">
         <span className="glow-orb" />
         <span className="label-xbox">Live Room</span>
-        <span className="text-xs text-text-muted ml-1">
-          ({visibleMessages.filter((m) => !m.id.startsWith("temp-")).length})
-        </span>
         <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
         <div className="ml-auto flex items-center gap-2">
-          <PresencePile roomId={initialRoom.id} accentColor={accentColor} />
+          <PresencePile
+            roomId={initialRoom.id}
+            accentColor={accentColor}
+            onCountChange={onPresenceChange}
+          />
           {onCollapse && (
             <button
               type="button"

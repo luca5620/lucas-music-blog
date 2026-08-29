@@ -87,6 +87,11 @@ function LiveRoomSheet({
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  // Live head-count for the collapsed bar (Luca 2026-08-28: rooms
+  // show PEOPLE, not comment counts). Relayed up from PresencePile
+  // through ChatPanel — the sheet keeps ChatPanel mounted while
+  // closed, so the number stays live behind the bar.
+  const [present, setPresent] = useState(0);
   // Keyboard mode: composer focused → sheet fills the top instead.
   const [kb, setKb] = useState(false);
   // The visible area above the keyboard, in layout-viewport coords.
@@ -156,8 +161,6 @@ function LiveRoomSheet({
     blurTimer.current = window.setTimeout(() => setKb(false), 160);
   };
 
-  const messageCount = initialMessages.length;
-
   if (!mounted) return null;
 
   return createPortal(
@@ -186,7 +189,13 @@ function LiveRoomSheet({
             }}
           />
           <span className="label-xbox">Live Room</span>
-          <span className="text-xs text-text-muted">({messageCount})</span>
+          {/* Who's here right now — not a comment tally. Hidden until
+              the presence sync lands (a beat after page load). */}
+          {present > 0 && (
+            <span className="text-xs text-text-muted tabular-nums">
+              {present} here
+            </span>
+          )}
           <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
           {/* The up arrow = the press affordance (mirrors the header's
               chevron-down that tucks the sheet away). */}
@@ -244,6 +253,7 @@ function LiveRoomSheet({
             initialViewerReactions={initialViewerReactions}
             variant="sheet"
             onCollapse={closeSheet}
+            onPresenceChange={setPresent}
           />
         </div>
       </div>

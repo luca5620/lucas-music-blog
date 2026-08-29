@@ -12,9 +12,10 @@ remnants: every piece of content is community-made and catalog-backed.
 ## ⏳ In progress
 
 - **2026-08-28 (Windows, round 2 — Luca's batch, all shipped through
-  ac90363, builds green. ⚠️ MIGRATION 027 TO RUN (hide streaming
-  links) — one add-column, everything degrades gracefully until
-  then.** The batch:
+  ac90363, builds green. ✅ MIGRATION 027 CONFIRMED RUN (Luca,
+  2026-08-28 — verified via anon-key REST probe: profiles rows answer
+  with hide_streaming_links=false). ALL migrations through 027 now
+  applied.** The batch:
   1. **Taste fullscreen rail** (c5dfc72): heart/comments/VIEW now one
      stack in the BOTTOM-RIGHT corner, buttons 44→36px, icons
      20→16px, counts 10px.
@@ -63,7 +64,7 @@ remnants: every piece of content is community-made and catalog-backed.
   iOS sheet curve; bar fade-in delayed 150ms on close. ⚠️ Repo-wide
   gotcha: transitioning Tailwind translate/rotate/scale utilities
   needs `translate`/`rotate`/`scale` in the transition property list,
-  NOT `transform`.
+  NOT `transform`. Migration 027 RUN ✓ same day (probe-verified).
 
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager

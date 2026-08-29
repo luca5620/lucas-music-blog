@@ -76,10 +76,13 @@ remnants: every piece of content is community-made and catalog-backed.
   **Follow-up ca3160b** — app tab bar shifted DOWN 16px (Luca: it
   hovered the full home-indicator inset up; "do it a decent amount
   now and then if its too low ill tell you to raise it back up").
-  New :root --tab-bar-pad = max(0, inset − 16px), used by the bar
-  AND everything stacking on it (crt-screen padding, surf-fullscreen,
-  live-room bar/sheet) so they stay flush. Tune the ONE var if he
-  wants it raised/lowered. Awaiting his verdict on the height.
+  New :root --tab-bar-pad, used by the bar AND everything stacking
+  on it (crt-screen padding, surf-fullscreen, live-room bar/sheet)
+  so they stay flush. ✅ FINAL (a831077): went down 16px, raised 6
+  back → inset − 10px = Luca's "perfect". ⚠️ STANDING RULE from him:
+  the app's TOP section and the TAB BAR are both in approved spots
+  now — do NOT touch either without his explicit ask. Session close:
+  "all changes have been great today".
 
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager

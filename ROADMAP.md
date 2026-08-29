@@ -46,11 +46,15 @@ remnants: every piece of content is community-made and catalog-backed.
      which sits left of CREATE/avatar), panel 20→19rem; bell/CREATE/
      avatar cluster sized up in the app (pills 11px/8px padding, 17px
      icons, 32px avatar) — app-only CSS, web untouched.
-  **DEVICE CHECKS PENDING — nothing eyeballed yet.** The big one is
-  the live-room sheet keyboard dance on the iPhone (open sheet → tap
-  composer → sheet fills top above keyboard → send → blur → back to
-  bottom half). Also: rail corner position, comments-sheet slide
-  feel, bell panel fit, header button sizes.
+  **DEVICE VERDICT (same day): "everything works"** → polish round
+  a855e8f per Luca: (a) half-open↔keyboard morph no longer snaps —
+  sheet geometry is top+height in BOTH modes (.live-sheet-half class,
+  vh fallback under dvh; keyboard mode overrides inline from
+  visualViewport) so .live-sheet-panel transitions top/height/radius;
+  (b) the bar FADES while the sheet slides (one motion, not two);
+  (c) grab-handle tab REMOVED + all slide gestures gone — buttons
+  only: up arrow on the bar opens, header chevron-down closes.
+  Polish round not yet eyeballed; migration 027 still to run.
 
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager

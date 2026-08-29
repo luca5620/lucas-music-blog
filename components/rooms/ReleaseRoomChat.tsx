@@ -7,8 +7,9 @@
  * Desktop (xl+): the classic ChatPanel column, unchanged.
  *
  * Phones (web + app): the chat LEAVES the page flow. A slim LIVE
- * ROOM bar hugs the bottom edge (above the app's tab bar); tapping
- * or sliding it up opens a half-screen sheet, so the countdown /
+ * ROOM bar hugs the bottom edge (above the app's tab bar); pressing
+ * it (buttons only — no slide gestures, no grab handle, Luca
+ * 2026-08-28) opens a half-screen sheet, so the countdown /
  * artwork / Spotify preview stay in view above while you watch the
  * chat. While typing, the sheet jumps to the TOP of the page and
  * fills exactly the visible area above the keyboard (tracked via
@@ -94,7 +95,6 @@ function LiveRoomSheet({
   );
   const sheetRef = useRef<HTMLDivElement>(null);
   const blurTimer = useRef<number | null>(null);
-  const touchY = useRef(0);
 
   // The bar/sheet portal to document.body: the release panel's CRT
   // chrome creates transform/filter stacking contexts that would
@@ -162,20 +162,16 @@ function LiveRoomSheet({
 
   return createPortal(
     <>
-      {/* ── Collapsed bar — tap or slide up to open ── */}
+      {/* ── Collapsed bar — press to open (buttons only, no slide
+          gesture: Luca 2026-08-28). It fades while the sheet slides
+          so there's one clean motion, not two. ── */}
       <button
         type="button"
         onClick={openSheet}
-        onTouchStart={(e) => {
-          touchY.current = e.touches[0].clientY;
-        }}
-        onTouchMove={(e) => {
-          if (touchY.current - e.touches[0].clientY > 24) openSheet();
-        }}
         aria-label="Open the live room"
         aria-expanded={open}
-        className={`live-sheet-fixed live-sheet-bottom live-sheet-pad w-full text-left bg-[#0c0c0f] border-t transition-transform duration-300 ${
-          open ? "translate-y-[110%]" : "translate-y-0"
+        className={`live-sheet-fixed live-sheet-bottom live-sheet-pad w-full text-left bg-[#0c0c0f] border-t transition-opacity duration-200 ${
+          open ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
         style={{ borderColor: `${accentColor}30` }}
       >
@@ -190,8 +186,9 @@ function LiveRoomSheet({
           <span className="label-xbox">Live Room</span>
           <span className="text-xs text-text-muted">({messageCount})</span>
           <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
-          <span className="ml-auto pixel-text text-[10px] uppercase tracking-widest text-text-secondary inline-flex items-center gap-1.5">
-            Slide up
+          {/* The up arrow = the press affordance (mirrors the header's
+              chevron-down that tucks the sheet away). */}
+          <span className="ml-auto w-8 h-8 rounded-full border border-border-medium text-text-secondary inline-flex items-center justify-center">
             <svg
               viewBox="0 0 24 24"
               className="w-4 h-4"
@@ -207,7 +204,12 @@ function LiveRoomSheet({
         </span>
       </button>
 
-      {/* ── The sheet — half the page; top-filling while typing ── */}
+      {/* ── The sheet — half the page; top-filling while typing.
+          live-sheet-half carries the half-open top/height; keyboard
+          mode overrides them inline, so bottom↔top is a smooth
+          top/height/radius morph (transitions in .live-sheet-panel)
+          instead of a snap. No grab handle, no drag gestures — the
+          header's chevron-down (onCollapse) is the way back down. ── */}
       <div
         ref={sheetRef}
         role="dialog"
@@ -215,10 +217,10 @@ function LiveRoomSheet({
         inert={!open}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        className={`live-sheet-fixed bg-[#0c0c0f] border-border-medium flex flex-col overflow-hidden transition-transform duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0.33,1)] ${
+        className={`live-sheet-panel live-sheet-half bg-[#0c0c0f] border-border-medium flex flex-col overflow-hidden ${
           kb
             ? "border-b rounded-b-2xl"
-            : "live-sheet-bottom live-sheet-pad border-t rounded-t-2xl"
+            : "live-sheet-pad border-t rounded-t-2xl"
         } ${open ? "translate-y-0" : "translate-y-[110%]"}`}
         style={
           kb
@@ -227,24 +229,9 @@ function LiveRoomSheet({
                 height: vvBox ? vvBox.height : "50vh",
                 paddingTop: "env(safe-area-inset-top, 0px)",
               }
-            : { height: "52svh" }
+            : undefined
         }
       >
-        {/* Grab handle — drag down to tuck the room away (the header
-            chevron ChatPanel renders via onCollapse also closes). */}
-        <div
-          className="shrink-0 flex justify-center pt-2 pb-1"
-          onTouchStart={(e) => {
-            touchY.current = e.touches[0].clientY;
-          }}
-          onTouchMove={(e) => {
-            if (!kb && e.touches[0].clientY - touchY.current > 32) {
-              closeSheet();
-            }
-          }}
-        >
-          <span className="w-10 h-1 rounded-full bg-white/20" />
-        </div>
         <div className="flex-1 min-h-0">
           <ChatPanel
             releaseId={releaseId}

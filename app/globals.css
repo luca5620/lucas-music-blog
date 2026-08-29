@@ -1611,6 +1611,37 @@ body {
 .native-app .live-sheet-pad {
   padding-bottom: 0px;
 }
+/* The sheet itself. Geometry is TOP+HEIGHT in both modes (half-open
+   and keyboard/top-fill) so the morph between them can actually
+   transition — bottom-anchoring one mode would snap (top: auto
+   doesn't animate). Transform is the open/close slide; top/height/
+   radius morph when the keyboard shows. */
+.live-sheet-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 55;
+  transition:
+    top 0.28s ease,
+    height 0.28s ease,
+    border-radius 0.28s ease,
+    transform 0.34s cubic-bezier(0.32, 0.72, 0.33, 1);
+}
+/* Half-open geometry: bottom edge sits on the tab bar in the app /
+   the screen edge on web, top edge ~half the page up. vh line =
+   fallback for engines without dvh; dvh tracks Safari's collapsing
+   chrome. Keyboard mode overrides top/height inline (JS-measured
+   from visualViewport), so this class can stay put. */
+.live-sheet-half {
+  --live-sheet-gap: 0px;
+  top: calc(100vh - 52vh - var(--live-sheet-gap));
+  height: 52vh;
+  top: calc(100dvh - 52dvh - var(--live-sheet-gap));
+  height: 52dvh;
+}
+.native-app .live-sheet-half {
+  --live-sheet-gap: calc(52px + env(safe-area-inset-bottom, 0px));
+}
 
 /* ============================================================
    CHANNEL FRAME — the rebuilt fullscreen broadcast

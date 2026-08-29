@@ -611,7 +611,7 @@ export default function ChatPanel({
     <div
       className={
         isSheet
-          ? "h-full flex flex-col px-4 pb-3 space-y-3 relative overflow-hidden"
+          ? "h-full flex flex-col px-4 pt-3 pb-3 space-y-3 relative overflow-hidden"
           : "panel-xbox p-4 sm:p-5 space-y-4 relative overflow-hidden xl:h-full xl:flex xl:flex-col"
       }
       style={isSheet ? undefined : { borderColor: `${accentColor}30` }}

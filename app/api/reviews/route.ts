@@ -51,7 +51,13 @@ async function uniqueReviewSlug(
   username: string
 ): Promise<string | null> {
   const safeUser = username.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const base = `${releaseSlug}-by-${safeUser}`.slice(0, 140);
+  // The DB enforces chk_reviews_slug_format: ^[a-z0-9-]{1,120}$. Release
+  // slugs are uncapped (long album title + artist name), so cut the base
+  // at 116 — room for the widest collision suffix ("-20") to still fit —
+  // and drop any hyphen the cut leaves dangling.
+  const base = `${releaseSlug}-by-${safeUser}`
+    .slice(0, 116)
+    .replace(/-+$/, "");
   if (!(await reviewSlugTaken(base))) return base;
   for (let n = 2; n <= 20; n++) {
     const candidate = `${base}-${n}`;

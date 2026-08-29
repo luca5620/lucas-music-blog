@@ -142,7 +142,12 @@ export async function createReview(
     .select()
     .single();
 
-  if (error || !data) return null;
+  if (error || !data) {
+    // The API route answers a generic 500 — keep the real reason
+    // findable in the Vercel function logs instead of swallowing it.
+    console.error("createReview insert failed:", error?.message ?? "no row");
+    return null;
+  }
   return data as Review;
 }
 

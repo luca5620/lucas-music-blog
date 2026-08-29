@@ -55,6 +55,15 @@ remnants: every piece of content is community-made and catalog-backed.
   (c) grab-handle tab REMOVED + all slide gestures gone — buttons
   only: up arrow on the bar opens, header chevron-down closes.
   Polish round not yet eyeballed; migration 027 still to run.
+  **Follow-up 9860d1b** — Luca: open/close "kinda just pops". It
+  literally didn't animate: Tailwind v4's translate-y-* utilities
+  drive the CSS `translate` property, which the transition list
+  (transform only) never covered. Slide moved into
+  .live-sheet-panel/.live-sheet-open's own transform with a 0.42s
+  iOS sheet curve; bar fade-in delayed 150ms on close. ⚠️ Repo-wide
+  gotcha: transitioning Tailwind translate/rotate/scale utilities
+  needs `translate`/`rotate`/`scale` in the transition property list,
+  NOT `transform`.
 
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager

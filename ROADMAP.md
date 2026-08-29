@@ -631,6 +631,16 @@ session ends mid-task; clear it when the work lands under Done.)*
 
 ## ✅ Done
 
+### Review save failing on long titles — slug cap fix (2026-08-28, Windows)
+Luca hit "Failed to create review." saving a draft. Cause: migration
+005's `chk_reviews_slug_format` caps review slugs at 120 chars, but
+`uniqueReviewSlug` cut its base at 140 and release slugs are uncapped,
+so a long album title + artist + `-by-username` blew the check and the
+insert died silently. Fixed (43e4237): base now cut at 116 (room for
+the `-N` collision suffix), no dangling hyphen, and `createReview`
+logs the real Supabase error to the Vercel function logs so the next
+insert failure isn't blind.
+
 ### App-only "check out our website" plug on home (2026-08-26, MacBook)
 End of the home scroll (both splash and dashboard), `.app-only`, OSD
 styling: "For a better experience, check out our website" +

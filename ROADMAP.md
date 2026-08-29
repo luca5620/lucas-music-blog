@@ -65,6 +65,14 @@ remnants: every piece of content is community-made and catalog-backed.
   gotcha: transitioning Tailwind translate/rotate/scale utilities
   needs `translate`/`rotate`/`scale` in the transition property list,
   NOT `transform`. Migration 027 RUN ✓ same day (probe-verified).
+  **Follow-up a6690ec** — animations approved ("look good now,
+  everything works") → live rooms now count PEOPLE, not comments:
+  the bar shows a live "N here" head-count (PresencePile
+  onCountChange → ChatPanel onPresenceChange → bar; a second
+  presence subscription was never an option — duplicate topic =
+  silent no-op) and the room header's "(n)" message counter is gone
+  in both variants (the presence pile carries "N here"). Comment
+  counts on reviews/posts/taste rail untouched per Luca.
 
 - **2026-08-28 (Windows): ⚠️ BROADCAST OVERHAUL REVERTED per Luca's
   verdict — the /your-taste page is the pre-overhaul sliding pager

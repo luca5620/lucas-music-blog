@@ -12,9 +12,12 @@ remnants: every piece of content is community-made and catalog-backed.
 ## ⏳ In progress
 
 - **2026-08-31 (MacBook): LAUNCH-DAY BATCH — app is LIVE on the App
-  Store; Luca's post-launch list, code complete. ⚠️ MIGRATIONS 028 +
-  029 to run in the SQL Editor, and the NATIVE changes (push plugin,
-  entitlement, app name) need a new build submitted to take effect.**
+  Store; Luca's post-launch list, code complete. ✅ MIGRATIONS 028 +
+  029 CONFIRMED RUN (Luca, same day) — all migrations through 029
+  applied. Still pending: the NATIVE changes (push plugin,
+  entitlement, "Peak Music" icon name) ship with the next build, and
+  push delivery needs the docs/PUSH-NOTIFICATIONS.md runbook (APNs
+  key, edge function deploy + secrets, database webhook).**
   1. **Web bell dropdown fixed** — the app-tuned innerWidth shift was
      throwing the panel way off inside the CRT shell; web now drops
      it straight under the bell, app keeps the measured shift.

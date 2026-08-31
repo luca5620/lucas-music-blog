@@ -57,12 +57,18 @@ remnants: every piece of content is community-made and catalog-backed.
      inputs/textareas/contenteditable carved back out so typing
      works. Web selection untouched. Deployed with the web push,
      so it's live in the app on next launch.
-  9. **Touch polish round 2** — release/poster tiles: the one-
-     highlight rule left the outer link's ring as a box around
-     artwork + name ("looks worse"). Poster-shaped links now show NO
-     ring at all on press — the artwork zooms in slightly instead
-     (web-hover feel), via :has() in the touch section. Approved
-     look per Luca; after this he's desktop-side.
+  9. **Touch polish rounds 2–3 — release listings press = the WEB
+     HOVER, copied exactly (Luca's final spec after two misses).**
+     Miss 1: the one-highlight rule left the outer link's ring as a
+     box around artwork + name. Miss 2: an artwork-zoom-only pass
+     made the poster grid worse. Final: three marker classes on the
+     listing links — .release-tile (detailed cards: hover-glow's
+     soft glow + scale-105 artwork zoom), .release-art (poster walls
+     + DROPPING SOON rail: quiet link; posters replay .poster:hover
+     lift/accent/glow with NO img zoom, rail replays its img zoom),
+     .release-row (compact: hover's elevated bg). All in the
+     hover:none touch section of globals.css; web hover untouched.
+     After this lands, Luca is desktop-side.
 
   **WHERE THE REMAINING WORK RUNS (Luca is on the desktop next):**
   - 🖥️ **Desktop / any browser** — everything below EXCEPT the last

@@ -46,7 +46,7 @@ export default function ReleaseCard({
   return (
     <Link
       href={`/releases/${release.slug}`}
-      className="panel-xbox p-4 sm:p-5 space-y-4 group cursor-pointer hover-glow relative overflow-hidden block"
+      className="release-tile panel-xbox p-4 sm:p-5 space-y-4 group cursor-pointer hover-glow relative overflow-hidden block"
     >
       {/* Cover art */}
       <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-[rgba(255,255,255,0.3)] transition-all">

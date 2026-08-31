@@ -75,7 +75,7 @@ export default function UpcomingDropsClient({
             <Link
               key={item.id}
               href={`/releases/${item.slug}`}
-              className="group space-y-1.5"
+              className="release-art group space-y-1.5"
               title={`${item.title}${item.artistName ? ` — ${item.artistName}` : ""}`}
             >
               <span className="poster">
@@ -118,7 +118,7 @@ export default function UpcomingDropsClient({
             <Link
               key={item.id}
               href={`/releases/${item.slug}`}
-              className="flex items-center gap-3 px-3 py-2 hover:bg-bg-elevated transition-colors"
+              className="release-row flex items-center gap-3 px-3 py-2 hover:bg-bg-elevated transition-colors"
             >
               <span className="w-9 h-9 rounded overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
                 {item.cover_image ? (
@@ -162,7 +162,7 @@ export default function UpcomingDropsClient({
             <Link
               key={item.id}
               href={`/releases/${item.slug}`}
-              className="panel-xbox p-4 sm:p-5 space-y-3 group cursor-pointer hover-glow relative overflow-hidden border-osd-amber/30"
+              className="release-tile panel-xbox p-4 sm:p-5 space-y-3 group cursor-pointer hover-glow relative overflow-hidden border-osd-amber/30"
             >
               <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-osd-amber/50 transition-all">
                 {item.cover_image ? (

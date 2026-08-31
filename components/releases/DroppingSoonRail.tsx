@@ -43,7 +43,7 @@ export default async function DroppingSoonRail() {
             <Link
               key={release.id}
               href={`/releases/${release.slug}`}
-              className="group shrink-0 w-36 sm:w-44 space-y-2"
+              className="release-art group shrink-0 w-36 sm:w-44 space-y-2"
             >
               <div className="relative aspect-square rounded-lg overflow-hidden border border-osd-amber/30 group-hover:border-osd-amber/70 transition-colors bg-bg-elevated">
                 {release.cover_image ? (

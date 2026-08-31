@@ -2387,27 +2387,61 @@ a.card-y2k:hover { transform: translateY(-2px); }
     border-color: var(--border-subtle);
   }
 
-  /* RELEASE TILES: no box at all (Luca 2026-08-31 round 2). A poster
-     tile is a link wrapping artwork + name, so the one-highlight rule
-     above left the OUTER link's ring — a box around both, which reads
-     worse than the old double glow. On anything poster-shaped the
-     press shows as the artwork zooming in slightly instead (the web-
-     hover feel), no ring anywhere. `overflow:hidden` on .poster keeps
-     the zoom clipped inside the sleeve. (Pre-:has() WebKit just keeps
-     the ring — cosmetic fallback.) */
-  a:active:has(.poster),
-  a.poster:active,
-  a:active .poster,
-  a:active .poster:active {
+  /* ============ RELEASE LISTINGS: press = the WEB HOVER, copied
+     (Luca 2026-08-31, third round — his final spec: "copy the web's
+     view for both detailed and poster grid"). No rings, no boxes
+     around artwork + name; each surface replays exactly what the
+     same tile does under a desktop cursor. Three marker classes on
+     the listing links:
+       .release-tile — detailed cards (ReleaseCard, UpcomingDrops
+                       detailed): hover-glow's soft glow + the
+                       artwork's scale-105 zoom, card border at rest
+       .release-art  — borderless art links (poster walls, the
+                       DROPPING SOON rail): link itself stays quiet;
+                       posters replay .poster:hover (lift + accent
+                       border + glow, NO img zoom — the web doesn't
+                       zoom posters), rail tiles replay their img
+                       zoom
+       .release-row  — compact rows: the row's hover = elevated
+                       background, nothing else                    */
+
+  /* detailed cards */
+  a.release-tile:active {
+    border-color: rgba(var(--accent-rgb), 0.18); /* panel resting border */
+    box-shadow:
+      0 0 20px rgba(var(--accent-rgb), 0.15),
+      0 0 40px rgba(var(--accent-rgb), 0.05); /* = .hover-glow:hover */
+  }
+  a.release-tile:active img {
+    transform: scale(1.05); /* = the artwork's group-hover zoom */
+  }
+
+  /* borderless art links — the outer link never draws anything */
+  a.release-art:active {
     box-shadow: none;
-    border-color: var(--border-subtle);
   }
-  .poster img {
-    transition: transform 0.15s ease;
+  /* poster walls: the poster replays its own web hover, whether the
+     finger lands on the artwork or the title under it */
+  a.release-art:active .poster,
+  a.poster:active {
+    transform: translateY(-3px);
+    border-color: var(--accent-primary);
+    box-shadow:
+      0 6px 24px rgba(0, 0, 0, 0.5),
+      0 0 16px var(--glow-primary); /* = .poster:hover */
   }
-  a:active .poster img,
-  a.poster:active img {
-    transform: scale(1.06);
+  /* rail-style tiles (no .poster): their web hover zooms the img */
+  a.release-art:active img {
+    transform: scale(1.05);
+  }
+  a.release-art:active .poster img {
+    transform: none; /* posters don't zoom on the web — keep parity */
+  }
+
+  /* compact rows */
+  a.release-row:active {
+    box-shadow: none;
+    background: var(--bg-elevated); /* = the row's hover:bg */
   }
 }
 

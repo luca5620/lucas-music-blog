@@ -51,7 +51,7 @@ export default function ReleaseViews({
             <Link
               key={item.id}
               href={`/releases/${item.slug}`}
-              className="group space-y-1.5"
+              className="release-art group space-y-1.5"
               title={`${item.title}${item.artistName ? ` — ${item.artistName}` : ""}`}
             >
               <span className="poster">
@@ -109,7 +109,7 @@ export default function ReleaseViews({
             <Link
               key={item.id}
               href={`/releases/${item.slug}`}
-              className="flex items-center gap-3 px-3 py-2 hover:bg-bg-elevated transition-colors"
+              className="release-row flex items-center gap-3 px-3 py-2 hover:bg-bg-elevated transition-colors"
             >
               <span className="w-9 h-9 rounded overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
                 {item.cover_image ? (

@@ -49,6 +49,32 @@ remnants: every piece of content is community-made and catalog-backed.
   7. **Marketing** — docs/MARKETING.md: ready-to-post LinkedIn launch
      draft, @peakmusicreviews Instagram plan, GSC indexing checklist
      (SEO = the priority per Luca), Meta ads parked.
+  8. **App-only: text selection killed everywhere** — press-and-drag
+     was selecting body text on every page (terms/about included;
+     the old rule only covered buttons/links/images and left prose
+     selectable on purpose — reversed per Luca: "ruins the app
+     immersion"). `.native-app` now blankets user-select:none, with
+     inputs/textareas/contenteditable carved back out so typing
+     works. Web selection untouched. Deployed with the web push,
+     so it's live in the app on next launch.
+
+  **WHERE THE REMAINING WORK RUNS (Luca is on the desktop next):**
+  - 🖥️ **Desktop / any browser** — everything below EXCEPT the last
+    line: run docs/PUSH-NOTIFICATIONS.md steps 2–4 (create APNs key
+    at developer.apple.com, deploy push-fanout + set its secrets in
+    the Supabase dashboard, create the notifications→push-fanout
+    Database Webhook); LAUNCH-CHECKLIST §8 DSA declaration in App
+    Store Connect; post the docs/MARKETING.md LinkedIn draft; GSC
+    indexing checklist.
+  - 💻 **MACBOOK ONLY (needs Xcode): the new app build.** Open
+    `npm run mobile:ios`, confirm Push Notifications shows under
+    Signing & Capabilities, bump the build number, Archive → upload
+    → submit. This one binary ships: push support, the "Peak Music"
+    icon name, and the entitlement. iOS pods for the push plugin are
+    ALREADY INSTALLED on the MacBook (pod install ran 2026-08-31;
+    note for reruns: CocoaPods there needs `LANG=en_US.UTF-8` or it
+    crashes with a Unicode error). Everything web-side deploys from
+    either machine via git push, as always.
 
 - **2026-08-28 (Windows, round 2 — Luca's batch, all shipped through
   ac90363, builds green. ✅ MIGRATION 027 CONFIRMED RUN (Luca,

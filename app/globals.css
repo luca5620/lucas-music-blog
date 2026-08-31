@@ -1212,18 +1212,23 @@ body {
 /* No long-press callout sheets (link/image "Open in..." menus) and
    no accidental text-selection on interactive chrome. Inputs and
    textareas stay fully selectable/editable, and review/comment BODY
-   text stays selectable so people can still copy a take. */
-.native-app a,
-.native-app button,
-.native-app nav,
-.native-app img,
-.native-app .poster,
-.native-app .btn-y2k,
-.native-app .tab-y2k,
-.native-app .label-xbox {
+   (Reversed 2026-08-31, Luca: press-and-drag selecting text "ruins
+   the app immersion", on EVERY page — terms/about included. So the
+   whole app surface is non-selectable now, not just the interactive
+   elements the old list here named. APP ONLY — the web keeps normal
+   selection. The one carve-out: real text inputs, where the caret
+   and select-to-edit are how typing works at all.) */
+.native-app {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.native-app input,
+.native-app textarea,
+.native-app [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 /* Keep the page from rubber-banding in the shell, and kill

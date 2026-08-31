@@ -2387,34 +2387,25 @@ a.card-y2k:hover { transform: translateY(-2px); }
     border-color: var(--border-subtle);
   }
 
-  /* ============ RELEASE LISTINGS: press = the WEB HOVER, copied
-     (Luca 2026-08-31, third round — his final spec: "copy the web's
-     view for both detailed and poster grid"). No rings, no boxes
-     around artwork + name; each surface replays exactly what the
-     same tile does under a desktop cursor. Three marker classes on
-     the listing links:
-       .release-tile — detailed cards (ReleaseCard, UpcomingDrops
-                       detailed): hover-glow's soft glow + the
-                       artwork's scale-105 zoom, card border at rest
-       .release-art  — borderless art links (poster walls, the
-                       DROPPING SOON rail): link itself stays quiet;
-                       posters replay .poster:hover (lift + accent
-                       border + glow, NO img zoom — the web doesn't
-                       zoom posters), rail tiles replay their img
-                       zoom
-       .release-row  — compact rows: the row's hover = elevated
-                       background, nothing else                    */
-
-  /* detailed cards */
-  a.release-tile:active {
-    border-color: rgba(var(--accent-rgb), 0.18); /* panel resting border */
-    box-shadow:
-      0 0 20px rgba(var(--accent-rgb), 0.15),
-      0 0 40px rgba(var(--accent-rgb), 0.05); /* = .hover-glow:hover */
-  }
-  a.release-tile:active img {
-    transform: scale(1.05); /* = the artwork's group-hover zoom */
-  }
+  /* ============ LISTING PRESS STATES (Luca 2026-08-31, settled
+     after several rounds — the final spec):
+     - DETAILED views: ONLY "the box all around" — one ring around
+       the whole card, never around anything inside it.
+     - POSTER walls: the poster replays its own web hover (lift +
+       accent border + glow, no img zoom).
+     - COMPACT rows: the row's hover (elevated bg), nothing else.
+     Marker classes on listing links:
+       .release-art — borderless art links (poster walls, the
+                      DROPPING SOON rail): link draws nothing itself
+       .release-row — compact rows
+     Detailed LINK-cards need no marker: the standard card press ring
+     already is the box-all-around. (.release-tile in some components
+     is an inert leftover hook.) Detailed ARTICLE-cards (community
+     feed / reviews list, where the card is an <article> full of
+     inner links) are handled by the :has() rules at the bottom:
+     pressing ANY link inside rings the CARD, and the inner link
+     stays quiet — that inner ring was the "box around the artwork
+     and artist name". */
 
   /* borderless art links — the outer link never draws anything */
   a.release-art:active {
@@ -2442,6 +2433,21 @@ a.card-y2k:hover { transform: translateY(-2px); }
   a.release-row:active {
     box-shadow: none;
     background: var(--bg-elevated); /* = the row's hover:bg */
+  }
+
+  /* ARTICLE cards (community feed, reviews list): the card is an
+     <article>, not a link, so pressing the inner cover/title link
+     ringed just that link — the "box around the artwork and artist
+     name". Redirect the press: any active link inside lights the
+     WHOLE card (the box all around), the inner link draws nothing. */
+  article.panel-xbox:has(a:active) {
+    border-color: rgba(var(--accent-rgb), 0.5);
+    box-shadow:
+      0 0 0 2px rgba(var(--accent-rgb), 0.4),
+      0 0 20px rgba(var(--accent-rgb), 0.15);
+  }
+  article.panel-xbox a:active {
+    box-shadow: none;
   }
 }
 

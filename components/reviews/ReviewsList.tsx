@@ -135,7 +135,7 @@ export default function ReviewsList({
             <Link
               key={review.id}
               href={`/reviews/${review.slug}`}
-              className="group space-y-1.5"
+              className="release-art group space-y-1.5"
               title={`${review.title} — ${review.artist} (${formatRating(review.rating)}/10 by ${review.profiles.username})`}
               style={{ "--rating-color": getRatingHex(review.rating) } as React.CSSProperties}
             >
@@ -171,7 +171,7 @@ export default function ReviewsList({
               <Link
                 key={review.id}
                 href={`/reviews/${review.slug}`}
-                className="flex items-center gap-3 px-3 py-2 hover:bg-bg-elevated transition-colors"
+                className="release-row flex items-center gap-3 px-3 py-2 hover:bg-bg-elevated transition-colors"
               >
                 <span className="w-9 h-9 rounded overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
                   {review.cover_image ? (

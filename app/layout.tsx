@@ -16,6 +16,7 @@ import OfflineOverlay from "@/components/ui/OfflineOverlay";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import ImageReveal from "@/components/ui/ImageReveal";
 import TabBar from "@/components/ui/TabBar";
+import PushRegistration from "@/components/ui/PushRegistration";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
 import { AuthProvider } from "@/components/auth/AuthProvider";
@@ -193,6 +194,9 @@ export default async function RootLayout({
           </CRTShell>
           {/* App-only bottom tabs — renders null on the web */}
           <TabBar />
+          {/* App-only: registers this device for push when signed in
+              (renders null; web + signed-out are no-ops) */}
+          <PushRegistration />
           {/* App-only NO SIGNAL screen for mid-session connection loss */}
           <OfflineOverlay />
           {/* App-only pull-down-to-refresh gesture */}

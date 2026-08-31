@@ -2366,6 +2366,41 @@ a.card-y2k:hover { transform: translateY(-2px); }
       0 0 20px rgba(var(--accent-rgb), 0.15),
       0 0 40px rgba(var(--accent-rgb), 0.05);
   }
+
+  /* ONE press = ONE highlight (Luca 2026-08-31): a touch makes every
+     tappable ANCESTOR in the chain :active too, so pressing the album
+     cover inside a review card lit up BOTH the card and the cover.
+     When a tappable sits inside another active tappable, the inner
+     one stays quiet — only the big box glows. (.poster also gets its
+     accent border press-state reverted to its resting color.) */
+  :is(a, button, [role="button"]):active
+    :is(a, button, [role="button"], summary):active {
+    box-shadow: none;
+  }
+  :is(a, button, [role="button"]):active .poster:active {
+    box-shadow: none;
+    border-color: var(--border-subtle);
+  }
+}
+
+/* Rounded press highlight (Luca 2026-08-31: the ring often traced a
+   SHARP SQUARE — plain links, covers, rows with no radius of their
+   own). The ring hugs the element's border-radius, so squareness =
+   radius 0. This @layer base rule gives every pressed tappable a soft
+   10px fallback radius; anything with a real radius — Tailwind
+   rounded-* utilities (@layer utilities) and every unlayered rule in
+   this file (.btn-y2k, .poster, panels…) — outranks a base-layer rule
+   BY LAYER regardless of specificity, so pills stay pills and only
+   the radius-less squares get rounded out. */
+@layer base {
+  @media (hover: none) {
+    a:active,
+    button:active,
+    [role="button"]:active,
+    summary:active {
+      border-radius: 10px;
+    }
+  }
 }
 
 /* ============================================================

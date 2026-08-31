@@ -89,6 +89,16 @@ export default function ProfileSettingsPage() {
   // --- Identity ---
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
+  // What the row currently holds — so we only send username when it
+  // actually changed, and can restore the field after a failed save.
+  const [savedUsername, setSavedUsername] = useState("");
+  // Migration 028 gate + cooldown clock. Before the columns exist the
+  // field stays read-only-permanent like it always was; after, it's
+  // editable once every 14 days (trigger-enforced server-side).
+  const [supportsNameLimits, setSupportsNameLimits] = useState(false);
+  const [usernameChangedAt, setUsernameChangedAt] = useState<string | null>(
+    null
+  );
   const [tagline, setTagline] = useState("");
   const [pronouns, setPronouns] = useState("");
   const [location, setLocation] = useState("");
@@ -129,6 +139,15 @@ export default function ProfileSettingsPage() {
 
   const themeHex = THEMES.find((t) => t.id === theme)?.hex ?? "#1e90ff";
 
+  // Username cooldown (migration 028): 14 days from the last change.
+  const usernameNextAllowed = usernameChangedAt
+    ? new Date(
+        new Date(usernameChangedAt).getTime() + 14 * 24 * 60 * 60 * 1000
+      )
+    : null;
+  const usernameLocked =
+    !!usernameNextAllowed && usernameNextAllowed > new Date();
+
   // Load the current profile once.
   useEffect(() => {
     async function loadProfile() {
@@ -158,6 +177,9 @@ export default function ProfileSettingsPage() {
         const p = profile as Profile;
         setDisplayName(p.display_name ?? "");
         setUsername(p.username ?? "");
+        setSavedUsername(p.username ?? "");
+        setSupportsNameLimits("username_changed_at" in p);
+        setUsernameChangedAt(p.username_changed_at ?? null);
         setTagline(p.tagline ?? "");
         setPronouns(p.pronouns ?? "");
         setLocation(p.location ?? "");
@@ -310,8 +332,31 @@ export default function ProfileSettingsPage() {
       }
     }
 
-    // username deliberately absent — permanent after signup.
+    // --- Username (migration 028): editable once every 14 days.
+    //     Only SENT when it actually changed — the DB trigger is the
+    //     real enforcer; these checks just fail friendlier + faster.
+    const nextUsername = username.trim().toLowerCase();
+    const usernameChanged =
+      supportsNameLimits && nextUsername !== savedUsername;
+    if (usernameChanged) {
+      if (!/^[a-z0-9_]{3,20}$/.test(nextUsername)) {
+        setError(
+          "Usernames are 3–20 characters: lowercase letters, numbers, underscores."
+        );
+        setSaving(false);
+        return;
+      }
+      if (usernameNextAllowed && usernameNextAllowed > new Date()) {
+        setError(
+          `You can change your username again on ${usernameNextAllowed.toLocaleDateString()}.`
+        );
+        setSaving(false);
+        return;
+      }
+    }
+
     const updates: Partial<Profile> = {
+      ...(usernameChanged ? { username: nextUsername } : {}),
       display_name: displayName || null,
       tagline: tagline || null,
       pronouns: pronouns || null,
@@ -344,12 +389,33 @@ export default function ProfileSettingsPage() {
       .eq("id", userId);
 
     if (updateError) {
-      if (updateError.message.includes("unique") || updateError.message.includes("duplicate")) {
+      // The name-limit trigger (migration 028) raises coded messages —
+      // translate them into human copy.
+      const msg = updateError.message;
+      if (msg.includes("USERNAME_COOLDOWN")) {
+        const date = msg.match(/until (\d{4}-\d{2}-\d{2})/)?.[1];
+        setError(
+          `Usernames can only change once every 2 weeks — you can change yours again ${
+            date ? `on ${date}` : "soon"
+          }.`
+        );
+      } else if (msg.includes("DISPLAY_NAME_DAILY_LIMIT")) {
+        setError(
+          "Display names can only change twice a day — try again tomorrow."
+        );
+      } else if (msg.includes("USERNAME_RESERVED")) {
+        setError("That username is reserved.");
+      } else if (msg.includes("unique") || msg.includes("duplicate")) {
         setError("That username is already taken.");
       } else {
-        setError(updateError.message);
+        setError(msg);
       }
     } else {
+      if (usernameChanged) {
+        setSavedUsername(nextUsername);
+        setUsername(nextUsername);
+        setUsernameChangedAt(new Date().toISOString());
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     }
@@ -448,17 +514,43 @@ export default function ProfileSettingsPage() {
                 maxLength={50}
                 className="form-input"
               />
+              {supportsNameLimits && (
+                <p className="text-xs text-text-muted mt-1">
+                  Can be changed up to twice a day.
+                </p>
+              )}
             </FormField>
 
-            {/* Username is PERMANENT (Luca 2026-08-22) — it's the
-                profile URL and the login identifier; only the display
-                name is editable. Shown, not editable. */}
+            {/* Username — Instagram rules since migration 028 (Luca
+                2026-08-31): changeable, but only once every 14 days.
+                The DB trigger enforces it; this field mirrors it. Until
+                the migration runs (columns absent) the old permanent-
+                username behavior stays. */}
             <FormField label="Username">
-              <p className="form-input opacity-60 cursor-not-allowed select-none">
-                @{username}
-              </p>
+              {supportsNameLimits && !usernameLocked ? (
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) =>
+                    setUsername(
+                      e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 20)
+                    )
+                  }
+                  placeholder="your_username"
+                  maxLength={20}
+                  className="form-input"
+                />
+              ) : (
+                <p className="form-input opacity-60 cursor-not-allowed select-none">
+                  @{username}
+                </p>
+              )}
               <p className="text-xs text-text-muted mt-1">
-                Usernames are permanent — change your display name instead.
+                {!supportsNameLimits
+                  ? "Usernames are permanent — change your display name instead."
+                  : usernameLocked
+                    ? `You can change your username again on ${usernameNextAllowed!.toLocaleDateString()}.`
+                    : "You can change your username once every 2 weeks — your profile URL changes with it."}
               </p>
             </FormField>
           </div>

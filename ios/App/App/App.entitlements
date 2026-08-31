@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Push notifications (2026-08-31). "production" is correct for
+	     BOTH TestFlight and the App Store; Xcode automatically swaps
+	     it to the development APNs environment for debug builds on a
+	     plugged-in device. Referenced from project.pbxproj via
+	     CODE_SIGN_ENTITLEMENTS on both configurations. -->
+	<key>aps-environment</key>
+	<string>production</string>
+</dict>
+</plist>

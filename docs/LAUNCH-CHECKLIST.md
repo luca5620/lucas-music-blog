@@ -82,6 +82,39 @@ The `android/` project in the repo is ready when you are.
 - Before submitting: create the `applereview` demo account and confirm
   its email (see docs/APP-STORE-LISTING.md).
 
+## 8. EU availability — DSA trader declaration (post-launch, ~10 min)
+
+*Added 2026-08-31: the app is live but NOT available in the EU until
+this is done in App Store Connect. Reference: Apple's guide,
+"Manage European Union Digital Services Act trader requirements".*
+
+1. App Store Connect → **Business** → **Agreements** tab → scroll to
+   **Compliance** → **Complete Compliance Requirements** next to
+   "Digital Services Act". (Needs the Account Holder or Admin role.)
+2. Pick a status:
+   - **Non-trader** — one click, done. Apple then tells EU users that
+     consumer-protection laws don't apply. Apple's own guidance says
+     you're *likely a trader* if the app generates revenue (IAP, paid,
+     ads), you advertise to consumers, or you built it in connection
+     with a trade/business. **Right now the app is free with no
+     revenue** — non-trader is the low-friction fit *for now*, BUT the
+     roadmap has muted web ads and possible future monetization; when
+     revenue starts, come back and switch to trader.
+   - **Trader** — provide address (or P.O. box + proof of association),
+     phone, and email; verify both via 2FA codes; upload a document
+     proving name+address; certify EU-law compliance. **This contact
+     info is published on the EU App Store product page** — as an
+     individual account, that means personal details go public, so if
+     choosing trader, consider a P.O. box / dedicated phone + the
+     contact@peakmusicreviews.com address first.
+3. Per-app override lives at Apps → app → **App Information** → App
+   Store Regulations and Permits → Digital Services Act → Edit.
+4. After declaring, confirm the EU territories are ticked under the
+   app's Pricing and Availability.
+
+*Not legal advice — if unsure, the safe order is: declare non-trader
+now to unlock the EU, revisit as trader before any money flows.*
+
 ## Notes
 
 - Old personal-blog stuff (diary, hardcoded analytics, background

@@ -109,18 +109,27 @@ export default function NotificationsBell() {
   function toggle() {
     const next = !open;
     if (next) {
-      // The panel is anchored right-0 to the BELL, but in the app the
-      // bell sits left of CREATE + avatar — a 300px box extending
-      // left from there ran off the screen edge (Luca 2026-08-28:
-      // "cuts off a bit on the left"). Measure once on open and shift
-      // the panel right so its right edge lands 12px from the
-      // screen's; combined with the viewport-capped width below it
-      // can never clip on either side.
+      // APP ONLY: the panel is anchored right-0 to the BELL, but in
+      // the app the bell sits left of CREATE + avatar — a 300px box
+      // extending left from there ran off the screen edge (Luca
+      // 2026-08-28: "cuts off a bit on the left"). Measure once on
+      // open and shift the panel right so its right edge lands 12px
+      // from the screen's; combined with the viewport-capped width
+      // below it can never clip on either side.
+      // On the WEB this same math is what threw the panel "way off"
+      // (Luca 2026-08-31): innerWidth spans the whole browser window
+      // — CRT bezel, room side bars and all — so the shift pushed the
+      // panel far past the content area. The web bell sits at the
+      // right edge of the nav already; a plain drop straight under it
+      // (shift 0) is correct there.
+      const isApp = document.documentElement.classList.contains("native-app");
       const r = boxRef.current?.getBoundingClientRect();
-      if (r) {
+      if (isApp && r) {
         setPanelShift(
           Math.max(0, Math.round(window.innerWidth - r.right - 12))
         );
+      } else {
+        setPanelShift(0);
       }
     }
     setOpen(next);

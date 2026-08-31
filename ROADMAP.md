@@ -11,6 +11,42 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-08-31 (MacBook): LAUNCH-DAY BATCH — app is LIVE on the App
+  Store; Luca's post-launch list, code complete. ⚠️ MIGRATIONS 028 +
+  029 to run in the SQL Editor, and the NATIVE changes (push plugin,
+  entitlement, app name) need a new build submitted to take effect.**
+  1. **Web bell dropdown fixed** — the app-tuned innerWidth shift was
+     throwing the panel way off inside the CRT shell; web now drops
+     it straight under the bell, app keeps the measured shift.
+  2. **App touch polish** — one press = ONE highlight (pressing a
+     card no longer also lights the album cover inside it), and the
+     press ring gets a 10px fallback radius via an @layer base rule
+     so radius-less elements stop flashing sharp squares (real
+     rounded-* utilities still win by cascade layer).
+  3. **Name-change limits (migration 028)** — usernames are no longer
+     permanent: once every 14 days (Instagram-style), display names
+     twice per UTC day, enforced by a profiles BEFORE UPDATE trigger
+     (settings write directly under RLS, so the DB is the boundary);
+     settings UI mirrors it with cooldown copy and gates on the
+     migration having run.
+  4. **Home-screen name → "Peak Music"** — CFBundleDisplayName,
+     capacitor.config appName, android strings, and PWA short_name
+     (full name truncated under the icon). Ships with the next build.
+  5. **Push notifications — code side DONE** (plugin installed, pods
+     installed, AppDelegate forwarding, aps-environment entitlement,
+     PushRegistration in layout, /api/push/register, migration 029
+     push_tokens, push-fanout edge function for APNs). Human steps —
+     APNs key, function deploy + secrets, database webhook, rebuild —
+     are the runbook in **docs/PUSH-NOTIFICATIONS.md**. Android/FCM
+     stubbed until the Play launch.
+  6. **EU availability** — DSA trader declaration steps documented as
+     LAUNCH-CHECKLIST section 8 (App Store Connect → Business →
+     Compliance; non-trader now vs trader-with-published-contact-info
+     tradeoff spelled out). Dashboard task, Luca's hands.
+  7. **Marketing** — docs/MARKETING.md: ready-to-post LinkedIn launch
+     draft, @peakmusicreviews Instagram plan, GSC indexing checklist
+     (SEO = the priority per Luca), Meta ads parked.
+
 - **2026-08-28 (Windows, round 2 — Luca's batch, all shipped through
   ac90363, builds green. ✅ MIGRATION 027 CONFIRMED RUN (Luca,
   2026-08-28 — verified via anon-key REST probe: profiles rows answer

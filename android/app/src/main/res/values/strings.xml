@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Peak Music Reviews</string>
-    <string name="title_activity_main">Peak Music Reviews</string>
+    <string name="app_name">Peak Music</string>
+    <string name="title_activity_main">Peak Music</string>
     <string name="package_name">com.peakmusicreviews.app</string>
     <string name="custom_url_scheme">com.peakmusicreviews.app</string>
 </resources>

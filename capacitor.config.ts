@@ -14,11 +14,15 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 const config: CapacitorConfig = {
   appId: "com.peakmusicreviews.app",
-  // Home-screen label. Luca prefers the full name even though iOS
-  // truncates icon labels around ~13 chars ("Peak Music..."); if that
-  // bothers him later, shorten to "PMR" here AND in ios/App/App/
-  // Info.plist (CFBundleDisplayName) + android strings.xml.
-  appName: "Peak Music Reviews",
+  // Home-screen label. "Peak Music" (Luca 2026-08-31): the full name
+  // truncated on the iPhone home screen, and the short form is also
+  // the parked-rebrand's approved under-icon name. Changed in all
+  // three places — here, ios/App/App/Info.plist (CFBundleDisplayName),
+  // android strings.xml — plus the PWA manifest's short_name. The App
+  // Store LISTING name is set in App Store Connect and keeps the full
+  // "Peak Music Reviews" for search. Takes effect on the next build
+  // submitted, not via a web deploy.
+  appName: "Peak Music",
   webDir: "mobile/www",
   backgroundColor: "#000000",
   server: {

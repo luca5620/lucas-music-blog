@@ -12,6 +12,11 @@
  * and review — like a real app.
  */
 
+/** The push plugin's permission answer: "granted" | "denied" | "prompt". */
+interface PushPermissionStatus {
+  receive: string;
+}
+
 interface CapacitorBridge {
   isNativePlatform?: () => boolean;
   getPlatform?: () => string;
@@ -23,6 +28,16 @@ interface CapacitorBridge {
         text?: string;
         url?: string;
       }) => Promise<unknown>;
+    };
+    PushNotifications?: {
+      checkPermissions: () => Promise<PushPermissionStatus>;
+      requestPermissions: () => Promise<PushPermissionStatus>;
+      register: () => Promise<void>;
+      addListener: (
+        event: string,
+        callback: (data: never) => void
+      ) => Promise<unknown>;
+      removeAllListeners: () => Promise<void>;
     };
   };
 }
@@ -65,6 +80,15 @@ export async function hapticImpact(style: "LIGHT" | "MEDIUM"): Promise<void> {
   } catch {
     /* haptics are garnish — never break the flow */
   }
+}
+
+/**
+ * The push plugin off the injected bridge — null on the plain web and
+ * on app builds that predate the plugin (older installed versions of
+ * the shell keep working; they just never register for push).
+ */
+export function pushPlugin() {
+  return bridge()?.Plugins?.PushNotifications ?? null;
 }
 
 /**

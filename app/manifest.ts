@@ -12,7 +12,9 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Peak Music Reviews",
-    short_name: "Peak Music Reviews",
+    // Home-screen label — the full name truncates under the icon
+    // (Luca 2026-08-31), same change as the native apps.
+    short_name: "Peak Music",
     description:
       "Rate albums, build lists, join live release rooms and debates. Every record on Spotify plus the deep Genius catalog — unreleased included.",
     start_url: "/",

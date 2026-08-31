@@ -7,6 +7,11 @@ export interface Profile {
   id: string;
   username: string;
   display_name: string | null;
+  /** Name-change limit clocks (migration 028) — trigger-owned, the
+      client can't reset them. Optional until 028 runs. */
+  username_changed_at?: string | null;
+  display_name_changed_at?: string | null;
+  display_name_change_count?: number;
   bio: string | null;
   avatar_url: string | null;
   banner_url: string | null;

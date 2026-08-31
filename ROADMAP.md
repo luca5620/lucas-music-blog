@@ -794,10 +794,11 @@ validation, CSP).
 ## 🔨 Next up (priority order)
 
 ### 1. App Store launch week
-Apple Developer enrollment → sign in Xcode on the MacBook → TestFlight
-→ App Store review. Google Play closed test (14-day clock) in parallel.
-Then: push notifications (also the strongest guard against an Apple
-4.2 "web wrapper" rejection).
+**🎉 iOS APP IS LIVE ON THE APP STORE (Luca confirmed 2026-08-31).**
+Every push to `main` now updates what App Store users see instantly —
+the "treat every push as production" rule in CLAUDE.md is no longer
+theoretical. Still open from this item: Google Play (closed test's
+14-day clock → production), and push notifications.
 
 ### 2. Live layer v2
 Scheduled listening parties for release dates (waiting rooms on

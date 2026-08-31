@@ -2386,6 +2386,29 @@ a.card-y2k:hover { transform: translateY(-2px); }
     box-shadow: none;
     border-color: var(--border-subtle);
   }
+
+  /* RELEASE TILES: no box at all (Luca 2026-08-31 round 2). A poster
+     tile is a link wrapping artwork + name, so the one-highlight rule
+     above left the OUTER link's ring — a box around both, which reads
+     worse than the old double glow. On anything poster-shaped the
+     press shows as the artwork zooming in slightly instead (the web-
+     hover feel), no ring anywhere. `overflow:hidden` on .poster keeps
+     the zoom clipped inside the sleeve. (Pre-:has() WebKit just keeps
+     the ring — cosmetic fallback.) */
+  a:active:has(.poster),
+  a.poster:active,
+  a:active .poster,
+  a:active .poster:active {
+    box-shadow: none;
+    border-color: var(--border-subtle);
+  }
+  .poster img {
+    transition: transform 0.15s ease;
+  }
+  a:active .poster img,
+  a.poster:active img {
+    transform: scale(1.06);
+  }
 }
 
 /* Rounded press highlight (Luca 2026-08-31: the ring often traced a

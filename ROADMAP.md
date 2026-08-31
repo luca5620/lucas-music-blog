@@ -57,6 +57,12 @@ remnants: every piece of content is community-made and catalog-backed.
      inputs/textareas/contenteditable carved back out so typing
      works. Web selection untouched. Deployed with the web push,
      so it's live in the app on next launch.
+  9. **Touch polish round 2** — release/poster tiles: the one-
+     highlight rule left the outer link's ring as a box around
+     artwork + name ("looks worse"). Poster-shaped links now show NO
+     ring at all on press — the artwork zooms in slightly instead
+     (web-hover feel), via :has() in the touch section. Approved
+     look per Luca; after this he's desktop-side.
 
   **WHERE THE REMAINING WORK RUNS (Luca is on the desktop next):**
   - 🖥️ **Desktop / any browser** — everything below EXCEPT the last

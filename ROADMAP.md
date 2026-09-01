@@ -910,6 +910,17 @@ session ends mid-task; clear it when the work lands under Done.)*
 
 ## ✅ Done
 
+### Leaderboard removed from Social (2026-09-01, Windows)
+Luca: "remove the leaderboard in social, keep everything else."
+Deleted `components/friends/Leaderboard.tsx` and
+`lib/db/leaderboard.ts`; /social lost the import, the
+`getLeaderboard(50)` fetch, the blocked-filter line and the section.
+Everything else on the page stands - user search, Top Rooms, Top
+Reviews This Week, Popular With Friends, Recent Activity, Find People.
+The `leaderboard_stats()` function from migration 023 is left in the
+DB (harmless, nothing calls it). Build + tsc clean.
+
+
 ### Review save failing — slug bugs, TWO of them (2026-08-28, Windows)
 Luca hit "Failed to create review." saving a draft. REAL cause (found
 by querying prod): `catalog_import_release` (006) appends a RAW

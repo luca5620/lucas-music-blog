@@ -10,10 +10,9 @@
  *  3. TOP REVIEWS THIS WEEK — most review-likes RECEIVED since the
  *     Friday-midnight-ET reset, any-age reviews welcome (an old
  *     review that resurfaces this week deservedly tops the chart).
- *  4. Leaderboard — the community charts.
- *  5. "Popular with friends" — poster rail from the people you follow.
- *  6. The activity feed — one sentence per event.
- *  7. "Find people" suggestions when the feed is quiet.
+ *  4. "Popular with friends" — poster rail from the people you follow.
+ *  5. The activity feed — one sentence per event.
+ *  6. "Find people" suggestions when the feed is quiet.
  *
  * Logged-out visitors get the sign-in prompt (the discovery modules
  * are follow-independent, but the page is a signed-in surface).
@@ -23,11 +22,9 @@ import Link from "next/link";
 import { formatRating } from "@/lib/rating";
 import { getUser } from "@/lib/auth";
 import UserSearch from "@/components/friends/UserSearch";
-import Leaderboard from "@/components/friends/Leaderboard";
 import PageHero from "@/components/ui/PageHero";
 import TopRooms from "@/components/social/TopRooms";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
-import { getLeaderboard } from "@/lib/db/leaderboard";
 import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import { getActiveRooms, getTopReviewsThisWeek } from "@/lib/db/social";
 import type { TopWeekReview } from "@/lib/db/social";
@@ -126,7 +123,6 @@ export default async function SocialPage() {
     activity,
     popular,
     suggestions,
-    allLeaderboard,
     blocked,
     activeRooms,
     allTopWeek,
@@ -134,13 +130,11 @@ export default async function SocialPage() {
     getFriendActivity(user.id, { limit: 40 }),
     getPopularWithFriends(user.id, { limit: 6 }),
     getSuggestedProfiles(user.id, { limit: 6 }),
-    getLeaderboard(50),
     getViewerBlockedIdSet(),
     getActiveRooms(12),
     getTopReviewsThisWeek(10),
   ]);
   // Blocked users stay off the viewer's charts (App Store 1.2).
-  const leaderboard = allLeaderboard.filter((r) => !blocked.has(r.user_id));
   const topWeek = allTopWeek.filter((r) => !blocked.has(r.user_id));
 
   return (
@@ -172,11 +166,6 @@ export default async function SocialPage() {
           </div>
         </section>
       )}
-
-      {/* ===== Leaderboard — the community charts (Luca 2026-08-26).
-             Empty until migration 023 runs; the section hides itself
-             rather than showing a bare header. ===== */}
-      {leaderboard.length > 0 && <Leaderboard rows={leaderboard} />}
 
       {/* ===== Popular with friends ===== */}
       {popular.length > 0 && (
@@ -232,7 +221,7 @@ export default async function SocialPage() {
    Top-week chart row — rank + cover + review + weekly hearts
    ============================================ */
 
-/** Medal colors for 1/2/3, muted for the rest (same as Leaderboard). */
+/** Medal colors for 1/2/3, muted for the rest. */
 function rankColor(rank: number): string {
   if (rank === 1) return "#fbbf24";
   if (rank === 2) return "#d1d5db";

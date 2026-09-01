@@ -77,15 +77,20 @@ Identifiers & Profiles:
      (`com.peakmusicreviews.web`). If native iOS sign-in is ever
      added, the app's bundle ID goes in this same list, comma
      separated.
-   - **Secret Key**: the client secret JWT, generated from Team ID +
-     Key ID + the `.p8`. The Supabase Apple provider page walks
-     through it — see
-     <https://supabase.com/docs/guides/auth/social-login/auth-apple>.
+   - **Secret Key**: Apple doesn't give you one — you mint it as a
+     JWT from Team ID + Key ID + the `.p8`. Run:
 
-⚠️ **Apple's secret expires every 6 months.** When Apple sign-in
-suddenly stops working, this is why — regenerate the secret from the
-same `.p8` and paste it back into Supabase. Worth a calendar reminder
-the day you set it up.
+     ```bash
+     node scripts/apple-secret.mjs --team TEAMID --key-id KEYID        --client-id com.peakmusicreviews.web --p8 "path/to/AuthKey_KEYID.p8"
+     ```
+
+     It signs locally with node's crypto (never paste a `.p8` into a
+     random "Apple JWT generator" site) and prints the token to paste.
+
+⚠️ **Apple's secret expires every 6 months** — that's Apple's hard cap,
+not a choice. When Apple sign-in suddenly stops working, this is why:
+re-run `scripts/apple-secret.mjs` with the same `.p8` and paste the new
+token into Supabase. Worth a calendar reminder the day you set it up.
 
 ---
 

@@ -11,6 +11,72 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+### 📦 THE 1.1 PATCH — the next native build (Luca 2026-09-01)
+
+Luca's call: **everything that needs a new binary rides in ONE build.**
+No more one-off Mac trips. He is on Windows; all of this needs the
+MacBook (Xcode + `npm run mobile:sync` + pod install + a new App Store
+submission). Contents, as agreed:
+
+1. **In-app Google/Apple sign-in.** Web is DONE and live (buttons
+   showing as of today). The app shows nothing because Google refuses
+   OAuth in an embedded webview (`disallowed_useragent`). The fix, all
+   native: add `@capacitor/browser` (opens the OAuth page in
+   SFSafariViewController, which Google accepts) + register the custom
+   URL scheme `com.peakmusicreviews.app://` in `Info.plist` + an
+   `appUrlOpen` listener (`@capacitor/app` is already installed) that
+   catches the code and calls `exchangeCodeForSession` INSIDE the
+   webview — the PKCE verifier lives in that webview's storage, so the
+   session lands in the right cookie jar. Supabase's redirect allow-
+   list needs the custom-scheme URL added too. Google never sees the
+   scheme (it only knows Supabase's callback), so no Google Cloud
+   change. **Luca vetoed the interim web-only experiment** (rendering
+   Apple alone in the app to see if appleid.apple.com survives the
+   WKWebView) — it all goes in 1.1 instead. App Store 4.8 is satisfied
+   either way since both providers ship together.
+2. **Push notifications** — code shipped 8f1ea78, dead until a native
+   build + his APNs runbook steps.
+3. **Splash / status-bar item 5** from the app-native polish backlog.
+4. **Cold offline launch white-screen (5b)** — the `errorPath` fallback
+   only works from a fresh binary.
+5. **iOS 15 deployment-target bump.**
+
+Sequence when we pick this up: JS/TS side first (it deploys to web
+harmlessly and does nothing until the native half exists), then the
+Mac session does sync + Xcode + submit once.
+
+### 📅 TOMORROW (2026-09-02) — the backlog Luca wants ADDRESSED
+
+His words on logging off 2026-09-01: *"all of that extra stuff we
+didn't work on today i will need you to address when we work on it
+tomorrow."* Raise these; don't wait to be asked:
+
+- **Nothing from 2026-08-31 or 2026-09-01 has been eyeballed on
+  device.** Comment hearts went live today (030 finally run), as did
+  the Social page minus its Leaderboard, the create/search swap and
+  the Your Taste rework. First job: he looks, we fix.
+- **Debates changes** he's wanted for a while — no specifics ever
+  given. ASK what he wants; do not pitch a redesign at him.
+- **Your Taste revamp** — he said he'd brainstorm it himself and come
+  with a prompt. The reverted-overhaul design law still binds
+  (centered text, plain ✕, no channel/CRT gimmicks, no reason labels,
+  no cover rating badge).
+- **Lint-error backlog** (~11 pre-existing: setState-in-effect,
+  Date.now-in-render).
+- **Site-wide soft 404s** — root `app/loading.tsx` streams a 200
+  before any notFound() runs. Only worked around in generateMetadata
+  so far; the real fix is still open.
+- **SEO leftovers**: H1 font-repaint LCP fix, JS audit, per-artist
+  unreleased hubs, and the GSC query data (his hands). ⛔ Comparison
+  pages stay dead — do not re-propose.
+- **Google Play** still parked (no testers for the 14-day closed
+  test). Don't re-pitch unless he raises it.
+
+**Migration state: EVERY migration through 031 is applied.** Verified
+2026-09-01 by anon-key REST probe against prod (025 notifications, 028
+username_changed_at, 029 push_tokens, 030 comment_likes, 031
+username_auto all answer). Nothing is waiting on the SQL Editor.
+
 - **2026-09-01 — migrations 030 + 031 ARE RUN.** Verified live by
   anon-key REST probe against prod: `profiles.username_auto` answers
   (031) and `comment_likes` exists with rows in it (030). So comment

@@ -54,12 +54,34 @@ remnants: every piece of content is community-made and catalog-backed.
      — the moment it exists, the old review URL 308s to it and the
      impressions land somewhere real. Deleting the URL is the wrong
      move while it still earns impressions.
-  **AWAITING LUCA'S VERDICTS (proposals discussed, not built):**
-  Friends→Social rename + top rooms/top-reviews-of-week modules;
-  reactions→universal comment likes; app search/create button swap;
-  Your Taste horizontal-web + app-blur rework (plan agreed to run on
-  a preview branch first). None of these started — his call comes
-  first.**
+  **AWAITING LUCA'S VERDICTS (proposals discussed, not built) — his
+  2026-08-31 specs, verbatim intent, so either machine can build:**
+  - **Friends→"Social" rename** (page + app bottom tab, web + app):
+    page adds TOP ROOMS (releases with most live "people here") and
+    TOP REVIEWS THIS WEEK — most likes RECEIVED this week, live,
+    resetting Friday; ANY review qualifies regardless of age (an old
+    House of Balloons review getting 20 likes this week ranks #1 —
+    deliberately resurfaces old reviews).
+  - **Reactions → universal LIKE on all comments**: remove current
+    reaction sets, one like button on every comment everywhere
+    (review comments can't be liked at all today); richer reactions
+    may return later with better UI.
+  - **App search/create swap**: magnifying-glass icon replaces the
+    blue + in the header; bottom tab bar gets a blue CREATE button
+    (label "create") that pops the 4-choice sheet (live-room-popup
+    format). Tab icons all gray; CREATE stays blue; the ACTIVE page's
+    tab highlights WHITE (not blue). ⚠️ tab bar geometry is frozen —
+    this touches it, so it needs his explicit go + device pass.
+  - **Your Taste rework** (preview branch + dev-server eyeball before
+    push): WEB fullscreen goes horizontal — top box labels the card
+    type (review/release) so text doesn't collide with the blurred
+    backdrop; then the community-feed detailed-view format for
+    "{user} rated this a 10"; larger artwork; wider body for long
+    reviews (no scroll-in-scroll, "read full review" button if truly
+    long); Spotify module widened/elongated for ALBUMS (singles stay
+    current size). APP (subtler): blurred artwork background exactly
+    like web, long reviews/bios shortened to fit, album Spotify
+    module elongated a BIT (not the drastic web resize).
 
 - **2026-08-31 (MacBook): LAUNCH-DAY BATCH — app is LIVE on the App
   Store; Luca's post-launch list, code complete. ✅ MIGRATIONS 028 +

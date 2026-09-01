@@ -11,6 +11,17 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-09-01 — migrations 030 + 031 ARE RUN.** Verified live by
+  anon-key REST probe against prod: `profiles.username_auto` answers
+  (031) and `comment_likes` exists with rows in it (030). So comment
+  hearts are LIVE, and the /welcome handle-picker path is armed. All
+  migrations through 031 are now applied. Social-login provider setup
+  done with Luca the same day: Supabase redirect URLs ✓, Apple
+  Services ID + key + secret ✓ (first Apple secret expires
+  **2027-02-28** — re-mint with `node scripts/apple-secret.mjs`),
+  Google console in progress. Remaining: `NEXT_PUBLIC_SOCIAL_LOGIN`
+  in Vercel + redeploy, which is what makes the buttons appear.
+
 - **2026-08-31 — GOOGLE + APPLE SIGN-IN (code SHIPPED, buttons OFF
   until Luca does the provider setup).** QoL so signing up isn't a
   password + inbox-confirmation errand. What's live in the repo:

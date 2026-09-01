@@ -35,11 +35,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
-import { getRatingHex, formatRating } from "@/lib/rating";
+import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap, isNativeApp } from "@/lib/native";
 import { useLikeState } from "@/lib/likeStore";
 import CommentsSection from "@/components/reviews/CommentsSection";
-import BackdropVideo from "@/components/profile/BackdropVideo";
 
 /** Only https:// or local /path images (stored-XSS defense). */
 function safeImage(url: string | null): string | null {
@@ -160,15 +159,14 @@ function RailLike({
 function SurfCard({
   item,
   fullscreen,
-  ambient,
+  native,
   onOpenComments,
 }: {
   item: TunedItem;
   fullscreen: boolean;
-  /** App shell: the pager plays one hardware-decoded ambient video
-      behind ALL cards, so each card skips its own CSS-blurred cover
-      backdrop (blur-2xl per card was real GPU cost on phones). */
-  ambient?: boolean;
+  /** App shell — keeps the compact card scale (Luca 2026-08-31: the
+      web goes wide/horizontal, the app changes stay subtle). */
+  native?: boolean;
   /** Opens the in-place comments sheet (reviews only). */
   onOpenComments?: () => void;
 }) {
@@ -234,6 +232,26 @@ function SurfCard({
     (item.type === "review" || item.type === "release") &&
     !!item.spotify_url &&
     !!toSpotifyEmbed(item.spotify_url);
+  // Album embeds get real room (Luca 2026-08-31: the 152px compact
+  // player is too small to actually use on albums): the web goes
+  // wide + tall (352 = Spotify's full album player, tracklist
+  // scrollable inside), the app elongates a bit (232 — deliberately
+  // not the drastic web resize). Singles stay compact everywhere.
+  const spotifyKind =
+    (item.type === "review" || item.type === "release"
+      ? item.spotify_url
+      : null
+    )?.match(/open\.spotify\.com\/(track|album)\//)?.[1] ?? null;
+  const embedHeight =
+    spotifyKind === "album" ? (native ? 232 : 352) : 152;
+  const embedWidthClass =
+    spotifyKind === "album" && !native ? "max-w-2xl" : "max-w-md";
+  // Web-fullscreen body budget: the card has no inner scroll any
+  // more, so when the tall album player shares the frame the words
+  // clamp earlier (and get the read-the-rest button sooner).
+  const albumEmbed = wantsEmbed && spotifyKind === "album";
+  const longBodyAt = !native && albumEmbed ? 400 : 700;
+  const webClampClass = albumEmbed ? "line-clamp-6" : "line-clamp-[14]";
   const [embedLive, setEmbedLive] = useState(false);
   useEffect(() => {
     if (!wantsEmbed) {
@@ -255,9 +273,11 @@ function SurfCard({
 
   const inner = (
     <>
-      {/* Blurred cover as the backdrop, dimmed for legibility. In the
-          app the shared ambient video plays instead (see ambient). */}
-      {cover && !ambient && (
+      {/* Blurred cover as the backdrop, dimmed for legibility —
+          everywhere, app included (Luca 2026-08-31: the app gets the
+          blurred artwork exactly like the web; a static blurred img
+          rasterizes once, so the thermal diet holds). */}
+      {cover && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={cover}
@@ -268,6 +288,15 @@ function SurfCard({
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
 
+      {/* Fullscreen: the card-type tag rides pinned at the TOP in a
+          solid box, clear of the blurred backdrop (Luca 2026-08-31 —
+          "say at the top what this is in a box"). */}
+      {fullscreen && (
+        <span className="absolute top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-10 pixel-text text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-md border border-white/15 bg-black/70 text-text-secondary">
+          {typeLabel}
+        </span>
+      )}
+
       {/* Foreground — fullscreen pads BOTH sides equally (the rail
           hangs over the right padding) so content stays visually
           centered; pr-only shoved everything left (Luca 2026-08-22). */}
@@ -276,9 +305,13 @@ function SurfCard({
           fullscreen ? "px-14 py-5" : "p-5"
         }`}
       >
-        <span className="pixel-text text-[10px] uppercase px-1.5 py-px rounded border border-border-medium text-text-muted">
-          {typeLabel}
-        </span>
+        {/* Pager keeps the inline type chip (fullscreen pins it at
+            the top of the frame instead — see above). */}
+        {!fullscreen && (
+          <span className="pixel-text text-[10px] uppercase px-1.5 py-px rounded border border-border-medium text-text-muted">
+            {typeLabel}
+          </span>
+        )}
 
         {/* Posts lead with the person too — their transmission */}
         {item.type === "post" && (
@@ -310,35 +343,70 @@ function SurfCard({
           </span>
         )}
 
-        {/* Reviews lead with the person: avatar + name above the work */}
-        {item.type === "review" && (
-          <span className="flex items-center gap-2.5">
-            {safeImage(item.avatar_url) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={safeImage(item.avatar_url)!}
-                alt=""
-                className="w-8 h-8 rounded-full object-cover border border-white/10"
-              />
-            ) : (
-              <span className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-xs font-bold text-accent-primary uppercase">
-                {(item.username || "U")[0]}
+        {/* Reviews lead with the person. FULLSCREEN uses the
+            community-feed detailed-view verdict line (Luca
+            2026-08-31): "{name} rated this release" + THE number in
+            its own rating box. The pager keeps the compact inline
+            form. */}
+        {item.type === "review" &&
+          (fullscreen ? (
+            <span className="flex items-center justify-center gap-2.5 flex-wrap">
+              {safeImage(item.avatar_url) ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={safeImage(item.avatar_url)!}
+                  alt=""
+                  className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
+                />
+              ) : (
+                <span className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-xs font-bold text-accent-primary uppercase shrink-0">
+                  {(item.username || "U")[0]}
+                </span>
+              )}
+              <span className="min-w-0 text-base text-text-secondary leading-snug break-words">
+                <span className="font-bold text-text-primary">
+                  {item.display_name || item.username}
+                </span>{" "}
+                rated this release
               </span>
-            )}
-            <span className="text-sm text-text-secondary">
-              <span className="font-bold text-text-primary">
-                {item.display_name || item.username}
-              </span>{" "}
-              rated it{" "}
               <span
-                className="font-bold tabular-nums"
-                style={{ color: getRatingHex(item.rating) }}
+                className={`rating-badge text-xs w-8 h-8 shrink-0 ${getRatingColor(item.rating)}`}
+                style={{
+                  color: getRatingHex(item.rating),
+                  borderColor: getRatingHex(item.rating),
+                }}
               >
                 {formatRating(item.rating)}
               </span>
             </span>
-          </span>
-        )}
+          ) : (
+            <span className="flex items-center gap-2.5">
+              {safeImage(item.avatar_url) ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={safeImage(item.avatar_url)!}
+                  alt=""
+                  className="w-8 h-8 rounded-full object-cover border border-white/10"
+                />
+              ) : (
+                <span className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-xs font-bold text-accent-primary uppercase">
+                  {(item.username || "U")[0]}
+                </span>
+              )}
+              <span className="text-sm text-text-secondary">
+                <span className="font-bold text-text-primary">
+                  {item.display_name || item.username}
+                </span>{" "}
+                rated it{" "}
+                <span
+                  className="font-bold tabular-nums"
+                  style={{ color: getRatingHex(item.rating) }}
+                >
+                  {formatRating(item.rating)}
+                </span>
+              </span>
+            </span>
+          ))}
 
         {/* The picture slot: playing embed > tappable video poster >
             plain poster. Embeds exist only in fullscreen. */}
@@ -370,8 +438,12 @@ function SurfCard({
           <span
             className={`poster shrink-0 relative ${
               (item.type === "review" || item.type === "post") && item.body
-                ? "w-28 sm:w-32" /* smaller cover — their words get the room */
-                : "w-40 sm:w-48"
+                ? fullscreen && !native
+                  ? "w-36 sm:w-44" /* web fullscreen: larger artwork (Luca 2026-08-31) */
+                  : "w-28 sm:w-32" /* app + pager: their words get the room */
+                : fullscreen && !native
+                  ? "w-44 sm:w-56" /* web fullscreen: larger artwork */
+                  : "w-40 sm:w-48"
             }`}
           >
             {cover ? (
@@ -407,7 +479,11 @@ function SurfCard({
           </span>
         )}
 
-        <span className="block max-w-md space-y-1">
+        <span
+          className={`block space-y-1 ${
+            fullscreen && !native ? "max-w-2xl" : "max-w-md"
+          }`}
+        >
           <span className="block text-lg sm:text-xl font-bold text-text-primary font-[family-name:var(--font-heading)] leading-snug group-hover:text-accent-primary transition-colors">
             {item.title}
           </span>
@@ -427,23 +503,42 @@ function SurfCard({
         </span>
 
         {/* The words themselves, right on the card. Pager mode clamps
-            them (teaser); fullscreen shows EVERYTHING. Long reads get
-            the reading treatment — left-aligned, scrolling inside
-            their own box (when that inner scroll runs out, the swipe
-            chains to the pager and flips the channel, TikTok-style).
-            SHORT reviews stay centered like the rest of the card. */}
+            them (teaser). FULLSCREEN (Luca 2026-08-31, scroll-in-
+            scroll is gone): the WEB gets a wide body (max-w-2xl) so
+            long reads breathe, clamped past ~14 lines with a "read
+            the full review" button; the APP shortens long bodies to
+            a clamp that fits the card (the rail's VIEW opens the
+            full page). Short takes stay centered everywhere. */}
         {(item.type === "review" || item.type === "post") && item.body && (
-          <span
-            className={`block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
-              fullscreen
-                ? item.body.length > 280
-                  ? "w-full flex-shrink min-h-0 overflow-y-auto text-left px-1 [scrollbar-width:thin]"
-                  : "text-center"
-                : "line-clamp-4 sm:line-clamp-6"
-            }`}
-          >
-            {item.body}
-          </span>
+          <>
+            <span
+              className={`block text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
+                fullscreen
+                  ? native
+                    ? item.body.length > 280
+                      ? "max-w-md w-full text-left line-clamp-6"
+                      : "max-w-md text-center"
+                    : item.body.length > longBodyAt
+                      ? `max-w-2xl w-full text-left ${webClampClass}`
+                      : item.body.length > 280
+                        ? "max-w-2xl w-full text-left"
+                        : "max-w-2xl text-center"
+                  : "max-w-md line-clamp-4 sm:line-clamp-6"
+              }`}
+            >
+              {item.body}
+            </span>
+            {/* Truly long on the web: hand the rest to the page */}
+            {fullscreen && !native && item.body.length > longBodyAt && (
+              <Link
+                href={href}
+                onClick={() => hapticTap()}
+                className="shrink-0 pixel-text text-[10px] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+              >
+                Read the full {item.type === "review" ? "review" : "post"} →
+              </Link>
+            )}
+          </>
         )}
 
         {/* Release synopsis — manual → Genius → Wikipedia (enriched in
@@ -451,13 +546,22 @@ function SurfCard({
             to check the release out (Luca 2026-08-22). */}
         {item.type === "release" && item.description && (
           <>
+            {/* Same no-scroll-in-scroll rules as review bodies
+                (2026-08-31): web reads wide + clamps the epics, the
+                app shortens to fit (VIEW opens the release page). */}
             <span
-              className={`block max-w-md text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
+              className={`block text-sm text-text-secondary leading-relaxed whitespace-pre-line ${
                 fullscreen
-                  ? item.description.length > 280
-                    ? "w-full flex-shrink min-h-0 overflow-y-auto text-left px-1 [scrollbar-width:thin]"
-                    : "text-center"
-                  : "line-clamp-3 sm:line-clamp-4"
+                  ? native
+                    ? item.description.length > 280
+                      ? "max-w-md w-full text-left line-clamp-6"
+                      : "max-w-md text-center"
+                    : item.description.length > longBodyAt
+                      ? `max-w-2xl w-full text-left ${webClampClass}`
+                      : item.description.length > 280
+                        ? "max-w-2xl w-full text-left"
+                        : "max-w-2xl text-center"
+                  : "max-w-md line-clamp-3 sm:line-clamp-4"
               }`}
             >
               {item.description}
@@ -493,12 +597,15 @@ function SurfCard({
           (item.type === "review" || item.type === "release") &&
           item.spotify_url &&
           (wantsEmbed ? (
-            <div className="w-full max-w-md h-[152px] shrink-0">
+            <div
+              className={`w-full ${embedWidthClass} shrink-0`}
+              style={{ height: embedHeight }}
+            >
               {embedLive && (
                 <iframe
                   src={toSpotifyEmbed(item.spotify_url)!}
                   width="100%"
-                  height={152}
+                  height={embedHeight}
                   frameBorder="0"
                   allow="autoplay; clipboard-write; encrypted-media"
                   title={`Spotify preview of ${item.title}`}
@@ -663,15 +770,16 @@ export default function ChannelSurf({
       return true;
     });
   }, []);
-  // App shell only: swap the per-card CSS-blurred cover backdrops for
-  // ONE hardware-decoded ambient loop behind the whole pager
-  // (public/backdrops/taste.mp4 — the molten liquid, rendered as
-  // video). Same trick TikTok leans on: the rich layer is a video
-  // the decoder chip plays for near-zero GPU/CPU. Bridge check must
-  // wait for mount, same pattern as TabBar.
-  const [ambient, setAmbient] = useState(false);
+  // App vs web fork for the 2026-08-31 card sizings (the app keeps
+  // its compact scale; the web goes wide). The app's ambient-video
+  // backdrop is RETIRED per the same spec — cards now paint the
+  // blurred artwork backdrop everywhere, exactly like the web
+  // (static image + one-time blur raster, not a per-frame filter, so
+  // the thermal diet holds). Bridge check waits for mount, same
+  // pattern as TabBar.
+  const [native, setNative] = useState(false);
   useEffect(() => {
-    setAmbient(isNativeApp());
+    setNative(isNativeApp());
   }, []);
   const commentsForRef = useRef<string | null>(null);
   commentsForRef.current = commentsFor;
@@ -777,15 +885,7 @@ export default function ChannelSurf({
             "panel-xbox relative overflow-hidden"
       }
     >
-      {/* App-only ambient: the molten liquid as a looping video the
-          hardware decoder plays behind every card. */}
-      {ambient && (
-        <div className="absolute inset-0" aria-hidden="true">
-          <BackdropVideo theme="taste" />
-        </div>
-      )}
-
-      {/* Snap frame — `relative` so it stacks above the ambient video */}
+      {/* Snap frame */}
       <div
         ref={frameRef}
         onScroll={handleScroll}
@@ -810,7 +910,7 @@ export default function ChannelSurf({
             key={`${item.type}:${item.slug}`}
             item={item}
             fullscreen={fullscreen}
-            ambient={ambient}
+            native={native}
             onOpenComments={
               item.type === "review"
                 ? () => setCommentsFor(item.id)

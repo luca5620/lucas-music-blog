@@ -57,6 +57,8 @@ export async function updateSession(request: NextRequest) {
     "/debates/new",
     "/posts/new",
     "/connections",
+    // Social-login handle picker — only ever reachable signed in.
+    "/welcome",
   ];
 
   if (!user) {

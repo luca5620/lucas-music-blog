@@ -11,6 +11,39 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-08-31 — GOOGLE + APPLE SIGN-IN (code SHIPPED, buttons OFF
+  until Luca does the provider setup).** QoL so signing up isn't a
+  password + inbox-confirmation errand. What's live in the repo:
+  `components/auth/OAuthButtons` on /login and /signup,
+  `/auth/callback` (PKCE exchange), `/welcome` (the handle picker),
+  `lib/username.ts` (the handle rules, now shared by signup +
+  welcome), migration **031-social-login.sql**.
+  **THREE THINGS ONLY LUCA CAN DO — all written out step by step in
+  `docs/SOCIAL-LOGIN-SETUP.md`:**
+  1. Google Cloud OAuth client + Apple Services ID/key → paste into
+     Supabase → Authentication → Providers (~15 min for Google, ~30
+     for Apple; ⚠️ Apple's secret expires every 6 months).
+  2. Run **migration 031** in the SQL Editor.
+  3. Set `NEXT_PUBLIC_SOCIAL_LOGIN=google,apple` in Vercel and
+     redeploy — until then `OAuthButtons` renders NOTHING, so the
+     live site is unchanged and no visitor can hit a dead button.
+     `google` alone is fine if Apple's setup waits.
+  Design notes: buttons sit ABOVE the email form with an OR divider
+  (the divider lives inside the component so the app doesn't get a
+  stray line); btn-y2k-outline, inline SVG logos, uppercase like
+  every other button. Why /welcome exists: social providers never
+  ask for a username, so 031's trigger invents one and flags
+  `profiles.username_auto` — the callback sends flagged accounts to
+  pick a real handle (it's in every review URL) plus tick the Terms
+  box the signup form would have shown (App Store 1.2). That first
+  claim is FREE — the 028 trigger doesn't start the 14-day cooldown
+  when it's replacing a generated handle, and `username_auto` is
+  trigger-owned so nobody can re-arm it for free renames.
+  **App shows none of it on purpose**: Google refuses OAuth in
+  embedded webviews (`disallowed_useragent`), so doing it in the
+  shell needs the system browser + a deep link handing the session
+  back — a separate job, noted in the doc.
+
 - **2026-08-31 (Windows, post-launch round 2 — Luca's new batch,
   quick fixes SHIPPED, builds green, NOT yet eyeballed.** The fixes:
   1. **NO SIGNAL Retune actually works** — the button only reloaded

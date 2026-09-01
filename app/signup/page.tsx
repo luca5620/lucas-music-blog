@@ -16,16 +16,12 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-
-// Matches the DB constraint from migration 006 exactly. We lowercase
-// input as they type, so the effective alphabet is a-z 0-9 _.
-const USERNAME_REGEX = /^[a-z0-9_]{3,20}$/;
-
-// Names that would let someone impersonate the platform or its staff.
-const RESERVED_USERNAMES = new Set([
-  "admin", "peak", "mod", "moderator", "staff", "support",
-  "api", "root", "system", "official", "help",
-]);
+import OAuthButtons from "@/components/auth/OAuthButtons";
+// The handle rules (charset from migration 006, the reserved list
+// from 028's trigger) live in lib/username now — /welcome asks the
+// same question after a Google/Apple sign-in and the two screens
+// must not drift apart.
+import { USERNAME_REGEX, RESERVED_USERNAMES } from "@/lib/username";
 
 /** Availability check result for the little status line. */
 type Availability = "idle" | "checking" | "free" | "taken";
@@ -256,6 +252,13 @@ export default function SignUpPage() {
               {error}
             </div>
           )}
+
+          {/* One-tap doors — no inbox confirmation, no password, and
+              the handle gets picked on /welcome straight after.
+              Renders nothing inside the app shell. */}
+          <div className="mb-6">
+            <OAuthButtons />
+          </div>
 
           {/* Form */}
           <form onSubmit={handleSignUp} className="space-y-5">

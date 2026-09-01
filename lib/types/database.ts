@@ -12,6 +12,11 @@ export interface Profile {
   username_changed_at?: string | null;
   display_name_changed_at?: string | null;
   display_name_change_count?: number;
+  /** True while the username is the one the signup trigger INVENTED
+      (a Google/Apple sign-in never types one) — /auth/callback sends
+      these accounts to /welcome to claim a real handle, and that
+      first claim is free. Migration 031; absent until it runs. */
+  username_auto?: boolean;
   bio: string | null;
   avatar_url: string | null;
   banner_url: string | null;

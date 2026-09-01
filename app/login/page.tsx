@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import OAuthButtons from "@/components/auth/OAuthButtons";
 import type { Profile } from "@/lib/types/database";
 
 export default function LoginPage() {
@@ -55,11 +56,18 @@ export default function LoginPage() {
     return () => clearTimeout(t);
   }, [resendCooldown]);
 
-  // ?verify=admin — read from the raw URL instead of useSearchParams
-  // so this client page doesn't need a Suspense boundary.
+  // ?verify=admin / ?error=oauth — read from the raw URL instead of
+  // useSearchParams so this client page needs no Suspense boundary.
+  // ?error=oauth means a Google/Apple hand-back failed (a plain
+  // cancel comes back clean, with nothing to explain).
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("verify") === "admin") setAdminNotice(true);
+    if (params.get("error") === "oauth") {
+      setError(
+        "That sign-in didn't come back through — try again, or use your email and password."
+      );
+    }
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -356,6 +364,12 @@ export default function LoginPage() {
               )}
             </div>
           )}
+
+          {/* One-tap doors. Renders nothing inside the app shell —
+              see components/auth/OAuthButtons. */}
+          <div className="mb-6">
+            <OAuthButtons />
+          </div>
 
           {/* Form */}
           <form onSubmit={handleLogin} className="space-y-5">

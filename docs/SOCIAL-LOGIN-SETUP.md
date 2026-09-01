@@ -30,10 +30,17 @@ Supabase Dashboard → **Authentication → URL Configuration**
 2. **APIs & Services → OAuth consent screen**
    - User type: **External**, then **Publish** the app (while it's in
      "Testing" only accounts you list can sign in).
-   - App name: Peak Music Reviews. Support email + developer email:
-     yours. Add the logo and the links to
-     `https://peakmusicreviews.com/privacy` and `/terms` — Google
-     shows them on the consent screen.
+   - App name: Peak Music Reviews. Developer contact email (free
+     text): `contact@peakmusicreviews.com`. **User support email is a
+     dropdown**, not free text — it only offers the signed-in Google
+     account or a Google Group you own, so unless contact@ is a
+     Workspace account there, pick the personal gmail and put
+     contact@ in the developer field.
+   - Links to `https://peakmusicreviews.com/privacy` and `/terms` —
+     Google shows them on the consent screen.
+   - **Skip the logo** on the first pass: uploading one can trigger
+     Google's brand verification review (weeks), and without it the
+     consent screen just shows the app name. Add it later if wanted.
    - Scopes: the default `email`, `profile`, `openid` — nothing else,
      so the app needs no Google verification review.
 3. **APIs & Services → Credentials → Create credentials → OAuth client

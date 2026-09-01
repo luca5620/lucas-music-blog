@@ -54,8 +54,26 @@ remnants: every piece of content is community-made and catalog-backed.
      — the moment it exists, the old review URL 308s to it and the
      impressions land somewhere real. Deleting the URL is the wrong
      move while it still earns impressions.
-  **AWAITING LUCA'S VERDICTS (proposals discussed, not built) — his
-  2026-08-31 specs, verbatim intent, so either machine can build:**
+  **UPDATE same day: Luca greenlit ALL FOUR proposals ("do all my
+  proposals … no need for a dev server, just push it when done") —
+  ALL SHIPPED to main (488dda8 comment likes, 8b07380 Social page,
+  31a9943 create/search swap, e17661f Your Taste rework), builds
+  green, NOT yet eyeballed anywhere. ⚠️ MIGRATION 030
+  (comment_likes) NEEDS RUNNING in the SQL Editor — review-comment
+  hearts hide themselves until it runs; everything else works
+  without it. Implementation notes: chat reactions collapsed to one
+  ❤️ per message with NO schema change (a like IS a ❤️ reaction row;
+  legacy emojis stop rendering); Top Rooms ranks candidates by LIVE
+  presence in an observe-only client subscription (never track() —
+  see components/social/TopRooms.tsx header for the topic-sharing
+  gotcha); Top Reviews This Week = review_likes.created_at since
+  lastFridayEasternUtcMs() (new helper in lib/upcoming — the one
+  Eastern-midnight rule); tab bar GEOMETRY untouched by the swap
+  (same frozen fifths — only the middle cell's content and the
+  active-color rule changed: active = white, CREATE = blue);
+  the taste pager's app ambient video (taste.mp4) is RETIRED for
+  per-card blurred artwork per his spec. The original specs below
+  stand as the record of intent:**
   - **Friends→"Social" rename** (page + app bottom tab, web + app):
     page adds TOP ROOMS (releases with most live "people here") and
     TOP REVIEWS THIS WEEK — most likes RECEIVED this week, live,

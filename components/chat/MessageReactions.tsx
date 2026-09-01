@@ -1,30 +1,35 @@
 "use client";
 
 /**
- * MessageReactions — the reaction strip under a single chat message.
+ * MessageReactions — the like row under a single chat message.
  *
- * Purely presentational: chips for every emoji with a nonzero count
- * (highlighted when the viewer added it) plus an add-button that expands
- * an inline emoji picker. All counts/toggling live in the parent via
- * useMessageReactions — this component just renders and reports clicks.
+ * 2026-08-31 (Luca's universal-like pass): the multi-emoji strip +
+ * picker is GONE — every comment across the site now carries one
+ * heart, same as reviews/posts/lists. This kept the whole reaction
+ * pipeline (tables, routes, realtime, useMessageReactions) untouched:
+ * a like is simply a reaction with the canonical ❤️ emoji, so old ❤️
+ * reactions carry over as likes and other legacy emojis just stop
+ * rendering. Richer reactions can return later by rendering more of
+ * the counts again.
  *
- * The picker expands inline rather than as a floating popover so it never
- * clips inside the overflow-y-auto message list.
+ * Purely presentational: counts/toggling live in the parent via
+ * useMessageReactions — this component renders and reports clicks.
  */
 
-import { useState } from "react";
 import { hapticTap } from "@/lib/native";
 
-export const REACTION_EMOJIS = ["🔥", "💀", "🎯", "❤️", "🤧", "🥶"];
+/** The one canonical reaction the UI writes now. */
+export const LIKE_EMOJI = "❤️";
 
 interface MessageReactionsProps {
-  /** emoji -> count. Only entries with count > 0 render as chips. */
+  /** emoji -> count. Only the ❤️ entry renders (see header note). */
   counts: Record<string, number>;
   /** Emojis the viewer has reacted with on this message. */
   mine: ReadonlySet<string>;
   /** False for signed-out viewers and optimistic (temp) messages. */
   canReact: boolean;
   onToggle: (emoji: string) => void;
+  /** Kept for call-site compatibility; the heart is always rose. */
   accentColor?: string;
 }
 
@@ -33,82 +38,53 @@ export default function MessageReactions({
   mine,
   canReact,
   onToggle,
-  accentColor = "#1e90ff",
 }: MessageReactionsProps) {
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const count = counts[LIKE_EMOJI] ?? 0;
+  const liked = mine.has(LIKE_EMOJI);
 
-  const chips = Object.entries(counts)
-    .filter(([, count]) => count > 0)
-    .sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0]));
+  // Nothing to show: no likes yet and the viewer can't add one.
+  if (count === 0 && !canReact) return null;
 
-  if (chips.length === 0 && !canReact) return null;
-
-  // Every reaction toggle gets a physical tap in the app (no-op on web)
-  const toggle = (emoji: string) => {
-    hapticTap();
-    onToggle(emoji);
-  };
-
-  const pick = (emoji: string) => {
-    setPickerOpen(false);
-    toggle(emoji);
+  const toggle = () => {
+    hapticTap(); // physical tap in the app; no-op on web
+    onToggle(LIKE_EMOJI);
   };
 
   return (
-    <div className="flex items-center gap-1 flex-wrap mt-1">
-      {chips.map(([emoji, count]) => {
-        const isMine = mine.has(emoji);
-        return (
-          <button
-            key={emoji}
-            type="button"
-            disabled={!canReact}
-            onClick={() => toggle(emoji)}
-            aria-pressed={isMine}
-            aria-label={`${emoji} — ${count} reaction${count === 1 ? "" : "s"}`}
-            className="inline-flex items-center gap-1 px-1.5 py-px rounded-full text-xs transition-all disabled:cursor-default enabled:hover:scale-110"
-            style={{
-              background: isMine ? `${accentColor}26` : "rgba(255,255,255,0.04)",
-              border: `1px solid ${isMine ? `${accentColor}80` : "rgba(255,255,255,0.08)"}`,
-              color: isMine ? accentColor : undefined,
-            }}
-          >
-            <span className="text-sm leading-none">{emoji}</span>
-            <span className="font-[family-name:var(--font-heading)] font-bold tabular-nums text-[10px]">
-              {count}
-            </span>
-          </button>
-        );
-      })}
-
-      {canReact && (
-        <>
-          <button
-            type="button"
-            onClick={() => setPickerOpen((o) => !o)}
-            aria-expanded={pickerOpen}
-            aria-label={pickerOpen ? "Close reaction picker" : "Add reaction"}
-            className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[11px] leading-none text-text-muted border border-transparent hover:border-border-medium hover:text-text-secondary transition-all"
-          >
-            {pickerOpen ? "×" : "☺+"}
-          </button>
-          {pickerOpen && (
-            <span className="inline-flex items-center gap-0.5">
-              {REACTION_EMOJIS.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  onClick={() => pick(emoji)}
-                  aria-label={`React with ${emoji}`}
-                  className="px-1 py-0.5 rounded text-base leading-none transition-transform hover:scale-125"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </span>
-          )}
-        </>
-      )}
+    <div className="flex items-center mt-1">
+      <button
+        type="button"
+        disabled={!canReact}
+        onClick={toggle}
+        aria-pressed={liked}
+        aria-label={liked ? "Unlike message" : "Like message"}
+        className={`inline-flex items-center gap-1 ${
+          liked ? "text-[#ff4d6d]" : "text-text-muted hover:text-[#ff4d6d]"
+        } transition-colors select-none disabled:cursor-default`}
+      >
+        <svg
+          width={13}
+          height={13}
+          viewBox="0 0 24 24"
+          fill={liked ? "#ff4d6d" : "none"}
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={
+            liked
+              ? { filter: "drop-shadow(0 0 4px rgba(255,77,109,0.7))" }
+              : undefined
+          }
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+        {count > 0 && (
+          <span className="font-[family-name:var(--font-heading)] font-bold tabular-nums text-[10px]">
+            {count}
+          </span>
+        )}
+      </button>
     </div>
   );
 }

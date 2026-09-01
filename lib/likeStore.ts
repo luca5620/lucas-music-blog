@@ -37,7 +37,7 @@ export interface LikeState {
 }
 
 /** The content types that have like endpoints today. */
-export type LikeKind = "review" | "post";
+export type LikeKind = "review" | "post" | "comment";
 
 /** One canonical key shape so every button agrees on the spelling. */
 export function likeKey(kind: LikeKind, id: string): string {

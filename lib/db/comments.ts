@@ -131,6 +131,55 @@ export async function deleteComment(
 }
 
 /**
+ * Toggle the viewer's like on a comment (migration 030). Mirrors
+ * likeReview: flip the row, then return the fresh count + state.
+ * Pre-migration the table doesn't exist — the API route surfaces
+ * that as a 503 and the UI simply hides hearts.
+ */
+export async function likeComment(
+  userId: string,
+  commentId: string
+): Promise<{ liked: boolean; count: number } | null> {
+  const supabase = await createClient();
+
+  const { data: existing, error: readError } = await supabase
+    .from("comment_likes")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("comment_id", commentId)
+    .maybeSingle();
+
+  // Table missing (pre-migration) or other read failure — bail.
+  if (readError) {
+    console.error("Error reading comment like:", readError);
+    return null;
+  }
+
+  if (existing) {
+    await supabase
+      .from("comment_likes")
+      .delete()
+      .eq("user_id", userId)
+      .eq("comment_id", commentId);
+  } else {
+    const { error } = await supabase
+      .from("comment_likes")
+      .insert({ user_id: userId, comment_id: commentId } as never);
+    if (error) {
+      console.error("Error liking comment:", error);
+      return null;
+    }
+  }
+
+  const { count } = await supabase
+    .from("comment_likes")
+    .select("id", { count: "exact", head: true })
+    .eq("comment_id", commentId);
+
+  return { liked: !existing, count: count ?? 0 };
+}
+
+/**
  * Get comment count for a review.
  */
 export async function getCommentCount(reviewId: string): Promise<number> {

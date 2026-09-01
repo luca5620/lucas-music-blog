@@ -10,8 +10,11 @@ import {
 } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useRouter } from "next/navigation";
 import ReportButton from "@/components/moderation/ReportButton";
 import Link from "next/link";
+import { hapticTap } from "@/lib/native";
+import { useLikeState } from "@/lib/likeStore";
 
 /* ─── Types ─── */
 
@@ -183,6 +186,94 @@ function CommentForm({
   );
 }
 
+/* ─── Comment Like Button ─── */
+
+/**
+ * The universal heart on a comment (Luca 2026-08-31 — you couldn't
+ * like review comments at all). Same optimistic pattern + shared
+ * likeStore as LikeButton, hitting /api/comments/[id]/like.
+ */
+function CommentLikeButton({
+  commentId,
+  initialCount,
+  initialLiked,
+}: {
+  commentId: string;
+  initialCount: number;
+  initialLiked: boolean;
+}) {
+  const { user } = useAuth();
+  const router = useRouter();
+  const { liked, count, write } = useLikeState(
+    "comment",
+    commentId,
+    initialLiked,
+    initialCount
+  );
+  const [pending, setPending] = useState(false);
+
+  const handleClick = async () => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (pending) return;
+    hapticTap();
+
+    const prevLiked = liked;
+    const prevCount = count;
+    write({ liked: !prevLiked, count: prevCount + (prevLiked ? -1 : 1) });
+    setPending(true);
+    try {
+      const res = await fetch(`/api/comments/${commentId}/like`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("like failed");
+      const data = (await res.json()) as { liked: boolean; count: number };
+      write({ liked: data.liked, count: data.count });
+    } catch {
+      write({ liked: prevLiked, count: prevCount });
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-label={liked ? "Unlike comment" : "Like comment"}
+      aria-pressed={liked}
+      className={`inline-flex items-center gap-1 ${
+        liked ? "text-[#ff4d6d]" : "text-text-muted hover:text-[#ff4d6d]"
+      } transition-colors select-none`}
+    >
+      <svg
+        width={13}
+        height={13}
+        viewBox="0 0 24 24"
+        fill={liked ? "#ff4d6d" : "none"}
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={
+          liked
+            ? { filter: "drop-shadow(0 0 4px rgba(255,77,109,0.7))" }
+            : undefined
+        }
+      >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+      {count > 0 && (
+        <span className="font-[family-name:var(--font-heading)] font-bold text-[0.65rem] tabular-nums">
+          {count}
+        </span>
+      )}
+    </button>
+  );
+}
+
 /* ─── Single Comment ─── */
 
 function CommentItem({
@@ -194,6 +285,7 @@ function CommentItem({
   onDelete,
   isReply = false,
   sheetMode = false,
+  like,
 }: {
   comment: CommentData;
   currentUserId: string | null;
@@ -203,6 +295,9 @@ function CommentItem({
   onEdit: (commentId: string, content: string) => Promise<void>;
   onDelete: (commentId: string) => Promise<void>;
   isReply?: boolean;
+  /** Like state for this comment — undefined pre-migration-030 (the
+      heart simply doesn't render then). */
+  like?: { count: number; mine: boolean };
   /** Rendered inside the taste broadcast's Switchboard read sheet —
       which is only keyboard-safe because it contains ZERO inputs
       (see SwitchboardSheet). So sheet mode hides the Edit button:
@@ -282,6 +377,13 @@ function CommentItem({
         {/* Actions */}
         {!editing && (
           <div className="flex items-center gap-3 mt-2">
+            {like && (
+              <CommentLikeButton
+                commentId={comment.id}
+                initialCount={like.count}
+                initialLiked={like.mine}
+              />
+            )}
             {currentUserId && !isReply && (
               <button
                 onClick={() => onReply(comment.id)}
@@ -374,6 +476,12 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   // Authors this viewer has blocked — their comments are hidden.
   const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
+  // Per-comment like state (count + whether the viewer liked it).
+  // null until migration 030's table answers — hearts hidden till then.
+  const [likes, setLikes] = useState<Map<
+    string,
+    { count: number; mine: boolean }
+  > | null>(null);
   const supabaseRef = useRef(createClient());
 
   // Load the viewer's block list once they're known. Failure is
@@ -413,7 +521,45 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
     if (error) {
       console.error("Error fetching comments:", error);
     } else {
-      setComments((data as unknown as CommentData[]) ?? []);
+      const rows = (data as unknown as CommentData[]) ?? [];
+      setComments(rows);
+
+      // Like counts + the viewer's hearts, one query (RLS: world-
+      // readable). Errors — most importantly "relation does not
+      // exist" before migration 030 runs — leave `likes` null and no
+      // heart renders anywhere. Viewer id read directly from the
+      // auth session so this doesn't depend on the auth hook's
+      // timing.
+      if (rows.length > 0) {
+        const { data: likeRows, error: likeError } = await supabase
+          .from("comment_likes")
+          .select("comment_id, user_id")
+          .in(
+            "comment_id",
+            rows.map((r) => r.id)
+          );
+        if (!likeError && likeRows) {
+          const {
+            data: { user: viewer },
+          } = await supabase.auth.getUser();
+          const map = new Map<string, { count: number; mine: boolean }>();
+          for (const row of likeRows as {
+            comment_id: string;
+            user_id: string;
+          }[]) {
+            const entry = map.get(row.comment_id) ?? {
+              count: 0,
+              mine: false,
+            };
+            entry.count += 1;
+            if (viewer && row.user_id === viewer.id) entry.mine = true;
+            map.set(row.comment_id, entry);
+          }
+          setLikes(map);
+        }
+      } else {
+        setLikes(new Map());
+      }
     }
     setLoading(false);
   }, [reviewId]);
@@ -583,6 +729,11 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
                 currentUserId={user?.id ?? null}
                 isStaff={isStaff}
                 sheetMode={sheet}
+                like={
+                  likes
+                    ? (likes.get(comment.id) ?? { count: 0, mine: false })
+                    : undefined
+                }
                 onReply={(id) => {
                   if (sheet) {
                     // Switchboard: no inline form — hand the parent
@@ -626,6 +777,11 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
                   currentUserId={user?.id ?? null}
                   isStaff={isStaff}
                   sheetMode={sheet}
+                  like={
+                    likes
+                      ? (likes.get(reply.id) ?? { count: 0, mine: false })
+                      : undefined
+                  }
                   onReply={() => {}}
                   onEdit={handleEdit}
                   onDelete={handleDelete}

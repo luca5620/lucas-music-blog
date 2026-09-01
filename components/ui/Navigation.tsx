@@ -136,18 +136,22 @@ export default function Navigation() {
           {/* BELL — in-app notifications (likes, comments, follows).
               Signed-in only; web AND app (the app has no other home
               for it — the tab bar is full). Sits LEFT of Search on
-              the web (Luca 2026-08-28); in the app Search is hidden,
-              so the visual order there is unchanged. */}
+              the web (Luca 2026-08-28); since the 2026-08-31 swap
+              the app shows Search up here too (bell → search →
+              avatar), in the spot CREATE used to hold. */}
           {!loading && user && <NotificationsBell />}
 
           {/* SEARCH — the universal /search page (users, artists,
-              releases, reviews, debates, lists, posts). Web-only up
-              here (app-hide): in the app it's the middle bottom tab. */}
+              releases, reviews, debates, lists, posts). 2026-08-31
+              swap: in the APP this magnifying glass takes the header
+              spot the blue CREATE + held (creating moved to the tab
+              bar's middle button); label stays web-only (below sm
+              it's icon-only anyway). nav-pill-btn = app pill sizing. */}
           <Link
             href="/search"
             title="Search everything"
             aria-label="Search everything"
-            className="app-hide shrink-0 inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
+            className="nav-pill-btn shrink-0 inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
               <circle cx="11" cy="11" r="7" />
@@ -159,9 +163,11 @@ export default function Navigation() {
           {/* CREATE — one button for every content type (Luca
               2026-08-19: fold posts into the review button, pick a
               name that fits both; 2026-08-22: lists join it). Click →
-              choose Review, Post, or List. */}
+              choose Review, Post, or List. WEB-ONLY since 2026-08-31
+              (app-hide): in the app, creating lives on the tab bar's
+              blue middle button + CreateSheet. */}
           {!loading && user && (
-            <div className="relative shrink-0" ref={createRef}>
+            <div className="app-hide relative shrink-0" ref={createRef}>
               <button
                 onClick={() => setCreateOpen(!createOpen)}
                 aria-expanded={createOpen}

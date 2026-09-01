@@ -1518,13 +1518,25 @@ body {
   height: 24px;
 }
 
+/* Active page = WHITE, not blue (Luca 2026-08-31: icons rest gray,
+   the selected page highlights white — blue belongs to CREATE alone) */
 .tab-bar-item.active {
-  color: var(--accent-primary);
+  color: #fff;
 }
 
 /* Active tab glows faintly — the CRT read of iOS's filled-icon state */
 .tab-bar-item.active svg {
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-primary) 60%, transparent));
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
+}
+
+/* The middle CREATE button: always accent-blue (it's a sheet
+   trigger, not a page — .active never applies to it). Same cell
+   geometry as every other tab — the frozen fifths stay frozen. */
+.tab-bar-create {
+  color: var(--accent-primary);
+}
+.tab-bar-create svg {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-primary) 45%, transparent));
 }
 
 /* Quick-access strip (QuickAccessStrip.tsx): the pin is a position

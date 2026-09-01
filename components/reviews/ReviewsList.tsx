@@ -17,7 +17,10 @@ import { smallCover } from "@/lib/images";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
 
-const RATING_OPTIONS: (number | "All")[] = ["All", 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+/* Rating chips are BUCKETS, not floors (Luca 2026-08-31: "showing
+   every release from 1-10 when clicking 1+ makes no sense") — each
+   number n means n ≤ rating ≤ n.9, and 10 is just the perfect 10s. */
+const RATING_OPTIONS: (number | "All")[] = ["All", 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
 
 export default function ReviewsList({
   reviews,
@@ -50,7 +53,8 @@ export default function ReviewsList({
     })
     .filter((r) => {
       if (activeRating === "All") return true;
-      return r.rating >= activeRating;
+      // Bucket match: 7 shows 7.0–7.9; the 10 chip shows only 10s.
+      return r.rating >= activeRating && r.rating < activeRating + 1;
     });
 
   return (
@@ -122,7 +126,7 @@ export default function ReviewsList({
               `}
               style={hex ? { "--btn-color": hex, color: isActive ? hex : undefined } as React.CSSProperties : undefined}
             >
-              {typeof rating === "number" ? `${rating}+` : rating}
+              {typeof rating === "number" ? `${rating}s` : rating}
             </button>
           );
         })}

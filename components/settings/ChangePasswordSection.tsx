@@ -98,10 +98,12 @@ export default function ChangePasswordSection() {
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Bare .btn-y2k is transparent (looked like plain text) —
+              Luca 2026-08-31: make it an actual visible button. */}
           <button
             type="submit"
             disabled={saving}
-            className="btn-y2k disabled:opacity-50"
+            className="btn-y2k btn-y2k-primary disabled:opacity-50"
           >
             {saving ? "Saving…" : "Change password"}
           </button>

@@ -5,10 +5,11 @@
  * canonical release page, and keeps likes + comments.
  */
 
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getReviewWithContextBySlug } from "@/lib/db/reviews";
+import { getReleaseBySlug } from "@/lib/db/releases";
 import { getRatingColor, getGenreColor, formatRating } from "@/lib/rating";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -30,7 +31,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const review = await getReviewWithContextBySlug(slug);
-  if (!review) return { title: "Review Not Found" };
+  // Dead review URL (deleted review, or a pre-pivot leftover Google
+  // still holds): permanently redirect to the release page when one
+  // lives at the same slug, so the URL's search equity lands
+  // somewhere real instead of a soft-404. Done HERE and not only in
+  // the page body because the root loading.tsx streams the shell
+  // (status 200) before the body runs — metadata resolves earlier,
+  // so crawlers get a real 308. (Luca 2026-08-31, GSC: the old
+  // echoes-of-silence-the-weeknd review page draws impressions.)
+  if (!review) {
+    const release = await getReleaseBySlug(slug);
+    if (release) permanentRedirect(`/releases/${slug}`);
+    return { title: "Review Not Found" };
+  }
 
   const desc =
     review.snippet ||
@@ -81,7 +94,12 @@ export default async function ReviewPage({
   } = await supabase.auth.getUser();
 
   const review = await getReviewWithContextBySlug(slug, user?.id);
-  if (!review) notFound();
+  if (!review) {
+    // Same dead-URL rescue as generateMetadata (see the note there).
+    const release = await getReleaseBySlug(slug);
+    if (release) permanentRedirect(`/releases/${slug}`);
+    notFound();
+  }
 
   const author = review.profiles;
   const release = review.releases;

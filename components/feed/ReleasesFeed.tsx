@@ -11,7 +11,9 @@ import type { ReleaseListItem } from "@/components/releases/ReleaseViews";
 export default async function ReleasesFeed() {
   let feed: Awaited<ReturnType<typeof getReleaseDiscoveryFeed>> = [];
   try {
-    feed = await getReleaseDiscoveryFeed(9);
+    // 18 = the largest per-view module cap (web posters); the client
+    // trims to the active view's limit (useModuleLimit).
+    feed = await getReleaseDiscoveryFeed(18);
   } catch {
     // Table may not exist yet (pre-migration). Degrade silently.
     feed = [];

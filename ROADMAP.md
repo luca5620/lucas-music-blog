@@ -11,6 +11,56 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ⏳ In progress
 
+- **2026-08-31 (Windows, post-launch round 2 — Luca's new batch,
+  quick fixes SHIPPED, builds green, NOT yet eyeballed.** The fixes:
+  1. **NO SIGNAL Retune actually works** — the button only reloaded
+     `if (navigator.onLine)`, and WKWebView is unreliable about
+     flipping that back after service returns, so the tap did
+     nothing. Retune now probes the real network (HEAD to our own
+     manifest, 5s timeout) and reloads on success / shows STILL NO
+     SIGNAL on failure; while the overlay is up a 4s background probe
+     auto-reloads the moment the connection is really back.
+  2. **Debate page: ARENA / ON AIR crumb → plain "← Back"** (same
+     BackLink style as release pages).
+  3. **Menu press-highlight clipping fixed** — avatar dropdown + bell
+     panel rows span an overflow-hidden panel, so the press RING's
+     left/right edges were sliced off; rows now light up with a soft
+     white wash instead (new .menu-sheet hook). PLUS: on touch
+     screens every tappable now transitions the full press-property
+     set (box-shadow/transform/translate/rotate/scale included), so
+     press effects ease in/out instead of popping — the "choppy"
+     feel.
+  4. **Badge glow no longer fades into a box** — RoleBadge's
+     drop-shadow was clipped to the tiny svg box; the svg now carries
+     a padded viewBox (half the box is halo room) with negative
+     margins so layout/spacing is unchanged.
+  5. **Module caps match grid geometry** (useModuleLimit in
+     ViewToggle): home Community Feed + Latest Drops show web
+     detailed 10 / posters 18 / compact 10, app detailed 5 / others
+     9 — no more half-empty last rows; server fetches bumped 9→18.
+  6. **Rating quick-filter = buckets** — chips are now All/10s/9s…/0s
+     and filter n ≤ rating ≤ n.9 (10s = perfect 10s only), replacing
+     the useless "1+ shows everything" floors.
+  7. **Change password is a visible button** (btn-y2k-primary — bare
+     btn-y2k is transparent).
+  8. **Dead review URLs redirect** — /reviews/[slug] with no review
+     now 308s to /releases/[slug] when that release exists (done in
+     generateMetadata too, since the root loading.tsx streams a 200
+     before the body can 404). ⚠️ KNOWN ISSUE surfaced: root
+     app/loading.tsx makes EVERY not-found page a soft 404 (HTTP
+     200) site-wide — flagged for a future SEO pass. For the GSC
+     echoes-of-silence-the-weeknd page: the release ISN'T in the
+     catalog, so Luca should search/import Echoes of Silence in-app
+     — the moment it exists, the old review URL 308s to it and the
+     impressions land somewhere real. Deleting the URL is the wrong
+     move while it still earns impressions.
+  **AWAITING LUCA'S VERDICTS (proposals discussed, not built):**
+  Friends→Social rename + top rooms/top-reviews-of-week modules;
+  reactions→universal comment likes; app search/create button swap;
+  Your Taste horizontal-web + app-blur rework (plan agreed to run on
+  a preview branch first). None of these started — his call comes
+  first.**
+
 - **2026-08-31 (MacBook): LAUNCH-DAY BATCH — app is LIVE on the App
   Store; Luca's post-launch list, code complete. ✅ MIGRATIONS 028 +
   029 CONFIRMED RUN (Luca, same day) — all migrations through 029

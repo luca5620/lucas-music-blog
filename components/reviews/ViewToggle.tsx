@@ -12,8 +12,26 @@
  */
 
 import { useEffect, useState } from "react";
+import { isNativeApp } from "@/lib/native";
 
 export type ReviewView = "detailed" | "posters" | "compact";
+
+/**
+ * How many items a home/section MODULE shows per view before "View
+ * All" takes over (Luca 2026-08-31): caps match the grid geometry so
+ * the last row is always full — web detailed runs 5 across, and 9
+ * items left a hole in row two. Web: detailed 10, posters 18,
+ * compact 10. App: detailed 5, posters/compact 9. Full index pages
+ * (/reviews, /releases) ARE the view-all — never cap those.
+ * App detection lands in an effect so the server render (web caps)
+ * hydrates cleanly; the app trims on mount, before first paint.
+ */
+export function useModuleLimit(view: ReviewView): number {
+  const [app, setApp] = useState(false);
+  useEffect(() => setApp(isNativeApp()), []);
+  if (app) return view === "detailed" ? 5 : 9;
+  return view === "posters" ? 18 : 10;
+}
 
 const STORAGE_KEY = "pmr-review-view";
 const VALID: ReviewView[] = ["detailed", "posters", "compact"];

@@ -1,7 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isNativeApp } from "@/lib/native";
+
+/**
+ * Ask the actual network, not navigator.onLine — WKWebView is
+ * unreliable about flipping onLine back to true (and about firing
+ * the `online` event at all) after service returns, which left the
+ * Retune button dead and the overlay stuck (Luca, 2026-08-31).
+ * A tiny no-store fetch against our own origin is the truth.
+ */
+async function probeConnection(): Promise<boolean> {
+  // Manual abort timer — AbortSignal.timeout needs Safari 16+.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    const res = await fetch("/manifest.webmanifest", {
+      method: "HEAD",
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    return res.ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 /**
  * OfflineOverlay — the in-session NO SIGNAL screen (app shell only).
@@ -21,6 +46,12 @@ import { isNativeApp } from "@/lib/native";
 export default function OfflineOverlay() {
   const [native, setNative] = useState(false);
   const [offline, setOffline] = useState(false);
+  // "checking" while the Retune probe runs, "dead" right after a
+  // failed one (drives the button label + the STILL NO SIGNAL note).
+  const [retuning, setRetuning] = useState<"idle" | "checking" | "dead">(
+    "idle",
+  );
+  const probing = useRef(false);
 
   useEffect(() => {
     setNative(isNativeApp());
@@ -33,6 +64,35 @@ export default function OfflineOverlay() {
       window.removeEventListener("offline", goOffline);
       window.removeEventListener("online", goOnline);
     };
+  }, []);
+
+  // Safety net for WKWebView's missing `online` event: while the
+  // overlay is up, quietly re-probe every few seconds and reload the
+  // moment the network answers (reload rather than just lifting —
+  // whatever the user was doing mid-drop is stale by now anyway).
+  useEffect(() => {
+    if (!native || !offline) return;
+    const interval = setInterval(async () => {
+      if (probing.current) return;
+      probing.current = true;
+      const alive = await probeConnection();
+      probing.current = false;
+      if (alive) window.location.reload();
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [native, offline]);
+
+  const handleRetune = useCallback(async () => {
+    if (probing.current) return;
+    probing.current = true;
+    setRetuning("checking");
+    const alive = await probeConnection();
+    probing.current = false;
+    if (alive) {
+      window.location.reload();
+    } else {
+      setRetuning("dead");
+    }
   }, []);
 
   if (!native || !offline) return null;
@@ -59,14 +119,17 @@ export default function OfflineOverlay() {
       </p>
       <button
         type="button"
-        onClick={() => {
-          // Manual retune: if the radio's actually back, reload fresh.
-          if (navigator.onLine) window.location.reload();
-        }}
-        className="btn-y2k btn-y2k-primary mt-2"
+        onClick={handleRetune}
+        disabled={retuning === "checking"}
+        className="btn-y2k btn-y2k-primary mt-2 disabled:opacity-60"
       >
-        Retune
+        {retuning === "checking" ? "Tuning…" : "Retune"}
       </button>
+      {retuning === "dead" && (
+        <p className="osd-text text-xs opacity-80" role="status">
+          STILL NO SIGNAL — try again in a moment.
+        </p>
+      )}
     </div>
   );
 }

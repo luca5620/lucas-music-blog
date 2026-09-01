@@ -25,7 +25,9 @@ export default async function DiscoveryFeed() {
   }
 
   const [rawFeed, blocked] = await Promise.all([
-    getDiscoveryFeed(9, viewerId) as unknown as Promise<FeedReview[]>,
+    // 18 = the largest per-view module cap (web posters); the client
+    // trims to the active view's limit (useModuleLimit).
+    getDiscoveryFeed(18, viewerId) as unknown as Promise<FeedReview[]>,
     getViewerBlockedIdSet(),
   ]);
 

@@ -12,6 +12,7 @@ import { getUser } from "@/lib/auth";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import DebateRoom from "@/components/debates/DebateRoom";
 import PublishDebateButton from "@/components/debates/PublishDebateButton";
+import BackLink from "@/components/ui/BackLink";
 
 // Live rooms: votes, messages, and reactions change second to second.
 export const dynamic = "force-dynamic";
@@ -79,17 +80,13 @@ export default async function DebatePage({ params }: PageProps) {
 
       {/* ══════════ Debate header ══════════ */}
       <section className="space-y-3">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Link
-            href="/debates"
-            className="osd-text text-xs hover:opacity-100 opacity-70 transition-opacity"
-          >
-            ◄ THE ARENA
-          </Link>
-          <span className="osd-text text-xs opacity-60">
-            / {debate.status === "open" ? "ON AIR" : "SIGN-OFF"}
-          </span>
-        </div>
+        {/* Plain Back (Luca 2026-08-31: replaced the ARENA / ON AIR
+            crumb) — same BackLink convention as release/list pages. */}
+        <BackLink
+          fallback="/debates"
+          label="Back"
+          className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
+        />
 
         <div className="flex items-start gap-4">
           {/* Pinned release, physical-media style */}

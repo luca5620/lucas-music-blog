@@ -48,10 +48,16 @@ const badgeConfig: Record<
   },
 };
 
+/* The glow halo needs ROOM: a drop-shadow filter on a tiny svg gets
+   clipped to (roughly) the element box, so the glow faded into a hard
+   square (Luca 2026-08-31: "fades into a box shape"). Each box is now
+   double the visible icon — the padded viewBox below centers the
+   artwork in it — and the negative margin hands the padding back to
+   layout, so gaps/alignment stay exactly as before. */
 const sizeMap = {
-  sm: { icon: "w-4 h-4", text: "text-[10px]" },
-  md: { icon: "w-5 h-5", text: "text-xs" },
-  lg: { icon: "w-6 h-6", text: "text-sm" },
+  sm: { icon: "w-8 h-8 -m-2", text: "text-[10px]" },
+  md: { icon: "w-10 h-10 -m-2.5", text: "text-xs" },
+  lg: { icon: "w-12 h-12 -m-3", text: "text-sm" },
 };
 
 export default function RoleBadge({
@@ -76,10 +82,12 @@ export default function RoleBadge({
 
   return (
     <span className="inline-flex items-center gap-1" title={config.label}>
+      {/* viewBox pads 12 units of breathing room on every side (the
+          icon art spans 0–24) = half the box is halo space. */}
       <svg
-        viewBox="0 0 24 24"
+        viewBox="-12 -12 48 48"
         fill="none"
-        className={s.icon}
+        className={`${s.icon} overflow-visible`}
         style={{ filter: glowFilter }}
       >
         {/* Shield / badge shape */}

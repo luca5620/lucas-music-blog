@@ -10,7 +10,11 @@ import Link from "next/link";
 import ReleaseViews, {
   type ReleaseListItem,
 } from "@/components/releases/ReleaseViews";
-import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
+import {
+  useModuleLimit,
+  useReviewView,
+  ViewToggle,
+} from "@/components/reviews/ViewToggle";
 
 export default function ReleasesFeedClient({
   items,
@@ -18,6 +22,8 @@ export default function ReleasesFeedClient({
   items: ReleaseListItem[];
 }) {
   const [view, setView] = useReviewView();
+  // Per-view module cap — full rows only, View All has the rest.
+  const limit = useModuleLimit(view);
 
   return (
     <section className="space-y-4">
@@ -39,7 +45,7 @@ export default function ReleasesFeedClient({
         </Link>
       </div>
 
-      <ReleaseViews items={items} view={view} />
+      <ReleaseViews items={items.slice(0, limit)} view={view} />
     </section>
   );
 }

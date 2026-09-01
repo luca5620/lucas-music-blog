@@ -14,7 +14,11 @@ import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LikeButton from "@/components/reviews/LikeButton";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
-import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
+import {
+  useModuleLimit,
+  useReviewView,
+  ViewToggle,
+} from "@/components/reviews/ViewToggle";
 
 export interface FeedReview {
   id: string;
@@ -71,8 +75,12 @@ function timeAgo(dateStr: string): string {
   });
 }
 
-export default function DiscoveryFeedClient({ feed }: { feed: FeedReview[] }) {
+export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedReview[] }) {
   const [view, setView] = useReviewView();
+  // Per-view module cap (full rows only — View All has the rest);
+  // the views below all render from this trimmed list.
+  const limit = useModuleLimit(view);
+  const feed = allFeed.slice(0, limit);
 
   return (
     <section className="space-y-4">

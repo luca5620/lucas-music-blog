@@ -185,7 +185,7 @@ export default function NotificationsBell() {
 
       {open && (
         <div
-          className="absolute top-full mt-2 w-[min(19rem,calc(100vw-1.5rem))] bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] z-50 overflow-hidden"
+          className="menu-sheet absolute top-full mt-2 w-[min(19rem,calc(100vw-1.5rem))] bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] z-50 overflow-hidden"
           style={{ right: -panelShift }}
         >
           <p className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-text-secondary border-b border-white/10 font-[family-name:var(--font-heading)]">

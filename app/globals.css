@@ -2307,6 +2307,43 @@ a.card-y2k:hover { transform: translateY(-2px); }
    only; desktop keeps its separate hover/active split above.
    ============================================================ */
 @media (hover: none) {
+  /* Presses EASE now (Luca 2026-08-31: touch effects with "no
+     animation at all" read as choppy). Most tappables only carried
+     Tailwind's transition-colors, which doesn't cover box-shadow or
+     transform — so the press ring and press-scale POPPED in and out
+     with zero motion. On touch screens every tappable transitions
+     the full press-property set: press-in stays near-instant (the
+     :active rules below set 0.05s), release eases back over 0.25s.
+     Per the Tailwind v4 gotcha, translate/rotate/scale are their own
+     properties and MUST be in this list. Unlayered on purpose so it
+     outranks the transition-* utilities; classed rules with their
+     own transition (.btn-y2k, .poster, panels) still win on
+     specificity and already ease. Desktop untouched. */
+  a,
+  button,
+  [role="button"],
+  summary {
+    transition-property: color, background-color, border-color,
+      opacity, box-shadow, transform, translate, rotate, scale;
+    transition-duration: 0.25s;
+    transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* Menu sheets (avatar dropdown, notifications panel): rows span
+     the FULL WIDTH of an overflow-hidden rounded panel, so the
+     generic press ring got its left/right edges clipped into hard
+     cut lines (Luca 2026-08-31). Rows replay their hover instead —
+     soft elevated background, no ring, radius handled by the panel. */
+  .menu-sheet a:active,
+  .menu-sheet button:active {
+    box-shadow: none;
+    /* NOT --bg-elevated: the panel itself is that exact color, the
+       highlight would vanish. Same white wash as the rows' hover. */
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 0;
+    transition-duration: 0.05s;
+  }
+
   /* Generic tap acknowledgment: an accent HIGHLIGHT RING that hugs
      the pressed element's own border-radius (Luca 2026-08-27: "a
      highlight around the icon/button instead of a shadow effect" —

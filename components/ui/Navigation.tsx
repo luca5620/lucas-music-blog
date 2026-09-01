@@ -300,7 +300,7 @@ export default function Navigation() {
 
                   {/* Dropdown Menu */}
                   {dropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-60 bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] overflow-hidden z-50">
+                    <div className="menu-sheet absolute right-0 top-full mt-2 w-60 bg-[#141418] border border-white/10 rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.7)] overflow-hidden z-50">
                       <div className="px-4 py-3 border-b border-white/5">
                         <p className="text-sm font-medium text-text-primary truncate flex items-center gap-1.5">
                           <span>{profile?.display_name || profile?.username}</span>

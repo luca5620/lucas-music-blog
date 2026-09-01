@@ -20,7 +20,7 @@ const navLinks = [
   { href: "/reviews", label: "Reviews" },
   { href: "/lists", label: "Lists" },
   { href: "/debates", label: "Debates" },
-  { href: "/friends", label: "Friends" },
+  { href: "/social", label: "Social" },
   { href: "/your-taste", label: "Your Taste" },
 ];
 

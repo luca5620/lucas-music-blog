@@ -43,7 +43,7 @@ export default async function ConnectionsPage() {
         <ConnectionColumn
           title={`Following (${following.length})`}
           people={following}
-          empty="You don't follow anyone yet — find people on the Friends page."
+          empty="You don't follow anyone yet — find people on the Social page."
         />
       </div>
     </div>

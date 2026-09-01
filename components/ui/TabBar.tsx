@@ -111,11 +111,13 @@ export default function TabBar() {
     { href: "/your-taste", label: "Taste", icon: icons.taste },
     { href: "/search", label: "Search", icon: icons.search },
     {
-      href: "/friends",
-      label: "Friends",
-      // /connections is reached from the friends/profile flow — keep
-      // the tab lit there too.
-      match: ["/friends", "/connections"],
+      // "Social", not "Friends" (Luca 2026-08-31) — the page grew
+      // top rooms + weekly charts; /friends 308s to /social.
+      href: "/social",
+      label: "Social",
+      // /connections is reached from the social/profile flow — keep
+      // the tab lit there too (and on the old /friends URL mid-308).
+      match: ["/social", "/friends", "/connections"],
       icon: icons.friends,
     },
     { href: profileHref, label: "Profile", icon: icons.profile },

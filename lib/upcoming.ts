@@ -85,6 +85,25 @@ export function formatDropDate(releaseDate: string | null | undefined): string |
   });
 }
 
+/**
+ * UTC ms of the most recent Friday 00:00 Eastern — the reset moment
+ * for the Social page's "Top Reviews This Week" chart (Luca
+ * 2026-08-31: likes received since Friday, any-age reviews qualify).
+ * On a Friday the week started TODAY at midnight ET. Same Eastern
+ * anchor as release drops — one timezone rule everywhere.
+ */
+export function lastFridayEasternUtcMs(): number {
+  const today = todayEastern(); // YYYY-MM-DD as it reads in ET
+  // Weekday of that calendar date (UTC-noon parse = DST-safe).
+  const noonUtc = Date.parse(`${today}T12:00:00Z`);
+  const weekday = new Date(noonUtc).getUTCDay(); // 0 Sun … 5 Fri
+  const daysBack = (weekday - 5 + 7) % 7;
+  const friday = new Date(noonUtc - daysBack * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+  return easternMidnightUtcMs(friday);
+}
+
 /** Today's date (YYYY-MM-DD) in Eastern time — for SQL date filters. */
 export function todayEastern(): string {
   return new Intl.DateTimeFormat("en-CA", {

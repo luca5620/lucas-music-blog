@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     recipientId: followingId,
     actorId: user.id,
     type: "follow",
-    href: username ? `/profile/${username}` : "/friends",
+    href: username ? `/profile/${username}` : "/social",
   });
 
   return NextResponse.json({ following: true });

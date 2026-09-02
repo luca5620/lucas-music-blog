@@ -102,7 +102,20 @@ don't wait to be asked:**
   for future review windows: freeze main, hold all work + behavior-
   changing migrations on a branch, merge on approval.
 
-### ⚠️ MIGRATION 036 NEEDS RUNNING (2026-09-02, late) — 035 is RUN ✓
+### ✅ ALL MIGRATIONS THROUGH 036 ARE RUN (Luca, 2026-09-02 late)
+
+### 🔐 Sign up / sign in rework — MERGED 2026-09-02 (Luca approved on localhost)
+
+One question per screen (`components/auth/AuthShell.tsx`): logo,
+blue progress dots on EVERY screen incl. the door, big question,
+helper line, one field, one Continue; steps slide in; labeled Back
+pill. /signup: door → email → username → password → rules → inbox.
+/login: door → email/username → password → (staff) code. Logic
+unchanged underneath. OAuthButtons draws the only OR rule. Local
+note: `.env.local` carries NEXT_PUBLIC_SOCIAL_LOGIN=google,apple so
+the doors show on localhost (prod has it in Vercel).
+
+### (was) MIGRATION 036 — now run
 
 `supabase/migrations/036-apple-music.sql` — `releases.apple_music_id`
 + `apple_music_checked_at`, `profiles.preferred_player`

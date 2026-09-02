@@ -7,7 +7,10 @@ import {
   deleteList,
   generateUniqueListSlug,
 } from "@/lib/db/lists";
-import { fetchPlaylistSnapshot } from "@/lib/spotify/playlist";
+import {
+  fetchPlaylistSnapshot,
+  PlaylistUnavailableError,
+} from "@/lib/spotify/playlist";
 import { PLAYLIST_ID_RE, playlistUrl } from "@/lib/playlist";
 import { rateLimit } from "@/lib/rate-limit";
 import { checkContent } from "@/lib/content-filter";
@@ -55,14 +58,17 @@ export async function POST(request: Request) {
   try {
     snapshot = await fetchPlaylistSnapshot(playlistId);
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Couldn't read that playlist.";
-    // Our own readable messages start with "Spotify won't share…";
-    // anything else (token misconfig, network) stays generic.
-    const friendly = /won't share|Invalid playlist/i.test(message)
-      ? message
-      : "Spotify didn't answer — try again in a minute.";
-    return NextResponse.json({ error: friendly }, { status: 502 });
+    // PlaylistUnavailableError carries a message written for the
+    // person; anything else (token misconfig, network) stays generic
+    // and gets logged.
+    if (err instanceof PlaylistUnavailableError) {
+      return NextResponse.json({ error: err.message }, { status: 502 });
+    }
+    console.error("from-playlist: read failed —", err);
+    return NextResponse.json(
+      { error: "Spotify didn't answer — try again in a minute." },
+      { status: 502 }
+    );
   }
   if (snapshot.tracks.length === 0) {
     return NextResponse.json(

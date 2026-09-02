@@ -144,9 +144,21 @@ playlists still works (no schema change needed there).
      and a paste box on top of /lists/new. Private-by-default is
      deliberate: a 100-row import must not hit the community rail
      until the person trims/ranks it.
-   - Ceiling: Spotify-OWNED editorial playlists 404 for dev-mode apps
-     (Nov 2024 API change) — user-made playlists work; the error
-     message says so.
+   - **How the tracks are actually read (fixed same night — Luca hit
+     "no tracks we can list")**: probed with the app's own credentials
+     on 2026-09-02: since Spotify's Feb 2026 API changes a dev-mode
+     app with client credentials gets NO `tracks` object from
+     GET /playlists/{id}, 403 from /playlists/{id}/tracks, and 403
+     from every batch endpoint (/tracks?ids=, /albums?ids=). Single
+     GET /tracks/{id} and /albums/{id} still work. So
+     `lib/spotify/playlist.ts` tries the API, then reads the PUBLIC
+     embed page (open.spotify.com/embed/playlist/{id} — the page our
+     iframe renders; its Next.js JSON carries up to 100 rows: title,
+     artist line, track uri), then fills covers one GET /tracks/{id}
+     at a time (5 in flight, 12s budget). Unofficial door, defensive
+     parser, readable error if Spotify reshapes the page. Side note
+     worth remembering: the embed JSON also carries `audioPreview.url`
+     (30s mp3) per track — the preview_url we thought was dead.
 
 ### ✅ ALL MIGRATIONS THROUGH 034 ARE RUN (verified 2026-09-02)
 

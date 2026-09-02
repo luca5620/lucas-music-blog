@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import OAuthButtons from "@/components/auth/OAuthButtons";
-import AuthShell, { ContinueButton, OrRule } from "@/components/auth/AuthShell";
+import AuthShell, { ContinueButton } from "@/components/auth/AuthShell";
 // The handle rules (charset from migration 006, the reserved list
 // from 028's trigger) live in lib/username — /welcome asks the same
 // question after a Google/Apple sign-in and the two must not drift.
@@ -33,10 +33,11 @@ import { USERNAME_REGEX, RESERVED_USERNAMES } from "@/lib/username";
 /** Availability check result for the little status line. */
 type Availability = "idle" | "checking" | "free" | "taken";
 
-/** The screens, in order. "door" has no progress dot; the four
-    questions do. */
+/** The screens, in order. Every one gets a progress dot — the door
+    included — so the tracker is on screen from the first tap (Luca
+    2026-09-02). */
 type Step = "door" | "email" | "username" | "password" | "terms";
-const QUESTION_STEPS: Step[] = ["email", "username", "password", "terms"];
+const QUESTION_STEPS: Step[] = ["door", "email", "username", "password", "terms"];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -281,6 +282,8 @@ export default function SignUpPage() {
       <AuthShell
         title="Create your account"
         helper="every album. every leak. every argument."
+        steps={QUESTION_STEPS.length}
+        step={0}
         error={error}
         footer={footer}
       >
@@ -288,7 +291,8 @@ export default function SignUpPage() {
             the handle gets picked on /welcome straight after.
             Renders nothing inside a 1.0 app shell. */}
         <OAuthButtons />
-        <OrRule />
+        {/* OAuthButtons draws its own OR rule under the doors. */}
+        <div className="h-4" />
         <button
           type="button"
           onClick={() => go("email")}
@@ -307,7 +311,7 @@ export default function SignUpPage() {
         title="Enter your email"
         helper="For sign-in and account recovery — you'll confirm it, one account per inbox."
         steps={QUESTION_STEPS.length}
-        step={0}
+        step={1}
         onBack={() => go("door")}
         error={error}
         footer={footer}
@@ -356,7 +360,7 @@ export default function SignUpPage() {
         title="Choose a username"
         helper="3–20 characters: letters, numbers, underscores. It's in every review URL you write."
         steps={QUESTION_STEPS.length}
-        step={1}
+        step={2}
         onBack={() => go("email")}
         error={error}
         footer={footer}
@@ -400,7 +404,7 @@ export default function SignUpPage() {
         title="Create a password"
         helper="At least 6 characters. Make it one you don't use anywhere else."
         steps={QUESTION_STEPS.length}
-        step={2}
+        step={3}
         onBack={() => go("username")}
         error={error}
         footer={footer}
@@ -449,7 +453,7 @@ export default function SignUpPage() {
       title="One last thing"
       helper="Agree to the rules and your account switches on."
       steps={QUESTION_STEPS.length}
-      step={3}
+      step={4}
       onBack={() => go("password")}
       error={error}
       footer={footer}

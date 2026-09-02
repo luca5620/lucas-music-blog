@@ -29,13 +29,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import OAuthButtons from "@/components/auth/OAuthButtons";
-import AuthShell, { ContinueButton, OrRule } from "@/components/auth/AuthShell";
+import AuthShell, { ContinueButton } from "@/components/auth/AuthShell";
 import type { Profile } from "@/lib/types/database";
 
 type Step = "door" | "identifier" | "password" | "code";
-/** Dots only cover the two questions everyone answers; the staff
-    code screen rides as a third dot when it appears. */
-const DOTS = 2;
+/** Door + email + password get dots; the staff code screen rides as
+    a fourth when it appears. */
+const DOTS = 3;
 
 export default function LoginPage() {
   const [step, setStep] = useState<Step>("door");
@@ -307,6 +307,8 @@ export default function LoginPage() {
       <AuthShell
         title="Welcome back"
         helper="Sign in to Peak Music Reviews."
+        steps={DOTS}
+        step={0}
         error={error}
         footer={footer}
       >
@@ -321,7 +323,8 @@ export default function LoginPage() {
         {/* One-tap doors. Renders nothing inside a 1.0 app shell —
             see components/auth/OAuthButtons. */}
         <OAuthButtons />
-        <OrRule />
+        {/* OAuthButtons draws its own OR rule under the doors. */}
+        <div className="h-4" />
         <button
           type="button"
           onClick={() => go("identifier")}
@@ -340,7 +343,7 @@ export default function LoginPage() {
         title="Enter your email"
         helper="Or your username — either one works."
         steps={DOTS}
-        step={0}
+        step={1}
         onBack={() => go("door")}
         error={error}
         footer={footer}
@@ -381,7 +384,7 @@ export default function LoginPage() {
         </>
       }
       steps={DOTS}
-      step={1}
+      step={2}
       onBack={() => {
         go("identifier");
         setNeedsConfirmation(false);

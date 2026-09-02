@@ -169,14 +169,3 @@ export function ContinueButton({
     </button>
   );
 }
-
-/** The thin "or" rule between the one-tap doors and the email path. */
-export function OrRule() {
-  return (
-    <div className="flex items-center gap-3 my-5 text-[10px] uppercase tracking-[0.3em] text-text-muted">
-      <span className="flex-1 h-px bg-white/10" />
-      or
-      <span className="flex-1 h-px bg-white/10" />
-    </div>
-  );
-}

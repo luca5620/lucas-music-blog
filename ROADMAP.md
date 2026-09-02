@@ -90,11 +90,18 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-- **2026-09-02 (MacBook): ⚠️ BRANCH `loading-feedback-fix` — MERGE TO
-  MAIN ONLY AFTER APPLE APPROVES 1.1.** Main is deliberately FROZEN
-  while the review is in flight (Luca: a live deploy mid-session has
-  bugged the app into web-view before; the reviewer must not see
-  that). The branch fixes the "tuning thing removed in general":
+- **2026-09-02 (MacBook): ⚠️ BRANCH `loading-feedback-fix` is THE
+  HOLDING BRANCH for ALL work while Apple reviews 1.1 — every session
+  on either machine commits HERE, never to main, until the approval
+  email lands.** Main is deliberately FROZEN while the review is in
+  flight (Luca: a live deploy mid-session has bugged the app into
+  web-view before; the reviewer must not see that). Start sessions
+  with `git checkout loading-feedback-fix && git pull`. Keep the
+  branch building green — the post-approval merge deploys everything
+  at once. ALSO HOLD hand-run Supabase migrations that change live
+  behavior (the DB is production for the reviewer's session too);
+  purely additive ones are OK if truly needed. First thing on this
+  branch — the "tuning thing removed in general" fix:
   NavigationPending (loading.tsx's Sep 1 replacement) was DEAD ON
   ARRIVAL — its `defaultPrevented` guard bails on every internal
   click because Next's <Link> calls preventDefault() on every

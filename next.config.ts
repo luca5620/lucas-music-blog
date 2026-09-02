@@ -43,7 +43,7 @@ const securityHeaders = [
       // privacy-enhanced player, www.youtube.com covers player-internal
       // redirects. TikTok: the iframe player lives at www.tiktok.com.
       // Spotify: the /embed/... preview player on release pages.
-      "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com https://open.spotify.com",
+      "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com https://open.spotify.com https://embed.music.apple.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

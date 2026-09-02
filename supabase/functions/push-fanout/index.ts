@@ -25,7 +25,13 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const APNS_HOST = "https://api.push.apple.com";
+// Two environments, and a device token is only ever valid in ONE of
+// them. TestFlight and App Store builds get PRODUCTION tokens; a build
+// run straight from Xcode onto a phone gets a SANDBOX one. Since the
+// token itself doesn't say which it is, we try production and fall
+// back — see sendApns.
+const APNS_PRODUCTION = "https://api.push.apple.com";
+const APNS_SANDBOX = "https://api.sandbox.push.apple.com";
 
 interface NotificationRecord {
   id: string;
@@ -106,13 +112,14 @@ async function apnsJwt(): Promise<string> {
   return jwt;
 }
 
-/** Send one alert. Returns "dead" when APNs says the token is gone. */
-async function sendApns(
+/** One POST to one APNs host. */
+async function postApns(
+  host: string,
   token: string,
   body: string,
   href: string
-): Promise<"ok" | "dead" | "error"> {
-  const res = await fetch(`${APNS_HOST}/3/device/${token}`, {
+): Promise<{ ok: boolean; status: number; reason: string }> {
+  const res = await fetch(`${host}/3/device/${token}`, {
     method: "POST",
     headers: {
       authorization: `bearer ${await apnsJwt()}`,
@@ -130,12 +137,51 @@ async function sendApns(
     }),
   });
 
-  if (res.ok) return "ok";
+  if (res.ok) return { ok: true, status: res.status, reason: "" };
   const reason = (await res.json().catch(() => ({})))?.reason ?? "";
-  if (res.status === 410 || reason === "BadDeviceToken" || reason === "Unregistered") {
-    return "dead";
+  return { ok: false, status: res.status, reason };
+}
+
+/**
+ * Send one alert. Returns "dead" only when the token is genuinely gone.
+ *
+ * The sandbox retry is what makes on-device testing possible. APNs
+ * answers BadDeviceToken both for a token that has been revoked AND for
+ * a perfectly good token sent to the wrong environment — and a phone
+ * running a build straight from Xcode holds a sandbox token. Without
+ * the retry, testing push during a Mac session would look exactly like
+ * a broken setup: no notification arrives, and because "dead" tokens
+ * get deleted, the device quietly removes itself from push_tokens and
+ * has to re-register to try again.
+ *
+ * Production is tried first because that's every real user.
+ */
+async function sendApns(
+  token: string,
+  body: string,
+  href: string
+): Promise<"ok" | "dead" | "error"> {
+  const prod = await postApns(APNS_PRODUCTION, token, body, href);
+  if (prod.ok) return "ok";
+
+  if (prod.reason === "BadDeviceToken") {
+    const sandbox = await postApns(APNS_SANDBOX, token, body, href);
+    if (sandbox.ok) return "ok";
+    // Rejected by both: nothing will ever deliver to it.
+    if (
+      sandbox.status === 410 ||
+      sandbox.reason === "BadDeviceToken" ||
+      sandbox.reason === "Unregistered"
+    ) {
+      return "dead";
+    }
+    console.error(`APNs sandbox ${sandbox.status}: ${sandbox.reason}`);
+    return "error";
   }
-  console.error(`APNs ${res.status}: ${reason}`);
+
+  if (prod.status === 410 || prod.reason === "Unregistered") return "dead";
+
+  console.error(`APNs ${prod.status}: ${prod.reason}`);
   return "error";
 }
 

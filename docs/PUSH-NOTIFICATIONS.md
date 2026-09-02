@@ -29,6 +29,16 @@ the push opens the app at the same `href` the bell uses.
 Supabase SQL Editor → run `supabase/migrations/029-push-tokens.sql`
 (after 028).
 
+> **Done 2026-09-02** — steps 1 and 2 are complete. Migration 029 is
+> run, and the APNs key exists and has been probed against Apple
+> (accepted on both the production and sandbox hosts). The key is a
+> SECOND key, separate from the Sign in with Apple one, because Apple
+> keys carry per-service capabilities and the sign-in key had only
+> that service enabled. Both keys must be kept: the sign-in secret has
+> to be re-minted from the older one every 6 months.
+> ⚠️ When creating an APNs key, do NOT restrict it to one environment
+> — a sandbox-only key works in Xcode builds and dies on the App Store.
+
 ### 2. Create an APNs Auth Key (Apple Developer, ~2 min)
 1. [developer.apple.com](https://developer.apple.com) → Certificates,
    Identifiers & Profiles → **Keys** → **+**.
@@ -77,6 +87,11 @@ the next binary, not a web deploy:
 ### 6. Verify
 - Fresh install from TestFlight, sign in → iOS permission prompt →
   Allow.
+- Testing from a build run straight out of Xcode works too: that
+  phone holds a SANDBOX token, and push-fanout retries the sandbox
+  host whenever production answers BadDeviceToken. (Without that
+  retry a wrong-environment token is indistinguishable from a revoked
+  one, and the function would delete the device from push_tokens.)
 - From another account, like one of your reviews → push arrives;
   tapping it opens the review.
 - Supabase: `select count(*) from push_tokens;` should be ≥ 1.

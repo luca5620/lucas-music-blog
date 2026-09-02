@@ -90,9 +90,25 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-- **2026-09-02 (MacBook): ⚠️ MIGRATION 038 TO RUN — ROOT CAUSE of
+- **📋 LISTS PASS — parked by Luca 2026-09-02 ("many issues with the
+  lists area we haven't discussed yet, work on all of that later").
+  Open it as ONE conversation, not symptom patches. Known so far:**
+  1. Playlist imports resolve to the ALBUM, not the song (unless the
+     track was a single). The import only kept `album_spotify_id`;
+     the catalog already supports `spotify_track` imports (a track as
+     a standalone single), so keep the TRACK id too (add
+     `track(id)` to the fields query in lib/spotify/playlist.ts, a
+     `spotify_track_id` column, and resolve via
+     ensureRelease("spotify_track", …) first).
+  2. Own private lists are findable only via the profile Lists tab —
+     /lists shows public only; a playlist import lands private.
+  3. Whatever else Luca brings — ask him for the full list first.
+
+- **2026-09-02 (MacBook): ✅ MIGRATIONS 037 + 038 CONFIRMED RUN (Luca:
+  "delete worked and the songs are clickable now"). All migrations
+  through 038 applied.** 038 was the ROOT CAUSE of
   "can't delete my list" (and every other delete Luca has ever seen
-  silently fail: reviews, posts, comments).** Migration 021's
+  silently fail: reviews, posts, comments). Migration 021's
   RESTRICTIVE delete policies use `staff_action_allowed()` = "not
   staff OR email-coded session". Restrictive = must pass for EVERY
   delete, own rows included. Luca is `owner`; his Google/phone

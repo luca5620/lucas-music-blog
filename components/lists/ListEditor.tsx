@@ -88,6 +88,8 @@ export default function ListEditor({
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Two-step delete — see the Danger Zone block at the bottom.
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   /* --- Item row operations --- */
 
@@ -298,8 +300,9 @@ export default function ListEditor({
 
   async function handleDeleteList() {
     if (!list) return;
-    if (!window.confirm("Delete this list? This cannot be undone.")) return;
-
+    // No window.confirm — the Danger Zone's two-step buttons ARE the
+    // confirmation, and a native dialog inside the app WebView is a
+    // worse version of the same question.
     setSaving(true);
     setError(null);
     try {
@@ -541,21 +544,57 @@ export default function ListEditor({
           Cancel
         </button>
 
-        {/* Desktop only (Luca 2026-09-02): on a phone the red button
-            crowded the Save/Cancel row right where thumbs land, and a
-            list you just built from a playlist is one mis-tap from
-            gone. Deleting stays a big-screen action. */}
-        {mode === "edit" && (
-          <button
-            type="button"
-            onClick={handleDeleteList}
-            disabled={saving}
-            className="btn-y2k btn-y2k-outline disabled:opacity-50 ml-auto text-accent-rose hidden sm:inline-flex"
-          >
-            Delete List
-          </button>
-        )}
       </div>
+
+      {/* --- Danger zone ---
+          Delete was hidden on phones earlier today because a red
+          button in the Save/Cancel row is one mis-tap from losing a
+          list — but that left NO way to delete a list from a phone at
+          all (Luca 2026-09-02). So it comes back everywhere, moved
+          out of the thumb row into its own section at the bottom and
+          armed in two steps, the same shape as the settings page's
+          account-deletion block. Mis-tapping "Delete List" now just
+          reveals a confirm; only "Delete Forever" is destructive. */}
+      {mode === "edit" && (
+        <fieldset className="panel-xbox p-5 space-y-4 border-[#e0557540]">
+          <legend className="label-xbox text-accent-rose">Danger Zone</legend>
+
+          <p className="text-sm text-text-secondary leading-relaxed">
+            Deleting this list removes it and everything in it. There is no
+            undo.
+          </p>
+
+          {!confirmDelete ? (
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              disabled={saving}
+              className="btn-y2k btn-y2k-outline !border-accent-rose !text-accent-rose disabled:opacity-50"
+            >
+              Delete List
+            </button>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={handleDeleteList}
+                disabled={saving}
+                className="btn-y2k !bg-accent-rose !border-accent-rose !text-black disabled:opacity-40"
+              >
+                {saving ? "Deleting..." : "Delete Forever"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(false)}
+                disabled={saving}
+                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+              >
+                Keep It
+              </button>
+            </div>
+          )}
+        </fieldset>
+      )}
     </div>
   );
 }

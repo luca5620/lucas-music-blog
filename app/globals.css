@@ -3553,3 +3553,42 @@ fieldset {
   animation: liquid-breathe 9s ease-in-out infinite !important;
   animation-play-state: running !important;
 }
+
+/* ------------------------------------------------------------
+   AUTH SHELL (Luca 2026-09-02) — one question per screen on
+   /signup and /login. Steps slide in (forward from the right, back
+   from the left); the progress dots under the logo stretch the
+   active one into a pill, like the reference onboarding.
+   Written as plain transform, not Tailwind's translate utility —
+   see the v4 note above: the utilities are standalone properties
+   and `transition: transform` won't animate them.
+   ------------------------------------------------------------ */
+@keyframes auth-step-in {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes auth-step-back {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.auth-step-in   { animation: auth-step-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.auth-step-back { animation: auth-step-back 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+.auth-dot {
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+.auth-dot-done   { background: rgba(var(--accent-rgb), 0.55); }
+.auth-dot-active {
+  width: 22px;
+  background: rgb(var(--accent-rgb));
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-step-in, .auth-step-back { animation: none; }
+}

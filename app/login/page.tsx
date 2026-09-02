@@ -1,9 +1,12 @@
 "use client";
 
 /**
- * /login — sign in.
+ * /login — sign in, one question per screen (Luca 2026-09-02).
  *
- * Two flows live here:
+ * Screens: the door (Google / Apple / email) → who are you (email or
+ * username) → password → [staff only] the emailed code.
+ *
+ * Two flows live here, unchanged underneath:
  *
  * 1. Normal accounts: email/username + password, done.
  *
@@ -15,7 +18,7 @@
  *    was created — see lib/auth/amr.ts). A stolen admin password
  *    without inbox access gets nobody into the mod tools.
  *
- * Also handled well: someone signs up, never clicks the confirmation
+ * Also handled: someone signs up, never clicks the confirmation
  * email, then tries to log in. Supabase answers "Email not confirmed"
  * — we turn that into a clear message plus a one-click resend (with a
  * cooldown so it can't be spammed).
@@ -26,12 +29,20 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import OAuthButtons from "@/components/auth/OAuthButtons";
+import AuthShell, { ContinueButton, OrRule } from "@/components/auth/AuthShell";
 import type { Profile } from "@/lib/types/database";
 
+type Step = "door" | "identifier" | "password" | "code";
+/** Dots only cover the two questions everyone answers; the staff
+    code screen rides as a third dot when it appears. */
+const DOTS = 2;
+
 export default function LoginPage() {
+  const [step, setStep] = useState<Step>("door");
   // Email OR username (Luca 2026-08-22) — never display name.
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   // The address the sign-in actually ran against — a username entry
   // resolves to this; the confirmation-resend and the admin code
   // step both need it.
@@ -41,9 +52,6 @@ export default function LoginPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendNote, setResendNote] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  // Admin second step: "credentials" is the normal form, "code" is
-  // the emailed 6-digit entry that only staff accounts ever see.
-  const [step, setStep] = useState<"credentials" | "code">("credentials");
   const [code, setCode] = useState("");
   // Set when the middleware bounced an admin here (?verify=admin):
   // their session predates the code requirement.
@@ -69,6 +77,13 @@ export default function LoginPage() {
       );
     }
   }, []);
+
+  function go(next: Step) {
+    setError(null);
+    setStep(next);
+  }
+
+  const identifierOk = identifier.trim().length > 0;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,7 +164,7 @@ export default function LoginPage() {
           return;
         }
 
-        setStep("code");
+        go("code");
         setResendCooldown(60);
         setLoading(false);
         return;
@@ -160,7 +175,7 @@ export default function LoginPage() {
     router.refresh();
   };
 
-  // Step 2 (staff only): the emailed 6-digit code → real session.
+  // Step (staff only): the emailed 6-digit code → real session.
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -222,245 +237,230 @@ export default function LoginPage() {
     setResendCooldown(60);
   };
 
-  /* --- Step 2 screen: enter the emailed code --- */
+  const footer = (
+    <>
+      Don&apos;t have an account?{" "}
+      <Link href="/signup" className="text-accent-primary hover:text-accent-glow hover:underline">
+        Sign up
+      </Link>
+    </>
+  );
+
+  /* ---------------- STAFF CODE ---------------- */
   if (step === "code") {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          <div className="panel-xbox-glow p-8 relative overflow-hidden">
-            <div className="text-center mb-8 space-y-2">
-              <h1 className="crt-title text-3xl">CHECK YOUR EMAIL</h1>
-              <p className="text-text-secondary text-sm">
-                Admin accounts need the sign-in code we just sent to{" "}
-                <span className="text-text-primary">{resolvedEmail}</span>
-              </p>
-            </div>
+      <AuthShell
+        title="Check your email"
+        helper={
+          <>
+            Admin accounts need the sign-in code we just sent to{" "}
+            <span className="text-text-primary">{resolvedEmail}</span>.
+          </>
+        }
+        steps={DOTS + 1}
+        step={DOTS}
+        onBack={() => {
+          go("password");
+          setCode("");
+        }}
+        error={error}
+      >
+        <form onSubmit={handleVerifyCode}>
+          <input
+            id="code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+            className="form-input text-center tracking-[0.5em] text-lg"
+            placeholder="00000000"
+            /* Supabase's OTP length is a dashboard setting (6–10
+               digits) and this project sends 8 — accept the range. */
+            maxLength={10}
+            autoFocus
+          />
+          <ContinueButton disabled={code.trim().length < 6} loading={loading}>
+            Verify
+          </ContinueButton>
+        </form>
 
-            {error && (
-              <div className="mb-6 p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleVerifyCode} className="space-y-5">
-              <div>
-                <label
-                  htmlFor="code"
-                  className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
-                >
-                  Sign-in code
-                </label>
-                <input
-                  id="code"
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  required
-                  className="form-input text-center tracking-[0.5em] text-lg"
-                  placeholder="00000000"
-                  /* Supabase's OTP length is a dashboard setting
-                     (6–10 digits) and this project sends 8 — the old
-                     maxLength={6} silently cut off the last two
-                     digits, so no code could ever be entered (Luca
-                     2026-08-26). Accept the whole range. */
-                  maxLength={10}
-                  autoFocus
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || code.trim().length < 6}
-                className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Tuning in…" : "Verify"}
-              </button>
-            </form>
-
-            <div className="mt-6 space-y-2 text-center text-sm">
-              <button
-                type="button"
-                onClick={handleResendCode}
-                disabled={resendCooldown > 0}
-                className="text-text-secondary hover:text-accent-primary transition-colors disabled:opacity-50"
-              >
-                {resendCooldown > 0
-                  ? `Resend code in ${resendCooldown}s`
-                  : "Resend code"}
-              </button>
-              {resendNote && (
-                <p className="pixel-text text-accent-glow">{resendNote}</p>
-              )}
-              <p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep("credentials");
-                    setCode("");
-                    setError(null);
-                  }}
-                  className="text-text-muted hover:text-text-primary transition-colors"
-                >
-                  ← Back to sign in
-                </button>
-              </p>
-            </div>
-
-            <div className="scan-bar" />
-          </div>
+        <div className="mt-5 space-y-2 text-center text-sm">
+          <button
+            type="button"
+            onClick={handleResendCode}
+            disabled={resendCooldown > 0}
+            className="text-text-secondary hover:text-accent-primary transition-colors disabled:opacity-50"
+          >
+            {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : "Resend code"}
+          </button>
+          {resendNote && <p className="pixel-text text-accent-glow">{resendNote}</p>}
         </div>
-      </div>
+      </AuthShell>
     );
   }
 
+  /* ---------------- THE DOOR ---------------- */
+  if (step === "door") {
+    return (
+      <AuthShell
+        title="Welcome back"
+        helper="Sign in to Peak Music Reviews."
+        error={error}
+        footer={footer}
+      >
+        {/* Middleware sent an admin here for the code upgrade */}
+        {adminNotice && (
+          <div className="mb-4 p-3 rounded bg-accent-primary/10 border border-accent-primary/30 text-sm text-text-primary">
+            Admin tools now need a sign-in verified by email code. Sign in
+            again and we&apos;ll send you one.
+          </div>
+        )}
+
+        {/* One-tap doors. Renders nothing inside a 1.0 app shell —
+            see components/auth/OAuthButtons. */}
+        <OAuthButtons />
+        <OrRule />
+        <button
+          type="button"
+          onClick={() => go("identifier")}
+          className="btn-y2k btn-y2k-primary w-full justify-center"
+        >
+          Continue with email
+        </button>
+      </AuthShell>
+    );
+  }
+
+  /* ---------------- WHO ARE YOU ---------------- */
+  if (step === "identifier") {
+    return (
+      <AuthShell
+        title="Enter your email"
+        helper="Or your username — either one works."
+        steps={DOTS}
+        step={0}
+        onBack={() => go("door")}
+        error={error}
+        footer={footer}
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (identifierOk) go("password");
+          }}
+        >
+          <input
+            id="identifier"
+            type="text"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            required
+            className="form-input text-center text-base"
+            placeholder="you@example.com or username"
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            autoFocus
+          />
+          <ContinueButton disabled={!identifierOk} />
+        </form>
+      </AuthShell>
+    );
+  }
+
+  /* ---------------- PASSWORD ---------------- */
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="panel-xbox-glow p-8 relative overflow-hidden">
-          {/* Header */}
-          <div className="text-center mb-8 space-y-2">
-            <h1 className="crt-title text-3xl">SIGN IN</h1>
-            <p className="text-text-secondary text-sm">Welcome to Peak Music Reviews</p>
-          </div>
-
-          {/* Middleware sent an admin here for the code upgrade */}
-          {adminNotice && (
-            <div className="mb-6 p-3 rounded bg-accent-primary/10 border border-accent-primary/30 text-sm text-text-primary">
-              Admin tools now need a sign-in verified by email code.
-              Sign in again and we&apos;ll send you one.
-            </div>
-          )}
-
-          {/* Plain errors */}
-          {error && (
-            <div className="mb-6 p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Unconfirmed email — explain + offer a resend */}
-          {needsConfirmation && (
-            <div className="mb-6 p-4 rounded bg-osd-amber/10 border border-osd-amber/30 space-y-3">
-              <p className="text-sm text-text-primary">
-                This account hasn&apos;t been switched on yet — the
-                confirmation link in your inbox does that.
-              </p>
-              <button
-                type="button"
-                onClick={handleResend}
-                disabled={resendCooldown > 0}
-                className="btn-y2k btn-y2k-outline text-xs disabled:opacity-50"
-              >
-                {resendCooldown > 0
-                  ? `Resend in ${resendCooldown}s`
-                  : "Resend confirmation link"}
-              </button>
-              {resendNote && (
-                <p className="pixel-text text-sm text-accent-glow">
-                  {resendNote}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* One-tap doors. Renders nothing inside the app shell —
-              see components/auth/OAuthButtons. */}
-          <div className="mb-6">
-            <OAuthButtons />
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label
-                htmlFor="identifier"
-                className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
-              >
-                Email or Username
-              </label>
-              <input
-                id="identifier"
-                type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                required
-                className="form-input"
-                placeholder="you@example.com or username"
-                autoComplete="username"
-                autoCapitalize="none"
-                spellCheck={false}
-              />
-            </div>
-
-            <div>
-              <div className="flex items-baseline justify-between mb-2">
-                <label
-                  htmlFor="password"
-                  className="block text-xs font-bold uppercase tracking-wider text-text-secondary font-[family-name:var(--font-heading)]"
-                >
-                  Password
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-text-muted hover:text-accent-primary transition-colors"
-                >
-                  Forgot it?
-                </Link>
-              </div>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="form-input"
-                placeholder="Your password"
-                autoComplete="current-password"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Tuning in…" : "Sign In"}
-            </button>
-
-            {/* App Store 1.2 says the EULA is presented "before
-                registering or logging in" — signup has the required
-                checkbox; login carries the agreement notice so the
-                reviewer's demo-account path sees it too. */}
-            <p className="text-xs text-text-muted text-center">
-              By signing in you agree to the{" "}
-              <Link href="/terms" className="text-accent-primary hover:underline">
-                Terms of Use
-              </Link>{" "}
-              — zero tolerance for objectionable content or abusive users —
-              and the{" "}
-              <Link href="/privacy" className="text-accent-primary hover:underline">
-                Privacy Policy
-              </Link>
-              .
-            </p>
-          </form>
-
-          {/* Footer */}
-          <p className="mt-6 text-center text-sm text-text-secondary">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/signup"
-              className="text-accent-primary hover:text-accent-glow hover:underline"
-            >
-              Sign up
-            </Link>
+    <AuthShell
+      title="Enter your password"
+      helper={
+        <>
+          Signing in as{" "}
+          <span className="text-text-primary font-medium">{identifier.trim()}</span>
+        </>
+      }
+      steps={DOTS}
+      step={1}
+      onBack={() => {
+        go("identifier");
+        setNeedsConfirmation(false);
+      }}
+      error={error}
+      footer={footer}
+    >
+      {/* Unconfirmed email — explain + offer a resend */}
+      {needsConfirmation && (
+        <div className="mb-4 p-4 rounded bg-osd-amber/10 border border-osd-amber/30 space-y-3">
+          <p className="text-sm text-text-primary">
+            This account hasn&apos;t been switched on yet — the confirmation
+            link in your inbox does that.
           </p>
-
-          <div className="scan-bar" />
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resendCooldown > 0}
+            className="btn-y2k btn-y2k-outline text-xs disabled:opacity-50"
+          >
+            {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend confirmation link"}
+          </button>
+          {resendNote && (
+            <p className="pixel-text text-sm text-accent-glow">{resendNote}</p>
+          )}
         </div>
-      </div>
-    </div>
+      )}
+
+      <form onSubmit={handleLogin}>
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="form-input text-center text-base pr-16"
+            placeholder="••••••••"
+            autoComplete="current-password"
+            autoFocus
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((s) => !s)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-widest text-text-muted hover:text-text-primary"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+        <p className="mt-2 text-right">
+          <Link
+            href="/forgot-password"
+            className="text-xs text-text-muted hover:text-accent-primary transition-colors"
+          >
+            Forgot it?
+          </Link>
+        </p>
+
+        <ContinueButton disabled={password.length === 0} loading={loading}>
+          Sign in
+        </ContinueButton>
+
+        {/* App Store 1.2 says the EULA is presented "before
+            registering or logging in" — signup has the required
+            checkbox; login carries the agreement notice so the
+            reviewer's demo-account path sees it too. */}
+        <p className="mt-4 text-[11px] text-text-muted text-center leading-relaxed">
+          By signing in you agree to the{" "}
+          <Link href="/terms" className="text-accent-primary hover:underline">
+            Terms of Use
+          </Link>{" "}
+          — zero tolerance for objectionable content or abusive users — and
+          the{" "}
+          <Link href="/privacy" className="text-accent-primary hover:underline">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </form>
+    </AuthShell>
   );
 }

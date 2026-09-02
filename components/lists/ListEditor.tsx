@@ -541,12 +541,16 @@ export default function ListEditor({
           Cancel
         </button>
 
+        {/* Desktop only (Luca 2026-09-02): on a phone the red button
+            crowded the Save/Cancel row right where thumbs land, and a
+            list you just built from a playlist is one mis-tap from
+            gone. Deleting stays a big-screen action. */}
         {mode === "edit" && (
           <button
             type="button"
             onClick={handleDeleteList}
             disabled={saving}
-            className="btn-y2k btn-y2k-outline disabled:opacity-50 ml-auto text-accent-rose"
+            className="btn-y2k btn-y2k-outline disabled:opacity-50 ml-auto text-accent-rose hidden sm:inline-flex"
           >
             Delete List
           </button>

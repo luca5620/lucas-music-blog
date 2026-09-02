@@ -19,6 +19,10 @@ import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
 import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import QuickAccessStrip from "@/components/home/QuickAccessStrip";
 import UpcomingDrops from "@/components/home/UpcomingDrops";
+import Reveal from "@/components/home/Reveal";
+import RatedThisWeek from "@/components/home/RatedThisWeek";
+import HowItWorks from "@/components/home/HowItWorks";
+import ClosingCta from "@/components/home/ClosingCta";
 import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
 import PostsFeed from "@/components/posts/PostsFeed";
@@ -184,19 +188,38 @@ function Splash() {
         <div className="scan-bar" />
       </section>
 
-      {/* ===== Feature cards ===== */}
+      {/* ===== The scroll (Luca 2026-09-02, Resonate-style pacing):
+             each module eases in as it arrives — Reveal — and every
+             one shares the HomeSection header skeleton. Hero copy is
+             untouched. No listening-club block: the live rooms are
+             ours and they're in step 03 + ON AIR. ===== */}
+
+      {/* Rated this week — the cover wall, first thing after the hero */}
+      <Reveal>
+        <Suspense fallback={null}>
+          <RatedThisWeek />
+        </Suspense>
+      </Reveal>
+
+      {/* ===== Feature cards — the three VHS labels, staggered in ===== */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {FEATURES.map((f, i) => (
-          <div key={f.label} className="panel-xbox p-5 space-y-3 hover-glow relative overflow-hidden">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl" aria-hidden="true">{f.emoji}</span>
-              <span className="vhs-label text-sm">{f.label}</span>
+          <Reveal key={f.label} delay={i * 110}>
+            <div className="panel-xbox p-5 space-y-3 hover-glow relative overflow-hidden h-full">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl" aria-hidden="true">{f.emoji}</span>
+                <span className="vhs-label text-sm">{f.label}</span>
+              </div>
+              <p className="text-sm text-text-secondary leading-relaxed">{f.body}</p>
+              <div className="scan-bar" style={{ animationDelay: `${i * 0.8}s` }} />
             </div>
-            <p className="text-sm text-text-secondary leading-relaxed">{f.body}</p>
-            <div className="scan-bar" style={{ animationDelay: `${i * 0.8}s` }} />
-          </div>
+          </Reveal>
         ))}
       </section>
+
+      <Reveal>
+        <HowItWorks />
+      </Reveal>
 
       <div className="divider-glow" />
 
@@ -204,22 +227,36 @@ function Splash() {
           countdowns + release-page links lead straight to the live
           rooms, and that's the pitch. canAdd=false hides the
           paste-a-link box — adding needs an account. */}
-      <Suspense fallback={null}>
-        <UpcomingDrops canAdd={false} />
-      </Suspense>
+      <Reveal>
+        <Suspense fallback={null}>
+          <UpcomingDrops canAdd={false} />
+        </Suspense>
+      </Reveal>
 
       {/* Even logged out, show the community pulse so the site feels
           alive — reviews FIRST (Luca: greet people with the takes),
           then posts, then the release wall */}
-      <Suspense fallback={null}>
-        <DiscoveryFeed />
-      </Suspense>
-      <Suspense fallback={null}>
-        <PostsFeed />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ReleasesFeed />
-      </Suspense>
+      <Reveal>
+        <Suspense fallback={null}>
+          <DiscoveryFeed />
+        </Suspense>
+      </Reveal>
+      <Reveal>
+        <Suspense fallback={null}>
+          <PostsFeed />
+        </Suspense>
+      </Reveal>
+      <Reveal>
+        <Suspense fallback={null}>
+          <ReleasesFeed />
+        </Suspense>
+      </Reveal>
+
+      {/* The close — same glow + liquid as the hero, so the page ends
+          the way it opened. */}
+      <Reveal>
+        <ClosingCta badge={<AppStoreBadge />} />
+      </Reveal>
 
       <WebsitePlug />
     </>

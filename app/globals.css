@@ -3592,3 +3592,26 @@ fieldset {
 @media (prefers-reduced-motion: reduce) {
   .auth-step-in, .auth-step-back { animation: none; }
 }
+
+/* ------------------------------------------------------------
+   SCROLL REVEAL (Luca 2026-09-02) — logged-out home sections ease
+   into place the first time they scroll into view (components/home/
+   Reveal.tsx flips .is-in once, then disconnects — nothing animates
+   while idle). Plain transform, not the translate utility (v4 note).
+   ------------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}

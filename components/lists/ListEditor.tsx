@@ -90,6 +90,11 @@ export default function ListEditor({
   const [error, setError] = useState<string | null>(null);
   // Two-step delete — see the Danger Zone block at the bottom.
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // Delete failures get their OWN message, rendered inside the Danger
+  // Zone. The shared `error` block sits near the top of a long editor,
+  // so on a phone a failed delete scrolled off-screen and the tap just
+  // looked dead (Luca 2026-09-02: "still cant delete my list").
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   /* --- Item row operations --- */
 
@@ -305,13 +310,35 @@ export default function ListEditor({
     // worse version of the same question.
     setSaving(true);
     setError(null);
+    setDeleteError(null);
     try {
       const res = await fetch(`/api/lists/${list.id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete list.");
-      router.push("/lists");
-      router.refresh();
+
+      if (!res.ok) {
+        // Say what actually went wrong instead of one blanket message —
+        // the route distinguishes signed-out (401), not-yours / gone
+        // (403/404) and a real failure (500), and which one it is
+        // changes what the person should do next.
+        const body = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        throw new Error(
+          res.status === 401
+            ? "Your session expired — sign in again, then delete it."
+            : (body.error ?? `Couldn't delete the list (error ${res.status}).`)
+        );
+      }
+
+      // HARD navigation, not router.push: the list is gone server-side,
+      // but a client-side push can paint /lists (and the profile tab
+      // behind it) from the router cache, so the list looks like it's
+      // still there and the delete looks like it failed. Same class of
+      // bug as the mobile sign-in. A full load can't show stale rows.
+      window.location.assign("/lists");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setDeleteError(
+        err instanceof Error ? err.message : "Something went wrong."
+      );
       setSaving(false);
     }
   }
@@ -563,6 +590,14 @@ export default function ListEditor({
             Deleting this list removes it and everything in it. There is no
             undo.
           </p>
+
+          {/* Right here, not in the page-top error block — a failure
+              you can't see reads as a dead button. */}
+          {deleteError && (
+            <p className="text-sm text-red-400 border border-red-500/30 bg-red-500/5 rounded p-3">
+              {deleteError}
+            </p>
+          )}
 
           {!confirmDelete ? (
             <button

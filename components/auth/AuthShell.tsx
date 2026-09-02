@@ -73,10 +73,21 @@ export default function AuthShell({
             <button
               type="button"
               onClick={onBack}
-              aria-label="Back"
-              className="absolute top-4 left-4 w-9 h-9 rounded-full border border-white/15 bg-black/40 text-text-secondary hover:text-text-primary hover:border-white/40 transition-colors flex items-center justify-center text-lg leading-none"
+              className="auth-back absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/50 pl-2.5 pr-3.5 py-1.5 text-[10px] uppercase tracking-[0.2em] text-text-secondary hover:text-text-primary hover:border-[rgba(var(--accent-rgb),0.6)] transition-colors font-[family-name:var(--font-heading)]"
             >
-              ←
+              <svg
+                viewBox="0 0 16 16"
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M10 3L5 8l5 5" />
+              </svg>
+              Back
             </button>
           )}
 

@@ -27,7 +27,13 @@
  * loads this very same deploy and has to keep showing email/password.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -41,14 +47,32 @@ import type { Profile } from "@/lib/types/database";
 type Provider = "google" | "apple";
 
 /**
- * Which surface we're drawing for. Starts "web" so the server render
- * and the first client render agree — the bridge is only readable on
- * mount (the same pattern useModuleLimit and TabBar use).
+ * Which surface we're drawing for. "web" on the server so SSR and the
+ * first client render agree; the bridge is only readable in the
+ * browser.
  *  - "web"        the plain site, redirect flow
  *  - "app"        a 1.1+ shell: system browser + deep link back
  *  - "app-legacy" a 1.0 shell with no Browser plugin: render nothing
  */
 type Surface = "web" | "app" | "app-legacy";
+
+/**
+ * Read as a store rather than set in an effect — same reasoning as
+ * lib/useIsNativeApp: the bridge is in place before our JS runs and
+ * never changes, so there's nothing to subscribe to. Returns a plain
+ * string, so React's identity check is stable and this can't loop.
+ */
+const subscribeSurface = () => () => {};
+
+const getSurface = (): Surface =>
+  !isNativeApp()
+    ? "web"
+    : browserPlugin() && appPlugin()
+      ? "app"
+      : "app-legacy";
+
+/** SSR can't know, and the web is the safe default. */
+const getServerSurface = (): Surface => "web";
 
 /**
  * Where the provider sends the app back — a custom scheme, not an
@@ -96,7 +120,11 @@ interface OAuthButtonsProps {
 }
 
 export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
-  const [surface, setSurface] = useState<Surface>("web");
+  const surface = useSyncExternalStore(
+    subscribeSurface,
+    getSurface,
+    getServerSurface
+  );
   const [busy, setBusy] = useState<Provider | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -106,11 +134,6 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
   // that handler would clear `busy` mid-exchange and re-arm the
   // buttons under the user's thumb.
   const finishing = useRef(false);
-
-  useEffect(() => {
-    if (!isNativeApp()) return;
-    setSurface(browserPlugin() && appPlugin() ? "app" : "app-legacy");
-  }, []);
 
   /**
    * The deep link coming back from Safari — the app's stand-in for

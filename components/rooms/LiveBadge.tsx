@@ -22,6 +22,17 @@ export default function LiveBadge({
   const last = Date.parse(lastActivityAt);
   if (Number.isNaN(last)) return null;
 
+  // Unlike the dashboard's server-only clock read, this component is
+  // also pulled into CLIENT trees (ReleaseViews, ChatPanel,
+  // ReleaseRoomChat), so server and client compute `ageMs` a moment
+  // apart. In the rare case where the room crosses the 30-minute line
+  // in that gap, the two renders disagree and React re-renders the
+  // subtree. Left as is on purpose: the alternatives are to render the
+  // badge only after mount (it would pop in and shift the row — this
+  // sits inline in release-card headers, and CLS on those was an SEO
+  // fix we already paid for) or to thread a `now` prop through every
+  // call site. Revisit if a hydration warning ever actually shows up.
+  // eslint-disable-next-line react-hooks/purity
   const ageMs = Date.now() - last;
   if (ageMs > thresholdMinutes * 60 * 1000) return null;
 

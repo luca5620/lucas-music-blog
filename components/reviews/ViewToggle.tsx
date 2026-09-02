@@ -12,7 +12,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { isNativeApp } from "@/lib/native";
+import { useIsNativeApp } from "@/lib/useIsNativeApp";
 
 export type ReviewView = "detailed" | "posters" | "compact";
 
@@ -23,12 +23,12 @@ export type ReviewView = "detailed" | "posters" | "compact";
  * items left a hole in row two. Web: detailed 10, posters 18,
  * compact 10. App: detailed 5, posters/compact 9. Full index pages
  * (/reviews, /releases) ARE the view-all — never cap those.
- * App detection lands in an effect so the server render (web caps)
- * hydrates cleanly; the app trims on mount, before first paint.
+ * The server render uses the web caps and the app trims once the
+ * bridge answers — see useIsNativeApp for why that's a store read
+ * rather than an effect.
  */
 export function useModuleLimit(view: ReviewView): number {
-  const [app, setApp] = useState(false);
-  useEffect(() => setApp(isNativeApp()), []);
+  const app = useIsNativeApp();
   if (app) return view === "detailed" ? 5 : 9;
   return view === "posters" ? 18 : 10;
 }

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { isNativeApp, hapticTap } from "@/lib/native";
+import { hapticTap } from "@/lib/native";
+import { useIsNativeApp } from "@/lib/useIsNativeApp";
 import CreateSheet from "@/components/ui/CreateSheet";
 
 /**
@@ -80,7 +81,7 @@ const icons = {
 export default function TabBar() {
   const pathname = usePathname();
   const { user, profile } = useAuth();
-  const [native, setNative] = useState(false);
+  const native = useIsNativeApp();
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   // The middle CREATE button's slide-up sheet.
   const [createOpen, setCreateOpen] = useState(false);
@@ -90,11 +91,6 @@ export default function TabBar() {
   useEffect(() => {
     setCreateOpen(false);
   }, [pathname]);
-
-  // Bridge check must wait for mount — SSR can't know it's the app.
-  useEffect(() => {
-    setNative(isNativeApp());
-  }, []);
 
   // When the on-screen keyboard is up, position:fixed pins to the
   // LAYOUT viewport (which the keyboard doesn't shrink on iOS) — the

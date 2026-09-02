@@ -235,6 +235,11 @@ async function Dashboard() {
   const feed = await getReleaseDiscoveryFeed(12).catch(() => []);
 
   // "On air" = releases whose live room saw activity in the last 24h.
+  // Dashboard is an async SERVER component rendered once per request,
+  // so reading the clock here is the intended behaviour — there's no
+  // hydration pass to disagree with it and no re-render to make it
+  // drift. The rule can't tell a server render from a client one.
+  // eslint-disable-next-line react-hooks/purity
   const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
   const onAir = feed
     .filter(

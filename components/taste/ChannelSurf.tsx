@@ -36,7 +36,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
-import { hapticTap, isNativeApp } from "@/lib/native";
+import { hapticTap } from "@/lib/native";
+import { useIsNativeApp } from "@/lib/useIsNativeApp";
 import { useLikeState } from "@/lib/likeStore";
 import CommentsSection from "@/components/reviews/CommentsSection";
 
@@ -777,10 +778,7 @@ export default function ChannelSurf({
   // (static image + one-time blur raster, not a per-frame filter, so
   // the thermal diet holds). Bridge check waits for mount, same
   // pattern as TabBar.
-  const [native, setNative] = useState(false);
-  useEffect(() => {
-    setNative(isNativeApp());
-  }, []);
+  const native = useIsNativeApp();
   const commentsForRef = useRef<string | null>(null);
   commentsForRef.current = commentsFor;
   // Swipe-down-to-exit bookkeeping

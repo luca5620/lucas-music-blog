@@ -98,8 +98,33 @@ tomorrow."* Raise these; don't wait to be asked:
   with a prompt. The reverted-overhaul design law still binds
   (centered text, plain ✕, no channel/CRT gimmicks, no reason labels,
   no cover rating badge).
-- **Lint-error backlog** (~11 pre-existing: setState-in-effect,
-  Date.now-in-render).
+- **Lint-error backlog — 21 errors down to 15 (2026-09-01).** Six
+  components were each doing the same `useState(false)` +
+  `useEffect(() => setNative(isNativeApp()), [])` dance; they now
+  share **`lib/useIsNativeApp.ts`**, one useSyncExternalStore read
+  (server snapshot false, client snapshot the bridge, nothing to
+  subscribe to because the answer never changes). Swapped: TabBar,
+  PullToRefresh, ChannelSurf, OfflineOverlay, useModuleLimit
+  (ViewToggle) and OAuthButtons — the last one via a local
+  three-state version of the same store. OfflineOverlay's
+  `navigator.onLine` became a store read too (the textbook case).
+  One render pass less per component and no behaviour change, but
+  these ARE app-critical surfaces — worth a look on device.
+  Both `react-hooks/purity` errors are now documented rather than
+  fixed: the dashboard's `Date.now()` is an async SERVER component
+  reading the clock once per request, which is correct and which the
+  rule can't distinguish. LiveBadge's is a genuine (if rare)
+  hydration edge — it renders in client trees too — and the comment
+  at the call site explains why churning it would cost CLS on release
+  cards. The 15 that remain are bespoke: CommentsSection ×2,
+  ChannelSurf ×2, ReleaseRoomChat ×2, LiveCountdown,
+  NotificationsBell, CreateSheet, TabBar (sheet reset on pathname),
+  PullToRefresh (derived state), ViewToggle (localStorage read),
+  login. `lib/likeStore.ts` was deliberately LEFT ALONE: it looks
+  like a textbook useSyncExternalStore conversion, but its
+  module-level Maps would then need a server snapshot and would leak
+  state across requests — not worth it for a lint error, and it
+  powers every like button on the site.
 - **Site-wide soft 404s — MEASURED 2026-09-01, and it's worse than
   we thought.** Tested against a real production build (`npm start` +
   curl, not the dev server). Findings:

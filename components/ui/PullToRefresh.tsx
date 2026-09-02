@@ -19,7 +19,8 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { isNativeApp, hapticTap } from "@/lib/native";
+import { hapticTap } from "@/lib/native";
+import { useIsNativeApp } from "@/lib/useIsNativeApp";
 
 /** Drag distance (post-resistance px) that arms the refresh. */
 const THRESHOLD = 64;
@@ -30,7 +31,7 @@ const RESISTANCE = 0.45;
 
 export default function PullToRefresh() {
   const router = useRouter();
-  const [enabled, setEnabled] = useState(false);
+  const enabled = useIsNativeApp();
   const [refreshing, setRefreshing] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -38,11 +39,6 @@ export default function PullToRefresh() {
   const startYRef = useRef<number | null>(null);
   const pullRef = useRef(0);
   const armedRef = useRef(false);
-
-  // Bridge check must wait for mount — SSR can't know it's the app.
-  useEffect(() => {
-    setEnabled(isNativeApp());
-  }, []);
 
   // The transition ending = fresh data rendered → retract the disc.
   useEffect(() => {

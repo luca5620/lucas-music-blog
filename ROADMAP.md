@@ -40,8 +40,37 @@ submission). Contents, as agreed:
    the scheme (it only knows Supabase's callback), so no Google Cloud
    change. Luca vetoed the interim web-only experiment; both providers
    ship together, which satisfies App Store 4.8.
-2. **Push notifications** — code shipped 8f1ea78, dead until a native
-   build + his APNs runbook steps.
+2. ✅ **Push notifications — THE WHOLE SERVER SIDE IS DONE AND
+   VERIFIED (2026-09-02).** Nothing left but the binary. What got
+   done today, with Luca:
+   - **APNs key.** The existing Apple key `4679FU9C74` turned out to
+     be Sign-in-with-Apple ONLY — proved by signing a provider JWT
+     with it and getting `403 InvalidProviderToken` from Apple. Apple
+     keys carry per-service capabilities. A SECOND key was created for
+     push and probed the same way: ACCEPTED on both
+     api.push.apple.com and api.sandbox.push.apple.com. **Both keys
+     must be kept** — the sign-in secret is re-minted from the old one
+     every 6 months (next: 2027-02-28). Key ids live in Claude memory,
+     NOT here: this repo is public (confirmed 2026-09-02).
+     ⚠️ When creating an APNs key, do not restrict it to one
+     environment — sandbox-only works in Xcode and dies on the Store.
+   - **push-fanout deployed** to `qhbtfhyzbiwqwaxtetgd` with all five
+     secrets set (the .p8 went disk → Supabase, never through chat).
+     Live-tested: no secret 403, wrong secret 403, correct secret 200
+     reading push_tokens via service-role.
+   - **Migration 032 RUN** — the trigger on notifications INSERT that
+     calls the function via pg_net. Verified end to end from the SQL
+     Editor: Postgres reaches the function, the shared secret matches,
+     and it answers "no devices" (correct — no phone has registered a
+     token yet, which needs the build).
+   - **Bug caught before deploy:** the function only spoke to
+     production APNs and treated `BadDeviceToken` as a dead token,
+     deleting the row. A phone running a build straight from Xcode
+     holds a SANDBOX token — so testing push on the Mac would have
+     silently done nothing AND unregistered the device. Now falls back
+     to the sandbox host before declaring a token dead (7e1008f).
+   So: every notification the site already creates (follows, likes,
+   comments, replies) will push the moment a 1.1 build is installed.
 3. **Splash / status-bar item 5** from the app-native polish backlog.
 4. **Cold offline launch white-screen (5b)** — the `errorPath` fallback
    only works from a fresh binary.

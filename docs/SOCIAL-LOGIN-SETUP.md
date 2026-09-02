@@ -17,9 +17,16 @@ https://qhbtfhyzbiwqwaxtetgd.supabase.co/auth/v1/callback
 Supabase Dashboard → **Authentication → URL Configuration**
 
 - Site URL: `https://peakmusicreviews.com`
-- Redirect URLs — add both:
+- Redirect URLs — add all three:
   - `https://peakmusicreviews.com/auth/callback`
   - `http://localhost:3000/auth/callback` (for `npm run dev`)
+  - `com.peakmusicreviews.app://auth/callback` — **the app.** Not a
+    typo and not a website: it's the custom URL scheme iOS/Android use
+    to hand the signed-in session back to the shell. Paste it exactly;
+    no trailing slash, no wildcard. Without it the app's buttons open
+    Safari and come back to a Supabase error page. Google and Apple
+    never see this URL — they only ever know the Supabase callback at
+    the top of this doc — so nothing changes on their end.
 
 ---
 
@@ -133,13 +140,20 @@ one change per fortnight).
   `you@gmail.com` and a password, then hits "Continue with Google"
   with that same address, gets linked to the existing account —
   Supabase links identities when the provider has verified the email.
-- **The app shows none of this.** Inside the iOS/Android shell the
-  site runs in a WKWebView and Google rejects OAuth in embedded
-  webviews (`disallowed_useragent`), so `OAuthButtons` renders
-  nothing there. Doing it properly in the app means the system
-  browser (`@capacitor/browser`) plus a deep link handing the session
-  back — a separate piece of work. If that ever ships with Google,
-  App Store guideline 4.8 requires Sign in with Apple alongside it,
-  which we'd have anyway.
+- **The app does this too, from the 1.1 build on.** Inside the shell
+  the site runs in a WKWebView and Google rejects OAuth in embedded
+  webviews (`disallowed_useragent`), so the app can't just navigate
+  to the provider. Instead `OAuthButtons` opens the provider page in
+  SFSafariViewController (`@capacitor/browser`), Supabase comes back
+  to `com.peakmusicreviews.app://auth/callback`, and the App plugin's
+  `appUrlOpen` fires inside the WebView, where the PKCE verifier and
+  the session cookies live. Both providers ship together, which is
+  what App Store guideline 4.8 wants anyway.
+- **Old app builds stay on email/password, on purpose.** The shell
+  loads the live site, so this deploy also reaches phones running the
+  1.0 binary — which has no Browser plugin and no registered URL
+  scheme. The buttons are gated on the plugin actually being there
+  (`browserPlugin()` in `lib/native.ts`), so 1.0 shows exactly what
+  it shows today and 1.1 arms itself on install. Nothing to toggle.
 - **Apple's relay addresses forward mail**, so notification email
   still reaches those users through Resend as normal.

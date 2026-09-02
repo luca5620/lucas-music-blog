@@ -22,6 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- OAuth deep link. Supabase sends the code back to
+                 com.peakmusicreviews.app://auth/callback; Android hands
+                 it to this (singleTask) activity and the App plugin
+                 turns it into an appUrlOpen the WebView can act on.
+                 Same scheme as ios/App/App/Info.plist. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.peakmusicreviews.app" />
+            </intent-filter>
+
         </activity>
 
         <provider

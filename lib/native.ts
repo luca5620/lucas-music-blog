@@ -17,6 +17,11 @@ interface PushPermissionStatus {
   receive: string;
 }
 
+/** What every Capacitor addListener() resolves to — call remove() on unmount. */
+export interface PluginListener {
+  remove: () => Promise<void>;
+}
+
 interface CapacitorBridge {
   isNativePlatform?: () => boolean;
   getPlatform?: () => string;
@@ -38,6 +43,23 @@ interface CapacitorBridge {
         callback: (data: never) => void
       ) => Promise<unknown>;
       removeAllListeners: () => Promise<void>;
+    };
+    Browser?: {
+      open: (opts: {
+        url: string;
+        presentationStyle?: "fullscreen" | "popover";
+      }) => Promise<void>;
+      close: () => Promise<void>;
+      addListener: (
+        event: string,
+        callback: () => void
+      ) => Promise<PluginListener>;
+    };
+    App?: {
+      addListener: (
+        event: string,
+        callback: (data: { url: string }) => void
+      ) => Promise<PluginListener>;
     };
   };
 }
@@ -89,6 +111,34 @@ export async function hapticImpact(style: "LIGHT" | "MEDIUM"): Promise<void> {
  */
 export function pushPlugin() {
   return bridge()?.Plugins?.PushNotifications ?? null;
+}
+
+/**
+ * The Browser plugin (@capacitor/browser) off the injected bridge —
+ * opens a URL in SFSafariViewController / a Custom Tab instead of in
+ * the app's own WebView.
+ *
+ * Null on the plain web AND on app builds that predate the plugin,
+ * which here is load-bearing rather than incidental: the shell loads
+ * the LIVE site, so every web deploy reaches phones still running the
+ * OLD binary. Social sign-in in the app is gated on this being
+ * non-null, so 1.0 installs keep showing email/password only instead
+ * of sprouting buttons that would open nothing. The 1.1 build arms
+ * itself the moment it's installed.
+ */
+export function browserPlugin() {
+  return bridge()?.Plugins?.Browser ?? null;
+}
+
+/**
+ * The App plugin (@capacitor/app) — used here for `appUrlOpen`, which
+ * fires when iOS/Android hands the shell a
+ * `com.peakmusicreviews.app://` deep link. That is how the OAuth code
+ * gets back out of the system browser and into the WebView that owns
+ * the PKCE verifier.
+ */
+export function appPlugin() {
+  return bridge()?.Plugins?.App ?? null;
 }
 
 /**

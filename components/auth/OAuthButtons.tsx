@@ -3,25 +3,72 @@
 /**
  * "Continue with Google / Apple" — the one-tap doors into the site.
  *
- * Both run Supabase's OAuth flow: signInWithOAuth redirects the whole
- * page to the provider, the provider bounces back to Supabase, and
- * Supabase bounces to our /auth/callback with a code we exchange for
- * a session. No popups anywhere — popups are blocked in webviews and
- * awkward on phones.
+ * TWO FLOWS BEHIND ONE PAIR OF BUTTONS.
  *
- * WEB ONLY, on purpose (Luca 2026-08-31): inside the iOS/Android
- * shell the site runs in a WKWebView, and Google flatly refuses OAuth
- * in embedded webviews ("disallowed_useragent"). Doing it properly in
- * the app means the system browser + a deep link back, which is its
- * own piece of work — until then the app shows email/password only,
- * which is exactly what it shows today.
+ * On the web: Supabase's plain redirect flow. signInWithOAuth sends
+ * the whole page to the provider, the provider bounces back to
+ * Supabase, and Supabase bounces to our /auth/callback with a code we
+ * exchange for a session. No popups anywhere — popups are blocked in
+ * webviews and awkward on phones.
+ *
+ * In the app: the same flow turned inside out, because Google flatly
+ * refuses OAuth inside an embedded webview ("disallowed_useragent").
+ * The provider page opens in SFSafariViewController (a real Safari,
+ * which Google accepts) via @capacitor/browser, and Supabase is told
+ * to come back to the custom scheme `com.peakmusicreviews.app://` —
+ * iOS hands that to the shell, the App plugin's `appUrlOpen` fires
+ * INSIDE the WebView, and we exchange the code right there. Doing the
+ * exchange in the WebView is the whole point: that's where
+ * signInWithOAuth stashed the PKCE verifier, and where the session
+ * cookies have to land for the site to see them.
+ *
+ * The app buttons only appear on shells that actually carry the
+ * Browser plugin — see browserPlugin() in lib/native. The 1.0 build
+ * loads this very same deploy and has to keep showing email/password.
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { isNativeApp } from "@/lib/native";
+import {
+  appPlugin,
+  browserPlugin,
+  isNativeApp,
+  type PluginListener,
+} from "@/lib/native";
+import type { Profile } from "@/lib/types/database";
 
 type Provider = "google" | "apple";
+
+/**
+ * Which surface we're drawing for. Starts "web" so the server render
+ * and the first client render agree — the bridge is only readable on
+ * mount (the same pattern useModuleLimit and TabBar use).
+ *  - "web"        the plain site, redirect flow
+ *  - "app"        a 1.1+ shell: system browser + deep link back
+ *  - "app-legacy" a 1.0 shell with no Browser plugin: render nothing
+ */
+type Surface = "web" | "app" | "app-legacy";
+
+/**
+ * Where the provider sends the app back — a custom scheme, not an
+ * https URL, so iOS wakes the shell instead of opening the site in
+ * Safari. Registered in ios/App/App/Info.plist (CFBundleURLTypes) and
+ * android/app/src/main/AndroidManifest.xml, and it has to be on
+ * Supabase's Redirect URLs allow-list too. Google never sees it — it
+ * only ever knows Supabase's own callback — so no Google Cloud change.
+ */
+const APP_REDIRECT = "com.peakmusicreviews.app://auth/callback";
+
+/** Everything before the "?" — how we spot our own deep links. */
+const APP_SCHEME = "com.peakmusicreviews.app://";
+
+/**
+ * Where to land afterwards, parked while we're out in Safari. It rides
+ * sessionStorage rather than the redirect URL so the allow-list only
+ * ever has to match one exact string.
+ */
+const NEXT_KEY = "pmr:oauth-next";
 
 /**
  * Which buttons to show — NEXT_PUBLIC_SOCIAL_LOGIN, a comma list
@@ -38,28 +85,208 @@ const ENABLED = new Set(
     .filter(Boolean)
 );
 
+/** Same-site paths only — never an open redirect. */
+function safePath(path: string | null | undefined): string {
+  return path && path.startsWith("/") && !path.startsWith("//") ? path : "/";
+}
+
 interface OAuthButtonsProps {
   /** Where to land after a successful sign-in. Same-site path only. */
   next?: string;
 }
 
 export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
-  // App detection lands in an effect so the server render (web) and
-  // the first client render agree — the app then hides them on mount,
-  // the same pattern useModuleLimit uses.
-  const [app, setApp] = useState(false);
+  const [surface, setSurface] = useState<Surface>("web");
   const [busy, setBusy] = useState<Provider | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  useEffect(() => setApp(isNativeApp()), []);
+  // True from the moment a deep link lands until we've navigated. Our
+  // own Browser.close() also fires "browserFinished", and without this
+  // that handler would clear `busy` mid-exchange and re-arm the
+  // buttons under the user's thumb.
+  const finishing = useRef(false);
 
-  if (app || ENABLED.size === 0) return null;
+  useEffect(() => {
+    if (!isNativeApp()) return;
+    setSurface(browserPlugin() && appPlugin() ? "app" : "app-legacy");
+  }, []);
+
+  /**
+   * The deep link coming back from Safari — the app's stand-in for
+   * /auth/callback. Keep the two in step: they make the same
+   * cancel / error / flagged-handle decisions.
+   */
+  const finish = useCallback(
+    async (url: string) => {
+      // Other deep links (a push tap, a universal link) aren't ours.
+      if (!url.startsWith(APP_SCHEME)) return;
+
+      finishing.current = true;
+      try {
+        await browserPlugin()?.close();
+      } catch {
+        /* the sheet may already be gone — nothing to close */
+      }
+
+      const params = new URLSearchParams(
+        url.includes("?") ? url.slice(url.indexOf("?") + 1) : ""
+      );
+      const code = params.get("code");
+      const providerError =
+        params.get("error_description") ?? params.get("error");
+
+      let parked: string | null = null;
+      try {
+        parked = sessionStorage.getItem(NEXT_KEY);
+        sessionStorage.removeItem(NEXT_KEY);
+      } catch {
+        /* storage disabled — they land on the home page */
+      }
+
+      const giveUp = (message: string | null) => {
+        finishing.current = false;
+        setBusy(null);
+        setError(message);
+      };
+
+      if (!code) {
+        // A plain cancel stays silent, exactly as on the web.
+        giveUp(
+          providerError && !/access_denied/i.test(providerError)
+            ? "That sign-in didn't go through. Try again, or use your email and password."
+            : null
+        );
+        return;
+      }
+
+      const supabase = createClient();
+      const { data, error: exchangeError } =
+        await supabase.auth.exchangeCodeForSession(code);
+
+      if (exchangeError || !data.user) {
+        giveUp(
+          "Couldn't finish signing you in. Try again, or use your email and password."
+        );
+        return;
+      }
+
+      // Fresh social account → pick a handle first. Guarded the same
+      // way /auth/callback is: if the column isn't there the select
+      // errors, `profile` comes back null, and we just carry on.
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username_auto")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      const destination = safePath(parked);
+      const flagged = (profile as Pick<Profile, "username_auto"> | null)
+        ?.username_auto;
+
+      router.push(
+        flagged
+          ? `/welcome?next=${encodeURIComponent(destination)}`
+          : destination
+      );
+      router.refresh();
+    },
+    [router]
+  );
+
+  // App only: listen for the trip back. It lives here rather than
+  // app-wide because this component is the only thing that starts the
+  // journey, and SFSafariViewController never unloads the WebView
+  // underneath it — /login stays mounted the whole time.
+  useEffect(() => {
+    if (surface !== "app") return;
+    const app = appPlugin();
+    const browser = browserPlugin();
+    if (!app || !browser) return;
+
+    let cancelled = false;
+    const handles: PluginListener[] = [];
+    const keep = async (pending: Promise<PluginListener>) => {
+      try {
+        const handle = await pending;
+        if (cancelled) void handle.remove();
+        else handles.push(handle);
+      } catch {
+        /* the plugin refused the listener — the buttons just won't
+           complete, and email/password is still right there */
+      }
+    };
+
+    void keep(
+      app.addListener("appUrlOpen", (event: { url: string }) => {
+        void finish(event.url);
+      })
+    );
+    // Sheet dismissed without finishing (Done, or a swipe down) —
+    // let them have another go.
+    void keep(
+      browser.addListener("browserFinished", () => {
+        if (!finishing.current) setBusy(null);
+      })
+    );
+
+    return () => {
+      cancelled = true;
+      handles.forEach((handle) => void handle.remove());
+    };
+  }, [surface, finish]);
+
+  if (surface === "app-legacy" || ENABLED.size === 0) return null;
+
+  const handoffError = (provider: Provider, message: string) =>
+    /not enabled|unsupported/i.test(message)
+      ? `${provider === "google" ? "Google" : "Apple"} sign-in isn't switched on yet — use your email and password for now.`
+      : message;
 
   const start = async (provider: Provider) => {
     setError(null);
     setBusy(provider);
 
     const supabase = createClient();
+
+    if (surface === "app") {
+      try {
+        sessionStorage.setItem(NEXT_KEY, safePath(next));
+      } catch {
+        /* storage disabled — they land on the home page */
+      }
+
+      // skipBrowserRedirect: hand us the URL instead of navigating
+      // this WebView to it, which is the thing Google rejects.
+      const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: APP_REDIRECT, skipBrowserRedirect: true },
+      });
+
+      if (oauthError || !data?.url) {
+        setError(
+          oauthError
+            ? handoffError(provider, oauthError.message)
+            : "Couldn't start that sign-in. Try again, or use your email and password."
+        );
+        setBusy(null);
+        return;
+      }
+
+      try {
+        await browserPlugin()?.open({
+          url: data.url,
+          presentationStyle: "fullscreen",
+        });
+      } catch {
+        setError(
+          "Couldn't open the sign-in page. Try again, or use your email and password."
+        );
+        setBusy(null);
+      }
+      return;
+    }
+
     const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
@@ -70,11 +297,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
     // On success the browser is already navigating away, so anything
     // below only runs when the handoff failed.
     if (oauthError) {
-      setError(
-        /not enabled|unsupported/i.test(oauthError.message)
-          ? `${provider === "google" ? "Google" : "Apple"} sign-in isn't switched on yet — use your email and password for now.`
-          : oauthError.message
-      );
+      setError(handoffError(provider, oauthError.message));
       setBusy(null);
     }
   };
@@ -111,8 +334,8 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
         </button>
       )}
 
-      {/* The divider lives in here so the app — where none of this
-          renders — doesn't get left with a stray "OR" line. */}
+      {/* The divider lives in here so a surface that renders none of
+          this — the 1.0 app — isn't left with a stray "OR" line. */}
       <div className="flex items-center gap-3 pt-2">
         <span className="h-px flex-1 bg-white/10" />
         <span className="osd-text text-[0.65rem] text-text-muted">OR</span>

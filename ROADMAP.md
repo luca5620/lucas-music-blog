@@ -18,32 +18,69 @@ No more one-off Mac trips. He is on Windows; all of this needs the
 MacBook (Xcode + `npm run mobile:sync` + pod install + a new App Store
 submission). Contents, as agreed:
 
-1. **In-app Google/Apple sign-in.** Web is DONE and live (buttons
-   showing as of today). The app shows nothing because Google refuses
-   OAuth in an embedded webview (`disallowed_useragent`). The fix, all
-   native: add `@capacitor/browser` (opens the OAuth page in
-   SFSafariViewController, which Google accepts) + register the custom
-   URL scheme `com.peakmusicreviews.app://` in `Info.plist` + an
-   `appUrlOpen` listener (`@capacitor/app` is already installed) that
-   catches the code and calls `exchangeCodeForSession` INSIDE the
-   webview — the PKCE verifier lives in that webview's storage, so the
-   session lands in the right cookie jar. Supabase's redirect allow-
-   list needs the custom-scheme URL added too. Google never sees the
-   scheme (it only knows Supabase's callback), so no Google Cloud
-   change. **Luca vetoed the interim web-only experiment** (rendering
-   Apple alone in the app to see if appleid.apple.com survives the
-   WKWebView) — it all goes in 1.1 instead. App Store 4.8 is satisfied
-   either way since both providers ship together.
+1. ✅ **In-app Google/Apple sign-in — CODE DONE 2026-09-01.** Shipped:
+   `@capacitor/browser` 7.0.5 installed + added to the Podfile;
+   `browserPlugin()`/`appPlugin()` accessors in `lib/native.ts`;
+   `OAuthButtons` grew a second flow (signInWithOAuth with
+   `skipBrowserRedirect` → `Browser.open` in SFSafariViewController →
+   Supabase returns to `com.peakmusicreviews.app://auth/callback` →
+   `appUrlOpen` fires in the WebView → `exchangeCodeForSession` there,
+   because that's where the PKCE verifier and the session cookies
+   live); the scheme registered in `ios/App/App/Info.plist`
+   (CFBundleURLTypes) and `android/.../AndroidManifest.xml` (VIEW +
+   BROWSABLE intent-filter on the singleTask activity).
+   **Safe to deploy before the build exists**: the buttons are gated
+   on the Browser plugin being present in the injected bridge, so the
+   1.0 binary — which loads this same live site — keeps showing
+   email/password exactly as today, and 1.1 arms itself on install.
+   Dead until two things happen: the native build, and **Luca adding
+   `com.peakmusicreviews.app://auth/callback` to Supabase →
+   Authentication → URL Configuration → Redirect URLs** (one paste,
+   documented in `docs/SOCIAL-LOGIN-SETUP.md` §0). Google never sees
+   the scheme (it only knows Supabase's callback), so no Google Cloud
+   change. Luca vetoed the interim web-only experiment; both providers
+   ship together, which satisfies App Store 4.8.
 2. **Push notifications** — code shipped 8f1ea78, dead until a native
    build + his APNs runbook steps.
 3. **Splash / status-bar item 5** from the app-native polish backlog.
 4. **Cold offline launch white-screen (5b)** — the `errorPath` fallback
    only works from a fresh binary.
-5. **iOS 15 deployment-target bump.**
+5. ✅ **iOS 15 deployment-target bump — DONE 2026-09-01.** `platform
+   :ios, '15.0'` in the Podfile + all four
+   `IPHONEOS_DEPLOYMENT_TARGET` entries in `project.pbxproj`. Costs
+   no users: iOS 15 runs on every device iOS 14 did (the 6s and up) —
+   iOS 16 is where Apple dropped hardware.
 
 Sequence when we pick this up: JS/TS side first (it deploys to web
 harmlessly and does nothing until the native half exists), then the
 Mac session does sync + Xcode + submit once.
+
+**STATUS 2026-09-01: the Windows half of 1.1 is DONE and pushed.**
+Items 1 and 5 were built today; items 2, 3 and 4 were already
+code-complete and have only ever been waiting on a binary. So there is
+nothing left to write for 1.1 — everything remaining is Mac work plus
+two dashboard pastes.
+
+**The Mac runbook (one session, in this order):**
+1. `git pull`
+2. `npm install` — picks up `@capacitor/browser`
+3. `npx cap sync ios` — regenerates the Pods (Podfile.lock in the
+   repo is stale on purpose; sync + pod install rewrite it)
+4. `npx cap open ios` → run on the phone, then check, in order:
+   - the splash (penguin + PlayStation-font wordmark) and the light
+     status bar
+   - no black safe-area bars at either end of a scroll
+   - airplane mode → cold launch shows NO SIGNAL, not white
+   - **sign-in**: Continue with Google opens a real Safari sheet, and
+     coming back lands you signed in (a brand-new account should stop
+     at /welcome to pick a handle). Then the same with Apple.
+   - a push notification arrives and its tap deep-links
+5. Archive → upload → App Store Connect submission.
+
+**Luca's two dashboard pastes (can be done any time, from Windows):**
+- Supabase → Authentication → URL Configuration → Redirect URLs → add
+  `com.peakmusicreviews.app://auth/callback`
+- APNs, per `docs/PUSH-NOTIFICATIONS.md` (only needed for item 2)
 
 ### 📅 TOMORROW (2026-09-02) — the backlog Luca wants ADDRESSED
 

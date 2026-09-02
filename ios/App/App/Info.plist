@@ -51,5 +51,16 @@
 	<string>Lets you pick a photo when uploading a profile avatar or banner.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.peakmusicreviews.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.peakmusicreviews.app</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

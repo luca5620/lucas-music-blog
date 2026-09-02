@@ -90,6 +90,25 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-02 (MacBook): ⚠️ MIGRATION 038 TO RUN — ROOT CAUSE of
+  "can't delete my list" (and every other delete Luca has ever seen
+  silently fail: reviews, posts, comments).** Migration 021's
+  RESTRICTIVE delete policies use `staff_action_allowed()` = "not
+  staff OR email-coded session". Restrictive = must pass for EVERY
+  delete, own rows included. Luca is `owner`; his Google/phone
+  session was never email-coded → 0 rows deleted, no error, API
+  said success, row stayed. Regular users unaffected (that's why it
+  looked random / "lists neglected"). 038 rewrites the six policies
+  as `user_id = auth.uid() OR staff_action_allowed()` — moderation
+  deletes of OTHER people's rows still need the code, your own don't.
+  Also hardened: `deleteList` now `.select()`s the deleted rows and
+  reports zero-rows as failure (API 403 with a real message) instead
+  of a false success; the editor got a Danger Zone two-step delete
+  that works on phones, shows failures in place, and hard-navigates
+  on success. STANDING GOTCHA for the repo: any Supabase `.delete()`
+  / `.update()` that trusts `!error` alone can silently no-op under
+  RLS — always `.select()` and check row count when success matters.
+
 - **2026-09-02 (MacBook): three bug fixes — ⚠️ MIGRATION 037 TO RUN,
   and Luca must RE-IMPORT his playlist list afterwards (see 3).**
   1. **Google sign-in didn't take on mobile** ("doesn't recognize the

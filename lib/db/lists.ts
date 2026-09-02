@@ -301,8 +301,18 @@ export async function updateList(
 export async function deleteList(id: string): Promise<boolean> {
   const supabase = await createClient();
   // list_items and list_likes cascade-delete with the list (FK "on delete cascade").
-  const { error } = await supabase.from("lists").delete().eq("id", id);
-  return !error;
+  //
+  // .select() on the delete so we get the rows that actually went.
+  // Under RLS a delete the policies don't allow removes ZERO rows and
+  // raises NO error — `!error` alone reported success while the list
+  // sat there (the 021 restrictive-policy bug, 2026-09-02). Now
+  // "nothing was deleted" is a failure the API can say out loud.
+  const { data, error } = await supabase
+    .from("lists")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  return !error && (data?.length ?? 0) > 0;
 }
 
 /* --- Writes: items --- */

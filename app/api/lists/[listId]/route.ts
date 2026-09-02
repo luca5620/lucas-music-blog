@@ -175,9 +175,18 @@ export async function DELETE(
 
   const success = await deleteList(listId);
   if (!success) {
+    // deleteList now distinguishes "zero rows went" from a real error
+    // and returns false for both. The ownership guard above already
+    // passed, so a silent zero-row delete means an RLS policy refused
+    // it — before migration 038 that was every staff session without
+    // the admin email code deleting its OWN list. Say so instead of a
+    // generic 500 so the next person hitting it isn't guessing.
     return NextResponse.json(
-      { error: "Failed to delete list." },
-      { status: 500 }
+      {
+        error:
+          "The list wasn't deleted — a database policy refused it. If you're staff, sign in through the admin flow (or make sure migration 038 has been run).",
+      },
+      { status: 403 }
     );
   }
 

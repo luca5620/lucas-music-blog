@@ -143,6 +143,11 @@ export default function ProfileSettingsPage() {
   // reason as supportsHideLinks above.
   const [featuredPlaylistLink, setFeaturedPlaylistLink] = useState("");
   const [supportsFeaturedPlaylist, setSupportsFeaturedPlaylist] = useState(false);
+  // Preview player on release pages (migration 036): Spotify by
+  // default, Apple Music as the one alternative — never both on a
+  // page (Luca 2026-09-02). Gated on the column existing, as above.
+  const [preferredPlayer, setPreferredPlayer] = useState<"spotify" | "apple">("spotify");
+  const [supportsPreferredPlayer, setSupportsPreferredPlayer] = useState(false);
 
   const themeHex = THEMES.find((t) => t.id === theme)?.hex ?? "#1e90ff";
 
@@ -217,6 +222,8 @@ export default function ProfileSettingsPage() {
           p.featured_playlist_id ? playlistUrl(p.featured_playlist_id) : ""
         );
         setSupportsFeaturedPlaylist("featured_playlist_id" in p);
+        setPreferredPlayer(p.preferred_player === "apple" ? "apple" : "spotify");
+        setSupportsPreferredPlayer("preferred_player" in p);
       }
 
       setMyReviews(
@@ -397,6 +404,7 @@ export default function ProfileSettingsPage() {
       (featuredPlaylistLink.trim() === "" || parsePlaylistUrl(featuredPlaylistLink))
         ? { featured_playlist_id: parsePlaylistUrl(featuredPlaylistLink) }
         : {}),
+      ...(supportsPreferredPlayer ? { preferred_player: preferredPlayer } : {}),
       updated_at: new Date().toISOString(),
     };
 
@@ -851,6 +859,53 @@ export default function ProfileSettingsPage() {
             )}
           </FormField>
         </fieldset>
+
+        {/* ========== PREVIEW PLAYER (migration 036) — which player
+            release pages show YOU. One or the other, never both. ========== */}
+        {supportsPreferredPlayer && (
+          <fieldset className="panel-xbox p-5 space-y-3">
+            <legend className="label-xbox">Preview Player</legend>
+            <p className="text-xs text-text-muted">
+              Release pages show one preview player. Pick the service you
+              actually use — signed in to it in your browser, previews
+              become full tracks.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {(
+                [
+                  ["spotify", "Spotify", "The default. Every release we have."],
+                  ["apple", "Apple Music", "Where Apple carries the record; otherwise Spotify fills in."],
+                ] as const
+              ).map(([id, label, blurb]) => {
+                const active = preferredPlayer === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      setPreferredPlayer(id);
+                      setSaved(false);
+                    }}
+                    className="text-left p-3 rounded-lg border transition-colors"
+                    style={{
+                      borderColor: active ? themeHex : "rgba(255,255,255,0.12)",
+                      background: active ? `${themeHex}14` : "rgba(0,0,0,0.25)",
+                    }}
+                  >
+                    <span
+                      className="block text-sm font-bold font-[family-name:var(--font-heading)]"
+                      style={{ color: active ? themeHex : "#c8c8cc" }}
+                    >
+                      {active ? "● " : "○ "}
+                      {label}
+                    </span>
+                    <span className="block text-xs text-text-muted mt-0.5">{blurb}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
 
         {/* ========== PROFILE SONG — picked from the catalog, same
             flow as reviews. No pasted URLs. When Spotify has a 30s

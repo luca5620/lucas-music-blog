@@ -34,6 +34,9 @@ import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { isUpcoming } from "@/lib/upcoming";
 import LiveCountdown from "@/components/releases/LiveCountdown";
 import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
+import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
+import { resolveAppleMusic, type AppleMusicRef } from "@/lib/apple-music";
+import { createClient } from "@/lib/supabase/server";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
@@ -210,6 +213,27 @@ export default async function ReleasePage({ params }: Props) {
 
   const user = await getUser();
 
+  // ONE preview player, the viewer's pick (Luca 2026-09-02): Spotify
+  // unless they chose Apple Music in Settings. The Apple id is looked
+  // up (and cached on the row) only when an Apple-preferring member
+  // actually opens the page, so the Spotify-default majority costs
+  // nothing. Any hiccup — column not there yet, Apple doesn't carry
+  // the record — falls back to the Spotify player.
+  let apple: AppleMusicRef | null = null;
+  if (user) {
+    const supabase = await createClient();
+    const { data: pref } = await supabase
+      .from("profiles")
+      .select("preferred_player")
+      .eq("id", user.id)
+      .maybeSingle();
+    const wantsApple =
+      (pref as { preferred_player?: string } | null)?.preferred_player === "apple";
+    if (wantsApple) {
+      apple = await resolveAppleMusic(release, artist?.name ?? "");
+    }
+  }
+
   const [stats, reviewsRaw, followers, isFollowing, room] = await Promise.all([
     getReleaseStats(release.id),
     getReleaseReviews(release.id),
@@ -299,6 +323,7 @@ export default async function ReleasePage({ params }: Props) {
       />
 
       <ReleaseContent
+        apple={apple}
         release={release}
         stats={stats}
         isFollowing={isFollowing}
@@ -335,9 +360,13 @@ interface ReleaseContentProps {
   releaseDateFormatted: string | null;
   artistName: string;
   artistSlug: string | undefined;
+  /** Set only when the viewer prefers Apple Music AND Apple carries
+      the record — then the Apple player replaces the Spotify one. */
+  apple: AppleMusicRef | null;
 }
 
 function ReleaseContent({
+  apple,
   release,
   stats,
   isFollowing,
@@ -580,9 +609,15 @@ function ReleaseContent({
           </>
         )}
 
-        {/* Spotify preview player — 30s snippets, streamed by Spotify
-            under their licenses (we host no audio). */}
-        <SpotifyEmbed release={release} tracks={tracks} />
+        {/* ONE preview player — Apple's for members who picked it in
+            Settings (when Apple carries the record), Spotify's for
+            everyone else. Both stream 30s snippets under the
+            platform's own licenses (we host no audio). */}
+        {apple ? (
+          <AppleMusicEmbed release={release} apple={apple} />
+        ) : (
+          <SpotifyEmbed release={release} tracks={tracks} />
+        )}
       </div>
 
       {/* Live Room — its own grid column on desktop, filling row 1 so

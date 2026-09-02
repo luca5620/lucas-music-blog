@@ -102,15 +102,57 @@ don't wait to be asked:**
   for future review windows: freeze main, hold all work + behavior-
   changing migrations on a branch, merge on approval.
 
-### ⚠️ MIGRATION 035 NEEDS RUNNING (2026-09-02, batch 2)
+### ⚠️ MIGRATION 036 NEEDS RUNNING (2026-09-02, late) — 035 is RUN ✓
 
-`supabase/migrations/035-spotify-playlists.sql` — adds
-`posts.playlist_id` + `profiles.featured_playlist_id` (22-char id
-shape checks) and reloads the PostgREST schema cache. Until it runs:
-posts without a playlist keep working (the column is only mentioned
-when one is set), the featured-playlist field simply doesn't appear
-in settings (it probes for the column), and "Save as a list" from
-playlists still works (no schema change needed there).
+`supabase/migrations/036-apple-music.sql` — `releases.apple_music_id`
++ `apple_music_checked_at`, `profiles.preferred_player`
+('spotify' default | 'apple'), and the SECURITY DEFINER
+`catalog_set_apple_music(uuid, text)` cache-writer. Until it runs
+nothing changes: the Preview Player choice doesn't appear in Settings
+(probes for the column) and release pages keep the Spotify player.
+
+### 🍎 Apple Music preview player — shipped 2026-09-02 (needs 036)
+
+Luca's rule: ONE player per release page, never two. Settings →
+"Preview Player": Spotify (default) or Apple Music. Release page
+reads the viewer's pick; Apple-preferring members get Apple's public
+embed (embed.music.apple.com — 30s previews for anyone, full tracks
+for subscribers signed in to music.apple.com), everyone else the
+Spotify embed. When Apple doesn't carry a record the Spotify player
+fills in (the Settings blurb says so).
+
+How the Apple id is found (`lib/apple-music.ts`) — **no developer
+key anywhere**: Spotify single-item endpoints still give UPC (albums)
+/ ISRC (tracks); Apple's public `itunes.apple.com/lookup?upc=` /
+`?isrc=` turns those into Apple Music ids (verified: UPC
+196874557198 → collectionId 6784327271). Name search with an artist
+sanity check is the fallback (Genius/manual releases only have a
+name; brand-new singles sometimes miss on ISRC). Resolved lazily the
+first time an Apple-preferring member opens the page, cached on the
+row via `catalog_set_apple_music` (fills only an EMPTY id, stamps
+checked_at; misses retry after 7 days). CSP frame-src now allows
+embed.music.apple.com.
+
+### 📌 Decisions logged 2026-09-02 (late session)
+
+- **Monetization: Luca is fully on board** with the plan — web-only
+  Stripe ($20 / $50 a year), entitlement on the profile, app unlocks
+  it (3.1.3(b)); ads web-only, right rail + bottom, none in the app.
+  Not before real bills (Supabase Pro). Nothing to build yet.
+- **EU trader status**: discuss when the graphic designer's 1.1.1
+  screenshots arrive. **Marketing plan** still owed.
+- **Musicboard import: parked.** Luca found
+  https://github.com/alexlawless12/Musicboard-Scraper — makes a
+  future import plausible (scrape → CSV → import with the guardrails:
+  imported flag, original dates, never in feeds, unmatched titles
+  held per-user). Revisit when the tangible goals are done.
+- **Resonate-style logged-out home — SPEC** (build on a preview
+  branch, test before push): he wants the *professional look* —
+  scroll-reveal sections unveiling info as you go, album covers,
+  a "rated this week" module. **Keep our headline/taglines as they
+  are. NO listening-club block** (our live release rooms are the
+  more accessible version). The three-step strip and closing CTA
+  from the earlier proposal are fine.
 
 ### 🔧 2026-09-02 batch 2 — shipped
 

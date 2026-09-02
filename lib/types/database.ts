@@ -32,6 +32,10 @@ export interface Profile {
       only. Absent until the migration runs; the settings page probes
       for the key before sending it. */
   featured_playlist_id?: string | null;
+  /** Which preview player release pages show this member (migration
+      036): Spotify is the default, Apple Music the alternative — never
+      both. Absent until the migration runs. */
+  preferred_player?: "spotify" | "apple";
   /** NULL for accounts that never picked genres (signup trigger
       doesn't set it) — always guard with ?? [] before iterating. */
   favorite_genres: string[] | null;
@@ -165,6 +169,12 @@ export interface Release {
   description: string | null;
   tracks: ReleaseTrack[];
   popularity: number | null;
+  /** Apple Music album id, or "album:track" for single-track releases
+      (migration 036). Resolved lazily by lib/apple-music.ts; null with
+      a checked_at = looked, Apple doesn't carry it. Optional until
+      the migration runs. */
+  apple_music_id?: string | null;
+  apple_music_checked_at?: string | null;
   created_at: string;
   updated_at: string;
 }

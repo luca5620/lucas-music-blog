@@ -90,6 +90,51 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 🚀 STATE AS OF 2026-09-02 (Luca cleared the chat here — resume from this)
+
+**1.1 (build 2) is SUBMITTED TO APP REVIEW** — status Waiting for
+Review, automatic release on approval. Submitted with: subtitle
+"Rate music, even unreleased", the new keyword field (competitor
+names in), rewritten App Review notes (present-tense UGC safeguards
++ what 1.1 adds; no video attachment — not needed), demo account
+unchanged. Expect 24–48h. Everything native in 1.1 was verified on
+his phone before submitting: splash, light status bar, no safe-area
+bars, offline cold launch, Google AND Apple sign-in end to end, push
+delivery + deep link.
+
+**⚠️ MIGRATION 033 — NOT CONFIRMED RUN.** The SQL was handed to Luca
+twice; he never said he ran it. Until it runs, follow-feed
+notifications ("someone you follow posted") fail the check constraint
+silently. FIRST THING next session: ask, or probe — the constraint
+now lists `new_review` if it ran. Everything through 032 IS applied
+(032 proven by a real push arriving).
+
+**When 1.1 is approved, check on the live app:** the buttons show,
+sign-in works on a Store build (production APNs/sandbox both verified,
+so push should too), the bold-name push shape, follow-feed pushes
+once 033 is in.
+
+**Open with Luca — he wants these raised, don't wait:**
+1. **The three owed conversations**: SEO deep-dive, EU availability
+   (he was asked to glance at App Information → Trader Status during
+   submission — ask what it said), and a real marketing plan. See the
+   🎯 Strategy section above.
+2. **"Unreleased as the front door"** — the product bet. Do NOT start
+   unprompted; bring a proposal to look at before code, he says "go".
+3. **Rebrand to plain "Peak Music" + a better icon** — near future,
+   timed with the marketing ramp. His call on when.
+4. **Screenshots** — he's finding a graphic designer; waits on that.
+5. **Google Play** — un-parked; the 12-tester closed test is the
+   first marketing task (recruit from leak communities).
+6. **Musicboard-refugee posting** — his hands; he knows.
+7. **Debates changes** — still parked, "delegated later"; ask, don't
+   pitch.
+8. Lint backlog: 15 errors remain (list in the lint bullet below).
+   SEO leftovers: H1 font-repaint LCP, JS audit, per-artist unreleased
+   hubs (which now belong to item 2).
+
+---
+
 ### 📦 THE 1.1 PATCH — the next native build (Luca 2026-09-01)
 
 Luca's call: **everything that needs a new binary rides in ONE build.**

@@ -14,13 +14,13 @@ import LiveBadge from "@/components/rooms/LiveBadge";
 import HomeSection from "./HomeSection";
 import Reveal from "./Reveal";
 
-/* Celebrity handles, not random ones (Luca 2026-09-02) — a room
-   should look like the room you'd want to be in. */
+/* The handles are Luca's pick (2026-09-02) — personality, not
+   placeholders. "you" is the highlighted bubble. */
 const MOCK_CHAT = [
-  { who: "drake", text: "track 4 just started. it's the one.", me: false },
-  { who: "sza", text: "the sample flip on the outro 😭", me: false },
-  { who: "kendrick", text: "nah track 2 clears. argue with me", me: true },
-  { who: "tyler", text: "7.8 from me, could go up on a relisten", me: false },
+  { who: "noobmaster69", text: "track 4 just started. it's the one.", me: false },
+  { who: "luca", text: "the sample flip on the outro 😭", me: false },
+  { who: "you", text: "nah track 2 clears. argue with me", me: true },
+  { who: "champagnepapi", text: "7.8 from me, could go up on a relisten", me: false },
 ];
 
 export default async function LiveRooms() {

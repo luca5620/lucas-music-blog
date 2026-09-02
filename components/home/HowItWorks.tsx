@@ -52,7 +52,7 @@ const STEPS = [
       <div className="flex items-center gap-2 text-xs">
         <span className="glow-orb" />
         <span className="vhs-label text-[10px] text-accent-glow">On air</span>
-        <span className="text-text-secondary truncate">“argue with a wall”</span>
+        <span className="text-text-secondary truncate">“track 4 is the one, argue with a wall”</span>
       </div>
     ),
   },

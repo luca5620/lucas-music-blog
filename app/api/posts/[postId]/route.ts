@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getPostById, deletePost, updatePost } from "@/lib/db/posts";
+import { notifyFollowers } from "@/lib/db/notifications";
 import { getReleaseById } from "@/lib/db/releases";
 import {
   parseVideoUrl,
@@ -150,6 +151,16 @@ export async function PATCH(
         { error: "Failed to update post." },
         { status: 500 }
       );
+    }
+
+    // Same as reviews: the publish is the announcement, not the save.
+    if (flip && wantsPublished === true) {
+      await notifyFollowers({
+        actorId: user.id,
+        type: "new_post",
+        href: `/posts/${existing.slug}`,
+        title: title.trim(),
+      });
     }
 
     return NextResponse.json({ post });

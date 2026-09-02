@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import type { Review } from "@/lib/types/database";
 import { isOptionalText, parseRating } from "@/lib/validate";
+import { notifyFollowers } from "@/lib/db/notifications";
 import { checkContent } from "@/lib/content-filter";
 
 /**
@@ -130,6 +131,18 @@ export async function PUT(
         { error: "Failed to update review." },
         { status: 500 }
       );
+    }
+
+    // A draft going live is the first moment followers should hear
+    // about it. notifyFollowers dedups on (actor, type, href), so an
+    // unpublish/republish loop can't refill anyone's bell.
+    if (!existing.is_published && is_published === true) {
+      await notifyFollowers({
+        actorId: user.id,
+        type: "new_review",
+        href: `/reviews/${existing.slug}`,
+        title: existing.title,
+      });
     }
 
     return NextResponse.json(review);

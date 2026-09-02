@@ -58,6 +58,14 @@ function messageFor(type: string, title: string | null): string {
       return `liked your post${t}`;
     case "list_like":
       return `liked your list${t}`;
+    case "new_review":
+      return `posted a review of${t}`;
+    case "new_post":
+      return `posted${t}`;
+    case "new_list":
+      return `made a new list${t}`;
+    case "new_debate":
+      return `started a debate${t}`;
     default:
       return "did something";
   }
@@ -116,6 +124,7 @@ async function apnsJwt(): Promise<string> {
 async function postApns(
   host: string,
   token: string,
+  actor: string,
   body: string,
   href: string
 ): Promise<{ ok: boolean; status: number; reason: string }> {
@@ -129,7 +138,10 @@ async function postApns(
     },
     body: JSON.stringify({
       aps: {
-        alert: { body },
+        // Two lines, not one: iOS draws `title` bold above `body`, so
+        // the banner reads as "Luca" / "liked your review of X" the way
+        // every other social app does it, instead of one run-on line.
+        alert: { title: actor, body },
         sound: "default",
       },
       // The tap deep-link — PushRegistration routes to it.
@@ -158,14 +170,15 @@ async function postApns(
  */
 async function sendApns(
   token: string,
+  actor: string,
   body: string,
   href: string
 ): Promise<"ok" | "dead" | "error"> {
-  const prod = await postApns(APNS_PRODUCTION, token, body, href);
+  const prod = await postApns(APNS_PRODUCTION, token, actor, body, href);
   if (prod.ok) return "ok";
 
   if (prod.reason === "BadDeviceToken") {
-    const sandbox = await postApns(APNS_SANDBOX, token, body, href);
+    const sandbox = await postApns(APNS_SANDBOX, token, actor, body, href);
     if (sandbox.ok) return "ok";
     // Rejected by both: nothing will ever deliver to it.
     if (
@@ -223,13 +236,15 @@ Deno.serve(async (req) => {
 
   const actor =
     actorRes.data?.display_name || actorRes.data?.username || "Someone";
-  const body = `${actor} ${messageFor(record.type, record.title)}`;
+  // The name is the alert TITLE now, so the body is the verb phrase on
+  // its own — no longer prefixed with the name.
+  const body = messageFor(record.type, record.title);
 
   const deadIds: string[] = [];
   await Promise.all(
     tokens.map(async (row) => {
       if (row.platform !== "ios") return; // FCM: post-Play-launch
-      const result = await sendApns(row.token, body, record.href);
+      const result = await sendApns(row.token, actor, body, record.href);
       if (result === "dead") deadIds.push(row.id);
     })
   );

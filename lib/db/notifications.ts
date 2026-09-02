@@ -22,7 +22,19 @@ export type NotificationType =
   | "comment"
   | "comment_reply"
   | "post_like"
-  | "list_like";
+  | "list_like"
+  // Follow-feed (033): someone you follow made a thing.
+  | "new_review"
+  | "new_post"
+  | "new_list"
+  | "new_debate";
+
+/** The four the CREATE tab makes — the only types that fan out. */
+export type FollowFeedType =
+  | "new_review"
+  | "new_post"
+  | "new_list"
+  | "new_debate";
 
 export interface NotificationRow {
   id: string;
@@ -87,6 +99,82 @@ export async function createNotification(input: {
     } as never);
   } catch (err) {
     console.error("createNotification failed (non-fatal):", err);
+  }
+}
+
+/**
+ * "Someone you follow posted" — one notification per follower.
+ *
+ * The other helper answers a single person; this one answers a crowd,
+ * so it does the whole fan-out in three queries no matter how many
+ * followers there are: who follows me, who have I already told, insert
+ * the rest. Doing it per-follower through createNotification would be
+ * two round trips each.
+ *
+ * Deduped by (actor, type, href) because publishing is not a one-way
+ * door: unpublishing a post and publishing it again, or editing a
+ * draft repeatedly, must not refill everyone's bell. First publish
+ * wins, forever.
+ *
+ * Best-effort like everything else here — the thing was already
+ * created, and a notification hiccup must never surface as a failure
+ * to publish.
+ *
+ * Note each inserted row also fires the push trigger (033/032), so a
+ * creator with N followers sends N pushes. That's the intent, and at
+ * current scale it's nothing; if the site ever gets someone with
+ * thousands of followers this wants a queue rather than a loop.
+ */
+export async function notifyFollowers(input: {
+  actorId: string;
+  type: FollowFeedType;
+  href: string;
+  title?: string | null;
+}): Promise<void> {
+  const { actorId, type, href, title } = input;
+
+  try {
+    const supabase = await createClient();
+
+    const { data: followers } = await supabase
+      .from("follows")
+      .select("follower_id")
+      .eq("following_id", actorId);
+
+    const followerIds = (followers ?? []).map(
+      (row) => (row as { follower_id: string }).follower_id
+    );
+    if (followerIds.length === 0) return;
+
+    // Already told about this exact thing? Then this is a re-publish.
+    const { data: existing } = await supabase
+      .from("notifications")
+      .select("user_id")
+      .eq("actor_id", actorId)
+      .eq("type", type)
+      .eq("href", href);
+
+    const told = new Set(
+      (existing ?? []).map((row) => (row as { user_id: string }).user_id)
+    );
+
+    const rows = followerIds
+      // A self-follow shouldn't exist, but the DB check would reject
+      // the whole insert if one ever did.
+      .filter((id) => id !== actorId && !told.has(id))
+      .map((id) => ({
+        user_id: id,
+        actor_id: actorId,
+        type,
+        href: href.slice(0, 300),
+        title: title ? title.slice(0, 200) : null,
+      }));
+
+    if (rows.length === 0) return;
+
+    await supabase.from("notifications").insert(rows as never);
+  } catch (err) {
+    console.error("notifyFollowers failed (non-fatal):", err);
   }
 }
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
+import { notifyFollowers } from "@/lib/db/notifications";
 
 /**
  * PATCH /api/debates/[debateId] — publish a draft debate.
@@ -52,7 +53,7 @@ export async function PATCH(
   // for the honest 403 when someone pokes at a LIVE debate id.
   const { data: existing } = await supabase
     .from("debates")
-    .select("id, created_by, is_published")
+    .select("id, created_by, is_published, slug, title")
     .eq("id", debateId)
     .maybeSingle();
 
@@ -60,6 +61,8 @@ export async function PATCH(
     return NextResponse.json({ error: "Debate not found." }, { status: 404 });
   }
   const row = existing as {
+    slug: string;
+    title: string;
     id: string;
     created_by: string;
     is_published?: boolean;
@@ -84,6 +87,13 @@ export async function PATCH(
       { status: 500 }
     );
   }
+
+  await notifyFollowers({
+    actorId: user.id,
+    type: "new_debate",
+    href: `/debates/${row.slug}`,
+    title: row.title,
+  });
 
   return NextResponse.json({ success: true });
 }

@@ -4,6 +4,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { isText, isOptionalText, isUuid } from "@/lib/validate";
 import { checkContent } from "@/lib/content-filter";
 import { slugify } from "@/lib/spotify-import";
+import { notifyFollowers } from "@/lib/db/notifications";
 
 /**
  * POST /api/debates — open a new debate.
@@ -115,6 +116,17 @@ export async function POST(request: Request) {
       { error: "Couldn't open the debate. Try again." },
       { status: 500 }
     );
+  }
+
+  // Same rule as the others: drafts stay quiet. The publish button
+  // (PATCH /api/debates/[debateId]) fires this when one goes live.
+  if (is_published !== false) {
+    await notifyFollowers({
+      actorId: user.id,
+      type: "new_debate",
+      href: `/debates/${slug}`,
+      title: cleanTitle,
+    });
   }
 
   return NextResponse.json({ debate: data }, { status: 201 });

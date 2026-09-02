@@ -7,6 +7,8 @@ import {
 } from "@/lib/db/lists";
 import { rateLimit } from "@/lib/rate-limit";
 import { checkContent } from "@/lib/content-filter";
+import { createClient } from "@/lib/supabase/server";
+import { notifyFollowers } from "@/lib/db/notifications";
 
 /**
  * GET /api/lists — recent public lists, paginated.
@@ -123,6 +125,29 @@ export async function POST(request: Request) {
         { error: "Failed to create list." },
         { status: 500 }
       );
+    }
+
+    // A private list is nobody's business. Public ones tell the
+    // author's followers — note the list is EMPTY at this point, since
+    // items get added on the next screen; the notification is "X made
+    // a list", and the link is live for whenever they open it.
+    if (is_public ?? true) {
+      const supabase = await createClient();
+      const { data: profileRow } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .single();
+      const username = (profileRow as { username: string } | null)?.username;
+
+      if (username) {
+        await notifyFollowers({
+          actorId: user.id,
+          type: "new_list",
+          href: `/lists/${username}/${slug}`,
+          title: trimmedTitle,
+        });
+      }
     }
 
     return NextResponse.json(list, { status: 201 });

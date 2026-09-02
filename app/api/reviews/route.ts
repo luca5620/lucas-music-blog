@@ -7,6 +7,7 @@ import { getArtistById } from "@/lib/db/artists";
 import { rateLimit } from "@/lib/rate-limit";
 import { isOptionalText, isUuid, parseRating } from "@/lib/validate";
 import { checkContent } from "@/lib/content-filter";
+import { notifyFollowers } from "@/lib/db/notifications";
 
 /**
  * POST /api/reviews
@@ -206,6 +207,18 @@ export async function POST(request: Request) {
         { error: "Failed to create review." },
         { status: 500 }
       );
+    }
+
+    // Followers hear about it — but only once it's actually public.
+    // A draft is nobody's business until it's published (the edit
+    // route fires this when a draft goes live).
+    if (is_published) {
+      await notifyFollowers({
+        actorId: user.id,
+        type: "new_review",
+        href: `/reviews/${slug}`,
+        title: release.title,
+      });
     }
 
     return NextResponse.json(review, { status: 201 });

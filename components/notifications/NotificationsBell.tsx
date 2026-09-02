@@ -51,6 +51,15 @@ function message(n: NotificationRow): string {
       return `liked your post${t}`;
     case "list_like":
       return `liked your list${t}`;
+    // Follow-feed (033): these read as news, not as flattery.
+    case "new_review":
+      return `posted a review of${t}`;
+    case "new_post":
+      return `posted${t}`;
+    case "new_list":
+      return `made a new list${t}`;
+    case "new_debate":
+      return `started a debate${t}`;
     default:
       return "did something";
   }

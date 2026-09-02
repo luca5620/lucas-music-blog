@@ -7,6 +7,7 @@ import { parseVideoUrl, isTikTokShortLink, type ParsedVideo } from "@/lib/video"
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
 import { checkContent } from "@/lib/content-filter";
+import { notifyFollowers } from "@/lib/db/notifications";
 
 /**
  * POST /api/posts
@@ -135,6 +136,17 @@ export async function POST(request: Request) {
         { error: "Failed to create post." },
         { status: 500 }
       );
+    }
+
+    // Posts default to published (isPublished: is_published !== false),
+    // so mirror that exact condition rather than re-deriving it.
+    if (is_published !== false) {
+      await notifyFollowers({
+        actorId: user.id,
+        type: "new_post",
+        href: `/posts/${post.slug}`,
+        title: title.trim(),
+      });
     }
 
     return NextResponse.json({ post }, { status: 201 });

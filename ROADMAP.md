@@ -102,12 +102,9 @@ his phone before submitting: splash, light status bar, no safe-area
 bars, offline cold launch, Google AND Apple sign-in end to end, push
 delivery + deep link.
 
-**⚠️ MIGRATION 033 — NOT CONFIRMED RUN.** The SQL was handed to Luca
-twice; he never said he ran it. Until it runs, follow-feed
-notifications ("someone you follow posted") fail the check constraint
-silently. FIRST THING next session: ask, or probe — the constraint
-now lists `new_review` if it ran. Everything through 032 IS applied
-(032 proven by a real push arriving).
+**ALL MIGRATIONS THROUGH 033 ARE RUN** (Luca, 2026-09-02, last words
+before clearing the chat). Follow-feed notifications are live.
+Nothing waits on the SQL Editor.
 
 **When 1.1 is approved, check on the live app:** the buttons show,
 sign-in works on a Store build (production APNs/sandbox both verified,

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getProfile } from "@/lib/auth";
 import ListEditor from "@/components/lists/ListEditor";
+import PlaylistImportBox from "@/components/playlists/PlaylistImportBox";
 
 export const metadata: Metadata = {
   title: "New List",
@@ -21,5 +22,13 @@ export default async function NewListPage() {
 
   // The editor needs the username to build the redirect URL
   // (/lists/[username]/[slug]) after the list is created.
-  return <ListEditor mode="create" username={profile.username} />;
+  // The playlist slot rides on top (Luca 2026-09-02): paste a Spotify
+  // playlist and the list is built from it, landing on its edit page.
+  // Below it, the regular one-record-at-a-time editor.
+  return (
+    <div className="space-y-6">
+      <PlaylistImportBox />
+      <ListEditor mode="create" username={profile.username} />
+    </div>
+  );
 }

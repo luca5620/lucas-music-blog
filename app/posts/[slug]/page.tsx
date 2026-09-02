@@ -23,6 +23,7 @@ import ReportButton from "@/components/moderation/ReportButton";
 import DeletePostButton from "@/components/posts/DeletePostButton";
 import PostLikeButton from "@/components/posts/PostLikeButton";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import PlaylistEmbed from "@/components/playlists/PlaylistEmbed";
 
 // Community content changes constantly — always render fresh.
 export const dynamic = "force-dynamic";
@@ -194,6 +195,13 @@ export default async function PostPage({
               />
             </div>
           </div>
+        )}
+
+        {/* The playlist embed, if any (migration 035) — Spotify's own
+            player from a fixed template + the validated id, plus the
+            "save as a list" door for readers. */}
+        {post.playlist_id && (
+          <PlaylistEmbed playlistId={post.playlist_id} title={post.title} />
         )}
 
         {/* Divider */}

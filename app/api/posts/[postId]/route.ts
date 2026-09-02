@@ -9,6 +9,7 @@ import {
   isTikTokShortLink,
   type ParsedVideo,
 } from "@/lib/video";
+import { parsePlaylistUrl } from "@/lib/playlist";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
 import { checkContent } from "@/lib/content-filter";
@@ -51,7 +52,8 @@ export async function PATCH(
 
   try {
     const payload = await request.json();
-    const { title, body, video_url, release_id, is_published } = payload;
+    const { title, body, video_url, playlist_url, release_id, is_published } =
+      payload;
 
     if (is_published !== undefined && typeof is_published !== "boolean") {
       return NextResponse.json(
@@ -107,6 +109,32 @@ export async function PATCH(
       }
     }
 
+    // Optional Spotify playlist (migration 035) — id only, never the URL.
+    let playlistId: string | null = null;
+    if (playlist_url != null && playlist_url !== "") {
+      if (typeof playlist_url !== "string") {
+        return NextResponse.json(
+          { error: "Invalid playlist URL." },
+          { status: 400 }
+        );
+      }
+      playlistId = parsePlaylistUrl(playlist_url);
+      if (!playlistId) {
+        return NextResponse.json(
+          {
+            error:
+              "That doesn't look like a Spotify playlist link. Paste an open.spotify.com/playlist/… URL.",
+          },
+          { status: 400 }
+        );
+      }
+    }
+    // Pre-035 safety, same shape as is_published below: only mention
+    // the column when the edit actually sets or clears a playlist.
+    // A post that never had one and still has none never touches it.
+    const touchPlaylist =
+      playlistId !== null || (existing.playlist_id ?? null) !== null;
+
     let releaseId: string | null = null;
     if (release_id != null && release_id !== "") {
       if (!isUuid(release_id)) {
@@ -143,6 +171,7 @@ export async function PATCH(
       body,
       video,
       releaseId,
+      ...(touchPlaylist ? { playlistId } : {}),
       ...(flip ? { isPublished: wantsPublished } : {}),
     });
 

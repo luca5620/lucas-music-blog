@@ -301,16 +301,15 @@ export default function ReviewsList({
                       </span>
                     </div>
                   )}
+                  {/* Name + check as one unit — same treatment as the
+                      home-page cards (DiscoveryFeedClient). */}
                   <span className="min-w-0 text-base text-text-secondary leading-snug break-words">
-                    <span className="font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
-                      {author.display_name || author.username}
-                    </span>
-                    {isVerified && (
-                      <>
-                        {" "}
-                        <VerifiedBadge role={author.role} />
-                      </>
-                    )}{" "}
+                    <span className="inline-flex items-center gap-1 align-middle max-w-full whitespace-nowrap">
+                      <span className="min-w-0 whitespace-normal break-words font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
+                        {author.display_name || author.username}
+                      </span>
+                      {isVerified && <VerifiedBadge role={author.role} size="xs" />}
+                    </span>{" "}
                     rated this release
                   </span>
                   <span

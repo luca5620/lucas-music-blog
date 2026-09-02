@@ -122,6 +122,8 @@ export async function createPost(input: {
   body: string;
   video: ParsedVideo | null;
   releaseId: string | null;
+  /** Validated Spotify playlist id (lib/playlist.ts), or null. */
+  playlistId?: string | null;
   /** false = save as draft (migration 024). Defaults to published. */
   isPublished?: boolean;
 }): Promise<Post | null> {
@@ -146,6 +148,10 @@ export async function createPost(input: {
       video_kind: input.video?.kind ?? null,
       video_id: input.video?.id ?? null,
       release_id: input.releaseId,
+      // Same idea for the playlist (migration 035): only mention the
+      // column when there IS one, so plain posts keep working before
+      // the migration has run.
+      ...(input.playlistId ? { playlist_id: input.playlistId } : {}),
       // Only mention the column when saving a DRAFT — published is the
       // column default, and omitting it keeps publishing working even
       // before migration 024 has been run in the SQL Editor.
@@ -170,6 +176,9 @@ export async function updatePost(
     body: string;
     video: ParsedVideo | null;
     releaseId: string | null;
+    /** undefined = leave the column alone (pre-035 safe); null = clear;
+        string = a validated playlist id. */
+    playlistId?: string | null;
     /** Omit to leave the publish state untouched. The API layer only
         passes this when it would actually flip the row (so pre-024
         databases never see the column in an UPDATE). */
@@ -193,6 +202,9 @@ export async function updatePost(
       video_kind: fields.video?.kind ?? null,
       video_id: fields.video?.id ?? null,
       release_id: fields.releaseId,
+      ...(fields.playlistId !== undefined
+        ? { playlist_id: fields.playlistId }
+        : {}),
       ...(fields.isPublished !== undefined
         ? { is_published: fields.isPublished }
         : {}),

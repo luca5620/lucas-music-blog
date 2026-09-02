@@ -28,6 +28,10 @@ export interface Profile {
   soundcloud_url: string | null;
   statsfm_url: string | null;
   apple_music_url: string | null;
+  /** Spotify playlist featured on the profile (migration 035) — id
+      only. Absent until the migration runs; the settings page probes
+      for the key before sending it. */
+  featured_playlist_id?: string | null;
   /** NULL for accounts that never picked genres (signup trigger
       doesn't set it) — always guard with ?? [] before iterating. */
   favorite_genres: string[] | null;
@@ -343,6 +347,10 @@ export interface Post {
   video_kind: "youtube" | "tiktok" | null;
   video_id: string | null;
   release_id: string | null;
+  /** Spotify playlist embedded on the post (migration 035) — the 22-char
+      id only, never a URL; see lib/playlist.ts. Optional because rows
+      predate the column until 035 runs. */
+  playlist_id?: string | null;
   /** false = draft, visible only to the author (migration 024).
       Optional because rows predate the column until 024 runs —
       treat undefined as published. */

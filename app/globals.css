@@ -3516,3 +3516,40 @@ fieldset {
   transform: none !important;
   animation: none !important;
 }
+
+/* ------------------------------------------------------------
+   BREATHING BLOB (Luca 2026-09-02) — the ONE exception to the
+   phone/app still.
+
+   Thermal mode above freezes every blob on phones and in the app.
+   Luca wanted the top blob — the one behind the status bar and
+   masthead, on screen more than any other — to feel alive again,
+   without reopening the overheating door. So exactly one blob per
+   field (marked .liquid-breathe in CRTShell) fades between two
+   opacities on a slow loop. Why this stays cool:
+   - opacity is a compositor-only property: no repaint, no layout,
+     one small layer re-blended per frame (the blur/transform work
+     that actually burned is still off — the !important rules above
+     hold)
+   - it is ONE element, not ~30
+   - 9s per cycle, so the GPU wakes for a blend and idles again
+   Runs even when idle (it IS the "alive" signal), so it also sits
+   outside the .motion-on play-state gate. Desktop keeps its full
+   drift and never sees this rule.
+   ------------------------------------------------------------ */
+@keyframes liquid-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.22; }
+}
+
+@media (max-width: 768px) {
+  .liquid-blob.liquid-breathe {
+    animation: liquid-breathe 9s ease-in-out infinite !important;
+  }
+}
+
+.native-app .liquid-blob.liquid-breathe,
+.native-app:not(.motion-on) .crt-bezel-liquid .liquid-blob.liquid-breathe {
+  animation: liquid-breathe 9s ease-in-out infinite !important;
+  animation-play-state: running !important;
+}

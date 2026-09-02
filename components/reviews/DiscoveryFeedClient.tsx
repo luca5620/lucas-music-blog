@@ -278,18 +278,18 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                       </span>
                     </div>
                   )}
-                  {/* text-base (16px) matches the 16px verified
-                      checkmark so the line reads as one piece. */}
+                  {/* Name + check are ONE inline-flex unit (Luca
+                      2026-09-02: the check must sit on the same line
+                      as the name, smaller). whitespace-nowrap keeps
+                      the pair together; break-words on the name still
+                      lets a 20-char handle wrap inside it. */}
                   <span className="min-w-0 text-base text-text-secondary leading-snug break-words">
-                    <span className="font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
-                      {profile.display_name || profile.username}
-                    </span>
-                    {isVerified && (
-                      <>
-                        {" "}
-                        <VerifiedBadge role={profile.role} />
-                      </>
-                    )}{" "}
+                    <span className="inline-flex items-center gap-1 align-middle max-w-full whitespace-nowrap">
+                      <span className="min-w-0 whitespace-normal break-words font-bold text-text-primary group-hover/author:text-accent-primary transition-colors">
+                        {profile.display_name || profile.username}
+                      </span>
+                      {isVerified && <VerifiedBadge role={profile.role} size="xs" />}
+                    </span>{" "}
                     rated this release
                   </span>
                   <span

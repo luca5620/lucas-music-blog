@@ -128,6 +128,11 @@ export default async function PostsFeed() {
                     {post.video_kind === "youtube" ? "▶ YOUTUBE" : "♪ TIKTOK"}
                   </span>
                 )}
+                {post.playlist_id && (
+                  <span className="pixel-text text-[10px] border rounded px-1 py-0.5 shrink-0 text-[#1db954] border-[#1db954]/40">
+                    ♫ PLAYLIST
+                  </span>
+                )}
               </span>
 
               {/* Title + tied release */}

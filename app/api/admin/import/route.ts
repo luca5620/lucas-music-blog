@@ -8,6 +8,10 @@ import {
   importReleaseFromTrack,
 } from "@/lib/spotify-import";
 import type { Profile } from "@/lib/types/database";
+import {
+  importReleaseManually,
+  type ManualImportInput,
+} from "@/lib/manual-import";
 
 interface ImportBodyByUrl {
   spotifyUrl: string;
@@ -16,7 +20,14 @@ interface ImportBodyByKind {
   kind: "artist" | "album" | "track";
   spotifyId: string;
 }
-type ImportBody = Partial<ImportBodyByUrl & ImportBodyByKind>;
+/** Manual tab (Luca 2026-09-02): a release typed in by hand because
+    neither Spotify nor Genius has it. See lib/manual-import.ts. */
+interface ImportBodyManual {
+  manual: ManualImportInput;
+}
+type ImportBody = Partial<
+  ImportBodyByUrl & ImportBodyByKind & ImportBodyManual
+>;
 
 function isSpotifyError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
@@ -64,6 +75,41 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  // 3b. Manual import — no Spotify involved. Field validation lives in
+  // importReleaseManually; its thrown messages are written for staff
+  // and safe to echo back (this route is owner/admin + code-gated).
+  if (body.manual) {
+    const m = body.manual;
+    try {
+      const release = await importReleaseManually({
+        title: String(m.title ?? ""),
+        artist_id: typeof m.artist_id === "string" ? m.artist_id : null,
+        artist_name: typeof m.artist_name === "string" ? m.artist_name : null,
+        release_type: m.release_type,
+        release_date: m.release_date ? String(m.release_date) : null,
+        cover_image: m.cover_image ? String(m.cover_image) : null,
+        tracks: Array.isArray(m.tracks) ? m.tracks.map(String) : [],
+        is_unreleased: m.is_unreleased === true,
+        description: m.description ? String(m.description) : null,
+      });
+      return NextResponse.json({
+        ok: true,
+        kind: "album",
+        resolvedFrom: "manual",
+        id: release.id,
+        slug: release.slug,
+        title: release.title,
+      });
+    } catch (err) {
+      console.error("Manual import failed:", err);
+      const message = err instanceof Error ? err.message : "Import failed.";
+      // "upsertRelease failed: …" = database; everything else is one
+      // of the validation lines (missing title, bad date…).
+      const status = /failed:/i.test(message) ? 500 : 400;
+      return NextResponse.json({ error: message }, { status });
+    }
+  }
+
   let kind: "artist" | "album" | "track";
   let spotifyId: string;
 
@@ -91,7 +137,7 @@ export async function POST(request: Request) {
     spotifyId = body.spotifyId;
   } else {
     return NextResponse.json(
-      { error: "Provide either spotifyUrl or {kind, spotifyId}" },
+      { error: "Provide spotifyUrl, {kind, spotifyId}, or a manual release" },
       { status: 400 }
     );
   }

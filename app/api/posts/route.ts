@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createPost } from "@/lib/db/posts";
 import { getReleaseById } from "@/lib/db/releases";
 import { parseVideoUrl, isTikTokShortLink, type ParsedVideo } from "@/lib/video";
+import { parsePlaylistUrl } from "@/lib/playlist";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
 import { checkContent } from "@/lib/content-filter";
@@ -32,7 +33,8 @@ export async function POST(request: Request) {
 
   try {
     const payload = await request.json();
-    const { title, body, video_url, release_id, is_published } = payload;
+    const { title, body, video_url, playlist_url, release_id, is_published } =
+      payload;
 
     // --- Validate. Nothing in the body is trusted. ---
     // Draft flag: anything other than an explicit false means publish.
@@ -90,6 +92,28 @@ export async function POST(request: Request) {
       }
     }
 
+    // The optional Spotify playlist (migration 035): same rule as the
+    // video — parse to the bare id or reject, never store the URL.
+    let playlistId: string | null = null;
+    if (playlist_url != null && playlist_url !== "") {
+      if (typeof playlist_url !== "string") {
+        return NextResponse.json(
+          { error: "Invalid playlist URL." },
+          { status: 400 }
+        );
+      }
+      playlistId = parsePlaylistUrl(playlist_url);
+      if (!playlistId) {
+        return NextResponse.json(
+          {
+            error:
+              "That doesn't look like a Spotify playlist link. Paste an open.spotify.com/playlist/… URL.",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // The optional tied release must be a real catalog row.
     let releaseId: string | null = null;
     if (release_id != null && release_id !== "") {
@@ -128,6 +152,7 @@ export async function POST(request: Request) {
       body,
       video,
       releaseId,
+      playlistId,
       isPublished: is_published !== false,
     });
 

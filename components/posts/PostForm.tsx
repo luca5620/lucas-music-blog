@@ -20,6 +20,7 @@ import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
 import { parseVideoUrl, isTikTokShortLink } from "@/lib/video";
+import { parsePlaylistUrl, playlistUrl as buildPlaylistUrl } from "@/lib/playlist";
 
 const BODY_MAX = 10000;
 
@@ -49,6 +50,11 @@ export default function PostForm({
   const [title, setTitle] = useState(post?.title ?? "");
   const [body, setBody] = useState(post?.body ?? "");
   const [videoUrl, setVideoUrl] = useState(post ? videoUrlFromPost(post) : "");
+  // The optional Spotify playlist (migration 035). Stored as the bare
+  // id; the edit form starts from the rebuilt canonical link.
+  const [playlistLink, setPlaylistLink] = useState(
+    post?.playlist_id ? buildPlaylistUrl(post.playlist_id) : ""
+  );
 
   // The optionally tied release (full local row via /api/catalog/ensure).
   const [release, setRelease] = useState<Release | null>(initialRelease);
@@ -62,6 +68,11 @@ export default function PostForm({
   const parsedVideo = trimmedUrl ? parseVideoUrl(trimmedUrl) : null;
   const isShortLink = trimmedUrl ? isTikTokShortLink(trimmedUrl) : false;
   const videoInvalid = trimmedUrl.length > 0 && !parsedVideo;
+
+  // Live playlist-link feedback, same idea as the video field.
+  const trimmedPlaylist = playlistLink.trim();
+  const parsedPlaylist = trimmedPlaylist ? parsePlaylistUrl(trimmedPlaylist) : null;
+  const playlistInvalid = trimmedPlaylist.length > 0 && !parsedPlaylist;
 
   const year = release?.release_date?.slice(0, 4) ?? null;
 
@@ -86,6 +97,10 @@ export default function PostForm({
       setError("Fix the video URL (or clear it) before posting.");
       return;
     }
+    if (playlistInvalid) {
+      setError("Fix the playlist link (or clear it) before posting.");
+      return;
+    }
 
     setSaving(true);
     setError(null);
@@ -98,6 +113,7 @@ export default function PostForm({
           title: title.trim(),
           body,
           video_url: trimmedUrl || null,
+          playlist_url: trimmedPlaylist || null,
           release_id: release?.id ?? null,
           is_published: isPublished,
         }),
@@ -188,6 +204,44 @@ export default function PostForm({
         {!trimmedUrl && (
           <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
             one video max — AMV edits, live cuts, video essays all welcome
+          </p>
+        )}
+      </fieldset>
+
+      {/* ========== STEP 2b: THE PLAYLIST (optional) ==========
+          A Spotify playlist embeds on the post with its own player
+          (Luca 2026-09-02), and readers can save it as one of their
+          lists from there. Stored as the bare id — see lib/playlist.ts. */}
+      <fieldset className="panel-xbox p-5 space-y-3">
+        <legend className="label-xbox">Spotify Playlist — optional</legend>
+
+        <FormField label="Playlist link">
+          <input
+            type="text"
+            value={playlistLink}
+            onChange={(e) => setPlaylistLink(e.target.value)}
+            placeholder="open.spotify.com/playlist/…"
+            className="form-input"
+            spellCheck={false}
+            autoComplete="off"
+          />
+        </FormField>
+
+        {parsedPlaylist && (
+          <p className="pixel-text text-xs text-accent-primary">
+            ✓ Spotify playlist detected — it&apos;ll embed on your post with
+            a player, and readers can save it as a list.
+          </p>
+        )}
+        {playlistInvalid && (
+          <p className="text-xs text-accent-rose">
+            Not a Spotify playlist link. Paste an open.spotify.com/playlist/…
+            URL (Share → Copy link in Spotify).
+          </p>
+        )}
+        {!trimmedPlaylist && (
+          <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
+            one playlist max — a mix, a ranking, the soundtrack to the post
           </p>
         )}
       </fieldset>

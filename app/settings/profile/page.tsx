@@ -20,6 +20,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { parsePlaylistUrl, playlistUrl } from "@/lib/playlist";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import CatalogSearch, {
@@ -136,6 +137,12 @@ export default function ProfileSettingsPage() {
   // update, so the option simply doesn't appear yet.
   const [hideStreamingLinks, setHideStreamingLinks] = useState(false);
   const [supportsHideLinks, setSupportsHideLinks] = useState(false);
+  // Featured Spotify playlist (migration 035) — the field holds the
+  // pasted LINK for editing; only the parsed 22-char id is ever saved.
+  // supportsFeaturedPlaylist gates it on the column existing, same
+  // reason as supportsHideLinks above.
+  const [featuredPlaylistLink, setFeaturedPlaylistLink] = useState("");
+  const [supportsFeaturedPlaylist, setSupportsFeaturedPlaylist] = useState(false);
 
   const themeHex = THEMES.find((t) => t.id === theme)?.hex ?? "#1e90ff";
 
@@ -206,6 +213,10 @@ export default function ProfileSettingsPage() {
         setAppleMusicUrl(p.apple_music_url ?? "");
         setHideStreamingLinks(p.hide_streaming_links ?? false);
         setSupportsHideLinks("hide_streaming_links" in p);
+        setFeaturedPlaylistLink(
+          p.featured_playlist_id ? playlistUrl(p.featured_playlist_id) : ""
+        );
+        setSupportsFeaturedPlaylist("featured_playlist_id" in p);
       }
 
       setMyReviews(
@@ -378,6 +389,13 @@ export default function ProfileSettingsPage() {
       // fail the ENTIRE update, taking every other field with it.
       ...(supportsHideLinks
         ? { hide_streaming_links: hideStreamingLinks }
+        : {}),
+      // Featured playlist: empty clears it, a valid link saves the id,
+      // an unparseable link leaves the saved value alone (the field
+      // shows the red hint, nothing silently disappears).
+      ...(supportsFeaturedPlaylist &&
+      (featuredPlaylistLink.trim() === "" || parsePlaylistUrl(featuredPlaylistLink))
+        ? { featured_playlist_id: parsePlaylistUrl(featuredPlaylistLink) }
         : {}),
       updated_at: new Date().toISOString(),
     };
@@ -964,6 +982,35 @@ export default function ProfileSettingsPage() {
               />
             </FormField>
           </div>
+
+          {/* Featured playlist (Luca 2026-09-02): a Spotify playlist
+              embedded on the profile with its own player, under the
+              profile song. Appears once migration 035 has run. */}
+          {supportsFeaturedPlaylist && (
+            <FormField label="Featured Spotify playlist">
+              <input
+                type="text"
+                value={featuredPlaylistLink}
+                onChange={(e) => setFeaturedPlaylistLink(e.target.value)}
+                placeholder="https://open.spotify.com/playlist/…"
+                className="form-input"
+                spellCheck={false}
+                autoComplete="off"
+              />
+              {featuredPlaylistLink.trim() && parsePlaylistUrl(featuredPlaylistLink) && (
+                <p className="mt-1.5 text-xs text-accent-primary pixel-text">
+                  ✓ Playlist detected — it&apos;ll play on your profile.
+                </p>
+              )}
+              {featuredPlaylistLink.trim() && !parsePlaylistUrl(featuredPlaylistLink) && (
+                <p className="mt-1.5 text-xs text-accent-rose">
+                  Not a Spotify playlist link — paste an
+                  open.spotify.com/playlist/… URL. (Won&apos;t be saved until
+                  it&apos;s fixed or cleared.)
+                </p>
+              )}
+            </FormField>
+          )}
 
           {/* Privacy toggle (Luca 2026-08-28): connect whatever you
               want, choose whether visitors see it. Appears once

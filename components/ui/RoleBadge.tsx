@@ -14,7 +14,7 @@ type Role = "user" | "reviewer" | "admin" | "owner" | "tester";
 
 interface RoleBadgeProps {
   role: Role;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   showLabel?: boolean;
 }
 
@@ -55,6 +55,10 @@ const badgeConfig: Record<
    artwork in it — and the negative margin hands the padding back to
    layout, so gaps/alignment stay exactly as before. */
 const sizeMap = {
+  // xs = the inline-with-a-name size (12px visible): the home-page
+  // review cards read "{name} ✓ rated this release" and a 16px check
+  // next to 16px text looked like a second avatar (Luca 2026-09-02).
+  xs: { icon: "w-6 h-6 -m-1.5", text: "text-[10px]" },
   sm: { icon: "w-8 h-8 -m-2", text: "text-[10px]" },
   md: { icon: "w-10 h-10 -m-2.5", text: "text-xs" },
   lg: { icon: "w-12 h-12 -m-3", text: "text-sm" },
@@ -81,7 +85,12 @@ export default function RoleBadge({
     : `drop-shadow(0 0 4px ${config.glow}80)`;
 
   return (
-    <span className="inline-flex items-center gap-1" title={config.label}>
+    // align-middle: an inline-flex box has no text baseline, so
+    // browsers park its BOTTOM margin edge on the baseline — the check
+    // floated a few px above the name it belongs to (Luca 2026-09-02:
+    // "above as it sits currently"). Middle-aligning centers it on
+    // the x-height, same line as the name, everywhere it's used.
+    <span className="inline-flex items-center gap-1 align-middle" title={config.label}>
       {/* viewBox pads 12 units of breathing room on every side (the
           icon art spans 0–24) = half the box is halo space. */}
       <svg
@@ -123,6 +132,13 @@ export default function RoleBadge({
  * Small inline badge for review cards and comments.
  * Just the checkmark icon, no label.
  */
-export function VerifiedBadge({ role }: { role: Role }) {
-  return <RoleBadge role={role} size="sm" />;
+export function VerifiedBadge({
+  role,
+  size = "sm",
+}: {
+  role: Role;
+  /** "xs" for the check that rides inline with a name in body text. */
+  size?: "xs" | "sm";
+}) {
+  return <RoleBadge role={role} size={size} />;
 }

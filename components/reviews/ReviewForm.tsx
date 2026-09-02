@@ -329,6 +329,28 @@ export default function ReviewForm({
           everything on Peak Music Reviews is tied to a real release — spotify catalog +
           genius deep cuts (unreleased included)
         </p>
+
+        {/* The door for releases the search can't reach (Luca
+            2026-09-02): Bandcamp-only records, private-press stuff,
+            regional catalogs, anything neither Spotify nor Genius
+            carries. Staff import those by hand through the admin
+            tool's Manual tab, so the ask is one email. Shown only
+            while picking, and only in create mode — once a release is
+            locked in there's nothing left to be missing. */}
+        {mode === "create" && !release && (
+          <p className="text-xs text-text-secondary leading-relaxed border-t border-border-subtle pt-3">
+            <span className="text-text-primary font-bold">Can&apos;t find it?</span>{" "}
+            If the release isn&apos;t on Spotify or Genius, email{" "}
+            <a
+              href="mailto:contact@peakmusicreviews.com?subject=Please%20import%20a%20release"
+              className="text-accent-primary hover:underline"
+            >
+              contact@peakmusicreviews.com
+            </a>{" "}
+            with the artist, title, and a link (Bandcamp, Apple Music,
+            SoundCloud…) and we&apos;ll add it by hand so you can review it.
+          </p>
+        )}
       </fieldset>
 
       {/* ========== STEP 2: THE VERDICT ========== */}

@@ -47,11 +47,14 @@ export default async function AdminImportPage() {
     <main className="mx-auto max-w-2xl px-4 py-12">
       <div className="mb-6">
         <span className="label-xbox mb-3 inline-flex">Admin // Phase 2a</span>
-        <h1 className="pixel-text text-3xl font-bold mb-2">Spotify Import</h1>
+        <h1 className="pixel-text text-3xl font-bold mb-2">Release Import</h1>
         <p className="text-sm opacity-70">
-          Paste a Spotify artist or album URL. The importer will pull metadata,
-          cover art, tracklist, and feature credits, then upsert the entity row
-          so it can be linked from reviews and pages.
+          Two doors. <span className="text-white/90">Spotify link</span>: paste
+          an artist, album, or track URL and the importer pulls metadata,
+          cover art, tracklist, and feature credits. <span className="text-white/90">Manual</span>:
+          for the emails to contact@ about records neither Spotify nor
+          Genius carries — type it in and it becomes a normal release page
+          people can review and list.
         </p>
       </div>
       <AdminImportForm />

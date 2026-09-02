@@ -102,6 +102,52 @@ don't wait to be asked:**
   for future review windows: freeze main, hold all work + behavior-
   changing migrations on a branch, merge on approval.
 
+### ⚠️ MIGRATION 035 NEEDS RUNNING (2026-09-02, batch 2)
+
+`supabase/migrations/035-spotify-playlists.sql` — adds
+`posts.playlist_id` + `profiles.featured_playlist_id` (22-char id
+shape checks) and reloads the PostgREST schema cache. Until it runs:
+posts without a playlist keep working (the column is only mentioned
+when one is set), the featured-playlist field simply doesn't appear
+in settings (it probes for the column), and "Save as a list" from
+playlists still works (no schema change needed there).
+
+### 🔧 2026-09-02 batch 2 — shipped
+
+1. **Verified check on home/reviews cards**: new `xs` badge size, and
+   the name + check are one inline-flex unit with `align-middle`
+   (`RoleBadge.tsx`, `DiscoveryFeedClient.tsx`, `ReviewsList.tsx`).
+   The float-above came from an inline-flex box having no baseline.
+2. **Breathing top blob** (`.liquid-breathe`, CRTShell + end of
+   globals.css): on phones and in the app the FIRST blob of the bezel
+   field and of the screen wash fades 0.55→0.22 on a 9s loop —
+   opacity-only, one element, runs even when idle. Every other blob
+   is still the designed still. Needs eyeballing on the phone.
+3. **"Can't find it? email contact@"** note under the search on
+   /reviews/new (create mode, before a release is picked).
+4. **Admin import → two tabs** (`/admin/import`): Spotify link (as
+   before) + **Manual** (title, artist, type, date, cover URL,
+   tracklist one-per-line, unreleased flag, description) via
+   `lib/manual-import.ts` → a normal `releases` row, `source=manual`,
+   no spotify_id (release page shows the tracklist, no Spotify
+   preview). Artist matches an existing row by exact name, else
+   creates one.
+5. **Spotify playlists** (migration 035):
+   - posts: optional playlist link → `PlaylistEmbed` on the post page
+     (+ "♫ PLAYLIST" chip in the feed)
+   - profiles: "Featured Spotify playlist" in Settings → embed under
+     the profile song
+   - **lists**: `POST /api/lists/from-playlist` reads the playlist
+     (client credentials, first 100 tracks) and builds a PRIVATE list
+     (items carry title/artist/cover, `release_id` null) → lands on
+     the list's edit page. Doors: "Save as a list" under every embed,
+     and a paste box on top of /lists/new. Private-by-default is
+     deliberate: a 100-row import must not hit the community rail
+     until the person trims/ranks it.
+   - Ceiling: Spotify-OWNED editorial playlists 404 for dev-mode apps
+     (Nov 2024 API change) — user-made playlists work; the error
+     message says so.
+
 ### ✅ ALL MIGRATIONS THROUGH 034 ARE RUN (verified 2026-09-02)
 
 034 was run by Luca and **verified live against prod** with an

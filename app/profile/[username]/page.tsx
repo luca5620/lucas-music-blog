@@ -38,6 +38,7 @@ import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
 import { getUserPosts } from "@/lib/db/posts";
 import type { StreakIcon } from "@/components/profile/StreakIndicator";
 import ListCard from "@/components/lists/ListCard";
+import PlaylistEmbed from "@/components/playlists/PlaylistEmbed";
 import type { Metadata } from "next";
 import type {
   Profile,
@@ -571,6 +572,19 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               title={profile.profile_song_title}
               accentColor={accentColor}
             />
+          )}
+
+          {/* Featured Spotify playlist (migration 035, Luca 2026-09-02):
+              the profile's own player, under the profile song. Visitors
+              can save it as one of their lists straight from here. */}
+          {profile.featured_playlist_id && (
+            <div className="pt-2">
+              <PlaylistEmbed
+                playlistId={profile.featured_playlist_id}
+                title={`${profile.display_name || profile.username}'s playlist`}
+                label="Featured Playlist"
+              />
+            </div>
           )}
         </div>
 

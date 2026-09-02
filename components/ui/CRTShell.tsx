@@ -20,7 +20,7 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
           blobs carry .liquid-still — painted but parked, so the
           alive ring costs a fraction of the GPU (see globals.css). */}
       <div className="crt-bezel-liquid" aria-hidden="true">
-        <div className="liquid-blob liquid-a w-[340px] h-[340px] -top-24 left-[10%]" />
+        <div className="liquid-blob liquid-breathe liquid-a w-[340px] h-[340px] -top-24 left-[10%]" />
         <div className="liquid-blob liquid-b w-[300px] h-[300px] -top-20 right-[18%]" />
         <div className="liquid-blob liquid-c w-[320px] h-[320px] top-[14%] -left-28" />
         <div className="liquid-blob liquid-still liquid-a w-[500px] h-[500px] top-[8%] left-1/3" />
@@ -64,7 +64,7 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
                 Phone sizes are untouched — small screens keep the
                 exact wash Luca already approved (and mobile web holds
                 these still anyway, so no extra GPU cost there). */}
-            <div className="liquid-blob liquid-a w-[560px] h-[560px] md:w-[800px] md:h-[800px] -top-40 -left-32" />
+            <div className="liquid-blob liquid-breathe liquid-a w-[560px] h-[560px] md:w-[800px] md:h-[800px] -top-40 -left-32" />
             <div className="liquid-blob liquid-c w-[500px] h-[500px] md:w-[720px] md:h-[720px] top-[55vh] left-1/3" />
             <div className="liquid-blob liquid-b w-[480px] h-[480px] md:w-[700px] md:h-[700px] top-[115vh] -right-40" />
             <div className="liquid-blob liquid-a w-[520px] h-[520px] md:w-[760px] md:h-[760px] top-[190vh] left-1/2" />

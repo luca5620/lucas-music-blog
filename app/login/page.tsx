@@ -322,7 +322,7 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center mb-8 space-y-2">
             <h1 className="crt-title text-3xl">SIGN IN</h1>
-            <p className="text-text-secondary text-sm">welcome back to Peak Music Reviews</p>
+            <p className="text-text-secondary text-sm">Welcome to Peak Music Reviews</p>
           </div>
 
           {/* Middleware sent an admin here for the code upgrade */}

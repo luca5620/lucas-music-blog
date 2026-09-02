@@ -90,6 +90,32 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 🗣️ NEXT — what we talk about when we pick this back up (2026-09-02 night)
+
+Nothing is on a branch. Everything below is either a conversation or
+a device check, in the order it makes sense:
+
+1. **Device pass on tonight's work** (none of it eyeballed on the
+   phone yet): breathing top blob, inline verified check, new
+   sign-up/sign-in flow (does the keyboard rise on each step?),
+   Apple Music player (Settings → Preview Player → Apple, open a
+   release), playlist embeds on a post + profile, the new logged-out
+   home.
+2. **EU availability + DSA trader status** — when the designer's
+   1.1.1 screenshots arrive. Needed before selling subscriptions in
+   the EU; also decides whether the app is listed in EU storefronts.
+3. **Marketing plan** — channels, cadence, what Luca does each week.
+   Google Play is un-parked as a marketing task; screenshots wait on
+   the designer.
+4. **SEO deep-dive** — still owed: GSC query data (Luca's hands), the
+   H1 font-repaint LCP fix, JS audit, per-artist unreleased hubs.
+5. **1.1.1** — what goes in it: new screenshots + everything shipped
+   since 1.1 (playlists, Apple Music, auth flow, home).
+6. Parked, revisit later: Musicboard import (scraper link below),
+   Peak Music rebrand + icon, debates changes (Luca has ideas, ask),
+   Your Taste revamp (he's brainstorming), monetization build-out
+   (approved plan, dormant until real bills).
+
 - **2026-09-02 (MacBook): ✅ 1.1 APPROVED — review freeze OVER, the
   holding branch is merged to main, deployed, and VERIFIED on prod
   (link click → TUNING panel shows again).** What shipped: the

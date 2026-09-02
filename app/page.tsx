@@ -20,8 +20,11 @@ import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import QuickAccessStrip from "@/components/home/QuickAccessStrip";
 import UpcomingDrops from "@/components/home/UpcomingDrops";
 import Reveal from "@/components/home/Reveal";
-import RatedThisWeek from "@/components/home/RatedThisWeek";
+import RatedWall from "@/components/home/RatedWall";
 import HowItWorks from "@/components/home/HowItWorks";
+import LiveRooms from "@/components/home/LiveRooms";
+import Unreleased from "@/components/home/Unreleased";
+import MakeItYours from "@/components/home/MakeItYours";
 import ClosingCta from "@/components/home/ClosingCta";
 import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
@@ -109,24 +112,9 @@ export default async function Home() {
    LOGGED OUT — the test-card splash
    ============================================================ */
 
-/** One VHS-labeled feature card on the splash. */
-const FEATURES = [
-  {
-    label: "RATE ANYTHING",
-    body: "Every album and single on Spotify, plus the Genius deep catalog — unreleased tracks, leaks, and loosies included. If it exists, you can rate it.",
-    emoji: "📼",
-  },
-  {
-    label: "LIVE ROOMS & DEBATES",
-    body: "Release-night chat rooms with track-by-track reactions, and two-sided debates where you pick a side and argue it out.",
-    emoji: "📺",
-  },
-  {
-    label: "A PROFILE THAT'S YOURS",
-    body: "CRT themes, showcases you arrange yourself, verified badges. Your taste, your channel.",
-    emoji: "🖥️",
-  },
-];
+/* The three VHS feature cards (RATE ANYTHING / LIVE ROOMS & DEBATES /
+   A PROFILE THAT'S YOURS) grew into full sections on 2026-09-02:
+   Unreleased, LiveRooms, MakeItYours — see components/home. */
 
 function Splash() {
   return (
@@ -188,68 +176,41 @@ function Splash() {
         <div className="scan-bar" />
       </section>
 
-      {/* ===== The scroll (Luca 2026-09-02, Resonate-style pacing):
-             each module eases in as it arrives — Reveal — and every
-             one shares the HomeSection header skeleton. Hero copy is
-             untouched. No listening-club block: the live rooms are
-             ours and they're in step 03 + ON AIR. ===== */}
+      {/* ===== A separate page, not the dashboard (Luca 2026-09-02,
+             Resonate-style): no feed modules down here — the
+             dashboard's Dropping Soon / reviews / posts / releases
+             are for members. This is the pitch, section by section,
+             each easing in as it arrives (Reveal) and each wearing
+             the same HomeSection header. Hero copy untouched. ===== */}
 
-      {/* Rated this week — the cover wall, first thing after the hero */}
+      {/* The cover ticker — what the community rated */}
       <Reveal>
         <Suspense fallback={null}>
-          <RatedThisWeek />
+          <RatedWall />
         </Suspense>
       </Reveal>
-
-      {/* ===== Feature cards — the three VHS labels, staggered in ===== */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {FEATURES.map((f, i) => (
-          <Reveal key={f.label} delay={i * 110}>
-            <div className="panel-xbox p-5 space-y-3 hover-glow relative overflow-hidden h-full">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl" aria-hidden="true">{f.emoji}</span>
-                <span className="vhs-label text-sm">{f.label}</span>
-              </div>
-              <p className="text-sm text-text-secondary leading-relaxed">{f.body}</p>
-              <div className="scan-bar" style={{ animationDelay: `${i * 0.8}s` }} />
-            </div>
-          </Reveal>
-        ))}
-      </section>
 
       <Reveal>
         <HowItWorks />
       </Reveal>
 
-      <div className="divider-glow" />
-
-      {/* Dropping Soon rides the splash too (Luca 2026-08-26): the
-          countdowns + release-page links lead straight to the live
-          rooms, and that's the pitch. canAdd=false hides the
-          paste-a-link box — adding needs an account. */}
+      {/* Live release rooms — their own section (not a club) */}
       <Reveal>
         <Suspense fallback={null}>
-          <UpcomingDrops canAdd={false} />
+          <LiveRooms />
         </Suspense>
       </Reveal>
 
-      {/* Even logged out, show the community pulse so the site feels
-          alive — reviews FIRST (Luca: greet people with the takes),
-          then posts, then the release wall */}
+      {/* Unreleased — the wedge */}
       <Reveal>
         <Suspense fallback={null}>
-          <DiscoveryFeed />
+          <Unreleased />
         </Suspense>
       </Reveal>
+
+      {/* Customization — themes, showcases, the preview player… */}
       <Reveal>
-        <Suspense fallback={null}>
-          <PostsFeed />
-        </Suspense>
-      </Reveal>
-      <Reveal>
-        <Suspense fallback={null}>
-          <ReleasesFeed />
-        </Suspense>
+        <MakeItYours />
       </Reveal>
 
       {/* The close — same glow + liquid as the hero, so the page ends

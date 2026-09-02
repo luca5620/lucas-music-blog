@@ -565,3 +565,34 @@ export async function listReleases(opts?: {
     artistName: names.get(r.primary_artist_id) ?? null,
   }));
 }
+
+/**
+ * Unreleased records currently on the platform (is_unreleased = true —
+ * Genius deep-catalog imports and by-hand adds), newest first, with
+ * the primary artist's name. Feeds the Unreleased section on the
+ * logged-out home.
+ */
+export async function listUnreleasedReleases(limit = 8): Promise<
+  { id: string; slug: string; title: string; cover_image: string | null; artist: string }[]
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("releases")
+    .select("id, slug, title, cover_image, artists!releases_primary_artist_id_fkey(name)")
+    .eq("is_unreleased", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error || !data) return [];
+
+  type Row = {
+    id: string;
+    slug: string;
+    title: string;
+    cover_image: string | null;
+    artists: { name: string } | { name: string }[] | null;
+  };
+  return (data as unknown as Row[]).map((r) => {
+    const a = Array.isArray(r.artists) ? r.artists[0] : r.artists;
+    return { id: r.id, slug: r.slug, title: r.title, cover_image: r.cover_image, artist: a?.name ?? "" };
+  });
+}

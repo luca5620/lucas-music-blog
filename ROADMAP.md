@@ -90,13 +90,20 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-### ⚠️ MIGRATION 034 IS WAITING ON THE SQL EDITOR (2026-09-02)
+### ✅ ALL MIGRATIONS THROUGH 034 ARE RUN (verified 2026-09-02)
 
-`supabase/migrations/034-releases-by-review-count.sql` — run it in
-the Supabase SQL Editor. Until it runs, the /releases **Popularity**
-tab silently falls back to Spotify's imported `popularity` column
-(the old behaviour) instead of sorting by how many reviews a release
-actually has. Nothing else in the batch below needs it.
+034 was run by Luca and **verified live against prod** with an
+anon-key probe: `list_releases_by_review_count` resolves, and the
+rows come back with review counts in descending order. Nothing is
+waiting on the SQL Editor.
+
+Worth remembering: when the RPC was missing, `listReleases` fell
+back to the old `popularity` column **silently** — the Popularity
+tab looked unchanged rather than broken, and Luca reported it as "the
+filter still doesn't work". The anon-key REST probe is what settled
+it in one call (PGRST202 = function not in the schema cache). If a
+future migration adds a fallback like this, probe before debugging
+the app code.
 
 ### 🔧 /releases fixes — shipped 2026-09-02 (commit after 3843cb7)
 
@@ -114,7 +121,7 @@ all live:
    1000-row cap applies per page of 24 releases — becomes a batch RPC
    if the catalog ever gets there.
 2. **Popularity = most-reviewed by this community**, not Spotify's
-   score. Needs migration 034 (see above).
+   score. Migration 034 is run and the ordering is verified in prod.
 3. **Dropping Soon holds a release for 24h after it drops** — the
    stamp reads OUT NOW for that last day, then it's Recent only. The
    grace window lines up exactly with the Eastern calendar day, so
@@ -146,9 +153,9 @@ his phone before submitting: splash, light status bar, no safe-area
 bars, offline cold launch, Google AND Apple sign-in end to end, push
 delivery + deep link.
 
-**ALL MIGRATIONS THROUGH 033 ARE RUN** (Luca, 2026-09-02, last words
-before clearing the chat). Follow-feed notifications are live.
-**034 landed after that and is NOT run yet** — see the block above.
+**ALL MIGRATIONS THROUGH 034 ARE RUN** (033 per Luca; 034 verified
+against prod, 2026-09-02). Follow-feed notifications are live.
+Nothing waits on the SQL Editor.
 
 **When 1.1 is approved, check on the live app:** the buttons show,
 sign-in works on a Store build (production APNs/sandbox both verified,

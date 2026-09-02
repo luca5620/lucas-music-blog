@@ -19,6 +19,7 @@ import TabBar from "@/components/ui/TabBar";
 import PushRegistration from "@/components/ui/PushRegistration";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
+import NavigationPending from "@/components/ui/NavigationPending";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { WebSiteSchema } from "@/app/schema";
@@ -188,7 +189,10 @@ export default async function RootLayout({
           {/* Everything renders on the tube */}
           <CRTShell>
             <Navigation />
-            {children}
+            {/* Instant tap feedback, in the slot app/loading.tsx used
+                to occupy — see the component header for why that file
+                had to go (it made every notFound() a soft 404). */}
+            <NavigationPending>{children}</NavigationPending>
             {/* Bug-report hatch on every page */}
             <SiteFooter />
           </CRTShell>

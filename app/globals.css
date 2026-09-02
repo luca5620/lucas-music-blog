@@ -28,6 +28,11 @@
   --text-secondary: #9a9a9e;
   --text-muted: #5a5a60;
 
+  /* Halo behind copy that crosses the chrome disc — see .hero-copy.
+     Points AWAY from the text: dark here, light on the light
+     themes, so the letters always sit on their own contrast. */
+  --hero-halo: rgba(0, 0, 0, 0.85);
+
   /* Accent — themeable. Default: CRT blue (Xbox-360-ring lineage). */
   --accent-primary: #1e90ff;
   --accent-glow: #4dacff;
@@ -196,6 +201,8 @@
   --text-primary: #3a3a3e;
   --text-secondary: #6f6f76;
   --text-muted: #9a9aa2;
+  /* Dark copy on a light panel wants a LIGHT halo. */
+  --hero-halo: rgba(255, 255, 255, 0.9);
   --border-subtle: #dcdce2;
   --border-medium: #c6c6ce;
 }
@@ -225,6 +232,7 @@
   --text-primary: #1c1c1c;
   --text-secondary: #4a4a44;
   --text-muted: #7c7c72;
+  --hero-halo: rgba(255, 255, 255, 0.9);
   --border-subtle: #c9c5b2;
   --border-medium: #a8a492;
 }
@@ -2039,6 +2047,22 @@ body {
     1.5px 0 0 rgba(255, 45, 85, 0.35),
     -1.5px 0 0 rgba(0, 200, 255, 0.35),
     0 0 24px rgba(var(--accent-rgb), 0.25);
+}
+
+/* Copy that shares space with the chrome disc. The disc's bright
+   ring lands at almost exactly --text-secondary's value (#9a9a9e on
+   the default theme), so hero subtitles washed out precisely where
+   they crossed the chrome (Luca 2026-09-02: "hard to read due to
+   them being generally gray"). Two cheap fixes at once — step the
+   copy up to the primary text color, and give it a halo pointing
+   away from the text so it reads over ANY part of the disc, bright
+   ring or dark groove. Buttons never had the problem: they bring
+   their own background. */
+.hero-copy {
+  color: var(--text-primary);
+  text-shadow:
+    0 1px 2px var(--hero-halo),
+    0 0 10px var(--hero-halo);
 }
 
 .pixel-text {

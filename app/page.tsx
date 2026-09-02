@@ -160,7 +160,7 @@ function Splash() {
           every album. every leak. every argument.
         </p>
 
-        <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
+        <p className="hero-copy max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
           The music social network. Rate what you hear, build lists, follow
           people with taste (or terrible taste — more fun to argue with),
           and pile into live rooms when the album of the year drops at

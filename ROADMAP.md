@@ -90,6 +90,50 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### ⚠️ MIGRATION 034 IS WAITING ON THE SQL EDITOR (2026-09-02)
+
+`supabase/migrations/034-releases-by-review-count.sql` — run it in
+the Supabase SQL Editor. Until it runs, the /releases **Popularity**
+tab silently falls back to Spotify's imported `popularity` column
+(the old behaviour) instead of sorting by how many reviews a release
+actually has. Nothing else in the batch below needs it.
+
+### 🔧 /releases fixes — shipped 2026-09-02 (commit after 3843cb7)
+
+Luca was browsing and found the page misreporting itself. Four fixes,
+all live:
+
+1. **"be the first to review" on releases that had reviews.**
+   `app/releases/page.tsx` mapped six fields and passed no stats at
+   all, so every card hit the invitation branch and every poster read
+   UNRATED. Now `getReleaseListStats()` resolves the whole page in
+   three queries (not 24 RPCs) and the detailed card has three states:
+   rated → community average, reviewed-but-unrated → "Unrated / N
+   reviews", untouched → the invitation. Artist names ride along.
+   Ceiling to know: the stats fetch is row-based, so PostgREST's
+   1000-row cap applies per page of 24 releases — becomes a batch RPC
+   if the catalog ever gets there.
+2. **Popularity = most-reviewed by this community**, not Spotify's
+   score. Needs migration 034 (see above).
+3. **Dropping Soon holds a release for 24h after it drops** — the
+   stamp reads OUT NOW for that last day, then it's Recent only. The
+   grace window lines up exactly with the Eastern calendar day, so
+   the existing `todayEastern()` SQL filter still matches;
+   `isDroppingSoonEligible()` in `lib/upcoming.ts` is the one rule.
+   Applies to BOTH shelves (home + /releases) — they share
+   `listUpcomingReleases`.
+4. **Still-coming sorts ahead of already-dropped** on the shelf, so
+   yesterday's news can't crowd out what people are waiting for.
+
+Plus, same session: the /reviews rating filter chips render **10s**
+not **10S** (the chips are `uppercase`), and `.hero-copy` in
+globals.css fixes gray hero subtitles washing out where they cross
+the chrome disc — primary text color + a theme-aware halo
+(`--hero-halo`, dark by default, light on theme-wii/limewire).
+
+**None of this has been eyeballed on device yet** — Luca reported the
+bugs from the live site, the fixes are build-verified only.
+
 ### 🚀 STATE AS OF 2026-09-02 (Luca cleared the chat here — resume from this)
 
 **1.1 (build 2) is SUBMITTED TO APP REVIEW** — status Waiting for
@@ -104,7 +148,7 @@ delivery + deep link.
 
 **ALL MIGRATIONS THROUGH 033 ARE RUN** (Luca, 2026-09-02, last words
 before clearing the chat). Follow-feed notifications are live.
-Nothing waits on the SQL Editor.
+**034 landed after that and is NOT run yet** — see the block above.
 
 **When 1.1 is approved, check on the live app:** the buttons show,
 sign-in works on a Store build (production APNs/sandbox both verified,

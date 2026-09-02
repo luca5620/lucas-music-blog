@@ -22,8 +22,10 @@ export default function PageHero({
     <section className="panel-xbox-glow p-6 sm:p-8 relative isolate overflow-hidden">
       <LiquidAtmosphere />
       {/* The disc spins behind the right side of the band — compact
-          on phones, bigger as the box grows. The dark scrim over it
-          keeps gray text crossing the chrome readable. */}
+          on phones, bigger as the box grows. The scrim knocks the
+          chrome back; the subtitle's own .hero-copy halo does the
+          rest, since the scrim alone still left gray text washed out
+          against the bright ring (Luca 2026-09-02). */}
       <div
         className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
         aria-hidden="true"
@@ -36,7 +38,7 @@ export default function PageHero({
       <div className="space-y-3 text-center sm:text-left">
         <h1 className="crt-title text-3xl sm:text-4xl">{title}</h1>
         {sub && (
-          <p className="text-text-secondary text-sm max-w-xl mx-auto sm:mx-0">
+          <p className="hero-copy text-sm max-w-xl mx-auto sm:mx-0">
             {sub}
           </p>
         )}

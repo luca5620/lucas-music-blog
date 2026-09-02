@@ -49,10 +49,16 @@ export default function NavigationPending({
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
-      // Bubble phase on purpose: anything that calls preventDefault()
-      // (a link that opens a sheet, a handled tab tap) has already run,
-      // so we can tell a real navigation from a hijacked click.
-      if (event.defaultPrevented) return;
+      // NO defaultPrevented check — that was the bug that killed this
+      // component dead on arrival (Luca 2026-09-02: "we removed the
+      // tuning thing in general"). Next's <Link> calls preventDefault()
+      // on EVERY client-side navigation before pushing, so by the time
+      // this bubble listener runs, every internal link click looks
+      // "handled" and the panel never showed once, web or app. A click
+      // that was hijacked to do something non-navigational instead is
+      // almost always a same-path link (sheet openers, toggles), which
+      // the pathname guard below already skips — and the rare miss is
+      // cleaned up by the pathname-commit clear + the 8s failsafe.
       // Left button, unmodified — anything else opens a new tab.
       if (event.button !== 0) return;
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {

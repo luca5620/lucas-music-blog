@@ -90,6 +90,21 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-02 (MacBook): ⚠️ BRANCH `loading-feedback-fix` — MERGE TO
+  MAIN ONLY AFTER APPLE APPROVES 1.1.** Main is deliberately FROZEN
+  while the review is in flight (Luca: a live deploy mid-session has
+  bugged the app into web-view before; the reviewer must not see
+  that). The branch fixes the "tuning thing removed in general":
+  NavigationPending (loading.tsx's Sep 1 replacement) was DEAD ON
+  ARRIVAL — its `defaultPrevented` guard bails on every internal
+  click because Next's <Link> calls preventDefault() on every
+  client navigation, so the TUNING panel never showed once, web or
+  app. Guard removed (same-path + failsafe guards cover the rare
+  hijacked link); verified in dev: click → TUNING → page. The SEO
+  half of the Sep 1 change (no streaming boundary, real 404s) is
+  untouched. To ship after approval:
+  `git checkout main && git merge loading-feedback-fix && git push`.
+
 ### ✅ ALL MIGRATIONS THROUGH 034 ARE RUN (verified 2026-09-02)
 
 034 was run by Luca and **verified live against prod** with an

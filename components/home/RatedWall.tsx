@@ -64,7 +64,10 @@ export default async function RatedWall() {
           decoding="async"
           draggable={false}
         />
-        {/* Reviewer — avatar only, bottom-left */}
+        {/* Reviewer — avatar only, bottom-left. Size is INLINE on
+            purpose: `.poster img { width:100%; height:100% }` in
+            globals.css outranks a w-6 utility, which is how the
+            avatar ended up covering the artwork (Luca 2026-09-02). */}
         {p.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -72,10 +75,14 @@ export default async function RatedWall() {
             alt=""
             loading="lazy"
             decoding="async"
-            className="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full object-cover border border-white/40 shadow-[0_1px_6px_rgba(0,0,0,0.8)]"
+            style={{ width: 22, height: 22 }}
+            className="absolute bottom-1.5 left-1.5 rounded-full object-cover border border-white/50 shadow-[0_1px_6px_rgba(0,0,0,0.8)]"
           />
         ) : (
-          <span className="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-black/70 border border-white/40 inline-flex items-center justify-center text-[10px] font-bold text-accent-primary uppercase shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
+          <span
+            style={{ width: 22, height: 22 }}
+            className="absolute bottom-1.5 left-1.5 rounded-full bg-black/70 border border-white/50 inline-flex items-center justify-center text-[10px] font-bold text-accent-primary uppercase shadow-[0_1px_6px_rgba(0,0,0,0.8)]"
+          >
             {(p.username || "U")[0]}
           </span>
         )}

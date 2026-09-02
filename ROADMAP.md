@@ -71,6 +71,21 @@ aesthetic we already have and from saying no.
 **Waiting on:** better App Store screenshots — Luca is finding a
 graphic designer; he'll come back with that.
 
+**THREE CONVERSATIONS STILL OWED (Luca, 2026-09-02) — raise them,
+don't wait to be asked:**
+1. **SEO, properly** — the earlier "item 6" only listed leftovers
+   (H1 font-repaint LCP, JS audit, per-artist unreleased hubs, GSC
+   query data). He wants the actual conversation: what to rank for
+   now that the wedge is unreleased, and a plan.
+2. **EU market availability** — is the App Store listing even
+   offered in EU storefronts, and what it takes: Apple's EU trader
+   status / DSA disclosure (missing it gets apps pulled from EU
+   stores), GDPR posture (privacy policy, consent, data-processing
+   answers, Supabase region is us-west-1), age-rating differences.
+3. **A marketing plan** — the Strategy section above is the
+   direction; he wants it turned into an actual plan with channels,
+   cadence and what he does each week.
+
 ---
 
 ## ⏳ In progress

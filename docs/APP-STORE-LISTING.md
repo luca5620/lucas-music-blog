@@ -11,7 +11,7 @@ Field limits are noted; all copy below fits.
 |---|---|
 | Platform | iOS |
 | Name (30 chars max) | `Peak Music Reviews` (18 ✓) |
-| Subtitle (30 chars max) | `Rate, debate, discover music` (28 ✓) |
+| Subtitle (30 chars max) | `Rate music, even unreleased` (28 ✓ — changed with 1.1, 2026-09-02; names the thing no competitor has) |
 | Bundle ID | `com.peakmusicreviews.app` (must match Xcode) |
 | SKU | `pmr-001` |
 | Primary language | English (U.S.) |
@@ -63,7 +63,7 @@ Field limits are noted; all copy below fits.
 
 ## Keywords (100 chars max, comma-separated, no spaces needed)
 
-`music,album,review,rate,social,lists,vinyl,unreleased,leaks,debate,live,charts,rap,pop,indie` (95 ✓)
+`albums,rating,social,lists,leaks,debate,charts,rap,indie,musicboard,rateyourmusic,aoty,discover` (99 ✓ — 1.1, 2026-09-02: competitor names added so refugees find us; `music`/`unreleased` dropped because the name + subtitle already carry them)
 
 ## URLs
 

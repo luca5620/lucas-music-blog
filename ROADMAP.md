@@ -40,7 +40,7 @@ anywhere — it's the clone tell. Brand names win this category
 (Letterboxd, Discogs, RYM). The rebrand to plain **Peak Music** with a
 better icon is NEAR-FUTURE, timed with the marketing ramp — Luca's
 call on when. Until then the listing stays "Peak Music Reviews".
-1.1 ships with subtitle "Rate albums, even unreleased" + competitor
+1.1 ships with subtitle "Rate music, even unreleased" + competitor
 terms in the keyword field.
 
 **Marketing = go where a community already is, don't broadcast:**

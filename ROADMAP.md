@@ -90,27 +90,17 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-- **2026-09-02 (MacBook): ⚠️ BRANCH `loading-feedback-fix` is THE
-  HOLDING BRANCH for ALL work while Apple reviews 1.1 — every session
-  on either machine commits HERE, never to main, until the approval
-  email lands.** Main is deliberately FROZEN while the review is in
-  flight (Luca: a live deploy mid-session has bugged the app into
-  web-view before; the reviewer must not see that). Start sessions
-  with `git checkout loading-feedback-fix && git pull`. Keep the
-  branch building green — the post-approval merge deploys everything
-  at once. ALSO HOLD hand-run Supabase migrations that change live
-  behavior (the DB is production for the reviewer's session too);
-  purely additive ones are OK if truly needed. First thing on this
-  branch — the "tuning thing removed in general" fix:
-  NavigationPending (loading.tsx's Sep 1 replacement) was DEAD ON
-  ARRIVAL — its `defaultPrevented` guard bails on every internal
-  click because Next's <Link> calls preventDefault() on every
-  client navigation, so the TUNING panel never showed once, web or
-  app. Guard removed (same-path + failsafe guards cover the rare
-  hijacked link); verified in dev: click → TUNING → page. The SEO
-  half of the Sep 1 change (no streaming boundary, real 404s) is
-  untouched. To ship after approval:
-  `git checkout main && git merge loading-feedback-fix && git push`.
+- **2026-09-02 (MacBook): ✅ 1.1 APPROVED — review freeze OVER, the
+  holding branch is merged to main, deployed, and VERIFIED on prod
+  (link click → TUNING panel shows again).** What shipped: the
+  NavigationPending fix — loading.tsx's Sep 1 replacement was dead
+  on arrival (its `defaultPrevented` guard bailed on every internal
+  click because Next's <Link> preventDefaults every client
+  navigation, so the TUNING feedback never showed once, web or
+  app). Guard removed; the Sep 1 SEO half (real 404s) untouched.
+  The `loading-feedback-fix` branch is deleted. STANDING PRACTICE
+  for future review windows: freeze main, hold all work + behavior-
+  changing migrations on a branch, merge on approval.
 
 ### ✅ ALL MIGRATIONS THROUGH 034 ARE RUN (verified 2026-09-02)
 

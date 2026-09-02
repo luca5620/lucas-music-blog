@@ -104,6 +104,21 @@ don't wait to be asked:**
 
 ### ✅ ALL MIGRATIONS THROUGH 036 ARE RUN (Luca, 2026-09-02 late)
 
+### 🏠 Logged-out home rework — MERGED 2026-09-02 (Luca: "this is gold")
+
+Its own page now, Resonate-style pacing, hero untouched, NO feed
+modules below (Dropping Soon / reviews / posts / releases are
+dashboard-only). Sections under `components/home`: RatedWall (all
+reviews, one tile per record, 22px avatar bottom-left + rating
+bottom-right, CSS marquee that pauses on hover), HowItWorks,
+LiveRooms (pitch + drawn room: noobmaster69 / luca / you /
+champagnepapi + real ON AIR posters), Unreleased (leak / countdown /
+by-hand + real unreleased posters via `listUnreleasedReleases`),
+MakeItYours (themes, showcases, Spotify-or-Apple player, badges,
+song + playlist, Your Taste), ClosingCta. Reveal = one-shot
+IntersectionObserver ease-in. Gotcha logged: `.poster img` forces
+100% size on any nested img — size overlays inline.
+
 ### 🔐 Sign up / sign in rework — MERGED 2026-09-02 (Luca approved on localhost)
 
 One question per screen (`components/auth/AuthShell.tsx`): logo,

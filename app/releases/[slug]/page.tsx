@@ -115,7 +115,7 @@ async function DescriptionBlock({
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const release = await getReleaseBySlug(slug);
-  if (!release) return { title: "Release Not Found" };
+  if (!release) notFound(); // real 404, not a soft one — see app/not-found.tsx
 
   const [artist, stats] = await Promise.all([
     getArtistById(release.primary_artist_id),

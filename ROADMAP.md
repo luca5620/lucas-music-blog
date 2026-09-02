@@ -100,9 +100,45 @@ tomorrow."* Raise these; don't wait to be asked:
   no cover rating badge).
 - **Lint-error backlog** (~11 pre-existing: setState-in-effect,
   Date.now-in-render).
-- **Site-wide soft 404s** — root `app/loading.tsx` streams a 200
-  before any notFound() runs. Only worked around in generateMetadata
-  so far; the real fix is still open.
+- **Site-wide soft 404s — MEASURED 2026-09-01, and it's worse than
+  we thought.** Tested against a real production build (`npm start` +
+  curl, not the dev server). Findings:
+  1. The diagnosis was right: with `app/loading.tsx` present, EVERY
+     missing page answers **200** — releases, profiles, artists,
+     posts, debates, lists, reviews. Delete that one file and all
+     seven answer a real **404**. Nothing else in the tree matters
+     (checked: Suspense boundaries, force-dynamic, dynamic segments,
+     the middleware — none of them change the outcome).
+  2. **The generateMetadata workaround does NOT work.** Moving the
+     check up there was believed to beat the flush because "metadata
+     resolves earlier". It doesn't: Next 16 streams metadata
+     alongside the page, so the loading shell is already out the door
+     with its 200. Verified by putting notFound() in metadata on all
+     seven routes — still 200, with or without a Googlebot UA.
+  3. **Therefore the dead-review 308 shipped on 2026-08-31 has never
+     fired.** `/reviews/<a-release-slug-with-no-review>` returns 200
+     and renders not-found; `curl -L` reports zero redirects. So the
+     echoes-of-silence GSC impressions Luca was trying to rescue are
+     still landing nowhere. The code is correct — it just never gets
+     to run before the response is committed.
+  **The trade-off, which is Luca's call:** `loading.tsx` is what
+  makes a tap feel instant, and losing it was described as the worst
+  mobile feel-issue we ever fixed. Three ways out:
+  (a) delete `app/loading.tsx` — correct 404s everywhere, instant
+      feedback gone site-wide;
+  (b) keep it only on list pages via route groups — detail pages (the
+      hot path: tap a card → /releases/[slug]) lose the feedback;
+  (c) **replace it with client-side navigation feedback** — a small
+      root-layout client component that shows the same TUNING… on
+      link-tap and clears on pathname change. Keeps the feel on every
+      route AND gets real 404s. Recommended; needs eyeballing on
+      device because it's an overlay rather than an in-place swap.
+  Shipped meanwhile (safe, and it stops being a no-op the moment
+  (a)/(b)/(c) lands): the existence check now lives in
+  generateMetadata on all seven routes, and **`app/not-found.tsx`
+  finally exists** — until today a genuine 404 (an unrouted path,
+  which does answer 404) rendered Next's bare white default page
+  instead of anything that looked like the site.
 - **SEO leftovers**: H1 font-repaint LCP fix, JS audit, per-artist
   unreleased hubs, and the GSC query data (his hands). ⛔ Comparison
   pages stay dead — do not re-propose.

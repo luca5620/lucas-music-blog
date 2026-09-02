@@ -42,7 +42,7 @@ export async function generateMetadata({
   if (!review) {
     const release = await getReleaseBySlug(slug);
     if (release) permanentRedirect(`/releases/${slug}`);
-    return { title: "Review Not Found" };
+    notFound(); // real 404, not a soft one — see app/not-found.tsx
   }
 
   const desc =

@@ -38,9 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const artist = await getArtistBySlug(slug);
 
-  if (!artist) {
-    return { title: "Artist Not Found" };
-  }
+  if (!artist) notFound(); // real 404, not a soft one — see app/not-found.tsx
 
   const description =
     artist.bio?.replace(/\s+/g, " ").trim().slice(0, 160) ??

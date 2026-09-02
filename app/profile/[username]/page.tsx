@@ -137,9 +137,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
   const profile = await getProfileByUsername(username);
 
-  if (!profile) {
-    return { title: "User Not Found" };
-  }
+  if (!profile) notFound(); // real 404, not a soft one — see app/not-found.tsx
 
   return {
     title: profile.display_name ?? profile.username,

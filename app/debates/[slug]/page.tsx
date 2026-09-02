@@ -26,7 +26,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const debate = await getDebateBySlug(slug);
-  if (!debate) return { title: "Debate not found" };
+  if (!debate) notFound(); // real 404, not a soft one — see app/not-found.tsx
   return {
     title: debate.title,
     description:

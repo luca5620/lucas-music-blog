@@ -34,7 +34,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  if (!post) return { title: "Post Not Found" };
+  if (!post) notFound(); // real 404, not a soft one — see app/not-found.tsx
 
   const desc =
     post.body.length > 160 ? `${post.body.slice(0, 157)}…` : post.body;

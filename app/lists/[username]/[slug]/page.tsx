@@ -18,7 +18,7 @@ export async function generateMetadata({
 }: PageParams): Promise<Metadata> {
   const { username, slug } = await params;
   const list = await getListBySlug(username, slug);
-  if (!list) return { title: "List Not Found" };
+  if (!list) notFound(); // real 404, not a soft one — see app/not-found.tsx
 
   const authorName = list.author.display_name || list.author.username;
   return {

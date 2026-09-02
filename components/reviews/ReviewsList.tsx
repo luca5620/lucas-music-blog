@@ -126,7 +126,16 @@ export default function ReviewsList({
               `}
               style={hex ? { "--btn-color": hex, color: isActive ? hex : undefined } as React.CSSProperties : undefined}
             >
-              {typeof rating === "number" ? `${rating}s` : rating}
+              {typeof rating === "number" ? (
+                <>
+                  {rating}
+                  {/* Lowercase + a touch smaller: the chip is uppercase, which
+                      turned the plural into a shouty "10S" (Luca 2026-09-02). */}
+                  <span className="normal-case text-[0.8em]">s</span>
+                </>
+              ) : (
+                rating
+              )}
             </button>
           );
         })}

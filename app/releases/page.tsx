@@ -2,15 +2,16 @@
  * Releases List Page — Browsable archive of all releases.
  * Sort by Recent / Popularity / Alpha.
  *
- * Strategy: This list intentionally shows release-only info (cover, title,
- * type, year). Artist info is fetched on the detail page where a proper
- * join is done. This avoids N+1 queries here while we wait for a JOIN
- * variant of listReleases to land.
+ * Strategy: listReleases resolves the primary artist name, and one
+ * batched getReleaseListStats call covers the whole page's community
+ * stats (three queries for 24 cards, not 24 RPCs). Before that landed
+ * the grid rendered with no stats at all, so every card claimed to be
+ * unreviewed (Luca 2026-09-02).
  */
 
 import Link from "next/link";
 import type { Metadata } from "next";
-import { listReleases } from "@/lib/db/releases";
+import { listReleases, getReleaseListStats } from "@/lib/db/releases";
 import ReleasesIndexClient from "@/components/releases/ReleasesIndexClient";
 import DroppingSoonRail from "@/components/releases/DroppingSoonRail";
 import { BreadcrumbSchema } from "@/app/schema";
@@ -24,6 +25,8 @@ type SortOption = "recent" | "popularity" | "alpha";
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "recent", label: "Recent" },
+  // Popularity = most reviewed by the community (migration 034), not
+  // Spotify's popularity score (Luca 2026-09-02).
   { value: "popularity", label: "Popularity" },
   { value: "alpha", label: "A–Z" },
 ];
@@ -58,6 +61,7 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
     limit: PAGE_SIZE,
     offset,
   });
+  const stats = await getReleaseListStats(releases.map((r) => r.id));
 
   const hasNextPage = releases.length === PAGE_SIZE;
   const hasPrevPage = pageNum > 1;
@@ -135,14 +139,22 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
         /* View-switchable listing (detailed/posters/compact) — shares
            the same persisted preference as every other listing. */
         <ReleasesIndexClient
-          items={releases.map((release) => ({
-            id: release.id,
-            slug: release.slug,
-            title: release.title,
-            cover_image: release.cover_image,
-            release_type: release.release_type,
-            release_date: release.release_date,
-          }))}
+          items={releases.map((release) => {
+            const s = stats.get(release.id);
+            return {
+              id: release.id,
+              slug: release.slug,
+              title: release.title,
+              cover_image: release.cover_image,
+              release_type: release.release_type,
+              release_date: release.release_date,
+              artistName: release.artistName,
+              avgRating: s?.avg_rating ?? null,
+              reviewCount: s?.review_count ?? 0,
+              followerCount: s?.follower_count ?? 0,
+              lastActivityAt: s?.last_activity_at ?? null,
+            };
+          })}
         />
       )}
 

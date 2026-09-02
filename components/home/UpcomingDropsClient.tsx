@@ -9,7 +9,11 @@
  * Drops and the Community Feed. The three views are countdown
  * flavors of ReleaseViews' layouts: every one keeps the live-ticking
  * clock (that's the whole module), and none of them show rating
- * stamps — nothing here can have reviews yet.
+ * stamps — the point here is the clock, not the score.
+ *
+ * Items linger for 24 hours after they drop (the clock reads OUT NOW
+ * for that stretch) and sort behind anything still coming — see
+ * listUpcomingReleases, which both this and the /releases shelf use.
  */
 
 import Link from "next/link";

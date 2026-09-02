@@ -1,15 +1,21 @@
 /**
  * DroppingSoonRail — the "albums about to drop" shelf on /releases.
  *
- * Server component. Shows every catalog release with a FUTURE
- * release_date (the countdown albums people added by pasting a
- * Spotify link into catalog search), soonest first, as a horizontal
- * scroll of covers with a big day-countdown stamp. Each card links
- * to the release page, where the live room is already open — the
- * whole point is that the chatroom exists BEFORE the album does.
+ * Server component. Shows the countdown albums people added by
+ * pasting a Spotify link into catalog search, as a horizontal scroll
+ * of covers with a big ticking stamp. Each card links to the release
+ * page, where the live room is already open — the whole point is
+ * that the chatroom exists BEFORE the album does.
  *
- * Renders nothing when no upcoming releases exist, so the /releases
- * page looks exactly like before until someone adds one.
+ * The shelf holds a release until 24 hours after it drops, then lets
+ * go (Luca 2026-09-02) — the stamp flips to OUT NOW for that last
+ * day, and afterwards the release lives in Recent only. Ordering puts
+ * everything still coming ahead of everything already out, so a drop
+ * people are waiting for never gets pushed off by yesterday's.
+ * listUpcomingReleases owns both rules.
+ *
+ * Renders nothing when nothing qualifies, so the /releases page looks
+ * exactly like before until someone adds one.
  */
 
 import Link from "next/link";

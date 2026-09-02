@@ -54,6 +54,40 @@ export function isUpcoming(releaseDate: string | null | undefined): boolean {
   return !Number.isNaN(target) && target > Date.now();
 }
 
+/** True once the drop moment has passed — the mirror of isUpcoming,
+ *  minus the "unparseable date" case (a missing date never counts as
+ *  dropped). */
+export function hasDropped(releaseDate: string | null | undefined): boolean {
+  const target = easternMidnightUtcMs(releaseDate);
+  return !Number.isNaN(target) && Date.now() >= target;
+}
+
+/**
+ * How long a release lingers on the Dropping Soon shelf AFTER it
+ * drops (Luca 2026-09-02). Before this, a release vanished from the
+ * shelf the instant the clock hit zero, so a drop everyone was
+ * waiting for disappeared at exactly the moment people came looking
+ * for it. 24 hours of "OUT NOW", then it lives in Recent only —
+ * bounded, so the shelf stays room for what's actually coming.
+ */
+export const DROP_GRACE_MS = 86_400_000;
+
+/**
+ * True while a release belongs on the Dropping Soon shelf: still
+ * upcoming, OR dropped less than DROP_GRACE_MS ago.
+ *
+ * Note the window lines up exactly with the Eastern calendar day:
+ * the drop is 00:00 ET on release day and the grace runs to 00:00 ET
+ * the next day, so "eligible" == release_date >= today in ET. That's
+ * why the SQL side can still filter on todayEastern() alone.
+ */
+export function isDroppingSoonEligible(
+  releaseDate: string | null | undefined
+): boolean {
+  const target = easternMidnightUtcMs(releaseDate);
+  return !Number.isNaN(target) && Date.now() < target + DROP_GRACE_MS;
+}
+
 /**
  * Whole days (rounded up) from now until the drop moment.
  * Returns null when the date is missing or already past.

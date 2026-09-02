@@ -171,6 +171,7 @@ export default function ReleaseViews({
         const year = yearOf(item.release_date);
         const hasRating =
           typeof item.avgRating === "number" && !Number.isNaN(item.avgRating);
+        const reviewCount = item.reviewCount ?? 0;
         const ratingColor = hasRating ? getRatingHex(item.avgRating!) : "#1e90ff";
         const ratingClass = hasRating ? getRatingColor(item.avgRating!) : "";
 
@@ -226,10 +227,17 @@ export default function ReleaseViews({
             </div>
 
             <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
-              {/* Reviewed → the community's average (a plain mean over
-                  every published rating, so ten 10s and one 5 land near
-                  10 — each VOTE weighs the same, not each value).
-                  Untouched → the standing invitation. */}
+              {/* Three states, not two (Luca 2026-09-02: /releases was
+                  telling him to "be the first to review" releases that
+                  already had reviews — the page passed no stats at all,
+                  so every card fell into the invitation branch).
+                    · rated → the community's average (a plain mean over
+                      every published rating, so ten 10s and one 5 land
+                      near 10 — each VOTE weighs the same, not each
+                      value).
+                    · reviewed but unrated → say so; never claim nobody
+                      has been here.
+                    · untouched → the standing invitation. */}
               {hasRating ? (
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div
@@ -248,6 +256,15 @@ export default function ReleaseViews({
                     </span>
                   </span>
                 </div>
+              ) : reviewCount > 0 ? (
+                <span className="min-w-0">
+                  <span className="block pixel-text text-[10px] uppercase tracking-widest text-text-muted">
+                    Unrated
+                  </span>
+                  <span className="block text-xs text-text-muted">
+                    {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+                  </span>
+                </span>
               ) : (
                 <span className="text-xs text-text-muted italic">
                   be the first to review

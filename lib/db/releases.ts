@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { isUpcoming, todayEastern } from "@/lib/upcoming";
+import {
+  hasDropped,
+  isDroppingSoonEligible,
+  todayEastern,
+} from "@/lib/upcoming";
 import type {
   Profile,
   Release,
@@ -334,10 +338,12 @@ export async function listUpcomingReleases(limit = 12): Promise<
 > {
   const supabase = await createClient();
 
-  // Date filter at Eastern-day granularity (release day itself stays
-  // in the query), then the exact drop-moment check — midnight ET,
-  // via lib/upcoming — trims anything already out. This keeps a
-  // release on the shelf until the second it actually drops.
+  // Date filter at Eastern-day granularity, then the exact
+  // eligibility check from lib/upcoming. A release stays on the shelf
+  // through its whole release day in ET — the drop moment plus the
+  // 24h OUT NOW grace (Luca 2026-09-02) — and the two filters agree
+  // by construction: the grace window ends at 00:00 ET the next day,
+  // which is exactly when release_date drops below todayEastern().
   const { data, error } = await supabase
     .from("releases")
     .select("*, artists!releases_primary_artist_id_fkey(name, slug)")
@@ -353,12 +359,133 @@ export async function listUpcomingReleases(limit = 12): Promise<
       | { name: string; slug: string }[]
       | null;
   };
-  return (data as unknown as Row[])
-    .filter((r) => isUpcoming(r.release_date))
-    .map((r) => ({
-      ...r,
-      artists: Array.isArray(r.artists) ? r.artists[0] ?? null : r.artists,
-    }));
+  return (
+    (data as unknown as Row[])
+      .filter((r) => isDroppingSoonEligible(r.release_date))
+      .map((r) => ({
+        ...r,
+        artists: Array.isArray(r.artists) ? r.artists[0] ?? null : r.artists,
+      }))
+      // Still-coming first, already-dropped behind them. The SQL order
+      // (release_date asc) put today's drops at the very front, which
+      // would let yesterday's news crowd out what people are actually
+      // waiting for. sort() is stable, so soonest-first survives
+      // inside each group.
+      .sort(
+        (a, b) =>
+          Number(hasDropped(a.release_date)) -
+          Number(hasDropped(b.release_date))
+      )
+  );
+}
+
+/**
+ * Community stats for a whole PAGE of releases — review count, the
+ * community average, follower count, and room activity — in three
+ * queries instead of one get_release_stats RPC per row.
+ *
+ * Exists because /releases used to render its whole grid with no
+ * stats at all, so every card showed "be the first to review" and
+ * every poster read UNRATED even for releases with plenty of reviews
+ * (Luca 2026-09-02).
+ *
+ * The average is a plain mean over published ratings, matching
+ * get_release_stats' avg(rating): every VOTE weighs the same.
+ *
+ * Ceiling worth knowing: the reviews fetch is row-based, so PostgREST's
+ * default 1000-row cap applies. That's 1000 reviews across ONE page of
+ * releases (24 of them) before counts start under-reporting — if the
+ * catalog ever gets there, this wants to become a batch RPC.
+ */
+export interface ReleaseListStats {
+  review_count: number;
+  avg_rating: number | null;
+  follower_count: number;
+  last_activity_at: string | null;
+}
+
+export async function getReleaseListStats(
+  releaseIds: string[]
+): Promise<Map<string, ReleaseListStats>> {
+  const out = new Map<string, ReleaseListStats>();
+  if (releaseIds.length === 0) return out;
+
+  // Seed every id so callers can read the map without null checks.
+  for (const id of releaseIds) {
+    out.set(id, {
+      review_count: 0,
+      avg_rating: null,
+      follower_count: 0,
+      last_activity_at: null,
+    });
+  }
+
+  const supabase = await createClient();
+  const [reviews, follows, rooms] = await Promise.all([
+    supabase
+      .from("reviews")
+      .select("release_id, rating")
+      .in("release_id", releaseIds)
+      .eq("is_published", true),
+    supabase
+      .from("release_follows")
+      .select("release_id")
+      .in("release_id", releaseIds),
+    supabase
+      .from("release_rooms")
+      .select("release_id, last_activity_at")
+      .in("release_id", releaseIds),
+  ]);
+
+  // rating is numeric(3,1) NOT NULL in the schema, but PostgREST hands
+  // numerics back as strings and a null would poison the mean — so
+  // count the review either way and only average real numbers.
+  const sums = new Map<string, { total: number; n: number }>();
+  for (const row of (reviews.data ?? []) as {
+    release_id: string | null;
+    rating: number | string | null;
+  }[]) {
+    if (!row.release_id) continue;
+    const entry = out.get(row.release_id);
+    if (!entry) continue;
+    entry.review_count += 1;
+
+    const rating =
+      typeof row.rating === "string" ? Number(row.rating) : row.rating;
+    if (rating === null || rating === undefined || Number.isNaN(rating)) {
+      continue;
+    }
+    const acc = sums.get(row.release_id) ?? { total: 0, n: 0 };
+    acc.total += rating;
+    acc.n += 1;
+    sums.set(row.release_id, acc);
+  }
+  for (const [id, acc] of sums) {
+    const entry = out.get(id);
+    if (entry && acc.n > 0) entry.avg_rating = acc.total / acc.n;
+  }
+
+  for (const row of (follows.data ?? []) as { release_id: string | null }[]) {
+    if (!row.release_id) continue;
+    const entry = out.get(row.release_id);
+    if (entry) entry.follower_count += 1;
+  }
+
+  for (const row of (rooms.data ?? []) as {
+    release_id: string | null;
+    last_activity_at: string | null;
+  }[]) {
+    if (!row.release_id) continue;
+    const entry = out.get(row.release_id);
+    if (entry) entry.last_activity_at = row.last_activity_at;
+  }
+
+  return out;
+}
+
+/** A release row with its primary artist's name resolved. */
+export interface ReleaseListRow extends Release {
+  artistName: string | null;
 }
 
 export async function listReleases(opts?: {
@@ -366,39 +493,75 @@ export async function listReleases(opts?: {
   limit?: number;
   offset?: number;
   artistId?: string;
-}): Promise<Release[]> {
+}): Promise<ReleaseListRow[]> {
   const supabase = await createClient();
   const sort = opts?.sort ?? "recent";
   const limit = opts?.limit ?? 20;
   const offset = opts?.offset ?? 0;
 
-  let query = supabase.from("releases").select("*");
+  const byColumn = async (
+    column: "release_date" | "popularity" | "title"
+  ): Promise<Release[]> => {
+    let query = supabase.from("releases").select("*");
+    if (opts?.artistId) {
+      query = query.eq("primary_artist_id", opts.artistId);
+    }
+    query =
+      column === "title"
+        ? query.order("title", { ascending: true })
+        : query.order(column, { ascending: false, nullsFirst: false });
 
-  if (opts?.artistId) {
-    query = query.eq("primary_artist_id", opts.artistId);
+    const { data, error } = await query.range(offset, offset + limit - 1);
+    if (error || !data) return [];
+    return data as Release[];
+  };
+
+  let rows: Release[];
+  if (sort === "popularity") {
+    // "Popularity" means what the COMMUNITY did with a release —
+    // total published reviews — not Spotify's popularity score, which
+    // is what this tab used to sort by (Luca 2026-09-02). Ordering by
+    // an aggregate has to happen in SQL for pagination to be correct,
+    // hence the RPC from migration 034.
+    const { data, error } = await supabase.rpc(
+      "list_releases_by_review_count",
+      {
+        p_limit: limit,
+        p_offset: offset,
+        p_artist_id: opts?.artistId ?? null,
+      } as never
+    );
+    // Before 034 is applied the function doesn't exist — fall back to
+    // the old column order so the tab still returns a sane page
+    // instead of going blank.
+    rows =
+      !error && data ? (data as unknown as Release[]) : await byColumn("popularity");
+  } else {
+    rows = await byColumn(sort === "alpha" ? "title" : "release_date");
   }
 
-  switch (sort) {
-    case "recent":
-      query = query.order("release_date", {
-        ascending: false,
-        nullsFirst: false,
-      });
-      break;
-    case "popularity":
-      query = query.order("popularity", {
-        ascending: false,
-        nullsFirst: false,
-      });
-      break;
-    case "alpha":
-      query = query.order("title", { ascending: true });
-      break;
+  if (rows.length === 0) return [];
+
+  // Artist names in one extra query rather than a per-sort embed —
+  // the popularity path comes back from an RPC that can't carry a
+  // PostgREST join, so resolving them here keeps all three sorts
+  // rendering the same card.
+  const artistIds = [
+    ...new Set(rows.map((r) => r.primary_artist_id).filter(Boolean)),
+  ];
+  const names = new Map<string, string>();
+  if (artistIds.length > 0) {
+    const { data } = await supabase
+      .from("artists")
+      .select("id, name")
+      .in("id", artistIds);
+    for (const a of (data ?? []) as { id: string; name: string }[]) {
+      names.set(a.id, a.name);
+    }
   }
 
-  query = query.range(offset, offset + limit - 1);
-
-  const { data, error } = await query;
-  if (error || !data) return [];
-  return data as Release[];
+  return rows.map((r) => ({
+    ...r,
+    artistName: names.get(r.primary_artist_id) ?? null,
+  }));
 }

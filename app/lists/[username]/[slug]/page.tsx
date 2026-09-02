@@ -133,8 +133,23 @@ export default async function ListDetailPage({ params }: PageParams) {
       {/* --- Items: poster grid --- */}
       {list.items.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {list.items.map((item, index) => (
-            <div key={item.id} className="card-y2k p-3 space-y-2 overflow-hidden">
+          {list.items.map((item, index) => {
+            // Where this item goes (2026-09-02 — every item used to be
+            // a dead card). A normal item links to its release; a
+            // playlist import has no release_id yet, so it links to
+            // the resolver, which imports the album on first click and
+            // redirects to the same place. Neither = not a link.
+            const href = item.release_slug
+              ? `/releases/${item.release_slug}`
+              : item.spotify_album_id
+                ? `/releases/spotify/${item.spotify_album_id}`
+                : null;
+            const cardClass = `card-y2k p-3 space-y-2 overflow-hidden block${
+              href ? " hover-glow" : ""
+            }`;
+
+            const content = (
+              <>
               {/* Cover with a rank badge for ranked lists */}
               <div className="relative aspect-square rounded-lg overflow-hidden bg-bg-elevated border border-[rgba(255,255,255,0.1)] flex items-center justify-center">
                 {item.cover_image ? (
@@ -171,8 +186,19 @@ export default async function ListDetailPage({ params }: PageParams) {
                   {item.note}
                 </p>
               )}
-            </div>
-          ))}
+              </>
+            );
+
+            return href ? (
+              <Link key={item.id} href={href} className={cardClass}>
+                {content}
+              </Link>
+            ) : (
+              <div key={item.id} className={cardClass}>
+                {content}
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="panel-xbox p-8 text-center">

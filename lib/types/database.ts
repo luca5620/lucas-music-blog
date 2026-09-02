@@ -272,6 +272,10 @@ export interface ListItem {
   cover_image: string | null;
   note: string | null;
   position: number;
+  /** Set only on playlist-imported items (migration 037), which have
+      no release_id yet — it's what /releases/spotify/[id] resolves on
+      the first click. Absent until the migration runs. */
+  spotify_album_id?: string | null;
   created_at: string;
 }
 

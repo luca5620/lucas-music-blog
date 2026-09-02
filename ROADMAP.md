@@ -90,6 +90,42 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-02 (MacBook): three bug fixes — ⚠️ MIGRATION 037 TO RUN,
+  and Luca must RE-IMPORT his playlist list afterwards (see 3).**
+  1. **Google sign-in didn't take on mobile** ("doesn't recognize the
+     account until you click view profile, where it 404s, then back
+     and it works"). The app OAuth path finished with a client-side
+     `router.push` + `refresh` after exchangeCodeForSession; inside
+     the WebView the just-written session COOKIES weren't reliably in
+     play for the next render, so SSR still saw a logged-out request
+     (hence the /profile 404 on a username the client didn't have).
+     Now a hard `window.location.assign` — the same full document
+     load the web flow gets from /auth/callback's redirect. Web path
+     untouched.
+  2. **My Reviews on mobile**: the status/date/actions footer was one
+     rigid row, so the delete button (which GROWS into a confirm
+     prompt) ran off the card — now `flex-wrap`, actions `shrink-0`.
+     Dates site-wide go through the new `lib/dates.ts` `formatDate`:
+     "Sept 2, 2026", never "2026-01-01", and deliberately NOT
+     locale-formatted (that would reintroduce the 2/9-vs-9/2
+     confusion Luca is avoiding). It parses date-only strings by hand
+     because `new Date("2026-01-01")` is UTC midnight and would
+     render as Dec 31 in Pacific — verified both branches.
+  3. **List items were dead cards** — nothing on a list page linked
+     anywhere, hand-built or imported. Items with a release now link
+     to it (needed a `releases(slug)` embed on the items query).
+     Playlist imports have no release_id by design (100 tracks ≠ 100
+     album imports), so **migration 037** stores each track's
+     `spotify_album_id` and the new `GET /releases/spotify/[albumId]`
+     resolves it on first click: already-imported → straight
+     redirect; new → import-on-demand (auth required, since
+     catalog_import_release is granted to `authenticated`; logged-out
+     visitors bounce to /login?next= and land back on it). The import
+     route falls back to the old insert shape if 037 hasn't run.
+     ⚠️ Rows imported BEFORE 037 have a null album id and stay
+     unclickable — Luca should delete and re-import that list once
+     the migration is run.
+
 ### 🗣️ NEXT — what we talk about when we pick this back up (2026-09-02 night)
 
 Nothing is on a branch. Everything below is either a conversation or

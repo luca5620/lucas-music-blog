@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { getReviewsByUser } from "@/lib/db/reviews";
 import { getUserPosts } from "@/lib/db/posts";
 import { getRatingHex } from "@/lib/rating";
+import { formatDate } from "@/lib/dates";
 import Link from "next/link";
 import type { Metadata } from "next";
 import DeleteReviewButton from "@/components/reviews/DeleteReviewButton";
@@ -136,8 +137,14 @@ export default async function MyReviewsPage() {
                       </p>
                     )}
 
-                    {/* Footer: Status + Actions */}
-                    <div className="flex items-center gap-3 mt-3">
+                    {/* Footer: Status + Actions.
+                        flex-wrap (Luca 2026-09-02: "the delete button
+                        is cut off to the side" on mobile) — this was
+                        one rigid row, and the actions group, which
+                        GROWS when delete asks to confirm, ran off the
+                        card on a phone. Wrapped, the actions drop to
+                        their own right-aligned line instead. */}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
                       {/* Status Badge */}
                       {review.is_published ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
@@ -152,10 +159,10 @@ export default async function MyReviewsPage() {
                       )}
 
                       <span className="text-xs text-[#5a5a60] font-[family-name:var(--font-vt323)]">
-                        {review.review_date || review.created_at?.split("T")[0]}
+                        {formatDate(review.review_date || review.created_at)}
                       </span>
 
-                      <div className="ml-auto flex items-center gap-2">
+                      <div className="ml-auto flex items-center gap-2 shrink-0">
                         <Link
                           href={`/reviews/${review.slug}/edit`}
                           className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-accent-primary hover:bg-accent-primary/10 transition-colors font-[family-name:var(--font-heading)]"
@@ -228,7 +235,10 @@ export default async function MyReviewsPage() {
                     {post.body}
                   </p>
 
-                  <div className="flex items-center gap-3 mt-3">
+                  {/* Same wrap treatment as the reviews footer above —
+                      this row carries an extra video chip, so it ran
+                      out of width even sooner on a phone. */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
                     {/* Status badge — same green/yellow pair as reviews.
                         Old rows without the 024 column count as published. */}
                     {post.is_published !== false ? (
@@ -248,10 +258,10 @@ export default async function MyReviewsPage() {
                       </span>
                     )}
                     <span className="text-xs text-[#5a5a60] font-[family-name:var(--font-vt323)]">
-                      {post.created_at?.split("T")[0]}
+                      {formatDate(post.created_at)}
                     </span>
 
-                    <div className="ml-auto flex items-center gap-2">
+                    <div className="ml-auto flex items-center gap-2 shrink-0">
                       <Link
                         href={`/posts/${post.slug}/edit`}
                         className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-accent-primary hover:bg-accent-primary/10 transition-colors font-[family-name:var(--font-heading)]"

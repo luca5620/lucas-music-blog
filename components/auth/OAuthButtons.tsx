@@ -34,7 +34,6 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   appPlugin,
@@ -127,7 +126,6 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
   );
   const [busy, setBusy] = useState<Provider | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   // True from the moment a deep link lands until we've navigated. Our
   // own Browser.close() also fires "browserFinished", and without this
@@ -207,14 +205,24 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
       const flagged = (profile as Pick<Profile, "username_auto"> | null)
         ?.username_auto;
 
-      router.push(
-        flagged
-          ? `/welcome?next=${encodeURIComponent(destination)}`
-          : destination
-      );
-      router.refresh();
+      const target = flagged
+        ? `/welcome?next=${encodeURIComponent(destination)}`
+        : destination;
+
+      // HARD navigation, not router.push (Luca 2026-09-02: on mobile
+      // the account "wasn't recognized until you click view profile").
+      // exchangeCodeForSession just wrote the session COOKIES, but a
+      // client-side router.push inside the WebView renders the next
+      // page from the RSC cache/middleware without those cookies having
+      // reliably taken hold — so the nav, and every SSR read after it,
+      // still saw a logged-OUT request (hence the /profile 404 on a
+      // username the client didn't have yet). The web flow never hit
+      // this because it finishes via a full server redirect out of
+      // /auth/callback. A full document load here does the same: the
+      // WebView reloads, the cookies ride along, SSR sees the session.
+      window.location.assign(target);
     },
-    [router]
+    []
   );
 
   // App only: listen for the trip back. It lives here rather than

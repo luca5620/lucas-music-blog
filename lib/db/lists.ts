@@ -32,14 +32,27 @@ export interface ListSummary extends List {
 }
 
 /** A full list with its items, for the detail page. */
+/** A list item plus where clicking it should go, if anywhere. */
+export interface ListItemWithLink extends ListItem {
+  /** The joined release's slug — the direct link target. Null for
+      playlist imports that haven't been resolved into the catalog
+      yet; those fall back to spotify_album_id. */
+  release_slug: string | null;
+}
+
 export interface ListWithItems extends List {
   author: ListAuthor;
-  items: ListItem[];
+  items: ListItemWithLink[];
   like_count: number;
   viewer_has_liked: boolean;
 }
 
 /* --- Internal helpers --- */
+
+/** A list_items row as it comes back with the releases(slug) embed. */
+type ItemRow = ListItem & {
+  releases: { slug: string } | { slug: string }[] | null;
+};
 
 /**
  * Shape of a raw row when we select lists with joined profile,
@@ -178,9 +191,13 @@ export async function getListBySlug(
 
   // Items, like count, and (optionally) the viewer's like — in parallel.
   const [itemsRes, likesRes, viewerLikeRes] = await Promise.all([
+    // releases(slug) rides along so the page can LINK each item to its
+    // release (2026-09-02 — items used to render as dead cards). The
+    // embed is a left join: items with no release_id, and playlist
+    // imports that resolve lazily, just come back with releases null.
     supabase
       .from("list_items")
-      .select("*")
+      .select("*, releases(slug)")
       .eq("list_id", list.id)
       .order("position", { ascending: true }),
     supabase
@@ -204,7 +221,13 @@ export async function getListBySlug(
       display_name: author.display_name,
       avatar_url: author.avatar_url,
     },
-    items: (itemsRes.data ?? []) as ListItem[],
+    items: ((itemsRes.data ?? []) as unknown as ItemRow[]).map((row) => {
+      const { releases, ...item } = row;
+      // PostgREST hands an embed back as an object OR a one-element
+      // array depending on how it infers the relationship.
+      const joined = Array.isArray(releases) ? releases[0] ?? null : releases;
+      return { ...item, release_slug: joined?.slug ?? null };
+    }),
     like_count: likesRes.count ?? 0,
     viewer_has_liked: !!viewerLikeRes.data,
   };
@@ -292,6 +315,11 @@ export async function addListItem(input: {
   cover_image?: string | null;
   note?: string | null;
   position: number;
+  /** Playlist imports only (migration 037): the album this track came
+      from, so the item can resolve to a real release on first click.
+      Omit it entirely on a pre-037 database — sending an unknown
+      column fails the whole insert. */
+  spotify_album_id?: string | null;
 }): Promise<ListItem | null> {
   const supabase = await createClient();
   const { data, error } = await supabase

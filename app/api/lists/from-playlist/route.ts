@@ -104,8 +104,14 @@ export async function POST(request: Request) {
   // If the very first insert fails (RLS, schema), drop the empty list
   // rather than leave a husk behind.
   let position = 0;
+  // Migration 037 stores each track's album id so the item can resolve
+  // to a real release on first click. If that column isn't there yet,
+  // the first insert fails — fall back to the old shape for the whole
+  // import rather than losing the list (the items just stay unlinked,
+  // exactly as they were before 037).
+  let storeAlbumId = true;
   for (const t of snapshot.tracks) {
-    const item = await addListItem({
+    const base = {
       list_id: list.id,
       release_id: null,
       title: t.title,
@@ -113,7 +119,21 @@ export async function POST(request: Request) {
       cover_image: t.cover_image,
       note: null,
       position,
-    });
+    };
+
+    let item = await addListItem(
+      storeAlbumId && t.album_spotify_id
+        ? { ...base, spotify_album_id: t.album_spotify_id }
+        : base
+    );
+
+    if (!item && storeAlbumId && t.album_spotify_id) {
+      // Could be the missing column — retry once without it, and if
+      // THAT works, stop sending it for the rest of the playlist.
+      item = await addListItem(base);
+      if (item) storeAlbumId = false;
+    }
+
     if (!item && position === 0) {
       await deleteList(list.id);
       return NextResponse.json(

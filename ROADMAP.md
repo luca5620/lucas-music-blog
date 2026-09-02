@@ -9,6 +9,70 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## 🎯 Strategy — decided 2026-09-02 (Luca + Claude, post-1.1)
+
+**The situation.** Musicboard collapsed (Feb 2026) and left a displaced
+userbase. The space is now a pile of small "X: Rate & Review Music"
+apps, most vibecoded, none with traction — including us. The one
+that's bigger is **"Ratings: Rate & Review Music"** (web + iOS + Play):
+cluttered, filler everywhere, quality not there. Not a big threat, but
+some of our surface similarities were too close for comfort — the
+/social Leaderboard was removed for exactly that reason (it bit them
+off, and it was gimmicky anyway).
+
+**The decision: stop competing on rate-and-review.** It's a commodity;
+anyone builds it in a weekend, so it can never be the reason someone
+picks us. The competitor's clutter is them trying to out-feature a
+commodity. We don't follow.
+
+**The wedge is UNRELEASED MUSIC.** The most intense music-opinion
+community on earth is leak/unreleased culture (r/hiphopleaks, the leak
+Discords, the Carti-unreleased subculture), and it has no social home
+because every mainstream product is too legally cautious to touch it.
+We already draw the line right — metadata + ratings only, never files
+— which is what lets us serve them. A clone can't copy this in a
+weekend: it's a catalog + sourcing + legal-posture problem, not a
+feature. Second wedge: **release-night live rooms**, marketed as a
+weekly ritual, not just a feature.
+
+**Naming rule (standing):** never adopt "Rate & Review" phrasing
+anywhere — it's the clone tell. Brand names win this category
+(Letterboxd, Discogs, RYM). The rebrand to plain **Peak Music** with a
+better icon is NEAR-FUTURE, timed with the marketing ramp — Luca's
+call on when. Until then the listing stays "Peak Music Reviews".
+1.1 ships with subtitle "Rate albums, even unreleased" + competitor
+terms in the keyword field.
+
+**Marketing = go where a community already is, don't broadcast:**
+1. Musicboard refugees — post /musicboard-alternative where they're
+   asking (Reddit threads on Musicboard dying, their Discord, Twitter
+   "musicboard alternative"). They don't need convincing; they need
+   to know we exist and won't die on them.
+2. Leak / unreleased communities — go with the unreleased angle ONLY.
+3. Release nights — one big drop a week, promote its live room in the
+   release-day thread + hashtag.
+
+**Google Play is un-parked** — Luca raised it (competitor has it, we
+don't). The 12-testers-for-14-days closed test is the FIRST MARKETING
+TASK in disguise: "be an early Android tester" is exactly the ask to
+make in a leak Discord / refugee thread, and it converts strangers
+into invested early users. Two problems, one post.
+
+**Product sequence:** (1) ship 1.1 ✓ → (2) post the Musicboard page
+where refugees are (Luca's hands, a day) → (3) **make unreleased the
+front door** — a dedicated section + the per-artist unreleased hubs
+on the SEO backlog since August (this is the product bet, the one
+thing a competitor can't copy) → (4) recruit Play testers from the
+leak communities while (3) builds.
+
+**Don't:** chase the competitor's feature list. Premium comes from the
+aesthetic we already have and from saying no.
+
+**Waiting on:** better App Store screenshots — Luca is finding a
+graphic designer; he'll come back with that.
+
+---
+
 ## ⏳ In progress
 
 ### 📦 THE 1.1 PATCH — the next native build (Luca 2026-09-01)

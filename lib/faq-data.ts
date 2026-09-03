@@ -53,12 +53,12 @@ export function getMusicboardFAQs(appStoreLive: boolean): FAQItem[] {
   {
     question: "Is Musicboard shutting down?",
     answer:
-      "Nothing official has been announced, but the signals are not good: TechCrunch reported in February 2026 that Musicboard had suffered repeated multi-day outages with no communication from its founders, the Android app is no longer available on Google Play, and the iOS app has not shipped an update since May 2025. Users have organized community campaigns asking for data exports.",
+      "Nothing official has been announced. What is public: TechCrunch reported in February 2026 that Musicboard had a stretch of multi-day outages, the Android app is not currently available on Google Play, and the iOS app has not shipped an update since May 2025. Some users have asked for a data export so they can keep their ratings either way.",
   },
   {
     question: "What is the best Musicboard alternative?",
     answer:
-      "Peak Music Reviews is the closest like-for-like replacement: 0–10.0 decimal album ratings, written reviews, lists, and social profiles — plus things Musicboard never had, like live release-night chat rooms, two-sided debates, a For You feed, and a catalog that includes unreleased tracks via Genius. It is free, actively updated, and works fully on the web as well as iOS. RateYourMusic and Album of the Year are solid web-only databases if you mainly want charts rather than a social app.",
+      "Peak Music Reviews is the closest like-for-like replacement: 0–10.0 decimal album ratings, written reviews, lists, and social profiles — plus a few things Musicboard doesn't offer, like live release-night chat rooms, two-sided debates, a For You feed, and a catalog that includes unreleased tracks via Genius. It is free, actively updated, and works fully on the web as well as iOS. RateYourMusic and Album of the Year are solid web-only databases if you mainly want charts rather than a social app.",
   },
   {
     question: "Can I import my Musicboard ratings into Peak Music Reviews?",

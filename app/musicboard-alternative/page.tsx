@@ -2,20 +2,25 @@
  * /musicboard-alternative — the switcher landing page.
  *
  * Why this page exists (SEO sprint, 2026-08-24): Musicboard — the
- * only real app-first competitor — is visibly failing (TechCrunch,
- * Feb 2026: multi-day outages, Android app pulled from Google Play,
- * no iOS update since May 2025). Its displaced community is searching
- * "musicboard alternative" / "is musicboard shutting down", and that
- * SERP is nothing but thin aggregator sites. This page is the honest,
- * factual answer — and the funnel into Peak.
+ * only real app-first competitor — has stalled (TechCrunch, Feb 2026:
+ * multi-day outages; Android app not on Google Play; no iOS update
+ * since May 2025). Its users are searching "musicboard alternative" /
+ * "is musicboard shutting down", and that SERP is nothing but thin
+ * aggregator sites. This page is the honest, factual answer — and the
+ * funnel into Peak.
  *
  * Content rules (they ARE the strategy — keep them on edits):
  *  - Answer-first: the direct answer lives in the first ~100 words,
  *    with hard dates. AI engines (ChatGPT/Perplexity/AI Overviews)
  *    quote exactly that kind of opening.
  *  - Facts stay attributed and dated ("as of August 2026", TechCrunch
- *    link). Never trash-talk beyond what is reported — credibility is
- *    the whole play. Update the dates if the story changes.
+ *    link). Never trash-talk — state what is reported, neutrally, and
+ *    no more (toned down 2026-09-03 on Luca's ask: no "failing", no
+ *    "never had", no "way out"). Credibility is the whole play. Update
+ *    the dates if the story changes.
+ *  - Table must FIT a phone: .panel-xbox is overflow:hidden (unlayered,
+ *    so it beats Tailwind's overflow-x-auto) — a min-width table just
+ *    gets clipped. Fixed column widths + wrapping, no side-scroll.
  *  - The competitor table includes options we DON'T win (RYM/AOTY
  *    depth) — an honest comparison ranks and gets cited; an ad
  *    does not.
@@ -36,7 +41,7 @@ import { APP_STORE_URL, isAppStoreLive } from "@/lib/app-store";
 export const metadata: Metadata = {
   title: "Musicboard Alternative — what to switch to in 2026",
   description:
-    "Musicboard hasn't updated its iOS app since May 2025 and its Android app is gone from Google Play. Peak Music Reviews is the free, actively-built alternative: 0–10 album ratings, reviews, lists, live release rooms and debates — on web and iOS.",
+    "Looking for a Musicboard alternative? Peak Music Reviews is a free, actively-built option: 0–10 album ratings, reviews, lists, live release rooms and debates — on web and iOS. An honest comparison, including the options that aren't us.",
   alternates: {
     canonical: "https://peakmusicreviews.com/musicboard-alternative",
   },
@@ -66,11 +71,11 @@ function buildComparison(appLive: boolean): { feature: string; peak: Cell; mb: C
     { feature: "Posts + For You feed", peak: true, mb: false },
     { feature: "Unreleased / leaked tracks in catalog", peak: "Via Genius deep library", mb: false },
     { feature: "Profile customization", peak: "Themes, showcases, favorites", mb: "Basic" },
-    { feature: "Full web app", peak: true, mb: "Limited — app-first" },
-    { feature: "iOS app", peak: appLive ? "On the App Store" : "Work in progress", mb: "Last updated May 2025" },
-    { feature: "Android", peak: "Future release coming soon", mb: "Removed from Google Play" },
+    { feature: "Full web app", peak: true, mb: "App-first" },
+    { feature: "iOS app", peak: appLive ? "On the App Store" : "Work in progress", mb: "Last update May 2025" },
+    { feature: "Android", peak: "Planned", mb: "Not currently on Google Play" },
     { feature: "Price", peak: "Core free — patron perks planned", mb: "Free + Pro subscription" },
-    { feature: "Actively developed", peak: "Updates ship weekly", mb: "No updates since May 2025" },
+    { feature: "Update cadence", peak: "Weekly", mb: "Paused since May 2025" },
   ];
 }
 
@@ -135,10 +140,10 @@ export default async function MusicboardAlternativePage() {
         <p className="text-text-primary leading-relaxed text-sm sm:text-base">
           <strong>The short answer:</strong> Peak Music Reviews is the closest
           like-for-like Musicboard replacement — album ratings on a 0–10.0
-          scale, written reviews, lists, and social profiles — and it adds
-          what Musicboard never had: live release-night chat rooms, two-sided
-          debates, a For You feed, and a catalog that includes unreleased
-          tracks. It&apos;s free, works fully on the web
+          scale, written reviews, lists, and social profiles — plus a few
+          things Musicboard doesn&apos;t offer: live release-night chat rooms,
+          two-sided debates, a For You feed, and a catalog that includes
+          unreleased tracks. It&apos;s free, works fully on the web
           {appLive ? (
             <>
               {" "}and on{" "}
@@ -159,8 +164,8 @@ export default async function MusicboardAlternativePage() {
         </p>
         <p className="text-text-secondary leading-relaxed text-sm">
           As for Musicboard itself: as of August 2026 its iOS app hasn&apos;t
-          been updated since May 2025, its Android app is no longer on Google
-          Play, and{" "}
+          been updated since May 2025, its Android app isn&apos;t currently on
+          Google Play, and{" "}
           <a
             href="https://techcrunch.com/2026/02/09/so-whats-going-on-with-musicboard/"
             target="_blank"
@@ -169,9 +174,9 @@ export default async function MusicboardAlternativePage() {
           >
             TechCrunch reported
           </a>{" "}
-          repeated multi-day outages with no communication from its founders.
-          Nothing official says it&apos;s shutting down — but its community
-          has been openly organizing for a way out.
+          a stretch of multi-day outages earlier this year. Nothing official
+          says it&apos;s shutting down, and it may well pick back up — but
+          plenty of its users are looking for a second home in the meantime.
         </p>
       </section>
 
@@ -182,19 +187,24 @@ export default async function MusicboardAlternativePage() {
           <span className="label-xbox">Peak Music Reviews vs Musicboard</span>
         </div>
 
-        {/* Wide table scrolls inside its own box on phones — the page
-            itself must never scroll sideways. */}
-        <div className="panel-xbox overflow-x-auto">
-          <table className="w-full text-sm min-w-[560px]">
+        {/* Fits the phone: fixed column widths, text wraps. No
+            min-width — the panel clips instead of scrolling. */}
+        <div className="panel-xbox">
+          <table className="w-full table-fixed text-xs sm:text-sm">
+            <colgroup>
+              <col className="w-[36%]" />
+              <col className="w-[32%]" />
+              <col className="w-[32%]" />
+            </colgroup>
             <thead>
               <tr className="border-b border-border-subtle">
-                <th className="text-left p-3 pixel-text text-xs uppercase tracking-widest text-text-muted font-normal">
+                <th className="text-left p-2 sm:p-3 pixel-text text-[10px] sm:text-xs uppercase tracking-widest text-text-muted font-normal">
                   Feature
                 </th>
-                <th className="text-left p-3 pixel-text text-xs uppercase tracking-widest text-accent-glow font-normal">
-                  Peak Music Reviews
+                <th className="text-left p-2 sm:p-3 pixel-text text-[10px] sm:text-xs uppercase tracking-widest text-accent-glow font-normal">
+                  Peak
                 </th>
-                <th className="text-left p-3 pixel-text text-xs uppercase tracking-widest text-text-muted font-normal">
+                <th className="text-left p-2 sm:p-3 pixel-text text-[10px] sm:text-xs uppercase tracking-widest text-text-muted font-normal">
                   Musicboard
                 </th>
               </tr>
@@ -205,11 +215,11 @@ export default async function MusicboardAlternativePage() {
                   key={row.feature}
                   className="border-b border-border-subtle last:border-0"
                 >
-                  <td className="p-3 text-text-secondary">{row.feature}</td>
-                  <td className="p-3">
+                  <td className="p-2 sm:p-3 align-top text-text-secondary break-words">{row.feature}</td>
+                  <td className="p-2 sm:p-3 align-top break-words">
                     <CellValue value={row.peak} accent />
                   </td>
-                  <td className="p-3">
+                  <td className="p-2 sm:p-3 align-top break-words">
                     <CellValue value={row.mb} />
                   </td>
                 </tr>
@@ -232,7 +242,7 @@ export default async function MusicboardAlternativePage() {
         </div>
         <div className="card-y2k p-5 space-y-3 text-sm text-text-secondary leading-relaxed">
           <p>
-            Straight truth: Musicboard has no public data export, so there&apos;s
+            Musicboard doesn&apos;t offer a public data export, so there&apos;s
             no automatic importer — from us or anyone else. Rebuilding by hand
             is faster than it sounds:
           </p>
@@ -314,7 +324,7 @@ export default async function MusicboardAlternativePage() {
       {/* ===== CTA ===== */}
       <section className="panel-xbox-glow p-6 sm:p-8 text-center space-y-4 relative overflow-hidden">
         <p className="pixel-text text-lg sm:text-xl text-accent-glow">
-          Your taste deserves a platform that&apos;s still being built.
+          Bring your taste. We&apos;re just getting started.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
           <Link href="/signup" className="btn-y2k btn-y2k-primary">

@@ -168,3 +168,28 @@ Takeaways:
    AlternativeTo (alternative to Musicboard, RYM, AOTY, Letterboxd),
    Product Hunt, SaaSHub, Slant, Crunchbase, Wikidata.
 6. Email achriom.com and wavemusic.app about their listicles.
+
+## Directory copy (paste-ready, 2026-09-03)
+
+Use the SAME wording everywhere — consistency across sources is what
+lets an assistant state the one sentence with confidence.
+
+**Name:** Peak Music Reviews
+**Tagline (≤60 chars):** Rate albums, leaks and all. Live rooms on release night.
+**One-liner:** A free music social network: rate albums and songs 0–10, write reviews, build lists, join live release-night rooms and two-sided debates. Web + iOS. Unreleased music included.
+**Short description (~300 chars):** Peak Music Reviews is a free music social network and review app. Members rate albums and songs from 0 to 10.0, write reviews, build lists, join live chat rooms when an album drops, and vote in two-sided debates. The catalog covers all of Spotify plus Genius's library, so unreleased and leaked songs can be rated by metadata (never files). Web and iOS; Android in closed testing.
+**Website:** https://peakmusicreviews.com
+**App Store:** https://apps.apple.com/us/app/peak-music-reviews/id6803279876
+**Pricing:** Free
+**Platforms:** Web, iOS (Android in testing)
+**Categories:** Music, Social Network, Reviews & Ratings
+**Alternative to (AlternativeTo / SaaSHub):** Musicboard, Rate Your Music, Album of the Year, Letterboxd, Last.fm
+**Tags:** music reviews, album ratings, letterboxd for music, musicboard alternative, unreleased music, release night, music debates
+
+**Product Hunt maker comment:** Hi PH. I built Peak because every music rating app pretends leaks and unreleased music don't exist, and every release night happens in 40 separate threads. Peak catalogs unreleased tracks by metadata so you can rate them next to official releases, gives every upcoming album a countdown and a live room, and lets you settle arguments in two-sided debates with a scoreboard. Profiles are skinnable like console dashboards (PS2, Xbox, Wii, LimeWire). Free, web + iOS, Android in testing. Solo dev, I read everything.
+
+**Wikidata item:** label "Peak Music Reviews"; description "music social network and review app"; instance of: website (Q35127), mobile app (Q620615); official website: https://peakmusicreviews.com; App Store app ID: 6803279876; inception: 2026; genre/main subject: music.
+
+**Listicle email (achriom.com, wavemusic.app):**
+Subject: One missing from your album-rating apps list
+Body: Hi — I read your "best album rating apps" piece and wanted to flag one you don't have: Peak Music Reviews (peakmusicreviews.com, free, web + iOS). It does the Letterboxd-for-music basics (0–10 ratings, reviews, lists, profiles) and three things none of the others on your list do: it catalogs unreleased and leaked tracks by metadata so they can be rated next to official releases, every upcoming album gets a countdown and a live chat room on release night, and there are two-sided debates with a live vote. Happy to send screenshots or a walkthrough if it's useful. Thanks — Luca, the developer.

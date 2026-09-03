@@ -394,10 +394,12 @@ pending (parked, his call).
   first redeploy missed it (env scope), the second took —
   `/<key>.txt` serves the key, api.indexnow.org answers 202, and the
   whole sitemap was submitted in one batch. From here every new
-  review / release page pings itself. **LUCA NEXT: Bing Webmaster
-  Tools (import from GSC → submit sitemap → URL inspection), then
-  AlternativeTo / Product Hunt / SaaSHub / Wikidata / Crunchbase,
-  then email achriom.com + wavemusic.app about their listicles.**
+  review / release page pings itself. **✅ BING DONE (Luca, same
+  night): sitemap submitted on both Bing and Google, 98 discovered on
+  each, the four key URLs inspected. LUCA NEXT: AlternativeTo /
+  Product Hunt / SaaSHub / Slant / Crunchbase / Wikidata (paste-ready
+  copy in docs/AI-SEARCH.md "Directory copy"), then email achriom.com
+  + wavemusic.app about their listicles.**
 
 - **2026-09-03 (Windows): LOGGED-OUT HOME COPY TRIMMED** (Luca: "cut
   down the wordiness in the home page and have it give you all the

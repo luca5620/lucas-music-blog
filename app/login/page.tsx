@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useLocationSearch } from "@/lib/useLocationSearch";
 import OAuthButtons from "@/components/auth/OAuthButtons";
 import AuthShell, { ContinueButton } from "@/components/auth/AuthShell";
 import type { Profile } from "@/lib/types/database";
@@ -53,10 +54,26 @@ export default function LoginPage() {
   const [resendNote, setResendNote] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
-  // Set when the middleware bounced an admin here (?verify=admin):
-  // their session predates the code requirement.
-  const [adminNotice, setAdminNotice] = useState(false);
   const router = useRouter();
+
+  // ?verify=admin / ?error=oauth — read from the raw URL (through a
+  // useSyncExternalStore hook, so no setState-in-effect and no
+  // Suspense boundary the way useSearchParams would demand).
+  //   verify=admin: the middleware bounced an admin here because their
+  //     session predates the code requirement → show the notice.
+  //   error=oauth: a Google/Apple hand-back failed (a plain cancel
+  //     comes back clean, with nothing to explain) → show a message
+  //     until the user does something that clears errors.
+  const search = useLocationSearch();
+  const urlParams = new URLSearchParams(search);
+  const adminNotice = urlParams.get("verify") === "admin";
+  const oauthFailed = urlParams.get("error") === "oauth";
+  const [oauthDismissed, setOauthDismissed] = useState(false);
+  const shownError =
+    error ??
+    (oauthFailed && !oauthDismissed
+      ? "That sign-in didn't come back through — try again, or use your email and password."
+      : null);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -64,22 +81,14 @@ export default function LoginPage() {
     return () => clearTimeout(t);
   }, [resendCooldown]);
 
-  // ?verify=admin / ?error=oauth — read from the raw URL instead of
-  // useSearchParams so this client page needs no Suspense boundary.
-  // ?error=oauth means a Google/Apple hand-back failed (a plain
-  // cancel comes back clean, with nothing to explain).
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("verify") === "admin") setAdminNotice(true);
-    if (params.get("error") === "oauth") {
-      setError(
-        "That sign-in didn't come back through — try again, or use your email and password."
-      );
-    }
-  }, []);
+  /** Clear whatever error is showing — ours, or the one from the URL. */
+  function clearError() {
+    setError(null);
+    setOauthDismissed(true);
+  }
 
   function go(next: Step) {
-    setError(null);
+    clearError();
     setStep(next);
   }
 
@@ -87,7 +96,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    clearError();
     setNeedsConfirmation(false);
     setLoading(true);
 
@@ -263,7 +272,7 @@ export default function LoginPage() {
           go("password");
           setCode("");
         }}
-        error={error}
+        error={shownError}
       >
         <form onSubmit={handleVerifyCode}>
           <input
@@ -309,7 +318,7 @@ export default function LoginPage() {
         helper="Sign in to Peak Music Reviews."
         steps={DOTS}
         step={0}
-        error={error}
+        error={shownError}
         footer={footer}
       >
         {/* Middleware sent an admin here for the code upgrade */}
@@ -345,7 +354,7 @@ export default function LoginPage() {
         steps={DOTS}
         step={1}
         onBack={() => go("door")}
-        error={error}
+        error={shownError}
         footer={footer}
       >
         <form
@@ -389,7 +398,7 @@ export default function LoginPage() {
         go("identifier");
         setNeedsConfirmation(false);
       }}
-      error={error}
+      error={shownError}
       footer={footer}
     >
       {/* Unconfirmed email — explain + offer a resend */}

@@ -11,7 +11,7 @@
  * avoids a server/client hydration mismatch.
  */
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useIsNativeApp } from "@/lib/useIsNativeApp";
 
 export type ReviewView = "detailed" | "posters" | "compact";
@@ -36,21 +36,53 @@ export function useModuleLimit(view: ReviewView): number {
 const STORAGE_KEY = "pmr-review-view";
 const VALID: ReviewView[] = ["detailed", "posters", "compact"];
 
-export function useReviewView(): [ReviewView, (v: ReviewView) => void] {
-  const [view, setView] = useState<ReviewView>("detailed");
+/* ─── The view preference as an external store ───
+   localStorage is an outside system, so the preference is read through
+   useSyncExternalStore instead of "useState + read it in an effect".
+   Server snapshot = the default, so SSR and the hydrating render
+   agree; the saved choice applies right after hydration (same visible
+   behaviour as before, one render pass cheaper). */
 
-  useEffect(() => {
+// In-memory copy of the choice: what every toggle on the page agrees
+// on, and the fallback when localStorage refuses (private mode) —
+// the toggle still works for this page, it just isn't remembered.
+let memoryView: ReviewView | null = null;
+const viewListeners = new Set<() => void>();
+
+function readSavedView(): ReviewView {
+  if (memoryView) return memoryView;
+  try {
     const saved = localStorage.getItem(STORAGE_KEY) as ReviewView | null;
-    if (saved && VALID.includes(saved)) setView(saved);
-  }, []);
+    if (saved && VALID.includes(saved)) return saved;
+  } catch {
+    /* storage refused — default */
+  }
+  return "detailed";
+}
+
+function subscribeView(onChange: () => void) {
+  viewListeners.add(onChange);
+  // Another tab changing the preference shows up here too.
+  window.addEventListener("storage", onChange);
+  return () => {
+    viewListeners.delete(onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+const getServerView = (): ReviewView => "detailed";
+
+export function useReviewView(): [ReviewView, (v: ReviewView) => void] {
+  const view = useSyncExternalStore(subscribeView, readSavedView, getServerView);
 
   function change(v: ReviewView) {
-    setView(v);
+    memoryView = v;
     try {
       localStorage.setItem(STORAGE_KEY, v);
     } catch {
-      /* private mode etc. — the toggle still works for this page */
+      /* private mode etc. — memoryView keeps the toggle working */
     }
+    for (const notify of viewListeners) notify();
   }
 
   return [view, change];

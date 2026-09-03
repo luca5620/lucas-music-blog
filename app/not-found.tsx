@@ -49,7 +49,7 @@ export default function NotFound() {
       </p>
 
       <p className="text-sm text-text-secondary max-w-sm">
-        There's nothing at this address. It may have been deleted, or the
+        There&apos;s nothing at this address. It may have been deleted, or the
         link that brought you here is wrong.
       </p>
 

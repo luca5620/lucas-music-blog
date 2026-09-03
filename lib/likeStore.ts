@@ -28,7 +28,7 @@
  * fresher optimistic state.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 /** What every like button renders from. */
 export interface LikeState {
@@ -130,21 +130,33 @@ export function useLikeState(
 ): { liked: boolean; count: number; write: (next: LikeState) => void } {
   const key = likeKey(kind, id);
 
-  // Lazy initializer runs once per component instance: seed the store
-  // (no-op if another button already did — first writer wins) and
-  // start local state from whatever the store holds.
-  const [state, setState] = useState<LikeState>(() =>
-    seedLike(key, { liked: initialLiked, count: initialCount })
+  // The store IS an external system, so the hook reads it through
+  // useSyncExternalStore (2026-09-03; it used to be useState + an
+  // effect that caught up and subscribed — one wasted render and a
+  // setState-in-effect lint error).
+  //
+  //  - subscribe: the store's per-key listener set. React's callback
+  //    takes no arguments, so the state the store passes is ignored —
+  //    React re-reads the snapshot itself.
+  //  - snapshot: seedLike() — first writer wins, so it returns the
+  //    existing entry if another button got there first, else the
+  //    value it just stored. Both are stable object references until
+  //    setLike() writes a fresh one, which is exactly what makes React
+  //    re-render (and never loop).
+  //  - server snapshot: the props, as one memoised object, so SSR
+  //    renders what the server fetched and never touches the Map
+  //    (seedLike guards that too — see its comment).
+  const fallback = useMemo<LikeState>(
+    () => ({ liked: initialLiked, count: initialCount }),
+    [initialLiked, initialCount]
   );
-
-  useEffect(() => {
-    // Catch up first: another instance may have written between our
-    // initial render and this effect running (effects run after paint).
-    const current = getLike(key);
-    if (current) setState(current);
-    // Then stay in sync for as long as we're mounted.
-    return subscribeLike(key, setState);
-  }, [key]);
+  const subscribe = useCallback(
+    (onChange: () => void) => subscribeLike(key, onChange),
+    [key]
+  );
+  const getSnapshot = useCallback(() => seedLike(key, fallback), [key, fallback]);
+  const getServerSnapshot = useCallback(() => fallback, [fallback]);
+  const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   // Stable identity so buttons can list it in their own deps safely.
   const write = useCallback((next: LikeState) => setLike(key, next), [key]);

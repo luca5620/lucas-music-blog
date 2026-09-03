@@ -33,6 +33,8 @@ import ChatPanel, {
 import LiveBadge from "@/components/rooms/LiveBadge";
 import ShimmerLines from "@/components/ui/ShimmerLines";
 import { hapticTap } from "@/lib/native";
+import { useHydrated } from "@/lib/useHydrated";
+import { useVisualViewport } from "@/lib/useVisualViewport";
 import type {
   ReactionCountRow,
   ViewerReactionRow,
@@ -85,7 +87,12 @@ function LiveRoomSheet({
   initialReactionCounts,
   initialViewerReactions,
 }: Props) {
-  const [mounted, setMounted] = useState(false);
+  // The bar/sheet portal to document.body: the release panel's CRT
+  // chrome creates transform/filter stacking contexts that would
+  // turn position:fixed into position:absolute-in-the-panel. So
+  // nothing renders until hydration is done (a store read, not a
+  // mounted-flag effect).
+  const mounted = useHydrated();
   const [open, setOpen] = useState(false);
   // Live head-count for the collapsed bar (Luca 2026-08-28: rooms
   // show PEOPLE, not comment counts). Relayed up from PresencePile
@@ -94,37 +101,14 @@ function LiveRoomSheet({
   const [present, setPresent] = useState(0);
   // Keyboard mode: composer focused → sheet fills the top instead.
   const [kb, setKb] = useState(false);
-  // The visible area above the keyboard, in layout-viewport coords.
-  const [vvBox, setVvBox] = useState<{ top: number; height: number } | null>(
-    null
-  );
+  // While typing, glue the sheet to the visual viewport so it fills
+  // exactly the space above the keyboard, wherever iOS pans it. The
+  // viewport is an external system, so it's read through a
+  // useSyncExternalStore hook that only listens while `kb` is on —
+  // null the rest of the time (and on the server).
+  const vvBox = useVisualViewport(kb);
   const sheetRef = useRef<HTMLDivElement>(null);
   const blurTimer = useRef<number | null>(null);
-
-  // The bar/sheet portal to document.body: the release panel's CRT
-  // chrome creates transform/filter stacking contexts that would
-  // turn position:fixed into position:absolute-in-the-panel.
-  useEffect(() => setMounted(true), []);
-
-  // While typing, glue the sheet to the visual viewport so it fills
-  // exactly the space above the keyboard, wherever iOS pans it.
-  useEffect(() => {
-    if (!kb) {
-      setVvBox(null);
-      return;
-    }
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const measure = () =>
-      setVvBox({ top: vv.offsetTop, height: vv.height });
-    measure();
-    vv.addEventListener("resize", measure);
-    vv.addEventListener("scroll", measure);
-    return () => {
-      vv.removeEventListener("resize", measure);
-      vv.removeEventListener("scroll", measure);
-    };
-  }, [kb]);
 
   useEffect(
     () => () => {

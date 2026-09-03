@@ -44,14 +44,22 @@ interface PageProps {
   searchParams: Promise<{
     sort?: string;
     page?: string;
+    /** "1" = only unreleased records (Luca 2026-09-03). */
+    unreleased?: string;
   }>;
 }
 
 export default async function ReleasesPage({ searchParams }: PageProps) {
   const sp = await searchParams;
+  const unreleased = sp.unreleased === "1";
   const rawSort = sp.sort;
+  // Unreleased has no community-popularity order (the RPC can't
+  // filter), so that tab is hidden while the filter is on and a
+  // pasted ?sort=popularity falls back to Recent.
   const sort: SortOption =
-    rawSort === "popularity" || rawSort === "alpha" ? rawSort : "recent";
+    (rawSort === "popularity" && !unreleased) || rawSort === "alpha"
+      ? rawSort
+      : "recent";
 
   const pageNum = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const offset = (pageNum - 1) * PAGE_SIZE;
@@ -60,14 +68,16 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
     sort,
     limit: PAGE_SIZE,
     offset,
+    unreleased,
   });
   const stats = await getReleaseListStats(releases.map((r) => r.id));
 
   const hasNextPage = releases.length === PAGE_SIZE;
   const hasPrevPage = pageNum > 1;
 
-  function makeHref(s: SortOption, p: number) {
+  function makeHref(s: SortOption, p: number, u: boolean = unreleased) {
     const params = new URLSearchParams();
+    if (u) params.set("unreleased", "1");
     if (s !== "recent") params.set("sort", s);
     if (p > 1) params.set("page", String(p));
     const qs = params.toString();
@@ -101,9 +111,14 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
           nothing when no upcoming releases exist. */}
       {pageNum === 1 && <DroppingSoonRail />}
 
-      {/* Sort tabs */}
-      <div className="flex flex-wrap gap-2">
-        {SORT_OPTIONS.map((opt) => {
+      {/* Sort tabs + the UNRELEASED filter. The filter is a toggle
+          chip set apart from the sorts: on = only records tagged
+          unreleased (leaks, snippets, shelved albums — the wedge);
+          off = the full catalog. Sort carries across the toggle. */}
+      <div className="flex flex-wrap items-center gap-2">
+        {SORT_OPTIONS.filter(
+          (opt) => !(unreleased && opt.value === "popularity")
+        ).map((opt) => {
           const active = opt.value === sort;
           return (
             <Link
@@ -116,6 +131,19 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
             </Link>
           );
         })}
+        <span className="w-px h-6 bg-white/15 mx-1" aria-hidden />
+        <Link
+          href={makeHref(sort, 1, !unreleased)}
+          className={`btn-y2k ${unreleased ? "btn-y2k-primary" : "btn-y2k-outline"}`}
+          aria-pressed={unreleased}
+          title={
+            unreleased
+              ? "Showing unreleased only — tap to show everything"
+              : "Only leaks, snippets and shelved records"
+          }
+        >
+          {unreleased ? "● " : "○ "}Unreleased
+        </Link>
       </div>
 
       {/* Empty state */}
@@ -124,7 +152,9 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
           <p className="font-[family-name:var(--font-vt323)] text-lg text-text-muted">
             {pageNum > 1
               ? "No more releases on this page."
-              : "No releases yet. Check back soon."}
+              : unreleased
+                ? "No unreleased records in the catalog yet — paste a link to one to review it."
+                : "No releases yet. Check back soon."}
           </p>
           {pageNum > 1 && (
             <Link

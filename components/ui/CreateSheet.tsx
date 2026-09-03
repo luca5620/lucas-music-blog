@@ -17,7 +17,7 @@
  * tappable above the sheet, exactly like the live-room sheet.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { hapticTap } from "@/lib/native";
@@ -56,11 +56,12 @@ export default function CreateSheet({
   open: boolean;
   onClose: () => void;
 }) {
-  // Two-phase mount: render while open OR while animating out.
+  // Two-phase mount: render while open OR while animating out. When
+  // `open` flips true the flag is raised DURING render (React's
+  // adjust-state-on-prop-change pattern) instead of in an effect —
+  // same result, one render pass less, and no setState-in-effect.
   const [mounted, setMounted] = useState(open);
-  useEffect(() => {
-    if (open) setMounted(true);
-  }, [open]);
+  if (open && !mounted) setMounted(true);
 
   if (!mounted || typeof document === "undefined") return null;
 

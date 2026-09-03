@@ -493,6 +493,16 @@ export async function listReleases(opts?: {
   limit?: number;
   offset?: number;
   artistId?: string;
+  /**
+   * Only UNRELEASED records (Luca 2026-09-03: "add a filter for
+   * unreleased music" — the wedge, see ROADMAP Strategy). With this
+   * on, "recent" means newest ADDED to the catalog (created_at), not
+   * release_date — leaks and unreleased tracks mostly have no date,
+   * and "what just surfaced" is the question people are asking. The
+   * popularity RPC (034) has no unreleased switch, so that sort falls
+   * back to the same newest-added order here.
+   */
+  unreleased?: boolean;
 }): Promise<ReleaseListRow[]> {
   const supabase = await createClient();
   const sort = opts?.sort ?? "recent";
@@ -500,11 +510,14 @@ export async function listReleases(opts?: {
   const offset = opts?.offset ?? 0;
 
   const byColumn = async (
-    column: "release_date" | "popularity" | "title"
+    column: "release_date" | "popularity" | "title" | "created_at"
   ): Promise<Release[]> => {
     let query = supabase.from("releases").select("*");
     if (opts?.artistId) {
       query = query.eq("primary_artist_id", opts.artistId);
+    }
+    if (opts?.unreleased) {
+      query = query.eq("is_unreleased", true);
     }
     query =
       column === "title"
@@ -517,7 +530,9 @@ export async function listReleases(opts?: {
   };
 
   let rows: Release[];
-  if (sort === "popularity") {
+  if (opts?.unreleased) {
+    rows = await byColumn(sort === "alpha" ? "title" : "created_at");
+  } else if (sort === "popularity") {
     // "Popularity" means what the COMMUNITY did with a release —
     // total published reviews — not Spotify's popularity score, which
     // is what this tab used to sort by (Luca 2026-09-02). Ordering by

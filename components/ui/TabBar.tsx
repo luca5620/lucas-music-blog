@@ -87,10 +87,14 @@ export default function TabBar() {
   const [createOpen, setCreateOpen] = useState(false);
 
   // Navigating away (a sheet link, or any other route change) always
-  // leaves the sheet closed for the next page.
-  useEffect(() => {
+  // leaves the sheet closed for the next page. React's "previous prop
+  // in state" pattern: the reset happens during the render that sees
+  // the new pathname, so the new page never paints with the sheet up.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setCreateOpen(false);
-  }, [pathname]);
+  }
 
   // When the on-screen keyboard is up, position:fixed pins to the
   // LAYOUT viewport (which the keyboard doesn't shrink on iOS) — the

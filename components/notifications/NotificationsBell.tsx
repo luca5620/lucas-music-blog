@@ -74,19 +74,28 @@ export default function NotificationsBell() {
   const [panelShift, setPanelShift] = useState(0);
   const boxRef = useRef<HTMLDivElement>(null);
 
-  const fetchAll = useCallback(async () => {
-    try {
-      const res = await fetch("/api/notifications");
-      if (!res.ok) return;
-      const data = (await res.json()) as {
-        notifications?: NotificationRow[];
-        unread?: number;
-      };
-      setItems(data.notifications ?? []);
-      setUnread(data.unread ?? 0);
-    } catch {
-      /* offline / pre-migration — the bell just stays quiet */
-    }
+  // Written as a promise chain rather than async/await on purpose:
+  // the state writes live inside the .then callback, which makes it
+  // plain to the React Compiler lint that they run after the network
+  // answers — never synchronously inside the effect that calls this.
+  const fetchAll = useCallback(() => {
+    return fetch("/api/notifications")
+      .then((res) =>
+        res.ok
+          ? (res.json() as Promise<{
+              notifications?: NotificationRow[];
+              unread?: number;
+            }>)
+          : null
+      )
+      .then((data) => {
+        if (!data) return;
+        setItems(data.notifications ?? []);
+        setUnread(data.unread ?? 0);
+      })
+      .catch(() => {
+        /* offline / pre-migration — the bell just stays quiet */
+      });
   }, []);
 
   // Initial load + poll + refetch when the tab comes back.

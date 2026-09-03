@@ -17,7 +17,7 @@
  * Purely presentational — the pages own every bit of logic.
  */
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 
@@ -51,15 +51,18 @@ export default function AuthShell({
 }: AuthShellProps) {
   // Direction of the slide: forward when the step number grows,
   // back when it shrinks. Tracked here so pages don't have to.
-  const lastStep = useRef(step ?? 0);
+  // This is React's "store the previous prop in state" pattern: when
+  // the step changes we set state DURING render, and React re-runs
+  // the render immediately with the new direction before painting —
+  // so the very first frame of the new step already slides the right
+  // way (the old effect version painted once, then corrected).
+  const current = step ?? 0;
+  const [prevStep, setPrevStep] = useState(current);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
-  useEffect(() => {
-    const current = step ?? 0;
-    if (current !== lastStep.current) {
-      setDirection(current > lastStep.current ? "forward" : "back");
-      lastStep.current = current;
-    }
-  }, [step]);
+  if (current !== prevStep) {
+    setDirection(current > prevStep ? "forward" : "back");
+    setPrevStep(current);
+  }
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-6">

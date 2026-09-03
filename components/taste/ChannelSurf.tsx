@@ -218,10 +218,14 @@ function SurfCard({
     return () => io.disconnect();
   }, [playing]);
 
-  // Leaving fullscreen kills playback too.
-  useEffect(() => {
+  // Leaving fullscreen kills playback too — settled during render
+  // (React's prev-prop pattern) so the exit frame never shows a
+  // still-playing embed.
+  const [wasFullscreen, setWasFullscreen] = useState(fullscreen);
+  if (fullscreen !== wasFullscreen) {
+    setWasFullscreen(fullscreen);
     if (!fullscreen) setPlaying(false);
-  }, [fullscreen]);
+  }
 
   // Spotify embed on review/release cards: no tap-to-load (Luca
   // 2026-08-26 — the embed has its own play button, a pill first is
@@ -253,12 +257,13 @@ function SurfCard({
   const albumEmbed = wantsEmbed && spotifyKind === "album";
   const longBodyAt = !native && albumEmbed ? 400 : 700;
   const webClampClass = albumEmbed ? "line-clamp-6" : "line-clamp-[14]";
+  // embedLive is only ever READ under `wantsEmbed` (the iframe sits
+  // inside that branch below), so there's nothing to reset when the
+  // embed is unwanted — and when it's wanted again the observer
+  // fires its initial callback on observe() and sets it fresh.
   const [embedLive, setEmbedLive] = useState(false);
   useEffect(() => {
-    if (!wantsEmbed) {
-      setEmbedLive(false);
-      return;
-    }
+    if (!wantsEmbed) return;
     const el = rootRef.current;
     if (!el) return;
     const io = new IntersectionObserver(

@@ -307,45 +307,106 @@ don't wait to be asked:**
 
 ### 🗣️ NEXT — the order Luca set on 2026-09-03
 
-Nothing is on a branch. Luca re-ordered the conversations on
-2026-09-03 ("AI 1, marketing plan 2, and EU 3"):
+Nothing is on a branch. Luca's order, 2026-09-03: **"AI 1, marketing
+plan 2, [the long-range items] in between, and EU 3."** He starts
+on AI after he's checked the hide-badges / collapsible-settings work
+on device. Status notes from him the same day: he's already posting
+around to promote the Musicboard alternative; **push notifications
+are LIVE** (Next up #1 is now Google Play only); the rebrand is still
+pending (parked, his call).
 
 1. **AI search** — the levers are Luca's hands, plan in
    `docs/AI-SEARCH.md`: Bing Webmaster Tools (ChatGPT searches through
    Bing — the biggest single lever), AlternativeTo / Product Hunt /
    Wikidata / Slant listings, Reddit answers, monthly "ask the four
    assistants" check. Code side (llms.txt, robots, JSON-LD, /about) is
-   shipped.
+   shipped. NEXT SESSION STARTS HERE (after the device check).
 2. **Marketing plan** — channels, cadence, what Luca does each week.
    Google Play closed test = the first marketing task in disguise;
-   screenshots wait on the designer. Includes posting
-   /musicboard-alternative where the refugees are (Luca's hands).
-3. **EU availability + DSA trader status** — when the designer's
+   screenshots wait on the designer. The Musicboard-alternative
+   posting is already underway (Luca).
+3. **The long-range items — Luca wants to DISCUSS these** (the "Next
+   up" list at the bottom, untouched since August): live layer v2
+   (listening parties / waiting rooms, debate discovery on release
+   pages, weekly featured debate), predictions + karma, Your Taste
+   v2 (taste-match scores), growth guardrails (Resend SMTP, report
+   queue, mute, 2FA), muted web-only ads. Bring each as a short
+   pitch with a cost; he picks.
+4. **EU availability + DSA trader status** — when the designer's
    1.1.1 screenshots arrive. Needed before selling subscriptions in
    the EU; also decides whether the app is listed in EU storefronts.
-4. **Device pass** — still nothing from 2026-09-02/03 eyeballed on the
+5. **Device pass** — still nothing from 2026-09-02/03 eyeballed on the
    phone: breathing blob, verified check, sign-up/sign-in flow,
    Apple Music player, playlist embeds, logged-out home, badges row,
    My Stuff, debate VS covers, Connected Platforms, hide-badges +
-   collapsible settings (needs 040 run first).
-5. **SEO deep-dive** — still owed: GSC query data (Luca's hands), the
+   collapsible settings (needs 040 run first), the Unreleased filter
+   on /releases, and the lint-fix surfaces (tab bar sheet reset,
+   pull-to-refresh retract, room chat keyboard sheet, like hearts,
+   comments, login ?error=oauth, countdown clocks, view toggle).
+6. **SEO deep-dive** — still owed: GSC query data (Luca's hands), the
    H1 font-repaint LCP fix, JS audit, per-artist unreleased hubs.
-6. **Unreleased front door** — the product bet from the Strategy
+7. **Unreleased front door** — the product bet from the Strategy
    section (step 3 of the product sequence): a dedicated section +
-   per-artist unreleased hubs. Proposal first, then build.
-7. **1.1.1** — what goes in it: new screenshots + everything shipped
+   per-artist unreleased hubs. The /releases Unreleased filter
+   (2026-09-03) is the first brick. Proposal first, then build.
+8. **1.1.1** — what goes in it: new screenshots + everything shipped
    since 1.1 (playlists, Apple Music, auth flow, home, badges,
-   platforms, My Stuff, debate sides, settings).
-8. **Lists pass** — parked as ONE conversation, Luca brings the full
+   platforms, My Stuff, debate sides, settings, unreleased filter).
+9. **Lists pass** — parked as ONE conversation, Luca brings the full
    list (known: playlist imports resolve to album not song; private
-   lists only findable via the profile tab).
-9. Parked, revisit later: push notifications (Next up #1 still lists
-   it open), Musicboard import (scraper link below), Peak Music
-   rebrand + icon (timed with the marketing ramp), debates changes
-   (six ideas logged above — ask, don't pitch), Your Taste revamp
-   (he's brainstorming), monetization build-out (approved plan,
-   dormant until real bills), lint backlog (15 bespoke errors),
-   merge/upgrade-release tool for Genius→Spotify dupes.
+   lists only findable via the profile tab; maybe a dedicated
+   source-playlist column so the "Open on Spotify" chip doesn't
+   depend on description formatting).
+10. Parked, revisit later: Musicboard import (scraper link below),
+    Peak Music rebrand + icon (pending, Luca's call), debates changes
+    (six ideas logged above — ask, don't pitch), Your Taste revamp
+    (he's brainstorming), monetization build-out (approved plan,
+    dormant until real bills), merge/upgrade-release tool for
+    Genius→Spotify dupes.
+
+- **2026-09-03 (Windows): UNRELEASED FILTER + LINT BACKLOG CLEARED
+  (0 errors, was 16).** No migration.
+  1. **/releases → Unreleased filter** (Luca: "for unreleased add a
+     filter for unreleased music"): a toggle chip after the sort
+     tabs (`?unreleased=1`), only records tagged `is_unreleased`.
+     With it on, Recent = newest ADDED to the catalog (`created_at`
+     — leaks mostly have no release_date, and "what just surfaced"
+     is the question), A–Z stays, Popularity is hidden (the 034 RPC
+     can't filter; a pasted ?sort=popularity falls back to Recent).
+     Sort carries across the toggle; pagination carries the filter.
+     `listReleases()` gained `unreleased?: boolean`. Verified on
+     localhost: the filtered page renders only unreleased rows.
+  2. **Lint errors 16 → 0** (Luca: "if there are any errors diagnose
+     and fix there"). Every one was `react-hooks/set-state-in-effect`
+     (plus one unescaped apostrophe). Fixed with the two honest
+     patterns, never by silencing the rule:
+     - **External systems → useSyncExternalStore.** Three new hooks:
+       `lib/useHydrated.ts` ("am I on the client yet" — replaces
+       every mounted-flag effect), `lib/useVisualViewport.ts` (the
+       keyboard-aware visual viewport, cached snapshot so it can't
+       loop), `lib/useLocationSearch.ts` (the query string without
+       useSearchParams' Suspense demand). Plus `lib/likeStore.ts`'s
+       `useLikeState` is now a store read (the Maps were already
+       server-safe — seedLike returns early without window), and
+       ViewToggle's saved view is a tiny localStorage store with an
+       in-memory fallback for private mode.
+     - **"Adjust state when a prop changes" → set state DURING
+       render** (React's documented prev-prop pattern): AuthShell's
+       slide direction, TabBar's sheet-close-on-navigate, CreateSheet
+       two-phase mount, PullToRefresh retract, ChannelSurf's
+       stop-on-exit-fullscreen, LiveCountdown's date reset. Same
+       result one render earlier — the new frame never paints stale.
+     - **Async loaders → state writes inside `.then`**
+       (NotificationsBell, CommentsSection's loadComments/
+       fetchComments split) so the lint can see they run after the
+       network, not in the effect.
+     - Derived instead of reset: CommentsSection's block list is only
+       consulted when signed in; ChannelSurf's embedLive is only read
+       under wantsEmbed.
+     Login's `?error=oauth` message is now derived from the URL until
+     the user clears errors (clearError) — same visible behaviour.
+     26 warnings remain (img elements, unused vars), all pre-existing.
+     These are app-critical surfaces → on the device-pass list.
 
 - **2026-09-02 (MacBook): ✅ 1.1 APPROVED — review freeze OVER, the
   holding branch is merged to main, deployed, and VERIFIED on prod

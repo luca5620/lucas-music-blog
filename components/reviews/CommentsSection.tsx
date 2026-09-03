@@ -472,7 +472,10 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
   // the role re-check in the DELETE route — this flag is UI only).
   const isStaff = profile?.role === "owner" || profile?.role === "admin";
   const [comments, setComments] = useState<CommentData[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Starts true only when there's a database to load from —
+  // isSupabaseConfigured() is a build-time env check, identical on
+  // server and client, so this can't cause a hydration mismatch.
+  const [loading, setLoading] = useState(() => isSupabaseConfigured());
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   // Authors this viewer has blocked — their comments are hidden.
   const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
@@ -485,12 +488,11 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
   const supabaseRef = useRef(createClient());
 
   // Load the viewer's block list once they're known. Failure is
-  // harmless (nothing gets hidden) so errors are swallowed.
+  // harmless (nothing gets hidden) so errors are swallowed. Logged
+  // out, the list is simply not consulted (see `visible` below), so
+  // there's nothing to reset here.
   useEffect(() => {
-    if (!user) {
-      setBlockedIds(new Set());
-      return;
-    }
+    if (!user) return;
     let cancelled = false;
     fetch("/api/blocks")
       .then((res) => (res.ok ? res.json() : { blocked: [] }))
@@ -503,12 +505,17 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
     };
   }, [user]);
 
-  const fetchComments = useCallback(async () => {
-    if (!isSupabaseConfigured()) {
-      setLoading(false);
-      return;
-    }
-
+  // Pure loader: fetches the comments (+ like counts) and RETURNS
+  // them — no state writes in here. fetchComments below applies the
+  // result inside a .then callback, which keeps it plain to the React
+  // Compiler lint that the writes run after the network answers,
+  // never synchronously inside the effect that kicks the load off.
+  // Returns null when the comments query fails (state left as is).
+  const loadComments = useCallback(async (): Promise<{
+    comments: CommentData[];
+    /** null = the likes table didn't answer → leave `likes` alone. */
+    likes: Map<string, { count: number; mine: boolean }> | null;
+  } | null> => {
     const supabase = supabaseRef.current;
     const { data, error } = await supabase
       .from("comments")
@@ -520,49 +527,57 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
 
     if (error) {
       console.error("Error fetching comments:", error);
-    } else {
-      const rows = (data as unknown as CommentData[]) ?? [];
-      setComments(rows);
-
-      // Like counts + the viewer's hearts, one query (RLS: world-
-      // readable). Errors — most importantly "relation does not
-      // exist" before migration 030 runs — leave `likes` null and no
-      // heart renders anywhere. Viewer id read directly from the
-      // auth session so this doesn't depend on the auth hook's
-      // timing.
-      if (rows.length > 0) {
-        const { data: likeRows, error: likeError } = await supabase
-          .from("comment_likes")
-          .select("comment_id, user_id")
-          .in(
-            "comment_id",
-            rows.map((r) => r.id)
-          );
-        if (!likeError && likeRows) {
-          const {
-            data: { user: viewer },
-          } = await supabase.auth.getUser();
-          const map = new Map<string, { count: number; mine: boolean }>();
-          for (const row of likeRows as {
-            comment_id: string;
-            user_id: string;
-          }[]) {
-            const entry = map.get(row.comment_id) ?? {
-              count: 0,
-              mine: false,
-            };
-            entry.count += 1;
-            if (viewer && row.user_id === viewer.id) entry.mine = true;
-            map.set(row.comment_id, entry);
-          }
-          setLikes(map);
-        }
-      } else {
-        setLikes(new Map());
-      }
+      return null;
     }
-    setLoading(false);
+    const rows = (data as unknown as CommentData[]) ?? [];
+
+    // Like counts + the viewer's hearts, one query (RLS: world-
+    // readable). Errors — most importantly "relation does not
+    // exist" before migration 030 runs — leave `likes` null and no
+    // heart renders anywhere. Viewer id read directly from the
+    // auth session so this doesn't depend on the auth hook's
+    // timing.
+    if (rows.length === 0) return { comments: rows, likes: new Map() };
+
+    const { data: likeRows, error: likeError } = await supabase
+      .from("comment_likes")
+      .select("comment_id, user_id")
+      .in(
+        "comment_id",
+        rows.map((r) => r.id)
+      );
+    if (likeError || !likeRows) return { comments: rows, likes: null };
+
+    const {
+      data: { user: viewer },
+    } = await supabase.auth.getUser();
+    const map = new Map<string, { count: number; mine: boolean }>();
+    for (const row of likeRows as {
+      comment_id: string;
+      user_id: string;
+    }[]) {
+      const entry = map.get(row.comment_id) ?? {
+        count: 0,
+        mine: false,
+      };
+      entry.count += 1;
+      if (viewer && row.user_id === viewer.id) entry.mine = true;
+      map.set(row.comment_id, entry);
+    }
+    return { comments: rows, likes: map };
   }, [reviewId]);
+
+  const fetchComments = useCallback(() => {
+    // No database configured → `loading` already started false.
+    if (!isSupabaseConfigured()) return Promise.resolve();
+    return loadComments().then((result) => {
+      if (result) {
+        setComments(result.comments);
+        if (result.likes) setLikes(result.likes);
+      }
+      setLoading(false);
+    });
+  }, [loadComments]);
 
   useEffect(() => {
     fetchComments();
@@ -643,7 +658,9 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
      Comments from blocked authors are dropped before threading, so
      their replies-to-others also vanish for this viewer. */
 
-  const visible = comments.filter((c) => !blockedIds.has(c.user_id));
+  // Block list only applies to a signed-in viewer (a stale list from
+  // a previous session is ignored once they're logged out).
+  const visible = comments.filter((c) => !user || !blockedIds.has(c.user_id));
   const topLevel = visible.filter((c) => !c.parent_id);
   const repliesMap = new Map<string, CommentData[]>();
   visible

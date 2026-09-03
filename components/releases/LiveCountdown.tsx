@@ -16,6 +16,7 @@
 
 import { useEffect, useState } from "react";
 import { easternMidnightUtcMs } from "@/lib/upcoming";
+import { useHydrated } from "@/lib/useHydrated";
 
 interface LiveCountdownProps {
   /** YYYY-MM-DD release date (longer ISO strings are truncated). */
@@ -37,11 +38,22 @@ export default function LiveCountdown({
   releaseDate,
   className = "",
 }: LiveCountdownProps) {
-  // null until mounted — that renders the static placeholder.
-  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  // The static placeholder renders until hydration is done (server
+  // render + first client paint agree); the ticking clock takes over
+  // right after. useHydrated is a store read, not a mounted-flag
+  // effect, so there's no setState-in-effect here.
+  const hydrated = useHydrated();
+  const [secondsLeft, setSecondsLeft] = useState(() => remaining(releaseDate));
+
+  // A new release date (rare — the prop is fixed for a mounted card)
+  // resets the clock during render, React's prev-prop pattern.
+  const [prevDate, setPrevDate] = useState(releaseDate);
+  if (prevDate !== releaseDate) {
+    setPrevDate(releaseDate);
+    setSecondsLeft(remaining(releaseDate));
+  }
 
   useEffect(() => {
-    setSecondsLeft(remaining(releaseDate));
     const timer = setInterval(
       () => setSecondsLeft(remaining(releaseDate)),
       1000
@@ -49,7 +61,7 @@ export default function LiveCountdown({
     return () => clearInterval(timer);
   }, [releaseDate]);
 
-  if (secondsLeft === null) {
+  if (!hydrated) {
     // Server + first client paint: day-precision only, so both sides
     // render identical HTML.
     const days = Math.ceil(remaining(releaseDate) / 86_400);

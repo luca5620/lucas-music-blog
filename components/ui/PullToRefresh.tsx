@@ -41,9 +41,9 @@ export default function PullToRefresh() {
   const armedRef = useRef(false);
 
   // The transition ending = fresh data rendered → retract the disc.
-  useEffect(() => {
-    if (!isPending && refreshing) setRefreshing(false);
-  }, [isPending, refreshing]);
+  // Settled during render (derived from isPending) rather than in an
+  // effect, so the disc retracts on the same frame the data lands.
+  if (!isPending && refreshing) setRefreshing(false);
 
   useEffect(() => {
     if (!enabled) return;

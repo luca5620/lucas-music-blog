@@ -21,6 +21,13 @@ Sentry.init({
   tracesSampleRate: 0,
   sendDefaultPii: false,
   enabled: process.env.NODE_ENV === "production",
+
+  // Supabase auth-js guards session refresh with the Web Locks API and
+  // forcibly steals the lock when a waiter times out — the loser's
+  // promise rejects with this message. Benign (the session stays
+  // valid), fires mostly on iOS WKWebView after backgrounding, and is
+  // an upstream issue, not ours. Don't page on it.
+  ignoreErrors: [/Lock was stolen by another request/],
 });
 
 // Lets Sentry name errors after the route the user was navigating to.

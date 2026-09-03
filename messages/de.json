@@ -941,5 +941,92 @@
     "dropsSoon": "BALD",
     "loading": "LÄDT…",
     "onPmr": "AUF PMR"
+  },
+  "lists": {
+    "index": {
+      "title": "LISTEN",
+      "sub": "Alben, kuratiert — Rankings, Stimmungen, Obsessionen.",
+      "newList": "+ Neue Liste",
+      "none": "Noch keine Listen.",
+      "beFirst": "sei der Erste, der etwas reiht",
+      "start": "Eine Liste anfangen",
+      "signInToStart": "Anmelden, um eine anzufangen"
+    },
+    "page": {
+      "ranked": "Gereiht",
+      "private": "Privat",
+      "byAuthor": "eine Liste von <b>Name</b>",
+      "openOnSpotify": "▶ Auf Spotify öffnen",
+      "albums": "{n, plural, one {# Album} other {# Alben}}",
+      "empty": "Diese Liste ist (noch) leer.",
+      "emptyOwner": "tipp auf Bearbeiten, um Alben hinzuzufügen",
+      "likeList": "Liste liken",
+      "unlikeList": "Like entfernen"
+    },
+    "deleteButton": {
+      "confirm": "„{title}“ löschen?",
+      "couldnt": "Konnte nicht gelöscht werden.",
+      "network": "Netzwerkproblem — versuch es noch mal."
+    },
+    "playlist": {
+      "reading": "Lese Playlist…",
+      "saveAsList": "Als Liste speichern",
+      "couldntSave": "Diese Playlist ließ sich nicht speichern.",
+      "network": "Netzwerkfehler — versuch es noch mal.",
+      "importTitle": "Mit einer Spotify-Playlist starten",
+      "readingShort": "Lese…",
+      "build": "Liste bauen",
+      "detected": "✓ Spotify-Playlist erkannt — jeder Track wird ein Listeneintrag.",
+      "notALink": "Kein Spotify-Playlist-Link. Füg eine open.spotify.com/playlist/…-URL ein.",
+      "couldntRead": "Diese Playlist ließ sich nicht lesen.",
+      "hint": "füg eine Playlist ein und wir bauen die Liste für dich (erste 100 Tracks) — oder überspring das und füg unten Platten einzeln hinzu"
+    },
+    "editor": {
+      "editTitle": "Liste bearbeiten",
+      "newTitle": "Neue Liste",
+      "editSub": "Feil am Aufgebot.",
+      "newSub": "Sammle Alben zu etwas, das sich zu teilen lohnt.",
+      "details": "Listendetails",
+      "titleLabel": "Titel * ({n}/120)",
+      "titlePlaceholder": "z. B. Beste Alben 2026",
+      "descriptionLabel": "Beschreibung ({n}/2000)",
+      "descriptionPlaceholder": "Was verbindet sie?",
+      "ranked": "Gereihte Liste <muted>(zeigt 1, 2, 3…-Badges)</muted>",
+      "public": "Öffentlich <muted>(jeder kann sie sehen)</muted>",
+      "albums": "Alben ({n})",
+      "addRelease": "Ein Release hinzufügen",
+      "searchPlaceholder": "Such ein Album, eine EP, eine Single — auch unveröffentlicht…",
+      "nothingYet": "Noch nichts hier — such oben, um Alben zu stapeln.",
+      "moveUp": "Nach oben",
+      "moveDown": "Nach unten",
+      "notePlaceholder": "Notiz hinzufügen (optional)...",
+      "removeTitle": "Aus der Liste entfernen",
+      "removeAria": "{title} entfernen",
+      "saveChanges": "Änderungen speichern",
+      "create": "Liste erstellen",
+      "saveDraft": "Als Entwurf speichern",
+      "saving": "Speichere...",
+      "dangerZone": "Gefahrenzone",
+      "dangerBody": "Diese Liste zu löschen entfernt sie und alles darin. Kein Zurück.",
+      "deleteList": "Liste löschen",
+      "deleting": "Lösche...",
+      "deleteForever": "Für immer löschen",
+      "keepIt": "Behalten",
+      "errors": {
+        "needTitle": "Gib deiner Liste einen Titel.",
+        "titleTooLong": "Der Titel darf höchstens 120 Zeichen haben.",
+        "descTooLong": "Die Beschreibung darf höchstens 2000 Zeichen haben.",
+        "createFailed": "Liste konnte nicht erstellt werden.",
+        "addItemFailed": "Eintrag konnte nicht hinzugefügt werden.",
+        "missingList": "Keine Liste zum Bearbeiten.",
+        "saveFailed": "Liste konnte nicht gespeichert werden.",
+        "removeFailed": "Eintrag konnte nicht entfernt werden.",
+        "noteFailed": "Notiz konnte nicht gespeichert werden.",
+        "reorderFailed": "Einträge konnten nicht umsortiert werden.",
+        "wentWrong": "Etwas ist schiefgelaufen.",
+        "sessionExpired": "Deine Sitzung ist abgelaufen — melde dich neu an und lösch sie dann.",
+        "deleteFailed": "Die Liste konnte nicht gelöscht werden (Fehler {status})."
+      }
+    }
   }
 }

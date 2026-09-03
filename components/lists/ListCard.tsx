@@ -17,9 +17,11 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { ListSummary } from "@/lib/db/lists";
 import { smallCover } from "@/lib/images";
+import { useTranslations } from "next-intl";
 
 export default function ListCard({ list }: { list: ListSummary }) {
   const { author } = list;
+  const t = useTranslations("lists.page");
 
   return (
     <Link
@@ -61,7 +63,7 @@ export default function ListCard({ list }: { list: ListSummary }) {
           {list.title}
         </h3>
         {list.is_ranked && (
-          <span className="label-xbox text-[0.55rem]">Ranked</span>
+          <span className="label-xbox text-[0.55rem]">{t("ranked")}</span>
         )}
       </div>
 
@@ -90,7 +92,7 @@ export default function ListCard({ list }: { list: ListSummary }) {
         </span>
 
         <span className="pixel-text text-xs text-text-muted uppercase tracking-widest shrink-0">
-          {list.item_count} {list.item_count === 1 ? "album" : "albums"}
+          {t("albums", { n: list.item_count })}
           {list.like_count > 0 && <> · ♥ {list.like_count}</>}
         </span>
       </div>
@@ -120,6 +122,7 @@ export function ListLikeButton({
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
   const [pending, setPending] = useState(false);
+  const t = useTranslations("lists.page");
 
   const handleClick = async () => {
     // Not signed in? Send them to login instead of failing silently.
@@ -158,7 +161,7 @@ export function ListLikeButton({
     <button
       type="button"
       onClick={handleClick}
-      aria-label={liked ? "Unlike list" : "Like list"}
+      aria-label={liked ? t("unlikeList") : t("likeList")}
       aria-pressed={liked}
       className={`inline-flex items-center gap-2 ${
         liked ? "text-[#ff4d6d]" : "text-text-muted hover:text-[#ff4d6d]"

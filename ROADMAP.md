@@ -109,6 +109,13 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 6 (lists) shipped:** /lists hero + empty state, list page
+    (Ranked/Private chips, "a list by", album counts, Open on Spotify,
+    empty states), ListCard + ListLikeButton, DeleteListButton,
+    SaveAsListButton, PlaylistImportBox, ListEditor (every label,
+    placeholder, toggle, button, danger zone, all API error fallbacks).
+    Namespace: lists. Verified NL index + list page from the built server;
+    the only English left is the metadata title (by design).
   - **Batch 5b (releases) shipped:** /releases hero, sort tabs, Unreleased
     filter, empty states, pagination; release page (bio labels + source
     credits, countdown strip, dates in the viewer's locale, community

@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import { getUser } from "@/lib/auth";
 import { getListBySlug } from "@/lib/db/lists";
 import { ListLikeButton } from "@/components/lists/ListCard";
+// LANGUAGES: messages → lists.page (+ common). Metadata stays English.
+import { getTranslations } from "next-intl/server";
 
 interface PageParams {
   params: Promise<{ username: string; slug: string }>;
@@ -47,13 +49,15 @@ export default async function ListDetailPage({ params }: PageParams) {
 
   const isOwner = !!user && user.id === list.user_id;
   const authorName = list.author.display_name || list.author.username;
+  const t = await getTranslations("lists.page");
+  const tc = await getTranslations("common");
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Back link */}
       <BackLink
         fallback="/lists"
-        label="Back"
+        label={tc("back")}
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
       />
 
@@ -63,10 +67,10 @@ export default async function ListDetailPage({ params }: PageParams) {
           <div className="space-y-2 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               {list.is_ranked && (
-                <span className="label-xbox text-[0.6rem]">Ranked</span>
+                <span className="label-xbox text-[0.6rem]">{t("ranked")}</span>
               )}
               {!list.is_public && (
-                <span className="label-xbox text-[0.6rem]">Private</span>
+                <span className="label-xbox text-[0.6rem]">{t("private")}</span>
               )}
             </div>
             <h1 className="crt-title text-2xl sm:text-3xl md:text-4xl break-words">
@@ -93,7 +97,9 @@ export default async function ListDetailPage({ params }: PageParams) {
                 )}
               </span>
               <span className="text-sm text-text-secondary group-hover:text-accent-primary transition-colors">
-                a list by <span className="font-medium">{authorName}</span>
+                {t.rich("byAuthor", {
+                  b: () => <span className="font-medium">{authorName}</span>,
+                })}
               </span>
             </Link>
           </div>
@@ -104,7 +110,7 @@ export default async function ListDetailPage({ params }: PageParams) {
               href={`/lists/${list.author.username}/${list.slug}/edit`}
               className="btn-y2k btn-y2k-outline shrink-0"
             >
-              Edit
+              {tc("edit")}
             </Link>
           )}
         </div>
@@ -135,7 +141,7 @@ export default async function ListDetailPage({ params }: PageParams) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 pixel-text text-[11px] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
                 >
-                  ▶ Open on Spotify
+                  {t("openOnSpotify")}
                 </a>
               )}
             </div>
@@ -150,7 +156,7 @@ export default async function ListDetailPage({ params }: PageParams) {
             initialLiked={list.viewer_has_liked}
           />
           <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-            {list.items.length} {list.items.length === 1 ? "album" : "albums"}
+            {t("albums", { n: list.items.length })}
           </span>
         </div>
 
@@ -183,7 +189,7 @@ export default async function ListDetailPage({ params }: PageParams) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={item.cover_image}
-                    alt={`${item.title} cover`}
+                    alt={tc("coverAlt", { title: item.title })}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
@@ -229,10 +235,10 @@ export default async function ListDetailPage({ params }: PageParams) {
         </div>
       ) : (
         <div className="panel-xbox p-8 text-center">
-          <p className="text-text-secondary">This list is empty (for now).</p>
+          <p className="text-text-secondary">{t("empty")}</p>
           {isOwner && (
             <p className="font-[family-name:var(--font-vt323)] text-[#9a9a9e] mt-2">
-              hit Edit to start adding albums
+              {t("emptyOwner")}
             </p>
           )}
         </div>

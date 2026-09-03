@@ -941,5 +941,92 @@
     "dropsSoon": "BIENTÔT",
     "loading": "CHARGEMENT…",
     "onPmr": "SUR PMR"
+  },
+  "lists": {
+    "index": {
+      "title": "LISTES",
+      "sub": "Des albums, triés — classements, humeurs, obsessions.",
+      "newList": "+ Nouvelle liste",
+      "none": "Pas encore de listes.",
+      "beFirst": "sois le premier à classer quelque chose",
+      "start": "Commencer une liste",
+      "signInToStart": "Connecte-toi pour en commencer une"
+    },
+    "page": {
+      "ranked": "Classée",
+      "private": "Privée",
+      "byAuthor": "une liste de <b>nom</b>",
+      "openOnSpotify": "▶ Ouvrir sur Spotify",
+      "albums": "{n, plural, one {# album} other {# albums}}",
+      "empty": "Cette liste est vide (pour l'instant).",
+      "emptyOwner": "appuie sur Modifier pour ajouter des albums",
+      "likeList": "Aimer la liste",
+      "unlikeList": "Ne plus aimer la liste"
+    },
+    "deleteButton": {
+      "confirm": "Supprimer « {title} » ?",
+      "couldnt": "Suppression impossible.",
+      "network": "Souci réseau — réessaie."
+    },
+    "playlist": {
+      "reading": "Lecture de la playlist…",
+      "saveAsList": "Enregistrer en liste",
+      "couldntSave": "Impossible d'enregistrer cette playlist.",
+      "network": "Erreur réseau — réessaie.",
+      "importTitle": "Partir d'une playlist Spotify",
+      "readingShort": "Lecture…",
+      "build": "Construire la liste",
+      "detected": "✓ Playlist Spotify détectée — chaque titre devient une entrée de la liste.",
+      "notALink": "Pas un lien de playlist Spotify. Colle une URL open.spotify.com/playlist/….",
+      "couldntRead": "Impossible de lire cette playlist.",
+      "hint": "colle une playlist et on construit la liste pour toi (100 premiers titres) — ou passe et ajoute des disques un par un ci-dessous"
+    },
+    "editor": {
+      "editTitle": "Modifier la liste",
+      "newTitle": "Nouvelle liste",
+      "editSub": "Ajuste la sélection.",
+      "newSub": "Rassemble des albums en quelque chose qui vaut le partage.",
+      "details": "Détails de la liste",
+      "titleLabel": "Titre * ({n}/120)",
+      "titlePlaceholder": "ex. Meilleurs albums de 2026",
+      "descriptionLabel": "Description ({n}/2000)",
+      "descriptionPlaceholder": "Qu'est-ce qui les relie ?",
+      "ranked": "Liste classée <muted>(affiche les badges 1, 2, 3…)</muted>",
+      "public": "Publique <muted>(visible par tous)</muted>",
+      "albums": "Albums ({n})",
+      "addRelease": "Ajouter une sortie",
+      "searchPlaceholder": "Cherche un album, un EP, un single — même inédit…",
+      "nothingYet": "Rien ici pour l'instant — cherche ci-dessus pour commencer à empiler des albums.",
+      "moveUp": "Monter",
+      "moveDown": "Descendre",
+      "notePlaceholder": "Ajoute une note (facultatif)...",
+      "removeTitle": "Retirer de la liste",
+      "removeAria": "Retirer {title}",
+      "saveChanges": "Enregistrer",
+      "create": "Créer la liste",
+      "saveDraft": "Enregistrer en brouillon",
+      "saving": "Enregistrement...",
+      "dangerZone": "Zone de danger",
+      "dangerBody": "Supprimer cette liste l'efface avec tout ce qu'elle contient. Aucun retour en arrière.",
+      "deleteList": "Supprimer la liste",
+      "deleting": "Suppression...",
+      "deleteForever": "Supprimer définitivement",
+      "keepIt": "La garder",
+      "errors": {
+        "needTitle": "Donne un titre à ta liste.",
+        "titleTooLong": "Le titre doit faire 120 caractères ou moins.",
+        "descTooLong": "La description doit faire 2000 caractères ou moins.",
+        "createFailed": "Échec de la création de la liste.",
+        "addItemFailed": "Échec de l'ajout d'un élément.",
+        "missingList": "Liste à modifier introuvable.",
+        "saveFailed": "Échec de l'enregistrement de la liste.",
+        "removeFailed": "Échec du retrait d'un élément.",
+        "noteFailed": "Échec de l'enregistrement d'une note.",
+        "reorderFailed": "Échec du réagencement des éléments.",
+        "wentWrong": "Quelque chose a mal tourné.",
+        "sessionExpired": "Ta session a expiré — reconnecte-toi, puis supprime-la.",
+        "deleteFailed": "Impossible de supprimer la liste (erreur {status})."
+      }
+    }
   }
 }

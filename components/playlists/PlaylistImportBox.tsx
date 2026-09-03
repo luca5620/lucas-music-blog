@@ -12,12 +12,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { parsePlaylistUrl } from "@/lib/playlist";
+import { useTranslations } from "next-intl";
 
 export default function PlaylistImportBox() {
   const router = useRouter();
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("lists.playlist");
 
   const trimmed = url.trim();
   const playlistId = trimmed ? parsePlaylistUrl(trimmed) : null;
@@ -38,21 +40,21 @@ export default function PlaylistImportBox() {
         editHref?: string;
       };
       if (!res.ok || !data.editHref) {
-        setError(data.error || "Couldn't read that playlist.");
+        setError(data.error || t("couldntRead"));
         setBusy(false);
         return;
       }
       router.push(data.editHref);
       router.refresh();
     } catch {
-      setError("Network error — try again.");
+      setError(t("network"));
       setBusy(false);
     }
   }
 
   return (
     <fieldset className="panel-xbox p-5 space-y-3">
-      <legend className="label-xbox">Start from a Spotify playlist</legend>
+      <legend className="label-xbox">{t("importTitle")}</legend>
       <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="text"
@@ -69,24 +71,23 @@ export default function PlaylistImportBox() {
           disabled={!playlistId || busy}
           className="btn-y2k btn-y2k-primary shrink-0 disabled:opacity-50"
         >
-          {busy ? "Reading…" : "Build the list"}
+          {busy ? t("readingShort") : t("build")}
         </button>
       </div>
       {playlistId && !error && (
         <p className="pixel-text text-xs text-accent-primary">
-          ✓ Spotify playlist detected — every track becomes a list entry.
+          {t("detected")}
         </p>
       )}
       {invalid && (
         <p className="text-xs text-accent-rose">
-          Not a Spotify playlist link. Paste an open.spotify.com/playlist/… URL.
+          {t("notALink")}
         </p>
       )}
       {error && <p className="text-xs text-accent-rose">{error}</p>}
       {!trimmed && (
         <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-          paste a playlist and we build the list for you (first 100 tracks) —
-          or skip this and add records one at a time below
+          {t("hint")}
         </p>
       )}
     </fieldset>

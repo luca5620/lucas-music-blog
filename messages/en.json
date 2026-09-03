@@ -941,5 +941,92 @@
     "dropsSoon": "DROPS SOON",
     "loading": "LOADING…",
     "onPmr": "ON PMR"
+  },
+  "lists": {
+    "index": {
+      "title": "LISTS",
+      "sub": "Albums, curated — rankings, moods, obsessions.",
+      "newList": "+ New List",
+      "none": "No lists yet.",
+      "beFirst": "be the first to rank something",
+      "start": "Start a List",
+      "signInToStart": "Sign in to start one"
+    },
+    "page": {
+      "ranked": "Ranked",
+      "private": "Private",
+      "byAuthor": "a list by <b>name</b>",
+      "openOnSpotify": "▶ Open on Spotify",
+      "albums": "{n, plural, one {# album} other {# albums}}",
+      "empty": "This list is empty (for now).",
+      "emptyOwner": "hit Edit to start adding albums",
+      "likeList": "Like list",
+      "unlikeList": "Unlike list"
+    },
+    "deleteButton": {
+      "confirm": "Delete “{title}”?",
+      "couldnt": "Couldn't delete it.",
+      "network": "Network hiccup — try again."
+    },
+    "playlist": {
+      "reading": "Reading playlist…",
+      "saveAsList": "Save as a list",
+      "couldntSave": "Couldn't save that playlist.",
+      "network": "Network error — try again.",
+      "importTitle": "Start from a Spotify playlist",
+      "readingShort": "Reading…",
+      "build": "Build the list",
+      "detected": "✓ Spotify playlist detected — every track becomes a list entry.",
+      "notALink": "Not a Spotify playlist link. Paste an open.spotify.com/playlist/… URL.",
+      "couldntRead": "Couldn't read that playlist.",
+      "hint": "paste a playlist and we build the list for you (first 100 tracks) — or skip this and add records one at a time below"
+    },
+    "editor": {
+      "editTitle": "Edit List",
+      "newTitle": "New List",
+      "editSub": "Tweak the lineup.",
+      "newSub": "Gather albums into something worth sharing.",
+      "details": "List Details",
+      "titleLabel": "Title * ({n}/120)",
+      "titlePlaceholder": "e.g. Best albums of 2026",
+      "descriptionLabel": "Description ({n}/2000)",
+      "descriptionPlaceholder": "What ties these together?",
+      "ranked": "Ranked list <muted>(shows 1, 2, 3… badges)</muted>",
+      "public": "Public <muted>(anyone can view)</muted>",
+      "albums": "Albums ({n})",
+      "addRelease": "Add a release",
+      "searchPlaceholder": "Search any album, EP, single — even unreleased…",
+      "nothingYet": "Nothing here yet — search above to start stacking albums.",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "notePlaceholder": "Add a note (optional)...",
+      "removeTitle": "Remove from list",
+      "removeAria": "Remove {title}",
+      "saveChanges": "Save Changes",
+      "create": "Create List",
+      "saveDraft": "Save as Draft",
+      "saving": "Saving...",
+      "dangerZone": "Danger Zone",
+      "dangerBody": "Deleting this list removes it and everything in it. There is no undo.",
+      "deleteList": "Delete List",
+      "deleting": "Deleting...",
+      "deleteForever": "Delete Forever",
+      "keepIt": "Keep It",
+      "errors": {
+        "needTitle": "Give your list a title.",
+        "titleTooLong": "Title must be 120 characters or fewer.",
+        "descTooLong": "Description must be 2000 characters or fewer.",
+        "createFailed": "Failed to create list.",
+        "addItemFailed": "Failed to add an item.",
+        "missingList": "Missing list to edit.",
+        "saveFailed": "Failed to save list.",
+        "removeFailed": "Failed to remove an item.",
+        "noteFailed": "Failed to save an item note.",
+        "reorderFailed": "Failed to reorder items.",
+        "wentWrong": "Something went wrong.",
+        "sessionExpired": "Your session expired — sign in again, then delete it.",
+        "deleteFailed": "Couldn't delete the list (error {status})."
+      }
+    }
   }
 }

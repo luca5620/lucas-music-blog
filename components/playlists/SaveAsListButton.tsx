@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function SaveAsListButton({
   playlistId,
@@ -23,6 +24,7 @@ export default function SaveAsListButton({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("lists.playlist");
 
   async function save() {
     if (busy) return;
@@ -43,14 +45,14 @@ export default function SaveAsListButton({
         editHref?: string;
       };
       if (!res.ok || !data.editHref) {
-        setError(data.error || "Couldn't save that playlist.");
+        setError(data.error || t("couldntSave"));
         setBusy(false);
         return;
       }
       router.push(data.editHref);
       router.refresh();
     } catch {
-      setError("Network error — try again.");
+      setError(t("network"));
       setBusy(false);
     }
   }
@@ -63,7 +65,7 @@ export default function SaveAsListButton({
         disabled={busy}
         className={`${className} disabled:opacity-50`}
       >
-        {busy ? "Reading playlist…" : "Save as a list"}
+        {busy ? t("reading") : t("saveAsList")}
       </button>
       {error && <span className="text-xs text-accent-rose max-w-xs text-right">{error}</span>}
     </span>

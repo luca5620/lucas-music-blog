@@ -24,6 +24,7 @@ import type { List, ListItem } from "@/lib/types/database";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
+import { useTranslations } from "next-intl";
 
 /**
  * An item row as the editor sees it. Saved items carry their database
@@ -95,6 +96,9 @@ export default function ListEditor({
   // so on a phone a failed delete scrolled off-screen and the tap just
   // looked dead (Luca 2026-09-02: "still cant delete my list").
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  // LANGUAGES: messages → lists.editor (+ common.cancel).
+  const t = useTranslations("lists.editor");
+  const tc = useTranslations("common");
 
   /* --- Item row operations --- */
 
@@ -150,15 +154,15 @@ export default function ListEditor({
   async function handleSave(asDraft = false) {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      setError("Give your list a title.");
+      setError(t("errors.needTitle"));
       return;
     }
     if (trimmedTitle.length > 120) {
-      setError("Title must be 120 characters or fewer.");
+      setError(t("errors.titleTooLong"));
       return;
     }
     if (description.trim().length > 2000) {
-      setError("Description must be 2000 characters or fewer.");
+      setError(t("errors.descTooLong"));
       return;
     }
 
@@ -182,7 +186,7 @@ export default function ListEditor({
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(data.error || "Failed to create list.");
+          throw new Error(data.error || t("errors.createFailed"));
         }
         const created = (await res.json()) as List;
 
@@ -202,7 +206,7 @@ export default function ListEditor({
           });
           if (!itemRes.ok) {
             const data = await itemRes.json().catch(() => ({}));
-            throw new Error(data.error || "Failed to add an item.");
+            throw new Error(data.error || t("errors.addItemFailed"));
           }
         }
 
@@ -213,7 +217,7 @@ export default function ListEditor({
       }
 
       // ------- Edit mode -------
-      if (!list) throw new Error("Missing list to edit.");
+      if (!list) throw new Error(t("errors.missingList"));
 
       // 1) Save metadata changes.
       const metaRes = await fetch(`/api/lists/${list.id}`, {
@@ -223,7 +227,7 @@ export default function ListEditor({
       });
       if (!metaRes.ok) {
         const data = await metaRes.json().catch(() => ({}));
-        throw new Error(data.error || "Failed to save list.");
+        throw new Error(data.error || t("errors.saveFailed"));
       }
 
       // 2) Delete items that were removed in the editor.
@@ -235,7 +239,7 @@ export default function ListEditor({
         const res = await fetch(`/api/lists/${list.id}/items/${item.id}`, {
           method: "DELETE",
         });
-        if (!res.ok) throw new Error("Failed to remove an item.");
+        if (!res.ok) throw new Error(t("errors.removeFailed"));
       }
 
       // 3) POST new items / PATCH notes that changed. We collect the
@@ -262,7 +266,7 @@ export default function ListEditor({
           });
           if (!res.ok) {
             const data = await res.json().catch(() => ({}));
-            throw new Error(data.error || "Failed to add an item.");
+            throw new Error(data.error || t("errors.addItemFailed"));
           }
           const createdItem = (await res.json()) as ListItem;
           orderedItemIds.push(createdItem.id);
@@ -278,7 +282,7 @@ export default function ListEditor({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ note: newNote }),
           });
-          if (!res.ok) throw new Error("Failed to save an item note.");
+          if (!res.ok) throw new Error(t("errors.noteFailed"));
         }
         orderedItemIds.push(item.id);
       }
@@ -290,13 +294,13 @@ export default function ListEditor({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ orderedItemIds }),
         });
-        if (!res.ok) throw new Error("Failed to reorder items.");
+        if (!res.ok) throw new Error(t("errors.reorderFailed"));
       }
 
       router.push(`/lists/${username}/${list.slug}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("errors.wentWrong"));
       setSaving(false);
     }
   }
@@ -324,8 +328,8 @@ export default function ListEditor({
         };
         throw new Error(
           res.status === 401
-            ? "Your session expired — sign in again, then delete it."
-            : (body.error ?? `Couldn't delete the list (error ${res.status}).`)
+            ? t("errors.sessionExpired")
+            : (body.error ?? t("errors.deleteFailed", { status: res.status }))
         );
       }
 
@@ -337,7 +341,7 @@ export default function ListEditor({
       window.location.assign("/lists");
     } catch (err) {
       setDeleteError(
-        err instanceof Error ? err.message : "Something went wrong."
+        err instanceof Error ? err.message : t("errors.wentWrong")
       );
       setSaving(false);
     }
@@ -350,28 +354,26 @@ export default function ListEditor({
           consistent format across the create button's options). --- */}
       <div className="space-y-2">
         <h1 className="crt-title text-3xl sm:text-4xl">
-          {mode === "edit" ? "Edit List" : "New List"}
+          {mode === "edit" ? t("editTitle") : t("newTitle")}
         </h1>
         <p className="text-sm text-text-secondary">
-          {mode === "edit"
-            ? "Tweak the lineup."
-            : "Gather albums into something worth sharing."}
+          {mode === "edit" ? t("editSub") : t("newSub")}
         </p>
       </div>
 
       {/* --- List details --- */}
       <fieldset className="panel-xbox p-5 space-y-4">
-        <legend className="label-xbox">List Details</legend>
+        <legend className="label-xbox">{t("details")}</legend>
 
         <div className="space-y-1.5">
           <label className="font-[family-name:var(--font-heading)] text-xs font-bold text-[#9a9a9e] uppercase tracking-wider block">
-            Title * ({title.length}/120)
+            {t("titleLabel", { n: title.length })}
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value.slice(0, 120))}
-            placeholder="e.g. Best albums of 2026"
+            placeholder={t("titlePlaceholder")}
             maxLength={120}
             required
             className="form-input"
@@ -380,12 +382,12 @@ export default function ListEditor({
 
         <div className="space-y-1.5">
           <label className="font-[family-name:var(--font-heading)] text-xs font-bold text-[#9a9a9e] uppercase tracking-wider block">
-            Description ({description.length}/2000)
+            {t("descriptionLabel", { n: description.length })}
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value.slice(0, 2000))}
-            placeholder="What ties these together?"
+            placeholder={t("descriptionPlaceholder")}
             rows={4}
             maxLength={2000}
             className="form-input resize-none"
@@ -402,8 +404,9 @@ export default function ListEditor({
               className="w-4 h-4 accent-[#1e90ff]"
             />
             <span className="text-sm text-text-secondary">
-              Ranked list{" "}
-              <span className="text-text-muted">(shows 1, 2, 3… badges)</span>
+              {t.rich("ranked", {
+                muted: (chunks) => <span className="text-text-muted">{chunks}</span>,
+              })}
             </span>
           </label>
 
@@ -415,7 +418,9 @@ export default function ListEditor({
               className="w-4 h-4 accent-[#1e90ff]"
             />
             <span className="text-sm text-text-secondary">
-              Public <span className="text-text-muted">(anyone can view)</span>
+              {t.rich("public", {
+                muted: (chunks) => <span className="text-text-muted">{chunks}</span>,
+              })}
             </span>
           </label>
         </div>
@@ -425,21 +430,21 @@ export default function ListEditor({
           overflow-visible: hosts the catalog search dropdown, which the
           panel's default overflow:hidden would clip. */}
       <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
-        <legend className="label-xbox">Albums ({items.length})</legend>
+        <legend className="label-xbox">{t("albums", { n: items.length })}</legend>
 
         {/* Add via the unified catalog picker — local rows, Spotify
             albums, and Genius deep cuts (unreleased included). */}
         <div className="space-y-2">
-          <span className="label-xbox block">Add a release</span>
+          <span className="label-xbox block">{t("addRelease")}</span>
           <CatalogSearch
             onPick={handleAddRelease}
-            placeholder="Search any album, EP, single — even unreleased…"
+            placeholder={t("searchPlaceholder")}
           />
         </div>
 
         {items.length === 0 ? (
           <p className="text-sm text-text-muted italic">
-            Nothing here yet — search above to start stacking albums.
+            {t("nothingYet")}
           </p>
         ) : (
           <ol className="space-y-3">
@@ -454,7 +459,7 @@ export default function ListEditor({
                     type="button"
                     onClick={() => moveItem(item.localId, -1)}
                     disabled={index === 0}
-                    aria-label="Move up"
+                    aria-label={t("moveUp")}
                     className="text-text-muted hover:text-accent-primary disabled:opacity-30 disabled:hover:text-text-muted transition-colors"
                   >
                     ▲
@@ -466,7 +471,7 @@ export default function ListEditor({
                     type="button"
                     onClick={() => moveItem(item.localId, 1)}
                     disabled={index === items.length - 1}
-                    aria-label="Move down"
+                    aria-label={t("moveDown")}
                     className="text-text-muted hover:text-accent-primary disabled:opacity-30 disabled:hover:text-text-muted transition-colors"
                   >
                     ▼
@@ -501,7 +506,7 @@ export default function ListEditor({
                     type="text"
                     value={item.note}
                     onChange={(e) => updateNote(item.localId, e.target.value)}
-                    placeholder="Add a note (optional)..."
+                    placeholder={t("notePlaceholder")}
                     maxLength={500}
                     className="form-input text-sm"
                   />
@@ -511,8 +516,8 @@ export default function ListEditor({
                 <button
                   type="button"
                   onClick={() => removeItem(item.localId)}
-                  title="Remove from list"
-                  aria-label={`Remove ${item.title}`}
+                  title={t("removeTitle")}
+                  aria-label={t("removeAria", { title: item.title })}
                   className="mt-1 text-[#5a5a60] hover:text-accent-rose transition-colors shrink-0"
                 >
                   <svg
@@ -550,7 +555,7 @@ export default function ListEditor({
           disabled={saving}
           className="btn-y2k btn-y2k-primary disabled:opacity-50"
         >
-          {saving ? "Saving..." : mode === "edit" ? "Save Changes" : "Create List"}
+          {saving ? t("saving") : mode === "edit" ? t("saveChanges") : t("create")}
         </button>
 
         <button
@@ -559,7 +564,7 @@ export default function ListEditor({
           disabled={saving}
           className="btn-y2k btn-y2k-outline disabled:opacity-50"
         >
-          {saving ? "Saving..." : "Save as Draft"}
+          {saving ? t("saving") : t("saveDraft")}
         </button>
 
         <button
@@ -568,7 +573,7 @@ export default function ListEditor({
           disabled={saving}
           className="btn-y2k btn-y2k-outline disabled:opacity-50"
         >
-          Cancel
+          {tc("cancel")}
         </button>
 
       </div>
@@ -584,11 +589,10 @@ export default function ListEditor({
           reveals a confirm; only "Delete Forever" is destructive. */}
       {mode === "edit" && (
         <fieldset className="panel-xbox p-5 space-y-4 border-[#e0557540]">
-          <legend className="label-xbox text-accent-rose">Danger Zone</legend>
+          <legend className="label-xbox text-accent-rose">{t("dangerZone")}</legend>
 
           <p className="text-sm text-text-secondary leading-relaxed">
-            Deleting this list removes it and everything in it. There is no
-            undo.
+            {t("dangerBody")}
           </p>
 
           {/* Right here, not in the page-top error block — a failure
@@ -606,7 +610,7 @@ export default function ListEditor({
               disabled={saving}
               className="btn-y2k btn-y2k-outline !border-accent-rose !text-accent-rose disabled:opacity-50"
             >
-              Delete List
+              {t("deleteList")}
             </button>
           ) : (
             <div className="flex flex-wrap gap-3">
@@ -616,7 +620,7 @@ export default function ListEditor({
                 disabled={saving}
                 className="btn-y2k !bg-accent-rose !border-accent-rose !text-black disabled:opacity-40"
               >
-                {saving ? "Deleting..." : "Delete Forever"}
+                {saving ? t("deleting") : t("deleteForever")}
               </button>
               <button
                 type="button"
@@ -624,7 +628,7 @@ export default function ListEditor({
                 disabled={saving}
                 className="btn-y2k btn-y2k-outline disabled:opacity-50"
               >
-                Keep It
+                {t("keepIt")}
               </button>
             </div>
           )}

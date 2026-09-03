@@ -941,5 +941,92 @@
     "dropsSoon": "BINNENKORT",
     "loading": "LADEN…",
     "onPmr": "OP PMR"
+  },
+  "lists": {
+    "index": {
+      "title": "LIJSTEN",
+      "sub": "Albums, samengesteld — ranglijsten, stemmingen, obsessies.",
+      "newList": "+ Nieuwe lijst",
+      "none": "Nog geen lijsten.",
+      "beFirst": "wees de eerste die iets rangschikt",
+      "start": "Een lijst beginnen",
+      "signInToStart": "Log in om er een te beginnen"
+    },
+    "page": {
+      "ranked": "Gerangschikt",
+      "private": "Privé",
+      "byAuthor": "een lijst van <b>naam</b>",
+      "openOnSpotify": "▶ Open in Spotify",
+      "albums": "{n, plural, one {# album} other {# albums}}",
+      "empty": "Deze lijst is leeg (voorlopig).",
+      "emptyOwner": "tik op Bewerken om albums toe te voegen",
+      "likeList": "Lijst liken",
+      "unlikeList": "Like verwijderen"
+    },
+    "deleteButton": {
+      "confirm": "“{title}” verwijderen?",
+      "couldnt": "Verwijderen mislukt.",
+      "network": "Netwerkstoring — probeer opnieuw."
+    },
+    "playlist": {
+      "reading": "Playlist lezen…",
+      "saveAsList": "Opslaan als lijst",
+      "couldntSave": "Die playlist kon niet worden opgeslagen.",
+      "network": "Netwerkfout — probeer opnieuw.",
+      "importTitle": "Begin met een Spotify-playlist",
+      "readingShort": "Lezen…",
+      "build": "Lijst bouwen",
+      "detected": "✓ Spotify-playlist gevonden — elke track wordt een lijstitem.",
+      "notALink": "Geen Spotify-playlistlink. Plak een open.spotify.com/playlist/…-URL.",
+      "couldntRead": "Die playlist kon niet worden gelezen.",
+      "hint": "plak een playlist en wij bouwen de lijst voor je (eerste 100 tracks) — of sla dit over en voeg hieronder platen één voor één toe"
+    },
+    "editor": {
+      "editTitle": "Lijst bewerken",
+      "newTitle": "Nieuwe lijst",
+      "editSub": "Pas de opstelling aan.",
+      "newSub": "Verzamel albums tot iets dat het delen waard is.",
+      "details": "Lijstdetails",
+      "titleLabel": "Titel * ({n}/120)",
+      "titlePlaceholder": "bijv. Beste albums van 2026",
+      "descriptionLabel": "Beschrijving ({n}/2000)",
+      "descriptionPlaceholder": "Wat verbindt ze?",
+      "ranked": "Gerangschikte lijst <muted>(toont 1, 2, 3…-badges)</muted>",
+      "public": "Openbaar <muted>(iedereen kan kijken)</muted>",
+      "albums": "Albums ({n})",
+      "addRelease": "Een release toevoegen",
+      "searchPlaceholder": "Zoek een album, ep, single — zelfs onuitgebracht…",
+      "nothingYet": "Nog niets hier — zoek hierboven om albums te stapelen.",
+      "moveUp": "Omhoog",
+      "moveDown": "Omlaag",
+      "notePlaceholder": "Voeg een notitie toe (optioneel)...",
+      "removeTitle": "Uit lijst verwijderen",
+      "removeAria": "{title} verwijderen",
+      "saveChanges": "Wijzigingen opslaan",
+      "create": "Lijst aanmaken",
+      "saveDraft": "Opslaan als concept",
+      "saving": "Opslaan...",
+      "dangerZone": "Gevarenzone",
+      "dangerBody": "Deze lijst verwijderen wist hem met alles erin. Geen weg terug.",
+      "deleteList": "Lijst verwijderen",
+      "deleting": "Verwijderen...",
+      "deleteForever": "Voorgoed verwijderen",
+      "keepIt": "Behouden",
+      "errors": {
+        "needTitle": "Geef je lijst een titel.",
+        "titleTooLong": "De titel mag maximaal 120 tekens zijn.",
+        "descTooLong": "De beschrijving mag maximaal 2000 tekens zijn.",
+        "createFailed": "Lijst aanmaken mislukt.",
+        "addItemFailed": "Item toevoegen mislukt.",
+        "missingList": "Geen lijst om te bewerken.",
+        "saveFailed": "Lijst opslaan mislukt.",
+        "removeFailed": "Item verwijderen mislukt.",
+        "noteFailed": "Notitie opslaan mislukt.",
+        "reorderFailed": "Items herschikken mislukt.",
+        "wentWrong": "Er ging iets mis.",
+        "sessionExpired": "Je sessie is verlopen — log opnieuw in en verwijder hem dan.",
+        "deleteFailed": "De lijst kon niet worden verwijderd (fout {status})."
+      }
+    }
   }
 }

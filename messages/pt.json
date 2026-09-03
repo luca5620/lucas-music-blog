@@ -941,5 +941,92 @@
     "dropsSoon": "SAI EM BREVE",
     "loading": "CARREGANDO…",
     "onPmr": "NO PMR"
+  },
+  "lists": {
+    "index": {
+      "title": "LISTAS",
+      "sub": "Álbuns, com curadoria — rankings, climas, obsessões.",
+      "newList": "+ Nova lista",
+      "none": "Nenhuma lista ainda.",
+      "beFirst": "seja o primeiro a ranquear algo",
+      "start": "Começar uma lista",
+      "signInToStart": "Entre para começar uma"
+    },
+    "page": {
+      "ranked": "Ranqueada",
+      "private": "Privada",
+      "byAuthor": "uma lista de <b>nome</b>",
+      "openOnSpotify": "▶ Abrir no Spotify",
+      "albums": "{n, plural, one {# álbum} other {# álbuns}}",
+      "empty": "Esta lista está vazia (por enquanto).",
+      "emptyOwner": "toque em Editar para começar a adicionar álbuns",
+      "likeList": "Curtir lista",
+      "unlikeList": "Descurtir lista"
+    },
+    "deleteButton": {
+      "confirm": "Excluir “{title}”?",
+      "couldnt": "Não deu para excluir.",
+      "network": "Falha de rede — tente de novo."
+    },
+    "playlist": {
+      "reading": "Lendo a playlist…",
+      "saveAsList": "Salvar como lista",
+      "couldntSave": "Não deu para salvar essa playlist.",
+      "network": "Erro de rede — tente de novo.",
+      "importTitle": "Comece de uma playlist do Spotify",
+      "readingShort": "Lendo…",
+      "build": "Montar a lista",
+      "detected": "✓ Playlist do Spotify detectada — cada faixa vira um item da lista.",
+      "notALink": "Não é um link de playlist do Spotify. Cole uma URL open.spotify.com/playlist/….",
+      "couldntRead": "Não deu para ler essa playlist.",
+      "hint": "cole uma playlist e a gente monta a lista para você (primeiras 100 faixas) — ou pule isso e adicione discos um por um abaixo"
+    },
+    "editor": {
+      "editTitle": "Editar lista",
+      "newTitle": "Nova lista",
+      "editSub": "Ajuste a escalação.",
+      "newSub": "Reúna álbuns em algo que valha a pena compartilhar.",
+      "details": "Detalhes da lista",
+      "titleLabel": "Título * ({n}/120)",
+      "titlePlaceholder": "ex.: Melhores álbuns de 2026",
+      "descriptionLabel": "Descrição ({n}/2000)",
+      "descriptionPlaceholder": "O que une esses álbuns?",
+      "ranked": "Lista ranqueada <muted>(mostra selos 1, 2, 3…)</muted>",
+      "public": "Pública <muted>(qualquer um pode ver)</muted>",
+      "albums": "Álbuns ({n})",
+      "addRelease": "Adicionar um lançamento",
+      "searchPlaceholder": "Busque qualquer álbum, EP, single — até inéditos…",
+      "nothingYet": "Nada aqui ainda — busque acima para começar a empilhar álbuns.",
+      "moveUp": "Subir",
+      "moveDown": "Descer",
+      "notePlaceholder": "Adicione uma nota (opcional)...",
+      "removeTitle": "Remover da lista",
+      "removeAria": "Remover {title}",
+      "saveChanges": "Salvar alterações",
+      "create": "Criar lista",
+      "saveDraft": "Salvar como rascunho",
+      "saving": "Salvando...",
+      "dangerZone": "Zona de perigo",
+      "dangerBody": "Excluir esta lista remove ela e tudo o que há nela. Não há como desfazer.",
+      "deleteList": "Excluir lista",
+      "deleting": "Excluindo...",
+      "deleteForever": "Excluir para sempre",
+      "keepIt": "Manter",
+      "errors": {
+        "needTitle": "Dê um título à sua lista.",
+        "titleTooLong": "O título deve ter no máximo 120 caracteres.",
+        "descTooLong": "A descrição deve ter no máximo 2000 caracteres.",
+        "createFailed": "Falha ao criar a lista.",
+        "addItemFailed": "Falha ao adicionar um item.",
+        "missingList": "Lista para editar não encontrada.",
+        "saveFailed": "Falha ao salvar a lista.",
+        "removeFailed": "Falha ao remover um item.",
+        "noteFailed": "Falha ao salvar a nota de um item.",
+        "reorderFailed": "Falha ao reordenar os itens.",
+        "wentWrong": "Algo deu errado.",
+        "sessionExpired": "Sua sessão expirou — entre de novo e depois exclua.",
+        "deleteFailed": "Não deu para excluir a lista (erro {status})."
+      }
+    }
   }
 }

@@ -941,5 +941,92 @@
     "dropsSoon": "SALE PRONTO",
     "loading": "CARGANDO…",
     "onPmr": "EN PMR"
+  },
+  "lists": {
+    "index": {
+      "title": "LISTAS",
+      "sub": "Álbumes curados: rankings, estados de ánimo, obsesiones.",
+      "newList": "+ Nueva lista",
+      "none": "Todavía no hay listas.",
+      "beFirst": "sé el primero en clasificar algo",
+      "start": "Empezar una lista",
+      "signInToStart": "Inicia sesión para empezar una"
+    },
+    "page": {
+      "ranked": "Clasificada",
+      "private": "Privada",
+      "byAuthor": "una lista de <b>nombre</b>",
+      "openOnSpotify": "▶ Abrir en Spotify",
+      "albums": "{n, plural, one {# álbum} other {# álbumes}}",
+      "empty": "Esta lista está vacía (por ahora).",
+      "emptyOwner": "toca Editar para empezar a agregar álbumes",
+      "likeList": "Me gusta la lista",
+      "unlikeList": "Quitar me gusta"
+    },
+    "deleteButton": {
+      "confirm": "¿Eliminar “{title}”?",
+      "couldnt": "No se pudo eliminar.",
+      "network": "Falló la red. Inténtalo de nuevo."
+    },
+    "playlist": {
+      "reading": "Leyendo la playlist…",
+      "saveAsList": "Guardar como lista",
+      "couldntSave": "No se pudo guardar esa playlist.",
+      "network": "Error de red. Inténtalo de nuevo.",
+      "importTitle": "Empieza desde una playlist de Spotify",
+      "readingShort": "Leyendo…",
+      "build": "Crear la lista",
+      "detected": "✓ Playlist de Spotify detectada: cada canción se vuelve una entrada de la lista.",
+      "notALink": "No es un enlace de playlist de Spotify. Pega una URL open.spotify.com/playlist/….",
+      "couldntRead": "No se pudo leer esa playlist.",
+      "hint": "pega una playlist y creamos la lista por ti (primeras 100 canciones), o sáltate esto y agrega discos uno por uno abajo"
+    },
+    "editor": {
+      "editTitle": "Editar lista",
+      "newTitle": "Nueva lista",
+      "editSub": "Ajusta la alineación.",
+      "newSub": "Reúne álbumes en algo que valga la pena compartir.",
+      "details": "Detalles de la lista",
+      "titleLabel": "Título * ({n}/120)",
+      "titlePlaceholder": "p. ej. Mejores álbumes de 2026",
+      "descriptionLabel": "Descripción ({n}/2000)",
+      "descriptionPlaceholder": "¿Qué las une?",
+      "ranked": "Lista clasificada <muted>(muestra insignias 1, 2, 3…)</muted>",
+      "public": "Pública <muted>(cualquiera puede verla)</muted>",
+      "albums": "Álbumes ({n})",
+      "addRelease": "Agregar un lanzamiento",
+      "searchPlaceholder": "Busca cualquier álbum, EP, sencillo, incluso inéditos…",
+      "nothingYet": "Todavía no hay nada: busca arriba para empezar a apilar álbumes.",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "notePlaceholder": "Agrega una nota (opcional)...",
+      "removeTitle": "Quitar de la lista",
+      "removeAria": "Quitar {title}",
+      "saveChanges": "Guardar cambios",
+      "create": "Crear lista",
+      "saveDraft": "Guardar como borrador",
+      "saving": "Guardando...",
+      "dangerZone": "Zona de peligro",
+      "dangerBody": "Eliminar esta lista la borra con todo lo que contiene. No hay vuelta atrás.",
+      "deleteList": "Eliminar lista",
+      "deleting": "Eliminando...",
+      "deleteForever": "Eliminar para siempre",
+      "keepIt": "Conservarla",
+      "errors": {
+        "needTitle": "Ponle un título a tu lista.",
+        "titleTooLong": "El título debe tener 120 caracteres o menos.",
+        "descTooLong": "La descripción debe tener 2000 caracteres o menos.",
+        "createFailed": "No se pudo crear la lista.",
+        "addItemFailed": "No se pudo agregar un elemento.",
+        "missingList": "Falta la lista a editar.",
+        "saveFailed": "No se pudo guardar la lista.",
+        "removeFailed": "No se pudo quitar un elemento.",
+        "noteFailed": "No se pudo guardar la nota de un elemento.",
+        "reorderFailed": "No se pudo reordenar los elementos.",
+        "wentWrong": "Algo salió mal.",
+        "sessionExpired": "Tu sesión expiró: inicia sesión otra vez y luego elimínala.",
+        "deleteFailed": "No se pudo eliminar la lista (error {status})."
+      }
+    }
   }
 }

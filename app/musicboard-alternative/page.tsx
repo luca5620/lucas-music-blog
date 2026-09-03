@@ -97,13 +97,13 @@ const OTHERS = [
   {
     name: "RateYourMusic",
     verdict:
-      "The deepest ratings database and genre charts on the internet, built over two decades. But it's web-only, the interface hasn't meaningfully changed in years, and there's no app and no real social layer. Pick it if you want an encyclopedia, not a community.",
+      "The deepest ratings database and genre charts on the internet, built over two decades, with a community of serious listeners to match. It's web-only with no app, and it's built around cataloguing rather than feeds and conversation. A great choice if depth of data is what you value most.",
     label: "THE ARCHIVE",
   },
   {
     name: "Album of the Year",
     verdict:
-      "Great for one thing: aggregated critic + user scores and year-end charts. Reviews and profiles exist but the social features are thin and it's built web-first. Pick it if you mainly want to check scores.",
+      "The best place for aggregated critic and user scores and year-end charts. Reviews and profiles are there too, with a lighter social layer, and it's built web-first. A great choice if you mainly want to check and compare scores.",
     label: "THE SCOREBOARD",
   },
   {

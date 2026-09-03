@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 
 /**
  * DeleteAccountSection — the settings-page danger zone.
@@ -25,6 +26,9 @@ export default function DeleteAccountSection({
   const [confirmText, setConfirmText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // LANGUAGES: messages → settings.deletion. The API's own error text
+  // (if it sends one) is shown as-is.
+  const t = useTranslations("settings.deletion");
 
   const armed = confirmText.trim().toLowerCase() === username.toLowerCase();
 
@@ -38,7 +42,7 @@ export default function DeleteAccountSection({
         const data = (await res.json().catch(() => null)) as {
           error?: string;
         } | null;
-        throw new Error(data?.error ?? "Deletion failed");
+        throw new Error(data?.error ?? t("failed"));
       }
       // Server session is gone — clear the client copy too, then a
       // hard reload so every auth-aware component starts signed out.
@@ -49,7 +53,7 @@ export default function DeleteAccountSection({
       }
       window.location.href = "/";
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Deletion failed");
+      setError(err instanceof Error ? err.message : t("failed"));
       setBusy(false);
     }
   };
@@ -60,10 +64,9 @@ export default function DeleteAccountSection({
   return (
     <div className="space-y-4">
       <p className="text-sm text-text-secondary leading-relaxed">
-        Deleting your account removes your profile and{" "}
-        <strong className="text-text-primary">everything you made</strong> —
-        reviews, lists, posts, debate votes, chat messages, uploads. There is
-        no undo and no recovery.
+        {t.rich("intro", {
+          b: (chunks) => <strong className="text-text-primary">{chunks}</strong>,
+        })}
       </p>
 
       {!open ? (
@@ -72,14 +75,14 @@ export default function DeleteAccountSection({
           onClick={() => setOpen(true)}
           className="btn-y2k btn-y2k-outline !border-accent-rose !text-accent-rose"
         >
-          Delete Account
+          {t("delete")}
         </button>
       ) : (
         <div className="space-y-3">
           <label className="block text-sm text-text-secondary">
-            Type your username{" "}
-            <span className="font-bold text-text-primary">@{username}</span> to
-            confirm:
+            {t.rich("typeUsername", {
+              b: () => <span className="font-bold text-text-primary">@{username}</span>,
+            })}
           </label>
           <input
             type="text"
@@ -96,7 +99,7 @@ export default function DeleteAccountSection({
               disabled={!armed || busy}
               className="btn-y2k !bg-accent-rose !border-accent-rose !text-black disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {busy ? "Deleting..." : "Delete Forever"}
+              {busy ? t("deleting") : t("forever")}
             </button>
             <button
               type="button"
@@ -108,7 +111,7 @@ export default function DeleteAccountSection({
               disabled={busy}
               className="btn-y2k btn-y2k-outline"
             >
-              Cancel
+              {t("cancel")}
             </button>
           </div>
           {error && (

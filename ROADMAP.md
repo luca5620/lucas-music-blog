@@ -109,6 +109,15 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 3 (settings) shipped:** app/settings/profile (every section
+    title/hint/field/placeholder, theme descriptions under
+    settings.appearance.themeDesc.<id>, showcase names via home.showcases
+    + hints via settings.showcases.hints.<id>, all save/upload/username
+    errors, UploadField), ChangePasswordSection, DeleteAccountSection
+    (rich <b> sentences). Theme names, platform names, catalog titles
+    untouched. Build green; the route is auth-gated so curl can't render
+    it — eyeball in the app. Badge labels/descriptions (lib/badges) still
+    English → profile batch.
   - **Batch 2 (auth) shipped:** /login (all four screens incl. the staff
     code step + every error), /signup (five screens, plural "more
     characters", rich EULA sentence), /forgot-password, /reset-password,

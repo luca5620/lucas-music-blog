@@ -63,7 +63,172 @@
     "performance": "Performance",
     "performanceHint": "Low detail mode — on by default, switch it off for the full effects.",
     "language": "Language",
-    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch.",
+    "tuning": "TUNING…",
+    "title": "Customize Your Profile",
+    "sub": "pick a theme, arrange your showcases, make it yours",
+    "preview": {
+      "yourName": "Your Name",
+      "live": "Live Preview",
+      "alt": "Preview"
+    },
+    "errors": {
+      "notImage": "That file isn't an image.",
+      "tooBig": "Image is too big — keep it under {mb}MB.",
+      "uploadFailed": "Upload failed: {reason}",
+      "badLink": "That {platform} link isn't a {platform} URL — paste one from {host}.",
+      "usernameRules": "Usernames are 3–20 characters: lowercase letters, numbers, underscores.",
+      "usernameAgainOn": "You can change your username again on {date}.",
+      "cooldownDate": "Usernames can only change once every 2 weeks — you can change yours again on {date}.",
+      "cooldownSoon": "Usernames can only change once every 2 weeks — you can change yours again soon.",
+      "displayNameLimit": "Display names can only change twice a day — try again tomorrow.",
+      "reserved": "That username is reserved.",
+      "taken": "That username is already taken."
+    },
+    "identity": {
+      "title": "Identity",
+      "hint": "Display name, username, tagline, pronouns, location, bio.",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "Your display name",
+      "twiceADay": "Can be changed up to twice a day.",
+      "username": "Username",
+      "usernamePlaceholder": "your_username",
+      "permanent": "Usernames are permanent — change your display name instead.",
+      "lockedUntil": "You can change your username again on {date}.",
+      "every2weeks": "You can change your username once every 2 weeks — your profile URL changes with it.",
+      "tagline": "Tagline ({n}/120)",
+      "taglinePlaceholder": "One line under your name — your motto, your era, whatever",
+      "pronouns": "Pronouns",
+      "pronounsPlaceholder": "they/them",
+      "location": "Location",
+      "locationPlaceholder": "City, planet, wherever",
+      "bio": "Bio ({n}/500)",
+      "bioPlaceholder": "Tell people about yourself..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "hint": "Theme preset, avatar, banner, streak icon.",
+      "presets": "Theme Presets",
+      "themeDesc": {
+        "crt-blue": "The standard Peak Music Reviews look",
+        "ps2": "The boot-screen galaxy — indigo clouds and silver dust",
+        "ps3": "Black void, silver-blue shimmer, thin airy type",
+        "ps4": "Deep PlayStation blue, clean and modern",
+        "xbox-og": "Acid green on black metal, industrial type",
+        "xbox-360": "Blade-dashboard green, glossy and friendly",
+        "wii": "White channel cards, rounded and cheerful",
+        "limewire": "Where internet music began — beveled freeware beige",
+        "bleach": "Manga ink — stark black & white with a blood-red slash",
+        "daft-punk": "Helmet chrome and Discovery gold, neon horizon"
+      },
+      "avatar": "Avatar",
+      "avatarHint": "Square works best · max 2MB",
+      "banner": "Banner",
+      "bannerHint": "Wide (~3:1) works best · max 6MB",
+      "streakIcon": "Streak icon (Song of the Day)",
+      "flame": "Flame",
+      "vinyl": "Vinyl",
+      "cd": "CD"
+    },
+    "upload": {
+      "remove": "Remove",
+      "noneSet": "none set",
+      "uploading": "Uploading…",
+      "upload": "Upload {label}",
+      "previewAlt": "{label} preview"
+    },
+    "showcases": {
+      "title": "Showcases",
+      "hint": "Which blocks appear on your profile, and in what order.",
+      "intro": "Pick which blocks appear on your profile and drag their order with the arrows. Top of the list = top of your page.",
+      "hints": {
+        "stats": "Review count, average, rating histogram",
+        "recent_reviews": "Your latest 8 reviews as a poster wall",
+        "featured_review": "One pinned review, front and center",
+        "lists": "Your newest public lists",
+        "anticipated": "Releases you follow, unreleased included",
+        "listening": "What you're playing right now / last played (needs your stats.fm link below)",
+        "listening_stats": "Lifetime minutes + total streams (needs your stats.fm link below)",
+        "sotd": "Daily pick — keep it up every day to grow your streak flame"
+      },
+      "toggle": "Toggle {label}",
+      "moveUp": "Move {label} up",
+      "moveDown": "Move {label} down",
+      "featured": "Feature Presentation — pinned review",
+      "none": "None",
+      "writeFirst": "Write a review first — then you can pin it here."
+    },
+    "badges": {
+      "title": "Badges",
+      "hint": "Choose which badges show under your username.",
+      "intro": "Every profile wears a reviews trophy, a likes trophy and a years-of-service badge under the username, plus any badge you've been awarded. Untick the ones you'd rather keep to yourself — nothing is deleted, and you'll still see hidden ones dimmed on your own profile.",
+      "show": "Show {label} on my profile",
+      "hidden": "hidden"
+    },
+    "player": {
+      "title": "Preview Player",
+      "hint": "Spotify or Apple Music on release pages.",
+      "intro": "Release pages show one preview player. Pick the service you actually use — signed in to it in your browser, previews become full tracks.",
+      "spotifyBlurb": "The default. Every release we have.",
+      "appleBlurb": "Where Apple carries the record; otherwise Spotify fills in."
+    },
+    "song": {
+      "title": "Profile Song",
+      "hint": "One track from the catalog, playing on your profile.",
+      "remove": "Remove",
+      "pickTrack": "Pick the track from <b>title</b>:",
+      "preview": "▶ PREVIEW",
+      "differentRelease": "← different release",
+      "searchPlaceholder": "Search for your profile song…"
+    },
+    "platforms": {
+      "title": "Connected Platforms",
+      "hint": "Streaming and social links, featured playlist, link privacy.",
+      "intro": "Drop a link for any platform you use. Ticked ones show on your profile, left to right in this order — use the arrows to reorder. A link that isn't from that platform won't save.",
+      "show": "Show {platform} on my profile",
+      "position": "#{n} on profile",
+      "moveLeft": "Move {platform} left",
+      "moveRight": "Move {platform} right",
+      "linkAria": "{platform} link",
+      "notALink": "Not a {platform} link — paste a {host} URL. (Won't be saved until it's fixed or cleared.)",
+      "playlist": "Featured Spotify playlist",
+      "playlistDetected": "✓ Playlist detected — it'll play on your profile.",
+      "notAPlaylist": "Not a Spotify playlist link — paste an open.spotify.com/playlist/… URL. (Won't be saved until it's fixed or cleared.)",
+      "hideLinks": "Don't show these on my profile",
+      "hideLinksBody": "Your links stay saved and keep powering things like the stats.fm showcases — visitors just won't see the icon row on your profile."
+    },
+    "save": {
+      "saved": "Saved. Your profile is updated.",
+      "saving": "Saving...",
+      "save": "Save Changes",
+      "viewProfile": "View Profile"
+    },
+    "password": {
+      "title": "Password",
+      "hint": "Pick a new one — takes effect everywhere you're signed in.",
+      "intro": "Pick a new one — takes effect immediately, everywhere you're signed in.",
+      "newPassword": "New password",
+      "newPlaceholder": "At least 6 characters",
+      "repeat": "Repeat it",
+      "repeatPlaceholder": "Same thing again",
+      "saving": "Saving…",
+      "change": "Change password",
+      "min6": "At least 6 characters.",
+      "mismatch": "The two entries don't match.",
+      "same": "That's already your password — pick a new one.",
+      "changed": "Password changed. ✓"
+    },
+    "deletion": {
+      "title": "Account Deletion",
+      "hint": "Remove your profile and everything you made. No undo.",
+      "intro": "Deleting your account removes your profile and <b>everything you made</b> — reviews, lists, posts, debate votes, chat messages, uploads. There is no undo and no recovery.",
+      "delete": "Delete Account",
+      "typeUsername": "Type your username <b>@name</b> to confirm:",
+      "deleting": "Deleting...",
+      "forever": "Delete Forever",
+      "cancel": "Cancel",
+      "failed": "Deletion failed"
+    }
   },
   "pending": {
     "tuning": "TUNING…"
@@ -168,7 +333,8 @@
       "mixtapes": "Mixtapes",
       "waitingOn": "Waiting On",
       "onRotation": "On Rotation",
-      "songOfTheDay": "Song of the Day"
+      "songOfTheDay": "Song of the Day",
+      "listeningStats": "All-Time Listening"
     },
     "community": {
       "eyebrow": "Community",

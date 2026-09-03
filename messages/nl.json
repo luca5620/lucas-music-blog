@@ -63,7 +63,172 @@
     "performance": "Prestaties",
     "performanceHint": "Lage-detailmodus — standaard aan, zet uit voor alle effecten.",
     "language": "Taal",
-    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch.",
+    "tuning": "AFSTEMMEN…",
+    "title": "Pas je profiel aan",
+    "sub": "kies een thema, deel je showcases in, maak het van jou",
+    "preview": {
+      "yourName": "Jouw naam",
+      "live": "Live voorbeeld",
+      "alt": "Voorbeeld"
+    },
+    "errors": {
+      "notImage": "Dat bestand is geen afbeelding.",
+      "tooBig": "Afbeelding is te groot — houd het onder {mb}MB.",
+      "uploadFailed": "Upload mislukt: {reason}",
+      "badLink": "Die {platform}-link is geen {platform}-URL — plak er een van {host}.",
+      "usernameRules": "Gebruikersnamen zijn 3–20 tekens: kleine letters, cijfers, underscores.",
+      "usernameAgainOn": "Je kunt je gebruikersnaam weer wijzigen op {date}.",
+      "cooldownDate": "Gebruikersnamen kunnen maar eens per 2 weken veranderen — je kunt de jouwe weer wijzigen op {date}.",
+      "cooldownSoon": "Gebruikersnamen kunnen maar eens per 2 weken veranderen — je kunt de jouwe binnenkort weer wijzigen.",
+      "displayNameLimit": "Weergavenamen kunnen maar twee keer per dag veranderen — probeer het morgen opnieuw.",
+      "reserved": "Die gebruikersnaam is gereserveerd.",
+      "taken": "Die gebruikersnaam is al bezet."
+    },
+    "identity": {
+      "title": "Identiteit",
+      "hint": "Weergavenaam, gebruikersnaam, motto, voornaamwoorden, locatie, bio.",
+      "displayName": "Weergavenaam",
+      "displayNamePlaceholder": "Je weergavenaam",
+      "twiceADay": "Kan tot twee keer per dag worden gewijzigd.",
+      "username": "Gebruikersnaam",
+      "usernamePlaceholder": "jouw_naam",
+      "permanent": "Gebruikersnamen zijn permanent — wijzig in plaats daarvan je weergavenaam.",
+      "lockedUntil": "Je kunt je gebruikersnaam weer wijzigen op {date}.",
+      "every2weeks": "Je kunt je gebruikersnaam eens per 2 weken wijzigen — de URL van je profiel verandert mee.",
+      "tagline": "Motto ({n}/120)",
+      "taglinePlaceholder": "Eén regel onder je naam — je motto, je tijdperk, wat dan ook",
+      "pronouns": "Voornaamwoorden",
+      "pronounsPlaceholder": "die/hen",
+      "location": "Locatie",
+      "locationPlaceholder": "Stad, planeet, waar dan ook",
+      "bio": "Bio ({n}/500)",
+      "bioPlaceholder": "Vertel iets over jezelf..."
+    },
+    "appearance": {
+      "title": "Uiterlijk",
+      "hint": "Thema, avatar, banner, reeks-icoon.",
+      "presets": "Thema's",
+      "themeDesc": {
+        "crt-blue": "De standaard Peak Music Reviews-look",
+        "ps2": "Het opstartscherm-sterrenstelsel — indigowolken en zilverstof",
+        "ps3": "Zwarte leegte, zilverblauwe glans, dunne luchtige letters",
+        "ps4": "Diep PlayStation-blauw, strak en modern",
+        "xbox-og": "Zuurgroen op zwart metaal, industriële letters",
+        "xbox-360": "Blade-dashboardgroen, glanzend en vriendelijk",
+        "wii": "Witte kanaalkaarten, rond en vrolijk",
+        "limewire": "Waar internetmuziek begon — afgeschuind freeware-beige",
+        "bleach": "Manga-inkt — hard zwart-wit met een bloedrode haal",
+        "daft-punk": "Helmchroom en Discovery-goud, neonhorizon"
+      },
+      "avatar": "Avatar",
+      "avatarHint": "Vierkant werkt het best · max 2MB",
+      "banner": "Banner",
+      "bannerHint": "Breed (~3:1) werkt het best · max 6MB",
+      "streakIcon": "Reeks-icoon (Nummer van de dag)",
+      "flame": "Vlam",
+      "vinyl": "Vinyl",
+      "cd": "Cd"
+    },
+    "upload": {
+      "remove": "Verwijderen",
+      "noneSet": "niet ingesteld",
+      "uploading": "Uploaden…",
+      "upload": "{label} uploaden",
+      "previewAlt": "Voorbeeld van {label}"
+    },
+    "showcases": {
+      "title": "Showcases",
+      "hint": "Welke blokken op je profiel verschijnen, en in welke volgorde.",
+      "intro": "Kies welke blokken op je profiel verschijnen en zet ze met de pijlen in volgorde. Bovenaan de lijst = bovenaan je pagina.",
+      "hints": {
+        "stats": "Aantal recensies, gemiddelde, cijferhistogram",
+        "recent_reviews": "Je laatste 8 recensies als postermuur",
+        "featured_review": "Eén vastgezette recensie, vooraan en centraal",
+        "lists": "Je nieuwste openbare lijsten",
+        "anticipated": "Releases die je volgt, onuitgebracht inbegrepen",
+        "listening": "Wat je nu speelt / als laatste speelde (vereist je stats.fm-link hieronder)",
+        "listening_stats": "Totaal aantal minuten + totaal aantal streams (vereist je stats.fm-link hieronder)",
+        "sotd": "Dagelijkse keuze — houd het elke dag vol om je reeksvlam te laten groeien"
+      },
+      "toggle": "{label} aan/uit",
+      "moveUp": "{label} omhoog",
+      "moveDown": "{label} omlaag",
+      "featured": "Hoofdfilm — vastgezette recensie",
+      "none": "Geen",
+      "writeFirst": "Schrijf eerst een recensie — dan kun je die hier vastzetten."
+    },
+    "badges": {
+      "title": "Badges",
+      "hint": "Kies welke badges onder je gebruikersnaam staan.",
+      "intro": "Elk profiel draagt een recensietrofee, een likestrofee en een dienstjarenbadge onder de gebruikersnaam, plus elke badge die je hebt gekregen. Vink uit wat je liever voor jezelf houdt — er wordt niets verwijderd, en verborgen badges zie je zelf nog gedimd op je eigen profiel.",
+      "show": "{label} op mijn profiel tonen",
+      "hidden": "verborgen"
+    },
+    "player": {
+      "title": "Previewspeler",
+      "hint": "Spotify of Apple Music op releasepagina's.",
+      "intro": "Releasepagina's tonen één previewspeler. Kies de dienst die je echt gebruikt — ingelogd in je browser worden previews volledige tracks.",
+      "spotifyBlurb": "De standaard. Elke release die we hebben.",
+      "appleBlurb": "Waar Apple de plaat heeft; anders vult Spotify aan."
+    },
+    "song": {
+      "title": "Profielnummer",
+      "hint": "Eén track uit de catalogus, spelend op je profiel.",
+      "remove": "Verwijderen",
+      "pickTrack": "Kies de track van <b>titel</b>:",
+      "preview": "▶ PREVIEW",
+      "differentRelease": "← andere release",
+      "searchPlaceholder": "Zoek je profielnummer…"
+    },
+    "platforms": {
+      "title": "Gekoppelde platforms",
+      "hint": "Streaming- en sociale links, uitgelichte playlist, linkprivacy.",
+      "intro": "Zet een link neer voor elk platform dat je gebruikt. Aangevinkte staan op je profiel, van links naar rechts in deze volgorde — gebruik de pijlen om te herschikken. Een link die niet van dat platform is, wordt niet opgeslagen.",
+      "show": "{platform} op mijn profiel tonen",
+      "position": "#{n} op profiel",
+      "moveLeft": "{platform} naar links",
+      "moveRight": "{platform} naar rechts",
+      "linkAria": "{platform}-link",
+      "notALink": "Geen {platform}-link — plak een {host}-URL. (Wordt niet opgeslagen tot het is hersteld of gewist.)",
+      "playlist": "Uitgelichte Spotify-playlist",
+      "playlistDetected": "✓ Playlist gevonden — hij speelt op je profiel.",
+      "notAPlaylist": "Geen Spotify-playlistlink — plak een open.spotify.com/playlist/…-URL. (Wordt niet opgeslagen tot het is hersteld of gewist.)",
+      "hideLinks": "Toon deze niet op mijn profiel",
+      "hideLinksBody": "Je links blijven opgeslagen en blijven dingen als de stats.fm-showcases voeden — bezoekers zien alleen de iconenrij niet op je profiel."
+    },
+    "save": {
+      "saved": "Opgeslagen. Je profiel is bijgewerkt.",
+      "saving": "Opslaan...",
+      "save": "Wijzigingen opslaan",
+      "viewProfile": "Profiel bekijken"
+    },
+    "password": {
+      "title": "Wachtwoord",
+      "hint": "Kies een nieuw — geldt overal waar je bent ingelogd.",
+      "intro": "Kies een nieuw — geldt meteen, overal waar je bent ingelogd.",
+      "newPassword": "Nieuw wachtwoord",
+      "newPlaceholder": "Minstens 6 tekens",
+      "repeat": "Herhaal het",
+      "repeatPlaceholder": "Hetzelfde nog een keer",
+      "saving": "Opslaan…",
+      "change": "Wachtwoord wijzigen",
+      "min6": "Minstens 6 tekens.",
+      "mismatch": "De twee invoeren komen niet overeen.",
+      "same": "Dat is al je wachtwoord — kies een nieuw.",
+      "changed": "Wachtwoord gewijzigd. ✓"
+    },
+    "deletion": {
+      "title": "Account verwijderen",
+      "hint": "Verwijder je profiel en alles wat je hebt gemaakt. Geen weg terug.",
+      "intro": "Je account verwijderen wist je profiel en <b>alles wat je hebt gemaakt</b> — recensies, lijsten, posts, debatstemmen, chatberichten, uploads. Geen ongedaan maken, geen herstel.",
+      "delete": "Account verwijderen",
+      "typeUsername": "Typ je gebruikersnaam <b>@naam</b> om te bevestigen:",
+      "deleting": "Verwijderen...",
+      "forever": "Voorgoed verwijderen",
+      "cancel": "Annuleren",
+      "failed": "Verwijderen mislukt"
+    }
   },
   "pending": {
     "tuning": "AFSTEMMEN…"
@@ -168,7 +333,8 @@
       "mixtapes": "Mixtapes",
       "waitingOn": "Wachten op",
       "onRotation": "In rotatie",
-      "songOfTheDay": "Nummer van de dag"
+      "songOfTheDay": "Nummer van de dag",
+      "listeningStats": "Totale luistertijd"
     },
     "community": {
       "eyebrow": "Community",

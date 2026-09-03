@@ -9,22 +9,25 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 
 export default function ChangePasswordSection() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
+  // LANGUAGES: messages → settings.password.
+  const t = useTranslations("settings.password");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setNote(null);
     if (password.length < 6) {
-      setNote({ ok: false, text: "At least 6 characters." });
+      setNote({ ok: false, text: t("min6") });
       return;
     }
     if (password !== confirm) {
-      setNote({ ok: false, text: "The two entries don't match." });
+      setNote({ ok: false, text: t("mismatch") });
       return;
     }
     setSaving(true);
@@ -36,13 +39,13 @@ export default function ChangePasswordSection() {
       setNote({
         ok: false,
         text: /different from the old/i.test(error.message)
-          ? "That's already your password — pick a new one."
+          ? t("same")
           : error.message,
       });
     } else {
       setPassword("");
       setConfirm("");
-      setNote({ ok: true, text: "Password changed. ✓" });
+      setNote({ ok: true, text: t("changed") });
     }
     setSaving(false);
   };
@@ -51,10 +54,7 @@ export default function ChangePasswordSection() {
   // collapsible SettingsSection that carries both (2026-09-03).
   return (
     <div className="space-y-4">
-      <p className="text-xs text-text-muted">
-        Pick a new one — takes effect immediately, everywhere
-        you&apos;re signed in.
-      </p>
+      <p className="text-xs text-text-muted">{t("intro")}</p>
 
       <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
         <div>
@@ -62,7 +62,7 @@ export default function ChangePasswordSection() {
             htmlFor="settings-new-password"
             className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
           >
-            New password
+            {t("newPassword")}
           </label>
           <input
             id="settings-new-password"
@@ -72,7 +72,7 @@ export default function ChangePasswordSection() {
             required
             minLength={6}
             className="form-input"
-            placeholder="At least 6 characters"
+            placeholder={t("newPlaceholder")}
             autoComplete="new-password"
           />
         </div>
@@ -81,7 +81,7 @@ export default function ChangePasswordSection() {
             htmlFor="settings-confirm-password"
             className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
           >
-            Repeat it
+            {t("repeat")}
           </label>
           <input
             id="settings-confirm-password"
@@ -91,7 +91,7 @@ export default function ChangePasswordSection() {
             required
             minLength={6}
             className="form-input"
-            placeholder="Same thing again"
+            placeholder={t("repeatPlaceholder")}
             autoComplete="new-password"
           />
         </div>
@@ -104,7 +104,7 @@ export default function ChangePasswordSection() {
             disabled={saving}
             className="btn-y2k btn-y2k-primary disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Change password"}
+            {saving ? t("saving") : t("change")}
           </button>
           {note && (
             <p

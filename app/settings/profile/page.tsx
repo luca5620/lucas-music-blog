@@ -58,17 +58,20 @@ import type {
    theme-* classes in globals.css AND the DB constraint from migration
    006. The swatch shows the accent; the theme-* class does the real
    work (accents, heading font, panel styling). */
-const THEMES: { id: ProfileTheme; label: string; hex: string; desc: string }[] = [
-  { id: "crt-blue", label: "Broadcast", hex: "#1e90ff", desc: "The standard Peak Music Reviews look" },
-  { id: "ps2", label: "PS2 · Nebula", hex: "#8ba7e8", desc: "The boot-screen galaxy — indigo clouds and silver dust" },
-  { id: "ps3", label: "PS3 · XMB", hex: "#7ec9e8", desc: "Black void, silver-blue shimmer, thin airy type" },
-  { id: "ps4", label: "PS4", hex: "#4a90d9", desc: "Deep PlayStation blue, clean and modern" },
-  { id: "xbox-og", label: "Xbox OG", hex: "#5dc21e", desc: "Acid green on black metal, industrial type" },
-  { id: "xbox-360", label: "Xbox 360", hex: "#92c83e", desc: "Blade-dashboard green, glossy and friendly" },
-  { id: "wii", label: "Wii", hex: "#35b7d8", desc: "White channel cards, rounded and cheerful" },
-  { id: "limewire", label: "LimeWire", hex: "#32cd32", desc: "Where internet music began — beveled freeware beige" },
-  { id: "bleach", label: "Soul Reaper", hex: "#e3342f", desc: "Manga ink — stark black & white with a blood-red slash" },
-  { id: "daft-punk", label: "Robot Rock", hex: "#f0b93c", desc: "Helmet chrome and Discovery gold, neon horizon" },
+// LANGUAGES: the LABELS are proper names and never translate; each
+// preset's one-line description lives in messages →
+// settings.appearance.themeDesc.<id>.
+const THEMES: { id: ProfileTheme; label: string; hex: string }[] = [
+  { id: "crt-blue", label: "Broadcast", hex: "#1e90ff" },
+  { id: "ps2", label: "PS2 · Nebula", hex: "#8ba7e8" },
+  { id: "ps3", label: "PS3 · XMB", hex: "#7ec9e8" },
+  { id: "ps4", label: "PS4", hex: "#4a90d9" },
+  { id: "xbox-og", label: "Xbox OG", hex: "#5dc21e" },
+  { id: "xbox-360", label: "Xbox 360", hex: "#92c83e" },
+  { id: "wii", label: "Wii", hex: "#35b7d8" },
+  { id: "limewire", label: "LimeWire", hex: "#32cd32" },
+  { id: "bleach", label: "Soul Reaper", hex: "#e3342f" },
+  { id: "daft-punk", label: "Robot Rock", hex: "#f0b93c" },
 ];
 
 /* Every showcase block a profile can display. Four Favorites was
@@ -77,15 +80,18 @@ const THEMES: { id: ProfileTheme; label: string; hex: string; desc: string }[] =
    profile page no longer renders it. "Credentials" (badges) went the
    same way 2026-09-02: badges now sit under the username on every
    profile, nothing to arrange. */
-const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string; hint: string }[] = [
-  { id: "stats", label: "Taste Readout", hint: "Review count, average, rating histogram" },
-  { id: "recent_reviews", label: "Now Showing", hint: "Your latest 8 reviews as a poster wall" },
-  { id: "featured_review", label: "Feature Presentation", hint: "One pinned review, front and center" },
-  { id: "lists", label: "Mixtapes", hint: "Your newest public lists" },
-  { id: "anticipated", label: "Waiting On", hint: "Releases you follow, unreleased included" },
-  { id: "listening", label: "On Rotation", hint: "What you're playing right now / last played (needs your stats.fm link below)" },
-  { id: "listening_stats", label: "All-Time Listening", hint: "Lifetime minutes + total streams (needs your stats.fm link below)" },
-  { id: "sotd", label: "Song of the Day", hint: "Daily pick — keep it up every day to grow your streak flame" },
+// LANGUAGES: `label` is a key into messages → home.showcases (shared
+// with the logged-out home's customization card); the hint is
+// settings.showcases.hints.<id>.
+const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string }[] = [
+  { id: "stats", label: "tasteReadout" },
+  { id: "recent_reviews", label: "nowShowing" },
+  { id: "featured_review", label: "featurePresentation" },
+  { id: "lists", label: "mixtapes" },
+  { id: "anticipated", label: "waitingOn" },
+  { id: "listening", label: "onRotation" },
+  { id: "listening_stats", label: "listeningStats" },
+  { id: "sotd", label: "songOfTheDay" },
 ];
 
 /** Uploads are capped client-side; the buckets are public-read.
@@ -97,8 +103,11 @@ const MAX_UPLOAD_BYTES: Record<"avatars" | "banners", number> = {
 };
 
 export default function ProfileSettingsPage() {
-  // LANGUAGES: section titles/hints for the per-device sections.
+  // LANGUAGES: everything on this page reads from messages → "settings"
+  // (tSettings); showcase block names come from home.showcases (tShow).
+  // Theme names, platform names and catalog titles are data — untouched.
   const tSettings = useTranslations("settings");
+  const tShow = useTranslations("home.showcases");
   const router = useRouter();
   const supabase = createClient();
 
@@ -375,13 +384,11 @@ export default function ProfileSettingsPage() {
     setError(null);
 
     if (!file.type.startsWith("image/")) {
-      setError("That file isn't an image.");
+      setError(tSettings("errors.notImage"));
       return;
     }
     if (file.size > MAX_UPLOAD_BYTES[bucket]) {
-      setError(
-        `Image is too big — keep it under ${bucket === "banners" ? 6 : 2}MB.`
-      );
+      setError(tSettings("errors.tooBig", { mb: bucket === "banners" ? 6 : 2 }));
       return;
     }
 
@@ -396,7 +403,7 @@ export default function ProfileSettingsPage() {
         .upload(path, file, { upsert: true, contentType: file.type });
 
       if (upErr) {
-        setError(`Upload failed: ${upErr.message}`);
+        setError(tSettings("errors.uploadFailed", { reason: upErr.message }));
         return;
       }
 
@@ -424,7 +431,12 @@ export default function ProfileSettingsPage() {
     for (const pl of PLATFORMS) {
       const v = links[pl.key].trim();
       if (v && !isValidPlatformUrl(pl, v)) {
-        setError(`That ${pl.label} link isn't a ${pl.label} URL — paste one from ${pl.hosts[0].replace(".*", ".com")}.`);
+        setError(
+          tSettings("errors.badLink", {
+            platform: pl.label,
+            host: pl.hosts[0].replace(".*", ".com"),
+          })
+        );
         setSaving(false);
         return;
       }
@@ -438,15 +450,15 @@ export default function ProfileSettingsPage() {
       supportsNameLimits && nextUsername !== savedUsername;
     if (usernameChanged) {
       if (!/^[a-z0-9_]{3,20}$/.test(nextUsername)) {
-        setError(
-          "Usernames are 3–20 characters: lowercase letters, numbers, underscores."
-        );
+        setError(tSettings("errors.usernameRules"));
         setSaving(false);
         return;
       }
       if (usernameNextAllowed && usernameNextAllowed > new Date()) {
         setError(
-          `You can change your username again on ${usernameNextAllowed.toLocaleDateString()}.`
+          tSettings("errors.usernameAgainOn", {
+            date: usernameNextAllowed.toLocaleDateString(),
+          })
         );
         setSaving(false);
         return;
@@ -518,18 +530,16 @@ export default function ProfileSettingsPage() {
       if (msg.includes("USERNAME_COOLDOWN")) {
         const date = msg.match(/until (\d{4}-\d{2}-\d{2})/)?.[1];
         setError(
-          `Usernames can only change once every 2 weeks — you can change yours again ${
-            date ? `on ${date}` : "soon"
-          }.`
+          date
+            ? tSettings("errors.cooldownDate", { date })
+            : tSettings("errors.cooldownSoon")
         );
       } else if (msg.includes("DISPLAY_NAME_DAILY_LIMIT")) {
-        setError(
-          "Display names can only change twice a day — try again tomorrow."
-        );
+        setError(tSettings("errors.displayNameLimit"));
       } else if (msg.includes("USERNAME_RESERVED")) {
-        setError("That username is reserved.");
+        setError(tSettings("errors.reserved"));
       } else if (msg.includes("unique") || msg.includes("duplicate")) {
-        setError("That username is already taken.");
+        setError(tSettings("errors.taken"));
       } else {
         setError(msg);
       }
@@ -549,7 +559,7 @@ export default function ProfileSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <p className="osd-text text-xl animate-pulse">TUNING…</p>
+        <p className="osd-text text-xl animate-pulse">{tSettings("tuning")}</p>
       </div>
     );
   }
@@ -560,9 +570,9 @@ export default function ProfileSettingsPage() {
     <div className="space-y-6 max-w-2xl">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="crt-title text-3xl sm:text-4xl">Customize Your Profile</h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">{tSettings("title")}</h1>
         <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
-          pick a theme, arrange your showcases, make it yours
+          {tSettings("sub")}
         </p>
       </div>
 
@@ -591,7 +601,7 @@ export default function ProfileSettingsPage() {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={avatarUrl}
-                alt="Preview"
+                alt={tSettings("preview.alt")}
                 className="w-12 h-12 rounded-full border-2 object-cover"
                 style={{ borderColor: themeHex }}
               />
@@ -612,10 +622,10 @@ export default function ProfileSettingsPage() {
                 className="font-[family-name:var(--font-heading)] font-bold text-sm"
                 style={{ color: themeHex }}
               >
-                {displayName || username || "Your Name"}
+                {displayName || username || tSettings("preview.yourName")}
               </p>
               <p className="font-[family-name:var(--font-vt323)] text-xs text-text-muted">
-                {tagline || "Live Preview"}
+                {tagline || tSettings("preview.live")}
               </p>
             </div>
           </div>
@@ -631,24 +641,24 @@ export default function ProfileSettingsPage() {
         {/* ========== IDENTITY ========== */}
         <SettingsSection
           id="identity"
-          title="Identity"
-          hint="Display name, username, tagline, pronouns, location, bio."
+          title={tSettings("identity.title")}
+          hint={tSettings("identity.hint")}
           defaultOpen
         >
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField label="Display Name">
+            <FormField label={tSettings("identity.displayName")}>
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Your display name"
+                placeholder={tSettings("identity.displayNamePlaceholder")}
                 maxLength={50}
                 className="form-input"
               />
               {supportsNameLimits && (
                 <p className="text-xs text-text-muted mt-1">
-                  Can be changed up to twice a day.
+                  {tSettings("identity.twiceADay")}
                 </p>
               )}
             </FormField>
@@ -658,7 +668,7 @@ export default function ProfileSettingsPage() {
                 The DB trigger enforces it; this field mirrors it. Until
                 the migration runs (columns absent) the old permanent-
                 username behavior stays. */}
-            <FormField label="Username">
+            <FormField label={tSettings("identity.username")}>
               {supportsNameLimits && !usernameLocked ? (
                 <input
                   type="text"
@@ -668,7 +678,7 @@ export default function ProfileSettingsPage() {
                       e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 20)
                     )
                   }
-                  placeholder="your_username"
+                  placeholder={tSettings("identity.usernamePlaceholder")}
                   maxLength={20}
                   className="form-input"
                 />
@@ -679,54 +689,56 @@ export default function ProfileSettingsPage() {
               )}
               <p className="text-xs text-text-muted mt-1">
                 {!supportsNameLimits
-                  ? "Usernames are permanent — change your display name instead."
+                  ? tSettings("identity.permanent")
                   : usernameLocked
-                    ? `You can change your username again on ${usernameNextAllowed!.toLocaleDateString()}.`
-                    : "You can change your username once every 2 weeks — your profile URL changes with it."}
+                    ? tSettings("identity.lockedUntil", {
+                        date: usernameNextAllowed!.toLocaleDateString(),
+                      })
+                    : tSettings("identity.every2weeks")}
               </p>
             </FormField>
           </div>
 
-          <FormField label={`Tagline (${tagline.length}/120)`}>
+          <FormField label={tSettings("identity.tagline", { n: tagline.length })}>
             <input
               type="text"
               value={tagline}
               onChange={(e) => setTagline(e.target.value.slice(0, 120))}
-              placeholder="One line under your name — your motto, your era, whatever"
+              placeholder={tSettings("identity.taglinePlaceholder")}
               maxLength={120}
               className="form-input"
             />
           </FormField>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField label="Pronouns">
+            <FormField label={tSettings("identity.pronouns")}>
               <input
                 type="text"
                 value={pronouns}
                 onChange={(e) => setPronouns(e.target.value.slice(0, 30))}
-                placeholder="they/them"
+                placeholder={tSettings("identity.pronounsPlaceholder")}
                 maxLength={30}
                 className="form-input"
               />
             </FormField>
 
-            <FormField label="Location">
+            <FormField label={tSettings("identity.location")}>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value.slice(0, 60))}
-                placeholder="City, planet, wherever"
+                placeholder={tSettings("identity.locationPlaceholder")}
                 maxLength={60}
                 className="form-input"
               />
             </FormField>
           </div>
 
-          <FormField label={`Bio (${bio.length}/500)`}>
+          <FormField label={tSettings("identity.bio", { n: bio.length })}>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value.slice(0, 500))}
-              placeholder="Tell people about yourself..."
+              placeholder={tSettings("identity.bioPlaceholder")}
               rows={4}
               maxLength={500}
               className="form-input resize-none"
@@ -737,8 +749,8 @@ export default function ProfileSettingsPage() {
         {/* ========== APPEARANCE ========== */}
         <SettingsSection
           id="appearance"
-          title="Appearance"
-          hint="Theme preset, avatar, banner, streak icon."
+          title={tSettings("appearance.title")}
+          hint={tSettings("appearance.hint")}
         >
 
           {/* Theme presets — one card per preset. Each card wears its
@@ -748,7 +760,7 @@ export default function ProfileSettingsPage() {
               LimeWire, Soul Reaper, and Robot Rock aren't consoles.) */}
           <div className="space-y-2">
             <p className="font-[family-name:var(--font-heading)] text-xs font-bold text-text-secondary uppercase tracking-wider">
-              Theme Presets
+              {tSettings("appearance.presets")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {THEMES.map((t) => {
@@ -785,7 +797,7 @@ export default function ProfileSettingsPage() {
                       </span>
                       {/* Description stays in the site font for readability */}
                       <span className="block text-xs text-[#8a8a90] font-[family-name:var(--font-inter)]">
-                        {t.desc}
+                        {tSettings(`appearance.themeDesc.${t.id}`)}
                       </span>
                     </span>
                   </button>
@@ -797,8 +809,8 @@ export default function ProfileSettingsPage() {
           {/* Avatar upload */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UploadField
-              label="Avatar"
-              hint="Square works best · max 2MB"
+              label={tSettings("appearance.avatar")}
+              hint={tSettings("appearance.avatarHint")}
               currentUrl={avatarUrl}
               busy={uploadingAvatar}
               accent={themeHex}
@@ -815,8 +827,8 @@ export default function ProfileSettingsPage() {
             />
 
             <UploadField
-              label="Banner"
-              hint="Wide (~3:1) works best · max 6MB"
+              label={tSettings("appearance.banner")}
+              hint={tSettings("appearance.bannerHint")}
               currentUrl={bannerUrl}
               busy={uploadingBanner}
               accent={themeHex}
@@ -836,13 +848,13 @@ export default function ProfileSettingsPage() {
 
           {/* --- Streak icon — the animated counter on Song of the Day.
                 Live previews: what you see is exactly what renders. --- */}
-          <FormField label="Streak icon (Song of the Day)">
+          <FormField label={tSettings("appearance.streakIcon")}>
             <div className="flex flex-wrap gap-3">
               {(
                 [
-                  { id: "flame", label: "Flame" },
-                  { id: "vinyl", label: "Vinyl" },
-                  { id: "cd", label: "CD" },
+                  { id: "flame", label: tSettings("appearance.flame") },
+                  { id: "vinyl", label: tSettings("appearance.vinyl") },
+                  { id: "cd", label: tSettings("appearance.cd") },
                 ] as { id: StreakIconChoice; label: string }[]
               ).map((opt) => (
                 <button
@@ -871,13 +883,10 @@ export default function ProfileSettingsPage() {
         {/* ========== SHOWCASES ========== */}
         <SettingsSection
           id="showcases"
-          title="Showcases"
-          hint="Which blocks appear on your profile, and in what order."
+          title={tSettings("showcases.title")}
+          hint={tSettings("showcases.hint")}
         >
-          <p className="text-xs text-text-muted">
-            Pick which blocks appear on your profile and drag their order
-            with the arrows. Top of the list = top of your page.
-          </p>
+          <p className="text-xs text-text-muted">{tSettings("showcases.intro")}</p>
 
           {/* Enabled blocks first (in order), then the disabled pool. */}
           <div className="space-y-2">
@@ -889,6 +898,7 @@ export default function ProfileSettingsPage() {
             ].map((opt) => {
               const enabled = enabledSet.has(opt.id);
               const idx = showcases.indexOf(opt.id);
+              const label = tShow(opt.label);
               return (
                 <div
                   key={opt.id}
@@ -905,7 +915,7 @@ export default function ProfileSettingsPage() {
                     onChange={() => toggleShowcase(opt.id)}
                     className="w-4 h-4 accent-current cursor-pointer"
                     style={{ color: themeHex }}
-                    aria-label={`Toggle ${opt.label}`}
+                    aria-label={tSettings("showcases.toggle", { label })}
                   />
 
                   <div className="min-w-0 flex-1">
@@ -913,9 +923,11 @@ export default function ProfileSettingsPage() {
                       className="text-sm font-bold font-[family-name:var(--font-heading)]"
                       style={{ color: enabled ? themeHex : "#9a9a9e" }}
                     >
-                      {opt.label}
+                      {label}
                     </p>
-                    <p className="text-xs text-text-muted truncate">{opt.hint}</p>
+                    <p className="text-xs text-text-muted truncate">
+                      {tSettings(`showcases.hints.${opt.id}`)}
+                    </p>
                   </div>
 
                   {/* Reorder arrows — only for enabled blocks */}
@@ -926,7 +938,7 @@ export default function ProfileSettingsPage() {
                         onClick={() => moveShowcase(opt.id, -1)}
                         disabled={idx === 0}
                         className="w-7 h-7 rounded border border-white/10 text-text-secondary hover:text-text-primary hover:border-white/30 disabled:opacity-30 transition-colors"
-                        aria-label={`Move ${opt.label} up`}
+                        aria-label={tSettings("showcases.moveUp", { label })}
                       >
                         ↑
                       </button>
@@ -935,7 +947,7 @@ export default function ProfileSettingsPage() {
                         onClick={() => moveShowcase(opt.id, 1)}
                         disabled={idx === showcases.length - 1}
                         className="w-7 h-7 rounded border border-white/10 text-text-secondary hover:text-text-primary hover:border-white/30 disabled:opacity-30 transition-colors"
-                        aria-label={`Move ${opt.label} down`}
+                        aria-label={tSettings("showcases.moveDown", { label })}
                       >
                         ↓
                       </button>
@@ -948,7 +960,7 @@ export default function ProfileSettingsPage() {
 
           {/* Featured review picker — only meaningful when the
               showcase is enabled, but always safe to set. */}
-          <FormField label="Feature Presentation — pinned review">
+          <FormField label={tSettings("showcases.featured")}>
             <select
               value={featuredReviewId}
               onChange={(e) => {
@@ -957,7 +969,7 @@ export default function ProfileSettingsPage() {
               }}
               className="form-input"
             >
-              <option value="">None</option>
+              <option value="">{tSettings("showcases.none")}</option>
               {myReviews.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.title} — {r.artist} ({r.rating}/10)
@@ -966,7 +978,7 @@ export default function ProfileSettingsPage() {
             </select>
             {myReviews.length === 0 && (
               <p className="text-xs text-text-muted mt-1">
-                Write a review first — then you can pin it here.
+                {tSettings("showcases.writeFirst")}
               </p>
             )}
           </FormField>
@@ -980,16 +992,10 @@ export default function ProfileSettingsPage() {
         {supportsHiddenBadges && (
           <SettingsSection
             id="badges"
-            title="Badges"
-            hint="Choose which badges show under your username."
+            title={tSettings("badges.title")}
+            hint={tSettings("badges.hint")}
           >
-            <p className="text-xs text-text-muted">
-              Every profile wears a reviews trophy, a likes trophy and a
-              years-of-service badge under the username, plus any badge
-              you&apos;ve been awarded. Untick the ones you&apos;d rather
-              keep to yourself — nothing is deleted, and you&apos;ll still
-              see hidden ones dimmed on your own profile.
-            </p>
+            <p className="text-xs text-text-muted">{tSettings("badges.intro")}</p>
 
             <div className="space-y-2">
               {[
@@ -1039,7 +1045,7 @@ export default function ProfileSettingsPage() {
                       }}
                       className="w-4 h-4 mt-0.5 shrink-0 accent-current cursor-pointer"
                       style={{ color: themeHex }}
-                      aria-label={`Show ${b.label} on my profile`}
+                      aria-label={tSettings("badges.show", { label: b.label })}
                     />
                     <span className="min-w-0">
                       <span
@@ -1049,7 +1055,7 @@ export default function ProfileSettingsPage() {
                         {b.label}
                         {!shown && (
                           <span className="ml-2 pixel-text text-[11px] uppercase tracking-wider text-text-muted">
-                            hidden
+                            {tSettings("badges.hidden")}
                           </span>
                         )}
                       </span>
@@ -1069,19 +1075,15 @@ export default function ProfileSettingsPage() {
         {supportsPreferredPlayer && (
           <SettingsSection
             id="preview-player"
-            title="Preview Player"
-            hint="Spotify or Apple Music on release pages."
+            title={tSettings("player.title")}
+            hint={tSettings("player.hint")}
           >
-            <p className="text-xs text-text-muted">
-              Release pages show one preview player. Pick the service you
-              actually use — signed in to it in your browser, previews
-              become full tracks.
-            </p>
+            <p className="text-xs text-text-muted">{tSettings("player.intro")}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {(
                 [
-                  ["spotify", "Spotify", "The default. Every release we have."],
-                  ["apple", "Apple Music", "Where Apple carries the record; otherwise Spotify fills in."],
+                  ["spotify", "Spotify", tSettings("player.spotifyBlurb")],
+                  ["apple", "Apple Music", tSettings("player.appleBlurb")],
                 ] as const
               ).map(([id, label, blurb]) => {
                 const active = preferredPlayer === id;
@@ -1120,8 +1122,8 @@ export default function ProfileSettingsPage() {
             otherwise the song shows as a tappable link. ========== */}
         <SettingsSection
           id="profile-song"
-          title="Profile Song"
-          hint="One track from the catalog, playing on your profile."
+          title={tSettings("song.title")}
+          hint={tSettings("song.hint")}
           overflowVisible
         >
 
@@ -1140,18 +1142,20 @@ export default function ProfileSettingsPage() {
                 }}
                 className="label-xbox hover:text-accent-rose transition-colors text-[0.65rem] shrink-0"
               >
-                Remove
+                {tSettings("song.remove")}
               </button>
             </div>
           ) : songRelease ? (
             /* Release picked — now choose WHICH track on it. */
             <div className="space-y-2">
               <p className="text-xs text-text-muted">
-                Pick the track from{" "}
-                <span className="text-text-primary font-bold">
-                  {songRelease.release.title}
-                </span>
-                :
+                {tSettings.rich("song.pickTrack", {
+                  b: () => (
+                    <span className="text-text-primary font-bold">
+                      {songRelease.release.title}
+                    </span>
+                  ),
+                })}
               </p>
               <div className="max-h-56 overflow-y-auto rounded-lg border border-border-subtle divide-y divide-border-subtle">
                 {(songRelease.release.tracks ?? []).map((t) => (
@@ -1181,7 +1185,7 @@ export default function ProfileSettingsPage() {
                     <span className="text-text-primary truncate">{t.title}</span>
                     {t.preview_url && (
                       <span className="ml-auto pixel-text text-[10px] text-accent-primary shrink-0">
-                        ▶ PREVIEW
+                        {tSettings("song.preview")}
                       </span>
                     )}
                   </button>
@@ -1192,13 +1196,13 @@ export default function ProfileSettingsPage() {
                 onClick={() => setSongRelease(null)}
                 className="text-xs text-text-muted hover:text-text-primary transition-colors"
               >
-                ← different release
+                {tSettings("song.differentRelease")}
               </button>
             </div>
           ) : (
             <CatalogSearch
               onPick={(pick) => setSongRelease(pick)}
-              placeholder="Search for your profile song…"
+              placeholder={tSettings("song.searchPlaceholder")}
             />
           )}
         </SettingsSection>
@@ -1212,15 +1216,10 @@ export default function ProfileSettingsPage() {
             every saved link shows). */}
         <SettingsSection
           id="connected-platforms"
-          title="Connected Platforms"
-          hint="Streaming and social links, featured playlist, link privacy."
+          title={tSettings("platforms.title")}
+          hint={tSettings("platforms.hint")}
         >
-          <p className="text-xs text-text-muted">
-            Drop a link for any platform you use. Ticked ones show on
-            your profile, left to right in this order — use the arrows
-            to reorder. A link that isn&apos;t from that platform
-            won&apos;t save.
-          </p>
+          <p className="text-xs text-text-muted">{tSettings("platforms.intro")}</p>
 
           <div className="space-y-2">
             {[
@@ -1252,7 +1251,7 @@ export default function ProfileSettingsPage() {
                           onChange={() => toggleLink(pl.key)}
                           className="w-4 h-4 accent-current cursor-pointer disabled:opacity-30"
                           style={{ color: themeHex }}
-                          aria-label={`Show ${pl.label} on my profile`}
+                          aria-label={tSettings("platforms.show", { platform: pl.label })}
                         />
                       )}
                       <span className="shrink-0" style={{ color: tint }}>
@@ -1265,7 +1264,7 @@ export default function ProfileSettingsPage() {
                         {pl.label}
                         {shown && supportsLinks039 && (
                           <span className="ml-2 pixel-text text-[10px] text-text-muted font-normal">
-                            #{idx + 1} on profile
+                            {tSettings("platforms.position", { n: idx + 1 })}
                           </span>
                         )}
                       </p>
@@ -1276,7 +1275,7 @@ export default function ProfileSettingsPage() {
                             onClick={() => moveLink(pl.key, -1)}
                             disabled={idx === 0}
                             className="w-7 h-7 rounded border border-white/10 text-text-secondary hover:text-text-primary hover:border-white/30 disabled:opacity-30 transition-colors"
-                            aria-label={`Move ${pl.label} left`}
+                            aria-label={tSettings("platforms.moveLeft", { platform: pl.label })}
                           >
                             ←
                           </button>
@@ -1285,7 +1284,7 @@ export default function ProfileSettingsPage() {
                             onClick={() => moveLink(pl.key, 1)}
                             disabled={idx === visibleLinks.length - 1}
                             className="w-7 h-7 rounded border border-white/10 text-text-secondary hover:text-text-primary hover:border-white/30 disabled:opacity-30 transition-colors"
-                            aria-label={`Move ${pl.label} right`}
+                            aria-label={tSettings("platforms.moveRight", { platform: pl.label })}
                           >
                             →
                           </button>
@@ -1300,13 +1299,14 @@ export default function ProfileSettingsPage() {
                       className="form-input"
                       spellCheck={false}
                       autoComplete="off"
-                      aria-label={`${pl.label} link`}
+                      aria-label={tSettings("platforms.linkAria", { platform: pl.label })}
                     />
                     {invalid && (
                       <p className="text-xs text-accent-rose">
-                        Not a {pl.label} link — paste a{" "}
-                        {pl.hosts[0].replace(".*", ".com")} URL. (Won&apos;t be
-                        saved until it&apos;s fixed or cleared.)
+                        {tSettings("platforms.notALink", {
+                          platform: pl.label,
+                          host: pl.hosts[0].replace(".*", ".com"),
+                        })}
                       </p>
                     )}
                   </div>
@@ -1318,7 +1318,7 @@ export default function ProfileSettingsPage() {
               embedded on the profile with its own player, under the
               profile song. Appears once migration 035 has run. */}
           {supportsFeaturedPlaylist && (
-            <FormField label="Featured Spotify playlist">
+            <FormField label={tSettings("platforms.playlist")}>
               <input
                 type="text"
                 value={featuredPlaylistLink}
@@ -1330,14 +1330,12 @@ export default function ProfileSettingsPage() {
               />
               {featuredPlaylistLink.trim() && parsePlaylistUrl(featuredPlaylistLink) && (
                 <p className="mt-1.5 text-xs text-accent-primary pixel-text">
-                  ✓ Playlist detected — it&apos;ll play on your profile.
+                  {tSettings("platforms.playlistDetected")}
                 </p>
               )}
               {featuredPlaylistLink.trim() && !parsePlaylistUrl(featuredPlaylistLink) && (
                 <p className="mt-1.5 text-xs text-accent-rose">
-                  Not a Spotify playlist link — paste an
-                  open.spotify.com/playlist/… URL. (Won&apos;t be saved until
-                  it&apos;s fixed or cleared.)
+                  {tSettings("platforms.notAPlaylist")}
                 </p>
               )}
             </FormField>
@@ -1363,12 +1361,10 @@ export default function ProfileSettingsPage() {
                   className="block text-sm font-bold font-[family-name:var(--font-heading)]"
                   style={{ color: hideStreamingLinks ? themeHex : "#c8c8cc" }}
                 >
-                  Don&apos;t show these on my profile
+                  {tSettings("platforms.hideLinks")}
                 </span>
                 <span className="block text-xs text-text-muted">
-                  Your links stay saved and keep powering things like the
-                  stats.fm showcases — visitors just won&apos;t see the
-                  icon row on your profile.
+                  {tSettings("platforms.hideLinksBody")}
                 </span>
               </span>
             </label>
@@ -1400,7 +1396,7 @@ export default function ProfileSettingsPage() {
           style={{ borderColor: `${themeHex}30`, background: `${themeHex}08` }}
         >
           <p style={{ color: themeHex }} className="text-sm font-bold">
-            Saved. Your profile is updated.
+            {tSettings("save.saved")}
           </p>
         </div>
       )}
@@ -1413,7 +1409,7 @@ export default function ProfileSettingsPage() {
           className="btn-y2k btn-y2k-primary disabled:opacity-50"
           style={{ background: themeHex, borderColor: themeHex, color: "#0a0a0c" }}
         >
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? tSettings("save.saving") : tSettings("save.save")}
         </button>
 
         <button
@@ -1421,15 +1417,15 @@ export default function ProfileSettingsPage() {
           onClick={() => router.push(`/profile/${username}`)}
           className="btn-y2k btn-y2k-outline"
         >
-          View Profile
+          {tSettings("save.viewProfile")}
         </button>
       </div>
 
       {/* ========== PASSWORD ========== */}
       <SettingsSection
         id="password"
-        title="Password"
-        hint="Pick a new one — takes effect everywhere you're signed in."
+        title={tSettings("password.title")}
+        hint={tSettings("password.hint")}
       >
         <ChangePasswordSection />
       </SettingsSection>
@@ -1462,8 +1458,8 @@ export default function ProfileSettingsPage() {
           requires it wherever account creation exists. Always LAST. */}
       <SettingsSection
         id="account-deletion"
-        title="Account Deletion"
-        hint="Remove your profile and everything you made. No undo."
+        title={tSettings("deletion.title")}
+        hint={tSettings("deletion.hint")}
         accent="#e05575"
         className="border-[#e0557540]"
       >
@@ -1496,6 +1492,7 @@ function UploadField({
   onFile: (file: File) => void;
   onClear: () => void;
 }) {
+  const t = useTranslations("settings.upload");
   return (
     <div className="space-y-2">
       <p className="font-[family-name:var(--font-heading)] text-xs font-bold text-text-secondary uppercase tracking-wider">
@@ -1508,7 +1505,7 @@ function UploadField({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={currentUrl}
-            alt={`${label} preview`}
+            alt={t("previewAlt", { label })}
             className={
               wide
                 ? "h-14 w-40 rounded object-cover border border-white/10"
@@ -1520,11 +1517,11 @@ function UploadField({
             onClick={onClear}
             className="text-xs font-bold uppercase tracking-wider text-red-400 hover:text-red-300 transition-colors font-[family-name:var(--font-heading)]"
           >
-            Remove
+            {t("remove")}
           </button>
         </div>
       ) : (
-        <p className="pixel-text text-sm text-text-muted">none set</p>
+        <p className="pixel-text text-sm text-text-muted">{t("noneSet")}</p>
       )}
 
       {/* Picker — a styled label wrapping a hidden file input */}
@@ -1537,7 +1534,7 @@ function UploadField({
           opacity: busy ? 0.5 : 1,
         }}
       >
-        {busy ? "Uploading…" : `Upload ${label}`}
+        {busy ? t("uploading") : t("upload", { label })}
         <input
           type="file"
           accept="image/*"

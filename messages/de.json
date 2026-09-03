@@ -63,7 +63,172 @@
     "performance": "Leistung",
     "performanceHint": "Modus mit wenig Details — standardmäßig an, ausschalten für alle Effekte.",
     "language": "Sprache",
-    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch.",
+    "tuning": "SENDERSUCHE…",
+    "title": "Gestalte dein Profil",
+    "sub": "wähl ein Theme, ordne deine Showcases, mach es zu deinem",
+    "preview": {
+      "yourName": "Dein Name",
+      "live": "Live-Vorschau",
+      "alt": "Vorschau"
+    },
+    "errors": {
+      "notImage": "Diese Datei ist kein Bild.",
+      "tooBig": "Das Bild ist zu groß — bleib unter {mb}MB.",
+      "uploadFailed": "Upload fehlgeschlagen: {reason}",
+      "badLink": "Dieser {platform}-Link ist keine {platform}-URL — füg einen von {host} ein.",
+      "usernameRules": "Nutzernamen haben 3–20 Zeichen: Kleinbuchstaben, Zahlen, Unterstriche.",
+      "usernameAgainOn": "Du kannst deinen Nutzernamen am {date} wieder ändern.",
+      "cooldownDate": "Nutzernamen ändern sich nur alle 2 Wochen — du kannst deinen am {date} wieder ändern.",
+      "cooldownSoon": "Nutzernamen ändern sich nur alle 2 Wochen — du kannst deinen bald wieder ändern.",
+      "displayNameLimit": "Anzeigenamen ändern sich nur zweimal am Tag — versuch es morgen noch mal.",
+      "reserved": "Dieser Nutzername ist reserviert.",
+      "taken": "Dieser Nutzername ist schon vergeben."
+    },
+    "identity": {
+      "title": "Identität",
+      "hint": "Anzeigename, Nutzername, Motto, Pronomen, Ort, Bio.",
+      "displayName": "Anzeigename",
+      "displayNamePlaceholder": "Dein Anzeigename",
+      "twiceADay": "Kann bis zu zweimal am Tag geändert werden.",
+      "username": "Nutzername",
+      "usernamePlaceholder": "dein_name",
+      "permanent": "Nutzernamen sind dauerhaft — ändere stattdessen deinen Anzeigenamen.",
+      "lockedUntil": "Du kannst deinen Nutzernamen am {date} wieder ändern.",
+      "every2weeks": "Du kannst deinen Nutzernamen alle 2 Wochen ändern — die URL deines Profils ändert sich mit.",
+      "tagline": "Motto ({n}/120)",
+      "taglinePlaceholder": "Eine Zeile unter deinem Namen — dein Motto, deine Ära, was auch immer",
+      "pronouns": "Pronomen",
+      "pronounsPlaceholder": "sie/er/dey",
+      "location": "Ort",
+      "locationPlaceholder": "Stadt, Planet, wo auch immer",
+      "bio": "Bio ({n}/500)",
+      "bioPlaceholder": "Erzähl den Leuten etwas über dich..."
+    },
+    "appearance": {
+      "title": "Aussehen",
+      "hint": "Theme, Avatar, Banner, Streak-Symbol.",
+      "presets": "Themes",
+      "themeDesc": {
+        "crt-blue": "Der Standard-Look von Peak Music Reviews",
+        "ps2": "Die Galaxie des Startbildschirms — Indigowolken und Silberstaub",
+        "ps3": "Schwarze Leere, silberblauer Schimmer, dünne luftige Schrift",
+        "ps4": "Tiefes PlayStation-Blau, klar und modern",
+        "xbox-og": "Säuregrün auf schwarzem Metall, industrielle Schrift",
+        "xbox-360": "Blade-Dashboard-Grün, glänzend und freundlich",
+        "wii": "Weiße Kanalkarten, rund und fröhlich",
+        "limewire": "Wo Internetmusik begann — abgeschrägtes Freeware-Beige",
+        "bleach": "Manga-Tusche — hartes Schwarz-Weiß mit einem blutroten Schnitt",
+        "daft-punk": "Helmchrom und Discovery-Gold, Neonhorizont"
+      },
+      "avatar": "Avatar",
+      "avatarHint": "Quadratisch passt am besten · max. 2MB",
+      "banner": "Banner",
+      "bannerHint": "Breit (~3:1) passt am besten · max. 6MB",
+      "streakIcon": "Streak-Symbol (Song des Tages)",
+      "flame": "Flamme",
+      "vinyl": "Vinyl",
+      "cd": "CD"
+    },
+    "upload": {
+      "remove": "Entfernen",
+      "noneSet": "nichts gesetzt",
+      "uploading": "Lade hoch…",
+      "upload": "{label} hochladen",
+      "previewAlt": "Vorschau von {label}"
+    },
+    "showcases": {
+      "title": "Showcases",
+      "hint": "Welche Blöcke auf deinem Profil erscheinen, und in welcher Reihenfolge.",
+      "intro": "Wähl, welche Blöcke auf deinem Profil erscheinen, und ordne sie mit den Pfeilen. Oben in der Liste = oben auf deiner Seite.",
+      "hints": {
+        "stats": "Anzahl Rezensionen, Durchschnitt, Bewertungs-Histogramm",
+        "recent_reviews": "Deine letzten 8 Rezensionen als Posterwand",
+        "featured_review": "Eine angepinnte Rezension, ganz vorne",
+        "lists": "Deine neuesten öffentlichen Listen",
+        "anticipated": "Releases, denen du folgst, Unveröffentlichtes inklusive",
+        "listening": "Was du gerade hörst / zuletzt gehört hast (braucht deinen stats.fm-Link unten)",
+        "listening_stats": "Minuten insgesamt + Streams insgesamt (braucht deinen stats.fm-Link unten)",
+        "sotd": "Tägliche Wahl — bleib jeden Tag dran, damit deine Streak-Flamme wächst"
+      },
+      "toggle": "{label} umschalten",
+      "moveUp": "{label} nach oben",
+      "moveDown": "{label} nach unten",
+      "featured": "Hauptfilm — angepinnte Rezension",
+      "none": "Keine",
+      "writeFirst": "Schreib erst eine Rezension — dann kannst du sie hier anpinnen."
+    },
+    "badges": {
+      "title": "Badges",
+      "hint": "Wähl, welche Badges unter deinem Nutzernamen stehen.",
+      "intro": "Jedes Profil trägt eine Rezensions-Trophäe, eine Likes-Trophäe und ein Dienstjahre-Badge unter dem Nutzernamen, plus jedes Badge, das dir verliehen wurde. Hak ab, was du lieber für dich behältst — nichts wird gelöscht, und versteckte siehst du auf deinem eigenen Profil weiterhin abgedunkelt.",
+      "show": "{label} auf meinem Profil zeigen",
+      "hidden": "versteckt"
+    },
+    "player": {
+      "title": "Vorschau-Player",
+      "hint": "Spotify oder Apple Music auf Release-Seiten.",
+      "intro": "Release-Seiten zeigen einen Vorschau-Player. Wähl den Dienst, den du wirklich nutzt — im Browser dort angemeldet werden aus Vorschauen ganze Tracks.",
+      "spotifyBlurb": "Der Standard. Jedes Release, das wir haben.",
+      "appleBlurb": "Wo Apple die Platte hat; sonst springt Spotify ein."
+    },
+    "song": {
+      "title": "Profilsong",
+      "hint": "Ein Track aus dem Katalog, der auf deinem Profil läuft.",
+      "remove": "Entfernen",
+      "pickTrack": "Wähl den Track von <b>Titel</b>:",
+      "preview": "▶ VORSCHAU",
+      "differentRelease": "← anderes Release",
+      "searchPlaceholder": "Such deinen Profilsong…"
+    },
+    "platforms": {
+      "title": "Verbundene Plattformen",
+      "hint": "Streaming- und Social-Links, Playlist im Fokus, Link-Privatsphäre.",
+      "intro": "Leg einen Link für jede Plattform ab, die du nutzt. Angehakte erscheinen auf deinem Profil, von links nach rechts in dieser Reihenfolge — mit den Pfeilen sortierst du um. Ein Link, der nicht von dieser Plattform ist, wird nicht gespeichert.",
+      "show": "{platform} auf meinem Profil zeigen",
+      "position": "Nr. {n} auf dem Profil",
+      "moveLeft": "{platform} nach links",
+      "moveRight": "{platform} nach rechts",
+      "linkAria": "{platform}-Link",
+      "notALink": "Kein {platform}-Link — füg eine {host}-URL ein. (Wird nicht gespeichert, bis es korrigiert oder gelöscht ist.)",
+      "playlist": "Spotify-Playlist im Fokus",
+      "playlistDetected": "✓ Playlist erkannt — sie läuft auf deinem Profil.",
+      "notAPlaylist": "Kein Spotify-Playlist-Link — füg eine open.spotify.com/playlist/…-URL ein. (Wird nicht gespeichert, bis es korrigiert oder gelöscht ist.)",
+      "hideLinks": "Diese nicht auf meinem Profil zeigen",
+      "hideLinksBody": "Deine Links bleiben gespeichert und versorgen weiter Dinge wie die stats.fm-Showcases — Besucher sehen nur die Symbolreihe auf deinem Profil nicht."
+    },
+    "save": {
+      "saved": "Gespeichert. Dein Profil ist aktualisiert.",
+      "saving": "Speichere...",
+      "save": "Änderungen speichern",
+      "viewProfile": "Profil ansehen"
+    },
+    "password": {
+      "title": "Passwort",
+      "hint": "Wähl ein neues — gilt überall, wo du angemeldet bist.",
+      "intro": "Wähl ein neues — gilt sofort, überall, wo du angemeldet bist.",
+      "newPassword": "Neues Passwort",
+      "newPlaceholder": "Mindestens 6 Zeichen",
+      "repeat": "Noch mal",
+      "repeatPlaceholder": "Dasselbe noch einmal",
+      "saving": "Speichere…",
+      "change": "Passwort ändern",
+      "min6": "Mindestens 6 Zeichen.",
+      "mismatch": "Die beiden Eingaben stimmen nicht überein.",
+      "same": "Das ist schon dein Passwort — nimm ein neues.",
+      "changed": "Passwort geändert. ✓"
+    },
+    "deletion": {
+      "title": "Konto löschen",
+      "hint": "Entfernt dein Profil und alles, was du erstellt hast. Kein Zurück.",
+      "intro": "Dein Konto zu löschen entfernt dein Profil und <b>alles, was du erstellt hast</b> — Rezensionen, Listen, Posts, Debatten-Stimmen, Chatnachrichten, Uploads. Kein Rückgängig, keine Wiederherstellung.",
+      "delete": "Konto löschen",
+      "typeUsername": "Tipp deinen Nutzernamen <b>@Name</b> zur Bestätigung ein:",
+      "deleting": "Lösche...",
+      "forever": "Für immer löschen",
+      "cancel": "Abbrechen",
+      "failed": "Löschen fehlgeschlagen"
+    }
   },
   "pending": {
     "tuning": "SENDERSUCHE…"
@@ -168,7 +333,8 @@
       "mixtapes": "Mixtapes",
       "waitingOn": "Warten auf",
       "onRotation": "In Rotation",
-      "songOfTheDay": "Song des Tages"
+      "songOfTheDay": "Song des Tages",
+      "listeningStats": "Gesamt-Hörzeit"
     },
     "community": {
       "eyebrow": "Community",

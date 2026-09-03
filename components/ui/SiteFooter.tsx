@@ -65,11 +65,11 @@ export default async function SiteFooter() {
             without an account (lib/lowDetail.ts). */}
         <LowDetailToggle variant="footer" />
       </p>
-      <p className="font-[family-name:var(--font-vt323)] text-sm text-text-muted text-center mt-1">
-        {/* LANGUAGES: the five codes, reachable without an account
-            (i18n/config.ts). Settings has the full-name version. */}
+      {/* LANGUAGES: six pill buttons, reachable without an account
+          (i18n/config.ts). Settings has the full-name version. */}
+      <div className="flex justify-center mt-3">
         <LanguagePicker variant="footer" />
-      </p>
+      </div>
     </footer>
   );
 }

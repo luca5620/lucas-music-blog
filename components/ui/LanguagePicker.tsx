@@ -41,31 +41,37 @@ export default function LanguagePicker({
   }
 
   if (variant === "footer") {
+    // Proper pills, not inline text (Luca 2026-09-03: "make the
+    // language change buttons bigger") — the same sizing as the nav
+    // pills so they're an easy thumb target in the app too.
     return (
       <span
         role="group"
         aria-label={t("label")}
-        className={pending ? "opacity-60 transition-opacity" : "transition-opacity"}
+        className={`inline-flex flex-wrap justify-center gap-2 transition-opacity ${
+          pending ? "opacity-60" : ""
+        }`}
       >
-        {LOCALES.map((code, i) => (
-          <span key={code}>
-            {i > 0 && " "}
+        {LOCALES.map((code) => {
+          const active = code === locale;
+          return (
             <button
+              key={code}
               type="button"
               onClick={() => choose(code)}
-              aria-pressed={code === locale}
+              aria-pressed={active}
               lang={code}
               title={LOCALE_NAMES[code]}
-              className={
-                code === locale
-                  ? "text-accent-primary uppercase"
-                  : "text-text-secondary hover:text-accent-primary transition-colors uppercase"
-              }
+              className={`px-3.5 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase border transition-colors font-[family-name:var(--font-heading)] ${
+                active
+                  ? "bg-accent-primary/15 text-accent-primary border-accent-primary/40"
+                  : "text-text-secondary border-white/15 hover:text-accent-primary hover:border-accent-primary/50"
+              }`}
             >
               {code}
             </button>
-          </span>
-        ))}
+          );
+        })}
       </span>
     );
   }
@@ -86,7 +92,7 @@ export default function LanguagePicker({
               lang={code}
               onClick={() => choose(code)}
               disabled={pending}
-              className="px-3 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase border transition-colors font-[family-name:var(--font-heading)] disabled:opacity-60"
+              className="px-4 py-2 rounded-full text-sm font-bold tracking-wide uppercase border transition-colors font-[family-name:var(--font-heading)] disabled:opacity-60"
               style={
                 active
                   ? { color: tint, borderColor: tint, background: "rgba(255,255,255,0.04)" }

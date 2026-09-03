@@ -12,6 +12,7 @@ import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
 import { daysUntil } from "@/lib/upcoming";
 import LiveBadge from "@/components/rooms/LiveBadge";
+import { useTranslations } from "next-intl";
 
 interface ReleaseCardProps {
   release: Release;
@@ -38,6 +39,8 @@ export default function ReleaseCard({
       ? release.release_date.slice(0, 4)
       : null;
 
+  const t = useTranslations("releases.views");
+  const tc = useTranslations("common");
   const hasRating = typeof avgRating === "number" && !Number.isNaN(avgRating);
   const ratingDisplay = hasRating ? formatRating(avgRating!) : null;
   const ratingColor = hasRating ? getRatingHex(avgRating!) : "#1e90ff";
@@ -57,7 +60,7 @@ export default function ReleaseCard({
             // card spans a phone screen.
             srcSet={`${smallCover(release.cover_image)} 300w, ${release.cover_image} 640w`}
             sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-            alt={`${release.title} cover`}
+            alt={tc("coverAlt", { title: release.title })}
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -83,7 +86,7 @@ export default function ReleaseCard({
           if (days !== null) {
             return (
               <span className="pixel-text text-xs text-osd-amber uppercase tracking-widest animate-pulse">
-                {days === 1 ? "Tomorrow" : `D–${days}`}
+                {days === 1 ? t("tomorrow") : t("dMinus", { n: days })}
               </span>
             );
           }
@@ -129,18 +132,18 @@ export default function ReleaseCard({
               {ratingDisplay}
             </div>
           ) : (
-            <span className="text-xs text-text-muted italic">No reviews</span>
+            <span className="text-xs text-text-muted italic">{t("noReviews")}</span>
           )}
 
           <div className="flex flex-col items-end gap-0.5 text-right">
             {reviewCount !== undefined && reviewCount > 0 && (
               <span className="text-xs text-text-muted">
-                {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+                {t("reviews", { n: reviewCount })}
               </span>
             )}
             {followerCount !== undefined && followerCount > 0 && (
               <span className="text-xs text-text-muted">
-                {followerCount} {followerCount === 1 ? "follower" : "followers"}
+                {t("followers", { n: followerCount })}
               </span>
             )}
           </div>

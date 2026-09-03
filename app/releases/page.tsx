@@ -18,18 +18,15 @@ import { BreadcrumbSchema } from "@/app/schema";
 import PageHero from "@/components/ui/PageHero";
 import BrowseSwitch from "@/components/ui/BrowseSwitch";
 import BackToHome from "@/components/ui/BackToHome";
+// LANGUAGES: messages → releases.index. Metadata stays English.
+import { getTranslations } from "next-intl/server";
 
 const PAGE_SIZE = 24;
 
 type SortOption = "recent" | "popularity" | "alpha";
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "recent", label: "Recent" },
-  // Popularity = most reviewed by the community (migration 034), not
-  // Spotify's popularity score (Luca 2026-09-02).
-  { value: "popularity", label: "Popularity" },
-  { value: "alpha", label: "A–Z" },
-];
+// `value` doubles as the key into messages → releases.index.sort.
+const SORT_OPTIONS: SortOption[] = ["recent", "popularity", "alpha"];
 
 export const metadata: Metadata = {
   title: "Releases",
@@ -74,6 +71,7 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
 
   const hasNextPage = releases.length === PAGE_SIZE;
   const hasPrevPage = pageNum > 1;
+  const t = await getTranslations("releases.index");
 
   function makeHref(s: SortOption, p: number, u: boolean = unreleased) {
     const params = new URLSearchParams();
@@ -98,8 +96,8 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
 
       {/* Page header — boxed hero, same as HOME */}
       <PageHero
-        title="RELEASES"
-        sub="Albums, EPs, mixtapes, and singles. Follow a release to be in the live room when it drops."
+        title={t("title")}
+        sub={t("sub")}
       />
 
       {/* App-only: Reviews + Releases share one bottom tab — this
@@ -117,17 +115,17 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
           off = the full catalog. Sort carries across the toggle. */}
       <div className="flex flex-wrap items-center gap-2">
         {SORT_OPTIONS.filter(
-          (opt) => !(unreleased && opt.value === "popularity")
+          (opt) => !(unreleased && opt === "popularity")
         ).map((opt) => {
-          const active = opt.value === sort;
+          const active = opt === sort;
           return (
             <Link
-              key={opt.value}
-              href={makeHref(opt.value, 1)}
+              key={opt}
+              href={makeHref(opt, 1)}
               className={`btn-y2k ${active ? "btn-y2k-primary" : "btn-y2k-outline"}`}
               aria-current={active ? "page" : undefined}
             >
-              {opt.label}
+              {t(`sort.${opt}`)}
             </Link>
           );
         })}
@@ -138,11 +136,11 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
           aria-pressed={unreleased}
           title={
             unreleased
-              ? "Showing unreleased only — tap to show everything"
-              : "Only leaks, snippets and shelved records"
+              ? t("unreleasedOn")
+              : t("unreleasedOff")
           }
         >
-          {unreleased ? "● " : "○ "}Unreleased
+          {unreleased ? "● " : "○ "}{t("unreleased")}
         </Link>
       </div>
 
@@ -151,17 +149,17 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
         <div className="panel-xbox p-8 text-center">
           <p className="font-[family-name:var(--font-vt323)] text-lg text-text-muted">
             {pageNum > 1
-              ? "No more releases on this page."
+              ? t("noMore")
               : unreleased
-                ? "No unreleased records in the catalog yet — paste a link to one to review it."
-                : "No releases yet. Check back soon."}
+                ? t("noUnreleased")
+                : t("none")}
           </p>
           {pageNum > 1 && (
             <Link
               href={makeHref(sort, 1)}
               className="btn-y2k btn-y2k-outline mt-4 inline-block"
             >
-              ← Back to first page
+              {t("backToFirst")}
             </Link>
           )}
         </div>
@@ -196,20 +194,20 @@ export default async function ReleasesPage({ searchParams }: PageProps) {
               href={makeHref(sort, pageNum - 1)}
               className="btn-y2k btn-y2k-outline"
             >
-              ← Previous
+              {t("previous")}
             </Link>
           ) : (
             <span />
           )}
           <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-            Page {pageNum}
+            {t("page", { n: pageNum })}
           </span>
           {hasNextPage ? (
             <Link
               href={makeHref(sort, pageNum + 1)}
               className="btn-y2k btn-y2k-outline"
             >
-              Next →
+              {t("next")}
             </Link>
           ) : (
             <span />

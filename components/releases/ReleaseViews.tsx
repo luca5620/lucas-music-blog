@@ -13,6 +13,7 @@ import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
 import LiveBadge from "@/components/rooms/LiveBadge";
 import type { ReviewView } from "@/components/reviews/ViewToggle";
+import { useTranslations } from "next-intl";
 
 export interface ReleaseListItem {
   id: string;
@@ -40,6 +41,9 @@ export default function ReleaseViews({
   items: ReleaseListItem[];
   view: ReviewView;
 }) {
+  // LANGUAGES: messages → releases.views (+ common.coverAlt).
+  const t = useTranslations("releases.views");
+  const tc = useTranslations("common");
   /* ===== Posters ===== */
   if (view === "posters") {
     return (
@@ -57,7 +61,7 @@ export default function ReleaseViews({
               <span className="poster">
                 {item.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={smallCover(item.cover_image)} alt={`${item.title} cover`} loading="lazy" decoding="async" />
+                  <img src={smallCover(item.cover_image)} alt={tc("coverAlt", { title: item.title })} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -72,12 +76,12 @@ export default function ReleaseViews({
                     className="poster-rating"
                     style={{ color: getRatingHex(item.avgRating!) }}
                   >
-                    <span className="text-[0.55rem] font-normal text-text-muted mr-1">AVG</span>
+                    <span className="text-[0.55rem] font-normal text-text-muted mr-1">{t("avg")}</span>
                     {formatRating(item.avgRating!)}
                   </span>
                 ) : (
                   <span className="poster-rating !text-[0.55rem] !font-normal text-text-muted tracking-wider">
-                    UNRATED
+                    {t("unrated")}
                   </span>
                 )}
               </span>
@@ -149,12 +153,12 @@ export default function ReleaseViews({
                     {formatRating(item.avgRating!)}
                   </span>
                   <span className="block pixel-text text-[8px] uppercase tracking-widest text-text-muted mt-0.5">
-                    AVG
+                    {t("avg")}
                   </span>
                 </span>
               ) : (
                 <span className="pixel-text text-[9px] uppercase tracking-widest text-text-muted shrink-0 w-11 text-right leading-tight">
-                  UNRATED
+                  {t("unrated")}
                 </span>
               )}
             </Link>
@@ -190,7 +194,7 @@ export default function ReleaseViews({
                   // card spans a phone screen.
                   srcSet={`${smallCover(item.cover_image)} 300w, ${item.cover_image} 640w`}
                   sizes="(min-width: 1536px) 18vw, (min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                  alt={`${item.title} cover`}
+                  alt={tc("coverAlt", { title: item.title })}
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -248,33 +252,31 @@ export default function ReleaseViews({
                   </div>
                   <span className="min-w-0">
                     <span className="block pixel-text text-[10px] uppercase tracking-widest text-text-muted">
-                      Community Avg
+                      {t("communityAvg")}
                     </span>
                     <span className="block text-xs text-text-muted">
-                      {item.reviewCount ?? 0}{" "}
-                      {(item.reviewCount ?? 0) === 1 ? "review" : "reviews"}
+                      {t("reviews", { n: item.reviewCount ?? 0 })}
                     </span>
                   </span>
                 </div>
               ) : reviewCount > 0 ? (
                 <span className="min-w-0">
                   <span className="block pixel-text text-[10px] uppercase tracking-widest text-text-muted">
-                    Unrated
+                    {t("unratedLabel")}
                   </span>
                   <span className="block text-xs text-text-muted">
-                    {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+                    {t("reviews", { n: reviewCount })}
                   </span>
                 </span>
               ) : (
                 <span className="text-xs text-text-muted italic">
-                  be the first to review
+                  {t("beFirst")}
                 </span>
               )}
 
               {(item.followerCount ?? 0) > 0 && (
                 <span className="text-xs text-text-muted text-right shrink-0">
-                  {item.followerCount}{" "}
-                  {item.followerCount === 1 ? "follower" : "followers"}
+                  {t("followers", { n: item.followerCount ?? 0 })}
                 </span>
               )}
             </div>

@@ -18,14 +18,16 @@
  */
 
 import type { Release, ReleaseTrack } from "@/lib/types/database";
+import { getTranslations } from "next-intl/server";
 
 interface SpotifyEmbedProps {
   release: Release;
   tracks: ReleaseTrack[];
 }
 
-export default function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
-  if (!release.spotify_id) return null; // Genius-only imports: nothing to embed
+export default async function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
+  if (!release.spotify_id) return null;
+  const t = await getTranslations("releases.embed"); // Genius-only imports: nothing to embed
 
   const isTrackId =
     tracks.length === 1 && tracks[0]?.spotify_id === release.spotify_id;
@@ -45,10 +47,10 @@ export default function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="glow-orb" />
-          <span className="label-xbox">Preview</span>
+          <span className="label-xbox">{t("preview")}</span>
         </div>
         <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
-          30s clips · via Spotify
+          {t("spotifyClips")}
         </span>
       </div>
       <iframe
@@ -60,7 +62,7 @@ export default function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
         frameBorder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"
-        title={`Spotify preview of ${release.title}`}
+        title={t("spotifyTitle", { title: release.title })}
         className="rounded-lg xl:flex-1 xl:min-h-0"
       />
     </div>

@@ -23,10 +23,13 @@ import { listUpcomingReleases } from "@/lib/db/releases";
 import { formatDropDate } from "@/lib/upcoming";
 import { smallCover } from "@/lib/images";
 import LiveCountdown from "@/components/releases/LiveCountdown";
+import { getTranslations } from "next-intl/server";
 
 export default async function DroppingSoonRail() {
   const upcoming = await listUpcomingReleases(12);
   if (upcoming.length === 0) return null;
+  const t = await getTranslations("releases.dropping");
+  const tc = await getTranslations("common");
 
   return (
     <section className="panel-xbox p-4 sm:p-5 space-y-4 relative overflow-hidden border-osd-amber/30">
@@ -34,10 +37,10 @@ export default async function DroppingSoonRail() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="glow-orb" />
-          <span className="label-xbox text-osd-amber">Dropping Soon</span>
+          <span className="label-xbox text-osd-amber">{t("title")}</span>
         </div>
         <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
-          The room opens before the album does
+          {t("tagline")}
         </span>
       </div>
 
@@ -56,7 +59,7 @@ export default async function DroppingSoonRail() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={smallCover(release.cover_image)}
-                    alt={`${release.title} cover`}
+                    alt={tc("coverAlt", { title: release.title })}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"

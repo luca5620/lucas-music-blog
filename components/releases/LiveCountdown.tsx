@@ -17,6 +17,7 @@
 import { useEffect, useState } from "react";
 import { easternMidnightUtcMs } from "@/lib/upcoming";
 import { useHydrated } from "@/lib/useHydrated";
+import { useTranslations } from "next-intl";
 
 interface LiveCountdownProps {
   /** YYYY-MM-DD release date (longer ISO strings are truncated). */
@@ -43,6 +44,7 @@ export default function LiveCountdown({
   // right after. useHydrated is a store read, not a mounted-flag
   // effect, so there's no setState-in-effect here.
   const hydrated = useHydrated();
+  const t = useTranslations("releases.countdown");
   const [secondsLeft, setSecondsLeft] = useState(() => remaining(releaseDate));
 
   // A new release date (rare — the prop is fixed for a mounted card)
@@ -70,13 +72,13 @@ export default function LiveCountdown({
       // can straddle a midnight boundary — a one-day flicker beats a
       // hydration error.
       <span className={`tabular-nums ${className}`} suppressHydrationWarning>
-        {days > 0 ? `D–${days}` : "OUT NOW"}
+        {days > 0 ? t("dMinus", { n: days }) : t("outNow")}
       </span>
     );
   }
 
   if (secondsLeft <= 0) {
-    return <span className={`tabular-nums ${className}`}>OUT NOW</span>;
+    return <span className={`tabular-nums ${className}`}>{t("outNow")}</span>;
   }
 
   const days = Math.floor(secondsLeft / 86_400);
@@ -86,7 +88,7 @@ export default function LiveCountdown({
 
   return (
     <span className={`tabular-nums ${className}`}>
-      {days > 0 ? `${days}D ` : ""}
+      {days > 0 ? t("days", { n: days }) : ""}
       {pad(hours)}:{pad(mins)}:{pad(secs)}
     </span>
   );

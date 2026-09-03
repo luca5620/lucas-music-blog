@@ -847,5 +847,99 @@
       "onAir": "On air",
       "signedOff": "Afgesloten"
     }
+  },
+  "releases": {
+    "index": {
+      "title": "RELEASES",
+      "sub": "Albums, ep's, mixtapes en singles. Volg een release om in de live room te zitten als hij uitkomt.",
+      "sort": {
+        "recent": "Recent",
+        "popularity": "Populariteit",
+        "alpha": "A–Z"
+      },
+      "unreleasedOn": "Alleen onuitgebracht — tik om alles te tonen",
+      "unreleasedOff": "Alleen leaks, snippets en geschrapte platen",
+      "unreleased": "Onuitgebracht",
+      "noMore": "Geen releases meer op deze pagina.",
+      "noUnreleased": "Nog geen onuitgebrachte platen in de catalogus — plak een link naar een om hem te recenseren.",
+      "none": "Nog geen releases. Kom snel terug.",
+      "backToFirst": "← Terug naar de eerste pagina",
+      "previous": "← Vorige",
+      "next": "Volgende →",
+      "page": "Pagina {n}"
+    },
+    "page": {
+      "songBio": "Over het nummer",
+      "albumBio": "Over het album",
+      "viaGeniusLink": "via Genius — songteksten en meer ↗",
+      "viaWikipediaLink": "via Wikipedia ↗",
+      "viaGenius": "via Genius",
+      "viaWikipedia": "via Wikipedia",
+      "dropsIn": "⏳ KOMT UIT OVER",
+      "drops": "Komt uit op",
+      "released": "Uitgebracht op",
+      "communityAverage": "Gemiddelde van de community",
+      "fromReviews": "uit {reviews, plural, one {# recensie} other {# recensies}} · {followers, plural, one {# volger} other {# volgers}}",
+      "noReviewsYet": "Nog geen recensies — het communitygemiddelde begint bij de eerste.",
+      "followers": "{n, plural, one {# volger} other {# volgers}}",
+      "followRelease": "Deze release volgen",
+      "following": "Volgend",
+      "tracks": "Tracks",
+      "spotify": "Spotify ↗",
+      "communityReviews": "Communityrecensies",
+      "addYours": "+ Voeg de jouwe toe",
+      "noReviewsRelease": "Nog geen recensies voor deze release.",
+      "beFirst": "Wees de eerste die dit recenseert",
+      "followersHeading": "{n, plural, one {# Volger} other {# Volgers}}",
+      "ratingSpread": "cijferspreiding",
+      "histogramBar": "{score}: {n, plural, one {# recensie} other {# recensies}}",
+      "anonymous": "anoniem",
+      "noWords": "Beoordeeld, zonder woorden — het cijfer zegt genoeg.",
+      "likesComments": "Likes + reacties →"
+    },
+    "views": {
+      "avg": "GEM",
+      "unrated": "GEEN CIJFER",
+      "communityAvg": "Communitygem.",
+      "unratedLabel": "Geen cijfer",
+      "reviews": "{n, plural, one {# recensie} other {# recensies}}",
+      "beFirst": "wees de eerste die recenseert",
+      "followers": "{n, plural, one {# volger} other {# volgers}}",
+      "noReviews": "Geen recensies",
+      "tomorrow": "Morgen",
+      "dMinus": "D–{n}"
+    },
+    "dropping": {
+      "title": "Binnenkort uit",
+      "tagline": "De room gaat open vóór het album"
+    },
+    "countdown": {
+      "outNow": "NU UIT",
+      "dMinus": "D–{n}",
+      "days": "{n}D "
+    },
+    "embed": {
+      "preview": "Preview",
+      "spotifyClips": "clips van 30s · via Spotify",
+      "appleClips": "clips van 30s · via Apple Music ↗",
+      "spotifyTitle": "Spotify-preview van {title}",
+      "appleTitle": "Apple Music-preview van {title}"
+    },
+    "feed": {
+      "latestDrops": "Nieuwste releases",
+      "freshLists": "Verse lijsten"
+    }
+  },
+  "catalog": {
+    "placeholder": "Zoek wat je wilt — of plak een Spotify-link…",
+    "hiccup": "Zoeken haperde — probeer opnieuw.",
+    "couldntLoad": "Die release kon niet worden geladen.",
+    "aria": "Zoek in de muziekcatalogus",
+    "tuning": "AFSTEMMEN…",
+    "communityAvg": "communitygem.",
+    "unreleased": "ONUITGEBRACHT",
+    "dropsSoon": "BINNENKORT",
+    "loading": "LADEN…",
+    "onPmr": "OP PMR"
   }
 }

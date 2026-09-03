@@ -847,5 +847,99 @@
       "onAir": "À l'antenne",
       "signedOff": "Terminé"
     }
+  },
+  "releases": {
+    "index": {
+      "title": "SORTIES",
+      "sub": "Albums, EP, mixtapes et singles. Suis une sortie pour être dans la salle en direct quand elle tombe.",
+      "sort": {
+        "recent": "Récents",
+        "popularity": "Popularité",
+        "alpha": "A–Z"
+      },
+      "unreleasedOn": "Inédits uniquement — appuie pour tout afficher",
+      "unreleasedOff": "Seulement les leaks, extraits et disques mis de côté",
+      "unreleased": "Inédits",
+      "noMore": "Plus de sorties sur cette page.",
+      "noUnreleased": "Pas encore de disques inédits dans le catalogue — colle un lien vers l'un d'eux pour le critiquer.",
+      "none": "Pas encore de sorties. Reviens bientôt.",
+      "backToFirst": "← Retour à la première page",
+      "previous": "← Précédent",
+      "next": "Suivant →",
+      "page": "Page {n}"
+    },
+    "page": {
+      "songBio": "À propos du morceau",
+      "albumBio": "À propos de l'album",
+      "viaGeniusLink": "via Genius — paroles et plus ↗",
+      "viaWikipediaLink": "via Wikipédia ↗",
+      "viaGenius": "via Genius",
+      "viaWikipedia": "via Wikipédia",
+      "dropsIn": "⏳ SORT DANS",
+      "drops": "Sort le",
+      "released": "Sorti le",
+      "communityAverage": "Moyenne de la communauté",
+      "fromReviews": "sur {reviews, plural, one {# critique} other {# critiques}} · {followers, plural, one {# abonné} other {# abonnés}}",
+      "noReviewsYet": "Pas encore de critiques — la moyenne de la communauté commence avec la première.",
+      "followers": "{n, plural, one {# abonné} other {# abonnés}}",
+      "followRelease": "Suivre cette sortie",
+      "following": "Abonné",
+      "tracks": "Titres",
+      "spotify": "Spotify ↗",
+      "communityReviews": "Critiques de la communauté",
+      "addYours": "+ Ajoute la tienne",
+      "noReviewsRelease": "Pas encore de critiques pour cette sortie.",
+      "beFirst": "Sois le premier à le critiquer",
+      "followersHeading": "{n, plural, one {# Abonné} other {# Abonnés}}",
+      "ratingSpread": "répartition des notes",
+      "histogramBar": "{score} : {n, plural, one {# critique} other {# critiques}}",
+      "anonymous": "anonyme",
+      "noWords": "Noté, sans un mot — le chiffre parle de lui-même.",
+      "likesComments": "Likes + commentaires →"
+    },
+    "views": {
+      "avg": "MOY",
+      "unrated": "SANS NOTE",
+      "communityAvg": "Moy. communauté",
+      "unratedLabel": "Sans note",
+      "reviews": "{n, plural, one {# critique} other {# critiques}}",
+      "beFirst": "sois le premier à critiquer",
+      "followers": "{n, plural, one {# abonné} other {# abonnés}}",
+      "noReviews": "Pas de critiques",
+      "tomorrow": "Demain",
+      "dMinus": "J–{n}"
+    },
+    "dropping": {
+      "title": "Bientôt",
+      "tagline": "La salle ouvre avant l'album"
+    },
+    "countdown": {
+      "outNow": "DISPONIBLE",
+      "dMinus": "J–{n}",
+      "days": "{n}J "
+    },
+    "embed": {
+      "preview": "Extrait",
+      "spotifyClips": "extraits de 30 s · via Spotify",
+      "appleClips": "extraits de 30 s · via Apple Music ↗",
+      "spotifyTitle": "Extrait Spotify de {title}",
+      "appleTitle": "Extrait Apple Music de {title}"
+    },
+    "feed": {
+      "latestDrops": "Dernières sorties",
+      "freshLists": "Listes fraîches"
+    }
+  },
+  "catalog": {
+    "placeholder": "Cherche n'importe quoi — ou colle un lien Spotify…",
+    "hiccup": "La recherche a raté — réessaie.",
+    "couldntLoad": "Impossible de charger cette sortie.",
+    "aria": "Chercher dans le catalogue musical",
+    "tuning": "RÉGLAGE…",
+    "communityAvg": "moy. communauté",
+    "unreleased": "INÉDIT",
+    "dropsSoon": "BIENTÔT",
+    "loading": "CHARGEMENT…",
+    "onPmr": "SUR PMR"
   }
 }

@@ -16,6 +16,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Release } from "@/lib/types/database";
 import { getRatingHex, formatRating } from "@/lib/rating";
+import { useTranslations } from "next-intl";
 
 interface CatalogResult {
   source: "local" | "spotify" | "spotify_track" | "genius";
@@ -47,8 +48,10 @@ interface CatalogSearchProps {
   label?: string;
 }
 
+// `text` for "local" is a key into messages → catalog; the others are
+// service names and stay as they are.
 const SOURCE_BADGE: Record<CatalogResult["source"], { text: string; cls: string }> = {
-  local: { text: "ON PMR", cls: "text-accent-glow border-accent-primary/40" },
+  local: { text: "onPmr", cls: "text-accent-glow border-accent-primary/40" },
   // Spotify stays brand-green (Luca 2026-08-25) — the sitewide
   // green→blue recolor deliberately skips this one badge.
   spotify: { text: "SPOTIFY", cls: "text-osd-green border-osd-green/40" },
@@ -61,10 +64,12 @@ export default function CatalogSearch({
   // The Spotify-link mention is load-bearing: pasting an album link is
   // the ONLY way to add an UPCOMING album (search hides those until
   // release day), so the input itself has to teach the trick.
-  placeholder = "Search anything — or paste a Spotify link…",
+  placeholder,
   autoFocus = false,
   label,
 }: CatalogSearchProps) {
+  // LANGUAGES: messages → catalog. The API's own `notice` is shown as-is.
+  const t = useTranslations("catalog");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CatalogResult[]>([]);
   const [open, setOpen] = useState(false);
@@ -126,11 +131,11 @@ export default function CatalogSearch({
         setOpen(true);
       }
     } catch {
-      if (lastQueryRef.current === q) setError("Search hiccuped — try again.");
+      if (lastQueryRef.current === q) setError(t("hiccup"));
     } finally {
       if (lastQueryRef.current === q) setSearching(false);
     }
-  }, []);
+  }, [t]);
 
   function handleChange(value: string) {
     setQuery(value);
@@ -158,7 +163,7 @@ export default function CatalogSearch({
       onPick({ release: data.release, artist_name: r.artist });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Couldn't load that release."
+        err instanceof Error ? err.message : t("couldntLoad")
       );
     } finally {
       setImporting(null);
@@ -179,14 +184,14 @@ export default function CatalogSearch({
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("placeholder")}
           autoFocus={autoFocus}
           className="form-input pr-20"
-          aria-label="Search the music catalog"
+          aria-label={t("aria")}
         />
         {searching && (
           <span className="osd-text absolute right-3 top-1/2 -translate-y-1/2 text-xs animate-pulse">
-            TUNING…
+            {t("tuning")}
           </span>
         )}
       </div>
@@ -249,28 +254,28 @@ export default function CatalogSearch({
                       {formatRating(r.avg_rating)}
                     </span>
                     <span className="block pixel-text text-[8px] uppercase tracking-widest text-text-muted">
-                      community avg
+                      {t("communityAvg")}
                     </span>
                   </span>
                 )}
 
                 {r.unreleased && (
                   <span className="pixel-text text-[10px] text-osd-amber border border-osd-amber/40 rounded px-1 py-0.5 shrink-0">
-                    UNRELEASED
+                    {t("unreleased")}
                   </span>
                 )}
 
                 {/* Future release_date — the countdown-album case. */}
                 {r.upcoming && (
                   <span className="pixel-text text-[10px] text-osd-amber border border-osd-amber/40 rounded px-1 py-0.5 shrink-0 animate-pulse">
-                    DROPS SOON
+                    {t("dropsSoon")}
                   </span>
                 )}
 
                 <span
                   className={`pixel-text text-[10px] border rounded px-1 py-0.5 shrink-0 ${badge.cls}`}
                 >
-                  {importing === key ? "LOADING…" : badge.text}
+                  {importing === key ? t("loading") : r.source === "local" ? t("onPmr") : badge.text}
                 </span>
               </button>
             );

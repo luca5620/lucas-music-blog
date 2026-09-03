@@ -43,6 +43,9 @@ import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
 import ReleaseRoomChat from "@/components/rooms/ReleaseRoomChat";
 import { type ChatMessageWithProfile } from "@/components/rooms/ChatPanel";
 import { BreadcrumbSchema, ReleaseSchema } from "@/app/schema";
+// LANGUAGES: page copy (messages → releases.page + common); dates use
+// the viewer's locale. Metadata and JSON-LD stay English.
+import { getLocale, getTranslations } from "next-intl/server";
 import type {
   Profile,
   Release,
@@ -76,8 +79,9 @@ async function DescriptionBlock({
 
   // Singles are songs; everything else (album/EP/mixtape/compilation)
   // reads as an album — the heading says which one this bio is for.
+  const t = await getTranslations("releases.page");
   const bioLabel =
-    release.release_type === "single" ? "Song Bio" : "Album Bio";
+    release.release_type === "single" ? t("songBio") : t("albumBio");
 
   return (
     <>
@@ -98,14 +102,12 @@ async function DescriptionBlock({
               rel="noopener noreferrer"
               className="hover:text-accent-primary transition-colors"
             >
-              {desc.source === "genius"
-                ? "via Genius — lyrics & more ↗"
-                : "via Wikipedia ↗"}
+              {desc.source === "genius" ? t("viaGeniusLink") : t("viaWikipediaLink")}
             </a>
           ) : desc.source === "genius" ? (
-            "via Genius"
+            t("viaGenius")
           ) : (
-            "via Wikipedia"
+            t("viaWikipedia")
           )}
         </p>
       )}
@@ -189,10 +191,10 @@ function formatDuration(ms: number): string {
   return `${min}:${sec.toString().padStart(2, "0")}`;
 }
 
-function formatDate(date: string | null): string | null {
+function formatDate(date: string | null, locale: string): string | null {
   if (!date) return null;
   try {
-    return new Date(date + "T12:00:00").toLocaleDateString("en-US", {
+    return new Date(date + "T12:00:00").toLocaleDateString(locale, {
       month: "long",
       day: "numeric",
       year: "numeric",
@@ -268,7 +270,9 @@ export default async function ReleasePage({ params }: Props) {
 
   const tracks = (release.tracks ?? []) as ReleaseTrack[];
 
-  const releaseDateFormatted = formatDate(release.release_date);
+  const locale = await getLocale();
+  const releaseDateFormatted = formatDate(release.release_date, locale);
+  const tc = await getTranslations("common");
   const artistName = artist?.name ?? "Unknown Artist";
   const artistSlug = artist?.slug;
 
@@ -318,7 +322,7 @@ export default async function ReleasePage({ params }: Props) {
       {/* Back link */}
       <BackLink
         fallback="/releases"
-        label="Back"
+        label={tc("back")}
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
       />
 
@@ -365,7 +369,7 @@ interface ReleaseContentProps {
   apple: AppleMusicRef | null;
 }
 
-function ReleaseContent({
+async function ReleaseContent({
   apple,
   release,
   stats,
@@ -382,6 +386,9 @@ function ReleaseContent({
   artistName,
   artistSlug,
 }: ReleaseContentProps) {
+  const t = await getTranslations("releases.page");
+  const tc = await getTranslations("common");
+  const locale = await getLocale();
   // Countdown album: the page (and its live room) exists BEFORE the
   // music does. isUpcoming flips to false on release day by itself.
   const upcoming = isUpcoming(release.release_date);
@@ -403,7 +410,7 @@ function ReleaseContent({
       {upcoming && release.release_date && (
         <div className="mb-5 sm:mb-6 border border-osd-amber/50 rounded-lg bg-osd-amber/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
           <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest">
-            ⏳ DROPS IN{" "}
+            {t("dropsIn")}{" "}
             <LiveCountdown
               releaseDate={release.release_date}
               className="animate-pulse"
@@ -432,7 +439,7 @@ function ReleaseContent({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={release.cover_image}
-              alt={`${release.title} cover`}
+              alt={tc("coverAlt", { title: release.title })}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -468,7 +475,7 @@ function ReleaseContent({
                 upcoming ? "text-osd-amber text-xs" : "text-text-muted text-xs"
               }
             >
-              {upcoming ? "Drops" : "Released"} {releaseDateFormatted}
+              {upcoming ? t("drops") : t("released")} {releaseDateFormatted}
             </span>
           )}
         </div>
@@ -486,26 +493,25 @@ function ReleaseContent({
                 </div>
                 <div className="space-y-0.5">
                   <p className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-                    Community average
+                    {t("communityAverage")}
                   </p>
                   <p className="text-xs text-text-secondary">
-                    from {stats.review_count}{" "}
-                    {stats.review_count === 1 ? "review" : "reviews"} ·{" "}
-                    {stats.follower_count}{" "}
-                    {stats.follower_count === 1 ? "follower" : "followers"}
+                    {t("fromReviews", {
+                      reviews: stats.review_count,
+                      followers: stats.follower_count,
+                    })}
                   </p>
                 </div>
               </div>
-              <RatingHistogram ratings={reviews.map((r) => r.rating)} />
+              <RatingHistogram ratings={reviews.map((r) => r.rating)} t={t} />
             </>
           ) : (
             <div className="flex flex-wrap items-center gap-4">
               <span className="text-xs text-text-muted italic">
-                No reviews yet — the community average starts with the first one.
+                {t("noReviewsYet")}
               </span>
               <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-                {stats.follower_count}{" "}
-                {stats.follower_count === 1 ? "follower" : "followers"}
+                {t("followers", { n: stats.follower_count })}
               </span>
             </div>
           )}
@@ -518,8 +524,8 @@ function ReleaseContent({
             entityId={release.id}
             initialFollowing={isFollowing}
             accentColor={accentColor}
-            labelFollow="Follow this release"
-            labelFollowing="Following"
+            labelFollow={t("followRelease")}
+            labelFollowing={t("following")}
           />
         </div>
 
@@ -550,7 +556,7 @@ function ReleaseContent({
             <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
-                <span className="label-xbox">Tracks</span>
+                <span className="label-xbox">{t("tracks")}</span>
               </div>
 
               <ol className="space-y-2">
@@ -576,7 +582,7 @@ function ReleaseContent({
                         </span>
                         {spotifyHref && (
                           <span className="text-xs text-accent-primary whitespace-nowrap">
-                            Spotify ↗
+                            {t("spotify")}
                           </span>
                         )}
                       </div>
@@ -663,7 +669,7 @@ function ReleaseContent({
             <div className="flex items-center gap-2">
               <span className="glow-orb" />
               <span className="label-xbox">
-                Community Reviews
+                {t("communityReviews")}
                 {reviews.length > 0 && ` (${reviews.length})`}
               </span>
             </div>
@@ -672,7 +678,7 @@ function ReleaseContent({
                 href={`/reviews/new?release_id=${release.id}`}
                 className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
               >
-                + Add yours
+                {t("addYours")}
               </Link>
             )}
           </div>
@@ -680,20 +686,20 @@ function ReleaseContent({
           {reviews.length === 0 ? (
             <div className="panel-xbox p-6 text-center space-y-3">
               <p className="font-[family-name:var(--font-vt323)] text-base text-text-muted">
-                No reviews for this release yet.
+                {t("noReviewsRelease")}
               </p>
               <Link
                 href={`/reviews/new?release_id=${release.id}`}
                 className="btn-y2k btn-y2k-outline inline-block"
                 style={{ borderColor: accentColor, color: accentColor }}
               >
-                Be the first to review this
+                {t("beFirst")}
               </Link>
             </div>
           ) : (
             <div className="space-y-3">
               {reviews.map((r) => (
-                <ReleaseReviewEntry key={r.id} review={r} />
+                <ReleaseReviewEntry key={r.id} review={r} t={t} locale={locale} />
               ))}
             </div>
           )}
@@ -707,8 +713,7 @@ function ReleaseContent({
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
                 <span className="label-xbox">
-                  {stats.follower_count}{" "}
-                  {stats.follower_count === 1 ? "Follower" : "Followers"}
+                  {t("followersHeading", { n: stats.follower_count })}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -761,7 +766,9 @@ function ReleaseContent({
  * with the same rating colors used everywhere else on the site.
  * Pure server-rendered divs — no chart library.
  */
-function RatingHistogram({ ratings }: { ratings: number[] }) {
+type ReleaseT = Awaited<ReturnType<typeof getTranslations<"releases.page">>>;
+
+function RatingHistogram({ ratings, t }: { ratings: number[]; t: ReleaseT }) {
   const bins = Array.from({ length: 11 }, () => 0);
   for (const r of ratings) {
     const bin = Math.min(10, Math.max(0, Math.round(r)));
@@ -775,7 +782,7 @@ function RatingHistogram({ ratings }: { ratings: number[] }) {
         {bins.map((count, score) => (
           <div
             key={score}
-            title={`${score}: ${count} ${count === 1 ? "review" : "reviews"}`}
+            title={t("histogramBar", { score, n: count })}
             className="flex-1 rounded-t-sm"
             style={
               count === 0
@@ -792,7 +799,7 @@ function RatingHistogram({ ratings }: { ratings: number[] }) {
       <div className="flex justify-between">
         <span className="pixel-text text-[0.65rem] text-text-muted">0</span>
         <span className="pixel-text text-[0.65rem] text-text-muted uppercase tracking-widest">
-          rating spread
+          {t("ratingSpread")}
         </span>
         <span className="pixel-text text-[0.65rem] text-text-muted">10</span>
       </div>
@@ -825,17 +832,25 @@ interface ReviewWithProfile {
  * center, their words in full, not just a floating number. The rating
  * only makes sense next to the person behind it.
  */
-function ReleaseReviewEntry({ review }: { review: ReviewWithProfile }) {
+function ReleaseReviewEntry({
+  review,
+  t,
+  locale,
+}: {
+  review: ReviewWithProfile;
+  t: ReleaseT;
+  locale: string;
+}) {
   const ratingColor = getRatingHex(review.rating);
   const profile = Array.isArray(review.profiles)
     ? review.profiles[0]
     : review.profiles;
-  const reviewerName = profile?.display_name ?? profile?.username ?? "anonymous";
+  const reviewerName = profile?.display_name ?? profile?.username ?? t("anonymous");
   const body = review.summary ?? review.snippet;
 
   let reviewedOn: string | null = null;
   try {
-    reviewedOn = new Date(review.created_at).toLocaleDateString("en-US", {
+    reviewedOn = new Date(review.created_at).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -888,7 +903,7 @@ function ReleaseReviewEntry({ review }: { review: ReviewWithProfile }) {
         </p>
       ) : (
         <p className="text-sm text-text-muted italic">
-          Rated, no words — the number speaks for itself.
+          {t("noWords")}
         </p>
       )}
 
@@ -897,7 +912,7 @@ function ReleaseReviewEntry({ review }: { review: ReviewWithProfile }) {
         href={`/reviews/${review.slug}`}
         className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors inline-flex items-center gap-1"
       >
-        Likes + comments →
+        {t("likesComments")}
       </Link>
     </article>
   );

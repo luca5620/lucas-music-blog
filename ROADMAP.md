@@ -109,6 +109,18 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 5b (releases) shipped:** /releases hero, sort tabs, Unreleased
+    filter, empty states, pagination; release page (bio labels + source
+    credits, countdown strip, dates in the viewer's locale, community
+    average with ICU plurals, follow button labels, tracks, community
+    reviews block, followers, histogram tooltips, review entries);
+    ReleaseViews + ReleaseCard (AVG/UNRATED stamps, counts, D–n),
+    DroppingSoonRail, LiveCountdown (OUT NOW), Spotify/Apple embeds,
+    ReleasesFeedClient (Latest Drops) + ListsRail (Fresh Lists) headers,
+    CatalogSearch (placeholder, badges, errors). Namespaces: releases,
+    catalog. Verified ES index + release page from the built server.
+    The dashboard's home modules are now fully translated except
+    PostsFeed (posts batch) and ListCard (lists batch).
   - **Batch 5a (reviews) shipped:** /reviews hero + ReviewsList (filters,
     NO SIGNAL states, cards), review page (draft banner, review by, dates
     in the viewer's locale, song/album review label, favorites), ReviewForm

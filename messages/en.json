@@ -847,5 +847,99 @@
       "onAir": "On air",
       "signedOff": "Signed off"
     }
+  },
+  "releases": {
+    "index": {
+      "title": "RELEASES",
+      "sub": "Albums, EPs, mixtapes, and singles. Follow a release to be in the live room when it drops.",
+      "sort": {
+        "recent": "Recent",
+        "popularity": "Popularity",
+        "alpha": "A–Z"
+      },
+      "unreleasedOn": "Showing unreleased only — tap to show everything",
+      "unreleasedOff": "Only leaks, snippets and shelved records",
+      "unreleased": "Unreleased",
+      "noMore": "No more releases on this page.",
+      "noUnreleased": "No unreleased records in the catalog yet — paste a link to one to review it.",
+      "none": "No releases yet. Check back soon.",
+      "backToFirst": "← Back to first page",
+      "previous": "← Previous",
+      "next": "Next →",
+      "page": "Page {n}"
+    },
+    "page": {
+      "songBio": "Song Bio",
+      "albumBio": "Album Bio",
+      "viaGeniusLink": "via Genius — lyrics & more ↗",
+      "viaWikipediaLink": "via Wikipedia ↗",
+      "viaGenius": "via Genius",
+      "viaWikipedia": "via Wikipedia",
+      "dropsIn": "⏳ DROPS IN",
+      "drops": "Drops",
+      "released": "Released",
+      "communityAverage": "Community average",
+      "fromReviews": "from {reviews, plural, one {# review} other {# reviews}} · {followers, plural, one {# follower} other {# followers}}",
+      "noReviewsYet": "No reviews yet — the community average starts with the first one.",
+      "followers": "{n, plural, one {# follower} other {# followers}}",
+      "followRelease": "Follow this release",
+      "following": "Following",
+      "tracks": "Tracks",
+      "spotify": "Spotify ↗",
+      "communityReviews": "Community Reviews",
+      "addYours": "+ Add yours",
+      "noReviewsRelease": "No reviews for this release yet.",
+      "beFirst": "Be the first to review this",
+      "followersHeading": "{n, plural, one {# Follower} other {# Followers}}",
+      "ratingSpread": "rating spread",
+      "histogramBar": "{score}: {n, plural, one {# review} other {# reviews}}",
+      "anonymous": "anonymous",
+      "noWords": "Rated, no words — the number speaks for itself.",
+      "likesComments": "Likes + comments →"
+    },
+    "views": {
+      "avg": "AVG",
+      "unrated": "UNRATED",
+      "communityAvg": "Community Avg",
+      "unratedLabel": "Unrated",
+      "reviews": "{n, plural, one {# review} other {# reviews}}",
+      "beFirst": "be the first to review",
+      "followers": "{n, plural, one {# follower} other {# followers}}",
+      "noReviews": "No reviews",
+      "tomorrow": "Tomorrow",
+      "dMinus": "D–{n}"
+    },
+    "dropping": {
+      "title": "Dropping Soon",
+      "tagline": "The room opens before the album does"
+    },
+    "countdown": {
+      "outNow": "OUT NOW",
+      "dMinus": "D–{n}",
+      "days": "{n}D "
+    },
+    "embed": {
+      "preview": "Preview",
+      "spotifyClips": "30s clips · via Spotify",
+      "appleClips": "30s clips · via Apple Music ↗",
+      "spotifyTitle": "Spotify preview of {title}",
+      "appleTitle": "Apple Music preview of {title}"
+    },
+    "feed": {
+      "latestDrops": "Latest Drops",
+      "freshLists": "Fresh Lists"
+    }
+  },
+  "catalog": {
+    "placeholder": "Search anything — or paste a Spotify link…",
+    "hiccup": "Search hiccuped — try again.",
+    "couldntLoad": "Couldn't load that release.",
+    "aria": "Search the music catalog",
+    "tuning": "TUNING…",
+    "communityAvg": "community avg",
+    "unreleased": "UNRELEASED",
+    "dropsSoon": "DROPS SOON",
+    "loading": "LOADING…",
+    "onPmr": "ON PMR"
   }
 }

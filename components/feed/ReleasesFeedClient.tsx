@@ -15,6 +15,7 @@ import {
   useReviewView,
   ViewToggle,
 } from "@/components/reviews/ViewToggle";
+import { useTranslations } from "next-intl";
 
 export default function ReleasesFeedClient({
   items,
@@ -24,6 +25,8 @@ export default function ReleasesFeedClient({
   const [view, setView] = useReviewView();
   // Per-view module cap — full rows only, View All has the rest.
   const limit = useModuleLimit(view);
+  const t = useTranslations("releases.feed");
+  const tc = useTranslations("common");
 
   return (
     <section className="space-y-4">
@@ -33,7 +36,7 @@ export default function ReleasesFeedClient({
       <div className="flex items-center gap-2 sm:gap-3">
         <span className="glow-orb shrink-0" style={{ animationDelay: "2.5s" }} />
         <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary min-w-0 truncate">
-          Latest Drops
+          {t("latestDrops")}
         </h2>
         <div className="flex-1 divider-glow" />
         <ViewToggle view={view} onChange={setView} />
@@ -41,7 +44,7 @@ export default function ReleasesFeedClient({
           href="/releases"
           className="label-xbox shrink-0 hover:text-accent-primary transition-colors"
         >
-          View All →
+          {tc("viewAll")}
         </Link>
       </div>
 

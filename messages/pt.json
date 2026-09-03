@@ -847,5 +847,99 @@
       "onAir": "No ar",
       "signedOff": "Encerrado"
     }
+  },
+  "releases": {
+    "index": {
+      "title": "LANÇAMENTOS",
+      "sub": "Álbuns, EPs, mixtapes e singles. Siga um lançamento para estar na sala ao vivo quando ele sair.",
+      "sort": {
+        "recent": "Recentes",
+        "popularity": "Popularidade",
+        "alpha": "A–Z"
+      },
+      "unreleasedOn": "Mostrando só inéditas — toque para ver tudo",
+      "unreleasedOff": "Só vazamentos, trechos e discos engavetados",
+      "unreleased": "Inéditas",
+      "noMore": "Não há mais lançamentos nesta página.",
+      "noUnreleased": "Ainda não há discos inéditos no catálogo — cole um link de um para resenhá-lo.",
+      "none": "Nenhum lançamento ainda. Volte em breve.",
+      "backToFirst": "← Voltar à primeira página",
+      "previous": "← Anterior",
+      "next": "Próxima →",
+      "page": "Página {n}"
+    },
+    "page": {
+      "songBio": "Sobre a música",
+      "albumBio": "Sobre o álbum",
+      "viaGeniusLink": "via Genius — letras e mais ↗",
+      "viaWikipediaLink": "via Wikipédia ↗",
+      "viaGenius": "via Genius",
+      "viaWikipedia": "via Wikipédia",
+      "dropsIn": "⏳ SAI EM",
+      "drops": "Sai em",
+      "released": "Lançado em",
+      "communityAverage": "Média da comunidade",
+      "fromReviews": "de {reviews, plural, one {# resenha} other {# resenhas}} · {followers, plural, one {# seguidor} other {# seguidores}}",
+      "noReviewsYet": "Nenhuma resenha ainda — a média da comunidade começa com a primeira.",
+      "followers": "{n, plural, one {# seguidor} other {# seguidores}}",
+      "followRelease": "Seguir este lançamento",
+      "following": "Seguindo",
+      "tracks": "Faixas",
+      "spotify": "Spotify ↗",
+      "communityReviews": "Resenhas da comunidade",
+      "addYours": "+ Adicione a sua",
+      "noReviewsRelease": "Nenhuma resenha deste lançamento ainda.",
+      "beFirst": "Seja o primeiro a resenhar",
+      "followersHeading": "{n, plural, one {# Seguidor} other {# Seguidores}}",
+      "ratingSpread": "distribuição de notas",
+      "histogramBar": "{score}: {n, plural, one {# resenha} other {# resenhas}}",
+      "anonymous": "anônimo",
+      "noWords": "Avaliado, sem palavras — o número fala por si.",
+      "likesComments": "Curtidas + comentários →"
+    },
+    "views": {
+      "avg": "MÉD",
+      "unrated": "SEM NOTA",
+      "communityAvg": "Média comunidade",
+      "unratedLabel": "Sem nota",
+      "reviews": "{n, plural, one {# resenha} other {# resenhas}}",
+      "beFirst": "seja o primeiro a resenhar",
+      "followers": "{n, plural, one {# seguidor} other {# seguidores}}",
+      "noReviews": "Sem resenhas",
+      "tomorrow": "Amanhã",
+      "dMinus": "D–{n}"
+    },
+    "dropping": {
+      "title": "Saindo em breve",
+      "tagline": "A sala abre antes do álbum"
+    },
+    "countdown": {
+      "outNow": "JÁ SAIU",
+      "dMinus": "D–{n}",
+      "days": "{n}D "
+    },
+    "embed": {
+      "preview": "Prévia",
+      "spotifyClips": "trechos de 30s · via Spotify",
+      "appleClips": "trechos de 30s · via Apple Music ↗",
+      "spotifyTitle": "Prévia de {title} no Spotify",
+      "appleTitle": "Prévia de {title} no Apple Music"
+    },
+    "feed": {
+      "latestDrops": "Últimos lançamentos",
+      "freshLists": "Listas novas"
+    }
+  },
+  "catalog": {
+    "placeholder": "Busque qualquer coisa — ou cole um link do Spotify…",
+    "hiccup": "A busca engasgou — tente de novo.",
+    "couldntLoad": "Não deu para carregar esse lançamento.",
+    "aria": "Buscar no catálogo de música",
+    "tuning": "SINTONIZANDO…",
+    "communityAvg": "média comunidade",
+    "unreleased": "INÉDITA",
+    "dropsSoon": "SAI EM BREVE",
+    "loading": "CARREGANDO…",
+    "onPmr": "NO PMR"
   }
 }

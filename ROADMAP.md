@@ -90,6 +90,40 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-03 (Windows): LANGUAGES — batch 0 shipped (infrastructure +
+  shared chrome), string extraction continues in batches.** Luca: Spanish,
+  French, Portuguese, Dutch, German ("easier languages"); China parked as
+  a far-off business decision (needs a Chinese entity, in-country hosting,
+  ICP filing, and a second catalog source — Spotify/YouTube are blocked;
+  Apple Music works). Rules he set: translate ONLY what we wrote (menus,
+  buttons, labels, hints, errors); never reviews/lists/posts/chat,
+  catalog data, API output, or page metadata. A "translate this review"
+  QoL button is a maybe-later idea, not planned.
+  - **Design (i18n/config.ts):** next-intl, NO URL prefixes — one
+    `pmr-lang` cookie (a year), resolution cookie → Accept-Language →
+    English. Nothing duplicated, no link changes, SEO untouched. Mobile
+    apps get every language on deploy with no rebuild (WKWebView keeps
+    the cookie; its Accept-Language follows the device language, so a
+    Dutch phone opens in Dutch). Portuguese = Brazilian.
+  - **Files:** i18n/config.ts + request.ts + client.ts, messages/{en,es,
+    fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
+    Settings → Language section), next.config wrapped with
+    createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 0 translated:** Navigation (links, search, create menu,
+    account dropdown, admin, sign in/out), TabBar, CreateSheet, SiteFooter,
+    LowDetailToggle, Settings Performance/Language sections, TUNING….
+    Verified against the built server with curl (default en, header nl,
+    cookie de beats header, bogus cookie → en). Not yet eyeballed.
+  - **NEXT batches (one commit each, page by page):** 1 home (logged-out
+    + logged-in strip), 2 auth (login/signup/reset), 3 settings (all
+    section titles/hints/fields/save states), 4 profile + badges,
+    5 reviews/releases (form, list, filters, empty states), 6 lists,
+    7 rooms/debates/chat, 8 search/social/notifications, 9 offline
+    overlay / error pages / toasts. Pattern: client components
+    `useTranslations("ns")`, server components `await getTranslations`.
+    Every string added to en.json must land in all six files. Watch label
+    width: FR/PT/DE run ~25% longer than EN in the uppercase OSD tags.
+
 - **2026-09-03 (Windows): LOW DETAIL MODE — shipped, not yet eyeballed.**
   Luca: "a low-detail mode for the website for users to toggle if they
   don't have a strong computer … matching the changes we made for the

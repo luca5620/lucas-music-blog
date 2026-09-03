@@ -7,6 +7,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap } from "@/lib/native";
 import { useIsNativeApp } from "@/lib/useIsNativeApp";
 import CreateSheet from "@/components/ui/CreateSheet";
+import { useTranslations } from "next-intl";
 
 /**
  * TabBar — app-only bottom navigation (iOS/Android shell).
@@ -82,6 +83,8 @@ export default function TabBar() {
   const pathname = usePathname();
   const { user, profile } = useAuth();
   const native = useIsNativeApp();
+  // LANGUAGES: tab words come from messages/<locale>.json → "tabBar".
+  const t = useTranslations("tabBar");
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   // The middle CREATE button's slide-up sheet.
   const [createOpen, setCreateOpen] = useState(false);
@@ -119,32 +122,32 @@ export default function TabBar() {
     user && profile?.username ? `/profile/${profile.username}` : "/login";
 
   const tabs: Tab[] = [
-    { href: "/", label: "Home", icon: icons.home },
+    { href: "/", label: t("home"), icon: icons.home },
     // "Taste", not "For You" — Luca 2026-08-22: don't copy TikTok's
     // label, and the short form fits the narrow tab cell.
-    { href: "/your-taste", label: "Taste", icon: icons.taste },
+    { href: "/your-taste", label: t("taste"), icon: icons.taste },
     // Middle slot: the CREATE button (rendered specially below — a
     // sheet trigger, not a link). This placeholder keeps the array
     // describing the visual order.
-    { href: "#create", label: "Create", icon: icons.create },
+    { href: "#create", label: t("create"), icon: icons.create },
     {
       // "Social", not "Friends" (Luca 2026-08-31) — the page grew
       // top rooms + weekly charts; /friends 308s to /social.
       href: "/social",
-      label: "Social",
+      label: t("social"),
       // /connections is reached from the social/profile flow — keep
       // the tab lit there too (and on the old /friends URL mid-308).
       match: ["/social", "/friends", "/connections"],
       icon: icons.friends,
     },
-    { href: profileHref, label: "Profile", icon: icons.profile },
+    { href: profileHref, label: t("profile"), icon: icons.profile },
   ];
 
   return (
     <>
       <nav
         className={`tab-bar${keyboardOpen ? " keyboard-open" : ""}`}
-        aria-label="App navigation"
+        aria-label={t("ariaLabel")}
       >
         {tabs.map((tab) => {
           // The CREATE cell: a button that pops the sheet — always
@@ -152,7 +155,7 @@ export default function TabBar() {
           if (tab.href === "#create") {
             return (
               <button
-                key={tab.label}
+                key={tab.href}
                 type="button"
                 onClick={() => {
                   hapticTap();
@@ -174,7 +177,7 @@ export default function TabBar() {
           );
           return (
             <Link
-              key={tab.label}
+              key={tab.href}
               href={tab.href}
               onClick={() => hapticTap()}
               aria-current={isActive ? "page" : undefined}

@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// LANGUAGES — points next-intl at the per-request locale resolver
+// (cookie → Accept-Language → English). Design notes in i18n/config.ts.
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /**
  * Security headers applied to every response.
@@ -85,7 +90,7 @@ const nextConfig: NextConfig = {
  *   names instead of minified goo. Only happens when SENTRY_AUTH_TOKEN
  *   is set (Vercel env); without it the build just skips the upload.
  */
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withNextIntl(nextConfig), {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   authToken: process.env.SENTRY_AUTH_TOKEN,

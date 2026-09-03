@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "releases": "Lançamentos",
+    "reviews": "Resenhas",
+    "lists": "Listas",
+    "debates": "Debates",
+    "social": "Social",
+    "yourTaste": "Seu gosto",
+    "search": "Buscar",
+    "searchEverything": "Buscar em tudo",
+    "create": "Criar",
+    "profile": "Perfil",
+    "myStuff": "Minhas coisas",
+    "settings": "Configurações",
+    "admin": "Admin",
+    "importRelease": "Importar lançamento",
+    "reports": "Denúncias",
+    "badgeTool": "Ferramenta de emblemas",
+    "signOut": "Sair",
+    "signIn": "Entrar",
+    "user": "Usuário"
+  },
+  "tabBar": {
+    "ariaLabel": "Navegação do app",
+    "home": "Início",
+    "taste": "Gosto",
+    "create": "Criar",
+    "social": "Social",
+    "profile": "Perfil"
+  },
+  "create": {
+    "title": "Criar",
+    "close": "Fechar",
+    "review": "Resenha",
+    "reviewSub": "avalie um lançamento",
+    "post": "Post",
+    "postSub": "escreva — incorpore YouTube / TikTok",
+    "list": "Lista",
+    "listSub": "empilhe e classifique suas escolhas",
+    "debate": "Debate",
+    "debateSub": "compre briga, os votos decidem"
+  },
+  "footer": {
+    "foundAProblem": "Encontrou um problema?",
+    "about": "Sobre nós",
+    "privacy": "Política de privacidade",
+    "terms": "Termos de uso",
+    "switching": "Vindo do Musicboard?"
+  },
+  "lowDetail": {
+    "footer": "Baixo detalhe: {state}",
+    "on": "Sim",
+    "off": "Não",
+    "footerTitle": "Desliga os fundos animados e os efeitos de vidro em aparelhos lentos",
+    "label": "Modo de baixo detalhe",
+    "description": "Para a luz líquida, desliga o grão de filme e o desfoque de vidro, e interrompe as animações decorativas — a mesma dieta que o app do celular usa. Todo o resto funciona exatamente igual. Ligado por padrão; desligue para ver todos os efeitos se a sua máquina aguentar. Lembrado somente neste aparelho."
+  },
+  "language": {
+    "label": "Idioma",
+    "description": "Menus, botões e rótulos no seu idioma. Resenhas, listas e posts sempre ficam do jeito que seus autores escreveram. Lembrado neste aparelho."
+  },
+  "settings": {
+    "performance": "Desempenho",
+    "performanceHint": "Modo de baixo detalhe — ligado por padrão, desligue para ver todos os efeitos.",
+    "language": "Idioma",
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+  },
+  "pending": {
+    "tuning": "SINTONIZANDO…"
+  }
+}

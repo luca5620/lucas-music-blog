@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "releases": "Releases",
+    "reviews": "Reviews",
+    "lists": "Lists",
+    "debates": "Debates",
+    "social": "Social",
+    "yourTaste": "Your Taste",
+    "search": "Search",
+    "searchEverything": "Search everything",
+    "create": "Create",
+    "profile": "Profile",
+    "myStuff": "My Stuff",
+    "settings": "Settings",
+    "admin": "Admin",
+    "importRelease": "Import Release",
+    "reports": "Reports",
+    "badgeTool": "Badge Tool",
+    "signOut": "Sign Out",
+    "signIn": "Sign In",
+    "user": "User"
+  },
+  "tabBar": {
+    "ariaLabel": "App navigation",
+    "home": "Home",
+    "taste": "Taste",
+    "create": "Create",
+    "social": "Social",
+    "profile": "Profile"
+  },
+  "create": {
+    "title": "Create",
+    "close": "Close",
+    "review": "Review",
+    "reviewSub": "rate a release",
+    "post": "Post",
+    "postSub": "write it up — embed YouTube / TikTok",
+    "list": "List",
+    "listSub": "stack and rank your picks",
+    "debate": "Debate",
+    "debateSub": "pick a fight, let the votes decide"
+  },
+  "footer": {
+    "foundAProblem": "Found a problem?",
+    "about": "About Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "switching": "Switching from Musicboard?"
+  },
+  "lowDetail": {
+    "footer": "Low detail: {state}",
+    "on": "On",
+    "off": "Off",
+    "footerTitle": "Turn off the animated backgrounds and glass effects for slower devices",
+    "label": "Low detail mode",
+    "description": "Holds the liquid light still, turns off the film grain and glass blur, and stops the decorative animations — the same diet the phone app runs. Everything else works exactly the same. On by default; turn it off for the full animated look if your machine can take it. Remembered on this device only."
+  },
+  "language": {
+    "label": "Language",
+    "description": "Menus, buttons and labels in your language. Reviews, lists and posts always stay the way their authors wrote them. Remembered on this device."
+  },
+  "settings": {
+    "performance": "Performance",
+    "performanceHint": "Low detail mode — on by default, switch it off for the full effects.",
+    "language": "Language",
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+  },
+  "pending": {
+    "tuning": "TUNING…"
+  }
+}

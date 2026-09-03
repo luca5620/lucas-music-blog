@@ -21,33 +21,16 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { hapticTap } from "@/lib/native";
+import { useTranslations } from "next-intl";
 
+// `label`/`sub` are keys into messages/<locale>.json → "create"
+// (LANGUAGES, i18n/config.ts); the words are looked up at render time.
 const CREATE_OPTIONS = [
-  {
-    href: "/reviews/new",
-    icon: "★",
-    label: "Review",
-    sub: "rate a release",
-  },
-  {
-    href: "/posts/new",
-    icon: "▶",
-    label: "Post",
-    sub: "write it up — embed YouTube / TikTok",
-  },
-  {
-    href: "/lists/new",
-    icon: "≣",
-    label: "List",
-    sub: "stack and rank your picks",
-  },
-  {
-    href: "/debates/new",
-    icon: "⚔",
-    label: "Debate",
-    sub: "pick a fight, let the votes decide",
-  },
-];
+  { href: "/reviews/new", icon: "★", label: "review", sub: "reviewSub" },
+  { href: "/posts/new", icon: "▶", label: "post", sub: "postSub" },
+  { href: "/lists/new", icon: "≣", label: "list", sub: "listSub" },
+  { href: "/debates/new", icon: "⚔", label: "debate", sub: "debateSub" },
+] as const;
 
 export default function CreateSheet({
   open,
@@ -60,6 +43,8 @@ export default function CreateSheet({
   // `open` flips true the flag is raised DURING render (React's
   // adjust-state-on-prop-change pattern) instead of in an effect —
   // same result, one render pass less, and no setState-in-effect.
+  // LANGUAGES: the four cards + header/close come from messages → "create".
+  const t = useTranslations("create");
   const [mounted, setMounted] = useState(open);
   if (open && !mounted) setMounted(true);
 
@@ -84,7 +69,7 @@ export default function CreateSheet({
           closing ? "sheet-anim-out" : "sheet-anim-in"
         }`}
         role="dialog"
-        aria-label="Create"
+        aria-label={t("title")}
         onAnimationEnd={() => {
           if (closing) setMounted(false);
         }}
@@ -93,11 +78,11 @@ export default function CreateSheet({
           {/* Header row — label + close, matching the live-room sheet's
               buttons-only dismissal (no swipe affordances on sheets) */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-            <span className="label-xbox">Create</span>
+            <span className="label-xbox">{t("title")}</span>
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={t("close")}
               className="w-7 h-7 rounded-full border border-white/10 text-text-muted hover:text-text-primary flex items-center justify-center text-sm"
             >
               ✕
@@ -120,10 +105,10 @@ export default function CreateSheet({
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-text-primary font-[family-name:var(--font-heading)] uppercase tracking-wide">
-                    {opt.label}
+                    {t(opt.label)}
                   </span>
                   <span className="block text-xs text-text-muted">
-                    {opt.sub}
+                    {t(opt.sub)}
                   </span>
                 </span>
               </Link>

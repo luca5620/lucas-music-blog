@@ -25,6 +25,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { SoftwareApplicationSchema, WebSiteSchema } from "@/app/schema";
 import { APP_STORE_URL } from "@/lib/app-store";
 import { LOW_DETAIL_BOOT_SCRIPT } from "@/lib/lowDetail";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
 
@@ -153,6 +155,12 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // LANGUAGES: which dictionary this response speaks (i18n/request.ts
+  // resolved it from the pmr-lang cookie / Accept-Language). Only the
+  // <html lang> and the client provider below need it here — every
+  // component asks next-intl directly.
+  const locale = await getLocale();
+
   let profile: Profile | null = null;
   if (user) {
     const { data } = await supabase
@@ -167,7 +175,7 @@ export default async function RootLayout({
     // suppressHydrationWarning: the low-detail boot script below may
     // add a class to <html> before React hydrates; React must not
     // treat that as a mismatch (the same trick every theme switcher uses).
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         {/* LOW DETAIL MODE boot — stamps html.low-detail BEFORE first
             paint unless localStorage holds an explicit opt-out, so the
@@ -210,6 +218,11 @@ export default async function RootLayout({
             for App Store listing assets (Guideline 5.2.1) */}
         <PressMode />
 
+        {/* LANGUAGES: hands the resolved locale + dictionary to every
+            client component (useTranslations). No props needed — in a
+            Server Component next-intl picks both up from the request
+            config, and only the chosen language ships to the browser. */}
+        <NextIntlClientProvider>
         <AuthProvider initialUser={user} initialProfile={profile}>
           {/* Everything renders on the tube */}
           <CRTShell>
@@ -233,6 +246,7 @@ export default async function RootLayout({
           {/* Site-wide cover-art blur-up on image load */}
           <ImageReveal />
         </AuthProvider>
+        </NextIntlClientProvider>
         {/* Vercel Web Analytics (enabled in the dashboard 2026-08-25).
             The dashboard toggle alone records nothing on Next.js —
             this component is what actually sends the page views.

@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "releases": "Lanzamientos",
+    "reviews": "Reseñas",
+    "lists": "Listas",
+    "debates": "Debates",
+    "social": "Social",
+    "yourTaste": "Tu gusto",
+    "search": "Buscar",
+    "searchEverything": "Buscar en todo",
+    "create": "Crear",
+    "profile": "Perfil",
+    "myStuff": "Mis cosas",
+    "settings": "Ajustes",
+    "admin": "Admin",
+    "importRelease": "Importar lanzamiento",
+    "reports": "Reportes",
+    "badgeTool": "Herramienta de insignias",
+    "signOut": "Cerrar sesión",
+    "signIn": "Iniciar sesión",
+    "user": "Usuario"
+  },
+  "tabBar": {
+    "ariaLabel": "Navegación de la app",
+    "home": "Inicio",
+    "taste": "Gusto",
+    "create": "Crear",
+    "social": "Social",
+    "profile": "Perfil"
+  },
+  "create": {
+    "title": "Crear",
+    "close": "Cerrar",
+    "review": "Reseña",
+    "reviewSub": "califica un lanzamiento",
+    "post": "Publicación",
+    "postSub": "escríbelo — inserta YouTube / TikTok",
+    "list": "Lista",
+    "listSub": "apila y clasifica tus favoritos",
+    "debate": "Debate",
+    "debateSub": "busca pelea, que decidan los votos"
+  },
+  "footer": {
+    "foundAProblem": "¿Encontraste un problema?",
+    "about": "Sobre nosotros",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso",
+    "switching": "¿Vienes de Musicboard?"
+  },
+  "lowDetail": {
+    "footer": "Detalle bajo: {state}",
+    "on": "Sí",
+    "off": "No",
+    "footerTitle": "Desactiva los fondos animados y los efectos de cristal en dispositivos lentos",
+    "label": "Modo de detalle bajo",
+    "description": "Detiene la luz líquida, apaga el grano de película y el desenfoque de cristal, y frena las animaciones decorativas: la misma dieta que usa la app del teléfono. Todo lo demás funciona exactamente igual. Activado por defecto; desactívalo para ver todos los efectos si tu equipo lo aguanta. Se recuerda solo en este dispositivo."
+  },
+  "language": {
+    "label": "Idioma",
+    "description": "Menús, botones y etiquetas en tu idioma. Las reseñas, listas y publicaciones siempre se quedan tal como las escribieron sus autores. Se recuerda en este dispositivo."
+  },
+  "settings": {
+    "performance": "Rendimiento",
+    "performanceHint": "Modo de detalle bajo: activado por defecto, desactívalo para ver todos los efectos.",
+    "language": "Idioma",
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+  },
+  "pending": {
+    "tuning": "SINTONIZANDO…"
+  }
+}

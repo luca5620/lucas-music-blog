@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "releases": "Releases",
+    "reviews": "Rezensionen",
+    "lists": "Listen",
+    "debates": "Debatten",
+    "social": "Social",
+    "yourTaste": "Dein Geschmack",
+    "search": "Suchen",
+    "searchEverything": "Alles durchsuchen",
+    "create": "Erstellen",
+    "profile": "Profil",
+    "myStuff": "Meine Sachen",
+    "settings": "Einstellungen",
+    "admin": "Admin",
+    "importRelease": "Release importieren",
+    "reports": "Meldungen",
+    "badgeTool": "Badge-Tool",
+    "signOut": "Abmelden",
+    "signIn": "Anmelden",
+    "user": "Nutzer"
+  },
+  "tabBar": {
+    "ariaLabel": "App-Navigation",
+    "home": "Start",
+    "taste": "Geschmack",
+    "create": "Erstellen",
+    "social": "Social",
+    "profile": "Profil"
+  },
+  "create": {
+    "title": "Erstellen",
+    "close": "Schließen",
+    "review": "Rezension",
+    "reviewSub": "bewerte ein Release",
+    "post": "Post",
+    "postSub": "schreib es auf — bette YouTube / TikTok ein",
+    "list": "Liste",
+    "listSub": "stapel und sortier deine Favoriten",
+    "debate": "Debatte",
+    "debateSub": "such Streit, die Stimmen entscheiden"
+  },
+  "footer": {
+    "foundAProblem": "Problem gefunden?",
+    "about": "Über uns",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "switching": "Wechsel von Musicboard?"
+  },
+  "lowDetail": {
+    "footer": "Wenig Details: {state}",
+    "on": "An",
+    "off": "Aus",
+    "footerTitle": "Schaltet die animierten Hintergründe und Glaseffekte für langsamere Geräte ab",
+    "label": "Modus mit wenig Details",
+    "description": "Hält das flüssige Licht still, schaltet Filmkorn und Glasunschärfe ab und stoppt die dekorativen Animationen — dieselbe Diät wie in der Handy-App. Alles andere funktioniert genau gleich. Standardmäßig an; schalte es aus, wenn dein Rechner die volle Animation verkraftet. Wird nur auf diesem Gerät gespeichert."
+  },
+  "language": {
+    "label": "Sprache",
+    "description": "Menüs, Buttons und Beschriftungen in deiner Sprache. Rezensionen, Listen und Posts bleiben immer so, wie ihre Autoren sie geschrieben haben. Wird auf diesem Gerät gespeichert."
+  },
+  "settings": {
+    "performance": "Leistung",
+    "performanceHint": "Modus mit wenig Details — standardmäßig an, ausschalten für alle Effekte.",
+    "language": "Sprache",
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+  },
+  "pending": {
+    "tuning": "SENDERSUCHE…"
+  }
+}

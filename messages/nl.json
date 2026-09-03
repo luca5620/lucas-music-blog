@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "releases": "Releases",
+    "reviews": "Recensies",
+    "lists": "Lijsten",
+    "debates": "Debatten",
+    "social": "Sociaal",
+    "yourTaste": "Jouw smaak",
+    "search": "Zoeken",
+    "searchEverything": "Alles doorzoeken",
+    "create": "Maken",
+    "profile": "Profiel",
+    "myStuff": "Mijn spullen",
+    "settings": "Instellingen",
+    "admin": "Admin",
+    "importRelease": "Release importeren",
+    "reports": "Meldingen",
+    "badgeTool": "Badge-tool",
+    "signOut": "Uitloggen",
+    "signIn": "Inloggen",
+    "user": "Gebruiker"
+  },
+  "tabBar": {
+    "ariaLabel": "App-navigatie",
+    "home": "Home",
+    "taste": "Smaak",
+    "create": "Maken",
+    "social": "Sociaal",
+    "profile": "Profiel"
+  },
+  "create": {
+    "title": "Maken",
+    "close": "Sluiten",
+    "review": "Recensie",
+    "reviewSub": "beoordeel een release",
+    "post": "Post",
+    "postSub": "schrijf het op — embed YouTube / TikTok",
+    "list": "Lijst",
+    "listSub": "stapel en rangschik je keuzes",
+    "debate": "Debat",
+    "debateSub": "zoek ruzie, de stemmen beslissen"
+  },
+  "footer": {
+    "foundAProblem": "Probleem gevonden?",
+    "about": "Over ons",
+    "privacy": "Privacybeleid",
+    "terms": "Gebruiksvoorwaarden",
+    "switching": "Overstappen van Musicboard?"
+  },
+  "lowDetail": {
+    "footer": "Lage details: {state}",
+    "on": "Aan",
+    "off": "Uit",
+    "footerTitle": "Zet de bewegende achtergronden en glaseffecten uit voor tragere apparaten",
+    "label": "Lage-detailmodus",
+    "description": "Houdt het vloeibare licht stil, zet de filmkorrel en de glasvervaging uit en stopt de decoratieve animaties — hetzelfde dieet als de telefoon-app. Al het andere werkt precies hetzelfde. Standaard aan; zet het uit voor het volledige geanimeerde beeld als je machine dat aankan. Alleen op dit apparaat onthouden."
+  },
+  "language": {
+    "label": "Taal",
+    "description": "Menu's, knoppen en labels in jouw taal. Recensies, lijsten en posts blijven altijd zoals hun schrijvers ze bedoelden. Onthouden op dit apparaat."
+  },
+  "settings": {
+    "performance": "Prestaties",
+    "performanceHint": "Lage-detailmodus — standaard aan, zet uit voor alle effecten.",
+    "language": "Taal",
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+  },
+  "pending": {
+    "tuning": "AFSTEMMEN…"
+  }
+}

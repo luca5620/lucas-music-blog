@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "releases": "Sorties",
+    "reviews": "Critiques",
+    "lists": "Listes",
+    "debates": "Débats",
+    "social": "Social",
+    "yourTaste": "Tes goûts",
+    "search": "Rechercher",
+    "searchEverything": "Tout rechercher",
+    "create": "Créer",
+    "profile": "Profil",
+    "myStuff": "Mes trucs",
+    "settings": "Réglages",
+    "admin": "Admin",
+    "importRelease": "Importer une sortie",
+    "reports": "Signalements",
+    "badgeTool": "Outil badges",
+    "signOut": "Se déconnecter",
+    "signIn": "Se connecter",
+    "user": "Utilisateur"
+  },
+  "tabBar": {
+    "ariaLabel": "Navigation de l'app",
+    "home": "Accueil",
+    "taste": "Goûts",
+    "create": "Créer",
+    "social": "Social",
+    "profile": "Profil"
+  },
+  "create": {
+    "title": "Créer",
+    "close": "Fermer",
+    "review": "Critique",
+    "reviewSub": "note une sortie",
+    "post": "Post",
+    "postSub": "écris-le — intègre YouTube / TikTok",
+    "list": "Liste",
+    "listSub": "empile et classe tes choix",
+    "debate": "Débat",
+    "debateSub": "cherche la bagarre, les votes trancheront"
+  },
+  "footer": {
+    "foundAProblem": "Un problème ?",
+    "about": "À propos",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "switching": "Tu quittes Musicboard ?"
+  },
+  "lowDetail": {
+    "footer": "Détails réduits : {state}",
+    "on": "Oui",
+    "off": "Non",
+    "footerTitle": "Désactive les fonds animés et les effets de verre pour les appareils lents",
+    "label": "Mode détails réduits",
+    "description": "Fige la lumière liquide, coupe le grain de pellicule et le flou de verre, et arrête les animations décoratives — le même régime que l'app sur téléphone. Tout le reste fonctionne exactement pareil. Activé par défaut ; désactive-le pour retrouver tous les effets si ta machine le supporte. Mémorisé sur cet appareil uniquement."
+  },
+  "language": {
+    "label": "Langue",
+    "description": "Menus, boutons et libellés dans ta langue. Les critiques, listes et posts restent toujours tels que leurs auteurs les ont écrits. Mémorisé sur cet appareil."
+  },
+  "settings": {
+    "performance": "Performances",
+    "performanceHint": "Mode détails réduits — activé par défaut, désactive-le pour tous les effets.",
+    "language": "Langue",
+    "languageHint": "English, Español, Français, Português, Nederlands, Deutsch."
+  },
+  "pending": {
+    "tuning": "RÉGLAGE…"
+  }
+}

@@ -25,6 +25,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 /** Blank content can't outlive a navigation that silently died. */
 const FAILSAFE_MS = 8000;
@@ -120,6 +121,7 @@ export default function NavigationPending({
  * phase under a TUNING readout.
  */
 function Tuning() {
+  const t = useTranslations("pending");
   return (
     <div
       className="flex flex-col items-center justify-center gap-5 py-32"
@@ -139,7 +141,7 @@ function Tuning() {
           />
         ))}
       </div>
-      <p className="osd-text text-sm tracking-widest opacity-70">TUNING…</p>
+      <p className="osd-text text-sm tracking-widest opacity-70">{t("tuning")}</p>
     </div>
   );
 }

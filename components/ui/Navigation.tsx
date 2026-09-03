@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import NotificationsBell from "@/components/notifications/NotificationsBell";
+import { useTranslations } from "next-intl";
 
 /**
  * Navigation — Inside the CRT frame.
@@ -15,18 +16,24 @@ import NotificationsBell from "@/components/notifications/NotificationsBell";
 // Home lives on the penguin logo (no Home tab needed).
 // Posts deliberately have no tab (Luca: no new module) — creating one
 // lives in the CREATE menu, browsing surfaces through feeds + /posts.
+// `label` is a key into messages/<locale>.json → "nav" (LANGUAGES,
+// i18n/config.ts); the visible word is looked up at render time.
 const navLinks = [
-  { href: "/releases", label: "Releases" },
-  { href: "/reviews", label: "Reviews" },
-  { href: "/lists", label: "Lists" },
-  { href: "/debates", label: "Debates" },
-  { href: "/social", label: "Social" },
-  { href: "/your-taste", label: "Your Taste" },
-];
+  { href: "/releases", label: "releases" },
+  { href: "/reviews", label: "reviews" },
+  { href: "/lists", label: "lists" },
+  { href: "/debates", label: "debates" },
+  { href: "/social", label: "social" },
+  { href: "/your-taste", label: "yourTaste" },
+] as const;
 
 export default function Navigation() {
   const pathname = usePathname();
   const { user, profile, loading, signOut } = useAuth();
+  const t = useTranslations("nav");
+  // The CREATE menu's four cards share their copy with the app's
+  // CreateSheet — one "create" namespace, one translation to maintain.
+  const tc = useTranslations("create");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -127,7 +134,7 @@ export default function Navigation() {
                     }
                   `}
                 >
-                  {link.label}
+                  {t(link.label)}
                 </Link>
               );
             })}
@@ -149,15 +156,15 @@ export default function Navigation() {
               it's icon-only anyway). nav-pill-btn = app pill sizing. */}
           <Link
             href="/search"
-            title="Search everything"
-            aria-label="Search everything"
+            title={t("searchEverything")}
+            aria-label={t("searchEverything")}
             className="nav-pill-btn shrink-0 inline-flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap text-text-secondary hover:text-accent-primary border border-white/10 hover:border-accent-primary/50 font-[family-name:var(--font-heading)]"
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.8-3.8" />
             </svg>
-            <span className="hidden sm:inline">Search</span>
+            <span className="hidden sm:inline">{t("search")}</span>
           </Link>
 
           {/* CREATE — one button for every content type (Luca
@@ -177,7 +184,7 @@ export default function Navigation() {
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                 </svg>
-                <span className="hidden sm:inline">Create</span>
+                <span className="hidden sm:inline">{t("create")}</span>
               </button>
 
               {createOpen && (
@@ -194,10 +201,10 @@ export default function Navigation() {
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
-                        Review
+                        {tc("review")}
                       </span>
                       <span className="block text-xs text-text-muted">
-                        rate a release
+                        {tc("reviewSub")}
                       </span>
                     </span>
                   </Link>
@@ -211,10 +218,10 @@ export default function Navigation() {
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
-                        Post
+                        {tc("post")}
                       </span>
                       <span className="block text-xs text-text-muted">
-                        write it up — embed YouTube / TikTok
+                        {tc("postSub")}
                       </span>
                     </span>
                   </Link>
@@ -228,10 +235,10 @@ export default function Navigation() {
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
-                        List
+                        {tc("list")}
                       </span>
                       <span className="block text-xs text-text-muted">
-                        stack and rank your picks
+                        {tc("listSub")}
                       </span>
                     </span>
                   </Link>
@@ -245,10 +252,10 @@ export default function Navigation() {
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
-                        Debate
+                        {tc("debate")}
                       </span>
                       <span className="block text-xs text-text-muted">
-                        pick a fight, let the votes decide
+                        {tc("debateSub")}
                       </span>
                     </span>
                   </Link>
@@ -286,7 +293,7 @@ export default function Navigation() {
                         earlier attempt didn't ellipsize. Dropdown shows
                         the full name regardless. */}
                     <span className="hidden sm:inline-block align-middle text-sm text-text-secondary font-[family-name:var(--font-heading)] max-w-[9rem] truncate">
-                      {profile?.display_name || profile?.username || "User"}
+                      {profile?.display_name || profile?.username || t("user")}
                     </span>
                     {profile?.role && profile.role !== "user" && (
                       <VerifiedBadge role={profile.role} />
@@ -324,21 +331,21 @@ export default function Navigation() {
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
-                          Profile
+                          {t("profile")}
                         </Link>
                         <Link
                           href="/reviews/mine"
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
-                          My Stuff
+                          {t("myStuff")}
                         </Link>
                         <Link
                           href="/settings/profile"
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
-                          Settings
+                          {t("settings")}
                         </Link>
                         {/* App-only (display:none on web): the browse
                             sections, mirroring the home page's locked
@@ -346,19 +353,21 @@ export default function Navigation() {
                             they got bottom tabs (Luca 2026-08-22). */}
                         <div className="app-only">
                           <div className="my-1 border-t border-white/5" />
-                          {[
-                            { href: "/reviews", label: "Reviews" },
-                            { href: "/releases", label: "Releases" },
-                            { href: "/debates", label: "Debates" },
-                            { href: "/lists", label: "Lists" },
-                          ].map((item) => (
+                          {(
+                            [
+                              { href: "/reviews", label: "reviews" },
+                              { href: "/releases", label: "releases" },
+                              { href: "/debates", label: "debates" },
+                              { href: "/lists", label: "lists" },
+                            ] as const
+                          ).map((item) => (
                             <Link
                               key={item.href}
                               href={item.href}
                               onClick={() => setDropdownOpen(false)}
                               className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                             >
-                              {item.label}
+                              {t(item.label)}
                             </Link>
                           ))}
                           {/* Closing rule before Sign Out (or the
@@ -369,21 +378,21 @@ export default function Navigation() {
                           <>
                             <div className="my-1 border-t border-white/5" />
                             <p className="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-text-muted font-[family-name:var(--font-vt323)]">
-                              Admin
+                              {t("admin")}
                             </p>
                             <Link
                               href="/admin/import"
                               onClick={() => setDropdownOpen(false)}
                               className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
                             >
-                              Import Release
+                              {t("importRelease")}
                             </Link>
                             <Link
                               href="/admin/reports"
                               onClick={() => setDropdownOpen(false)}
                               className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
                             >
-                              Reports
+                              {t("reports")}
                             </Link>
                             {/* Founder-only (the page itself turns
                                 admins away — don't tease the link) */}
@@ -393,7 +402,7 @@ export default function Navigation() {
                                 onClick={() => setDropdownOpen(false)}
                                 className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
                               >
-                                Badge Tool
+                                {t("badgeTool")}
                               </Link>
                             )}
                             <div className="my-1 border-t border-white/5" />
@@ -403,7 +412,7 @@ export default function Navigation() {
                           onClick={handleSignOut}
                           className="w-full text-left px-4 py-2 text-sm text-accent-rose hover:bg-bg-elevated transition-colors"
                         >
-                          Sign Out
+                          {t("signOut")}
                         </button>
                       </div>
                     </div>
@@ -415,7 +424,7 @@ export default function Navigation() {
                   href="/login"
                   className="px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap bg-accent-primary/15 text-accent-primary border border-accent-primary/30 hover:bg-accent-primary/25 font-[family-name:var(--font-heading)]"
                 >
-                  Sign In
+                  {t("signIn")}
                 </Link>
               )}
             </div>

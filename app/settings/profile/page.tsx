@@ -39,6 +39,8 @@ import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import SettingsSection from "@/components/settings/SettingsSection";
 import LowDetailToggle from "@/components/ui/LowDetailToggle";
+import LanguagePicker from "@/components/ui/LanguagePicker";
+import { useTranslations } from "next-intl";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
@@ -95,6 +97,8 @@ const MAX_UPLOAD_BYTES: Record<"avatars" | "banners", number> = {
 };
 
 export default function ProfileSettingsPage() {
+  // LANGUAGES: section titles/hints for the per-device sections.
+  const tSettings = useTranslations("settings");
   const router = useRouter();
   const supabase = createClient();
 
@@ -1436,10 +1440,21 @@ export default function ProfileSettingsPage() {
           of the profile form, so it sits outside <form> with no Save. */}
       <SettingsSection
         id="performance"
-        title="Performance"
-        hint="Low detail mode — on by default, switch it off for the full effects."
+        title={tSettings("performance")}
+        hint={tSettings("performanceHint")}
       >
         <LowDetailToggle variant="row" accent={themeHex} />
+      </SettingsSection>
+
+      {/* ========== LANGUAGE ==========
+          LANGUAGES (Luca 2026-09-03) — per device like low detail:
+          a cookie, not a profile column, so it's outside the form. */}
+      <SettingsSection
+        id="language"
+        title={tSettings("language")}
+        hint={tSettings("languageHint")}
+      >
+        <LanguagePicker variant="row" accent={themeHex} />
       </SettingsSection>
 
       {/* ========== ACCOUNT DELETION ==========

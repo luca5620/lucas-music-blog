@@ -1,6 +1,7 @@
 "use client";
 
 import { setLowDetail, useLowDetail } from "@/lib/lowDetail";
+import { useTranslations } from "next-intl";
 
 /**
  * The low-detail switch (see lib/lowDetail.ts for what it does and
@@ -22,6 +23,7 @@ export default function LowDetailToggle({
   accent?: string;
 }) {
   const on = useLowDetail();
+  const t = useTranslations("lowDetail");
 
   if (variant === "footer") {
     return (
@@ -30,9 +32,9 @@ export default function LowDetailToggle({
         onClick={() => setLowDetail(!on)}
         aria-pressed={on}
         className="text-text-secondary hover:text-accent-primary transition-colors"
-        title="Turn off the animated backgrounds and glass effects for slower devices"
+        title={t("footerTitle")}
       >
-        Low detail: {on ? "On" : "Off"}
+        {t("footer", { state: on ? t("on") : t("off") })}
       </button>
     );
   }
@@ -52,14 +54,10 @@ export default function LowDetailToggle({
           className="block text-sm font-bold font-[family-name:var(--font-heading)]"
           style={{ color: on ? tint : "#c8c8cc" }}
         >
-          Low detail mode
+          {t("label")}
         </span>
         <span className="block text-xs text-text-muted">
-          Holds the liquid light still, turns off the film grain and
-          glass blur, and stops the decorative animations — the same
-          diet the phone app runs. Everything else works exactly the
-          same. On by default; turn it off for the full animated look
-          if your machine can take it. Remembered on this device only.
+          {t("description")}
         </span>
       </span>
     </label>

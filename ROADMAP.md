@@ -91,10 +91,10 @@ don't wait to be asked:**
 ## ⏳ In progress
 
 - **2026-09-02 (MacBook, late): BADGES + CONNECTED PLATFORMS + MY STUFF
-  HUB + DEBATE SIDES + LISTS FIXES + AI SEARCH — ⚠️ MIGRATION 039 TO RUN
-  (`supabase/migrations/039-badges-links-debate-sides.sql`).** Every
-  piece degrades gracefully until it runs (see per-item notes), but
-  nothing NEW appears until it does. What shipped, by Luca's ask:
+  HUB + DEBATE SIDES + LISTS FIXES + AI SEARCH — ✅ MIGRATION 039 RUN
+  (Luca, same night; `supabase/migrations/039-badges-links-debate-sides.sql`),
+  duplicate "royal" cleaned up and the fix confirmed on prod.** What
+  shipped, by Luca's ask:
 
   1. **AI suggestions** ("rank highly if someone asks ChatGPT/Claude
      about music reviewing apps"): `public/llms.txt` (the plain-text
@@ -134,8 +134,9 @@ don't wait to be asked:**
      matches on the primary artist's Spotify id + title + kind
      (single↔single, album↔album), Spotify-sourced rows only. Verified
      against prod that both rows share artist 0qc4… — the click will
-     land on `royal-fakemink`. Luca deletes the regenerated dupe once
-     more (same SQL as before) after this deploy.
+     land on `royal-fakemink`. ✅ CONFIRMED (Luca, same night): dupe
+     deleted once more after the deploy, the playlist click now goes
+     to the reviewed page. Migration 039 is RUN.
      Genius-vs-Spotify same-song duplicates are still possible (a
      Genius row has no spotify_id) — a future "merge/upgrade release"
      tool, noted below.

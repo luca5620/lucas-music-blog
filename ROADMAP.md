@@ -90,6 +90,16 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-03: EU AVAILABILITY — DONE.** Luca declared non-trader
+  under the DSA and opened the EU territories the same night.
+  Netherlands storefront confirmed live (iTunes lookup country=nl → 1);
+  other EU countries still propagating at the time of writing. First EU
+  user came from the Musicboard-alternative Reddit post (a Netherlands
+  user who'd been blocked by the restriction, then downloaded). Switch
+  to **trader** (P.O. box + dedicated phone first — details go public)
+  before any IAP/subscription. Privacy page has the GDPR section
+  (2a66576); steps in docs/LAUNCH-CHECKLIST.md §8.
+
 - **2026-09-03 (Windows): HIDE BADGES + COLLAPSIBLE SETTINGS — ⚠️
   MIGRATION 040 TO RUN** (`supabase/migrations/040-hidden-badges.sql`,
   one nullable `hidden_badges text[]` column on profiles + a size
@@ -337,9 +347,9 @@ pending (parked, his call).
    v2 (taste-match scores), growth guardrails (Resend SMTP, report
    queue, mute, 2FA), muted web-only ads. Bring each as a short
    pitch with a cost; he picks.
-4. **EU availability + DSA trader status** — when the designer's
-   1.1.1 screenshots arrive. Needed before selling subscriptions in
-   the EU; also decides whether the app is listed in EU storefronts.
+4. ~~**EU availability + DSA trader status**~~ — DONE 2026-09-03
+   (non-trader declared, EU territories open, NL confirmed live).
+   Revisit as *trader* before selling subscriptions in the EU.
 5. **Device pass** — still nothing from 2026-09-02/03 eyeballed on the
    phone: breathing blob, verified check, sign-up/sign-in flow,
    Apple Music player, playlist embeds, logged-out home, badges row,

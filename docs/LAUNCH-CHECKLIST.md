@@ -110,7 +110,13 @@ this is done in App Store Connect. Reference: Apple's guide,
 3. Per-app override lives at Apps → app → **App Information** → App
    Store Regulations and Permits → Digital Services Act → Edit.
 4. After declaring, confirm the EU territories are ticked under the
-   app's Pricing and Availability.
+   app's Pricing and Availability → Availability → Edit. No new build
+   or review needed; storefronts light up within about a day. Check
+   with `https://itunes.apple.com/lookup?id=6803279876&country=de`
+   (resultCount 1 = live).
+
+*Status 2026-09-03: DONE — non-trader declared, EU opened, Netherlands
+confirmed live the same night. Privacy page has an EU/UK GDPR section.*
 
 *Not legal advice — if unsure, the safe order is: declare non-trader
 now to unlock the EU, revisit as trader before any money flows.*

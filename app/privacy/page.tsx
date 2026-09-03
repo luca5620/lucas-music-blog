@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "What Peak Music Reviews collects, why, and what it never does.",
 };
 
-const LAST_UPDATED = "August 18, 2026";
+const LAST_UPDATED = "September 3, 2026";
 
 export default function PrivacyPage() {
   return (
@@ -105,6 +105,32 @@ export default function PrivacyPage() {
         <p>
           Peak Music Reviews is not directed at children under 13. Don&apos;t
           sign up if you&apos;re under 13.
+        </p>
+      </section>
+
+      <section className="space-y-3 text-sm leading-relaxed text-text-secondary">
+        <h2 className="vhs-label text-base">If you&apos;re in the EU or UK</h2>
+        <p>
+          We process your data to provide the service you signed up for
+          (your account and the content you post) and, for server logs, to
+          keep the platform secure &mdash; that&apos;s our legitimate interest.
+          We don&apos;t use your data for anything that would need separate
+          consent, and we set no advertising or analytics cookies, only the
+          ones needed to keep you signed in.
+        </p>
+        <p>
+          Our providers (Supabase, Vercel) store data in the United States
+          under their standard contractual clauses for international
+          transfers. We keep your data for as long as your account exists;
+          server logs are kept for a short period by the providers and then
+          discarded.
+        </p>
+        <p>
+          You can access, correct, or delete your data yourself from
+          Settings. For a copy of your data, a correction we don&apos;t
+          expose in Settings, or an objection to processing, email us below
+          and we&apos;ll respond within 30 days. You also have the right to
+          complain to your local data protection authority.
         </p>
       </section>
 

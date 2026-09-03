@@ -17,7 +17,7 @@
  * profiles row — RLS guarantees you can only ever touch your own.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { parsePlaylistUrl, playlistUrl } from "@/lib/playlist";
@@ -38,6 +38,7 @@ import {
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import SettingsSection from "@/components/settings/SettingsSection";
+import LowDetailToggle from "@/components/ui/LowDetailToggle";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
@@ -1427,6 +1428,18 @@ export default function ProfileSettingsPage() {
         hint="Pick a new one — takes effect everywhere you're signed in."
       >
         <ChangePasswordSection />
+      </SettingsSection>
+
+      {/* ========== PERFORMANCE ==========
+          Low detail mode (Luca 2026-09-03) — the phone/app GPU diet as
+          an opt-in for any device. Per DEVICE (localStorage), not part
+          of the profile form, so it sits outside <form> with no Save. */}
+      <SettingsSection
+        id="performance"
+        title="Performance"
+        hint="Low detail mode for slower computers and phones."
+      >
+        <LowDetailToggle variant="row" accent={themeHex} />
       </SettingsSection>
 
       {/* ========== ACCOUNT DELETION ==========

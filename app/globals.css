@@ -3776,3 +3776,106 @@ fieldset {
     transition: none;
   }
 }
+
+/* ============================================================
+   LOW DETAIL MODE (Luca 2026-09-03: "a low-detail mode for the
+   website for users to toggle if they don't have a strong
+   computer"). html.low-detail is stamped by the boot script in
+   app/layout.tsx from localStorage (lib/lowDetail.ts); the switch
+   lives in the footer of every page and in Settings → Performance.
+
+   This is the phone/app THERMAL MODE diet above, applied on ANY
+   viewport when the visitor asks for it — the same rules, copied
+   rather than shared, so a change to one never silently moves the
+   other. Sits LAST in the file on purpose: a terminal hardware
+   override that must win the cascade.
+
+   1. The liquid light becomes the designed still (round 3): plain
+      soft gradients, no blur filter, no forced layer, no drift —
+      in every field (room, bezel, screen, panel veils).
+   2. Exactly one blob per field keeps the 9s opacity breathe, as in
+      the app — compositor-only, one element, the "alive" signal.
+   3. Grain, scanlines, grille: off (three full-viewport layers).
+   4. Panels: no backdrop-filter, slightly more opaque solid smoke.
+      :where() keeps them at base specificity so theme skins win.
+   5. Decorative motion stops: theme backdrops, the CD, badge glows
+      (box-shadow animation = repaint every frame), streak, scan
+      bars, shimmer, blur-up, scroll reveal, the wall marquee.
+      Their blur filters stay — a static blurred layer costs
+      nothing after its first paint. Functional motion (spinners,
+      loading pulses, sheet slides, the settings fold) is untouched:
+      a stopped spinner reads as broken.
+   ============================================================ */
+.low-detail .grain-overlay,
+.low-detail .scanlines,
+.low-detail .aperture-grille {
+  display: none;
+}
+
+.low-detail .liquid-blob {
+  filter: none !important;
+  will-change: auto !important;
+  transform: none !important;
+  animation: none !important;
+}
+.low-detail .liquid-blob.liquid-breathe {
+  animation: liquid-breathe 9s ease-in-out infinite !important;
+  animation-play-state: running !important;
+}
+
+.low-detail :where(.panel-xbox, .panel-xbox-glow) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(12, 14, 22, 0.92);
+}
+.low-detail .poster-rating {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.low-detail .cd-disc,
+.low-detail .scan-bar::after,
+.low-detail .glow-orb,
+.low-detail .glow-orb-red,
+.low-detail .elite-arrival,
+.low-detail .tracking-glitch,
+.low-detail .bd-ps3-ribbon,
+.low-detail .bd-spark,
+.low-detail .bd-ps4-ray,
+.low-detail .bd-ps2-nebula,
+.low-detail .bd-ps2-haze,
+.low-detail .bd-og-orb,
+.low-detail .bd-og-ring,
+.low-detail .bd-360-wave,
+.low-detail .bd-bleach-slash,
+.low-detail .bd-dp-pyramid,
+.low-detail .bd-bubble,
+.low-detail .streak-spin,
+.low-detail .streak-flicker,
+.low-detail .rating-badge.rating-elite,
+.low-detail .rating-badge.rating-perfect,
+.low-detail .rating-slider-elite::-webkit-slider-thumb,
+.low-detail .rating-slider-perfect::-webkit-slider-thumb,
+.low-detail .profile-badge.glow-elite,
+.low-detail .shimmer-line,
+.low-detail .img-reveal {
+  animation: none !important;
+}
+
+/* Scroll-reveal sections are simply there; the wall becomes a plain
+   scroll row (same as its reduced-motion treatment). */
+.low-detail .reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+  will-change: auto;
+}
+.low-detail .wall {
+  overflow-x: auto;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+.low-detail .wall-track {
+  animation: none;
+  will-change: auto;
+}

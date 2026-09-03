@@ -24,6 +24,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SoftwareApplicationSchema, WebSiteSchema } from "@/app/schema";
 import { APP_STORE_URL } from "@/lib/app-store";
+import { LOW_DETAIL_BOOT_SCRIPT } from "@/lib/lowDetail";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
 
@@ -163,8 +164,15 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the low-detail boot script below may
+    // add a class to <html> before React hydrates; React must not
+    // treat that as a mismatch (the same trick every theme switcher uses).
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* LOW DETAIL MODE boot — stamps html.low-detail from
+            localStorage BEFORE first paint so an opted-in visitor never
+            sees a frame of the full-effects version (lib/lowDetail.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: LOW_DETAIL_BOOT_SCRIPT }} />
         <WebSiteSchema />
         <SoftwareApplicationSchema appStoreUrl={APP_STORE_URL} />
       </head>

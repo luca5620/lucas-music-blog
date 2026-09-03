@@ -7,6 +7,7 @@
  */
 import Link from "next/link";
 import PressTapTarget from "@/components/ui/PressTapTarget";
+import LowDetailToggle from "@/components/ui/LowDetailToggle";
 
 export default function SiteFooter() {
   return (
@@ -55,6 +56,10 @@ export default function SiteFooter() {
         >
           Switching from Musicboard?
         </Link>
+        {" · "}
+        {/* Per-device performance switch, reachable from every page
+            without an account (lib/lowDetail.ts). */}
+        <LowDetailToggle variant="footer" />
       </p>
     </footer>
   );

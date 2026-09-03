@@ -90,6 +90,23 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-03 (Windows): LOW DETAIL MODE — shipped, not yet eyeballed.**
+  Luca: "a low-detail mode for the website for users to toggle if they
+  don't have a strong computer … matching the changes we made for the
+  app". `html.low-detail` (lib/lowDetail.ts) applies the phone/app
+  THERMAL MODE diet on any viewport: liquid blobs become the designed
+  still (no blur/transform/animation, one breathing blob per field
+  kept), grain/scanlines/grille off, panels solid (no backdrop-filter),
+  every decorative animation stopped (theme backdrops, CD, badge glows,
+  streak, scan bars, shimmer, blur-up, scroll reveal, wall marquee);
+  functional motion (spinners, sheets, settings fold) untouched. CSS
+  block sits LAST in globals.css. Per DEVICE in localStorage
+  (`pmr-low-detail`), works signed-out; an inline boot script in
+  app/layout.tsx stamps the class before first paint (no flash;
+  `suppressHydrationWarning` on `<html>`). Two switches: footer
+  "Low detail: On/Off" on every page + Settings → **Performance**
+  section (outside the form, no Save needed). No migration.
+
 - **2026-09-03: EU AVAILABILITY — DONE.** Luca declared non-trader
   under the DSA and opened the EU territories the same night.
   Netherlands storefront confirmed live (iTunes lookup country=nl → 1);

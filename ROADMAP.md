@@ -396,10 +396,16 @@ pending (parked, his call).
   whole sitemap was submitted in one batch. From here every new
   review / release page pings itself. **✅ BING DONE (Luca, same
   night): sitemap submitted on both Bing and Google, 98 discovered on
-  each, the four key URLs inspected. LUCA NEXT: AlternativeTo /
-  Product Hunt / SaaSHub / Slant / Crunchbase / Wikidata (paste-ready
-  copy in docs/AI-SEARCH.md "Directory copy"), then email achriom.com
-  + wavemusic.app about their listicles.**
+  each, the four key URLs inspected. ✅ AlternativeTo listed (Luca).
+  The other five directories + the two listicle emails are PARKED by
+  Luca ("don't want to do the other 5 yet") — paste-ready copy stays
+  in docs/AI-SEARCH.md "Directory copy" for when he does.
+  **MARKETING ORDER (Luca 2026-09-03): Instagram → TikTok → Meta ads,
+  before the rest of the directories.** Instagram batch 1 (eight
+  posts: ChatGPT image prompt + caption each, profile bio, hashtag
+  set, two-week cadence) is in `docs/marketing/instagram-batch-1.md`.
+  Luca generates the images in ChatGPT and posts; TikTok scripts
+  next when he asks.
 
 - **2026-09-03 (Windows): LOGGED-OUT HOME COPY TRIMMED** (Luca: "cut
   down the wordiness in the home page and have it give you all the

@@ -4,6 +4,7 @@ import { requireAuth } from "@/lib/auth";
 import { getPostBySlug, postReleaseArtistName } from "@/lib/db/posts";
 import { getReleaseById } from "@/lib/db/releases";
 import PostForm from "@/components/posts/PostForm";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Edit Post",
@@ -33,15 +34,14 @@ export default async function EditPostPage({
     ? await getReleaseById(post.release_id)
     : null;
   const artistName = postReleaseArtistName(post.release) ?? "";
+  const t = await getTranslations("posts.new");
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <section className="space-y-2">
-        <div className="vhs-label inline-block text-sm">EDIT TRANSMISSION</div>
-        <h1 className="crt-title text-3xl sm:text-4xl">Edit post</h1>
-        <p className="text-sm text-text-secondary">
-          Same post, new words — the link stays the same.
-        </p>
+        <div className="vhs-label inline-block text-sm">{t("editStamp")}</div>
+        <h1 className="crt-title text-3xl sm:text-4xl">{t("editTitle")}</h1>
+        <p className="text-sm text-text-secondary">{t("editSub")}</p>
       </section>
 
       <PostForm

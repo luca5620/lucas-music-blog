@@ -1028,5 +1028,78 @@
         "deleteFailed": "De lijst kon niet worden verwijderd (fout {status})."
       }
     }
+  },
+  "posts": {
+    "index": {
+      "title": "POSTS",
+      "sub": "Langer, losser, gekker dan recensies. Edits, essays, diepe duiken — plaats een video, koppel hem aan de plaat waar hij bij hoort.",
+      "newPost": "Nieuwe post",
+      "noSignal": "GEEN SIGNAAL",
+      "empty": "Nog niets gepost. Schrijf de eerste — een edit, een essay, wat de plaat verdient.",
+      "by": "door {name}",
+      "unknown": "onbekend"
+    },
+    "page": {
+      "draft": "Concept — alleen jij ziet dit",
+      "postBy": "post van",
+      "postByMember": "post van een lid",
+      "edit": "✎ Bewerken",
+      "tiedTo": "Gekoppeld aan",
+      "viewRelease": "Releasepagina bekijken →",
+      "likePost": "Post liken",
+      "unlikePost": "Like verwijderen"
+    },
+    "new": {
+      "title": "Een post schrijven",
+      "sub": "Langer dan een recensie, en losser ook. Plaats een YouTube- of TikTok-video als je die hebt, en koppel hem aan de release waar het over gaat zodat lezers meteen naar de plaat kunnen.",
+      "editStamp": "UITZENDING BEWERKEN",
+      "editTitle": "Post bewerken",
+      "editSub": "Dezelfde post, nieuwe woorden — de link blijft hetzelfde."
+    },
+    "form": {
+      "thePost": "De post",
+      "titleLabel": "Titel ({n}/120)",
+      "titlePlaceholder": "Geef het een naam…",
+      "bodyLabel": "Tekst ({n}/{max})",
+      "bodyPlaceholder": "Ga lang. Het verhaal achter de edit, het essay, de analyse — wat de plaat verdient.",
+      "video": "Video — optioneel",
+      "videoLabel": "YouTube- of TikTok-link",
+      "videoDetected": "✓ {kind}-video gevonden — hij wordt in je post ingebed.",
+      "shortLink": "vm.tiktok.com-deellinks kunnen niet worden ingebed — open de link in je browser en plak de volledige tiktok.com/@user/video/…-URL.",
+      "videoInvalid": "Geen herkende videolink. Plak een youtube.com/watch-, youtu.be-, YouTube Shorts- of tiktok.com/@user/video-URL.",
+      "videoHint": "maximaal één video — AMV-edits, live-opnames, video-essays, alles welkom",
+      "playlist": "Spotify-playlist — optioneel",
+      "playlistLabel": "Playlistlink",
+      "playlistDetected": "✓ Spotify-playlist gevonden — hij wordt met een speler in je post ingebed en lezers kunnen hem als lijst opslaan.",
+      "playlistInvalid": "Geen Spotify-playlistlink. Plak een open.spotify.com/playlist/…-URL (Delen → Link kopiëren in Spotify).",
+      "playlistHint": "maximaal één playlist — een mix, een ranglijst, de soundtrack van de post",
+      "tiedRelease": "Gekoppelde release — optioneel",
+      "remove": "Verwijderen",
+      "searchPlaceholder": "Zoek het nummer of album waar deze post over gaat…",
+      "tieHint": "koppel je post aan de plaat waar het over gaat — lezers springen meteen van je post naar de releasepagina",
+      "errors": {
+        "title": "Geef het een titel — minstens 3 tekens.",
+        "body": "Schrijf iets — de tekst mag niet leeg zijn.",
+        "video": "Herstel de video-URL (of wis hem) voor je post.",
+        "playlist": "Herstel de playlistlink (of wis hem) voor je post.",
+        "wentWrong": "Er ging iets mis.",
+        "network": "Netwerkfout. Probeer het opnieuw."
+      },
+      "saving": "Opslaan…",
+      "posting": "Plaatsen…",
+      "updatePublish": "Bijwerken en publiceren",
+      "saveChanges": "Wijzigingen opslaan",
+      "publish": "Post publiceren",
+      "saveDraft": "Opslaan als concept"
+    },
+    "deleteButton": {
+      "confirm": "“{title}” verwijderen?"
+    },
+    "feed": {
+      "title": "Posts",
+      "posted": "<b>naam</b> plaatste",
+      "aMember": "een lid",
+      "playlistBadge": "♫ PLAYLIST"
+    }
   }
 }

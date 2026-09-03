@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface DeletePostButtonProps {
   postId: string;
@@ -21,6 +22,8 @@ export default function DeletePostButton({
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const t = useTranslations("posts.deleteButton");
+  const tc = useTranslations("common");
 
   async function handleDelete() {
     setDeleting(true);
@@ -47,20 +50,20 @@ export default function DeletePostButton({
     return (
       <div className="inline-flex items-center gap-1.5">
         <span className="text-xs text-[#9a9a9e] font-[family-name:var(--font-vt323)]">
-          Delete &quot;{postTitle}&quot;?
+          {t("confirm", { title: postTitle })}
         </span>
         <button
           onClick={handleDelete}
           disabled={deleting}
           className="px-2 py-0.5 rounded text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wider disabled:opacity-50"
         >
-          {deleting ? "..." : "Yes"}
+          {deleting ? "..." : tc("yes")}
         </button>
         <button
           onClick={() => setConfirming(false)}
           className="px-2 py-0.5 rounded text-xs font-bold text-[#9a9a9e] hover:text-[#e8e6e3] transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wider"
         >
-          No
+          {tc("no")}
         </button>
       </div>
     );
@@ -84,7 +87,7 @@ export default function DeletePostButton({
           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
         />
       </svg>
-      Delete
+      {tc("delete")}
     </button>
   );
 }

@@ -1028,5 +1028,78 @@
         "deleteFailed": "Impossible de supprimer la liste (erreur {status})."
       }
     }
+  },
+  "posts": {
+    "index": {
+      "title": "POSTS",
+      "sub": "Plus long, plus libre, plus bizarre que les critiques. Edits, essais, plongées — dépose une vidéo, relie-la au disque qui va avec.",
+      "newPost": "Nouveau post",
+      "noSignal": "PAS DE SIGNAL",
+      "empty": "Rien de publié pour l'instant. Écris le premier — un edit, un essai, ce que le disque mérite.",
+      "by": "par {name}",
+      "unknown": "inconnu"
+    },
+    "page": {
+      "draft": "Brouillon — toi seul peux le voir",
+      "postBy": "post de",
+      "postByMember": "post d'un membre",
+      "edit": "✎ Modifier",
+      "tiedTo": "Lié à",
+      "viewRelease": "Voir la page de la sortie →",
+      "likePost": "Aimer le post",
+      "unlikePost": "Ne plus aimer le post"
+    },
+    "new": {
+      "title": "Écrire un post",
+      "sub": "Plus long qu'une critique, plus libre aussi. Dépose une vidéo YouTube ou TikTok si tu en as une, et relie-le à la sortie dont il parle pour que les lecteurs sautent directement au disque.",
+      "editStamp": "MODIFIER LA TRANSMISSION",
+      "editTitle": "Modifier le post",
+      "editSub": "Même post, nouveaux mots — le lien ne change pas."
+    },
+    "form": {
+      "thePost": "Le post",
+      "titleLabel": "Titre ({n}/120)",
+      "titlePlaceholder": "Donne-lui un nom…",
+      "bodyLabel": "Corps ({n}/{max})",
+      "bodyPlaceholder": "Fais long. L'histoire derrière l'edit, l'essai, l'analyse — ce que le disque mérite.",
+      "video": "Vidéo — facultatif",
+      "videoLabel": "Lien YouTube ou TikTok",
+      "videoDetected": "✓ Vidéo {kind} détectée — elle s'intégrera à ton post.",
+      "shortLink": "Les liens de partage vm.tiktok.com ne peuvent pas être intégrés — ouvre le lien dans ton navigateur et colle l'URL complète tiktok.com/@user/video/….",
+      "videoInvalid": "Lien vidéo non reconnu. Colle une URL youtube.com/watch, youtu.be, YouTube Shorts ou tiktok.com/@user/video.",
+      "videoHint": "une vidéo max — edits AMV, extraits live, essais vidéo bienvenus",
+      "playlist": "Playlist Spotify — facultatif",
+      "playlistLabel": "Lien de la playlist",
+      "playlistDetected": "✓ Playlist Spotify détectée — elle s'intégrera à ton post avec un lecteur, et les lecteurs pourront l'enregistrer en liste.",
+      "playlistInvalid": "Pas un lien de playlist Spotify. Colle une URL open.spotify.com/playlist/… (Partager → Copier le lien dans Spotify).",
+      "playlistHint": "une playlist max — un mix, un classement, la bande-son du post",
+      "tiedRelease": "Sortie liée — facultatif",
+      "remove": "Retirer",
+      "searchPlaceholder": "Cherche le morceau ou l'album dont parle ce post…",
+      "tieHint": "relie ton post au disque dont il parle — les lecteurs sautent directement de ton post à la page de la sortie",
+      "errors": {
+        "title": "Donne-lui un titre — au moins 3 caractères.",
+        "body": "Écris quelque chose — le corps ne peut pas être vide.",
+        "video": "Corrige l'URL de la vidéo (ou efface-la) avant de publier.",
+        "playlist": "Corrige le lien de la playlist (ou efface-le) avant de publier.",
+        "wentWrong": "Quelque chose a mal tourné.",
+        "network": "Erreur réseau. Réessaie."
+      },
+      "saving": "Enregistrement…",
+      "posting": "Publication…",
+      "updatePublish": "Mettre à jour et publier",
+      "saveChanges": "Enregistrer",
+      "publish": "Publier le post",
+      "saveDraft": "Enregistrer en brouillon"
+    },
+    "deleteButton": {
+      "confirm": "Supprimer « {title} » ?"
+    },
+    "feed": {
+      "title": "Posts",
+      "posted": "<b>nom</b> a posté",
+      "aMember": "un membre",
+      "playlistBadge": "♫ PLAYLIST"
+    }
   }
 }

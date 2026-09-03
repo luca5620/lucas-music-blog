@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listPosts, postReleaseArtistName } from "@/lib/db/posts";
 import { getViewerBlockedIdSet } from "@/lib/db/moderation";
+// LANGUAGES: messages → posts.index; dates in the viewer's locale.
+import { getLocale, getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Posts",
@@ -32,19 +34,20 @@ export default async function PostsPage() {
   ]);
   // Blocked authors never reach the viewer's wall (App Store 1.2).
   const posts = allPosts.filter((p) => !blocked.has(p.user_id));
+  const t = await getTranslations("posts.index");
+  const locale = await getLocale();
 
   return (
     <div className="space-y-6 circuit-bg">
       {/* ══════════ Header ══════════ */}
       <section className="panel-xbox-glow p-4 sm:p-8 space-y-3 relative overflow-hidden">
-        <h1 className="crt-title text-3xl sm:text-4xl">POSTS</h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">{t("title")}</h1>
         <p className="text-sm text-text-secondary max-w-xl">
-          Longer, looser, weirder than reviews. Edits, essays, deep dives —
-          drop a video, tie it to the record it belongs to.
+          {t("sub")}
         </p>
         <div className="pt-1">
           <Link href="/posts/new" className="btn-y2k btn-y2k-primary">
-            New Post
+            {t("newPost")}
           </Link>
         </div>
         <div className="scan-bar" />
@@ -53,10 +56,9 @@ export default async function PostsPage() {
       {/* ══════════ Post feed ══════════ */}
       {posts.length === 0 ? (
         <div className="panel-xbox p-10 text-center space-y-3">
-          <p className="osd-text text-sm">NO SIGNAL</p>
+          <p className="osd-text text-sm">{t("noSignal")}</p>
           <p className="text-sm text-text-muted">
-            Nothing posted yet. Write the first one — an edit, an essay,
-            whatever the record deserves.
+            {t("empty")}
           </p>
         </div>
       ) : (
@@ -93,7 +95,9 @@ export default async function PostsPage() {
                       {post.title}
                     </h2>
                     <p className="text-xs text-text-muted truncate">
-                      by {post.author?.display_name || post.author?.username || "unknown"}
+                      {t("by", {
+                        name: post.author?.display_name || post.author?.username || t("unknown"),
+                      })}
                       {post.release && (
                         <>
                           {" · "}
@@ -123,7 +127,7 @@ export default async function PostsPage() {
                 </p>
 
                 <p className="text-xs text-text-muted">
-                  {new Date(post.created_at).toLocaleDateString("en-US", {
+                  {new Date(post.created_at).toLocaleDateString(locale, {
                     month: "short",
                     day: "numeric",
                     year: "numeric",

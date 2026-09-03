@@ -1028,5 +1028,78 @@
         "deleteFailed": "Die Liste konnte nicht gelöscht werden (Fehler {status})."
       }
     }
+  },
+  "posts": {
+    "index": {
+      "title": "POSTS",
+      "sub": "Länger, lockerer, schräger als Rezensionen. Edits, Essays, Deep Dives — lad ein Video hoch, binde es an die Platte, zu der es gehört.",
+      "newPost": "Neuer Post",
+      "noSignal": "KEIN SIGNAL",
+      "empty": "Noch nichts gepostet. Schreib den ersten — ein Edit, ein Essay, was die Platte verdient.",
+      "by": "von {name}",
+      "unknown": "unbekannt"
+    },
+    "page": {
+      "draft": "Entwurf — nur du siehst das",
+      "postBy": "Post von",
+      "postByMember": "Post eines Mitglieds",
+      "edit": "✎ Bearbeiten",
+      "tiedTo": "Verknüpft mit",
+      "viewRelease": "Release-Seite ansehen →",
+      "likePost": "Post liken",
+      "unlikePost": "Like entfernen"
+    },
+    "new": {
+      "title": "Einen Post schreiben",
+      "sub": "Länger als eine Rezension, und lockerer. Lad ein YouTube- oder TikTok-Video hoch, wenn du eins hast, und verknüpf es mit dem Release, um das es geht, damit Leser direkt zur Platte springen.",
+      "editStamp": "SENDUNG BEARBEITEN",
+      "editTitle": "Post bearbeiten",
+      "editSub": "Gleicher Post, neue Worte — der Link bleibt gleich."
+    },
+    "form": {
+      "thePost": "Der Post",
+      "titleLabel": "Titel ({n}/120)",
+      "titlePlaceholder": "Gib dem Ding einen Namen…",
+      "bodyLabel": "Text ({n}/{max})",
+      "bodyPlaceholder": "Hol aus. Die Geschichte hinter dem Edit, der Essay, die Analyse — was die Platte verdient.",
+      "video": "Video — optional",
+      "videoLabel": "YouTube- oder TikTok-Link",
+      "videoDetected": "✓ {kind}-Video erkannt — es wird in deinen Post eingebettet.",
+      "shortLink": "vm.tiktok.com-Links lassen sich nicht einbetten — öffne den Link im Browser und füg die vollständige tiktok.com/@user/video/…-URL ein.",
+      "videoInvalid": "Kein erkannter Video-Link. Füg eine youtube.com/watch-, youtu.be-, YouTube-Shorts- oder tiktok.com/@user/video-URL ein.",
+      "videoHint": "maximal ein Video — AMV-Edits, Live-Schnitte, Video-Essays, alles willkommen",
+      "playlist": "Spotify-Playlist — optional",
+      "playlistLabel": "Playlist-Link",
+      "playlistDetected": "✓ Spotify-Playlist erkannt — sie wird mit Player in deinen Post eingebettet und Leser können sie als Liste speichern.",
+      "playlistInvalid": "Kein Spotify-Playlist-Link. Füg eine open.spotify.com/playlist/…-URL ein (Teilen → Link kopieren in Spotify).",
+      "playlistHint": "maximal eine Playlist — ein Mix, ein Ranking, der Soundtrack zum Post",
+      "tiedRelease": "Verknüpftes Release — optional",
+      "remove": "Entfernen",
+      "searchPlaceholder": "Such den Song oder das Album, um das es im Post geht…",
+      "tieHint": "verknüpf deinen Post mit der Platte, um die es geht — Leser springen direkt vom Post zur Release-Seite",
+      "errors": {
+        "title": "Gib ihm einen Titel — mindestens 3 Zeichen.",
+        "body": "Schreib etwas — der Text darf nicht leer sein.",
+        "video": "Korrigier die Video-URL (oder lösch sie), bevor du postest.",
+        "playlist": "Korrigier den Playlist-Link (oder lösch ihn), bevor du postest.",
+        "wentWrong": "Etwas ist schiefgelaufen.",
+        "network": "Netzwerkfehler. Bitte versuch es noch mal."
+      },
+      "saving": "Speichere…",
+      "posting": "Poste…",
+      "updatePublish": "Aktualisieren & veröffentlichen",
+      "saveChanges": "Änderungen speichern",
+      "publish": "Post veröffentlichen",
+      "saveDraft": "Als Entwurf speichern"
+    },
+    "deleteButton": {
+      "confirm": "„{title}“ löschen?"
+    },
+    "feed": {
+      "title": "Posts",
+      "posted": "<b>Name</b> hat gepostet",
+      "aMember": "ein Mitglied",
+      "playlistBadge": "♫ PLAYLIST"
+    }
   }
 }

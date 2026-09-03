@@ -109,6 +109,13 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 7 (posts) shipped:** /posts hero + empty state + "by name",
+    post page (draft chip, post by, dates in locale, Tied To, view
+    release), /posts/new + edit headers, PostForm (every label,
+    placeholder, live-parse hint, error), DeletePostButton,
+    PostLikeButton, PostsFeed (the dashboard's Posts module, "name
+    posted", time-ago). Namespace: posts. Verified PT index + post page.
+    → The signed-in dashboard is now fully translated end to end.
   - **Batch 6 (lists) shipped:** /lists hero + empty state, list page
     (Ranked/Private chips, "a list by", album counts, Open on Spotify,
     empty states), ListCard + ListLikeButton, DeleteListButton,

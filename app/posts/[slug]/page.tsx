@@ -24,6 +24,8 @@ import DeletePostButton from "@/components/posts/DeletePostButton";
 import PostLikeButton from "@/components/posts/PostLikeButton";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import PlaylistEmbed from "@/components/playlists/PlaylistEmbed";
+// LANGUAGES: messages → posts.page (+ common). Metadata stays English.
+import { getLocale, getTranslations } from "next-intl/server";
 
 // Community content changes constantly — always render fresh.
 export const dynamic = "force-dynamic";
@@ -75,13 +77,16 @@ export default async function PostPage({
   const artistName = postReleaseArtistName(release);
   const isVerified = !!author && author.role !== "user";
   const isAuthor = !!user && user.id === post.user_id;
+  const t = await getTranslations("posts.page");
+  const tc = await getTranslations("common");
+  const locale = await getLocale();
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto overflow-hidden">
       {/* Back link */}
       <BackLink
         fallback="/posts"
-        label="Back"
+        label={tc("back")}
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
       />
 
@@ -93,7 +98,7 @@ export default async function PostPage({
         {post.is_published === false && (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
             <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-            Draft — only you can see this
+            {t("draft")}
           </span>
         )}
 
@@ -122,7 +127,7 @@ export default async function PostPage({
                 </span>
               )}
               <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors flex items-center gap-1.5">
-                post by{" "}
+                {t("postBy")}{" "}
                 <span className="font-bold text-text-primary">
                   {author.display_name || author.username}
                 </span>
@@ -130,10 +135,10 @@ export default async function PostPage({
               </span>
             </Link>
           ) : (
-            <span className="text-sm text-text-muted">post by a member</span>
+            <span className="text-sm text-text-muted">{t("postByMember")}</span>
           )}
           <span className="text-text-muted text-xs">
-            {new Date(post.created_at).toLocaleDateString("en-US", {
+            {new Date(post.created_at).toLocaleDateString(locale, {
               month: "long",
               day: "numeric",
               year: "numeric",
@@ -155,7 +160,7 @@ export default async function PostPage({
                 href={`/posts/${post.slug}/edit`}
                 className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
               >
-                ✎ Edit
+                {t("edit")}
               </Link>
               <DeletePostButton postId={post.id} postTitle={post.title} />
             </>
@@ -219,7 +224,7 @@ export default async function PostPage({
             <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
-                <span className="label-xbox">Tied To</span>
+                <span className="label-xbox">{t("tiedTo")}</span>
               </div>
 
               <Link
@@ -231,7 +236,7 @@ export default async function PostPage({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={release.cover_image}
-                      alt={`${release.title} cover`}
+                      alt={tc("coverAlt", { title: release.title })}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -250,7 +255,7 @@ export default async function PostPage({
                     </span>
                   )}
                   <span className="block pixel-text text-xs text-accent-primary group-hover:text-accent-glow transition-colors uppercase tracking-widest mt-1">
-                    View release page →
+                    {t("viewRelease")}
                   </span>
                 </span>
               </Link>

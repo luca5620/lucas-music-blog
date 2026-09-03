@@ -1028,5 +1028,78 @@
         "deleteFailed": "No se pudo eliminar la lista (error {status})."
       }
     }
+  },
+  "posts": {
+    "index": {
+      "title": "PUBLICACIONES",
+      "sub": "Más largas, más libres y más raras que las reseñas. Edits, ensayos, análisis a fondo: suelta un video y átalo al disco al que pertenece.",
+      "newPost": "Nueva publicación",
+      "noSignal": "SIN SEÑAL",
+      "empty": "Todavía no hay publicaciones. Escribe la primera: un edit, un ensayo, lo que el disco merezca.",
+      "by": "por {name}",
+      "unknown": "desconocido"
+    },
+    "page": {
+      "draft": "Borrador: solo tú puedes verlo",
+      "postBy": "publicación de",
+      "postByMember": "publicación de un miembro",
+      "edit": "✎ Editar",
+      "tiedTo": "Ligado a",
+      "viewRelease": "Ver página del lanzamiento →",
+      "likePost": "Me gusta la publicación",
+      "unlikePost": "Quitar me gusta"
+    },
+    "new": {
+      "title": "Escribir una publicación",
+      "sub": "Más larga que una reseña y también más libre. Suelta un video de YouTube o TikTok si tienes uno, y átala al lanzamiento del que trata para que los lectores salten directo al disco.",
+      "editStamp": "EDITAR TRANSMISIÓN",
+      "editTitle": "Editar publicación",
+      "editSub": "La misma publicación con nuevas palabras; el enlace no cambia."
+    },
+    "form": {
+      "thePost": "La publicación",
+      "titleLabel": "Título ({n}/120)",
+      "titlePlaceholder": "Ponle nombre…",
+      "bodyLabel": "Texto ({n}/{max})",
+      "bodyPlaceholder": "Extiéndete. La historia detrás del edit, el ensayo, el análisis: lo que el disco merezca.",
+      "video": "Video, opcional",
+      "videoLabel": "Enlace de YouTube o TikTok",
+      "videoDetected": "✓ Video de {kind} detectado: se insertará en tu publicación.",
+      "shortLink": "Los enlaces vm.tiktok.com no se pueden insertar: abre el enlace en tu navegador y pega la URL completa tiktok.com/@user/video/….",
+      "videoInvalid": "No es un enlace de video reconocido. Pega una URL youtube.com/watch, youtu.be, YouTube Shorts o tiktok.com/@user/video.",
+      "videoHint": "máximo un video: edits AMV, cortes en vivo, videoensayos, todo vale",
+      "playlist": "Playlist de Spotify, opcional",
+      "playlistLabel": "Enlace de la playlist",
+      "playlistDetected": "✓ Playlist de Spotify detectada: se insertará en tu publicación con un reproductor y los lectores podrán guardarla como lista.",
+      "playlistInvalid": "No es un enlace de playlist de Spotify. Pega una URL open.spotify.com/playlist/… (Compartir → Copiar enlace en Spotify).",
+      "playlistHint": "máximo una playlist: un mix, un ranking, la banda sonora de la publicación",
+      "tiedRelease": "Lanzamiento ligado, opcional",
+      "remove": "Quitar",
+      "searchPlaceholder": "Busca la canción o el álbum del que trata la publicación…",
+      "tieHint": "ata tu publicación al disco del que trata: los lectores saltan directo de tu publicación a la página del lanzamiento",
+      "errors": {
+        "title": "Ponle un título: al menos 3 caracteres.",
+        "body": "Escribe algo: el texto no puede estar vacío.",
+        "video": "Corrige la URL del video (o bórrala) antes de publicar.",
+        "playlist": "Corrige el enlace de la playlist (o bórralo) antes de publicar.",
+        "wentWrong": "Algo salió mal.",
+        "network": "Error de red. Inténtalo de nuevo."
+      },
+      "saving": "Guardando…",
+      "posting": "Publicando…",
+      "updatePublish": "Actualizar y publicar",
+      "saveChanges": "Guardar cambios",
+      "publish": "Publicar",
+      "saveDraft": "Guardar como borrador"
+    },
+    "deleteButton": {
+      "confirm": "¿Eliminar “{title}”?"
+    },
+    "feed": {
+      "title": "Publicaciones",
+      "posted": "<b>nombre</b> publicó",
+      "aMember": "un miembro",
+      "playlistBadge": "♫ PLAYLIST"
+    }
   }
 }

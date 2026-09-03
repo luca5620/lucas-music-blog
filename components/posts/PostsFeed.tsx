@@ -19,6 +19,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import { smallCover } from "@/lib/images";
 import PostLikeButton from "@/components/posts/PostLikeButton";
+import { getLocale, getTranslations } from "next-intl/server";
 
 /** Card-sized excerpt: first ~180 chars, cut at a word boundary. */
 function excerpt(body: string): string {
@@ -28,16 +29,17 @@ function excerpt(body: string): string {
   return `${cut.slice(0, lastSpace > 100 ? lastSpace : 180)}…`;
 }
 
-function timeAgo(dateStr: string): string {
+type Tc = Awaited<ReturnType<typeof getTranslations<"common">>>;
+function timeAgo(dateStr: string, tc: Tc, locale: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return tc("justNow");
+  if (mins < 60) return tc("minsAgo", { n: mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return tc("hoursAgo", { n: hours });
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  if (days < 30) return tc("daysAgo", { n: days });
+  return new Date(dateStr).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
@@ -51,6 +53,9 @@ export default async function PostsFeed() {
   // Blocked authors never reach the viewer's feed (App Store 1.2).
   const posts = allPosts.filter((p) => !blocked.has(p.user_id));
   if (posts.length === 0) return null;
+  const t = await getTranslations("posts.feed");
+  const tc = await getTranslations("common");
+  const locale = await getLocale();
 
   let viewerId: string | undefined;
   try {
@@ -74,14 +79,14 @@ export default async function PostsFeed() {
       <div className="flex items-center gap-3">
         <span className="glow-orb" style={{ animationDelay: "1.8s" }} />
         <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary">
-          Posts
+          {t("title")}
         </h2>
         <div className="flex-1 divider-glow" />
         <Link
           href="/posts"
           className="label-xbox hover:text-accent-primary transition-colors"
         >
-          View All →
+          {tc("viewAll")}
         </Link>
       </div>
 
@@ -112,10 +117,13 @@ export default async function PostsFeed() {
                   </span>
                 )}
                 <span className="min-w-0 flex-1 text-sm text-text-secondary truncate">
-                  <span className="font-bold text-text-primary">
-                    {author?.display_name || author?.username || "a member"}
-                  </span>{" "}
-                  posted
+                  {t.rich("posted", {
+                    b: () => (
+                      <span className="font-bold text-text-primary">
+                        {author?.display_name || author?.username || t("aMember")}
+                      </span>
+                    ),
+                  })}
                 </span>
                 {post.video_kind && (
                   <span
@@ -130,7 +138,7 @@ export default async function PostsFeed() {
                 )}
                 {post.playlist_id && (
                   <span className="pixel-text text-[10px] border rounded px-1 py-0.5 shrink-0 text-[#1db954] border-[#1db954]/40">
-                    ♫ PLAYLIST
+                    {t("playlistBadge")}
                   </span>
                 )}
               </span>
@@ -182,7 +190,7 @@ export default async function PostsFeed() {
                   size="sm"
                 />
                 <span className="text-xs text-text-muted">
-                  {timeAgo(post.created_at)}
+                  {timeAgo(post.created_at, tc, locale)}
                 </span>
               </span>
             </Link>

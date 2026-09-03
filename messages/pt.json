@@ -1028,5 +1028,78 @@
         "deleteFailed": "Não deu para excluir a lista (erro {status})."
       }
     }
+  },
+  "posts": {
+    "index": {
+      "title": "POSTS",
+      "sub": "Mais longos, mais soltos, mais estranhos que resenhas. Edits, ensaios, mergulhos — solte um vídeo e amarre ao disco a que pertence.",
+      "newPost": "Novo post",
+      "noSignal": "SEM SINAL",
+      "empty": "Nada publicado ainda. Escreva o primeiro — um edit, um ensaio, o que o disco merecer.",
+      "by": "por {name}",
+      "unknown": "desconhecido"
+    },
+    "page": {
+      "draft": "Rascunho — só você vê isto",
+      "postBy": "post de",
+      "postByMember": "post de um membro",
+      "edit": "✎ Editar",
+      "tiedTo": "Ligado a",
+      "viewRelease": "Ver página do lançamento →",
+      "likePost": "Curtir post",
+      "unlikePost": "Descurtir post"
+    },
+    "new": {
+      "title": "Escrever um post",
+      "sub": "Mais longo que uma resenha, e mais solto também. Solte um vídeo do YouTube ou TikTok se tiver, e amarre ao lançamento de que fala para os leitores pularem direto para o disco.",
+      "editStamp": "EDITAR TRANSMISSÃO",
+      "editTitle": "Editar post",
+      "editSub": "Mesmo post, novas palavras — o link continua o mesmo."
+    },
+    "form": {
+      "thePost": "O post",
+      "titleLabel": "Título ({n}/120)",
+      "titlePlaceholder": "Dê um nome…",
+      "bodyLabel": "Texto ({n}/{max})",
+      "bodyPlaceholder": "Escreva à vontade. A história por trás do edit, o ensaio, a análise — o que o disco merecer.",
+      "video": "Vídeo — opcional",
+      "videoLabel": "Link do YouTube ou TikTok",
+      "videoDetected": "✓ Vídeo do {kind} detectado — vai aparecer no seu post.",
+      "shortLink": "Links vm.tiktok.com não podem ser incorporados — abra o link no navegador e cole a URL completa tiktok.com/@user/video/….",
+      "videoInvalid": "Link de vídeo não reconhecido. Cole uma URL youtube.com/watch, youtu.be, YouTube Shorts ou tiktok.com/@user/video.",
+      "videoHint": "um vídeo no máximo — edits AMV, cortes ao vivo, vídeo-ensaios, tudo vale",
+      "playlist": "Playlist do Spotify — opcional",
+      "playlistLabel": "Link da playlist",
+      "playlistDetected": "✓ Playlist do Spotify detectada — vai aparecer no seu post com um player, e os leitores podem salvá-la como lista.",
+      "playlistInvalid": "Não é um link de playlist do Spotify. Cole uma URL open.spotify.com/playlist/… (Compartilhar → Copiar link no Spotify).",
+      "playlistHint": "uma playlist no máximo — um mix, um ranking, a trilha sonora do post",
+      "tiedRelease": "Lançamento ligado — opcional",
+      "remove": "Remover",
+      "searchPlaceholder": "Busque a música ou o álbum de que o post fala…",
+      "tieHint": "amarre seu post ao disco de que fala — os leitores pulam direto do seu post para a página do lançamento",
+      "errors": {
+        "title": "Dê um título — pelo menos 3 caracteres.",
+        "body": "Escreva algo — o texto não pode ficar vazio.",
+        "video": "Corrija a URL do vídeo (ou apague) antes de publicar.",
+        "playlist": "Corrija o link da playlist (ou apague) antes de publicar.",
+        "wentWrong": "Algo deu errado.",
+        "network": "Erro de rede. Tente de novo."
+      },
+      "saving": "Salvando…",
+      "posting": "Publicando…",
+      "updatePublish": "Atualizar e publicar",
+      "saveChanges": "Salvar alterações",
+      "publish": "Publicar post",
+      "saveDraft": "Salvar como rascunho"
+    },
+    "deleteButton": {
+      "confirm": "Excluir “{title}”?"
+    },
+    "feed": {
+      "title": "Posts",
+      "posted": "<b>nome</b> postou",
+      "aMember": "um membro",
+      "playlistBadge": "♫ PLAYLIST"
+    }
   }
 }

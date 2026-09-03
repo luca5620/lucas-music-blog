@@ -21,6 +21,7 @@ import CatalogSearch, {
 } from "@/components/catalog/CatalogSearch";
 import { parseVideoUrl, isTikTokShortLink } from "@/lib/video";
 import { parsePlaylistUrl, playlistUrl as buildPlaylistUrl } from "@/lib/playlist";
+import { useTranslations } from "next-intl";
 
 const BODY_MAX = 10000;
 
@@ -62,6 +63,9 @@ export default function PostForm({
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // LANGUAGES: messages → posts.form (+ common).
+  const t = useTranslations("posts.form");
+  const tc = useTranslations("common");
 
   // Live video-URL feedback, recomputed every keystroke.
   const trimmedUrl = videoUrl.trim();
@@ -86,19 +90,19 @@ export default function PostForm({
   // it, and it waits on the My Stuff page to be published.
   async function handleSubmit(isPublished: boolean) {
     if (title.trim().length < 3) {
-      setError("Give it a title — at least 3 characters.");
+      setError(t("errors.title"));
       return;
     }
     if (body.trim().length === 0) {
-      setError("Write something — the body can't be empty.");
+      setError(t("errors.body"));
       return;
     }
     if (videoInvalid) {
-      setError("Fix the video URL (or clear it) before posting.");
+      setError(t("errors.video"));
       return;
     }
     if (playlistInvalid) {
-      setError("Fix the playlist link (or clear it) before posting.");
+      setError(t("errors.playlist"));
       return;
     }
 
@@ -121,7 +125,7 @@ export default function PostForm({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || "Something went wrong.");
+        setError(data.error || t("errors.wentWrong"));
         setSaving(false);
         return;
       }
@@ -132,7 +136,7 @@ export default function PostForm({
       router.push(isPublished ? `/posts/${data.post.slug}` : "/reviews/mine");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("errors.network"));
       setSaving(false);
     }
   }
@@ -141,25 +145,25 @@ export default function PostForm({
     <div className="space-y-6">
       {/* ========== STEP 1: THE POST ========== */}
       <fieldset className="panel-xbox p-5 space-y-4">
-        <legend className="label-xbox">The Post</legend>
+        <legend className="label-xbox">{t("thePost")}</legend>
 
-        <FormField label={`Title (${title.length}/120)`}>
+        <FormField label={t("titleLabel", { n: title.length })}>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value.slice(0, 120))}
-            placeholder="Name the thing…"
+            placeholder={t("titlePlaceholder")}
             maxLength={120}
             className="form-input"
             autoFocus
           />
         </FormField>
 
-        <FormField label={`Body (${body.length}/${BODY_MAX})`}>
+        <FormField label={t("bodyLabel", { n: body.length, max: BODY_MAX })}>
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value.slice(0, BODY_MAX))}
-            placeholder="Go long. The edit's backstory, the essay, the breakdown — whatever the record deserves."
+            placeholder={t("bodyPlaceholder")}
             rows={12}
             maxLength={BODY_MAX}
             className="form-input resize-none"
@@ -169,9 +173,9 @@ export default function PostForm({
 
       {/* ========== STEP 2: THE VIDEO (optional) ========== */}
       <fieldset className="panel-xbox p-5 space-y-3">
-        <legend className="label-xbox">Video — optional</legend>
+        <legend className="label-xbox">{t("video")}</legend>
 
-        <FormField label="YouTube or TikTok link">
+        <FormField label={t("videoLabel")}>
           <input
             type="text"
             value={videoUrl}
@@ -184,26 +188,22 @@ export default function PostForm({
         {/* Live parse feedback */}
         {parsedVideo && (
           <p className="pixel-text text-xs text-accent-primary">
-            ✓ {parsedVideo.kind === "youtube" ? "YouTube" : "TikTok"} video
-            detected — it&apos;ll embed on your post.
+            {t("videoDetected", { kind: parsedVideo.kind === "youtube" ? "YouTube" : "TikTok" })}
           </p>
         )}
         {isShortLink && (
           <p className="text-xs text-accent-rose">
-            vm.tiktok.com share links can&apos;t be embedded — open the link
-            in your browser and paste the full
-            tiktok.com/@user/video/… URL instead.
+            {t("shortLink")}
           </p>
         )}
         {videoInvalid && !isShortLink && (
           <p className="text-xs text-accent-rose">
-            Not a recognized video link. Paste a youtube.com/watch, youtu.be,
-            YouTube Shorts, or tiktok.com/@user/video URL.
+            {t("videoInvalid")}
           </p>
         )}
         {!trimmedUrl && (
           <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-            one video max — AMV edits, live cuts, video essays all welcome
+            {t("videoHint")}
           </p>
         )}
       </fieldset>
@@ -213,9 +213,9 @@ export default function PostForm({
           (Luca 2026-09-02), and readers can save it as one of their
           lists from there. Stored as the bare id — see lib/playlist.ts. */}
       <fieldset className="panel-xbox p-5 space-y-3">
-        <legend className="label-xbox">Spotify Playlist — optional</legend>
+        <legend className="label-xbox">{t("playlist")}</legend>
 
-        <FormField label="Playlist link">
+        <FormField label={t("playlistLabel")}>
           <input
             type="text"
             value={playlistLink}
@@ -229,19 +229,17 @@ export default function PostForm({
 
         {parsedPlaylist && (
           <p className="pixel-text text-xs text-accent-primary">
-            ✓ Spotify playlist detected — it&apos;ll embed on your post with
-            a player, and readers can save it as a list.
+            {t("playlistDetected")}
           </p>
         )}
         {playlistInvalid && (
           <p className="text-xs text-accent-rose">
-            Not a Spotify playlist link. Paste an open.spotify.com/playlist/…
-            URL (Share → Copy link in Spotify).
+            {t("playlistInvalid")}
           </p>
         )}
         {!trimmedPlaylist && (
           <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-            one playlist max — a mix, a ranking, the soundtrack to the post
+            {t("playlistHint")}
           </p>
         )}
       </fieldset>
@@ -250,7 +248,7 @@ export default function PostForm({
           overflow-visible: this panel hosts the search dropdown —
           the panel's default overflow:hidden would clip the list. */}
       <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
-        <legend className="label-xbox">Tied Release — optional</legend>
+        <legend className="label-xbox">{t("tiedRelease")}</legend>
 
         {release ? (
           <div className="flex items-center gap-4 p-3 rounded-lg border border-[rgba(var(--accent-rgb),0.4)] bg-[rgba(var(--accent-rgb),0.08)]">
@@ -260,7 +258,7 @@ export default function PostForm({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={release.cover_image}
-                  alt={`${release.title} cover`}
+                  alt={tc("coverAlt", { title: release.title })}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -285,19 +283,18 @@ export default function PostForm({
               onClick={() => setRelease(null)}
               className="label-xbox hover:text-accent-primary transition-colors text-[0.65rem] shrink-0"
             >
-              Remove
+              {t("remove")}
             </button>
           </div>
         ) : (
           <CatalogSearch
             onPick={handlePick}
-            placeholder="Search the song or album this post is about…"
+            placeholder={t("searchPlaceholder")}
           />
         )}
 
         <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-          tie your post to the record it&apos;s about — readers can jump
-          straight from your post to the release page
+          {t("tieHint")}
         </p>
       </fieldset>
 
@@ -318,13 +315,13 @@ export default function PostForm({
         >
           {saving
             ? editing
-              ? "Saving…"
-              : "Posting…"
+              ? t("saving")
+              : t("posting")
             : editing
               ? post!.is_published === false
-                ? "Update & Publish"
-                : "Save Changes"
-              : "Publish Post"}
+                ? t("updatePublish")
+                : t("saveChanges")
+              : t("publish")}
         </button>
 
         <button
@@ -333,7 +330,7 @@ export default function PostForm({
           disabled={saving || title.trim().length < 3 || body.trim().length === 0}
           className="btn-y2k btn-y2k-outline disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save as Draft"}
+          {saving ? t("saving") : t("saveDraft")}
         </button>
 
         <button
@@ -341,7 +338,7 @@ export default function PostForm({
           onClick={() => router.back()}
           className="btn-y2k btn-y2k-outline"
         >
-          Cancel
+          {tc("cancel")}
         </button>
       </div>
     </div>

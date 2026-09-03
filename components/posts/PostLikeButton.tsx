@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap } from "@/lib/native";
 import { useLikeState } from "@/lib/likeStore";
+import { useTranslations } from "next-intl";
 
 /**
  * PostLikeButton — the heart on a post (migration 016).
@@ -40,6 +41,7 @@ export default function PostLikeButton({
   // In-flight guard stays PER BUTTON: it throttles this button's own
   // fetch, not the shared state.
   const [pending, setPending] = useState(false);
+  const t = useTranslations("posts.page");
 
   const isMd = size === "md";
   const heartSize = isMd ? 22 : 16;
@@ -88,7 +90,7 @@ export default function PostLikeButton({
     <button
       type="button"
       onClick={handleClick}
-      aria-label={liked ? "Unlike post" : "Like post"}
+      aria-label={liked ? t("unlikePost") : t("likePost")}
       aria-pressed={liked}
       className={`inline-flex items-center ${gap} ${
         liked ? "text-[#ff4d6d]" : "text-text-muted hover:text-[#ff4d6d]"

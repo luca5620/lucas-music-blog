@@ -1028,5 +1028,78 @@
         "deleteFailed": "Couldn't delete the list (error {status})."
       }
     }
+  },
+  "posts": {
+    "index": {
+      "title": "POSTS",
+      "sub": "Longer, looser, weirder than reviews. Edits, essays, deep dives — drop a video, tie it to the record it belongs to.",
+      "newPost": "New Post",
+      "noSignal": "NO SIGNAL",
+      "empty": "Nothing posted yet. Write the first one — an edit, an essay, whatever the record deserves.",
+      "by": "by {name}",
+      "unknown": "unknown"
+    },
+    "page": {
+      "draft": "Draft — only you can see this",
+      "postBy": "post by",
+      "postByMember": "post by a member",
+      "edit": "✎ Edit",
+      "tiedTo": "Tied To",
+      "viewRelease": "View release page →",
+      "likePost": "Like post",
+      "unlikePost": "Unlike post"
+    },
+    "new": {
+      "title": "Write a post",
+      "sub": "Longer than a review, looser than one too. Drop a YouTube or TikTok video if you have one, and tie it to the release it's about so readers can jump straight to the record.",
+      "editStamp": "EDIT TRANSMISSION",
+      "editTitle": "Edit post",
+      "editSub": "Same post, new words — the link stays the same."
+    },
+    "form": {
+      "thePost": "The Post",
+      "titleLabel": "Title ({n}/120)",
+      "titlePlaceholder": "Name the thing…",
+      "bodyLabel": "Body ({n}/{max})",
+      "bodyPlaceholder": "Go long. The edit's backstory, the essay, the breakdown — whatever the record deserves.",
+      "video": "Video — optional",
+      "videoLabel": "YouTube or TikTok link",
+      "videoDetected": "✓ {kind} video detected — it'll embed on your post.",
+      "shortLink": "vm.tiktok.com share links can't be embedded — open the link in your browser and paste the full tiktok.com/@user/video/… URL instead.",
+      "videoInvalid": "Not a recognized video link. Paste a youtube.com/watch, youtu.be, YouTube Shorts, or tiktok.com/@user/video URL.",
+      "videoHint": "one video max — AMV edits, live cuts, video essays all welcome",
+      "playlist": "Spotify Playlist — optional",
+      "playlistLabel": "Playlist link",
+      "playlistDetected": "✓ Spotify playlist detected — it'll embed on your post with a player, and readers can save it as a list.",
+      "playlistInvalid": "Not a Spotify playlist link. Paste an open.spotify.com/playlist/… URL (Share → Copy link in Spotify).",
+      "playlistHint": "one playlist max — a mix, a ranking, the soundtrack to the post",
+      "tiedRelease": "Tied Release — optional",
+      "remove": "Remove",
+      "searchPlaceholder": "Search the song or album this post is about…",
+      "tieHint": "tie your post to the record it's about — readers can jump straight from your post to the release page",
+      "errors": {
+        "title": "Give it a title — at least 3 characters.",
+        "body": "Write something — the body can't be empty.",
+        "video": "Fix the video URL (or clear it) before posting.",
+        "playlist": "Fix the playlist link (or clear it) before posting.",
+        "wentWrong": "Something went wrong.",
+        "network": "Network error. Please try again."
+      },
+      "saving": "Saving…",
+      "posting": "Posting…",
+      "updatePublish": "Update & Publish",
+      "saveChanges": "Save Changes",
+      "publish": "Publish Post",
+      "saveDraft": "Save as Draft"
+    },
+    "deleteButton": {
+      "confirm": "Delete “{title}”?"
+    },
+    "feed": {
+      "title": "Posts",
+      "posted": "<b>name</b> posted",
+      "aMember": "a member",
+      "playlistBadge": "♫ PLAYLIST"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireAuth } from "@/lib/auth";
 import PostForm from "@/components/posts/PostForm";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Write a Post",
@@ -13,16 +14,13 @@ export const metadata: Metadata = {
  */
 export default async function NewPostPage() {
   await requireAuth();
+  const t = await getTranslations("posts.new");
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <section className="space-y-2">
-        <h1 className="crt-title text-3xl sm:text-4xl">Write a post</h1>
-        <p className="text-sm text-text-secondary">
-          Longer than a review, looser than one too. Drop a YouTube or
-          TikTok video if you have one, and tie it to the release it&apos;s
-          about so readers can jump straight to the record.
-        </p>
+        <h1 className="crt-title text-3xl sm:text-4xl">{t("title")}</h1>
+        <p className="text-sm text-text-secondary">{t("sub")}</p>
       </section>
 
       <PostForm />

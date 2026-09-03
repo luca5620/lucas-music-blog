@@ -9,16 +9,22 @@ import { useSyncExternalStore } from "react";
  * The phone + app shell already run a GPU diet — the THERMAL MODE
  * rounds at the bottom of globals.css (still liquid, solid panels, no
  * full-screen overlays, decorative motion off). Desktop keeps the full
- * cinema because a normal laptop can afford it. This is the same diet
- * as an OPT-IN for any device: `html.low-detail` applies every thermal
+ * cinema by media query. This is the same diet
+ * as a TOGGLE for any device: `html.low-detail` applies every thermal
  * rule regardless of viewport, so an old laptop or a budget Android in
  * a browser gets the app's still, cheap atmosphere.
+ *
+ * ON BY DEFAULT (Luca 2026-09-03: "it definitely is difficult to run
+ * when I don't have hardware acceleration on"). A visitor with no
+ * stored preference gets low detail; only an explicit "0" in storage
+ * turns the full cinema on. So the heavy version is the opt-in now,
+ * not the diet.
  *
  * The preference is PER DEVICE, not per account, on purpose — it
  * describes the machine, not the person — so it lives in localStorage
  * and works signed-out too. A tiny inline script in app/layout.tsx
- * reads the same key before first paint and stamps the class, so a
- * low-detail visitor never sees a frame of the heavy version.
+ * reads the same key before first paint and stamps the class, so the
+ * default visitor never sees a frame of the heavy version.
  *
  * The <html> class is the source of truth for readers (the inline
  * script may have set it even when storage is later refused), and
@@ -30,7 +36,7 @@ export const LOW_DETAIL_CLASS = "low-detail";
 const CHANGE_EVENT = "pmr-low-detail-change";
 
 /** The exact script the layout inlines — kept here so key + class stay in one file. */
-export const LOW_DETAIL_BOOT_SCRIPT = `try{if(localStorage.getItem("${LOW_DETAIL_KEY}")==="1")document.documentElement.classList.add("${LOW_DETAIL_CLASS}")}catch(e){}`;
+export const LOW_DETAIL_BOOT_SCRIPT = `var on=true;try{on=localStorage.getItem("${LOW_DETAIL_KEY}")!=="0"}catch(e){}if(on)document.documentElement.classList.add("${LOW_DETAIL_CLASS}")`;
 
 export function isLowDetail(): boolean {
   if (typeof document === "undefined") return false;
@@ -40,8 +46,8 @@ export function isLowDetail(): boolean {
 export function setLowDetail(on: boolean): void {
   if (typeof document === "undefined") return;
   try {
-    if (on) localStorage.setItem(LOW_DETAIL_KEY, "1");
-    else localStorage.removeItem(LOW_DETAIL_KEY);
+    // Both states are written explicitly; a MISSING key means the default (on).
+    localStorage.setItem(LOW_DETAIL_KEY, on ? "1" : "0");
   } catch {
     /* storage refused (private mode) — the mode still applies for this page's life */
   }
@@ -54,7 +60,7 @@ function subscribe(onChange: () => void) {
   // Another tab flipping the switch: mirror it here too.
   const onStorage = (e: StorageEvent) => {
     if (e.key !== LOW_DETAIL_KEY) return;
-    document.documentElement.classList.toggle(LOW_DETAIL_CLASS, e.newValue === "1");
+    document.documentElement.classList.toggle(LOW_DETAIL_CLASS, e.newValue !== "0");
     onChange();
   };
   window.addEventListener("storage", onStorage);
@@ -64,9 +70,11 @@ function subscribe(onChange: () => void) {
   };
 }
 
-const getServerSnapshot = () => false;
+// The default is on, so the server-rendered switch says "On" and only
+// flips for the minority who opted out — no flash for the common case.
+const getServerSnapshot = () => true;
 
-/** Reactive "is low detail on?" — false during SSR, the real state after hydration. */
+/** Reactive "is low detail on?" — the default (true) during SSR, the real state after hydration. */
 export function useLowDetail(): boolean {
   return useSyncExternalStore(subscribe, isLowDetail, getServerSnapshot);
 }

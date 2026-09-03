@@ -1437,7 +1437,7 @@ export default function ProfileSettingsPage() {
       <SettingsSection
         id="performance"
         title="Performance"
-        hint="Low detail mode for slower computers and phones."
+        hint="Low detail mode — on by default, switch it off for the full effects."
       >
         <LowDetailToggle variant="row" accent={themeHex} />
       </SettingsSection>

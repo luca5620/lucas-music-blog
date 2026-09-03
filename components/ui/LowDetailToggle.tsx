@@ -58,8 +58,8 @@ export default function LowDetailToggle({
           Holds the liquid light still, turns off the film grain and
           glass blur, and stops the decorative animations — the same
           diet the phone app runs. Everything else works exactly the
-          same. Remembered on this device only, so you can leave it on
-          for the old laptop and off everywhere else.
+          same. On by default; turn it off for the full animated look
+          if your machine can take it. Remembered on this device only.
         </span>
       </span>
     </label>

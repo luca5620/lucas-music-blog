@@ -169,9 +169,10 @@ export default async function RootLayout({
     // treat that as a mismatch (the same trick every theme switcher uses).
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* LOW DETAIL MODE boot — stamps html.low-detail from
-            localStorage BEFORE first paint so an opted-in visitor never
-            sees a frame of the full-effects version (lib/lowDetail.ts). */}
+        {/* LOW DETAIL MODE boot — stamps html.low-detail BEFORE first
+            paint unless localStorage holds an explicit opt-out, so the
+            default visitor never sees a frame of the full-effects
+            version (lib/lowDetail.ts). */}
         <script dangerouslySetInnerHTML={{ __html: LOW_DETAIL_BOOT_SCRIPT }} />
         <WebSiteSchema />
         <SoftwareApplicationSchema appStoreUrl={APP_STORE_URL} />

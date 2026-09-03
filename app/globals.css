@@ -3781,8 +3781,10 @@ fieldset {
    LOW DETAIL MODE (Luca 2026-09-03: "a low-detail mode for the
    website for users to toggle if they don't have a strong
    computer"). html.low-detail is stamped by the boot script in
-   app/layout.tsx from localStorage (lib/lowDetail.ts); the switch
-   lives in the footer of every page and in Settings → Performance.
+   app/layout.tsx (lib/lowDetail.ts); the switch lives in the footer
+   of every page and in Settings → Performance. ON BY DEFAULT since
+   2026-09-03 ("difficult to run when I don't have hardware
+   acceleration on") — the full cinema is the opt-out now.
 
    This is the phone/app THERMAL MODE diet above, applied on ANY
    viewport when the visitor asks for it — the same rules, copied

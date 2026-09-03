@@ -106,6 +106,9 @@ don't wait to be asked:**
   `suppressHydrationWarning` on `<html>`). Two switches: footer
   "Low detail: On/Off" on every page + Settings → **Performance**
   section (outside the form, no Save needed). No migration.
+  **ON BY DEFAULT** (same night: "difficult to run when I don't have
+  hardware acceleration on") — a missing key means on, only an explicit
+  "0" restores the full effects, so the desktop cinema is now opt-out.
 
 - **2026-09-03: EU AVAILABILITY — DONE.** Luca declared non-trader
   under the DSA and opened the EU territories the same night.

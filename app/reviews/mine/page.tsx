@@ -20,6 +20,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import DeleteReviewButton from "@/components/reviews/DeleteReviewButton";
 import DeletePostButton from "@/components/posts/DeletePostButton";
+// LANGUAGES: messages → reviews.mine (+ common). Metadata stays English.
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "My Stuff",
@@ -36,6 +38,8 @@ export default async function MyReviewsPage() {
   ]);
   // Lists are keyed by username; RLS lets the owner see private ones.
   const lists = profile ? await getListsByUsername(profile.username) : [];
+  const t = await getTranslations("reviews.mine");
+  const tc = await getTranslations("common");
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -43,18 +47,18 @@ export default async function MyReviewsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="space-y-1">
           <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold text-[#e8e6e3]">
-            My Stuff
+            {t("title")}
           </h1>
           <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-            Everything you made, in one place — edit or delete it here.
+            {t("sub")}
           </p>
           {/* Jump links: four sections, each with its own count */}
           <nav className="flex flex-wrap gap-2 pt-1">
             {[
-              { href: "#reviews", label: `Reviews · ${reviews.length}` },
-              { href: "#posts", label: `Posts · ${posts.length}` },
-              { href: "#lists", label: `Lists · ${lists.length}` },
-              { href: "#debates", label: `Debates · ${debates.length}` },
+              { href: "#reviews", label: t("reviewsCount", { n: reviews.length }) },
+              { href: "#posts", label: t("postsCount", { n: posts.length }) },
+              { href: "#lists", label: t("listsCount", { n: lists.length }) },
+              { href: "#debates", label: t("debatesCount", { n: debates.length }) },
             ].map((t) => (
               <a key={t.href} href={t.href} className="tab-y2k">
                 {t.label}
@@ -77,18 +81,18 @@ export default async function MyReviewsPage() {
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Write Review
+          {t("writeReview")}
         </Link>
       </div>
 
       {/* Reviews List */}
       <h2 id="reviews" className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-extrabold text-[#e8e6e3] pt-2 scroll-mt-24">
-        My Reviews
+        {t("myReviews")}
       </h2>
       {reviews.length === 0 ? (
         <div className="panel-xbox p-8 text-center">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
-            No reviews yet. Write your first one!
+            {t("noReviews")}
           </p>
         </div>
       ) : (
@@ -183,12 +187,12 @@ export default async function MyReviewsPage() {
                       {review.is_published ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
                           <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                          Published
+                          {tc("published")}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
                           <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                          Draft
+                          {tc("draft")}
                         </span>
                       )}
 
@@ -214,7 +218,7 @@ export default async function MyReviewsPage() {
                               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                             />
                           </svg>
-                          Edit
+                          {tc("edit")}
                         </Link>
 
                         <DeleteReviewButton
@@ -235,22 +239,22 @@ export default async function MyReviewsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
         <div className="space-y-1">
           <h2 id="posts" className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-extrabold text-[#e8e6e3] scroll-mt-24">
-            My Posts
+            {t("myPosts")}
           </h2>
           <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-            {posts.length} post{posts.length !== 1 ? "s" : ""} total
+            {t("postsTotal", { n: posts.length })}
           </p>
         </div>
 
         <Link href="/posts/new" className="btn-y2k btn-y2k-outline shrink-0">
-          + Write Post
+          {t("writePost")}
         </Link>
       </div>
 
       {posts.length === 0 ? (
         <div className="panel-xbox p-8 text-center">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
-            No posts yet. Longer than a review, looser than one too.
+            {t("noPosts")}
           </p>
         </div>
       ) : (
@@ -278,12 +282,12 @@ export default async function MyReviewsPage() {
                     {post.is_published !== false ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                        Published
+                        {tc("published")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                        Draft
+                        {tc("draft")}
                       </span>
                     )}
                     {post.video_kind && (
@@ -313,7 +317,7 @@ export default async function MyReviewsPage() {
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                           />
                         </svg>
-                        Edit
+                        {tc("edit")}
                       </Link>
 
                       <DeletePostButton
@@ -334,21 +338,21 @@ export default async function MyReviewsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
         <div className="space-y-1">
           <h2 id="lists" className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-extrabold text-[#e8e6e3] scroll-mt-24">
-            My Lists
+            {t("myLists")}
           </h2>
           <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-            {lists.length} list{lists.length !== 1 ? "s" : ""} total — private ones included
+            {t("listsTotal", { n: lists.length })}
           </p>
         </div>
         <Link href="/lists/new" className="btn-y2k btn-y2k-outline shrink-0">
-          + New List
+          {t("newList")}
         </Link>
       </div>
 
       {lists.length === 0 ? (
         <div className="panel-xbox p-8 text-center">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
-            No lists yet. Build one, or import a Spotify playlist.
+            {t("noLists")}
           </p>
         </div>
       ) : (
@@ -384,21 +388,21 @@ export default async function MyReviewsPage() {
                     {list.title}
                   </Link>
                   <p className="font-[family-name:var(--font-vt323)] text-[#9a9a9e] text-sm">
-                    {list.item_count} item{list.item_count !== 1 ? "s" : ""}
-                    <span className="text-[#5a5a60]"> &middot; {list.like_count} like{list.like_count !== 1 ? "s" : ""}</span>
-                    {list.is_ranked && <span className="text-[#5a5a60]"> &middot; ranked</span>}
+                    {t("items", { n: list.item_count })}
+                    <span className="text-[#5a5a60]"> &middot; {t("likes", { n: list.like_count })}</span>
+                    {list.is_ranked && <span className="text-[#5a5a60]"> &middot; {t("ranked")}</span>}
                   </p>
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
                     {list.is_public ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                        Public
+                        {tc("public")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                        Private
+                        {tc("private")}
                       </span>
                     )}
                     <span className="text-xs text-[#5a5a60] font-[family-name:var(--font-vt323)]">
@@ -411,7 +415,7 @@ export default async function MyReviewsPage() {
                         className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-accent-primary hover:bg-accent-primary/10 transition-colors font-[family-name:var(--font-heading)]"
                       >
                         <EditIcon />
-                        Edit
+                        {tc("edit")}
                       </Link>
                       <DeleteListButton listId={list.id} listTitle={list.title} />
                     </div>
@@ -427,21 +431,21 @@ export default async function MyReviewsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
         <div className="space-y-1">
           <h2 id="debates" className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-extrabold text-[#e8e6e3] scroll-mt-24">
-            My Debates
+            {t("myDebates")}
           </h2>
           <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-            {debates.length} debate{debates.length !== 1 ? "s" : ""} total
+            {t("debatesTotal", { n: debates.length })}
           </p>
         </div>
         <Link href="/debates/new" className="btn-y2k btn-y2k-outline shrink-0">
-          + Open a Debate
+          {t("openDebate")}
         </Link>
       </div>
 
       {debates.length === 0 ? (
         <div className="panel-xbox p-8 text-center">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
-            No debates yet. Pick a fight worth having.
+            {t("noDebates")}
           </p>
         </div>
       ) : (
@@ -471,11 +475,11 @@ export default async function MyReviewsPage() {
                   </Link>
                   <p className="font-[family-name:var(--font-vt323)] text-[#9a9a9e] text-sm truncate">
                     <span className="text-accent-primary">{debate.side_a_label}</span>
-                    <span className="text-[#5a5a60]"> vs </span>
+                    <span className="text-[#5a5a60]"> {t("vs")} </span>
                     <span className="text-accent-rose">{debate.side_b_label}</span>
                     <span className="text-[#5a5a60]">
-                      {" "}&middot; {debate.votes.a + debate.votes.b} vote{debate.votes.a + debate.votes.b !== 1 ? "s" : ""}
-                      {" "}&middot; {debate.message_count} take{debate.message_count !== 1 ? "s" : ""}
+                      {" "}&middot; {t("votes", { n: debate.votes.a + debate.votes.b })}
+                      {" "}&middot; {t("takes", { n: debate.message_count })}
                     </span>
                   </p>
 
@@ -483,17 +487,17 @@ export default async function MyReviewsPage() {
                     {debate.is_published === false ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                        Draft
+                        {tc("draft")}
                       </span>
                     ) : debate.status === "open" ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                        On air
+                        {t("onAir")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white/5 text-[#9a9a9e] border border-white/10 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#9a9a9e]" />
-                        Signed off
+                        {t("signedOff")}
                       </span>
                     )}
                     <span className="text-xs text-[#5a5a60] font-[family-name:var(--font-vt323)]">
@@ -506,7 +510,7 @@ export default async function MyReviewsPage() {
                         className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-accent-primary hover:bg-accent-primary/10 transition-colors font-[family-name:var(--font-heading)]"
                       >
                         <EditIcon />
-                        Edit
+                        {tc("edit")}
                       </Link>
                       <DeleteDebateButton debateId={debate.id} debateTitle={debate.title} stayOnPage />
                     </div>

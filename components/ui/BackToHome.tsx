@@ -13,8 +13,10 @@
 
 import Link from "next/link";
 import { hapticTap } from "@/lib/native";
+import { useTranslations } from "next-intl";
 
 export default function BackToHome() {
+  const t = useTranslations("common");
   return (
     <div className="app-only">
       <Link
@@ -22,7 +24,7 @@ export default function BackToHome() {
         onClick={() => hapticTap()}
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
       >
-        ← Back to Home
+        {t("backToHome")}
       </Link>
     </div>
   );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap } from "@/lib/native";
 import { useLikeState } from "@/lib/likeStore";
+import { useTranslations } from "next-intl";
 
 interface LikeButtonProps {
   reviewId: string;
@@ -33,6 +34,7 @@ export default function LikeButton({
   // In-flight guard stays PER BUTTON: it throttles this button's own
   // fetch, not the shared state.
   const [pending, setPending] = useState(false);
+  const t = useTranslations("reviews.like");
 
   const isMd = size === "md";
   const heartSize = isMd ? 22 : 16;
@@ -81,7 +83,7 @@ export default function LikeButton({
     <button
       type="button"
       onClick={handleClick}
-      aria-label={liked ? "Unlike review" : "Like review"}
+      aria-label={liked ? t("unlike") : t("like")}
       aria-pressed={liked}
       className={`inline-flex items-center ${gap} ${
         liked ? "text-[#ff4d6d]" : "text-text-muted hover:text-[#ff4d6d]"

@@ -15,6 +15,7 @@ import ReportButton from "@/components/moderation/ReportButton";
 import Link from "next/link";
 import { hapticTap } from "@/lib/native";
 import { useLikeState } from "@/lib/likeStore";
+import { useLocale, useTranslations } from "next-intl";
 
 /* ─── Types ─── */
 
@@ -46,7 +47,9 @@ async function throwServerError(res: Response, fallback: string): Promise<never>
 
 /* ─── Time Ago Utility ─── */
 
-function timeAgo(dateString: string): string {
+/** LANGUAGES: `tc` = the "common" translator (justNow / minsAgo / …). */
+type Tc = ReturnType<typeof useTranslations<"common">>;
+function timeAgo(dateString: string, tc: Tc, locale: string): string {
   const now = Date.now();
   const then = new Date(dateString).getTime();
   const diffMs = now - then;
@@ -55,13 +58,13 @@ function timeAgo(dateString: string): string {
   const diffHr = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHr / 24);
 
-  if (diffSec < 60) return "just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
-  if (diffHr < 24) return `${diffHr}h ago`;
-  if (diffDay < 7) return `${diffDay}d ago`;
+  if (diffSec < 60) return tc("justNow");
+  if (diffMin < 60) return tc("minsAgo", { n: diffMin });
+  if (diffHr < 24) return tc("hoursAgo", { n: diffHr });
+  if (diffDay < 7) return tc("daysAgo", { n: diffDay });
 
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
 /* ─── Avatar Component ─── */
@@ -108,7 +111,7 @@ function CommentForm({
   onSubmit,
   placeholder,
   initialValue = "",
-  submitLabel = "Post",
+  submitLabel,
   onCancel,
   autoFocus = false,
 }: {
@@ -125,6 +128,8 @@ function CommentForm({
   // here — the text stays in the box so nothing typed is lost.
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const t = useTranslations("comments");
+  const tc = useTranslations("common");
 
   useEffect(() => {
     if (autoFocus && textareaRef.current) {
@@ -142,7 +147,7 @@ function CommentForm({
       setContent("");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Couldn't post that — try again."
+        err instanceof Error ? err.message : t("couldntPost")
       );
     } finally {
       setSubmitting(false);
@@ -171,7 +176,7 @@ function CommentForm({
             onClick={onCancel}
             className="px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase text-text-muted hover:text-text-primary border border-border-subtle hover:border-border-medium transition-all font-[family-name:var(--font-heading)]"
           >
-            Cancel
+            {tc("cancel")}
           </button>
         )}
         <button
@@ -179,7 +184,7 @@ function CommentForm({
           disabled={!content.trim() || submitting}
           className="px-5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-accent-primary/15 text-accent-primary border border-accent-primary/30 hover:bg-accent-primary/25 transition-all font-[family-name:var(--font-heading)] disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {submitting ? "..." : submitLabel}
+          {submitting ? "..." : (submitLabel ?? t("post"))}
         </button>
       </div>
     </form>
@@ -211,6 +216,7 @@ function CommentLikeButton({
     initialCount
   );
   const [pending, setPending] = useState(false);
+  const t = useTranslations("comments");
 
   const handleClick = async () => {
     if (!user) {
@@ -242,7 +248,7 @@ function CommentLikeButton({
     <button
       type="button"
       onClick={handleClick}
-      aria-label={liked ? "Unlike comment" : "Like comment"}
+      aria-label={liked ? t("unlikeComment") : t("likeComment")}
       aria-pressed={liked}
       className={`inline-flex items-center gap-1 ${
         liked ? "text-[#ff4d6d]" : "text-text-muted hover:text-[#ff4d6d]"
@@ -309,9 +315,12 @@ function CommentItem({
 }) {
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const t = useTranslations("comments");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const isOwn = currentUserId === comment.user_id;
   const displayName =
-    comment.profiles?.display_name || comment.profiles?.username || "Unknown";
+    comment.profiles?.display_name || comment.profiles?.username || t("unknown");
   const wasEdited = comment.updated_at !== comment.created_at;
 
   const handleEdit = async (content: string) => {
@@ -323,7 +332,7 @@ function CommentItem({
     if (deleting) return;
     // Removing someone ELSE's words is a moderation act — never let it
     // happen on an accidental tap. Your own delete stays one-tap.
-    if (!isOwn && !window.confirm(`Delete ${displayName}'s comment?`)) {
+    if (!isOwn && !window.confirm(t("confirmDelete", { name: displayName }))) {
       return;
     }
     setDeleting(true);
@@ -349,10 +358,10 @@ function CommentItem({
             {displayName}
           </Link>
           <span className="text-xs text-text-muted">
-            {timeAgo(comment.created_at)}
+            {timeAgo(comment.created_at, tc, locale)}
           </span>
           {wasEdited && (
-            <span className="text-xs text-text-muted italic">(edited)</span>
+            <span className="text-xs text-text-muted italic">{t("edited")}</span>
           )}
         </div>
 
@@ -361,9 +370,9 @@ function CommentItem({
           <div className="mt-2">
             <CommentForm
               onSubmit={handleEdit}
-              placeholder="Edit your comment..."
+              placeholder={t("editPlaceholder")}
               initialValue={comment.content}
-              submitLabel="Save"
+              submitLabel={t("save")}
               onCancel={() => setEditing(false)}
               autoFocus
             />
@@ -389,7 +398,7 @@ function CommentItem({
                 onClick={() => onReply(comment.id)}
                 className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
               >
-                Reply
+                {t("reply")}
               </button>
             )}
             {isOwn && !sheetMode && (
@@ -397,7 +406,7 @@ function CommentItem({
                 onClick={() => setEditing(true)}
                 className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
               >
-                Edit
+                {tc("edit")}
               </button>
             )}
             {/* Delete: your own comment, or any comment as staff —
@@ -409,7 +418,7 @@ function CommentItem({
                 disabled={deleting}
                 className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-rose transition-colors disabled:opacity-40"
               >
-                {deleting ? "..." : isOwn ? "Delete" : "Mod Delete"}
+                {deleting ? "..." : isOwn ? tc("delete") : t("modDelete")}
               </button>
             )}
             {/* You can't report yourself — everyone else's comments get a flag. */}
@@ -467,6 +476,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
     ref
   ) {
   const sheet = variant === "sheet";
+  const t = useTranslations("comments");
   const { user, profile, loading: authLoading } = useAuth();
   // Staff can mod-delete any comment (backed by 007's RLS policy +
   // the role re-check in the DELETE route — this flag is UI only).
@@ -591,7 +601,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reviewId, content }),
     });
-    if (!res.ok) await throwServerError(res, "Couldn't post your comment.");
+    if (!res.ok) await throwServerError(res, t("couldntPostComment"));
     await fetchComments();
   };
 
@@ -601,7 +611,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reviewId, content, parentId }),
     });
-    if (!res.ok) await throwServerError(res, "Couldn't post your reply.");
+    if (!res.ok) await throwServerError(res, t("couldntPostReply"));
     setReplyingTo(null);
     await fetchComments();
   };
@@ -612,7 +622,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content }),
     });
-    if (!res.ok) await throwServerError(res, "Couldn't save your edit.");
+    if (!res.ok) await throwServerError(res, t("couldntSaveEdit"));
     await fetchComments();
   };
 
@@ -633,14 +643,14 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
           parentId ? { reviewId, content, parentId } : { reviewId, content }
         ),
       });
-      if (!res.ok) await throwServerError(res, "Couldn't post your comment.");
+      if (!res.ok) await throwServerError(res, t("couldntPostComment"));
       const created = (await res.json()) as CommentData;
       // created_at-ascending order means appending keeps the list
       // sorted; replies are re-grouped under their parent by the
       // threading pass below regardless of array position.
       setComments((prev) => [...prev, created]);
     },
-    [reviewId]
+    [reviewId, t]
   );
 
   useImperativeHandle(ref, () => ({ post: postAndInsert }), [postAndInsert]);
@@ -692,7 +702,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
         <>
           <div className="flex items-center gap-2">
             <span className="glow-orb" />
-            <span className="label-xbox">Comments</span>
+            <span className="label-xbox">{t("title")}</span>
             <span className="text-xs text-text-muted ml-1">
               ({loading ? "--" : commentCount})
             </span>
@@ -708,18 +718,21 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
       {sheet ? null : authLoading ? null : user ? (
         <CommentForm
           onSubmit={handlePost}
-          placeholder="Drop a comment..."
+          placeholder={t("dropPlaceholder")}
         />
       ) : (
         <div className="card-y2k p-4 text-center">
           <p className="text-sm text-text-muted">
-            <Link
-              href="/login"
-              className="text-accent-primary hover:text-accent-glow transition-colors font-bold"
-            >
-              Sign in
-            </Link>{" "}
-            to comment
+            {t.rich("toComment", {
+              a: (chunks) => (
+                <Link
+                  href="/login"
+                  className="text-accent-primary hover:text-accent-glow transition-colors font-bold"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         </div>
       )}
@@ -728,13 +741,13 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
       {loading ? (
         <div className="text-center py-8">
           <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-            Loading comments...
+            {t("loading")}
           </span>
         </div>
       ) : commentCount === 0 ? (
         <div className="text-center py-6">
           <p className="text-sm text-text-muted">
-            No comments yet. Be the first to share your thoughts.
+            {t("none")}
           </p>
         </div>
       ) : (
@@ -761,7 +774,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
                       replyToName:
                         comment.profiles?.display_name ||
                         comment.profiles?.username ||
-                        "Unknown",
+                        t("unknown"),
                       quote: comment.content,
                     });
                   } else {
@@ -778,8 +791,10 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
                 <div className="ml-10 pl-4 border-l-2 border-accent-primary/15">
                   <CommentForm
                     onSubmit={(content) => handleReply(comment.id, content)}
-                    placeholder={`Reply to ${comment.profiles?.display_name || comment.profiles?.username || "user"}...`}
-                    submitLabel="Reply"
+                    placeholder={t("replyTo", {
+                      name: comment.profiles?.display_name || comment.profiles?.username || t("user"),
+                    })}
+                    submitLabel={t("reply")}
                     onCancel={() => setReplyingTo(null)}
                     autoFocus
                   />

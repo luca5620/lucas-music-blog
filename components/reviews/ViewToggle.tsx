@@ -13,6 +13,7 @@
 
 import { useSyncExternalStore } from "react";
 import { useIsNativeApp } from "@/lib/useIsNativeApp";
+import { useTranslations } from "next-intl";
 
 export type ReviewView = "detailed" | "posters" | "compact";
 
@@ -91,7 +92,7 @@ export function useReviewView(): [ReviewView, (v: ReviewView) => void] {
 const OPTIONS: { id: ReviewView; label: string; icon: React.ReactNode }[] = [
   {
     id: "detailed",
-    label: "Detailed view",
+    label: "detailed",
     // One wide card
     icon: (
       <svg viewBox="0 0 16 16" className="w-4 h-4" fill="currentColor">
@@ -102,7 +103,7 @@ const OPTIONS: { id: ReviewView; label: string; icon: React.ReactNode }[] = [
   },
   {
     id: "posters",
-    label: "Poster grid view",
+    label: "posters",
     // 2x2 tiles
     icon: (
       <svg viewBox="0 0 16 16" className="w-4 h-4" fill="currentColor">
@@ -115,7 +116,7 @@ const OPTIONS: { id: ReviewView; label: string; icon: React.ReactNode }[] = [
   },
   {
     id: "compact",
-    label: "Compact list view",
+    label: "compact",
     // Slim lines
     icon: (
       <svg viewBox="0 0 16 16" className="w-4 h-4" fill="currentColor">
@@ -134,14 +135,16 @@ export function ViewToggle({
   view: ReviewView;
   onChange: (v: ReviewView) => void;
 }) {
+  // LANGUAGES: `label` above is a key into messages → common.view.
+  const t = useTranslations("common.view");
   return (
     <div className="inline-flex rounded-lg border border-border-subtle overflow-hidden shrink-0">
       {OPTIONS.map((opt) => (
         <button
           key={opt.id}
           type="button"
-          title={opt.label}
-          aria-label={opt.label}
+          title={t(opt.label)}
+          aria-label={t(opt.label)}
           aria-pressed={view === opt.id}
           onClick={() => onChange(opt.id)}
           // Slimmer on phones — the toggle shares a tight header row

@@ -109,6 +109,19 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 5a (reviews) shipped:** /reviews hero + ReviewsList (filters,
+    NO SIGNAL states, cards), review page (draft banner, review by, dates
+    in the viewer's locale, song/album review label, favorites), ReviewForm
+    (every label/placeholder/error, rich "can't find it?" sentence),
+    CommentsSection (form, replies, edit/delete/mod delete, time-ago),
+    DiscoveryFeedClient (Community Feed on the dashboard), LikeButton,
+    DeleteReviewButton, ViewToggle labels (common.view), ReportButton
+    (labels translated; the reason string SENT to mods stays English),
+    BackToHome, BrowseSwitch, and /reviews/mine (My Stuff, all four
+    sections, ICU plurals). New namespaces: common, comments, report,
+    reviews. Verified FR index + review page from the built server.
+    Still English on My Stuff: DeleteListButton / DeletePostButton /
+    DeleteDebateButton (their own batches).
   - **Batch 4 (profile) shipped:** app/profile/[username] (header,
     stats, showcase labels + every NO SIGNAL empty state, tabs, Member
     since in the viewer's locale), FollowButton, ProfileSongPlayer,

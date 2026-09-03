@@ -22,6 +22,7 @@ import CatalogSearch, {
 } from "@/components/catalog/CatalogSearch";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
+import { useTranslations } from "next-intl";
 
 interface ReviewFormProps {
   mode: "create" | "edit";
@@ -56,6 +57,9 @@ export default function ReviewForm({
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // LANGUAGES: messages → reviews.form (+ common for cover alt / cancel).
+  const t = useTranslations("reviews.form");
+  const tc = useTranslations("common");
 
   /* ── Autosave (create mode) — a swipe-back or closed tab should
      never eat someone's essay (Luca 2026-08-27). Everything the form
@@ -168,7 +172,7 @@ export default function ReviewForm({
 
   async function handleSubmit(isPublished: boolean) {
     if (!release) {
-      setError("Pick a release first — search above.");
+      setError(t("pickFirst"));
       return;
     }
 
@@ -215,7 +219,7 @@ export default function ReviewForm({
           router.push(`/reviews/${data.existing_slug}/edit`);
           return;
         }
-        setError(data.error || "Something went wrong.");
+        setError(data.error || t("wentWrong"));
         setSaving(false);
         return;
       }
@@ -224,7 +228,7 @@ export default function ReviewForm({
       router.push("/reviews/mine");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("networkError"));
       setSaving(false);
     }
   }
@@ -236,12 +240,10 @@ export default function ReviewForm({
           format across everything the create button offers). */}
       <div className="space-y-2">
         <h1 className="crt-title text-3xl sm:text-4xl">
-          {mode === "edit" ? "Edit Review" : "Write a Review"}
+          {mode === "edit" ? t("editTitle") : t("writeTitle")}
         </h1>
         <p className="text-sm text-text-secondary">
-          {mode === "edit"
-            ? "Update your take — the release stays locked in."
-            : "Find the record, drop your honest take."}
+          {mode === "edit" ? t("editSub") : t("writeSub")}
         </p>
       </div>
 
@@ -249,17 +251,16 @@ export default function ReviewForm({
       {restoredDraft && (
         <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg border border-accent-primary/30 bg-accent-primary/5">
           <p className="text-xs text-text-secondary">
-            <span className="text-accent-primary font-bold">
-              Draft restored
-            </span>{" "}
-            — picked up where you left off.
+            {t.rich("draftRestored", {
+              b: (chunks) => <span className="text-accent-primary font-bold">{chunks}</span>,
+            })}
           </p>
           <button
             type="button"
             onClick={discardDraft}
             className="text-[11px] uppercase tracking-wider text-text-muted hover:text-accent-rose shrink-0 transition-colors"
           >
-            Discard
+            {t("discard")}
           </button>
         </div>
       )}
@@ -268,7 +269,7 @@ export default function ReviewForm({
           overflow-visible: this panel hosts the search dropdown —
           the panel's default overflow:hidden would clip the list. */}
       <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
-        <legend className="label-xbox">The Release</legend>
+        <legend className="label-xbox">{t("theRelease")}</legend>
 
         {release ? (
           <div className="flex items-center gap-4 p-3 rounded-lg border border-[rgba(var(--accent-rgb),0.4)] bg-[rgba(var(--accent-rgb),0.08)]">
@@ -278,7 +279,7 @@ export default function ReviewForm({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={release.cover_image}
-                  alt={`${release.title} cover`}
+                  alt={tc("coverAlt", { title: release.title })}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -298,7 +299,7 @@ export default function ReviewForm({
               </p>
               {release.is_unreleased && (
                 <span className="pixel-text text-[10px] text-osd-amber border border-osd-amber/40 rounded px-1 py-0.5 inline-block mt-1">
-                  UNRELEASED
+                  {t("unreleasedStamp")}
                 </span>
               )}
             </div>
@@ -313,7 +314,7 @@ export default function ReviewForm({
                 }}
                 className="label-xbox hover:text-accent-primary transition-colors text-[0.65rem] shrink-0"
               >
-                Change
+                {t("change")}
               </button>
             )}
           </div>
@@ -321,13 +322,12 @@ export default function ReviewForm({
           <CatalogSearch
             onPick={handlePick}
             autoFocus
-            placeholder="Search any album, song, or artist…"
+            placeholder={t("searchPlaceholder")}
           />
         )}
 
         <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-          everything on Peak Music Reviews is tied to a real release — spotify catalog +
-          genius deep cuts (unreleased included)
+          {t("tiedNote")}
         </p>
 
         {/* The door for releases the search can't reach (Luca
@@ -339,23 +339,24 @@ export default function ReviewForm({
             locked in there's nothing left to be missing. */}
         {mode === "create" && !release && (
           <p className="text-xs text-text-secondary leading-relaxed border-t border-border-subtle pt-3">
-            <span className="text-text-primary font-bold">Can&apos;t find it?</span>{" "}
-            If the release isn&apos;t on Spotify or Genius, email{" "}
-            <a
-              href="mailto:contact@peakmusicreviews.com?subject=Please%20import%20a%20release"
-              className="text-accent-primary hover:underline"
-            >
-              contact@peakmusicreviews.com
-            </a>{" "}
-            with the artist, title, and a link (Bandcamp, Apple Music,
-            SoundCloud…) and we&apos;ll add it by hand so you can review it.
+            {t.rich("cantFind", {
+              b: (chunks) => <span className="text-text-primary font-bold">{chunks}</span>,
+              a: (chunks) => (
+                <a
+                  href="mailto:contact@peakmusicreviews.com?subject=Please%20import%20a%20release"
+                  className="text-accent-primary hover:underline"
+                >
+                  {chunks}
+                </a>
+              ),
+            })}
           </p>
         )}
       </fieldset>
 
       {/* ========== STEP 2: THE VERDICT ========== */}
       <fieldset className="panel-xbox p-5 space-y-4">
-        <legend className="label-xbox">Your Verdict</legend>
+        <legend className="label-xbox">{t("verdict")}</legend>
 
         <div className="flex items-center gap-5">
           {/* Big live rating readout — the SAME badge treatment the
@@ -401,7 +402,7 @@ export default function ReviewForm({
                   background: `linear-gradient(90deg, ${ratingColor}30 0%, ${ratingColor}99 ${rating * 10}%, rgba(255,255,255,0.08) ${rating * 10}%)`,
                 } as React.CSSProperties
               }
-              aria-label="Rating from 0 to 10"
+              aria-label={t("ratingAria")}
             />
             <div className="flex justify-between text-xs text-text-muted font-[family-name:var(--font-vt323)]">
               <span>0</span>
@@ -411,25 +412,25 @@ export default function ReviewForm({
           </div>
         </div>
 
-        <FormField label={`One-liner (${snippet.length}/200) — optional`}>
+        <FormField label={t("oneLiner", { n: snippet.length })}>
           <input
             type="text"
             value={snippet}
             onChange={(e) => setSnippet(e.target.value.slice(0, 200))}
-            placeholder="The short version of your take…"
+            placeholder={t("oneLinerPlaceholder")}
             maxLength={200}
             className="form-input"
           />
           <p className="text-xs text-text-muted mt-1">
-            Shows as the preview text on cards and feeds
+            {t("oneLinerHint")}
           </p>
         </FormField>
 
-        <FormField label={`Full review (${summary.length}/10000) — optional`}>
+        <FormField label={t("fullReview", { n: summary.length })}>
           <textarea
             value={summary}
             onChange={(e) => setSummary(e.target.value.slice(0, 10000))}
-            placeholder="What stands out? What doesn't work? Liking something for a dumb reason is just as valid as a technical breakdown."
+            placeholder={t("fullPlaceholder")}
             rows={10}
             maxLength={10000}
             className="form-input resize-none"
@@ -442,9 +443,9 @@ export default function ReviewForm({
           only; the DB column and API field stay standout_tracks.) */}
       {release && tracks.length > 0 && (
         <fieldset className="panel-xbox p-5 space-y-3">
-          <legend className="label-xbox">Personal Favorites</legend>
+          <legend className="label-xbox">{t("favorites")}</legend>
           <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-            check the ones that hit — picked straight from the tracklist
+            {t("favoritesHint")}
           </p>
 
           <div className="max-h-72 overflow-y-auto space-y-1 pr-1">
@@ -498,10 +499,10 @@ export default function ReviewForm({
           className="btn-y2k btn-y2k-primary disabled:opacity-50"
         >
           {saving
-            ? "Saving…"
+            ? tc("saving")
             : mode === "edit"
-            ? "Update & Publish"
-            : "Publish Review"}
+            ? t("updatePublish")
+            : t("publish")}
         </button>
 
         <button
@@ -510,7 +511,7 @@ export default function ReviewForm({
           disabled={saving || !release}
           className="btn-y2k btn-y2k-outline disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save as Draft"}
+          {saving ? tc("saving") : t("saveDraft")}
         </button>
 
         <button
@@ -518,7 +519,7 @@ export default function ReviewForm({
           onClick={() => router.back()}
           className="btn-y2k btn-y2k-outline"
         >
-          Cancel
+          {tc("cancel")}
         </button>
       </div>
     </div>

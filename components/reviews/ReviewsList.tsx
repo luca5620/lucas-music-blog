@@ -16,6 +16,7 @@ import { getGenreColor, getRatingColor, getRatingHex, formatRating } from "@/lib
 import { smallCover } from "@/lib/images";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
+import { useLocale, useTranslations } from "next-intl";
 
 /* Rating chips are BUCKETS, not floors (Luca 2026-08-31: "showing
    every release from 1-10 when clicking 1+ makes no sense") — each
@@ -32,6 +33,10 @@ export default function ReviewsList({
   const [activeRating, setActiveRating] = useState<number | "All">("All");
   // Folder-style view choice (detailed/posters/compact), persisted.
   const [view, setView] = useReviewView();
+  // LANGUAGES: "All" stays the internal filter value; the chip shows t("all").
+  const t = useTranslations("reviews.index");
+  const tc = useTranslations("common");
+  const locale = useLocale();
 
   // Build the genre chips from what's actually in the data.
   const genres = useMemo(() => {
@@ -66,7 +71,7 @@ export default function ReviewsList({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by title, artist, or reviewer…"
+            placeholder={t("searchPlaceholder")}
             className="form-input"
           />
           {searchQuery && (
@@ -98,7 +103,7 @@ export default function ReviewsList({
                 }
               `}
             >
-              {genre}
+              {genre === "All" ? t("all") : genre}
             </button>
           ))}
         </div>
@@ -134,7 +139,7 @@ export default function ReviewsList({
                   <span className="normal-case text-[0.8em]">s</span>
                 </>
               ) : (
-                rating
+                t("all")
               )}
             </button>
           );
@@ -154,7 +159,7 @@ export default function ReviewsList({
             >
               <span className="poster">
                 {review.cover_image ? (
-                  <img src={smallCover(review.cover_image)} alt={`${review.title} cover`} loading="lazy" decoding="async" />
+                  <img src={smallCover(review.cover_image)} alt={tc("coverAlt", { title: review.title })} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -258,11 +263,11 @@ export default function ReviewsList({
         {filtered.length === 0 ? (
           /* Same NO SIGNAL voice as every other empty surface. */
           <div className="panel-xbox p-8 sm:p-10 text-center space-y-3">
-            <p className="osd-text text-sm">NO SIGNAL</p>
+            <p className="osd-text text-sm">{t("noSignal")}</p>
             <p className="text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
               {reviews.length === 0
-                ? "No reviews on the wall yet. Be the first — pick a record and drop your take."
-                : "Nothing matches those filters. Loosen the rating or clear the search."}
+                ? t("emptyAll")
+                : t("emptyFilters")}
             </p>
           </div>
         ) : view !== "detailed" ? null : (
@@ -310,7 +315,7 @@ export default function ReviewsList({
                       </span>
                       {isVerified && <VerifiedBadge role={author.role} size="xs" />}
                     </span>{" "}
-                    rated this release
+                    {t("ratedThis")}
                   </span>
                   <span
                     className={`rating-badge text-xs w-8 h-8 shrink-0 ${getRatingColor(review.rating)}`}
@@ -328,7 +333,7 @@ export default function ReviewsList({
                         src={review.cover_image}
                         srcSet={`${smallCover(review.cover_image)} 300w, ${review.cover_image} 640w`}
                         sizes="(min-width: 1536px) 18vw, (min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                        alt={`${review.title} cover`}
+                        alt={tc("coverAlt", { title: review.title })}
                         loading="lazy"
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -362,7 +367,7 @@ export default function ReviewsList({
                     href={`/reviews/${review.slug}`}
                     className="block pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
                   >
-                    Read the full review →
+                    {t("readFull")}
                   </Link>
                 )}
 
@@ -379,7 +384,7 @@ export default function ReviewsList({
                     )}
                     <span className="text-text-muted text-xs shrink-0">
                       {review.review_date
-                        ? new Date(review.review_date + "T12:00:00").toLocaleDateString("en-US", {
+                        ? new Date(review.review_date + "T12:00:00").toLocaleDateString(locale, {
                             month: "short",
                             day: "numeric",
                             year: "numeric",

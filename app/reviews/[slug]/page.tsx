@@ -20,6 +20,8 @@ import ReportButton from "@/components/moderation/ReportButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+// LANGUAGES: page copy (messages → reviews.page); dates in the viewer's locale.
+import { getLocale, getTranslations } from "next-intl/server";
 
 // Community content changes constantly — always render fresh.
 export const dynamic = "force-dynamic";
@@ -104,6 +106,15 @@ export default async function ReviewPage({
   const author = review.profiles;
   const release = review.releases;
   const isVerified = author.role !== "user";
+  const t = await getTranslations("reviews.page");
+  const tc = await getTranslations("common");
+  const locale = await getLocale();
+  const longDate = (iso: string) =>
+    new Date(iso + "T12:00:00").toLocaleDateString(locale, {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
 
   // Likes: count + whether the viewer already liked it.
   let likeCount = 0;
@@ -163,7 +174,7 @@ export default async function ReviewPage({
       {/* Back link */}
       <BackLink
         fallback="/reviews"
-        label="Back"
+        label={tc("back")}
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
       />
 
@@ -171,7 +182,7 @@ export default async function ReviewPage({
       {!review.is_published && (
         <div className="panel-xbox p-3 border-yellow-500/30 bg-yellow-500/5">
           <p className="pixel-text text-sm text-yellow-400">
-            DRAFT — only you can see this. Publish it from the edit page.
+            {t("draft")}
           </p>
         </div>
       )}
@@ -190,14 +201,14 @@ export default async function ReviewPage({
           {review.cover_image ? (
             <img
               src={review.cover_image}
-              alt={`${review.title} cover`}
+              alt={tc("coverAlt", { title: review.title })}
               className="w-full h-full object-cover"
             />
           ) : (
             <span className="text-6xl">💿</span>
           )}
           {release?.is_unreleased && (
-            <span className="poster-unreleased">Unreleased</span>
+            <span className="poster-unreleased">{tc("unreleased")}</span>
           )}
         </div>
 
@@ -238,7 +249,7 @@ export default async function ReviewPage({
             </span>
           )}
           <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors flex items-center gap-1.5">
-            review by{" "}
+            {t("reviewBy")}{" "}
             <span className="font-bold text-text-primary">
               {author.display_name || author.username}
             </span>
@@ -254,7 +265,7 @@ export default async function ReviewPage({
             initialLiked={viewerHasLiked}
             size="md"
           />
-          <span className="label-xbox text-[0.6rem]">Likes</span>
+          <span className="label-xbox text-[0.6rem]">{t("likes")}</span>
           <ReportButton targetType="review" targetId={review.id} />
         </div>
 
@@ -269,20 +280,12 @@ export default async function ReviewPage({
           )}
           {review.release_date && (
             <span className="text-text-muted text-xs">
-              Released{" "}
-              {new Date(review.release_date + "T12:00:00").toLocaleDateString(
-                "en-US",
-                { month: "long", day: "numeric", year: "numeric" }
-              )}
+              {t("released", { date: longDate(review.release_date) })}
             </span>
           )}
           {review.review_date && (
             <span className="text-text-muted text-xs">
-              Reviewed{" "}
-              {new Date(review.review_date + "T12:00:00").toLocaleDateString(
-                "en-US",
-                { month: "long", day: "numeric", year: "numeric" }
-              )}
+              {t("reviewed", { date: longDate(review.review_date) })}
             </span>
           )}
         </div>
@@ -295,7 +298,7 @@ export default async function ReviewPage({
             href={`/releases/${release.slug}`}
             className="btn-y2k btn-y2k-outline inline-flex items-center gap-2"
           >
-            View release page + all reviews →
+            {t("viewRelease")}
           </Link>
         )}
         </div>
@@ -311,10 +314,10 @@ export default async function ReviewPage({
           <span className="glow-orb" />
           <span className="label-xbox">
             {review.release_type === "single"
-              ? "Song Review"
+              ? t("songReview")
               : review.release_type
-              ? "Album Review"
-              : "Review"}
+              ? t("albumReview")
+              : t("review")}
           </span>
         </div>
         <div className="space-y-4">
@@ -328,7 +331,7 @@ export default async function ReviewPage({
             </p>
           ) : (
             <p className="text-text-muted leading-relaxed text-sm md:text-base italic">
-              Rated, no words — the number speaks for itself.
+              {t("noWords")}
             </p>
           )}
         </div>
@@ -342,7 +345,7 @@ export default async function ReviewPage({
             <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
-                <span className="label-xbox">Personal Favorites</span>
+                <span className="label-xbox">{t("favorites")}</span>
               </div>
 
               <div className="space-y-2">
@@ -359,7 +362,7 @@ export default async function ReviewPage({
                       </div>
                       {track.spotifyUrl && (
                         <span className="text-xs text-accent-primary shrink-0 whitespace-nowrap">
-                          Spotify ↗
+                          {t("spotify")}
                         </span>
                       )}
                     </div>

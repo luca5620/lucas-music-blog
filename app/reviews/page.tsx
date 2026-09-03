@@ -18,6 +18,8 @@ import PageHero from "@/components/ui/PageHero";
 import BrowseSwitch from "@/components/ui/BrowseSwitch";
 import BackToHome from "@/components/ui/BackToHome";
 import { reviewsFAQs } from "@/lib/faq-data";
+// LANGUAGES: hero copy (messages → reviews.index). Metadata stays English.
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Reviews",
@@ -39,6 +41,7 @@ export default async function Reviews() {
 
   // Blocked authors never reach the viewer's wall (App Store 1.2).
   const reviews = allReviews.filter((r) => !blocked.has(r.user_id));
+  const t = await getTranslations("reviews.index");
 
   return (
     <div className="space-y-8">
@@ -69,8 +72,8 @@ export default async function Reviews() {
 
       {/* Page Header — boxed hero, same as HOME */}
       <PageHero
-        title="REVIEWS"
-        sub="Honest takes from the whole community. Every review is tied to a real release — no filler, no fake entries."
+        title={t("title")}
+        sub={t("sub")}
       />
 
       {/* App-only: Reviews + Releases share one bottom tab — this

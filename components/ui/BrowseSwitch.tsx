@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { hapticTap } from "@/lib/native";
+import { useTranslations } from "next-intl";
 
 /**
  * BrowseSwitch — app-only segmented control at the top of /reviews
@@ -19,11 +20,13 @@ interface BrowseSwitchProps {
 }
 
 const SEGMENTS = [
-  { key: "reviews", label: "Reviews", href: "/reviews" },
-  { key: "releases", label: "Releases", href: "/releases" },
+  // `label` = key into messages → "nav" (the same words the top nav uses).
+  { key: "reviews", label: "reviews", href: "/reviews" },
+  { key: "releases", label: "releases", href: "/releases" },
 ] as const;
 
 export default function BrowseSwitch({ active }: BrowseSwitchProps) {
+  const t = useTranslations("nav");
   return (
     <div className="app-only">
       <div className="flex rounded-full border border-border-medium bg-bg-elevated p-1 gap-1">
@@ -41,7 +44,7 @@ export default function BrowseSwitch({ active }: BrowseSwitchProps) {
                   : "text-text-secondary border border-transparent"
               }`}
             >
-              {seg.label}
+              {t(seg.label)}
             </Link>
           );
         })}

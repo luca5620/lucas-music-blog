@@ -23,6 +23,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface ReportButtonProps {
   targetType:
@@ -87,6 +88,13 @@ export default function ReportButton({
   const [anchor, setAnchor] = useState<{ left: number; top: number } | null>(
     null,
   );
+  // LANGUAGES: the visible labels come from messages → report. The
+  // reason string SENT to moderators stays the English REPORT_REASONS
+  // text so the mod tools read one language.
+  const t = useTranslations("report");
+  const tc = useTranslations("common");
+  const reasonLabel = (label: string) =>
+    label === OTHER ? t("reasons.other") : t(`reasons.r${REPORT_REASONS.indexOf(label as (typeof REPORT_REASONS)[number])}`);
 
   const measure = useCallback(() => {
     const el = boxRef.current;
@@ -181,11 +189,11 @@ export default function ReportButton({
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) throw new Error(data.error ?? "Report failed");
+      if (!res.ok) throw new Error(data.error ?? t("failed"));
       setDone(true);
       setOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Report failed");
+      setError(err instanceof Error ? err.message : t("failed"));
     } finally {
       setSubmitting(false);
     }
@@ -196,7 +204,7 @@ export default function ReportButton({
       <span
         className={`text-text-muted ${small ? "text-[10px]" : "text-xs"} whitespace-nowrap`}
       >
-        Reported ✓
+        {t("reported")}
       </span>
     );
   }
@@ -210,15 +218,15 @@ export default function ReportButton({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        title="Report this content"
-        aria-label="Report this content"
+        title={t("title")}
+        aria-label={t("title")}
         className={`text-text-muted hover:text-accent-rose transition-colors ${
           small
             ? "text-[10px] leading-none inline-flex items-center"
             : "text-xs px-2 py-1 rounded border border-transparent hover:border-accent-rose/30"
         }`}
       >
-        🚩{!small && <span className="ml-1 uppercase tracking-wider">Report</span>}
+        🚩{!small && <span className="ml-1 uppercase tracking-wider">{t("button")}</span>}
       </button>
 
       {open &&
@@ -249,18 +257,21 @@ export default function ReportButton({
             >
             {needsLogin ? (
               <p className="text-xs text-text-secondary">
-                <Link href="/login" className="text-accent-primary hover:underline">
-                  Sign in
-                </Link>{" "}
-                to report content.
+                {t.rich("toReport", {
+                  a: (chunks) => (
+                    <Link href="/login" className="text-accent-primary hover:underline">
+                      {chunks}
+                    </Link>
+                  ),
+                })}
               </p>
             ) : (
               <>
                 <p className="text-xs font-bold text-text-primary uppercase tracking-wider font-[family-name:var(--font-heading)]">
-                  Report this
+                  {t("heading")}
                 </p>
                 <p className="text-[11px] text-text-muted">
-                  What&apos;s wrong with it? Pick all that apply.
+                  {t("pick")}
                 </p>
 
                 {/* Reason checklist — scrolls if the screen is short. */}
@@ -277,7 +288,7 @@ export default function ReportButton({
                         className="w-3.5 h-3.5 shrink-0 accent-[#ff4455]"
                       />
                       <span className="text-xs text-text-secondary">
-                        {label}
+                        {reasonLabel(label)}
                       </span>
                     </label>
                   ))}
@@ -291,7 +302,7 @@ export default function ReportButton({
                     maxLength={300}
                     rows={2}
                     autoFocus
-                    placeholder="Tell us what's wrong (3–300 chars)"
+                    placeholder={t("otherPlaceholder")}
                     className="form-input !text-xs resize-none"
                   />
                 )}
@@ -303,7 +314,7 @@ export default function ReportButton({
                     onClick={() => setOpen(false)}
                     className="text-[11px] uppercase tracking-wider text-text-muted hover:text-text-primary px-2 py-1"
                   >
-                    Cancel
+                    {tc("cancel")}
                   </button>
                   <button
                     type="button"
@@ -311,7 +322,7 @@ export default function ReportButton({
                     disabled={!canSubmit}
                     className="text-[11px] uppercase tracking-wider font-bold text-accent-rose border border-accent-rose/40 rounded px-2 py-1 hover:bg-accent-rose/10 disabled:opacity-40 transition-colors"
                   >
-                    {submitting ? "…" : "Submit Report"}
+                    {submitting ? "…" : t("submit")}
                   </button>
                 </div>
               </>

@@ -19,6 +19,7 @@ import {
   useReviewView,
   ViewToggle,
 } from "@/components/reviews/ViewToggle";
+import { useLocale, useTranslations } from "next-intl";
 
 export interface FeedReview {
   id: string;
@@ -60,16 +61,18 @@ function releaseSlug(review: FeedReview): string | null {
   return rel?.slug ?? null;
 }
 
-function timeAgo(dateStr: string): string {
+/** LANGUAGES: `tc` = the "common" translator (justNow / minsAgo / …). */
+type Tc = ReturnType<typeof useTranslations<"common">>;
+function timeAgo(dateStr: string, tc: Tc, locale: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return tc("justNow");
+  if (mins < 60) return tc("minsAgo", { n: mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return tc("hoursAgo", { n: hours });
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  if (days < 30) return tc("daysAgo", { n: days });
+  return new Date(dateStr).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
@@ -81,6 +84,9 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
   // the views below all render from this trimmed list.
   const limit = useModuleLimit(view);
   const feed = allFeed.slice(0, limit);
+  const t = useTranslations("reviews");
+  const tc = useTranslations("common");
+  const locale = useLocale();
 
   return (
     <section className="space-y-4">
@@ -90,7 +96,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
       <div className="flex items-center gap-2 sm:gap-3">
         <span className="glow-orb shrink-0" style={{ animationDelay: "3s" }} />
         <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary min-w-0 truncate">
-          Community Feed
+          {t("feed.title")}
         </h2>
         <div className="flex-1 divider-glow" />
         <ViewToggle view={view} onChange={setView} />
@@ -98,7 +104,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
           href="/reviews"
           className="label-xbox shrink-0 hover:text-accent-primary transition-colors"
         >
-          View All →
+          {tc("viewAll")}
         </Link>
       </div>
 
@@ -116,7 +122,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
               <span className="poster">
                 {review.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={smallCover(review.cover_image)} alt={`${review.title} cover`} loading="lazy" decoding="async" />
+                  <img src={smallCover(review.cover_image)} alt={tc("coverAlt", { title: review.title })} loading="lazy" decoding="async" />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -290,7 +296,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                       </span>
                       {isVerified && <VerifiedBadge role={profile.role} size="xs" />}
                     </span>{" "}
-                    rated this release
+                    {t("index.ratedThis")}
                   </span>
                   <span
                     className={`rating-badge text-xs w-8 h-8 shrink-0 ${getRatingColor(review.rating)}`}
@@ -312,7 +318,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                         // slots, the full 640 when the card is phone-wide.
                         srcSet={`${smallCover(review.cover_image)} 300w, ${review.cover_image} 640w`}
                         sizes="(min-width: 1536px) 18vw, (min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                        alt={`${review.title} cover`}
+                        alt={tc("coverAlt", { title: review.title })}
                         loading="lazy"
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -348,7 +354,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                     href={`/reviews/${review.slug}`}
                     className="block pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
                   >
-                    Read the full review →
+                    {t("index.readFull")}
                   </Link>
                 )}
 
@@ -364,7 +370,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                       size="sm"
                     />
                     <span className="text-xs text-text-muted">
-                      {timeAgo(review.created_at)}
+                      {timeAgo(review.created_at, tc, locale)}
                     </span>
                   </span>
                   {releaseSlug(review) && (
@@ -372,7 +378,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                       href={`/releases/${releaseSlug(review)}`}
                       className="pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
                     >
-                      Release →
+                      {t("feed.release")}
                     </Link>
                   )}
                 </div>

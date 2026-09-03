@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { ensureRelease } from "@/lib/catalog";
+import { pingIndexNow } from "@/lib/indexnow";
 
 /**
  * POST /api/catalog/ensure  { source: "local"|"spotify"|"genius", id: string }
@@ -52,6 +53,12 @@ export async function POST(request: NextRequest) {
       source as "local" | "spotify" | "spotify_track" | "genius",
       id
     );
+    // A release page that didn't exist a second ago now does — tell
+    // Bing (ChatGPT's search) rather than wait for the sitemap crawl.
+    // Fire and forget; "local" means it already existed, so no ping.
+    if (source !== "local" && release?.slug) {
+      void pingIndexNow([`/releases/${release.slug}`]);
+    }
     return NextResponse.json({ release });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Import failed";

@@ -109,3 +109,62 @@ the generic one last (needs directory + Reddit presence).
   app" / "music social network" / "Letterboxd for music" are fine.
 - Don't ask friends to post fake reviews/listings — assistants cite
   sources, and a thin astroturf trail is worse than none.
+
+## Baseline — 2026-09-03 (Bing/Brave-style web search, four queries)
+
+We appear in **none** of them. What does, and therefore where the
+assistants get their answers:
+
+| Query | Who shows up | Source type |
+| --- | --- | --- |
+| "musicboard alternative" | Product Hunt alternatives page, SaaSHub, AlternativeTo, StartupHub.ai, Semrush competitors | directories |
+| "letterboxd for music app" | POPBOXD, Musicboard, RYM, Crate, MusicBox, achriom.com listicle "6 apps that pull it off (2026)", pi.fyi recs, TikTok | listicles + app stores |
+| "best app to rate and review albums 2026" | Rate Music, AOTY, Musicboard, Musis, rate.fm, wavemusic.app blog "best album rating apps 2026", RYM, RecordScratch | listicles + app stores |
+| "peak music reviews app" | Peak Player (a music player), two "The Peak" radio stations, a Peak Music podcast | name collision |
+
+Takeaways:
+1. **Directories are the whole game** for "alternative" queries.
+   AlternativeTo + Product Hunt + SaaSHub listings are the fastest
+   possible win — those three pages are literally what the assistants
+   read.
+2. **Two blogs own the listicles**: achriom.com and wavemusic.app.
+   Email both — "you missed one, here's the unreleased angle." One
+   inclusion puts us in every assistant answer that cites them.
+3. **The name collides.** "Peak Music Reviews" returns radio stations
+   and a music player. The rebrand to Peak Music won't fix that
+   (worse, if anything); what fixes it is entity presence — Wikidata,
+   Crunchbase, the directories — so the assistant has a record that
+   says which "Peak Music" is the app.
+4. POPBOXD, Crate, rate.fm, RecordScratch and MusicBox are the new
+   competitors in this space that weren't on the radar. None of them
+   touch unreleased music.
+
+## Code shipped 2026-09-03
+
+- **IndexNow** (`lib/indexnow.ts`): new review pages and freshly
+  imported release pages are pinged to Bing the moment they exist.
+  `/<key>.txt` ownership file is served by a rewrite → `/api/indexnow/key`.
+  Off until `INDEXNOW_KEY` is set on Vercel (then redeploy).
+- **Verification tags**: `NEXT_PUBLIC_BING_VERIFICATION` and
+  `NEXT_PUBLIC_GOOGLE_VERIFICATION` render the meta tags from the
+  root layout when set.
+- `public/llms-full.txt`: the long-form description + FAQ; llms.txt
+  refreshed (Android closed testing, unreleased filter, badges,
+  players, small-artist angle).
+
+## Setup steps (Luca, in order — 30 min total)
+
+1. https://www.bing.com/webmasters → Sign in → **Import from Google
+   Search Console** (copies verification; no tag needed). If it
+   refuses, pick "HTML meta tag", copy the content value, add it on
+   Vercel as `NEXT_PUBLIC_BING_VERIFICATION`, redeploy, then Verify.
+2. Sitemaps → submit `https://peakmusicreviews.com/sitemap.xml`.
+3. Settings → **IndexNow** → generate a key → copy it → Vercel env
+   `INDEXNOW_KEY` → redeploy. Check `https://peakmusicreviews.com/<key>.txt`
+   returns the key. From then on every new review/release is pinged.
+4. URL Inspection → request indexing for `/`, `/about`,
+   `/musicboard-alternative`, `/releases?unreleased=1`.
+5. Directories, same sentence everywhere (first paragraph of llms.txt):
+   AlternativeTo (alternative to Musicboard, RYM, AOTY, Letterboxd),
+   Product Hunt, SaaSHub, Slant, Crunchbase, Wikidata.
+6. Email achriom.com and wavemusic.app about their listicles.

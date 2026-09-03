@@ -117,6 +117,20 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Peak Music Reviews",
   },
+  // Search-console ownership tags (docs/AI-SEARCH.md). Bing Webmaster
+  // Tools is the one that matters for ChatGPT (it searches through
+  // Bing). Both are optional env vars so a machine without them
+  // renders no tag at all; Vercel carries the real values.
+  //   NEXT_PUBLIC_BING_VERIFICATION   → <meta name="msvalidate.01">
+  //   NEXT_PUBLIC_GOOGLE_VERIFICATION → <meta name="google-site-verification">
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION }
+      : {}),
+    ...(process.env.NEXT_PUBLIC_BING_VERIFICATION
+      ? { other: { "msvalidate.01": process.env.NEXT_PUBLIC_BING_VERIFICATION } }
+      : {}),
+  },
 };
 
 export const viewport: Viewport = {

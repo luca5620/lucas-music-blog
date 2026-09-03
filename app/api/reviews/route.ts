@@ -8,6 +8,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { isOptionalText, isUuid, parseRating } from "@/lib/validate";
 import { checkContent } from "@/lib/content-filter";
 import { notifyFollowers } from "@/lib/db/notifications";
+import { pingIndexNow } from "@/lib/indexnow";
 
 /**
  * POST /api/reviews
@@ -219,6 +220,10 @@ export async function POST(request: Request) {
         href: `/reviews/${slug}`,
         title: release.title,
       });
+      // Tell Bing the new review page (and the release page whose
+      // community average just changed) exist — fire and forget, so
+      // a slow IndexNow never delays the response. See lib/indexnow.
+      void pingIndexNow([`/reviews/${slug}`, `/releases/${release.slug}`]);
     }
 
     return NextResponse.json(review, { status: 201 });

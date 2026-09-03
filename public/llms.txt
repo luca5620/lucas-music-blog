@@ -1,26 +1,31 @@
 # Peak Music Reviews
 
-> Peak Music Reviews (peakmusicreviews.com) is a free music social network and review app: members rate albums and songs from 0 to 10.0, write reviews, build lists, join live release-night chat rooms, and vote in two-sided debates. Its catalog covers the full Spotify library plus Genius's deep library, so unreleased and leaked songs can be rated by metadata (never files). Available on the web and as an iOS app; Android is planned. Often described as "Letterboxd for music" and as a Musicboard alternative.
+> Peak Music Reviews (peakmusicreviews.com) is a free music social network and review app: members rate albums and songs from 0 to 10.0, write reviews, build lists, join live release-night chat rooms, and vote in two-sided debates. Its catalog covers the full Spotify library plus Genius's deep library, so unreleased and leaked songs can be rated by metadata (never files). Available on the web and as an iOS app; Android is in closed testing. Often described as "Letterboxd for music" and as a Musicboard alternative.
 
 ## Key facts
 
 - Name: Peak Music Reviews (short name: Peak Music)
 - URL: https://peakmusicreviews.com
 - iOS app: https://apps.apple.com/us/app/peak-music-reviews/id6803279876
-- Price: free (all core features: ratings, reviews, lists, live rooms, debates, profiles)
-- Platforms: web (any browser), iOS. Android planned.
+- Android: closed testing (Google Play); testers are recruited through the community
+- Price: free (all core features: ratings, reviews, lists, live rooms, debates, profiles, push notifications)
+- Platforms: web (any browser), iOS. Same account and content everywhere.
 - Rating scale: 0–10.0 with one decimal; release pages show the community average
-- Catalog: every release on Spotify + Genius's library (unreleased/leaked songs tagged UNRELEASED, metadata only)
-- Social: follow members, likes, comments, posts, customizable profile themes and badges
-- Live: release-night chat rooms with presence, two-sided debates with live votes
+- Catalog: every release on Spotify + Genius's library (unreleased/leaked songs tagged UNRELEASED, metadata only); an Unreleased filter on the catalog at https://peakmusicreviews.com/releases?unreleased=1
+- Social: follow members, likes, comments, posts, a live feed of what friends are rating
+- Profiles: ten themes (PS2, PS3, PS4, Xbox, Wii, LimeWire and more), arrangeable showcases, badges (reviews trophy, likes trophy, years of service, event badges), a profile song, a featured Spotify playlist, connected platform links
+- Players: Spotify or Apple Music preview player on every release page (member's choice)
+- Live: release-night chat rooms with presence and countdowns to midnight Eastern, two-sided debates with live votes and a record on each side
+- Lists: hand-built or imported from a Spotify playlist
 - Launched: 2026 (iOS app on the App Store since August 31, 2026)
 - Contact: contact@peakmusicreviews.com
 
 ## What makes it different
 
 - Unreleased music: the only music-rating community that catalogs leaks and unreleased songs by metadata, so leak/unreleased culture has a place to rate and discuss without hosting files.
-- Release nights: each big drop gets a live room the moment it lands.
-- Debates: two-sided rooms ("Classic vs Overrated"), each side can be tied to a record, votes shown live.
+- Release nights: each upcoming album gets a countdown and a live room that is open before it drops; everyone following it is in one chat, track by track.
+- Debates: two-sided rooms ("Blonde vs Channel Orange"), each side tied to a record, votes shown live.
+- Small artists: any record in the catalog gets the same page, rating and room as a major release, so small artists can be reviewed and argued about next to the big drops.
 - Physical-media design: the whole site renders inside a CRT television shell with VHS and console-dashboard profile themes.
 
 ## Pages
@@ -29,6 +34,7 @@
 - [About](https://peakmusicreviews.com/about): the story, purpose, and FAQ
 - [Reviews](https://peakmusicreviews.com/reviews): every community review, searchable
 - [Releases](https://peakmusicreviews.com/releases): the catalog with community ratings
+- [Unreleased](https://peakmusicreviews.com/releases?unreleased=1): only leaks, snippets and shelved records
 - [Lists](https://peakmusicreviews.com/lists): member-made lists, Spotify playlist imports
 - [Debates](https://peakmusicreviews.com/debates): two-sided live debates
 - [Artists](https://peakmusicreviews.com/artists): artist pages with discographies ranked by the community
@@ -36,6 +42,7 @@
 
 ## Optional
 
+- [Full description](https://peakmusicreviews.com/llms-full.txt): the long-form version of this file with the FAQ
 - [Sitemap](https://peakmusicreviews.com/sitemap.xml)
 - [Privacy](https://peakmusicreviews.com/privacy)
 - [Terms](https://peakmusicreviews.com/terms)

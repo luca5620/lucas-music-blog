@@ -369,6 +369,30 @@ pending (parked, his call).
     dormant until real bills), merge/upgrade-release tool for
     Genius→Spotify dupes.
 
+- **2026-09-03 (Windows): AI SEARCH — session 1. ✅ 040 RUN (Luca).
+  Code side finished; the rest is Luca's hands (docs/AI-SEARCH.md
+  "Setup steps", 30 min).** Baseline measured first (four web
+  searches, table in the doc): we appear in NONE; the answers come
+  from directories (Product Hunt / AlternativeTo / SaaSHub) and two
+  listicles (achriom.com, wavemusic.app); "peak music reviews" itself
+  returns radio stations and a music player (name collision → entity
+  presence on Wikidata/Crunchbase is the fix, not the rebrand).
+  Shipped: **IndexNow** (`lib/indexnow.ts` — new review pages, drafts
+  going live, and freshly imported release pages are pinged to Bing =
+  ChatGPT's search; `/<key>.txt` ownership file via a next.config
+  rewrite → `/api/indexnow/key`; silent no-op until `INDEXNOW_KEY` is
+  set on Vercel + redeploy), **verification meta tags** from
+  `NEXT_PUBLIC_BING_VERIFICATION` / `NEXT_PUBLIC_GOOGLE_VERIFICATION`,
+  **`public/llms-full.txt`** (long form + FAQ) and llms.txt refreshed
+  (Android closed testing, unreleased filter, badges, players, small
+  artists). Verified on localhost with a fake key: `/<key>.txt` serves
+  the key as text/plain, a wrong key 404s, llms-full serves. Prod
+  check: llms.txt 200, robots lists every AI bot, SoftwareApplication
+  JSON-LD on every page, FAQPage on /about, 98 sitemap URLs, bingbot
+  UA gets 200. **LUCA NEXT: Bing Webmaster Tools (import from GSC →
+  sitemap → IndexNow key → Vercel env → redeploy), then AlternativeTo
+  / Product Hunt / SaaSHub / Wikidata, then email the two listicles.**
+
 - **2026-09-03 (Windows): LOGGED-OUT HOME COPY TRIMMED** (Luca: "cut
   down the wordiness in the home page and have it give you all the
   important information straight up with no filler"). Headline and

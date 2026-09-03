@@ -8,6 +8,7 @@ import type { Review } from "@/lib/types/database";
 import { isOptionalText, parseRating } from "@/lib/validate";
 import { notifyFollowers } from "@/lib/db/notifications";
 import { checkContent } from "@/lib/content-filter";
+import { pingIndexNow } from "@/lib/indexnow";
 
 /**
  * PUT /api/reviews/[reviewId]
@@ -143,6 +144,8 @@ export async function PUT(
         href: `/reviews/${existing.slug}`,
         title: existing.title,
       });
+      // First time this page is public → tell Bing (lib/indexnow).
+      void pingIndexNow([`/reviews/${existing.slug}`]);
     }
 
     return NextResponse.json(review);

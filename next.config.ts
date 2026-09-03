@@ -60,6 +60,19 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  /**
+   * IndexNow ownership file (docs/AI-SEARCH.md, 2026-09-03). Bing
+   * verifies our pings by fetching https://peakmusicreviews.com/<key>.txt;
+   * the key is an env var, not a committed file, so the path is
+   * rewritten to the route that serves it. process.env is read at
+   * BUILD time here — a new key needs a redeploy to take effect,
+   * which Vercel does on any env change. No key = no rewrite.
+   */
+  async rewrites() {
+    const key = process.env.INDEXNOW_KEY?.trim();
+    if (!key || !/^[a-zA-Z0-9-]{8,128}$/.test(key)) return [];
+    return [{ source: `/${key}.txt`, destination: "/api/indexnow/key" }];
+  },
 };
 
 /**

@@ -127,6 +127,15 @@ don't wait to be asked:**
      as songs. ⚠️ The EXISTING duplicate "royal" row must be deleted
      by hand in the Supabase table editor (releases → the zero-review
      `royal-fakemink-xxxx` slug); the fix only prevents new ones.
+     **Round two (same night):** the id check alone wasn't enough —
+     Spotify carries "Royal" under TWO track ids (the reviewed single
+     is 38C7…, the playlist's album holds 7yB0…), so nothing overlapped
+     and the dupe came straight back. `findExistingByTitle()` now also
+     matches on the primary artist's Spotify id + title + kind
+     (single↔single, album↔album), Spotify-sourced rows only. Verified
+     against prod that both rows share artist 0qc4… — the click will
+     land on `royal-fakemink`. Luca deletes the regenerated dupe once
+     more (same SQL as before) after this deploy.
      Genius-vs-Spotify same-song duplicates are still possible (a
      Genius row has no spotify_id) — a future "merge/upgrade release"
      tool, noted below.

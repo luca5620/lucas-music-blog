@@ -507,6 +507,50 @@ async function findExistingSpotifyAlias(ids: string[]): Promise<Release | null> 
   return (data?.[0] as Release | undefined) ?? null;
 }
 
+/**
+ * Second net, same bug (Luca 2026-09-02, after the id check shipped:
+ * "it just regenerated that same dupe"): Spotify itself carries the
+ * SAME song under several track ids (an original single upload and a
+ * later re-release each get their own), so the two doors' ids don't
+ * always overlap at all. This matches on what IS stable: the primary
+ * artist's Spotify id + the title + the kind of release (a single
+ * only matches a single, an album only an album — so "Royal" the
+ * single never swallows an LP called Royal). Spotify-sourced rows
+ * only; Genius rows have no artist id to trust.
+ */
+async function findExistingByTitle(
+  artistSpotifyId: string | undefined,
+  title: string,
+  kind: "single" | "album"
+): Promise<Release | null> {
+  if (!artistSpotifyId) return null;
+  const supabase = await createClient();
+  const { data: artist } = await supabase
+    .from("artists")
+    .select("id")
+    .eq("spotify_id", artistSpotifyId)
+    .maybeSingle();
+  if (!artist) return null;
+
+  const { data } = await supabase
+    .from("releases")
+    .select("*")
+    .eq("primary_artist_id", (artist as { id: string }).id)
+    .eq("source", "spotify")
+    // ilike with the wildcards escaped: a plain equality on title
+    // would miss "Royal" vs "royal".
+    .ilike("title", title.replace(/[%_\\]/g, "\\$&"))
+    .limit(10);
+  const rows = (data ?? []) as Release[];
+  return (
+    rows.find(
+      (r) =>
+        sameTitle(r.title, title) &&
+        (kind === "single") === (r.release_type === "single")
+    ) ?? null
+  );
+}
+
 async function ensureFromSpotify(albumId: string): Promise<Release> {
   const album = (await spotifyFetch(`/albums/${albumId}`)) as SpotifyAlbumFull;
 
@@ -524,6 +568,14 @@ async function ensureFromSpotify(albumId: string): Promise<Release> {
     const existing = await findExistingSpotifyAlias(singleAliases);
     if (existing) return existing;
   }
+  // …and under a different id entirely (same song, re-released)?
+  const isSingle = album.album_type === "single" && album.tracks.items.length <= 3;
+  const byTitle = await findExistingByTitle(
+    album.artists?.[0]?.id,
+    album.name,
+    isSingle ? "single" : "album"
+  );
+  if (byTitle) return byTitle;
 
   // Full artist objects for images/genres (cap at 5 to bound latency).
   const artistRefs = (album.artists ?? []).slice(0, 5);
@@ -622,6 +674,9 @@ async function ensureFromSpotifyTrack(trackId: string): Promise<Release> {
     const existing = await findExistingSpotifyAlias([track.album.id]);
     if (existing) return existing;
   }
+  // Same song already here as a single under another track id?
+  const byTitle = await findExistingByTitle(track.artists?.[0]?.id, track.name, "single");
+  if (byTitle) return byTitle;
 
   // Full artist objects for images/genres (cap at 5 to bound latency).
   const artistRefs = (track.artists ?? []).slice(0, 5);

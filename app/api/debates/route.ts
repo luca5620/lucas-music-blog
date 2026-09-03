@@ -8,7 +8,11 @@ import { notifyFollowers } from "@/lib/db/notifications";
 
 /**
  * POST /api/debates — open a new debate.
- * Body: { title, prompt?, side_a_label, side_b_label, release_id? }
+ * Body: { title, prompt?, side_a_label, side_b_label, release_id?,
+ *         side_a_release_id?, side_b_release_id? }
+ * The two side ids (migration 039) tie EACH side to a record — "Side
+ * A = album X, Side B = album Y" (Luca 2026-09-02). release_id stays
+ * the whole-debate pin for single-topic rooms.
  *
  * The slug is generated server-side from the title plus a short random
  * suffix, so two debates named "Drake fell off" can coexist and nobody
@@ -35,15 +39,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { title, prompt, side_a_label, side_b_label, release_id, is_published } =
-    (body ?? {}) as {
-      title?: unknown;
-      prompt?: unknown;
-      side_a_label?: unknown;
-      side_b_label?: unknown;
-      release_id?: unknown;
-      is_published?: unknown;
-    };
+  const {
+    title,
+    prompt,
+    side_a_label,
+    side_b_label,
+    release_id,
+    side_a_release_id,
+    side_b_release_id,
+    is_published,
+  } = (body ?? {}) as {
+    title?: unknown;
+    prompt?: unknown;
+    side_a_label?: unknown;
+    side_b_label?: unknown;
+    release_id?: unknown;
+    side_a_release_id?: unknown;
+    side_b_release_id?: unknown;
+    is_published?: unknown;
+  };
 
   // Draft flag (migration 024): anything but an explicit false publishes.
   if (is_published !== undefined && typeof is_published !== "boolean") {
@@ -81,6 +95,14 @@ export async function POST(request: Request) {
   if (release_id != null && !isUuid(release_id)) {
     return NextResponse.json({ error: "Invalid release." }, { status: 400 });
   }
+  if (
+    (side_a_release_id != null && !isUuid(side_a_release_id)) ||
+    (side_b_release_id != null && !isUuid(side_b_release_id))
+  ) {
+    return NextResponse.json({ error: "Invalid side release." }, { status: 400 });
+  }
+  const sideAReleaseId = (side_a_release_id as string | null | undefined) ?? null;
+  const sideBReleaseId = (side_b_release_id as string | null | undefined) ?? null;
 
   // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
   const dirty = checkContent(title as string, prompt as string, sideA, sideB);
@@ -92,23 +114,41 @@ export async function POST(request: Request) {
   const suffix = Math.random().toString(36).slice(2, 6);
   const slug = `${slugify(cleanTitle).slice(0, 80) || "debate"}-${suffix}`;
 
-  const { data, error } = await supabase
+  const baseRow = {
+    slug,
+    title: cleanTitle,
+    prompt: typeof prompt === "string" && prompt.trim() ? prompt.trim() : null,
+    side_a_label: sideA,
+    side_b_label: sideB,
+    release_id: (release_id as string | undefined) ?? null,
+    created_by: user.id,
+    // Only mention the column when saving a DRAFT — published is the
+    // column default, and omitting it keeps the publish path working
+    // even before migration 024 has been run in the SQL Editor.
+    ...(is_published === false ? { is_published: false } : {}),
+  };
+  // Side releases (039) only travel when set — and if the columns
+  // don't exist yet the insert is retried without them, so a form
+  // deployed ahead of the migration still opens the room (minus the
+  // side art) instead of failing.
+  const withSides =
+    sideAReleaseId || sideBReleaseId
+      ? { ...baseRow, side_a_release_id: sideAReleaseId, side_b_release_id: sideBReleaseId }
+      : baseRow;
+
+  let { data, error } = await supabase
     .from("debates")
-    .insert({
-      slug,
-      title: cleanTitle,
-      prompt: typeof prompt === "string" && prompt.trim() ? prompt.trim() : null,
-      side_a_label: sideA,
-      side_b_label: sideB,
-      release_id: (release_id as string | undefined) ?? null,
-      created_by: user.id,
-      // Only mention the column when saving a DRAFT — published is the
-      // column default, and omitting it keeps the publish path working
-      // even before migration 024 has been run in the SQL Editor.
-      ...(is_published === false ? { is_published: false } : {}),
-    } as never)
+    .insert(withSides as never)
     .select()
     .single();
+
+  if (error && withSides !== baseRow && /side_[ab]_release_id/.test(error.message)) {
+    ({ data, error } = await supabase
+      .from("debates")
+      .insert(baseRow as never)
+      .select()
+      .single());
+  }
 
   if (error || !data) {
     console.error("debate create failed:", error?.message);

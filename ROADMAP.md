@@ -90,6 +90,102 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-02 (MacBook, late): BADGES + CONNECTED PLATFORMS + MY STUFF
+  HUB + DEBATE SIDES + LISTS FIXES + AI SEARCH — ⚠️ MIGRATION 039 TO RUN
+  (`supabase/migrations/039-badges-links-debate-sides.sql`).** Every
+  piece degrades gracefully until it runs (see per-item notes), but
+  nothing NEW appears until it does. What shipped, by Luca's ask:
+
+  1. **AI suggestions** ("rank highly if someone asks ChatGPT/Claude
+     about music reviewing apps"): `public/llms.txt` (the plain-text
+     summary AI crawlers read), every AI crawler allowed by name in
+     `app/robots.ts`, a site-wide `SoftwareApplication` JSON-LD
+     (free, web + iOS, App Store link, feature list), `/about`
+     rewritten ANSWER-FIRST with a facts grid + visible FAQ that is
+     also FAQPage JSON-LD (aboutFAQs gained "free / platforms" and
+     "Musicboard alternative"). **The real levers are Luca's hands —
+     docs/AI-SEARCH.md is the plan**: Bing Webmaster Tools (ChatGPT
+     searches through Bing — biggest single lever), AlternativeTo /
+     Product Hunt / Wikidata / Slant listings, Reddit answers, and a
+     monthly "ask the four assistants" check. No comparison pages
+     (⛔ rule respected).
+  2. **Lists**: (a) the imported playlist's Spotify URL "ran off the
+     screen on mobile" — description now wraps (`break-words` +
+     overflow-wrap:anywhere) and a trailing playlist URL is pulled
+     out into an "▶ Open on Spotify" chip; item notes wrap too.
+     (b) **/reviews/mine is now MY STUFF** — reviews, posts, LISTS
+     (private included) and DEBATES, each row with Edit + Delete
+     (new `DeleteListButton`, `DeleteDebateButton`; nav item renamed
+     "My Stuff"). (c) **Duplicate release fix** ("royal" by fakemink
+     imported twice): the catalog dedupes on `spotify_id`, but a
+     TRACK pick keys a single on the track id while an album/playlist
+     import keys on the album id — same record, two ids. Both doors
+     in `lib/catalog.ts` now ask `findExistingSpotifyAlias()` with
+     the OTHER door's ids (album's title-track ids / track's album
+     id) before inserting, only when the album IS that song's single
+     (same title or a one-track single), so LP deep cuts still import
+     as songs. ⚠️ The EXISTING duplicate "royal" row must be deleted
+     by hand in the Supabase table editor (releases → the zero-review
+     `royal-fakemink-xxxx` slug); the fix only prevents new ones.
+     Genius-vs-Spotify same-song duplicates are still possible (a
+     Genius row has no spotify_id) — a future "merge/upgrade release"
+     tool, noted below.
+  3. **Debates**: sides can be tied to releases — `side_a_release_id`
+     / `side_b_release_id` (039). NewDebateForm has a picker per side
+     (plus the old whole-debate pin); DebateCard draws a VS cover
+     pair; the room page shows both side posters linking to their
+     releases. Debates are now EDITABLE (`/debates/[slug]/edit`,
+     PATCH accepts title/prompt/releases/status; side LABELS lock
+     once anyone voted or posted) and DELETABLE (new DELETE handler,
+     `.select()`-checked). Creator sees Edit + Delete on the room
+     page. `lib/db/debates.ts` names every FK embed explicitly
+     (`releases!debates_release_id_fkey`) because the two new FKs
+     make a bare `releases(...)` embed ambiguous, and falls back to
+     the legacy select until 039 runs — verified against prod: full
+     select errors pre-039, legacy returns the rows.
+  4. **Badges** (replaces the CREDENTIALS showcase — removed from
+     VALID_SHOWCASES + settings + home copy, old rows just skip it):
+     a row under the username on every profile via
+     `components/profile/ProfileBadges.tsx` — 🏆 reviews trophy and
+     ♥ likes trophy tiered per 100 on the RATING colour ladder
+     (`lib/badges.ts trophyTier`: 900+ purple elite pulse, 1000+ the
+     glowing blue perfect), ⛨ years-of-service (whole months until
+     the first anniversary, then years; hover on web / tap in the
+     app shows "Member since March 10, 2026"), plus awarded EVENT
+     badges from the new `profile_badges` table (039) — registry in
+     `EVENT_BADGES` (beta_2026, release_night, debate_champion,
+     list_master, android_tester — planned, none awarded yet; award
+     with `select award_badge('username','key','note')` in the SQL
+     editor, founder-only; unknown keys render nothing, never crash).
+     Verified on localhost: hover card, tap card, mobile row.
+  5. **Connected platforms** (`lib/social-links.ts` is the registry):
+     five new link columns (Instagram, X, Discord, Amazon Music,
+     YouTube Music) next to the four originals, per-platform host
+     allow-lists (DB constraints in 039 mirror them; a wrong-site
+     link is rejected, not saved), and `visible_links` — the ORDERED
+     keys shown on the profile. Settings → "Connected Platforms":
+     one row per platform with link + show checkbox + ←/→ order
+     (typing a link shows it, clearing hides it). NULL visible_links
+     = legacy (every saved link, default order) so nothing changes
+     for existing profiles until they touch it. Icons moved to
+     `components/profile/PlatformIcons.tsx`.
+
+  **Also**: this MacBook had NO `.env.local` (data pages rendered
+  empty on localhost). Created one with the PUBLIC Supabase URL +
+  anon key only (the same values the deployed bundle ships) so dev
+  pages render; no Spotify/Genius/Upstash keys, so catalog search
+  and playlist import don't work locally until those are copied
+  from Vercel.
+
+  **Next / ideas parked from this session** (Luca: "want more out of
+  the debates page eventually"): featured/weekly debate on the home
+  page, debate discovery on release pages (every debate a record is a
+  side of), a "record vs record" quick-open from any release page,
+  side-tinted vote counts on the VS covers, debate history on
+  profiles (won/lost side), and the merge/upgrade-release tool for
+  Genius→Spotify duplicates.
+
+
 - **📋 LISTS PASS — parked by Luca 2026-09-02 ("many issues with the
   lists area we haven't discussed yet, work on all of that later").
   Open it as ONE conversation, not symptom patches. Known so far:**

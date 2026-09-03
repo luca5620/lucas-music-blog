@@ -331,7 +331,7 @@ export default function Navigation() {
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
-                          My Reviews
+                          My Stuff
                         </Link>
                         <Link
                           href="/settings/profile"

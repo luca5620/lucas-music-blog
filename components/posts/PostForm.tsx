@@ -83,7 +83,7 @@ export default function PostForm({
 
   // isPublished false = the Save as Draft path (same split as
   // ReviewForm): the post saves normally but only the author can see
-  // it, and it waits on the My Reviews & Posts page to be published.
+  // it, and it waits on the My Stuff page to be published.
   async function handleSubmit(isPublished: boolean) {
     if (title.trim().length < 3) {
       setError("Give it a title — at least 3 characters.");

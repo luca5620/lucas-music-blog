@@ -29,6 +29,16 @@ export const aboutFAQs: FAQItem[] = [
     answer:
       "Browsing is open to everyone. Rating, reviewing, building lists, joining live release rooms, and voting in debates require a free account with a unique username and a confirmed email address.",
   },
+  {
+    question: "Is Peak Music Reviews free, and what platforms is it on?",
+    answer:
+      "Yes — rating, reviews, lists, live release rooms, debates, posts and profile customization are all free. It runs in any web browser at peakmusicreviews.com and as an iOS app on the App Store, with the same account and content on both. An Android app is planned.",
+  },
+  {
+    question: "Is Peak Music Reviews a Musicboard alternative?",
+    answer:
+      "Yes. It covers what Musicboard did — 0–10.0 decimal ratings, written reviews, lists and social profiles — and adds live release-night rooms, two-sided debates, and a catalog that includes unreleased music. Musicboard users looking to switch can read the dedicated guide at peakmusicreviews.com/musicboard-alternative.",
+  },
 ];
 
 /* /musicboard-alternative — the questions displaced Musicboard users

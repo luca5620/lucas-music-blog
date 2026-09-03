@@ -109,11 +109,38 @@ export default async function ListDetailPage({ params }: PageParams) {
           )}
         </div>
 
-        {list.description && (
-          <p className="text-text-secondary leading-relaxed text-sm md:text-base whitespace-pre-line">
-            {list.description}
-          </p>
-        )}
+        {/* Description. break-words + overflow-wrap:anywhere (Luca
+            2026-09-02: the imported playlist's Spotify URL "ran off
+            the screen on mobile" — a 70-char unbroken token can't
+            wrap on its own). Playlist imports end their description
+            with the source URL; that tail is pulled out and drawn as
+            a compact "Open on Spotify" chip instead of raw text. */}
+        {list.description && (() => {
+          const m = /\s*[—-]\s*(https:\/\/open\.spotify\.com\/playlist\/[A-Za-z0-9]+)\s*$/.exec(
+            list.description
+          );
+          const text = m ? list.description.slice(0, m.index) : list.description;
+          const sourceUrl = m?.[1] ?? null;
+          return (
+            <div className="space-y-2">
+              {text.trim() && (
+                <p className="text-text-secondary leading-relaxed text-sm md:text-base whitespace-pre-line break-words [overflow-wrap:anywhere]">
+                  {text}
+                </p>
+              )}
+              {sourceUrl && (
+                <a
+                  href={sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 pixel-text text-[11px] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
+                >
+                  ▶ Open on Spotify
+                </a>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Like button + counts */}
         <div className="flex items-center gap-4">
@@ -182,7 +209,7 @@ export default async function ListDetailPage({ params }: PageParams) {
 
               {/* Per-item note */}
               {item.note && (
-                <p className="font-[family-name:var(--font-vt323)] text-sm text-[#9a9a9e] leading-snug border-l-2 border-[rgba(30,144,255,0.4)] pl-2">
+                <p className="font-[family-name:var(--font-vt323)] text-sm text-[#9a9a9e] leading-snug border-l-2 border-[rgba(30,144,255,0.4)] pl-2 break-words [overflow-wrap:anywhere]">
                   {item.note}
                 </p>
               )}

@@ -55,6 +55,19 @@ export interface Profile {
       features that read them (stats.fm showcases). May be absent
       until 027 runs — treat undefined as false. */
   hide_streaming_links?: boolean;
+  /** Connected platforms added by migration 039 (Luca 2026-09-02:
+      Instagram, X, Discord, Amazon Music, YouTube Music). Absent
+      until it runs — the settings page probes before sending them.
+      The registry that knows hosts/labels is lib/social-links.ts. */
+  instagram_url?: string | null;
+  x_url?: string | null;
+  discord_url?: string | null;
+  amazon_music_url?: string | null;
+  youtube_music_url?: string | null;
+  /** ORDERED platform keys to show on the profile, left to right
+      (migration 039). null = legacy: every saved link, default
+      order. [] = show none. */
+  visible_links?: string[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -313,6 +326,11 @@ export interface Debate {
   side_a_label: string;
   side_b_label: string;
   release_id: string | null;
+  /** Per-side releases (migration 039): "Side A = album X, Side B =
+      album Y". Optional because rows predate the columns until 039
+      runs; the create route only sends them once it's confirmed. */
+  side_a_release_id?: string | null;
+  side_b_release_id?: string | null;
   created_by: string;
   status: "open" | "closed";
   message_count: number;

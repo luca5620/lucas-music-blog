@@ -34,10 +34,62 @@ export interface VoteCounts {
   b: number;
 }
 
+/** The slice of a release a debate card / room needs. */
+export type DebateRelease = Pick<Release, "id" | "slug" | "title" | "cover_image">;
+
 export interface DebateWithMeta extends Debate {
   creator: DebateProfile | null;
-  release: Pick<Release, "id" | "slug" | "title" | "cover_image"> | null;
+  /** The whole-debate "pinned" release (original 006 column). */
+  release: DebateRelease | null;
+  /** Per-side releases (migration 039) — "Side A = X, Side B = Y". */
+  side_a_release: DebateRelease | null;
+  side_b_release: DebateRelease | null;
   votes: VoteCounts;
+}
+
+/* --- The select string, and why it comes in two flavours ---
+   Migration 039 adds two MORE foreign keys from debates to releases
+   (side_a_release_id / side_b_release_id). Once they exist, a bare
+   `releases(...)` embed is AMBIGUOUS and PostgREST refuses the whole
+   query — so every embed names its constraint explicitly. And until
+   039 runs, the side embeds don't exist and THEY fail — so reads try
+   the full select first and fall back to the legacy one, keeping
+   /debates alive on either side of the migration. */
+const DEBATE_SELECT_LEGACY = `*,
+  profiles!debates_created_by_fkey(id, username, display_name, avatar_url, role),
+  release:releases!debates_release_id_fkey(id, slug, title, cover_image)`;
+
+const DEBATE_SELECT = `${DEBATE_SELECT_LEGACY},
+  side_a_release:releases!debates_side_a_release_id_fkey(id, slug, title, cover_image),
+  side_b_release:releases!debates_side_b_release_id_fkey(id, slug, title, cover_image)`;
+
+type DebateRow = Debate & {
+  profiles: DebateProfile | DebateProfile[] | null;
+  release: DebateRelease | DebateRelease[] | null;
+  side_a_release?: DebateRelease | DebateRelease[] | null;
+  side_b_release?: DebateRelease | DebateRelease[] | null;
+};
+
+/** Run a debates query with the full select, legacy select on failure. */
+async function selectDebates(
+  apply: (select: string) => PromiseLike<{ data: unknown; error: unknown }>
+): Promise<DebateRow[]> {
+  const full = await apply(DEBATE_SELECT);
+  if (!full.error && full.data) return full.data as DebateRow[];
+  const legacy = await apply(DEBATE_SELECT_LEGACY);
+  if (!legacy.error && legacy.data) return legacy.data as DebateRow[];
+  return [];
+}
+
+function shapeDebate(row: DebateRow, votes: VoteCounts): DebateWithMeta {
+  return {
+    ...row,
+    creator: first(row.profiles),
+    release: first(row.release),
+    side_a_release: first(row.side_a_release),
+    side_b_release: first(row.side_b_release),
+    votes,
+  };
 }
 
 export interface DebateMessageWithProfile extends DebateMessage {
@@ -83,70 +135,48 @@ export async function getVoteCountsFor(
 /** Recent debates for the index page, newest first, with creator + votes. */
 export async function listDebates(limit = 24): Promise<DebateWithMeta[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("debates")
-    .select(
-      `*,
-       profiles!debates_created_by_fkey(id, username, display_name, avatar_url, role),
-       releases(id, slug, title, cover_image)`
-    )
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
-  if (error || !data) return [];
-
-  type Row = Debate & {
-    profiles: DebateProfile | DebateProfile[] | null;
-    releases:
-      | Pick<Release, "id" | "slug" | "title" | "cover_image">
-      | Pick<Release, "id" | "slug" | "title" | "cover_image">[]
-      | null;
-  };
-
-  const rows = data as unknown as Row[];
+  const rows = await selectDebates((select) =>
+    supabase
+      .from("debates")
+      .select(select)
+      .order("created_at", { ascending: false })
+      .limit(limit)
+  );
   const counts = await getVoteCountsFor(rows.map((r) => r.id));
-
-  return rows.map((row) => ({
-    ...row,
-    creator: first(row.profiles),
-    release: first(row.releases),
-    votes: counts.get(row.id) ?? { a: 0, b: 0 },
-  }));
+  return rows.map((row) => shapeDebate(row, counts.get(row.id) ?? { a: 0, b: 0 }));
 }
 
-/** One debate by slug, with creator profile + attached release + votes. */
+/**
+ * Every debate ONE member opened — drafts included (RLS shows drafts
+ * only to their creator, so calling this for someone else just yields
+ * their published ones). Powers the manage hub at /reviews/mine.
+ */
+export async function listDebatesByUser(userId: string): Promise<DebateWithMeta[]> {
+  const supabase = await createClient();
+  const rows = await selectDebates((select) =>
+    supabase
+      .from("debates")
+      .select(select)
+      .eq("created_by", userId)
+      .order("created_at", { ascending: false })
+      .limit(200)
+  );
+  const counts = await getVoteCountsFor(rows.map((r) => r.id));
+  return rows.map((row) => shapeDebate(row, counts.get(row.id) ?? { a: 0, b: 0 }));
+}
+
+/** One debate by slug, with creator profile + attached releases + votes. */
 export async function getDebateBySlug(
   slug: string
 ): Promise<DebateWithMeta | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("debates")
-    .select(
-      `*,
-       profiles!debates_created_by_fkey(id, username, display_name, avatar_url, role),
-       releases(id, slug, title, cover_image)`
-    )
-    .eq("slug", slug)
-    .single();
-
-  if (error || !data) return null;
-
-  type Row = Debate & {
-    profiles: DebateProfile | DebateProfile[] | null;
-    releases:
-      | Pick<Release, "id" | "slug" | "title" | "cover_image">
-      | Pick<Release, "id" | "slug" | "title" | "cover_image">[]
-      | null;
-  };
-  const row = data as unknown as Row;
+  const rows = await selectDebates((select) =>
+    supabase.from("debates").select(select).eq("slug", slug).limit(1)
+  );
+  const row = rows[0];
+  if (!row) return null;
   const counts = await getVoteCountsFor([row.id]);
-
-  return {
-    ...row,
-    creator: first(row.profiles),
-    release: first(row.releases),
-    votes: counts.get(row.id) ?? { a: 0, b: 0 },
-  };
+  return shapeDebate(row, counts.get(row.id) ?? { a: 0, b: 0 });
 }
 
 /** Which side (if any) this user has voted for on a debate. */

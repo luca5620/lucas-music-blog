@@ -99,6 +99,25 @@ export async function getProfileStats(
   };
 }
 
+/**
+ * Awarded (event) badges for a profile — migration 039's
+ * profile_badges rows. Returns [] before the migration runs (the
+ * table 404s, PostgREST answers with an error, we swallow it) so the
+ * profile page never breaks on a lagging database.
+ */
+export async function getProfileBadges(
+  userId: string
+): Promise<{ badge_key: string; note: string | null; awarded_at: string }[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profile_badges")
+    .select("badge_key, note, awarded_at")
+    .eq("user_id", userId)
+    .order("awarded_at", { ascending: true });
+  if (error || !data) return [];
+  return data as { badge_key: string; note: string | null; awarded_at: string }[];
+}
+
 /** Slice of a profile used in connection lists. */
 export interface ConnectionProfile {
   username: string;

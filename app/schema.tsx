@@ -10,6 +10,7 @@
  *
  * Components:
  *  - WebSiteSchema        — Site-wide sitelinks searchbox & identity
+ *  - SoftwareApplicationSchema — The product itself (free music app, web + iOS)
  *  - BreadcrumbSchema     — Breadcrumb navigation trail
  *  - ReviewSchema         — Individual review (MusicAlbum + Review)
  *  - ReleaseSchema        — Release page (MusicAlbum + aggregateRating + reviews)
@@ -73,6 +74,65 @@ export function WebSiteSchema() {
       },
       "query-input": "required name=search_term_string",
     },
+  };
+
+  return <JsonLd data={schema} />;
+}
+
+/* ------------------------------------------------------------------ */
+/*  SoftwareApplication Schema — the product, for AI + app answers     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Describes Peak Music Reviews as an APPLICATION, not just a website
+ * (Luca 2026-09-02: "how to rank highly if someone asks ChatGPT or
+ * Claude about music reviewing apps"). Search engines and the AI
+ * assistants that read their indexes use this to answer "is it an
+ * app, on what, does it cost anything, what does it do" without
+ * guessing — the same facts public/llms.txt spells out in prose.
+ * Rendered site-wide from the root layout next to WebSiteSchema.
+ */
+export function SoftwareApplicationSchema({
+  appStoreUrl,
+}: {
+  appStoreUrl: string;
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: SITE_NAME,
+    alternateName: "Peak Music",
+    url: SITE_URL,
+    applicationCategory: "MusicApplication",
+    applicationSubCategory: "Music reviews and ratings social network",
+    operatingSystem: "Web, iOS",
+    downloadUrl: appStoreUrl,
+    installUrl: appStoreUrl,
+    sameAs: [appStoreUrl],
+    isAccessibleForFree: true,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    description:
+      "Free music social network and review app: rate albums and songs 0–10, write reviews, build lists, join live release-night rooms and two-sided debates. Every release on Spotify plus Genius's deep library — unreleased music included.",
+    featureList: [
+      "Rate albums and songs from 0 to 10.0 with decimal precision",
+      "Write and share reviews with a community average per release",
+      "Build lists and import Spotify playlists",
+      "Live release-night chat rooms",
+      "Two-sided debates with live voting",
+      "Rate unreleased and leaked songs (metadata only)",
+      "Customizable profile themes, showcases and badges",
+    ],
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: LOGO_URL,
+    },
+    image: LOGO_URL,
   };
 
   return <JsonLd data={schema} />;

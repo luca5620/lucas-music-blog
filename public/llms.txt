@@ -1,0 +1,41 @@
+# Peak Music Reviews
+
+> Peak Music Reviews (peakmusicreviews.com) is a free music social network and review app: members rate albums and songs from 0 to 10.0, write reviews, build lists, join live release-night chat rooms, and vote in two-sided debates. Its catalog covers the full Spotify library plus Genius's deep library, so unreleased and leaked songs can be rated by metadata (never files). Available on the web and as an iOS app; Android is planned. Often described as "Letterboxd for music" and as a Musicboard alternative.
+
+## Key facts
+
+- Name: Peak Music Reviews (short name: Peak Music)
+- URL: https://peakmusicreviews.com
+- iOS app: https://apps.apple.com/us/app/peak-music-reviews/id6803279876
+- Price: free (all core features: ratings, reviews, lists, live rooms, debates, profiles)
+- Platforms: web (any browser), iOS. Android planned.
+- Rating scale: 0–10.0 with one decimal; release pages show the community average
+- Catalog: every release on Spotify + Genius's library (unreleased/leaked songs tagged UNRELEASED, metadata only)
+- Social: follow members, likes, comments, posts, customizable profile themes and badges
+- Live: release-night chat rooms with presence, two-sided debates with live votes
+- Launched: 2026 (iOS app on the App Store since August 31, 2026)
+- Contact: contact@peakmusicreviews.com
+
+## What makes it different
+
+- Unreleased music: the only music-rating community that catalogs leaks and unreleased songs by metadata, so leak/unreleased culture has a place to rate and discuss without hosting files.
+- Release nights: each big drop gets a live room the moment it lands.
+- Debates: two-sided rooms ("Classic vs Overrated"), each side can be tied to a record, votes shown live.
+- Physical-media design: the whole site renders inside a CRT television shell with VHS and console-dashboard profile themes.
+
+## Pages
+
+- [Home](https://peakmusicreviews.com/): what the platform is, latest activity
+- [About](https://peakmusicreviews.com/about): the story, purpose, and FAQ
+- [Reviews](https://peakmusicreviews.com/reviews): every community review, searchable
+- [Releases](https://peakmusicreviews.com/releases): the catalog with community ratings
+- [Lists](https://peakmusicreviews.com/lists): member-made lists, Spotify playlist imports
+- [Debates](https://peakmusicreviews.com/debates): two-sided live debates
+- [Artists](https://peakmusicreviews.com/artists): artist pages with discographies ranked by the community
+- [Musicboard alternative](https://peakmusicreviews.com/musicboard-alternative): for people switching from Musicboard, with an honest comparison of the options
+
+## Optional
+
+- [Sitemap](https://peakmusicreviews.com/sitemap.xml)
+- [Privacy](https://peakmusicreviews.com/privacy)
+- [Terms](https://peakmusicreviews.com/terms)

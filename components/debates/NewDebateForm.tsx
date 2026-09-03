@@ -1,12 +1,19 @@
 "use client";
 
 /**
- * NewDebateForm — open a new two-sided debate.
+ * NewDebateForm — open a new two-sided debate, or (edit mode) rework
+ * one you already opened.
  *
  * Fields: topic (title), optional framing prompt, the two side
- * labels, and an optional release attachment picked through
- * CatalogSearch (so even debates are anchored to real catalog
- * entries — never hand-typed metadata).
+ * labels, and releases picked through CatalogSearch — one per SIDE
+ * ("Side A = album X, Side B = album Y", migration 039, Luca
+ * 2026-09-02) plus the older whole-debate pin. Never hand-typed
+ * metadata: every attachment is a real catalog row.
+ *
+ * Edit mode (`initial` set): PATCHes /api/debates/[id]. Side LABELS
+ * lock once anyone has voted or posted (initial.sidesLocked) — those
+ * words are what people argued under. Everything else stays editable,
+ * and the floor can be signed off / reopened.
  */
 
 import { useState } from "react";
@@ -15,13 +22,57 @@ import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
 
-export default function NewDebateForm() {
+/** What an attached release looks like inside the form. */
+interface Attached {
+  id: string;
+  title: string;
+  cover_image: string | null;
+  artist_name?: string;
+}
+
+export interface DebateFormInitial {
+  id: string;
+  slug: string;
+  title: string;
+  prompt: string | null;
+  side_a_label: string;
+  side_b_label: string;
+  status: "open" | "closed";
+  release: Attached | null;
+  side_a_release: Attached | null;
+  side_b_release: Attached | null;
+  /** true once votes or takes exist — labels can't change any more. */
+  sidesLocked: boolean;
+}
+
+function fromPick(pick: CatalogPick): Attached {
+  return {
+    id: pick.release.id,
+    title: pick.release.title,
+    cover_image: pick.release.cover_image,
+    artist_name: pick.artist_name,
+  };
+}
+
+export default function NewDebateForm({
+  initial,
+}: {
+  initial?: DebateFormInitial;
+}) {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [sideA, setSideA] = useState("");
-  const [sideB, setSideB] = useState("");
-  const [attached, setAttached] = useState<CatalogPick | null>(null);
+  const editing = !!initial;
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [prompt, setPrompt] = useState(initial?.prompt ?? "");
+  const [sideA, setSideA] = useState(initial?.side_a_label ?? "");
+  const [sideB, setSideB] = useState(initial?.side_b_label ?? "");
+  const [attached, setAttached] = useState<Attached | null>(initial?.release ?? null);
+  const [sideARelease, setSideARelease] = useState<Attached | null>(
+    initial?.side_a_release ?? null
+  );
+  const [sideBRelease, setSideBRelease] = useState<Attached | null>(
+    initial?.side_b_release ?? null
+  );
+  const [status, setStatus] = useState<"open" | "closed">(initial?.status ?? "open");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +99,31 @@ export default function NewDebateForm() {
 
     setSubmitting(true);
     try {
+      if (editing && initial) {
+        const res = await fetch(`/api/debates/${initial.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: title.trim(),
+            prompt: prompt.trim() || null,
+            // Locked labels aren't sent at all — the server would
+            // refuse them, and nothing changed anyway.
+            ...(initial.sidesLocked
+              ? {}
+              : { side_a_label: sideA.trim(), side_b_label: sideB.trim() }),
+            release_id: attached?.id ?? null,
+            side_a_release_id: sideARelease?.id ?? null,
+            side_b_release_id: sideBRelease?.id ?? null,
+            status,
+          }),
+        });
+        const data = (await res.json()) as { error?: string };
+        if (!res.ok) throw new Error(data.error ?? "Couldn't save the debate.");
+        router.push(`/debates/${initial.slug}`);
+        router.refresh();
+        return;
+      }
+
       const res = await fetch("/api/debates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,7 +132,9 @@ export default function NewDebateForm() {
           prompt: prompt.trim() || null,
           side_a_label: sideA.trim(),
           side_b_label: sideB.trim(),
-          release_id: attached?.release.id ?? null,
+          release_id: attached?.id ?? null,
+          side_a_release_id: sideARelease?.id ?? null,
+          side_b_release_id: sideBRelease?.id ?? null,
           is_published: publish,
         }),
       });
@@ -94,7 +172,7 @@ export default function NewDebateForm() {
           maxLength={140}
           placeholder='e.g. "Is MBDTF overrated?"'
           className="form-input"
-          autoFocus
+          autoFocus={!editing}
         />
         <p className="mt-1 text-[10px] text-text-muted tabular-nums text-right">
           {title.length}/140
@@ -116,78 +194,70 @@ export default function NewDebateForm() {
         />
       </div>
 
-      {/* The two sides */}
+      {/* The two sides — label + optional release each */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs uppercase tracking-widest text-accent-primary mb-1.5 font-[family-name:var(--font-heading)]">
-            Side A
-          </label>
-          <input
-            type="text"
-            value={sideA}
-            onChange={(e) => setSideA(e.target.value)}
-            maxLength={40}
-            placeholder='e.g. "Classic"'
-            className="form-input"
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-widest text-accent-rose mb-1.5 font-[family-name:var(--font-heading)]">
-            Side B
-          </label>
-          <input
-            type="text"
-            value={sideB}
-            onChange={(e) => setSideB(e.target.value)}
-            maxLength={40}
-            placeholder='e.g. "Overrated"'
-            className="form-input"
-          />
-        </div>
+        <SidePanel
+          tone="a"
+          label={sideA}
+          onLabel={setSideA}
+          placeholder='e.g. "Classic"'
+          locked={!!initial?.sidesLocked}
+          release={sideARelease}
+          onRelease={setSideARelease}
+        />
+        <SidePanel
+          tone="b"
+          label={sideB}
+          onLabel={setSideB}
+          placeholder='e.g. "Overrated"'
+          locked={!!initial?.sidesLocked}
+          release={sideBRelease}
+          onRelease={setSideBRelease}
+        />
+      </div>
+      {initial?.sidesLocked && (
+        <p className="text-xs text-text-muted -mt-2">
+          People have already voted or argued under these sides, so the
+          labels are locked — the releases, topic and framing can still
+          change.
+        </p>
+      )}
+
+      {/* Optional whole-debate pin (the original attachment) */}
+      <div>
+        <AttachedChip
+          value={attached}
+          onClear={() => setAttached(null)}
+          picker={
+            <CatalogSearch
+              label="Pin a release to the whole debate (optional)"
+              placeholder="Attach the album/song on trial…"
+              onPick={(pick) => setAttached(fromPick(pick))}
+            />
+          }
+        />
       </div>
 
-      {/* Optional release attachment */}
-      <div>
-        {attached ? (
-          <div className="panel-xbox p-3 flex items-center gap-3">
-            <span className="w-12 h-12 rounded overflow-hidden border border-border-subtle shrink-0">
-              {attached.release.cover_image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={attached.release.cover_image}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="w-full h-full flex items-center justify-center">
-                  💿
-                </span>
-              )}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-bold truncate">
-                {attached.release.title}
-              </span>
-              <span className="block text-xs text-text-secondary truncate">
-                {attached.artist_name}
-              </span>
-            </span>
-            <button
-              type="button"
-              onClick={() => setAttached(null)}
-              className="text-xs text-accent-rose hover:underline shrink-0"
-            >
-              detach
-            </button>
+      {/* Edit-only: sign off / reopen the floor */}
+      {editing && (
+        <div className="flex items-center gap-3">
+          <span className="text-xs uppercase tracking-widest text-text-muted font-[family-name:var(--font-heading)]">
+            The floor is
+          </span>
+          <div className="flex gap-1">
+            {(["open", "closed"] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setStatus(s)}
+                className={`tab-y2k ${status === s ? "tab-active" : ""}`}
+              >
+                {s === "open" ? "ON AIR" : "SIGNED OFF"}
+              </button>
+            ))}
           </div>
-        ) : (
-          <CatalogSearch
-            label="Pin a release (optional)"
-            placeholder="Attach the album/song on trial…"
-            onPick={setAttached}
-          />
-        )}
-      </div>
+        </div>
+      )}
 
       {error && <p className="text-sm text-accent-rose">{error}</p>}
 
@@ -197,17 +267,25 @@ export default function NewDebateForm() {
           disabled={submitting}
           className="btn-y2k btn-y2k-primary disabled:opacity-50"
         >
-          {submitting ? "OPENING…" : "OPEN THE FLOOR"}
+          {editing
+            ? submitting
+              ? "SAVING…"
+              : "SAVE CHANGES"
+            : submitting
+              ? "OPENING…"
+              : "OPEN THE FLOOR"}
         </button>
 
-        <button
-          type="button"
-          onClick={() => submit(false)}
-          disabled={submitting}
-          className="btn-y2k btn-y2k-outline disabled:opacity-50"
-        >
-          {submitting ? "Saving…" : "Save as Draft"}
-        </button>
+        {!editing && (
+          <button
+            type="button"
+            onClick={() => submit(false)}
+            disabled={submitting}
+            className="btn-y2k btn-y2k-outline disabled:opacity-50"
+          >
+            {submitting ? "Saving…" : "Save as Draft"}
+          </button>
+        )}
 
         <button
           type="button"
@@ -219,5 +297,101 @@ export default function NewDebateForm() {
         </button>
       </div>
     </form>
+  );
+}
+
+/* ---- One side: its label + its (optional) release ---- */
+
+function SidePanel({
+  tone,
+  label,
+  onLabel,
+  placeholder,
+  locked,
+  release,
+  onRelease,
+}: {
+  tone: "a" | "b";
+  label: string;
+  onLabel: (v: string) => void;
+  placeholder: string;
+  locked: boolean;
+  release: Attached | null;
+  onRelease: (r: Attached | null) => void;
+}) {
+  const color = tone === "a" ? "text-accent-primary" : "text-accent-rose";
+  return (
+    <div className="space-y-2">
+      <label
+        className={`block text-xs uppercase tracking-widest ${color} mb-1.5 font-[family-name:var(--font-heading)]`}
+      >
+        Side {tone.toUpperCase()}
+      </label>
+      <input
+        type="text"
+        value={label}
+        onChange={(e) => onLabel(e.target.value)}
+        maxLength={40}
+        placeholder={placeholder}
+        className="form-input disabled:opacity-60"
+        disabled={locked}
+        title={locked ? "Locked — people already voted under this label" : undefined}
+      />
+      <AttachedChip
+        value={release}
+        onClear={() => onRelease(null)}
+        compact
+        picker={
+          <CatalogSearch
+            placeholder={`Side ${tone.toUpperCase()}'s record (optional)…`}
+            onPick={(pick) => onRelease(fromPick(pick))}
+          />
+        }
+      />
+    </div>
+  );
+}
+
+/* ---- Attached-release chip, or the picker when nothing's attached ---- */
+
+function AttachedChip({
+  value,
+  onClear,
+  picker,
+  compact = false,
+}: {
+  value: Attached | null;
+  onClear: () => void;
+  picker: React.ReactNode;
+  compact?: boolean;
+}) {
+  if (!value) return <>{picker}</>;
+  const size = compact ? "w-10 h-10" : "w-12 h-12";
+  return (
+    <div className="panel-xbox p-3 flex items-center gap-3">
+      <span className={`${size} rounded overflow-hidden border border-border-subtle shrink-0`}>
+        {value.cover_image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value.cover_image} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <span className="w-full h-full flex items-center justify-center">💿</span>
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-bold truncate">{value.title}</span>
+        {value.artist_name && (
+          <span className="block text-xs text-text-secondary truncate">
+            {value.artist_name}
+          </span>
+        )}
+      </span>
+      <button
+        type="button"
+        onClick={onClear}
+        className="text-xs text-accent-rose hover:underline shrink-0"
+      >
+        detach
+      </button>
+    </div>
   );
 }

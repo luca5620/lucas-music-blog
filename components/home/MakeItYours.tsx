@@ -30,7 +30,6 @@ const SHOWCASES = [
   "Taste Readout",
   "Now Showing",
   "Feature Presentation",
-  "Credentials",
   "Mixtapes",
   "Waiting On",
   "On Rotation",

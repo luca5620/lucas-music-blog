@@ -22,7 +22,8 @@ import CRTShell from "@/components/ui/CRTShell";
 import NavigationPending from "@/components/ui/NavigationPending";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
-import { WebSiteSchema } from "@/app/schema";
+import { SoftwareApplicationSchema, WebSiteSchema } from "@/app/schema";
+import { APP_STORE_URL } from "@/lib/app-store";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
 
@@ -151,6 +152,7 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <WebSiteSchema />
+        <SoftwareApplicationSchema appStoreUrl={APP_STORE_URL} />
       </head>
       <body
         className={`

@@ -21,6 +21,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { parsePlaylistUrl, playlistUrl } from "@/lib/playlist";
+import {
+  PLATFORMS,
+  getPlatform,
+  isPlatformKey,
+  isValidPlatformUrl,
+  type PlatformKey,
+} from "@/lib/social-links";
+import PlatformIcon from "@/components/profile/PlatformIcons";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import CatalogSearch, {
@@ -56,12 +64,13 @@ const THEMES: { id: ProfileTheme; label: string; hex: string; desc: string }[] =
 /* Every showcase block a profile can display. Four Favorites was
    removed from customization entirely (Luca 2026-08-26) — the load
    filter below strips it from older rows on next save, and the
-   profile page no longer renders it. */
+   profile page no longer renders it. "Credentials" (badges) went the
+   same way 2026-09-02: badges now sit under the username on every
+   profile, nothing to arrange. */
 const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string; hint: string }[] = [
   { id: "stats", label: "Taste Readout", hint: "Review count, average, rating histogram" },
   { id: "recent_reviews", label: "Now Showing", hint: "Your latest 8 reviews as a poster wall" },
   { id: "featured_review", label: "Feature Presentation", hint: "One pinned review, front and center" },
-  { id: "badges", label: "Credentials", hint: "Verified badge, member since, transmission count" },
   { id: "lists", label: "Mixtapes", hint: "Your newest public lists" },
   { id: "anticipated", label: "Waiting On", hint: "Releases you follow, unreleased included" },
   { id: "listening", label: "On Rotation", hint: "What you're playing right now / last played (needs your stats.fm link below)" },
@@ -126,10 +135,20 @@ export default function ProfileSettingsPage() {
   // Catalog pick in progress for the profile song (release chosen,
   // track not yet chosen). Not persisted — only title/url are saved.
   const [songRelease, setSongRelease] = useState<CatalogPick | null>(null);
-  const [spotifyUrl, setSpotifyUrl] = useState("");
-  const [soundcloudUrl, setSoundcloudUrl] = useState("");
-  const [statsfmUrl, setStatsfmUrl] = useState("");
-  const [appleMusicUrl, setAppleMusicUrl] = useState("");
+  // Connected platforms (lib/social-links.ts is the registry): one
+  // pasted link per platform key, plus the ORDERED keys shown on the
+  // profile (migration 039's visible_links). supportsLinks039 gates
+  // the five new platforms + the show/order controls on the columns
+  // existing — same reason as every other supportsX flag here.
+  const [links, setLinks] = useState<Record<PlatformKey, string>>(
+    () =>
+      Object.fromEntries(PLATFORMS.map((pl) => [pl.key, ""])) as Record<
+        PlatformKey,
+        string
+      >
+  );
+  const [visibleLinks, setVisibleLinks] = useState<PlatformKey[]>([]);
+  const [supportsLinks039, setSupportsLinks039] = useState(false);
   // "Don't show these on my profile" — links stay saved (and keep
   // feeding the stats.fm showcases), visitors just don't see the icon
   // row. supportsHideLinks gates the checkbox on migration 027 having
@@ -212,10 +231,21 @@ export default function ProfileSettingsPage() {
         setFeaturedReviewId(p.featured_review_id ?? "");
         setProfileSongUrl(p.profile_song_url ?? "");
         setProfileSongTitle(p.profile_song_title ?? "");
-        setSpotifyUrl(p.spotify_url ?? "");
-        setSoundcloudUrl(p.soundcloud_url ?? "");
-        setStatsfmUrl(p.statsfm_url ?? "");
-        setAppleMusicUrl(p.apple_music_url ?? "");
+        // Every platform column into one map; unknown (pre-039)
+        // columns simply read as "".
+        const loadedLinks = {} as Record<PlatformKey, string>;
+        for (const pl of PLATFORMS) {
+          const v = (p as unknown as Record<string, unknown>)[pl.column];
+          loadedLinks[pl.key] = typeof v === "string" ? v : "";
+        }
+        setLinks(loadedLinks);
+        setSupportsLinks039("visible_links" in p);
+        setVisibleLinks(
+          Array.isArray(p.visible_links)
+            ? p.visible_links.filter(isPlatformKey)
+            : // Legacy rows (null): everything saved shows, default order
+              PLATFORMS.filter((pl) => loadedLinks[pl.key]).map((pl) => pl.key)
+        );
         setHideStreamingLinks(p.hide_streaming_links ?? false);
         setSupportsHideLinks("hide_streaming_links" in p);
         setFeaturedPlaylistLink(
@@ -235,6 +265,40 @@ export default function ProfileSettingsPage() {
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
+
+  /* --- Connected-platform helpers --- */
+
+  /** Typing a link shows it by default; clearing it hides it. */
+  function setLink(key: PlatformKey, value: string) {
+    setLinks((prev) => ({ ...prev, [key]: value }));
+    setVisibleLinks((prev) => {
+      const has = prev.includes(key);
+      if (value.trim() && !has) return [...prev, key];
+      if (!value.trim() && has) return prev.filter((k) => k !== key);
+      return prev;
+    });
+    setSaved(false);
+  }
+
+  function toggleLink(key: PlatformKey) {
+    setVisibleLinks((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+    setSaved(false);
+  }
+
+  /** Move a shown platform left (-1) or right (+1) in the row. */
+  function moveLink(key: PlatformKey, dir: -1 | 1) {
+    setVisibleLinks((prev) => {
+      const idx = prev.indexOf(key);
+      const next = idx + dir;
+      if (idx < 0 || next < 0 || next >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[idx], copy[next]] = [copy[next], copy[idx]];
+      return copy;
+    });
+    setSaved(false);
+  }
 
   /* --- Showcase helpers: toggle on/off + reorder with arrows --- */
 
@@ -312,39 +376,14 @@ export default function ProfileSettingsPage() {
     setError(null);
     setSaved(false);
 
-    // Streaming links must come from their actual services — these
-    // render as clickable links on your PUBLIC profile, so nothing
-    // else is allowed (the database enforces the same rule).
-    const linkRules: { value: string; prefixes: string[]; label: string }[] = [
-      {
-        value: spotifyUrl,
-        prefixes: ["https://open.spotify.com/"],
-        label: "Spotify link must start with https://open.spotify.com/",
-      },
-      {
-        value: soundcloudUrl,
-        prefixes: [
-          "https://soundcloud.com/",
-          "https://www.soundcloud.com/",
-          "https://on.soundcloud.com/",
-        ],
-        label: "SoundCloud link must start with https://soundcloud.com/",
-      },
-      {
-        value: statsfmUrl,
-        prefixes: ["https://stats.fm/", "https://www.stats.fm/", "https://spotistats.app/"],
-        label: "stats.fm link must start with https://stats.fm/",
-      },
-      {
-        value: appleMusicUrl,
-        prefixes: ["https://music.apple.com/"],
-        label: "Apple Music link must start with https://music.apple.com/",
-      },
-    ];
-    for (const rule of linkRules) {
-      const v = rule.value.trim();
-      if (v && !rule.prefixes.some((p) => v.startsWith(p))) {
-        setError(rule.label);
+    // Platform links must come from their actual services — they
+    // render as clickable links on your PUBLIC profile, so a link to
+    // anywhere else is rejected, not saved (the database enforces the
+    // same allow-list). The row shows the red hint before you get here.
+    for (const pl of PLATFORMS) {
+      const v = links[pl.key].trim();
+      if (v && !isValidPlatformUrl(pl, v)) {
+        setError(`That ${pl.label} link isn't a ${pl.label} URL — paste one from ${pl.hosts[0].replace(".*", ".com")}.`);
         setSaving(false);
         return;
       }
@@ -388,10 +427,23 @@ export default function ProfileSettingsPage() {
       streak_icon: streakIcon,
       profile_song_url: profileSongUrl || null,
       profile_song_title: profileSongTitle || null,
-      spotify_url: spotifyUrl || null,
-      soundcloud_url: soundcloudUrl || null,
-      statsfm_url: statsfmUrl || null,
-      apple_music_url: appleMusicUrl || null,
+      spotify_url: links.spotify.trim() || null,
+      soundcloud_url: links.soundcloud.trim() || null,
+      statsfm_url: links.statsfm.trim() || null,
+      apple_music_url: links.apple_music.trim() || null,
+      // The five 039 platforms + the show/order list — only once the
+      // columns exist (an unknown column fails the whole update).
+      // visible_links keeps only keys that actually have a link.
+      ...(supportsLinks039
+        ? {
+            instagram_url: links.instagram.trim() || null,
+            x_url: links.x.trim() || null,
+            discord_url: links.discord.trim() || null,
+            amazon_music_url: links.amazon_music.trim() || null,
+            youtube_music_url: links.youtube_music.trim() || null,
+            visible_links: visibleLinks.filter((k) => !!links[k].trim()),
+          }
+        : {}),
       // Only sent once migration 027 exists — an unknown column would
       // fail the ENTIRE update, taking every other field with it.
       ...(supportsHideLinks
@@ -992,50 +1044,112 @@ export default function ProfileSettingsPage() {
           )}
         </fieldset>
 
-        {/* ========== STREAMING LINKS ========== */}
+        {/* ========== CONNECTED PLATFORMS ==========
+            (Luca 2026-09-02) One row per platform: paste a link, tick
+            whether it shows on your profile, arrow it left/right.
+            Shown platforms come first in their display order, then
+            the rest. Pre-039 databases only get the four original
+            streaming platforms and no show/order controls (legacy:
+            every saved link shows). */}
         <fieldset className="panel-xbox p-5 space-y-4">
-          <legend className="label-xbox">Streaming Links</legend>
+          <legend className="label-xbox">Connected Platforms</legend>
+          <p className="text-xs text-text-muted">
+            Drop a link for any platform you use. Ticked ones show on
+            your profile, left to right in this order — use the arrows
+            to reorder. A link that isn&apos;t from that platform
+            won&apos;t save.
+          </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField label="Spotify">
-              <input
-                type="url"
-                value={spotifyUrl}
-                onChange={(e) => setSpotifyUrl(e.target.value)}
-                placeholder="https://open.spotify.com/user/..."
-                className="form-input"
-              />
-            </FormField>
-
-            <FormField label="SoundCloud">
-              <input
-                type="url"
-                value={soundcloudUrl}
-                onChange={(e) => setSoundcloudUrl(e.target.value)}
-                placeholder="https://soundcloud.com/..."
-                className="form-input"
-              />
-            </FormField>
-
-            <FormField label="stats.fm">
-              <input
-                type="url"
-                value={statsfmUrl}
-                onChange={(e) => setStatsfmUrl(e.target.value)}
-                placeholder="https://stats.fm/user/..."
-                className="form-input"
-              />
-            </FormField>
-
-            <FormField label="Apple Music">
-              <input
-                type="url"
-                value={appleMusicUrl}
-                onChange={(e) => setAppleMusicUrl(e.target.value)}
-                placeholder="https://music.apple.com/..."
-                className="form-input"
-              />
-            </FormField>
+          <div className="space-y-2">
+            {[
+              ...visibleLinks.map((k) => getPlatform(k)),
+              ...PLATFORMS.filter((pl) => !visibleLinks.includes(pl.key)),
+            ]
+              .filter((pl) => pl.legacy || supportsLinks039)
+              .map((pl) => {
+                const value = links[pl.key];
+                const shown = visibleLinks.includes(pl.key);
+                const idx = visibleLinks.indexOf(pl.key);
+                const invalid = !!value.trim() && !isValidPlatformUrl(pl, value);
+                const tint = shown ? themeHex : "#9a9a9e";
+                return (
+                  <div
+                    key={pl.key}
+                    className="rounded-lg px-3 py-2.5 space-y-2"
+                    style={{
+                      background: shown ? `${themeHex}0d` : "rgba(255,255,255,0.02)",
+                      border: `1px solid ${shown ? `${themeHex}40` : "rgba(255,255,255,0.08)"}`,
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      {supportsLinks039 && (
+                        <input
+                          type="checkbox"
+                          checked={shown}
+                          disabled={!value.trim()}
+                          onChange={() => toggleLink(pl.key)}
+                          className="w-4 h-4 accent-current cursor-pointer disabled:opacity-30"
+                          style={{ color: themeHex }}
+                          aria-label={`Show ${pl.label} on my profile`}
+                        />
+                      )}
+                      <span className="shrink-0" style={{ color: tint }}>
+                        <PlatformIcon platform={pl.key} className="w-5 h-5" />
+                      </span>
+                      <p
+                        className="text-sm font-bold font-[family-name:var(--font-heading)] flex-1 min-w-0 truncate"
+                        style={{ color: tint }}
+                      >
+                        {pl.label}
+                        {shown && supportsLinks039 && (
+                          <span className="ml-2 pixel-text text-[10px] text-text-muted font-normal">
+                            #{idx + 1} on profile
+                          </span>
+                        )}
+                      </p>
+                      {supportsLinks039 && shown && (
+                        <div className="flex gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => moveLink(pl.key, -1)}
+                            disabled={idx === 0}
+                            className="w-7 h-7 rounded border border-white/10 text-text-secondary hover:text-text-primary hover:border-white/30 disabled:opacity-30 transition-colors"
+                            aria-label={`Move ${pl.label} left`}
+                          >
+                            ←
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveLink(pl.key, 1)}
+                            disabled={idx === visibleLinks.length - 1}
+                            className="w-7 h-7 rounded border border-white/10 text-text-secondary hover:text-text-primary hover:border-white/30 disabled:opacity-30 transition-colors"
+                            aria-label={`Move ${pl.label} right`}
+                          >
+                            →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="url"
+                      value={value}
+                      onChange={(e) => setLink(pl.key, e.target.value)}
+                      placeholder={pl.placeholder}
+                      className="form-input"
+                      spellCheck={false}
+                      autoComplete="off"
+                      aria-label={`${pl.label} link`}
+                    />
+                    {invalid && (
+                      <p className="text-xs text-accent-rose">
+                        Not a {pl.label} link — paste a{" "}
+                        {pl.hosts[0].replace(".*", ".com")} URL. (Won&apos;t be
+                        saved until it&apos;s fixed or cleared.)
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
           </div>
 
           {/* Featured playlist (Luca 2026-09-02): a Spotify playlist

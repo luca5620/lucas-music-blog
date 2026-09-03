@@ -12,6 +12,7 @@ import { getUser } from "@/lib/auth";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import DebateRoom from "@/components/debates/DebateRoom";
 import PublishDebateButton from "@/components/debates/PublishDebateButton";
+import DeleteDebateButton from "@/components/debates/DeleteDebateButton";
 import BackLink from "@/components/ui/BackLink";
 
 // Live rooms: votes, messages, and reactions change second to second.
@@ -82,11 +83,26 @@ export default async function DebatePage({ params }: PageProps) {
       <section className="space-y-3">
         {/* Plain Back (Luca 2026-08-31: replaced the ARENA / ON AIR
             crumb) — same BackLink convention as release/list pages. */}
-        <BackLink
-          fallback="/debates"
-          label="Back"
-          className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
-        />
+        <div className="flex items-center justify-between gap-3">
+          <BackLink
+            fallback="/debates"
+            label="Back"
+            className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
+          />
+          {/* Creator's controls (Luca 2026-09-02): edit here, or from
+              the manage hub at /reviews/mine. */}
+          {user?.id === debate.created_by && (
+            <span className="flex items-center gap-2">
+              <Link
+                href={`/debates/${debate.slug}/edit`}
+                className="btn-y2k btn-y2k-outline text-xs"
+              >
+                Edit
+              </Link>
+              <DeleteDebateButton debateId={debate.id} debateTitle={debate.title} />
+            </span>
+          )}
+        </div>
 
         <div className="flex items-start gap-4">
           {/* Pinned release, physical-media style */}
@@ -118,6 +134,53 @@ export default async function DebatePage({ params }: PageProps) {
               <p className="text-sm text-text-secondary leading-relaxed">
                 {debate.prompt}
               </p>
+            )}
+
+            {/* Per-side records (migration 039): each side's poster
+                links to its release, tinted in that side's colour. */}
+            {(debate.side_a_release || debate.side_b_release) && (
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                {(
+                  [
+                    { tone: "a", label: debate.side_a_label, release: debate.side_a_release },
+                    { tone: "b", label: debate.side_b_label, release: debate.side_b_release },
+                  ] as const
+                ).map(({ tone, label, release }) =>
+                  release ? (
+                    <Link
+                      key={tone}
+                      href={`/releases/${release.slug}`}
+                      className="flex items-center gap-2 group/side"
+                      title={release.title}
+                    >
+                      <span
+                        className={`w-12 h-12 rounded overflow-hidden border shrink-0 ${
+                          tone === "a" ? "border-accent-primary/60" : "border-accent-rose/60"
+                        }`}
+                      >
+                        {release.cover_image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={release.cover_image} alt={release.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="w-full h-full flex items-center justify-center">💿</span>
+                        )}
+                      </span>
+                      <span className="min-w-0">
+                        <span
+                          className={`block text-[10px] uppercase tracking-widest font-[family-name:var(--font-heading)] ${
+                            tone === "a" ? "text-accent-primary" : "text-accent-rose"
+                          }`}
+                        >
+                          {label}
+                        </span>
+                        <span className="block text-sm font-bold text-text-primary truncate max-w-[12rem] group-hover/side:text-accent-glow transition-colors">
+                          {release.title}
+                        </span>
+                      </span>
+                    </Link>
+                  ) : null
+                )}
+              </div>
             )}
             <div className="flex items-center gap-1.5 text-xs text-text-muted">
               <span>opened by</span>

@@ -2738,6 +2738,78 @@ fieldset {
 }
 
 /* ============================================================
+   PROFILE BADGES (under the username — trophies + tenure)
+   The glow tiers mirror the rating badges: `soft` is the everyday
+   halo, `elite` the 9.5-style purple pulse (tier 9, 900+), `perfect`
+   the perfect-10 blue bloom (tier 10, 1000+). --badge-color comes
+   from the element's inline style.
+   ============================================================ */
+.profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid currentColor;
+  background: color-mix(in srgb, var(--badge-color) 12%, transparent);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.profile-badge:hover,
+.profile-badge:focus-visible {
+  transform: translateY(-1px);
+  outline: none;
+}
+.profile-badge.glow-soft {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--badge-color) 35%, transparent);
+}
+.profile-badge.glow-elite {
+  border-width: 2px;
+  background: rgba(168, 85, 247, 0.15);
+  box-shadow:
+    0 0 10px rgba(168, 85, 247, 0.6),
+    0 0 26px rgba(168, 85, 247, 0.35),
+    inset 0 0 10px rgba(168, 85, 247, 0.25);
+  animation: elite-glow 2.5s ease-in-out infinite;
+}
+.profile-badge.glow-perfect {
+  border-width: 2px;
+  color: #fff !important;
+  border-color: #1e90ff !important;
+  background: rgba(30, 144, 255, 0.18);
+  box-shadow:
+    0 0 12px rgba(30, 144, 255, 0.8),
+    0 0 30px rgba(30, 144, 255, 0.5),
+    0 0 60px rgba(30, 144, 255, 0.25),
+    inset 0 0 12px rgba(30, 144, 255, 0.3);
+  animation: badge-perfect-glow 2s ease-in-out infinite;
+}
+@keyframes badge-perfect-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(30, 144, 255, 0.8),
+      0 0 30px rgba(30, 144, 255, 0.5),
+      0 0 60px rgba(30, 144, 255, 0.25),
+      inset 0 0 12px rgba(30, 144, 255, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(30, 144, 255, 1),
+      0 0 45px rgba(30, 144, 255, 0.65),
+      0 0 90px rgba(30, 144, 255, 0.35),
+      inset 0 0 18px rgba(30, 144, 255, 0.4);
+  }
+}
+/* Motion-sensitive app builds already still the rating glows; the
+   badges follow the same switch. */
+.native-app:not(.motion-on) .profile-badge.glow-elite,
+.native-app:not(.motion-on) .profile-badge.glow-perfect {
+  animation: none;
+}
+
+/* ============================================================
    RATINGS
    ============================================================ */
 .rating-badge {

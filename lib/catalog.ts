@@ -460,8 +460,70 @@ function coerceDate(date?: string, precision?: string): string | null {
   return date;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Same record, two Spotify doors                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Loose title equality for "is this album just this song's single?":
+ * lowercase, trimmed, whitespace collapsed, trailing "- single" /
+ * "(single)" markers dropped.
+ */
+function sameTitle(a: string, b: string): boolean {
+  const norm = (t: string) =>
+    t
+      .toLowerCase()
+      .replace(/\s*[-–(]\s*single\s*\)?\s*$/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  return norm(a) === norm(b);
+}
+
+/**
+ * The catalog dedupes on `spotify_id` — but a song reaches us through
+ * TWO Spotify doors with two different ids: a TRACK pick stores the
+ * track id (a standalone single), an ALBUM import stores the album
+ * id. For a single, those are the same record. Luca 2026-09-02:
+ * "royal" by fakemink had a page with 2 reviews (track import), then
+ * a playlist import resolved its ALBUM id, found nothing, and minted
+ * a second, reviewless "royal" — "a no-no".
+ *
+ * Before either door inserts, it asks here with the OTHER door's ids
+ * (the album's track ids, or the track's album id). A hit means the
+ * record already exists under its other id — return that row and
+ * never insert. Only done when the album IS the song (a single whose
+ * title matches the track), so an album track never collapses into
+ * its parent LP.
+ */
+async function findExistingSpotifyAlias(ids: string[]): Promise<Release | null> {
+  const unique = ids.filter((id, i) => id && ids.indexOf(id) === i);
+  if (unique.length === 0) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("releases")
+    .select("*")
+    .in("spotify_id", unique)
+    .limit(1);
+  return (data?.[0] as Release | undefined) ?? null;
+}
+
 async function ensureFromSpotify(albumId: string): Promise<Release> {
   const album = (await spotifyFetch(`/albums/${albumId}`)) as SpotifyAlbumFull;
+
+  // Already here under a TRACK id? (See findExistingSpotifyAlias.)
+  // Only the tracks whose title IS the album title count — for a
+  // single that's the title track; for an LP normally nothing.
+  const singleAliases = (album.tracks?.items ?? [])
+    .filter(
+      (t) =>
+        sameTitle(t.name, album.name) ||
+        (album.album_type === "single" && album.tracks.items.length === 1)
+    )
+    .map((t) => t.id);
+  if (album.album_type !== "album" || singleAliases.length > 0) {
+    const existing = await findExistingSpotifyAlias(singleAliases);
+    if (existing) return existing;
+  }
 
   // Full artist objects for images/genres (cap at 5 to bound latency).
   const artistRefs = (album.artists ?? []).slice(0, 5);
@@ -528,6 +590,9 @@ interface SpotifyTrackFull {
   artists: { id: string; name: string }[];
   album?: {
     id: string;
+    name?: string;
+    album_type?: "album" | "single" | "compilation";
+    total_tracks?: number;
     images?: { url: string; width: number | null }[];
     release_date?: string;
     release_date_precision?: "year" | "month" | "day";
@@ -545,6 +610,18 @@ interface SpotifyTrackFull {
  */
 async function ensureFromSpotifyTrack(trackId: string): Promise<Release> {
   const track = (await spotifyFetch(`/tracks/${trackId}`)) as SpotifyTrackFull;
+
+  // Already here under the ALBUM id? Only when the album is this
+  // song's own single (same title, or a one-track single) — picking
+  // a deep cut off an LP must still give you the song, not the LP.
+  if (
+    track.album?.id &&
+    (sameTitle(track.name, track.album.name ?? "") ||
+      (track.album.album_type === "single" && track.album.total_tracks === 1))
+  ) {
+    const existing = await findExistingSpotifyAlias([track.album.id]);
+    if (existing) return existing;
+  }
 
   // Full artist objects for images/genres (cap at 5 to bound latency).
   const artistRefs = (track.artists ?? []).slice(0, 5);

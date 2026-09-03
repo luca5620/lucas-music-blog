@@ -32,6 +32,7 @@ import { useLocationSearch } from "@/lib/useLocationSearch";
 import OAuthButtons from "@/components/auth/OAuthButtons";
 import AuthShell, { ContinueButton } from "@/components/auth/AuthShell";
 import type { Profile } from "@/lib/types/database";
+import { useTranslations } from "next-intl";
 
 type Step = "door" | "identifier" | "password" | "code";
 /** Door + email + password get dots; the staff code screen rides as
@@ -55,6 +56,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
   const router = useRouter();
+  // LANGUAGES: every line on these screens (messages → "auth.login").
+  // Supabase's own error text is shown as-is when we have no mapping.
+  const t = useTranslations("auth.login");
 
   // ?verify=admin / ?error=oauth — read from the raw URL (through a
   // useSyncExternalStore hook, so no setState-in-effect and no
@@ -72,7 +76,7 @@ export default function LoginPage() {
   const shownError =
     error ??
     (oauthFailed && !oauthDismissed
-      ? "That sign-in didn't come back through — try again, or use your email and password."
+      ? t("oauthFailed")
       : null);
 
   useEffect(() => {
@@ -117,7 +121,7 @@ export default function LoginPage() {
         pass: password,
       } as never);
       if (!resolved) {
-        setError("Wrong username or password.");
+        setError(t("wrongUsername"));
         setLoading(false);
         return;
       }
@@ -136,7 +140,7 @@ export default function LoginPage() {
       if (/email not confirmed/i.test(authError.message)) {
         setNeedsConfirmation(true);
       } else if (/invalid login credentials/i.test(authError.message)) {
-        setError("Wrong email/username or password.");
+        setError(t("wrongCredentials"));
       } else {
         setError(authError.message);
       }
@@ -166,9 +170,7 @@ export default function LoginPage() {
         });
         if (otpError) {
           // Most likely Supabase's email rate limit.
-          setError(
-            "Password OK, but the sign-in code couldn't be sent — wait a minute and try again."
-          );
+          setError(t("codeNotSent"));
           setLoading(false);
           return;
         }
@@ -202,9 +204,7 @@ export default function LoginPage() {
       // reason next to the friendly line — "expired", "invalid",
       // rate-limited, etc. — instead of leaving them (and us)
       // guessing which one it was.
-      setError(
-        `Wrong or expired code — check the newest email. (${verifyError.message})`
-      );
+      setError(t("wrongCode", { reason: verifyError.message }));
       setLoading(false);
       return;
     }
@@ -221,11 +221,7 @@ export default function LoginPage() {
       email: resolvedEmail,
       options: { shouldCreateUser: false },
     });
-    setResendNote(
-      resendError
-        ? "Couldn't resend — wait a minute and try again."
-        : "New code sent. Only the newest one works."
-    );
+    setResendNote(resendError ? t("resendFailed") : t("newCodeSent"));
     setResendCooldown(60);
   };
 
@@ -238,19 +234,15 @@ export default function LoginPage() {
       type: "signup",
       email,
     });
-    setResendNote(
-      resendError
-        ? "Couldn't resend — wait a minute and try again."
-        : "Confirmation link re-sent. Check spam too."
-    );
+    setResendNote(resendError ? t("resendFailed") : t("confirmationResent"));
     setResendCooldown(60);
   };
 
   const footer = (
     <>
-      Don&apos;t have an account?{" "}
+      {t("noAccount")}{" "}
       <Link href="/signup" className="text-accent-primary hover:text-accent-glow hover:underline">
-        Sign up
+        {t("signUp")}
       </Link>
     </>
   );
@@ -259,13 +251,10 @@ export default function LoginPage() {
   if (step === "code") {
     return (
       <AuthShell
-        title="Check your email"
-        helper={
-          <>
-            Admin accounts need the sign-in code we just sent to{" "}
-            <span className="text-text-primary">{resolvedEmail}</span>.
-          </>
-        }
+        title={t("codeTitle")}
+        helper={t.rich("codeHelper", {
+          email: () => <span className="text-text-primary">{resolvedEmail}</span>,
+        })}
         steps={DOTS + 1}
         step={DOTS}
         onBack={() => {
@@ -291,7 +280,7 @@ export default function LoginPage() {
             autoFocus
           />
           <ContinueButton disabled={code.trim().length < 6} loading={loading}>
-            Verify
+            {t("verify")}
           </ContinueButton>
         </form>
 
@@ -302,7 +291,7 @@ export default function LoginPage() {
             disabled={resendCooldown > 0}
             className="text-text-secondary hover:text-accent-primary transition-colors disabled:opacity-50"
           >
-            {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : "Resend code"}
+            {resendCooldown > 0 ? t("resendCodeIn", { s: resendCooldown }) : t("resendCode")}
           </button>
           {resendNote && <p className="pixel-text text-accent-glow">{resendNote}</p>}
         </div>
@@ -314,8 +303,8 @@ export default function LoginPage() {
   if (step === "door") {
     return (
       <AuthShell
-        title="Welcome back"
-        helper="Sign in to Peak Music Reviews."
+        title={t("welcomeBack")}
+        helper={t("signInTo")}
         steps={DOTS}
         step={0}
         error={shownError}
@@ -324,8 +313,7 @@ export default function LoginPage() {
         {/* Middleware sent an admin here for the code upgrade */}
         {adminNotice && (
           <div className="mb-4 p-3 rounded bg-accent-primary/10 border border-accent-primary/30 text-sm text-text-primary">
-            Admin tools now need a sign-in verified by email code. Sign in
-            again and we&apos;ll send you one.
+            {t("adminNotice")}
           </div>
         )}
 
@@ -339,7 +327,7 @@ export default function LoginPage() {
           onClick={() => go("identifier")}
           className="btn-y2k btn-y2k-primary w-full justify-center"
         >
-          Continue with email
+          {t("continueEmail")}
         </button>
       </AuthShell>
     );
@@ -349,8 +337,8 @@ export default function LoginPage() {
   if (step === "identifier") {
     return (
       <AuthShell
-        title="Enter your email"
-        helper="Or your username — either one works."
+        title={t("enterEmail")}
+        helper={t("orUsername")}
         steps={DOTS}
         step={1}
         onBack={() => go("door")}
@@ -370,7 +358,7 @@ export default function LoginPage() {
             onChange={(e) => setIdentifier(e.target.value)}
             required
             className="form-input text-center text-base"
-            placeholder="you@example.com or username"
+            placeholder={t("identifierPlaceholder")}
             autoComplete="username"
             autoCapitalize="none"
             spellCheck={false}
@@ -385,13 +373,10 @@ export default function LoginPage() {
   /* ---------------- PASSWORD ---------------- */
   return (
     <AuthShell
-      title="Enter your password"
-      helper={
-        <>
-          Signing in as{" "}
-          <span className="text-text-primary font-medium">{identifier.trim()}</span>
-        </>
-      }
+      title={t("enterPassword")}
+      helper={t.rich("signingInAs", {
+        id: () => <span className="text-text-primary font-medium">{identifier.trim()}</span>,
+      })}
       steps={DOTS}
       step={2}
       onBack={() => {
@@ -405,8 +390,7 @@ export default function LoginPage() {
       {needsConfirmation && (
         <div className="mb-4 p-4 rounded bg-osd-amber/10 border border-osd-amber/30 space-y-3">
           <p className="text-sm text-text-primary">
-            This account hasn&apos;t been switched on yet — the confirmation
-            link in your inbox does that.
+            {t("notSwitchedOn")}
           </p>
           <button
             type="button"
@@ -414,7 +398,7 @@ export default function LoginPage() {
             disabled={resendCooldown > 0}
             className="btn-y2k btn-y2k-outline text-xs disabled:opacity-50"
           >
-            {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend confirmation link"}
+            {resendCooldown > 0 ? t("resendIn", { s: resendCooldown }) : t("resendConfirmation")}
           </button>
           {resendNote && (
             <p className="pixel-text text-sm text-accent-glow">{resendNote}</p>
@@ -440,7 +424,7 @@ export default function LoginPage() {
             onClick={() => setShowPassword((s) => !s)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-widest text-text-muted hover:text-text-primary"
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? t("hide") : t("show")}
           </button>
         </div>
         <p className="mt-2 text-right">
@@ -448,12 +432,12 @@ export default function LoginPage() {
             href="/forgot-password"
             className="text-xs text-text-muted hover:text-accent-primary transition-colors"
           >
-            Forgot it?
+            {t("forgot")}
           </Link>
         </p>
 
         <ContinueButton disabled={password.length === 0} loading={loading}>
-          Sign in
+          {t("signIn")}
         </ContinueButton>
 
         {/* App Store 1.2 says the EULA is presented "before
@@ -461,16 +445,18 @@ export default function LoginPage() {
             checkbox; login carries the agreement notice so the
             reviewer's demo-account path sees it too. */}
         <p className="mt-4 text-[11px] text-text-muted text-center leading-relaxed">
-          By signing in you agree to the{" "}
-          <Link href="/terms" className="text-accent-primary hover:underline">
-            Terms of Use
-          </Link>{" "}
-          — zero tolerance for objectionable content or abusive users — and
-          the{" "}
-          <Link href="/privacy" className="text-accent-primary hover:underline">
-            Privacy Policy
-          </Link>
-          .
+          {t.rich("agreement", {
+            terms: (chunks) => (
+              <Link href="/terms" className="text-accent-primary hover:underline">
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link href="/privacy" className="text-accent-primary hover:underline">
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       </form>
     </AuthShell>

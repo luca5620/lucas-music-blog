@@ -42,6 +42,7 @@ import {
   type PluginListener,
 } from "@/lib/native";
 import type { Profile } from "@/lib/types/database";
+import { useTranslations } from "next-intl";
 
 type Provider = "google" | "apple";
 
@@ -126,6 +127,8 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
   );
   const [busy, setBusy] = useState<Provider | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // LANGUAGES: button labels + every failure line (messages → "auth.oauth").
+  const t = useTranslations("auth.oauth");
 
   // True from the moment a deep link lands until we've navigated. Our
   // own Browser.close() also fires "browserFinished", and without this
@@ -175,7 +178,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
         // A plain cancel stays silent, exactly as on the web.
         giveUp(
           providerError && !/access_denied/i.test(providerError)
-            ? "That sign-in didn't go through. Try again, or use your email and password."
+            ? t("didntGoThrough")
             : null
         );
         return;
@@ -186,9 +189,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
         await supabase.auth.exchangeCodeForSession(code);
 
       if (exchangeError || !data.user) {
-        giveUp(
-          "Couldn't finish signing you in. Try again, or use your email and password."
-        );
+        giveUp(t("couldntFinish"));
         return;
       }
 
@@ -222,7 +223,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
       // WebView reloads, the cookies ride along, SSR sees the session.
       window.location.assign(target);
     },
-    []
+    [t]
   );
 
   // App only: listen for the trip back. It lives here rather than
@@ -271,7 +272,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
 
   const handoffError = (provider: Provider, message: string) =>
     /not enabled|unsupported/i.test(message)
-      ? `${provider === "google" ? "Google" : "Apple"} sign-in isn't switched on yet — use your email and password for now.`
+      ? t("notEnabled", { provider: provider === "google" ? "Google" : "Apple" })
       : message;
 
   const start = async (provider: Provider) => {
@@ -298,7 +299,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
         setError(
           oauthError
             ? handoffError(provider, oauthError.message)
-            : "Couldn't start that sign-in. Try again, or use your email and password."
+            : t("couldntStart")
         );
         setBusy(null);
         return;
@@ -310,9 +311,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
           presentationStyle: "fullscreen",
         });
       } catch {
-        setError(
-          "Couldn't open the sign-in page. Try again, or use your email and password."
-        );
+        setError(t("couldntOpen"));
         setBusy(null);
       }
       return;
@@ -349,7 +348,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
           className="btn-y2k btn-y2k-outline w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <GoogleMark />
-          {busy === "google" ? "Handing over…" : "Continue with Google"}
+          {busy === "google" ? t("handingOver") : t("google")}
         </button>
       )}
 
@@ -361,7 +360,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
           className="btn-y2k btn-y2k-outline w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <AppleMark />
-          {busy === "apple" ? "Handing over…" : "Continue with Apple"}
+          {busy === "apple" ? t("handingOver") : t("apple")}
         </button>
       )}
 
@@ -369,7 +368,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
           this — the 1.0 app — isn't left with a stray "OR" line. */}
       <div className="flex items-center gap-3 pt-2">
         <span className="h-px flex-1 bg-white/10" />
-        <span className="osd-text text-[0.65rem] text-text-muted">OR</span>
+        <span className="osd-text text-[0.65rem] text-text-muted">{t("or")}</span>
         <span className="h-px flex-1 bg-white/10" />
       </div>
     </div>

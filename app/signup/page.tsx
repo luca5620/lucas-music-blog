@@ -29,6 +29,7 @@ import AuthShell, { ContinueButton } from "@/components/auth/AuthShell";
 // from 028's trigger) live in lib/username — /welcome asks the same
 // question after a Google/Apple sign-in and the two must not drift.
 import { USERNAME_REGEX, RESERVED_USERNAMES } from "@/lib/username";
+import { useTranslations } from "next-intl";
 
 /** Availability check result for the little status line. */
 type Availability = "idle" | "checking" | "free" | "taken";
@@ -60,6 +61,8 @@ export default function SignUpPage() {
   const [resendNote, setResendNote] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
+  // LANGUAGES: every line on these screens (messages → "auth.signup").
+  const t = useTranslations("auth.signup");
 
   // Tick the resend cooldown down once per second.
   useEffect(() => {
@@ -91,19 +94,19 @@ export default function SignUpPage() {
       return;
     }
     if (lower.length < 3) {
-      setUsernameError("At least 3 characters");
+      setUsernameError(t("min3"));
       return;
     }
     if (lower.length > 20) {
-      setUsernameError("20 characters or fewer");
+      setUsernameError(t("max20"));
       return;
     }
     if (!USERNAME_REGEX.test(lower)) {
-      setUsernameError("Letters, numbers, and underscores only");
+      setUsernameError(t("charset"));
       return;
     }
     if (RESERVED_USERNAMES.has(lower)) {
-      setUsernameError("That name is reserved");
+      setUsernameError(t("reserved"));
       return;
     }
     setUsernameError(null);
@@ -133,16 +136,16 @@ export default function SignUpPage() {
 
     if (!USERNAME_REGEX.test(username) || RESERVED_USERNAMES.has(username)) {
       go("username");
-      setUsernameError("Please enter a valid username");
+      setUsernameError(t("invalidUsername"));
       return;
     }
     if (availability === "taken") {
       go("username");
-      setUsernameError("That username is taken");
+      setUsernameError(t("usernameTaken"));
       return;
     }
     if (!agreedToTerms) {
-      setError("You need to agree to the Terms of Use to create an account.");
+      setError(t("agreeRequired"));
       return;
     }
 
@@ -167,9 +170,7 @@ export default function SignUpPage() {
     if (authError) {
       // Friendlier wording for the common case.
       setError(
-        /already registered/i.test(authError.message)
-          ? "That email already has an account — try signing in instead."
-          : authError.message
+        /already registered/i.test(authError.message) ? t("emailExists") : authError.message
       );
       setLoading(false);
       return;
@@ -179,7 +180,7 @@ export default function SignUpPage() {
     // but returns a ghost user with no identities. Catch that so the
     // person isn't left staring at an inbox with nothing in it.
     if (data.user && data.user.identities?.length === 0) {
-      setError("That email already has an account — try signing in instead.");
+      setError(t("emailExists"));
       setLoading(false);
       return;
     }
@@ -205,11 +206,7 @@ export default function SignUpPage() {
       type: "signup",
       email: email.trim(),
     });
-    setResendNote(
-      resendError
-        ? "Couldn't resend — wait a minute and try again."
-        : "Signal re-sent. Give it a minute (and check spam)."
-    );
+    setResendNote(resendError ? t("resendFailed") : t("signalResent"));
     setResendCooldown(60);
   };
 
@@ -217,20 +214,15 @@ export default function SignUpPage() {
   if (awaitingConfirm) {
     return (
       <AuthShell
-        title="Check your inbox"
-        helper={
-          <>
-            We sent a confirmation link to{" "}
-            <span className="text-text-primary font-medium">{email.trim()}</span>.
-            Click it to switch your account on — until then this channel
-            stays static.
-          </>
-        }
+        title={t("inboxTitle")}
+        helper={t.rich("inboxHelper", {
+          email: () => <span className="text-text-primary font-medium">{email.trim()}</span>,
+        })}
         steps={QUESTION_STEPS.length}
         step={QUESTION_STEPS.length - 1}
         footer={
           <>
-            Wrong address?{" "}
+            {t("wrongAddress")}{" "}
             <button
               type="button"
               onClick={() => {
@@ -239,14 +231,14 @@ export default function SignUpPage() {
               }}
               className="text-accent-primary hover:text-accent-glow hover:underline"
             >
-              Start over
+              {t("startOver")}
             </button>
           </>
         }
       >
         <div className="space-y-3">
           <p className="osd-text text-sm text-center">
-            <span className="text-[#ff4455]">●</span> AWAITING SIGNAL
+            <span className="text-[#ff4455]">●</span> {t("awaitingSignal")}
           </p>
           <button
             type="button"
@@ -254,10 +246,10 @@ export default function SignUpPage() {
             disabled={resendCooldown > 0}
             className="btn-y2k btn-y2k-outline w-full justify-center disabled:opacity-50"
           >
-            {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend link"}
+            {resendCooldown > 0 ? t("resendIn", { s: resendCooldown }) : t("resendLink")}
           </button>
           <Link href="/login" className="btn-y2k btn-y2k-primary w-full justify-center">
-            Go to sign in
+            {t("goToSignIn")}
           </Link>
           {resendNote && (
             <p className="pixel-text text-sm text-accent-glow text-center">{resendNote}</p>
@@ -269,9 +261,9 @@ export default function SignUpPage() {
 
   const footer = (
     <>
-      Already have an account?{" "}
+      {t("haveAccount")}{" "}
       <Link href="/login" className="text-accent-primary hover:text-accent-glow hover:underline">
-        Sign in
+        {t("signIn")}
       </Link>
     </>
   );
@@ -280,8 +272,8 @@ export default function SignUpPage() {
   if (step === "door") {
     return (
       <AuthShell
-        title="Create your account"
-        helper="every album. every leak. every argument."
+        title={t("createTitle")}
+        helper={t("tagline")}
         steps={QUESTION_STEPS.length}
         step={0}
         error={error}
@@ -298,7 +290,7 @@ export default function SignUpPage() {
           onClick={() => go("email")}
           className="btn-y2k btn-y2k-primary w-full justify-center"
         >
-          Continue with email
+          {t("continueEmail")}
         </button>
       </AuthShell>
     );
@@ -308,8 +300,8 @@ export default function SignUpPage() {
   if (step === "email") {
     return (
       <AuthShell
-        title="Enter your email"
-        helper="For sign-in and account recovery — you'll confirm it, one account per inbox."
+        title={t("emailTitle")}
+        helper={t("emailHelper")}
         steps={QUESTION_STEPS.length}
         step={1}
         onBack={() => go("door")}
@@ -348,17 +340,17 @@ export default function SignUpPage() {
       usernameError ? (
         <p className="mt-2 text-xs text-red-400 text-center">{usernameError}</p>
       ) : availability === "checking" ? (
-        <p className="mt-2 text-xs osd-text animate-pulse text-center">CHECKING…</p>
+        <p className="mt-2 text-xs osd-text animate-pulse text-center">{t("checking")}</p>
       ) : availability === "free" && username ? (
-        <p className="mt-2 text-xs text-accent-primary text-center">✓ @{username} is free</p>
+        <p className="mt-2 text-xs text-accent-primary text-center">{t("isFree", { username })}</p>
       ) : availability === "taken" ? (
-        <p className="mt-2 text-xs text-accent-rose text-center">@{username} is taken</p>
+        <p className="mt-2 text-xs text-accent-rose text-center">{t("isTaken", { username })}</p>
       ) : null;
 
     return (
       <AuthShell
-        title="Choose a username"
-        helper="3–20 characters: letters, numbers, underscores. It's in every review URL you write."
+        title={t("usernameTitle")}
+        helper={t("usernameHelper")}
         steps={QUESTION_STEPS.length}
         step={2}
         onBack={() => go("email")}
@@ -382,7 +374,7 @@ export default function SignUpPage() {
               onChange={(e) => validateUsername(e.target.value)}
               required
               className="form-input text-center text-base pl-8"
-              placeholder="your_username"
+              placeholder={t("usernamePlaceholder")}
               autoComplete="username"
               autoFocus
               autoCapitalize="none"
@@ -401,8 +393,8 @@ export default function SignUpPage() {
   if (step === "password") {
     return (
       <AuthShell
-        title="Create a password"
-        helper="At least 6 characters. Make it one you don't use anywhere else."
+        title={t("passwordTitle")}
+        helper={t("passwordHelper")}
         steps={QUESTION_STEPS.length}
         step={3}
         onBack={() => go("username")}
@@ -433,12 +425,12 @@ export default function SignUpPage() {
               onClick={() => setShowPassword((s) => !s)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-widest text-text-muted hover:text-text-primary"
             >
-              {showPassword ? "Hide" : "Show"}
+              {showPassword ? t("hide") : t("show")}
             </button>
           </div>
           {password.length > 0 && !passwordOk && (
             <p className="mt-2 text-xs text-text-muted text-center">
-              {6 - password.length} more character{6 - password.length === 1 ? "" : "s"}
+              {t("moreChars", { n: 6 - password.length })}
             </p>
           )}
           <ContinueButton disabled={!passwordOk} />
@@ -450,8 +442,8 @@ export default function SignUpPage() {
   /* ---------------- THE RULES ---------------- */
   return (
     <AuthShell
-      title="One last thing"
-      helper="Agree to the rules and your account switches on."
+      title={t("lastTitle")}
+      helper={t("lastHelper")}
       steps={QUESTION_STEPS.length}
       step={4}
       onBack={() => go("password")}
@@ -463,11 +455,11 @@ export default function SignUpPage() {
             the email doesn't cost them the confirmation link. */}
         <dl className="mb-4 rounded-lg border border-white/10 bg-black/30 divide-y divide-white/10 text-sm">
           <div className="flex justify-between gap-3 px-3 py-2">
-            <dt className="text-text-muted">Email</dt>
+            <dt className="text-text-muted">{t("emailLabel")}</dt>
             <dd className="text-text-primary truncate">{email.trim()}</dd>
           </div>
           <div className="flex justify-between gap-3 px-3 py-2">
-            <dt className="text-text-muted">Username</dt>
+            <dt className="text-text-muted">{t("usernameLabel")}</dt>
             <dd className="text-text-primary truncate">@{username}</dd>
           </div>
         </dl>
@@ -486,22 +478,26 @@ export default function SignUpPage() {
           <span className="text-xs text-text-secondary leading-relaxed">
             {/* In-app navigation, NOT target="_blank": the app's
                 WKWebView has no tabs, so _blank can silently no-op. */}
-            I agree to the{" "}
-            <Link href="/terms" className="text-accent-primary hover:underline">
-              Terms of Use
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="text-accent-primary hover:underline">
-              Privacy Policy
-            </Link>
-            , including the{" "}
-            <span className="text-text-primary font-medium">zero-tolerance policy</span>{" "}
-            for objectionable content and abusive users.
+            {t.rich("agree", {
+              terms: (chunks) => (
+              <Link href="/terms" className="text-accent-primary hover:underline">
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link href="/privacy" className="text-accent-primary hover:underline">
+                {chunks}
+              </Link>
+            ),
+              strong: (chunks) => (
+                <span className="text-text-primary font-medium">{chunks}</span>
+              ),
+            })}
           </span>
         </label>
 
         <ContinueButton disabled={!agreedToTerms} loading={loading}>
-          Create account
+          {t("createAccount")}
         </ContinueButton>
       </form>
     </AuthShell>

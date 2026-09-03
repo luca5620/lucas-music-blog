@@ -24,6 +24,24 @@ export const RESERVED_USERNAMES = new Set([
  * show, or null when the format is fine (availability is a separate,
  * async question — see the ilike lookup the signup/welcome pages do).
  */
+/**
+ * LANGUAGES: the same checks as usernameFormatError, answered as a KEY
+ * into messages → "auth.signup" (min3 / max20 / charset / reserved) so
+ * a client page can show the line in the visitor's language. Keep the
+ * two in step.
+ */
+export type UsernameFormatErrorKey = "min3" | "max20" | "charset" | "reserved";
+
+export function usernameFormatErrorKey(value: string): UsernameFormatErrorKey | null {
+  const lower = value.toLowerCase();
+  if (lower.length === 0) return null;
+  if (lower.length < 3) return "min3";
+  if (lower.length > 20) return "max20";
+  if (!USERNAME_REGEX.test(lower)) return "charset";
+  if (RESERVED_USERNAMES.has(lower)) return "reserved";
+  return null;
+}
+
 export function usernameFormatError(value: string): string | null {
   const lower = value.toLowerCase();
   if (lower.length === 0) return null;

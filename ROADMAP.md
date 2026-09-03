@@ -109,6 +109,14 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 2 (auth) shipped:** /login (all four screens incl. the staff
+    code step + every error), /signup (five screens, plural "more
+    characters", rich EULA sentence), /forgot-password, /reset-password,
+    /welcome (handle picker; lib/username gained usernameFormatErrorKey so
+    the rules render in-language), AuthShell (Back / Continue / Tuning
+    in…), OAuthButtons (labels + failure lines). Supabase's own error
+    text still shows as-is where we have no mapping. Verified FR login,
+    PT signup, DE forgot/reset from the built server, no leftovers.
   - **Batch 1 (home) shipped:** app/page.tsx (splash hero, App Store
     badge, website plug, dashboard band, ON AIR, Your Taste teaser) +
     every components/home module (RatedWall, HowItWorks incl. the rich

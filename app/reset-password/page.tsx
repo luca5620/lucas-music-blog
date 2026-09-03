@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useTranslations } from "next-intl";
 
 function ResetPasswordInner() {
   const { user, loading: authLoading } = useAuth();
@@ -29,16 +30,18 @@ function ResetPasswordInner() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
+  // LANGUAGES: messages → "auth.reset".
+  const t = useTranslations("auth.reset");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     if (password.length < 6) {
-      setError("At least 6 characters.");
+      setError(t("min6"));
       return;
     }
     if (password !== confirm) {
-      setError("The two entries don't match.");
+      setError(t("mismatch"));
       return;
     }
     setSaving(true);
@@ -51,7 +54,7 @@ function ResetPasswordInner() {
     if (updateError) {
       setError(
         /different from the old/i.test(updateError.message)
-          ? "That's already your password — pick a new one."
+          ? t("samePassword")
           : updateError.message
       );
       setSaving(false);
@@ -73,38 +76,28 @@ function ResetPasswordInner() {
       <div className="w-full max-w-md">
         <div className="panel-xbox-glow p-8 relative overflow-hidden">
           <div className="text-center mb-8 space-y-2">
-            <h1 className="crt-title text-3xl">NEW PASSWORD</h1>
-            <p className="text-text-secondary text-sm">
-              set it and you&apos;re back in
-            </p>
+            <h1 className="crt-title text-3xl">{t("title")}</h1>
+            <p className="text-text-secondary text-sm">{t("sub")}</p>
           </div>
 
           {done ? (
             <div className="p-4 rounded bg-accent-primary/10 border border-accent-primary/30">
-              <p className="text-sm text-text-primary">
-                Password changed — taking you home, signed in. ✓
-              </p>
+              <p className="text-sm text-text-primary">{t("done")}</p>
             </div>
           ) : showExpired ? (
             <div className="space-y-4">
               <div className="p-4 rounded bg-osd-amber/10 border border-osd-amber/30">
-                <p className="text-sm text-text-primary">
-                  This reset link is expired, already used, or was
-                  opened in a different browser than it was requested
-                  from.
-                </p>
+                <p className="text-sm text-text-primary">{t("expired")}</p>
               </div>
               <Link
                 href="/forgot-password"
                 className="btn-y2k btn-y2k-primary w-full justify-center"
               >
-                Send me a fresh link
+                {t("freshLink")}
               </Link>
             </div>
           ) : !showForm ? (
-            <p className="text-sm text-text-secondary text-center">
-              Checking your link…
-            </p>
+            <p className="text-sm text-text-secondary text-center">{t("checking")}</p>
           ) : (
             <>
               {error && (
@@ -119,7 +112,7 @@ function ResetPasswordInner() {
                     htmlFor="new-password"
                     className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
                   >
-                    New password
+                    {t("newPassword")}
                   </label>
                   <input
                     id="new-password"
@@ -129,7 +122,7 @@ function ResetPasswordInner() {
                     required
                     minLength={6}
                     className="form-input"
-                    placeholder="At least 6 characters"
+                    placeholder={t("newPlaceholder")}
                     autoComplete="new-password"
                   />
                 </div>
@@ -139,7 +132,7 @@ function ResetPasswordInner() {
                     htmlFor="confirm-password"
                     className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
                   >
-                    Repeat it
+                    {t("repeat")}
                   </label>
                   <input
                     id="confirm-password"
@@ -149,7 +142,7 @@ function ResetPasswordInner() {
                     required
                     minLength={6}
                     className="form-input"
-                    placeholder="Same thing again"
+                    placeholder={t("repeatPlaceholder")}
                     autoComplete="new-password"
                   />
                 </div>
@@ -159,7 +152,7 @@ function ResetPasswordInner() {
                   disabled={saving}
                   className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {saving ? "Saving…" : "Set new password"}
+                  {saving ? t("saving") : t("set")}
                 </button>
               </form>
             </>

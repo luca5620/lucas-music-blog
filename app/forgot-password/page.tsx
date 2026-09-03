@@ -13,12 +13,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [loading, setLoading] = useState(false);
+  // LANGUAGES: messages → "auth.forgot".
+  const t = useTranslations("auth.forgot");
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -50,22 +53,14 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="panel-xbox-glow p-8 relative overflow-hidden">
           <div className="text-center mb-8 space-y-2">
-            <h1 className="crt-title text-3xl">RESET PASSWORD</h1>
-            <p className="text-text-secondary text-sm">
-              we&apos;ll email you a link to set a new one
-            </p>
+            <h1 className="crt-title text-3xl">{t("title")}</h1>
+            <p className="text-text-secondary text-sm">{t("sub")}</p>
           </div>
 
           {sent && (
             <div className="mb-6 p-4 rounded bg-accent-primary/10 border border-accent-primary/30 space-y-1">
-              <p className="text-sm text-text-primary">
-                If that email has an account, a reset link is on its
-                way. Check spam too.
-              </p>
-              <p className="text-xs text-text-muted">
-                Open the link on this device if you can — it signs
-                this browser in to set the new password.
-              </p>
+              <p className="text-sm text-text-primary">{t("sentTitle")}</p>
+              <p className="text-xs text-text-muted">{t("sentNote")}</p>
             </div>
           )}
 
@@ -75,7 +70,7 @@ export default function ForgotPasswordPage() {
                 htmlFor="email"
                 className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
-                Email
+                {t("emailLabel")}
               </label>
               <input
                 id="email"
@@ -89,10 +84,7 @@ export default function ForgotPasswordPage() {
                 autoCapitalize="none"
                 spellCheck={false}
               />
-              <p className="mt-2 text-xs text-text-muted">
-                Your email, not your username — reset links only travel
-                by mail.
-              </p>
+              <p className="mt-2 text-xs text-text-muted">{t("emailHint")}</p>
             </div>
 
             <button
@@ -101,20 +93,20 @@ export default function ForgotPasswordPage() {
               className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {cooldown > 0
-                ? `Sent — again in ${cooldown}s`
+                ? t("sentAgainIn", { s: cooldown })
                 : loading
-                  ? "Sending…"
-                  : "Send reset link"}
+                  ? t("sending")
+                  : t("send")}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-text-secondary">
-            Remembered it?{" "}
+            {t("remembered")}{" "}
             <Link
               href="/login"
               className="text-accent-primary hover:text-accent-glow hover:underline"
             >
-              Sign in
+              {t("signIn")}
             </Link>
           </p>
 

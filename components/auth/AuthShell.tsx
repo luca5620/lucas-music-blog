@@ -20,6 +20,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import { useTranslations } from "next-intl";
 
 interface AuthShellProps {
   /** The question for this screen — short, sentence case. */
@@ -49,6 +50,8 @@ export default function AuthShell({
   footer,
   error,
 }: AuthShellProps) {
+  // LANGUAGES: the shell's own three words (messages → "auth.shell").
+  const t = useTranslations("auth.shell");
   // Direction of the slide: forward when the step number grows,
   // back when it shrinks. Tracked here so pages don't have to.
   // This is React's "store the previous prop in state" pattern: when
@@ -90,13 +93,13 @@ export default function AuthShell({
               >
                 <path d="M10 3L5 8l5 5" />
               </svg>
-              Back
+              {t("back")}
             </button>
           )}
 
           {/* Logo + progress dots */}
           <div className="flex flex-col items-center gap-3 mb-7">
-            <Link href="/" aria-label="Peak Music Reviews home" className="block">
+            <Link href="/" aria-label={t("homeAria")} className="block">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/penguin-logo.png"
@@ -154,7 +157,7 @@ export default function AuthShell({
 
 /** The one wide primary button every step ends with. */
 export function ContinueButton({
-  children = "Continue",
+  children,
   disabled,
   loading,
 }: {
@@ -162,13 +165,14 @@ export function ContinueButton({
   disabled?: boolean;
   loading?: boolean;
 }) {
+  const t = useTranslations("auth.shell");
   return (
     <button
       type="submit"
       disabled={disabled || loading}
       className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed mt-5"
     >
-      {loading ? "Tuning in…" : children}
+      {loading ? t("tuningIn") : (children ?? t("continue"))}
     </button>
   );
 }

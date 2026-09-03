@@ -21,7 +21,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { usernameFormatError, suggestUsername } from "@/lib/username";
+import { usernameFormatErrorKey, suggestUsername } from "@/lib/username";
+import { useTranslations } from "next-intl";
 import type { Profile } from "@/lib/types/database";
 
 type Availability = "idle" | "checking" | "free" | "taken";
@@ -40,6 +41,10 @@ export default function WelcomePage() {
   const [saving, setSaving] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
+  // LANGUAGES: this page's own lines live in "auth.welcome"; the
+  // username rules + agreement text are shared with /signup.
+  const t = useTranslations("auth.welcome");
+  const ts = useTranslations("auth.signup");
 
   // Where to go once they're set up (?next=, same-site paths only).
   // Read from the raw URL instead of useSearchParams so this client
@@ -101,9 +106,9 @@ export default function WelcomePage() {
     setAvailability("idle");
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    const formatError = usernameFormatError(lower);
-    setUsernameError(formatError);
-    if (formatError || lower.length === 0) return;
+    const formatKey = usernameFormatErrorKey(lower);
+    setUsernameError(formatKey ? ts(formatKey) : null);
+    if (formatKey || lower.length === 0) return;
 
     // Their own generated handle is "free" — keeping it is allowed.
     if (lower === generated) {
@@ -131,17 +136,17 @@ export default function WelcomePage() {
     if (!userId) return;
 
     const lower = username.trim().toLowerCase();
-    const formatError = usernameFormatError(lower);
-    if (formatError || lower.length < 3) {
-      setUsernameError(formatError ?? "Please enter a username");
+    const formatKey = usernameFormatErrorKey(lower);
+    if (formatKey || lower.length < 3) {
+      setUsernameError(formatKey ? ts(formatKey) : t("enterUsername"));
       return;
     }
     if (availability === "taken") {
-      setUsernameError("That username is taken");
+      setUsernameError(ts("usernameTaken"));
       return;
     }
     if (!agreedToTerms) {
-      setError("You need to agree to the Terms of Use to finish setting up.");
+      setError(t("agreeRequired"));
       return;
     }
 
@@ -163,9 +168,9 @@ export default function WelcomePage() {
     if (updateError) {
       const msg = updateError.message;
       if (msg.includes("USERNAME_RESERVED")) {
-        setError("That username is reserved.");
+        setError(t("reserved"));
       } else if (/unique|duplicate/i.test(msg)) {
-        setError("That username was just taken — try another.");
+        setError(t("justTaken"));
       } else {
         setError(msg);
       }
@@ -180,22 +185,20 @@ export default function WelcomePage() {
   if (!ready) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <p className="osd-text text-sm animate-pulse">TUNING IN…</p>
+        <p className="osd-text text-sm animate-pulse">{t("tuningIn")}</p>
       </div>
     );
   }
 
   const availabilityLine =
     availability === "checking" ? (
-      <p className="mt-1.5 text-xs osd-text animate-pulse">CHECKING…</p>
+      <p className="mt-1.5 text-xs osd-text animate-pulse">{ts("checking")}</p>
     ) : availability === "free" && !usernameError && username ? (
       <p className="mt-1.5 text-xs text-accent-primary">
-        {username === generated
-          ? `✓ keeping @${username}`
-          : `✓ @${username} is free`}
+        {username === generated ? t("keeping", { username }) : ts("isFree", { username })}
       </p>
     ) : availability === "taken" ? (
-      <p className="mt-1.5 text-xs text-accent-rose">@{username} is taken</p>
+      <p className="mt-1.5 text-xs text-accent-rose">{ts("isTaken", { username })}</p>
     ) : null;
 
   return (
@@ -203,13 +206,11 @@ export default function WelcomePage() {
       <div className="w-full max-w-md">
         <div className="panel-xbox-glow p-8 relative overflow-hidden">
           <div className="text-center mb-8 space-y-2">
-            <h1 className="crt-title text-3xl">PICK YOUR HANDLE</h1>
+            <h1 className="crt-title text-3xl">{t("title")}</h1>
             <p className="text-text-secondary text-sm leading-relaxed">
-              You&apos;re signed in — one thing left. Your username is what
-              everyone sees on your reviews, so pick the one you want. We
-              parked you on{" "}
-              <span className="text-text-primary">@{generated}</span> in the
-              meantime.
+              {t.rich("intro", {
+                handle: () => <span className="text-text-primary">@{generated}</span>,
+              })}
             </p>
           </div>
 
@@ -225,7 +226,7 @@ export default function WelcomePage() {
                 htmlFor="username"
                 className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
               >
-                Username
+                {ts("usernameLabel")}
               </label>
               <input
                 id="username"
@@ -234,7 +235,7 @@ export default function WelcomePage() {
                 onChange={(e) => onUsernameChange(e.target.value)}
                 required
                 className="form-input"
-                placeholder="your_username"
+                placeholder={ts("usernamePlaceholder")}
                 autoComplete="username"
                 autoCapitalize="none"
                 spellCheck={false}
@@ -245,10 +246,7 @@ export default function WelcomePage() {
               ) : (
                 availabilityLine
               )}
-              <p className="mt-1.5 text-xs text-text-muted">
-                This one&apos;s free — after it, usernames change once every 2
-                weeks.
-              </p>
+              <p className="mt-1.5 text-xs text-text-muted">{t("freeNote")}</p>
             </div>
 
             {/* The same active EULA consent /signup requires — a
@@ -261,19 +259,21 @@ export default function WelcomePage() {
                 className="mt-0.5 w-4 h-4 shrink-0 accent-[var(--accent-primary,#1e90ff)]"
               />
               <span className="text-xs text-text-secondary leading-relaxed">
-                I agree to the{" "}
-                <Link href="/terms" className="text-accent-primary hover:underline">
-                  Terms of Use
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="text-accent-primary hover:underline">
-                  Privacy Policy
-                </Link>
-                , including the{" "}
-                <span className="text-text-primary font-medium">
-                  zero-tolerance policy
-                </span>{" "}
-                for objectionable content and abusive users.
+                {ts.rich("agree", {
+                  terms: (chunks) => (
+              <Link href="/terms" className="text-accent-primary hover:underline">
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link href="/privacy" className="text-accent-primary hover:underline">
+                {chunks}
+              </Link>
+            ),
+                  strong: (chunks) => (
+                    <span className="text-text-primary font-medium">{chunks}</span>
+                  ),
+                })}
               </span>
             </label>
 
@@ -287,7 +287,7 @@ export default function WelcomePage() {
               }
               className="btn-y2k btn-y2k-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? "Saving…" : "Enter the site"}
+              {saving ? t("saving") : t("enter")}
             </button>
           </form>
 

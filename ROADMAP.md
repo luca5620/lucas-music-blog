@@ -389,9 +389,15 @@ pending (parked, his call).
   the key as text/plain, a wrong key 404s, llms-full serves. Prod
   check: llms.txt 200, robots lists every AI bot, SoftwareApplication
   JSON-LD on every page, FAQPage on /about, 98 sitemap URLs, bingbot
-  UA gets 200. **LUCA NEXT: Bing Webmaster Tools (import from GSC →
-  sitemap → IndexNow key → Vercel env → redeploy), then AlternativeTo
-  / Product Hunt / SaaSHub / Wikidata, then email the two listicles.**
+  UA gets 200. **✅ INDEXNOW LIVE (Luca, same night):** key
+  `758dd3993b3b4512810a368b04bdac01` set on Vercel Production, the
+  first redeploy missed it (env scope), the second took —
+  `/<key>.txt` serves the key, api.indexnow.org answers 202, and the
+  whole sitemap was submitted in one batch. From here every new
+  review / release page pings itself. **LUCA NEXT: Bing Webmaster
+  Tools (import from GSC → submit sitemap → URL inspection), then
+  AlternativeTo / Product Hunt / SaaSHub / Wikidata / Crunchbase,
+  then email achriom.com + wavemusic.app about their listicles.**
 
 - **2026-09-03 (Windows): LOGGED-OUT HOME COPY TRIMMED** (Luca: "cut
   down the wordiness in the home page and have it give you all the

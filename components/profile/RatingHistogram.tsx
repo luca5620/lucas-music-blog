@@ -10,6 +10,7 @@
  */
 
 import type { RatingBucket } from "@/lib/types/database";
+import { useTranslations } from "next-intl";
 
 interface RatingHistogramProps {
   distribution: RatingBucket[];
@@ -22,6 +23,7 @@ export default function RatingHistogram({
   accentColor = "#1e90ff",
 }: RatingHistogramProps) {
   // Fill all 11 buckets (0–10) so gaps render as empty columns.
+  const t = useTranslations("profile.histogram");
   const counts = Array.from({ length: 11 }, (_, bucket) => {
     const match = distribution.find((d) => d.bucket === bucket);
     return match?.count ?? 0;
@@ -39,14 +41,14 @@ export default function RatingHistogram({
       <div
         className="flex items-end gap-1 h-16"
         role="img"
-        aria-label={`Rating distribution across ${total} ratings`}
+        aria-label={t("aria", { n: total })}
       >
         {counts.map((count, bucket) => (
           <div
             key={bucket}
             className="flex-1 rounded-t-sm transition-all"
             // Hover shows the exact numbers, e.g. "8: 12 ratings"
-            title={`${bucket}: ${count} ${count === 1 ? "rating" : "ratings"}`}
+            title={t("bar", { bucket, n: count })}
             style={{
               // Zero-count buckets keep a 2px stub so the axis reads
               // as continuous; rated buckets scale to the max.

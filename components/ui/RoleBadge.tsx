@@ -10,6 +10,8 @@
  * - Regular users: no badge
  */
 
+import { useTranslations } from "next-intl";
+
 type Role = "user" | "reviewer" | "admin" | "owner" | "tester";
 
 interface RoleBadgeProps {
@@ -69,6 +71,9 @@ export default function RoleBadge({
   size = "md",
   showLabel = false,
 }: RoleBadgeProps) {
+  // LANGUAGES: the visible label comes from messages → profile.roles;
+  // badgeConfig keeps colors (and the English label as documentation).
+  const t = useTranslations("profile.roles");
   if (role === "user") return null;
 
   const config = badgeConfig[role];
@@ -77,6 +82,7 @@ export default function RoleBadge({
   if (!config) return null;
 
   const s = sizeMap[size];
+  const label = t(role);
 
   // Strong glow = layered drop-shadows (tight core + wide halo);
   // subtle = the single soft shadow the badges always had.
@@ -90,7 +96,7 @@ export default function RoleBadge({
     // floated a few px above the name it belongs to (Luca 2026-09-02:
     // "above as it sits currently"). Middle-aligning centers it on
     // the x-height, same line as the name, everywhere it's used.
-    <span className="inline-flex items-center gap-1 align-middle" title={config.label}>
+    <span className="inline-flex items-center gap-1 align-middle" title={label}>
       {/* viewBox pads 12 units of breathing room on every side (the
           icon art spans 0–24) = half the box is halo space. */}
       <svg
@@ -121,7 +127,7 @@ export default function RoleBadge({
           className={`${s.text} font-bold uppercase tracking-wider font-[family-name:var(--font-heading)]`}
           style={{ color: config.color }}
         >
-          {config.label}
+          {label}
         </span>
       )}
     </span>

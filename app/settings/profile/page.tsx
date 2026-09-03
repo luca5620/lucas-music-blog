@@ -30,7 +30,6 @@ import {
 } from "@/lib/social-links";
 import PlatformIcon from "@/components/profile/PlatformIcons";
 import {
-  COMPUTED_BADGE_INFO,
   COMPUTED_BADGE_KEYS,
   eventBadge,
   hiddenBadgeSet,
@@ -108,6 +107,7 @@ export default function ProfileSettingsPage() {
   // Theme names, platform names and catalog titles are data — untouched.
   const tSettings = useTranslations("settings");
   const tShow = useTranslations("home.showcases");
+  const tBadges = useTranslations("badges");
   const router = useRouter();
   const supabase = createClient();
 
@@ -1001,8 +1001,8 @@ export default function ProfileSettingsPage() {
               {[
                 ...COMPUTED_BADGE_KEYS.map((key) => ({
                   key,
-                  label: COMPUTED_BADGE_INFO[key].label,
-                  description: COMPUTED_BADGE_INFO[key].description,
+                  label: tBadges(`computed.${key}.label`),
+                  description: tBadges(`computed.${key}.description`),
                 })),
                 // Awarded event badges this member holds — only the ones
                 // this build can draw (an unknown key never shows on the
@@ -1013,8 +1013,8 @@ export default function ProfileSettingsPage() {
                   return [
                     {
                       key: b.badge_key,
-                      label: `${def.glyph} ${def.label}`,
-                      description: b.note ?? def.description,
+                      label: `${def.glyph} ${tBadges(`event.${b.badge_key}.label`)}`,
+                      description: b.note ?? tBadges(`event.${b.badge_key}.description`),
                     },
                   ];
                 }),

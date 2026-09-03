@@ -17,6 +17,7 @@ import StreakIndicator, {
   type StreakIcon,
 } from "@/components/profile/StreakIndicator";
 import SotdPicker from "@/components/profile/SotdPicker";
+import { getLocale, getTranslations } from "next-intl/server";
 
 interface Props {
   userId: string;
@@ -24,11 +25,15 @@ interface Props {
   streakIcon: StreakIcon;
 }
 
-function dayLabel(pickedOn: string): string {
-  if (isTodayPacific(pickedOn)) return "Today";
-  if (pickedOn === pacificDate(-1)) return "Yesterday";
+function dayLabel(
+  pickedOn: string,
+  locale: string,
+  words: { today: string; yesterday: string }
+): string {
+  if (isTodayPacific(pickedOn)) return words.today;
+  if (pickedOn === pacificDate(-1)) return words.yesterday;
   try {
-    return new Date(pickedOn + "T00:00:00Z").toLocaleDateString("en-US", {
+    return new Date(pickedOn + "T00:00:00Z").toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
     });
@@ -47,6 +52,9 @@ export default async function SongOfDayShowcase({
     getLatestSotd(userId).catch(() => null),
     getSotdStreak(userId).catch(() => 0),
   ]);
+  // LANGUAGES: messages → profile.sotd; the date reads in the viewer's locale.
+  const t = await getTranslations("profile.sotd");
+  const locale = await getLocale();
 
   // Nothing ever picked and it's not your profile: skip the section.
   if (!latest && !isOwner) return null;
@@ -55,7 +63,7 @@ export default async function SongOfDayShowcase({
 
   return (
     <section className="space-y-3">
-      <div className="vhs-label inline-block text-sm">SONG OF THE DAY</div>
+      <div className="vhs-label inline-block text-sm">{t("title")}</div>
 
       <div className="panel-xbox overflow-visible p-4 flex items-center gap-4">
         {/* ---- Left: the pick + owner controls ---- */}
@@ -79,9 +87,12 @@ export default async function SongOfDayShowcase({
 
               <div className="min-w-0 flex-1">
                 <p className="pixel-text text-[11px] uppercase tracking-widest mb-0.5 text-text-muted">
-                  {dayLabel(latest.picked_on)}
+                  {dayLabel(latest.picked_on, locale, {
+                    today: t("today"),
+                    yesterday: t("yesterday"),
+                  })}
                   {!hasToday && isOwner && (
-                    <span className="text-osd-amber"> · streak at risk!</span>
+                    <span className="text-osd-amber">{t("streakAtRisk")}</span>
                   )}
                 </p>
                 {latest.track_url ? (
@@ -106,10 +117,7 @@ export default async function SongOfDayShowcase({
               </div>
             </div>
           ) : (
-            <p className="text-sm text-text-secondary">
-              Pick your first song of the day — a new one every day keeps the
-              streak alive.
-            </p>
+            <p className="text-sm text-text-secondary">{t("firstPick")}</p>
           )}
 
           {isOwner && <SotdPicker hasToday={hasToday} />}

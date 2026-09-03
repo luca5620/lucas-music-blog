@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface BlockButtonProps {
   targetUserId: string;
@@ -29,6 +30,7 @@ export default function BlockButton({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const t = useTranslations("profile.block");
 
   async function toggle() {
     if (busy) return;
@@ -41,7 +43,7 @@ export default function BlockButton({
         body: JSON.stringify({ user_id: targetUserId }),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) throw new Error(data.error ?? "Failed");
+      if (!res.ok) throw new Error(data.error ?? t("failed"));
       setBlocked(!blocked);
       setConfirming(false);
       // Re-render the server components on this route so the
@@ -49,7 +51,7 @@ export default function BlockButton({
       // 1.2 wording is "remove it from the user's feed instantly".
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed");
+      setError(err instanceof Error ? err.message : t("failed"));
     } finally {
       setBusy(false);
     }
@@ -64,7 +66,7 @@ export default function BlockButton({
         disabled={busy}
         className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-border-medium text-text-muted hover:text-text-primary hover:border-border-bright transition-colors disabled:opacity-40 font-[family-name:var(--font-heading)]"
       >
-        {busy ? "…" : "Unblock"}
+        {busy ? "…" : t("unblock")}
       </button>
     );
   }
@@ -73,8 +75,7 @@ export default function BlockButton({
     return (
       <span className="inline-flex flex-col items-end gap-1.5">
         <span className="text-xs text-text-secondary max-w-[16rem] text-right">
-          Really block @{targetUsername}? Their content disappears from your
-          feeds immediately and our moderators are notified.
+          {t("confirm", { username: targetUsername })}
         </span>
         {error && <span className="text-[11px] text-accent-rose">{error}</span>}
         <span className="inline-flex gap-2">
@@ -83,7 +84,7 @@ export default function BlockButton({
             onClick={() => setConfirming(false)}
             className="text-[11px] uppercase tracking-wider text-text-muted hover:text-text-primary px-2 py-1"
           >
-            Cancel
+            {t("cancel")}
           </button>
           <button
             type="button"
@@ -91,7 +92,7 @@ export default function BlockButton({
             disabled={busy}
             className="text-[11px] uppercase tracking-wider font-bold text-accent-rose border border-accent-rose/40 rounded px-2 py-1 hover:bg-accent-rose/10 disabled:opacity-40 transition-colors"
           >
-            {busy ? "…" : "Block"}
+            {busy ? "…" : t("block")}
           </button>
         </span>
       </span>
@@ -104,7 +105,7 @@ export default function BlockButton({
       onClick={() => setConfirming(true)}
       className="px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-transparent text-text-muted hover:text-accent-rose hover:border-accent-rose/30 transition-colors font-[family-name:var(--font-heading)]"
     >
-      Block
+      {t("block")}
     </button>
   );
 }

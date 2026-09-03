@@ -12,6 +12,7 @@
  */
 
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   parseStatsfmUsername,
   getListeningSnapshot,
@@ -25,19 +26,20 @@ interface Props {
 }
 
 /** Coarse "2h ago" formatting for the last-played timestamp. */
-function timeAgo(iso: string | null): string | null {
+/** LANGUAGES: `t` is the profile.listening translator. */
+type Translator = Awaited<ReturnType<typeof getTranslations>>;
+
+function timeAgo(iso: string | null, t: Translator): string | null {
   if (!iso) return null;
   const ms = Date.now() - new Date(iso).getTime();
   if (Number.isNaN(ms) || ms < 0) return null;
   const mins = Math.floor(ms / 60_000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t("justNow");
+  if (mins < 60) return t("minsAgo", { n: mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t("hoursAgo", { n: hours });
+  return t("daysAgo", { n: Math.floor(hours / 24) });
 }
-
-const fmt = new Intl.NumberFormat("en-US");
 
 export default async function ListeningShowcase({
   mode,
@@ -45,7 +47,10 @@ export default async function ListeningShowcase({
   isOwner,
   accentColor,
 }: Props) {
-  const label = mode === "track" ? "ON ROTATION" : "ALL-TIME LISTENING";
+  const t = await getTranslations("profile.listening");
+  const locale = await getLocale();
+  const fmt = new Intl.NumberFormat(locale);
+  const label = mode === "track" ? t("onRotation") : t("allTime");
   const username = parseStatsfmUsername(statsfmUrl);
 
   // No stats.fm link: give the owner a setup nudge (once, on the
@@ -56,37 +61,36 @@ export default async function ListeningShowcase({
       <section className="space-y-3">
         <div className="vhs-label inline-block text-sm">{label}</div>
         <div className="panel-xbox p-5 text-sm text-text-secondary space-y-2">
-          <p>
-            Show what you&apos;re listening to (and your lifetime minutes +
-            streams) here. Two steps:
-          </p>
+          <p>{t("setupIntro")}</p>
           <ol className="list-decimal pl-5 space-y-1 text-text-muted">
             <li>
-              Make a free{" "}
-              <a
-                href="https://stats.fm"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent-primary hover:text-accent-glow"
-              >
-                stats.fm
-              </a>{" "}
-              account and connect your Spotify (set the profile to public).
+              {t.rich("step1", {
+                a: (chunks) => (
+                  <a
+                    href="https://stats.fm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent-primary hover:text-accent-glow"
+                  >
+                    {chunks}
+                  </a>
+                ),
+              })}
             </li>
             <li>
-              Paste your stats.fm link into{" "}
-              <Link
-                href="/settings/profile"
-                className="text-accent-primary hover:text-accent-glow"
-              >
-                Settings → Links
-              </Link>
-              .
+              {t.rich("step2", {
+                link: (chunks) => (
+                  <Link
+                    href="/settings/profile"
+                    className="text-accent-primary hover:text-accent-glow"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              })}
             </li>
           </ol>
-          <p className="text-xs text-text-muted">
-            (Only you can see this hint.)
-          </p>
+          <p className="text-xs text-text-muted">{t("onlyYou")}</p>
         </div>
       </section>
     );
@@ -102,16 +106,15 @@ export default async function ListeningShowcase({
         <section className="space-y-3">
           <div className="vhs-label inline-block text-sm">{label}</div>
           <div className="panel-xbox p-5 text-sm text-text-secondary">
-            Couldn&apos;t read your recent streams — make sure your stats.fm
-            profile is <span className="text-text-primary">public</span>{" "}
-            (stats.fm app → Settings → Privacy). (Only you can see this
-            hint.)
+            {t.rich("cantRead", {
+              b: (chunks) => <span className="text-text-primary">{chunks}</span>,
+            })}
           </div>
         </section>
       );
     }
 
-    const ago = !track.isPlaying ? timeAgo(track.endedAt) : null;
+    const ago = !track.isPlaying ? timeAgo(track.endedAt, t) : null;
 
     return (
       <section className="space-y-3">
@@ -138,11 +141,11 @@ export default async function ListeningShowcase({
             <p className="pixel-text text-[11px] uppercase tracking-widest">
               {track.isPlaying ? (
                 <span className="text-accent-primary">
-                  <span className="animate-pulse">●</span> Listening now
+                  <span className="animate-pulse">●</span> {t("listeningNow")}
                 </span>
               ) : (
                 <span className="text-text-muted">
-                  Last played{ago ? ` · ${ago}` : ""}
+                  {t("lastPlayed")}{ago ? ` · ${ago}` : ""}
                 </span>
               )}
             </p>
@@ -173,11 +176,7 @@ export default async function ListeningShowcase({
     return (
       <section className="space-y-3">
         <div className="vhs-label inline-block text-sm">{label}</div>
-        <div className="panel-xbox p-5 text-sm text-text-secondary">
-          No lifetime numbers yet — stats.fm needs your Spotify history
-          imported (stats.fm app → Import) and your profile set to public.
-          (Only you can see this hint.)
-        </div>
+        <div className="panel-xbox p-5 text-sm text-text-secondary">{t("noNumbers")}</div>
       </section>
     );
   }
@@ -197,7 +196,7 @@ export default async function ListeningShowcase({
               {fmt.format(stats.minutes)}
             </span>{" "}
             <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-              minutes
+              {t("minutes")}
             </span>
           </p>
           <p className="whitespace-nowrap">
@@ -208,7 +207,7 @@ export default async function ListeningShowcase({
               {fmt.format(stats.streams)}
             </span>{" "}
             <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-              streams
+              {t("streams")}
             </span>
           </p>
         </div>

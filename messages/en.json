@@ -519,5 +519,163 @@
       "reserved": "That username is reserved.",
       "justTaken": "That username was just taken — try another."
     }
+  },
+  "profile": {
+    "customize": "Customize",
+    "loginToFollow": "Log in to follow",
+    "stats": {
+      "reviews": "Reviews",
+      "followers": "Followers",
+      "following": "Following",
+      "viewConnections": "View your connections"
+    },
+    "hiddenFromVisitors": "Hidden from visitors",
+    "playlistTitle": "{name}'s playlist",
+    "featuredPlaylist": "Featured Playlist",
+    "ratingOverview": "RATING OVERVIEW",
+    "recordsRated": "Records rated",
+    "averageRating": "Average rating",
+    "likesReceived": "Likes received",
+    "nowShowing": "NOW SHOWING",
+    "noSignalOwnReviews": "NO SIGNAL — rate your first record to fill this shelf.",
+    "noSignalReviews": "NO SIGNAL — no reviews yet.",
+    "coverAlt": "{title} cover",
+    "featurePresentation": "FEATURE PRESENTATION",
+    "mixtapes": "MIXTAPES",
+    "noSignalOwnLists": "NO SIGNAL — build a list and it shows up here.",
+    "noSignalLists": "NO SIGNAL — no public lists yet.",
+    "waitingOn": "WAITING ON",
+    "noSignalOwnAnticipated": "NO SIGNAL — follow a release to start the countdown.",
+    "noSignalAnticipated": "NO SIGNAL — not waiting on anything.",
+    "unreleased": "Unreleased",
+    "tabs": {
+      "reviews": "Reviews",
+      "lists": "Lists",
+      "posts": "Posts"
+    },
+    "noSignalPosts": "NO SIGNAL — no posts yet.",
+    "noSignalListsTab": "NO SIGNAL — no lists yet.",
+    "memberSince": "Member since {date}",
+    "tuning": "TUNING…",
+    "follow": "Follow",
+    "following": "Following",
+    "block": {
+      "block": "Block",
+      "unblock": "Unblock",
+      "cancel": "Cancel",
+      "confirm": "Really block @{username}? Their content disappears from your feeds immediately and our moderators are notified.",
+      "failed": "Failed"
+    },
+    "song": {
+      "label": "Profile Song",
+      "play": "Play profile song {title}",
+      "pause": "Pause profile song {title}"
+    },
+    "badgesUi": {
+      "reviewsTitle": "{n, plural, one {# review} other {# reviews}}",
+      "likesTitle": "{n, plural, one {# like received} other {# likes received}}",
+      "yearsOfService": "{n, plural, one {# year of service} other {# years of service}}",
+      "monthsOfService": "{n, plural, one {# month of service} other {# months of service}}",
+      "reviewsLine": "Reviews trophy — tier {tier} of 10, one tier per {step}.",
+      "likesLine": "Likes trophy — tier {tier} of 10, one tier per {step} likes on your reviews.",
+      "topTier": "Top tier — the glowing blue.",
+      "reviewsToNext": "{n, plural, one {# more review} other {# more reviews}} to the next tier ({target}).",
+      "likesToNext": "{n, plural, one {# more like} other {# more likes}} to the next tier ({target}).",
+      "yearsRule": "Counts whole years from your join date.",
+      "monthsRule": "Counts whole months until your first anniversary, then years.",
+      "memberSince": "Member since {date}",
+      "tenureYears": "{n, plural, one {# YR} other {# YRS}}",
+      "tenureMonths": "{n} MO",
+      "hiddenAria": "{title} (hidden from visitors)",
+      "hiddenNote": "Hidden from visitors — only you see this"
+    },
+    "listening": {
+      "onRotation": "ON ROTATION",
+      "allTime": "ALL-TIME LISTENING",
+      "setupIntro": "Show what you're listening to (and your lifetime minutes + streams) here. Two steps:",
+      "step1": "Make a free <a>stats.fm</a> account and connect your Spotify (set the profile to public).",
+      "step2": "Paste your stats.fm link into <link>Settings → Links</link>.",
+      "onlyYou": "(Only you can see this hint.)",
+      "cantRead": "Couldn't read your recent streams — make sure your stats.fm profile is <b>public</b> (stats.fm app → Settings → Privacy). (Only you can see this hint.)",
+      "listeningNow": "Listening now",
+      "lastPlayed": "Last played",
+      "justNow": "just now",
+      "minsAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago",
+      "daysAgo": "{n}d ago",
+      "noNumbers": "No lifetime numbers yet — stats.fm needs your Spotify history imported (stats.fm app → Import) and your profile set to public. (Only you can see this hint.)",
+      "minutes": "minutes",
+      "streams": "streams"
+    },
+    "sotd": {
+      "title": "SONG OF THE DAY",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "streakAtRisk": " · streak at risk!",
+      "firstPick": "Pick your first song of the day — a new one every day keeps the streak alive.",
+      "changePick": "Change today's pick",
+      "setSong": "Set today's song",
+      "placeholder": "What's today's song?",
+      "whichTrack": "Which track on <b>title</b>?",
+      "differentRelease": "← different release",
+      "cancel": "Cancel",
+      "couldntSave": "Couldn't save.",
+      "dayStreak": "day streak",
+      "streakTitle": "{n}-day song-of-the-day streak"
+    },
+    "histogram": {
+      "aria": "Rating distribution across {n} ratings",
+      "bar": "{bucket}: {n, plural, one {# rating} other {# ratings}}"
+    },
+    "roles": {
+      "owner": "Founder",
+      "admin": "Admin",
+      "reviewer": "Verified Reviewer",
+      "tester": "Early Tester"
+    },
+    "playlist": {
+      "label": "Playlist",
+      "openOnSpotify": "open on spotify ↗",
+      "iframeTitle": "Spotify playlist: {title}",
+      "saveHint": "like it? keep it as one of your lists — every track becomes an entry you can rank and annotate"
+    }
+  },
+  "badges": {
+    "event": {
+      "beta_2026": {
+        "label": "Beta Crew",
+        "description": "Was here before launch — helped shape the app in 2026."
+      },
+      "release_night": {
+        "label": "Release Night",
+        "description": "Was in the live room the night a record dropped."
+      },
+      "debate_champion": {
+        "label": "Debate Champion",
+        "description": "Won a featured community debate."
+      },
+      "list_master": {
+        "label": "List Master",
+        "description": "Built a list the community couldn't stop liking."
+      },
+      "android_tester": {
+        "label": "Android Tester",
+        "description": "One of the first testers of the Android app."
+      }
+    },
+    "computed": {
+      "reviews": {
+        "label": "Reviews Trophy",
+        "description": "How many reviews you've published, tiered per 100."
+      },
+      "likes": {
+        "label": "Likes Trophy",
+        "description": "Likes received on your reviews, tiered per 100."
+      },
+      "tenure": {
+        "label": "Years of Service",
+        "description": "How long you've been a member — months, then years."
+      }
+    }
   }
 }

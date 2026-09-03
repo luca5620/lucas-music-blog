@@ -519,5 +519,163 @@
       "reserved": "Die gebruikersnaam is gereserveerd.",
       "justTaken": "Die gebruikersnaam is net ingenomen — probeer een andere."
     }
+  },
+  "profile": {
+    "customize": "Aanpassen",
+    "loginToFollow": "Log in om te volgen",
+    "stats": {
+      "reviews": "Recensies",
+      "followers": "Volgers",
+      "following": "Volgend",
+      "viewConnections": "Je connecties bekijken"
+    },
+    "hiddenFromVisitors": "Verborgen voor bezoekers",
+    "playlistTitle": "Playlist van {name}",
+    "featuredPlaylist": "Uitgelichte playlist",
+    "ratingOverview": "CIJFEROVERZICHT",
+    "recordsRated": "Platen beoordeeld",
+    "averageRating": "Gemiddeld cijfer",
+    "likesReceived": "Likes ontvangen",
+    "nowShowing": "NU TE ZIEN",
+    "noSignalOwnReviews": "GEEN SIGNAAL — beoordeel je eerste plaat om deze plank te vullen.",
+    "noSignalReviews": "GEEN SIGNAAL — nog geen recensies.",
+    "coverAlt": "Hoes van {title}",
+    "featurePresentation": "HOOFDFILM",
+    "mixtapes": "MIXTAPES",
+    "noSignalOwnLists": "GEEN SIGNAAL — maak een lijst en hij verschijnt hier.",
+    "noSignalLists": "GEEN SIGNAAL — nog geen openbare lijsten.",
+    "waitingOn": "WACHTEN OP",
+    "noSignalOwnAnticipated": "GEEN SIGNAAL — volg een release om het aftellen te starten.",
+    "noSignalAnticipated": "GEEN SIGNAAL — wacht nergens op.",
+    "unreleased": "Onuitgebracht",
+    "tabs": {
+      "reviews": "Recensies",
+      "lists": "Lijsten",
+      "posts": "Posts"
+    },
+    "noSignalPosts": "GEEN SIGNAAL — nog geen posts.",
+    "noSignalListsTab": "GEEN SIGNAAL — nog geen lijsten.",
+    "memberSince": "Lid sinds {date}",
+    "tuning": "AFSTEMMEN…",
+    "follow": "Volgen",
+    "following": "Volgend",
+    "block": {
+      "block": "Blokkeren",
+      "unblock": "Deblokkeren",
+      "cancel": "Annuleren",
+      "confirm": "Echt @{username} blokkeren? Diens content verdwijnt meteen uit je feeds en onze moderators krijgen bericht.",
+      "failed": "Mislukt"
+    },
+    "song": {
+      "label": "Profielnummer",
+      "play": "Profielnummer {title} afspelen",
+      "pause": "Profielnummer {title} pauzeren"
+    },
+    "badgesUi": {
+      "reviewsTitle": "{n, plural, one {# recensie} other {# recensies}}",
+      "likesTitle": "{n, plural, one {# like ontvangen} other {# likes ontvangen}}",
+      "yearsOfService": "{n, plural, one {# dienstjaar} other {# dienstjaren}}",
+      "monthsOfService": "{n, plural, one {# dienstmaand} other {# dienstmaanden}}",
+      "reviewsLine": "Recensietrofee — niveau {tier} van 10, één niveau per {step}.",
+      "likesLine": "Likestrofee — niveau {tier} van 10, één niveau per {step} likes op je recensies.",
+      "topTier": "Hoogste niveau — het gloeiende blauw.",
+      "reviewsToNext": "Nog {n, plural, one {# recensie} other {# recensies}} tot het volgende niveau ({target}).",
+      "likesToNext": "Nog {n, plural, one {# like} other {# likes}} tot het volgende niveau ({target}).",
+      "yearsRule": "Telt hele jaren vanaf je aanmelddatum.",
+      "monthsRule": "Telt hele maanden tot je eerste verjaardag, daarna jaren.",
+      "memberSince": "Lid sinds {date}",
+      "tenureYears": "{n} JR",
+      "tenureMonths": "{n} MND",
+      "hiddenAria": "{title} (verborgen voor bezoekers)",
+      "hiddenNote": "Verborgen voor bezoekers — alleen jij ziet dit"
+    },
+    "listening": {
+      "onRotation": "IN ROTATIE",
+      "allTime": "TOTALE LUISTERTIJD",
+      "setupIntro": "Laat hier zien wat je luistert (en je totale minuten + streams). Twee stappen:",
+      "step1": "Maak een gratis <a>stats.fm</a>-account en koppel je Spotify (zet het profiel op openbaar).",
+      "step2": "Plak je stats.fm-link in <link>Instellingen → Links</link>.",
+      "onlyYou": "(Alleen jij ziet deze hint.)",
+      "cantRead": "Je recente streams konden niet worden gelezen — zorg dat je stats.fm-profiel <b>openbaar</b> is (stats.fm-app → Instellingen → Privacy). (Alleen jij ziet deze hint.)",
+      "listeningNow": "Nu aan het luisteren",
+      "lastPlayed": "Laatst gespeeld",
+      "justNow": "zojuist",
+      "minsAgo": "{n}m geleden",
+      "hoursAgo": "{n}u geleden",
+      "daysAgo": "{n}d geleden",
+      "noNumbers": "Nog geen totaalcijfers — stats.fm heeft je geïmporteerde Spotify-geschiedenis nodig (stats.fm-app → Importeren) en een openbaar profiel. (Alleen jij ziet deze hint.)",
+      "minutes": "minuten",
+      "streams": "streams"
+    },
+    "sotd": {
+      "title": "NUMMER VAN DE DAG",
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "streakAtRisk": " · reeks in gevaar!",
+      "firstPick": "Kies je eerste nummer van de dag — elke dag een nieuw houdt de reeks in leven.",
+      "changePick": "Keuze van vandaag wijzigen",
+      "setSong": "Nummer van vandaag kiezen",
+      "placeholder": "Wat is het nummer van vandaag?",
+      "whichTrack": "Welke track van <b>titel</b>?",
+      "differentRelease": "← andere release",
+      "cancel": "Annuleren",
+      "couldntSave": "Opslaan mislukt.",
+      "dayStreak": "dagen reeks",
+      "streakTitle": "Reeks van {n} dagen nummer van de dag"
+    },
+    "histogram": {
+      "aria": "Verdeling van {n} cijfers",
+      "bar": "{bucket}: {n, plural, one {# cijfer} other {# cijfers}}"
+    },
+    "roles": {
+      "owner": "Oprichter",
+      "admin": "Admin",
+      "reviewer": "Geverifieerde recensent",
+      "tester": "Vroege tester"
+    },
+    "playlist": {
+      "label": "Playlist",
+      "openOnSpotify": "open in spotify ↗",
+      "iframeTitle": "Spotify-playlist: {title}",
+      "saveHint": "vind je hem goed? bewaar hem als een van je lijsten — elke track wordt een item dat je kunt rangschikken en annoteren"
+    }
+  },
+  "badges": {
+    "event": {
+      "beta_2026": {
+        "label": "Bètacrew",
+        "description": "Was er vóór de lancering — hielp de app vormgeven in 2026."
+      },
+      "release_night": {
+        "label": "Releasenacht",
+        "description": "Was in de live room de nacht dat een plaat uitkwam."
+      },
+      "debate_champion": {
+        "label": "Debatkampioen",
+        "description": "Won een uitgelicht communitydebat."
+      },
+      "list_master": {
+        "label": "Lijstenmeester",
+        "description": "Maakte een lijst die de community bleef liken."
+      },
+      "android_tester": {
+        "label": "Android-tester",
+        "description": "Een van de eerste testers van de Android-app."
+      }
+    },
+    "computed": {
+      "reviews": {
+        "label": "Recensietrofee",
+        "description": "Hoeveel recensies je hebt gepubliceerd, in niveaus per 100."
+      },
+      "likes": {
+        "label": "Likestrofee",
+        "description": "Likes ontvangen op je recensies, in niveaus per 100."
+      },
+      "tenure": {
+        "label": "Dienstjaren",
+        "description": "Hoe lang je lid bent — maanden, daarna jaren."
+      }
+    }
   }
 }

@@ -29,6 +29,7 @@ import {
   trophyTier,
   TROPHY_STEP,
 } from "@/lib/badges";
+import { useLocale, useTranslations } from "next-intl";
 
 interface AwardedBadge {
   badge_key: string;
@@ -86,6 +87,13 @@ export default function ProfileBadges({
   // click toggled it shut the instant you pressed). A TOUCH has no
   // hover, so its tap toggles.
   const lastPointer = useRef<string>("mouse");
+  // LANGUAGES: the tooltip copy (profile.badgesUi) + event badge
+  // names/descriptions (badges.event.<key>). lib/badges keeps the
+  // English source of truth; the awarded `note` is staff-written and
+  // shown as-is.
+  const t = useTranslations("profile.badgesUi");
+  const tb = useTranslations("badges.event");
+  const locale = useLocale();
 
   // Tap anywhere else (or Escape) closes the open card — the app has
   // no hover, so this is the only way a tapped card goes away.
@@ -114,10 +122,19 @@ export default function ProfileBadges({
   const glowFor = (t: ReturnType<typeof trophyTier>) =>
     t.perfect ? "perfect" : t.elite ? "elite" : t.tier >= 1 ? "soft" : "none";
 
-  const nextLine = (t: ReturnType<typeof trophyTier>, noun: string) =>
-    t.toNext === null
-      ? "Top tier — the glowing blue."
-      : `${t.toNext} more ${noun} to the next tier (${(t.tier + 1) * TROPHY_STEP}).`;
+  const nextLine = (tier: ReturnType<typeof trophyTier>, noun: "reviews" | "likes") =>
+    tier.toNext === null
+      ? t("topTier")
+      : t(noun === "reviews" ? "reviewsToNext" : "likesToNext", {
+          n: tier.toNext,
+          target: (tier.tier + 1) * TROPHY_STEP,
+        });
+  const joined = new Date(createdAt);
+  const sinceLine = t("memberSince", {
+    date: Number.isNaN(joined.getTime())
+      ? ""
+      : joined.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" }),
+  });
 
   const badges: BadgeSpec[] = [
     {
@@ -127,9 +144,9 @@ export default function ProfileBadges({
       caption: String(reviewCount),
       color: reviews.color,
       glow: glowFor(reviews),
-      title: `${reviewCount} ${reviewCount === 1 ? "review" : "reviews"}`,
+      title: t("reviewsTitle", { n: reviewCount }),
       lines: [
-        `Reviews trophy — tier ${reviews.tier} of 10, one tier per ${TROPHY_STEP}.`,
+        t("reviewsLine", { tier: reviews.tier, step: TROPHY_STEP }),
         nextLine(reviews, "reviews"),
       ],
     },
@@ -140,9 +157,9 @@ export default function ProfileBadges({
       caption: String(likesReceived),
       color: likes.color,
       glow: glowFor(likes),
-      title: `${likesReceived} ${likesReceived === 1 ? "like" : "likes"} received`,
+      title: t("likesTitle", { n: likesReceived }),
       lines: [
-        `Likes trophy — tier ${likes.tier} of 10, one tier per ${TROPHY_STEP} likes on your reviews.`,
+        t("likesLine", { tier: likes.tier, step: TROPHY_STEP }),
         nextLine(likes, "likes"),
       ],
     },
@@ -150,18 +167,17 @@ export default function ProfileBadges({
       id: "tenure",
       hideKey: "tenure",
       face: <ShieldGlyph />,
-      caption: tenure.label,
+      caption:
+        tenure.years >= 1
+          ? t("tenureYears", { n: tenure.years })
+          : t("tenureMonths", { n: tenure.months }),
       color: accentColor,
       glow: tenure.years >= 1 ? "soft" : "none",
-      title: tenure.years >= 1
-        ? `${tenure.years} ${tenure.years === 1 ? "year" : "years"} of service`
-        : `${tenure.months} ${tenure.months === 1 ? "month" : "months"} of service`,
-      lines: [
-        tenure.since,
+      title:
         tenure.years >= 1
-          ? "Counts whole years from your join date."
-          : "Counts whole months until your first anniversary, then years.",
-      ],
+          ? t("yearsOfService", { n: tenure.years })
+          : t("monthsOfService", { n: tenure.months }),
+      lines: [sinceLine, tenure.years >= 1 ? t("yearsRule") : t("monthsRule")],
     },
     // Awarded event badges — only the keys this build knows how to
     // draw; anything else is skipped silently (awarded ahead of a
@@ -178,11 +194,11 @@ export default function ProfileBadges({
               {def.glyph}
             </span>
           ),
-          caption: def.label,
+          caption: tb(`${a.badge_key}.label`),
           color: def.color,
           glow: "soft",
-          title: def.label,
-          lines: [def.description, ...(a.note ? [a.note] : [])],
+          title: tb(`${a.badge_key}.label`),
+          lines: [tb(`${a.badge_key}.description`), ...(a.note ? [a.note] : [])],
         },
       ];
     }),
@@ -206,7 +222,7 @@ export default function ProfileBadges({
             <button
               type="button"
               aria-expanded={isOpen}
-              aria-label={isHidden ? `${b.title} (hidden from visitors)` : b.title}
+              aria-label={isHidden ? t("hiddenAria", { title: b.title }) : b.title}
               onPointerDown={(e) => {
                 lastPointer.current = e.pointerType;
               }}
@@ -255,7 +271,7 @@ export default function ProfileBadges({
                 ))}
                 {isHidden && (
                   <p className="pixel-text text-[11px] uppercase tracking-wider text-text-muted pt-1">
-                    Hidden from visitors — only you see this
+                    {t("hiddenNote")}
                   </p>
                 )}
               </div>

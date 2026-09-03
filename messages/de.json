@@ -519,5 +519,163 @@
       "reserved": "Dieser Nutzername ist reserviert.",
       "justTaken": "Dieser Nutzername wurde gerade vergeben — versuch einen anderen."
     }
+  },
+  "profile": {
+    "customize": "Anpassen",
+    "loginToFollow": "Anmelden, um zu folgen",
+    "stats": {
+      "reviews": "Rezensionen",
+      "followers": "Follower",
+      "following": "Folgt",
+      "viewConnections": "Deine Verbindungen ansehen"
+    },
+    "hiddenFromVisitors": "Für Besucher verborgen",
+    "playlistTitle": "Playlist von {name}",
+    "featuredPlaylist": "Playlist im Fokus",
+    "ratingOverview": "BEWERTUNGSÜBERSICHT",
+    "recordsRated": "Platten bewertet",
+    "averageRating": "Durchschnitt",
+    "likesReceived": "Likes erhalten",
+    "nowShowing": "JETZT IM PROGRAMM",
+    "noSignalOwnReviews": "KEIN SIGNAL — bewerte deine erste Platte, um dieses Regal zu füllen.",
+    "noSignalReviews": "KEIN SIGNAL — noch keine Rezensionen.",
+    "coverAlt": "Cover von {title}",
+    "featurePresentation": "HAUPTFILM",
+    "mixtapes": "MIXTAPES",
+    "noSignalOwnLists": "KEIN SIGNAL — bau eine Liste und sie taucht hier auf.",
+    "noSignalLists": "KEIN SIGNAL — noch keine öffentlichen Listen.",
+    "waitingOn": "WARTEN AUF",
+    "noSignalOwnAnticipated": "KEIN SIGNAL — folge einem Release, um den Countdown zu starten.",
+    "noSignalAnticipated": "KEIN SIGNAL — wartet auf nichts.",
+    "unreleased": "Unveröffentlicht",
+    "tabs": {
+      "reviews": "Rezensionen",
+      "lists": "Listen",
+      "posts": "Posts"
+    },
+    "noSignalPosts": "KEIN SIGNAL — noch keine Posts.",
+    "noSignalListsTab": "KEIN SIGNAL — noch keine Listen.",
+    "memberSince": "Mitglied seit {date}",
+    "tuning": "SENDERSUCHE…",
+    "follow": "Folgen",
+    "following": "Folge ich",
+    "block": {
+      "block": "Blockieren",
+      "unblock": "Entblocken",
+      "cancel": "Abbrechen",
+      "confirm": "@{username} wirklich blockieren? Die Inhalte verschwinden sofort aus deinen Feeds und unsere Moderatoren werden benachrichtigt.",
+      "failed": "Fehlgeschlagen"
+    },
+    "song": {
+      "label": "Profilsong",
+      "play": "Profilsong {title} abspielen",
+      "pause": "Profilsong {title} pausieren"
+    },
+    "badgesUi": {
+      "reviewsTitle": "{n, plural, one {# Rezension} other {# Rezensionen}}",
+      "likesTitle": "{n, plural, one {# Like erhalten} other {# Likes erhalten}}",
+      "yearsOfService": "{n, plural, one {# Jahr dabei} other {# Jahre dabei}}",
+      "monthsOfService": "{n, plural, one {# Monat dabei} other {# Monate dabei}}",
+      "reviewsLine": "Rezensions-Trophäe — Stufe {tier} von 10, eine Stufe pro {step}.",
+      "likesLine": "Likes-Trophäe — Stufe {tier} von 10, eine Stufe pro {step} Likes auf deine Rezensionen.",
+      "topTier": "Höchste Stufe — das leuchtende Blau.",
+      "reviewsToNext": "Noch {n, plural, one {# Rezension} other {# Rezensionen}} bis zur nächsten Stufe ({target}).",
+      "likesToNext": "Noch {n, plural, one {# Like} other {# Likes}} bis zur nächsten Stufe ({target}).",
+      "yearsRule": "Zählt ganze Jahre ab deinem Beitritt.",
+      "monthsRule": "Zählt ganze Monate bis zum ersten Jahrestag, danach Jahre.",
+      "memberSince": "Mitglied seit {date}",
+      "tenureYears": "{n} J.",
+      "tenureMonths": "{n} MON.",
+      "hiddenAria": "{title} (für Besucher verborgen)",
+      "hiddenNote": "Für Besucher verborgen — nur du siehst das"
+    },
+    "listening": {
+      "onRotation": "IN ROTATION",
+      "allTime": "GESAMT-HÖRZEIT",
+      "setupIntro": "Zeig hier, was du hörst (und deine Gesamtminuten + Streams). Zwei Schritte:",
+      "step1": "Leg ein kostenloses <a>stats.fm</a>-Konto an und verbinde dein Spotify (stell das Profil auf öffentlich).",
+      "step2": "Füg deinen stats.fm-Link unter <link>Einstellungen → Links</link> ein.",
+      "onlyYou": "(Nur du siehst diesen Hinweis.)",
+      "cantRead": "Deine letzten Streams ließen sich nicht lesen — stell sicher, dass dein stats.fm-Profil <b>öffentlich</b> ist (stats.fm-App → Einstellungen → Datenschutz). (Nur du siehst diesen Hinweis.)",
+      "listeningNow": "Hört gerade",
+      "lastPlayed": "Zuletzt gehört",
+      "justNow": "gerade eben",
+      "minsAgo": "vor {n} Min.",
+      "hoursAgo": "vor {n} Std.",
+      "daysAgo": "vor {n} Tg.",
+      "noNumbers": "Noch keine Gesamtzahlen — stats.fm braucht deinen importierten Spotify-Verlauf (stats.fm-App → Import) und ein öffentliches Profil. (Nur du siehst diesen Hinweis.)",
+      "minutes": "Minuten",
+      "streams": "Streams"
+    },
+    "sotd": {
+      "title": "SONG DES TAGES",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "streakAtRisk": " · Streak in Gefahr!",
+      "firstPick": "Wähl deinen ersten Song des Tages — jeden Tag ein neuer hält die Streak am Leben.",
+      "changePick": "Heutige Wahl ändern",
+      "setSong": "Song des Tages setzen",
+      "placeholder": "Was ist der Song des Tages?",
+      "whichTrack": "Welcher Track von <b>Titel</b>?",
+      "differentRelease": "← anderes Release",
+      "cancel": "Abbrechen",
+      "couldntSave": "Speichern ging nicht.",
+      "dayStreak": "Tage Streak",
+      "streakTitle": "{n}-Tage-Streak beim Song des Tages"
+    },
+    "histogram": {
+      "aria": "Verteilung von {n} Bewertungen",
+      "bar": "{bucket}: {n, plural, one {# Bewertung} other {# Bewertungen}}"
+    },
+    "roles": {
+      "owner": "Gründer",
+      "admin": "Admin",
+      "reviewer": "Verifizierter Rezensent",
+      "tester": "Früher Tester"
+    },
+    "playlist": {
+      "label": "Playlist",
+      "openOnSpotify": "auf spotify öffnen ↗",
+      "iframeTitle": "Spotify-Playlist: {title}",
+      "saveHint": "gefällt dir? behalt sie als eine deiner Listen — jeder Track wird ein Eintrag, den du sortieren und kommentieren kannst"
+    }
+  },
+  "badges": {
+    "event": {
+      "beta_2026": {
+        "label": "Beta-Crew",
+        "description": "War vor dem Launch dabei — hat die App 2026 mitgeprägt."
+      },
+      "release_night": {
+        "label": "Release-Nacht",
+        "description": "War im Live-Raum in der Nacht, als eine Platte erschien."
+      },
+      "debate_champion": {
+        "label": "Debatten-Champion",
+        "description": "Hat eine hervorgehobene Community-Debatte gewonnen."
+      },
+      "list_master": {
+        "label": "Listenmeister",
+        "description": "Hat eine Liste gebaut, die die Community nicht aufhören konnte zu liken."
+      },
+      "android_tester": {
+        "label": "Android-Tester",
+        "description": "Einer der ersten Tester der Android-App."
+      }
+    },
+    "computed": {
+      "reviews": {
+        "label": "Rezensions-Trophäe",
+        "description": "Wie viele Rezensionen du veröffentlicht hast, in Stufen zu 100."
+      },
+      "likes": {
+        "label": "Likes-Trophäe",
+        "description": "Likes auf deine Rezensionen, in Stufen zu 100."
+      },
+      "tenure": {
+        "label": "Dienstjahre",
+        "description": "Wie lange du Mitglied bist — Monate, dann Jahre."
+      }
+    }
   }
 }

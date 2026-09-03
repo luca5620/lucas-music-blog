@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 
 interface FollowButtonProps {
   profileId: string;
@@ -15,6 +16,7 @@ export default function FollowButton({
 }: FollowButtonProps) {
   const [following, setFollowing] = useState(initialFollowing);
   const [isPending, startTransition] = useTransition();
+  const t = useTranslations("profile");
 
   function handleToggle() {
     startTransition(async () => {
@@ -53,7 +55,7 @@ export default function FollowButton({
             }
       }
     >
-      {isPending ? "..." : following ? "Following" : "Follow"}
+      {isPending ? "..." : following ? t("following") : t("follow")}
     </button>
   );
 }

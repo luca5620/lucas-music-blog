@@ -12,6 +12,8 @@
  * prefers-reduced-motion. Renders nothing at streak 0.
  */
 
+import { useTranslations } from "next-intl";
+
 export type StreakIcon = "flame" | "vinyl" | "cd";
 
 interface StreakIndicatorProps {
@@ -89,6 +91,9 @@ export default function StreakIndicator({
   size = "lg",
   preview = false,
 }: StreakIndicatorProps) {
+  // LANGUAGES: useTranslations works in server AND client components
+  // (this one is rendered from both), unlike the async getTranslations.
+  const t = useTranslations("profile.sotd");
   if (streak <= 0 && !preview) return null;
 
   const Icon = ICONS[icon] ?? FlameSvg;
@@ -97,7 +102,7 @@ export default function StreakIndicator({
     return (
       <span
         className="inline-flex items-center gap-1"
-        title={`${streak}-day song-of-the-day streak`}
+        title={t("streakTitle", { n: streak })}
       >
         <Icon className="w-4 h-4" />
         <span
@@ -114,7 +119,7 @@ export default function StreakIndicator({
   return (
     <div
       className="flex flex-col items-center justify-center gap-1 shrink-0"
-      title={`${streak}-day song-of-the-day streak`}
+      title={t("streakTitle", { n: streak })}
     >
       <Icon className="w-14 h-14 sm:w-16 sm:h-16" />
       <span
@@ -124,7 +129,7 @@ export default function StreakIndicator({
         {streak}
       </span>
       <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">
-        day streak
+        {t("dayStreak")}
       </span>
     </div>
   );

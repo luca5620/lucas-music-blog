@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface ProfileSongPlayerProps {
   url: string;
@@ -25,6 +26,7 @@ export default function ProfileSongPlayer({
 }: ProfileSongPlayerProps) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const t = useTranslations("profile.song");
 
   // Non-audio target (catalog pick without a preview): song-as-link.
   if (!isPlayableAudio(url) && (url.startsWith("https://") || url.startsWith("/"))) {
@@ -43,7 +45,7 @@ export default function ProfileSongPlayer({
         <span className="text-lg">♪</span>
         <span className="text-left">
           <span className="font-[family-name:var(--font-vt323)] text-xs text-[#5a5a60] uppercase tracking-wider block">
-            Profile Song
+            {t("label")}
           </span>
           <span className="font-[family-name:var(--font-space-grotesk)] text-sm font-bold block">
             {title} ↗
@@ -73,7 +75,7 @@ export default function ProfileSongPlayer({
   return (
     <button
       onClick={togglePlay}
-      aria-label={playing ? `Pause profile song ${title}` : `Play profile song ${title}`}
+      aria-label={playing ? t("pause", { title }) : t("play", { title })}
       aria-pressed={playing}
       className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all hover:scale-[1.02]"
       style={{
@@ -88,7 +90,7 @@ export default function ProfileSongPlayer({
       {/* Song info */}
       <div className="text-left">
         <span className="font-[family-name:var(--font-vt323)] text-xs text-[#5a5a60] uppercase tracking-wider block">
-          Profile Song
+          {t("label")}
         </span>
         <span className="font-[family-name:var(--font-space-grotesk)] text-sm font-bold block">
           {title}

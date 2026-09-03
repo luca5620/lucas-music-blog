@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
+import { useTranslations } from "next-intl";
 
 interface SotdPickerProps {
   /** True when a pick already exists today (button says "change"). */
@@ -24,6 +25,7 @@ export default function SotdPicker({ hasToday }: SotdPickerProps) {
   const [pick, setPick] = useState<CatalogPick | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("profile.sotd");
 
   async function chooseTrack(trackTitle: string) {
     if (!pick) return;
@@ -39,12 +41,12 @@ export default function SotdPicker({ hasToday }: SotdPickerProps) {
         }),
       });
       const data = (await res.json()) as { error?: string };
-      if (!res.ok) throw new Error(data.error ?? "Couldn't save.");
+      if (!res.ok) throw new Error(data.error ?? t("couldntSave"));
       setOpen(false);
       setPick(null);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't save.");
+      setError(err instanceof Error ? err.message : t("couldntSave"));
     } finally {
       setSaving(false);
     }
@@ -57,7 +59,7 @@ export default function SotdPicker({ hasToday }: SotdPickerProps) {
         onClick={() => setOpen(true)}
         className="pixel-text text-xs uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
       >
-        {hasToday ? "Change today's pick" : "Set today's song"}
+        {hasToday ? t("changePick") : t("setSong")}
       </button>
     );
   }
@@ -67,17 +69,17 @@ export default function SotdPicker({ hasToday }: SotdPickerProps) {
       {!pick ? (
         <CatalogSearch
           onPick={setPick}
-          placeholder="What's today's song?"
+          placeholder={t("placeholder")}
           autoFocus={!hasToday}
         />
       ) : (
         <div className="space-y-2">
           <p className="text-xs text-text-muted">
-            Which track on{" "}
-            <span className="text-text-primary font-bold">
-              {pick.release.title}
-            </span>
-            ?
+            {t.rich("whichTrack", {
+              b: () => (
+                <span className="text-text-primary font-bold">{pick.release.title}</span>
+              ),
+            })}
           </p>
           <div className="max-h-56 overflow-y-auto rounded-lg border border-border-subtle divide-y divide-border-subtle">
             {(pick.release.tracks ?? []).map((t) => (
@@ -100,7 +102,7 @@ export default function SotdPicker({ hasToday }: SotdPickerProps) {
             onClick={() => setPick(null)}
             className="text-xs text-text-muted hover:text-text-primary transition-colors"
           >
-            ← different release
+            {t("differentRelease")}
           </button>
         </div>
       )}
@@ -117,7 +119,7 @@ export default function SotdPicker({ hasToday }: SotdPickerProps) {
           }}
           className="text-xs text-text-muted hover:text-text-primary transition-colors"
         >
-          Cancel
+          {t("cancel")}
         </button>
       )}
     </div>

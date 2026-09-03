@@ -44,6 +44,9 @@ import type { StreakIcon } from "@/components/profile/StreakIndicator";
 import ListCard from "@/components/lists/ListCard";
 import PlaylistEmbed from "@/components/playlists/PlaylistEmbed";
 import type { Metadata } from "next";
+// LANGUAGES: server page → getTranslations("profile"); getLocale drives
+// date formatting so "Member since" reads in the visitor's language.
+import { getLocale, getTranslations } from "next-intl/server";
 import type {
   ProfileTheme,
   RatingBucket,
@@ -182,6 +185,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   const { tab: rawTab } = await searchParams;
   const activeTab = resolveTab(rawTab);
+  const t = await getTranslations("profile");
+  const locale = await getLocale();
 
   // --- Resolve theme + showcases defensively. Until migration 006
   //     runs, these columns don't exist and come back undefined. ---
@@ -298,7 +303,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     .filter((r): r is AnticipatedRelease => !!r);
 
   const displayName = profile.display_name ?? profile.username;
-  const memberSince = new Date(profile.created_at).toLocaleDateString("en-US", {
+  const memberSince = new Date(profile.created_at).toLocaleDateString(locale, {
     month: "long",
     year: "numeric",
   });
@@ -477,7 +482,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 className="btn-y2k btn-y2k-outline"
                 style={{ borderColor: accentColor, color: accentColor }}
               >
-                Customize
+                {t("customize")}
               </Link>
             ) : currentUser ? (
               <span className="inline-flex items-center gap-2">
@@ -494,7 +499,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               </span>
             ) : (
               <Link href="/login" className="btn-y2k btn-y2k-outline">
-                Log in to follow
+                {t("loginToFollow")}
               </Link>
             )}
           </div>
@@ -512,9 +517,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             /connections page) — visitors just see numbers, never lists. */}
         <div className="flex gap-6">
           {[
-            { label: "Reviews", value: stats.review_count, link: false },
-            { label: "Followers", value: stats.follower_count, link: true },
-            { label: "Following", value: stats.following_count, link: true },
+            { label: t("stats.reviews"), value: stats.review_count, link: false },
+            { label: t("stats.followers"), value: stats.follower_count, link: true },
+            { label: t("stats.following"), value: stats.following_count, link: true },
           ].map((stat) => {
             const inner = (
               <>
@@ -534,7 +539,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 key={stat.label}
                 href="/connections"
                 className="text-center hover:opacity-75 transition-opacity"
-                title="View your connections"
+                title={t("stats.viewConnections")}
               >
                 {inner}
               </Link>
@@ -575,7 +580,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 never reach this branch when linksHidden is on. */}
             {linksHidden && hasStreamingLinks && (
               <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">
-                Hidden from visitors
+                {t("hiddenFromVisitors")}
               </span>
             )}
           </div>
@@ -596,8 +601,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             <div className="pt-2">
               <PlaylistEmbed
                 playlistId={profile.featured_playlist_id}
-                title={`${profile.display_name || profile.username}'s playlist`}
-                label="Featured Playlist"
+                title={t("playlistTitle", { name: profile.display_name || profile.username })}
+                label={t("featuredPlaylist")}
               />
             </div>
           )}
@@ -615,7 +620,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             case "stats":
               return (
                 <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">RATING OVERVIEW</div>
+                  <div className="vhs-label inline-block text-sm">{t("ratingOverview")}</div>
                   <div className="panel-xbox p-5 space-y-6">
                     {/* The three headline stats — evenly spaced, centered,
                         original 3-column sizing. */}
@@ -628,7 +633,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                           {stats.review_count}
                         </p>
                         <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                          Records rated
+                          {t("recordsRated")}
                         </p>
                       </div>
                       <div className="text-center">
@@ -639,7 +644,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                           {avgRating ?? "—"}
                         </p>
                         <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                          Average rating
+                          {t("averageRating")}
                         </p>
                       </div>
                       {/* Total likes across ALL of this user's reviews */}
@@ -651,7 +656,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                           {stats.total_likes_received}
                         </p>
                         <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                          Likes received
+                          {t("likesReceived")}
                         </p>
                       </div>
                     </div>
@@ -672,13 +677,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               const recent = (reviews as Review[]).slice(0, 8);
               return (
                 <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">NOW SHOWING</div>
+                  <div className="vhs-label inline-block text-sm">{t("nowShowing")}</div>
                   {recent.length === 0 ? (
                     <EmptyState
                       text={
                         isOwnProfile
-                          ? "NO SIGNAL — rate your first record to fill this shelf."
-                          : "NO SIGNAL — no reviews yet."
+                          ? t("noSignalOwnReviews")
+                          : t("noSignalReviews")
                       }
                     />
                   ) : (
@@ -699,7 +704,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                             {review.cover_image ? (
                               <img
                                 src={review.cover_image}
-                                alt={`${review.title} cover`}
+                                alt={t("coverAlt", { title: review.title })}
                               />
                             ) : (
                               <span className="w-full h-full flex items-center justify-center text-4xl">
@@ -729,7 +734,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               const ratingColor = getRatingHex(featuredReview.rating);
               return (
                 <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">FEATURE PRESENTATION</div>
+                  <div className="vhs-label inline-block text-sm">{t("featurePresentation")}</div>
                   <Link
                     href={`/reviews/${featuredReview.slug}`}
                     className="panel-xbox-glow p-5 flex gap-5 items-start group hover-glow"
@@ -738,7 +743,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                       {featuredReview.cover_image ? (
                         <img
                           src={featuredReview.cover_image}
-                          alt={`${featuredReview.title} cover`}
+                          alt={t("coverAlt", { title: featuredReview.title })}
                         />
                       ) : (
                         <span className="w-full h-full flex items-center justify-center text-4xl">
@@ -778,13 +783,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               const rail = profileLists.slice(0, 3);
               return (
                 <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">MIXTAPES</div>
+                  <div className="vhs-label inline-block text-sm">{t("mixtapes")}</div>
                   {rail.length === 0 ? (
                     <EmptyState
                       text={
                         isOwnProfile
-                          ? "NO SIGNAL — build a list and it shows up here."
-                          : "NO SIGNAL — no public lists yet."
+                          ? t("noSignalOwnLists")
+                          : t("noSignalLists")
                       }
                     />
                   ) : (
@@ -801,13 +806,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             case "anticipated":
               return (
                 <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">WAITING ON</div>
+                  <div className="vhs-label inline-block text-sm">{t("waitingOn")}</div>
                   {anticipated.length === 0 ? (
                     <EmptyState
                       text={
                         isOwnProfile
-                          ? "NO SIGNAL — follow a release to start the countdown."
-                          : "NO SIGNAL — not waiting on anything."
+                          ? t("noSignalOwnAnticipated")
+                          : t("noSignalAnticipated")
                       }
                     />
                   ) : (
@@ -821,14 +826,14 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                         >
                           <span className="poster">
                             {rel.cover_image ? (
-                              <img src={rel.cover_image} alt={`${rel.title} cover`} />
+                              <img src={rel.cover_image} alt={t("coverAlt", { title: rel.title })} />
                             ) : (
                               <span className="w-full h-full flex items-center justify-center text-4xl">
                                 📼
                               </span>
                             )}
                             {rel.is_unreleased && (
-                              <span className="poster-unreleased">Unreleased</span>
+                              <span className="poster-unreleased">{t("unreleased")}</span>
                             )}
                           </span>
                           <span className="block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)]">
@@ -898,9 +903,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         <div className="flex items-center gap-2 flex-wrap">
           {(
             [
-              { key: "reviews", label: "Reviews" },
-              { key: "lists", label: "Lists" },
-              { key: "posts", label: "Posts" },
+              { key: "reviews", label: t("tabs.reviews") },
+              { key: "lists", label: t("tabs.lists") },
+              { key: "posts", label: t("tabs.posts") },
             ] as { key: ProfileTab; label: string }[]
           ).map((t) => (
             <Link
@@ -921,7 +926,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         {/* ----- Reviews tab (default) ----- */}
         {activeTab === "reviews" &&
           ((reviews as Review[]).length === 0 ? (
-            <EmptyState text="NO SIGNAL — no reviews yet." />
+            <EmptyState text={t("noSignalReviews")} />
           ) : (
             /* View-switchable (detailed/posters/compact) — the choice
                persists and is shared with the reviews index. */
@@ -931,7 +936,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         {/* ----- Lists tab ----- */}
         {activeTab === "lists" &&
           (profileLists.length === 0 ? (
-            <EmptyState text="NO SIGNAL — no lists yet." />
+            <EmptyState text={t("noSignalListsTab")} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {profileLists.map((list) => (
@@ -943,7 +948,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         {/* ----- Posts tab ----- */}
         {activeTab === "posts" &&
           (profilePosts.length === 0 ? (
-            <EmptyState text="NO SIGNAL — no posts yet." />
+            <EmptyState text={t("noSignalPosts")} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               {profilePosts.map((p) => (
@@ -966,7 +971,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                     {p.body}
                   </p>
                   <p className="text-xs text-text-muted">
-                    {new Date(p.created_at).toLocaleDateString("en-US", {
+                    {new Date(p.created_at).toLocaleDateString(locale, {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
@@ -981,7 +986,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       {/* ========== MEMBER SINCE ========== */}
       <div className="px-4 sm:px-8 pb-8">
         <p className="font-[family-name:var(--font-vt323)] text-sm text-text-muted text-center">
-          Member since {memberSince}
+          {t("memberSince", { date: memberSince })}
         </p>
       </div>
     </div>
@@ -1001,10 +1006,11 @@ function EmptyState({ text }: { text: string }) {
 }
 
 /** Streaming placeholder for the slow (external-data) showcases. */
-function ShowcaseSkeleton() {
+async function ShowcaseSkeleton() {
+  const t = await getTranslations("profile");
   return (
     <section className="space-y-3" aria-hidden="true">
-      <div className="vhs-label inline-block text-sm opacity-50">TUNING…</div>
+      <div className="vhs-label inline-block text-sm opacity-50">{t("tuning")}</div>
       <div className="panel-xbox p-5">
         <div className="h-10 rounded bg-white/5 animate-pulse" />
       </div>

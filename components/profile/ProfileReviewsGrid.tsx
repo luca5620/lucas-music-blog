@@ -12,9 +12,11 @@ import Link from "next/link";
 import type { Review } from "@/lib/types/database";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
+import { useTranslations } from "next-intl";
 
 export default function ProfileReviewsGrid({ reviews }: { reviews: Review[] }) {
   const [view, setView] = useReviewView();
+  const t = useTranslations("profile");
 
   return (
     <div className="space-y-3">
@@ -45,7 +47,7 @@ export default function ProfileReviewsGrid({ reviews }: { reviews: Review[] }) {
               <span className="poster">
                 {review.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={review.cover_image} alt={`${review.title} cover`} />
+                  <img src={review.cover_image} alt={t("coverAlt", { title: review.title })} />
                 ) : (
                   <span className="w-full h-full flex items-center justify-center text-4xl">
                     💿
@@ -114,6 +116,7 @@ export default function ProfileReviewsGrid({ reviews }: { reviews: Review[] }) {
 
 /** The full card — identical anatomy to the release/feed cards. */
 function DetailedCard({ review }: { review: Review }) {
+  const t = useTranslations("profile");
   const ratingColor = getRatingHex(review.rating);
   const year =
     review.release_date && review.release_date.length >= 4
@@ -130,7 +133,7 @@ function DetailedCard({ review }: { review: Review }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={review.cover_image}
-            alt={`${review.title} cover`}
+            alt={t("coverAlt", { title: review.title })}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
           />
         ) : (

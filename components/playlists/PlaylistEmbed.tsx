@@ -14,11 +14,12 @@
 
 import { playlistEmbedSrc, playlistUrl } from "@/lib/playlist";
 import SaveAsListButton from "./SaveAsListButton";
+import { getTranslations } from "next-intl/server";
 
-export default function PlaylistEmbed({
+export default async function PlaylistEmbed({
   playlistId,
   title,
-  label = "Playlist",
+  label,
   /** Hide the save door where it makes no sense (the owner's own
       profile settings preview, say). Default on. */
   allowSave = true,
@@ -31,12 +32,13 @@ export default function PlaylistEmbed({
   allowSave?: boolean;
   height?: 152 | 352;
 }) {
+  const t = await getTranslations("profile.playlist");
   return (
     <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="glow-orb" />
-          <span className="label-xbox">{label}</span>
+          <span className="label-xbox">{label ?? t("label")}</span>
         </div>
         <a
           href={playlistUrl(playlistId)}
@@ -44,7 +46,7 @@ export default function PlaylistEmbed({
           rel="noopener noreferrer"
           className="pixel-text text-[10px] text-text-muted hover:text-accent-primary uppercase tracking-widest transition-colors"
         >
-          open on spotify ↗
+          {t("openOnSpotify")}
         </a>
       </div>
       <iframe
@@ -54,14 +56,13 @@ export default function PlaylistEmbed({
         frameBorder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"
-        title={`Spotify playlist: ${title}`}
+        title={t("iframeTitle", { title })}
         className="rounded-lg"
       />
       {allowSave && (
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
           <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-            like it? keep it as one of your lists — every track becomes
-            an entry you can rank and annotate
+            {t("saveHint")}
           </p>
           <SaveAsListButton playlistId={playlistId} />
         </div>

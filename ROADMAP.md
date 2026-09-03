@@ -109,6 +109,16 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 4 (profile) shipped:** app/profile/[username] (header,
+    stats, showcase labels + every NO SIGNAL empty state, tabs, Member
+    since in the viewer's locale), FollowButton, ProfileSongPlayer,
+    ProfileBadges (ICU plurals for the trophy tooltips, tenure caption),
+    ProfileReviewsGrid, ListeningShowcase (rich stats.fm setup steps),
+    SongOfDayShowcase + SotdPicker + StreakIndicator, RatingHistogram,
+    RoleBadge (Founder/Admin/…), BlockButton, PlaylistEmbed. New "badges"
+    namespace (event + computed badge names/descriptions) also used by
+    Settings → Badges. Verified a public profile in German, no leftovers.
+    Still English: SaveAsListButton (lists batch), ViewToggle labels.
   - **Batch 3 (settings) shipped:** app/settings/profile (every section
     title/hint/field/placeholder, theme descriptions under
     settings.appearance.themeDesc.<id>, showcase names via home.showcases

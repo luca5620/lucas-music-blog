@@ -125,7 +125,12 @@ don't wait to be asked:**
      below Save: Password and Account Deletion (rose-tinted).
      ChangePasswordSection and DeleteAccountSection lost their own
      panel + title so the wrapper carries both. Save button is where
-     it was (bottom of the form, above the account zone).
+     it was (bottom of the form, above the account zone). **Open/close
+     animation added the same day** (Luca: "proper open and close
+     animations"): grid 0fr→1fr fold + fade-and-lift, ~240ms, reduced-
+     motion honoured, children stay mounted (inert while closed),
+     overflow restored after the open transition for the catalog
+     dropdown. CSS in globals.css under "Settings sections".
   `npm run build` clean, tsc clean, no new lint errors.
 
 - **2026-09-02 (MacBook, late): BADGES + CONNECTED PLATFORMS + MY STUFF

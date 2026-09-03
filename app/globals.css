@@ -3726,3 +3726,53 @@ fieldset {
   .wall { overflow-x: auto; mask-image: none; -webkit-mask-image: none; }
   .wall-track { animation: none; }
 }
+
+/* ============================================================
+   Settings sections — the collapsible fold (SettingsSection.tsx,
+   2026-09-03). Height animates via the grid 0fr → 1fr trick: the
+   outer box is a one-row grid whose row grows from nothing to the
+   content's natural height, no JS measuring. The middle div MUST be
+   min-height:0 + overflow:hidden or the row can't shrink below the
+   content. `is-settled` (set after the open transition ends) lifts
+   the clip for sections whose dropdowns need to hang below the panel.
+   Written as plain CSS on purpose — Tailwind v4's transition utility
+   doesn't animate grid-template-rows.
+   ============================================================ */
+.settings-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.24s ease-out;
+}
+.settings-fold.is-open {
+  grid-template-rows: 1fr;
+}
+.settings-fold > div {
+  min-height: 0;
+  overflow: hidden;
+}
+.settings-fold.is-settled > div {
+  overflow: visible;
+}
+/* The content fades and lifts into place a beat behind the fold, and
+   drops out ahead of it on close, so the box never looks empty. */
+.settings-fold-body {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.18s ease-out,
+    transform 0.24s ease-out;
+}
+.settings-fold.is-open .settings-fold-body {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.22s ease-out 0.06s,
+    transform 0.24s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-fold,
+  .settings-fold-body,
+  .settings-fold.is-open .settings-fold-body {
+    transition: none;
+  }
+}

@@ -22,6 +22,13 @@
  * drag. The chevron rotates with a plain `transform` — Tailwind v4's
  * rotate-* utilities are standalone properties that `transition:
  * transform` doesn't animate, so the style is written by hand.
+ *
+ * OPEN / CLOSE ANIMATION (Luca 2026-09-03: "proper open and close
+ * animations"): the body folds with the CSS grid 0fr→1fr trick
+ * (.settings-fold in globals.css) plus a fade-and-lift on the
+ * content, ~240ms each way, honouring prefers-reduced-motion. The
+ * children stay mounted while closed — `inert` hides them from
+ * keyboard and assistive tech instead.
  */
 
 import { useState } from "react";
@@ -86,11 +93,21 @@ export default function SettingsSection({
   const [open, setOpen] = useState<boolean>(() =>
     typeof window === "undefined" ? defaultOpen : (readStored(id) ?? defaultOpen)
   );
+  // "settled" = the OPEN animation has finished. While the body is
+  // still unfolding it must clip (overflow hidden) or the content
+  // would spill out of the growing box; once settled, sections that
+  // asked for overflowVisible get it back so their dropdowns (the
+  // catalog search) can hang below the panel. Starts true when the
+  // section mounts already open — no animation ran, nothing to wait
+  // for. Closing drops it immediately so the fold clips on the way
+  // up too.
+  const [settled, setSettled] = useState<boolean>(open);
 
   function toggle() {
     setOpen((prev) => {
       const next = !prev;
       writeStored(id, next);
+      if (!next) setSettled(false);
       return next;
     });
   }
@@ -136,11 +153,35 @@ export default function SettingsSection({
         </svg>
       </button>
 
-      {open && (
-        <div id={bodyId} className="px-5 pb-5 space-y-4">
-          {children}
+      {/* The fold. Children stay MOUNTED while closed (so a section's
+          form state never resets by opening and closing it) and the
+          box animates between 0fr and 1fr — the CSS grid trick that
+          lets height animate without knowing the content's height.
+          The classes live in globals.css (Tailwind v4: transitions on
+          layout properties are written as plain CSS there). `inert`
+          keeps a closed section's inputs out of the tab order and
+          away from screen readers. */}
+      <div
+        className={`settings-fold${open ? " is-open" : ""}${
+          open && settled && overflowVisible ? " is-settled" : ""
+        }`}
+        onTransitionEnd={(e) => {
+          if (e.target !== e.currentTarget) return;
+          if (e.propertyName !== "grid-template-rows") return;
+          if (open) setSettled(true);
+        }}
+      >
+        <div>
+          <div
+            id={bodyId}
+            className="settings-fold-body px-5 pb-5 space-y-4"
+            inert={!open}
+            aria-hidden={!open}
+          >
+            {children}
+          </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }

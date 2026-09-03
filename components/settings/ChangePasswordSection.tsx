@@ -47,15 +47,14 @@ export default function ChangePasswordSection() {
     setSaving(false);
   };
 
+  // No panel or title of its own: the Settings page wraps this in a
+  // collapsible SettingsSection that carries both (2026-09-03).
   return (
-    <section className="panel-xbox p-6 space-y-4">
-      <div className="space-y-1">
-        <span className="label-xbox inline-flex">Password</span>
-        <p className="text-xs text-text-muted">
-          Pick a new one — takes effect immediately, everywhere
-          you&apos;re signed in.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <p className="text-xs text-text-muted">
+        Pick a new one — takes effect immediately, everywhere
+        you&apos;re signed in.
+      </p>
 
       <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
         <div>
@@ -116,6 +115,6 @@ export default function ChangePasswordSection() {
           )}
         </div>
       </form>
-    </section>
+    </div>
   );
 }

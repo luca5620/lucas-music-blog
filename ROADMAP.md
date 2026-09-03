@@ -90,6 +90,44 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-03 (Windows): HIDE BADGES + COLLAPSIBLE SETTINGS — ⚠️
+  MIGRATION 040 TO RUN** (`supabase/migrations/040-hidden-badges.sql`,
+  one nullable `hidden_badges text[]` column on profiles + a size
+  check). Until it runs the Badges section in Settings simply doesn't
+  appear (probed like every other supportsX flag) and profiles look
+  exactly as they do today. Not yet eyeballed on device.
+  1. **Hide badges** (Luca: "add the ability to hide whatever badges
+     you don't want showing"). Settings → new **Badges** section: one
+     row per badge the member holds — Reviews Trophy, Likes Trophy,
+     Years of Service, plus any awarded event badge this build can
+     draw — with a "show on profile" checkbox. Unticked keys go in
+     `hidden_badges` ("reviews" / "likes" / "tenure" / the event
+     `badge_key`). Nothing is deleted: visitors don't see hidden ones,
+     the OWNER sees them dimmed (opacity 40%) with a "hidden from
+     visitors — only you see this" line in the detail card, same
+     treatment as hidden links. If everything is hidden the row
+     disappears for visitors so the header has no empty gap.
+     `lib/badges.ts` gained `COMPUTED_BADGE_KEYS`, `COMPUTED_BADGE_INFO`
+     and `hiddenBadgeSet()` (tolerates NULL / junk — a bad stored value
+     hides nothing, never throws). RULE: never register an event badge
+     keyed "reviews", "likes" or "tenure" — those names are taken.
+  2. **Collapsible settings** (Luca: "add dropdowns for settings since
+     the page is starting to get a bit lengthy"). New
+     `components/settings/SettingsSection.tsx`: every panel on
+     /settings/profile is now a press-target header (label-xbox tag +
+     chevron, no swipe affordance) that unfolds its section. Collapsed
+     by default except Identity; a one-line hint under each title says
+     what's inside. Open/closed state is remembered per section in
+     localStorage (try/catch — private browsing / WebView refusals
+     never break the page). Sections: Identity, Appearance, Showcases,
+     Badges (040), Preview Player (036), Profile Song (overflow
+     visible for the catalog dropdown), Connected Platforms, then
+     below Save: Password and Account Deletion (rose-tinted).
+     ChangePasswordSection and DeleteAccountSection lost their own
+     panel + title so the wrapper carries both. Save button is where
+     it was (bottom of the form, above the account zone).
+  `npm run build` clean, tsc clean, no new lint errors.
+
 - **2026-09-02 (MacBook, late): BADGES + CONNECTED PLATFORMS + MY STUFF
   HUB + DEBATE SIDES + LISTS FIXES + AI SEARCH — ✅ MIGRATION 039 RUN
   (Luca, same night; `supabase/migrations/039-badges-links-debate-sides.sql`),
@@ -267,31 +305,47 @@ don't wait to be asked:**
      unclickable — Luca should delete and re-import that list once
      the migration is run.
 
-### 🗣️ NEXT — what we talk about when we pick this back up (2026-09-02 night)
+### 🗣️ NEXT — the order Luca set on 2026-09-03
 
-Nothing is on a branch. Everything below is either a conversation or
-a device check, in the order it makes sense:
+Nothing is on a branch. Luca re-ordered the conversations on
+2026-09-03 ("AI 1, marketing plan 2, and EU 3"):
 
-1. **Device pass on tonight's work** (none of it eyeballed on the
-   phone yet): breathing top blob, inline verified check, new
-   sign-up/sign-in flow (does the keyboard rise on each step?),
-   Apple Music player (Settings → Preview Player → Apple, open a
-   release), playlist embeds on a post + profile, the new logged-out
-   home.
-2. **EU availability + DSA trader status** — when the designer's
+1. **AI search** — the levers are Luca's hands, plan in
+   `docs/AI-SEARCH.md`: Bing Webmaster Tools (ChatGPT searches through
+   Bing — the biggest single lever), AlternativeTo / Product Hunt /
+   Wikidata / Slant listings, Reddit answers, monthly "ask the four
+   assistants" check. Code side (llms.txt, robots, JSON-LD, /about) is
+   shipped.
+2. **Marketing plan** — channels, cadence, what Luca does each week.
+   Google Play closed test = the first marketing task in disguise;
+   screenshots wait on the designer. Includes posting
+   /musicboard-alternative where the refugees are (Luca's hands).
+3. **EU availability + DSA trader status** — when the designer's
    1.1.1 screenshots arrive. Needed before selling subscriptions in
    the EU; also decides whether the app is listed in EU storefronts.
-3. **Marketing plan** — channels, cadence, what Luca does each week.
-   Google Play is un-parked as a marketing task; screenshots wait on
-   the designer.
-4. **SEO deep-dive** — still owed: GSC query data (Luca's hands), the
+4. **Device pass** — still nothing from 2026-09-02/03 eyeballed on the
+   phone: breathing blob, verified check, sign-up/sign-in flow,
+   Apple Music player, playlist embeds, logged-out home, badges row,
+   My Stuff, debate VS covers, Connected Platforms, hide-badges +
+   collapsible settings (needs 040 run first).
+5. **SEO deep-dive** — still owed: GSC query data (Luca's hands), the
    H1 font-repaint LCP fix, JS audit, per-artist unreleased hubs.
-5. **1.1.1** — what goes in it: new screenshots + everything shipped
-   since 1.1 (playlists, Apple Music, auth flow, home).
-6. Parked, revisit later: Musicboard import (scraper link below),
-   Peak Music rebrand + icon, debates changes (Luca has ideas, ask),
-   Your Taste revamp (he's brainstorming), monetization build-out
-   (approved plan, dormant until real bills).
+6. **Unreleased front door** — the product bet from the Strategy
+   section (step 3 of the product sequence): a dedicated section +
+   per-artist unreleased hubs. Proposal first, then build.
+7. **1.1.1** — what goes in it: new screenshots + everything shipped
+   since 1.1 (playlists, Apple Music, auth flow, home, badges,
+   platforms, My Stuff, debate sides, settings).
+8. **Lists pass** — parked as ONE conversation, Luca brings the full
+   list (known: playlist imports resolve to album not song; private
+   lists only findable via the profile tab).
+9. Parked, revisit later: push notifications (Next up #1 still lists
+   it open), Musicboard import (scraper link below), Peak Music
+   rebrand + icon (timed with the marketing ramp), debates changes
+   (six ideas logged above — ask, don't pitch), Your Taste revamp
+   (he's brainstorming), monetization build-out (approved plan,
+   dormant until real bills), lint backlog (15 bespoke errors),
+   merge/upgrade-release tool for Genius→Spotify dupes.
 
 - **2026-09-02 (MacBook): ✅ 1.1 APPROVED — review freeze OVER, the
   holding branch is merged to main, deployed, and VERIFIED on prod

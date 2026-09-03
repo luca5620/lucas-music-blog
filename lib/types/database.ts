@@ -68,6 +68,12 @@ export interface Profile {
       (migration 039). null = legacy: every saved link, default
       order. [] = show none. */
   visible_links?: string[] | null;
+  /** Badge keys the member does NOT want visitors to see (migration
+      040): "reviews" | "likes" | "tenure" for the computed badges,
+      or an awarded event badge's badge_key. null / [] = everything
+      shows. The owner still sees hidden ones dimmed on their own
+      profile. Absent until 040 runs — the settings page probes. */
+  hidden_badges?: string[] | null;
   created_at: string;
   updated_at: string;
 }

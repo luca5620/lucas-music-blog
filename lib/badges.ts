@@ -158,3 +158,52 @@ export const EVENT_BADGES: EventBadgeDef[] = [
 export function eventBadge(key: string): EventBadgeDef | undefined {
   return EVENT_BADGES.find((b) => b.key === key);
 }
+
+/* ------------------------------------------------------------------ */
+/*  Hiding badges (migration 040)                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The three computed badges, by the key `hidden_badges` stores them
+ * under. Event badges are stored under their own `badge_key` — the
+ * profile_badges check constraint (`^[a-z0-9_-]{2,40}$`) means an
+ * event key COULD collide with one of these three, so never register
+ * an event badge named "reviews", "likes" or "tenure".
+ */
+export const COMPUTED_BADGE_KEYS = ["reviews", "likes", "tenure"] as const;
+export type ComputedBadgeKey = (typeof COMPUTED_BADGE_KEYS)[number];
+
+/** Settings-page copy for the three computed badges. */
+export const COMPUTED_BADGE_INFO: Record<
+  ComputedBadgeKey,
+  { label: string; description: string }
+> = {
+  reviews: {
+    label: "Reviews Trophy",
+    description: "How many reviews you've published, tiered per 100.",
+  },
+  likes: {
+    label: "Likes Trophy",
+    description: "Likes received on your reviews, tiered per 100.",
+  },
+  tenure: {
+    label: "Years of Service",
+    description: "How long you've been a member — months, then years.",
+  },
+};
+
+/**
+ * Turn the stored `hidden_badges` column into a clean Set of keys.
+ * Tolerates NULL (pre-040 rows / never touched), non-arrays (a bad
+ * client) and junk entries — anything that isn't a plausible badge
+ * key is dropped, so a bad stored value hides nothing instead of
+ * throwing on render.
+ */
+export function hiddenBadgeSet(raw: unknown): Set<string> {
+  if (!Array.isArray(raw)) return new Set();
+  return new Set(
+    raw.filter(
+      (k): k is string => typeof k === "string" && /^[a-z0-9_-]{2,40}$/.test(k)
+    )
+  );
+}

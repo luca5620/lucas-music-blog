@@ -22,7 +22,13 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { eventBadge, tenureFrom, trophyTier, TROPHY_STEP } from "@/lib/badges";
+import {
+  eventBadge,
+  hiddenBadgeSet,
+  tenureFrom,
+  trophyTier,
+  TROPHY_STEP,
+} from "@/lib/badges";
 
 interface AwardedBadge {
   badge_key: string;
@@ -37,11 +43,22 @@ interface Props {
   awarded?: AwardedBadge[];
   /** The profile theme's accent — tints the tenure badge. */
   accentColor: string;
+  /**
+   * Badge keys the member chose to hide (profiles.hidden_badges,
+   * migration 040). Visitors never see them; the OWNER sees them
+   * dimmed with a "hidden from visitors" note so they know what's
+   * tucked away — the same treatment hidden links get.
+   */
+  hidden?: string[] | null;
+  /** Is the viewer looking at their own profile? */
+  isOwner?: boolean;
 }
 
 /* One badge's face + its detail card. */
 interface BadgeSpec {
   id: string;
+  /** The key `hidden_badges` would store to hide this badge. */
+  hideKey: string;
   /** What's drawn on the badge. */
   face: React.ReactNode;
   /** Small text next to the face (count / "3 MO"). */
@@ -59,6 +76,8 @@ export default function ProfileBadges({
   createdAt,
   awarded = [],
   accentColor,
+  hidden = null,
+  isOwner = false,
 }: Props) {
   const [open, setOpen] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -103,6 +122,7 @@ export default function ProfileBadges({
   const badges: BadgeSpec[] = [
     {
       id: "reviews",
+      hideKey: "reviews",
       face: <TrophyGlyph />,
       caption: String(reviewCount),
       color: reviews.color,
@@ -115,6 +135,7 @@ export default function ProfileBadges({
     },
     {
       id: "likes",
+      hideKey: "likes",
       face: <HeartGlyph />,
       caption: String(likesReceived),
       color: likes.color,
@@ -127,6 +148,7 @@ export default function ProfileBadges({
     },
     {
       id: "tenure",
+      hideKey: "tenure",
       face: <ShieldGlyph />,
       caption: tenure.label,
       color: accentColor,
@@ -150,6 +172,7 @@ export default function ProfileBadges({
       return [
         {
           id: `event:${a.badge_key}`,
+          hideKey: a.badge_key,
           face: (
             <span className="text-[15px] font-black leading-none" aria-hidden>
               {def.glyph}
@@ -165,16 +188,25 @@ export default function ProfileBadges({
     }),
   ];
 
+  // Hidden badges (migration 040): visitors don't get them at all;
+  // the owner sees them dimmed so they know what's tucked away. If
+  // everything is hidden and it's not the owner, the row vanishes
+  // entirely so the header doesn't carry an empty gap.
+  const hiddenSet = hiddenBadgeSet(hidden);
+  const shown = badges.filter((b) => isOwner || !hiddenSet.has(b.hideKey));
+  if (shown.length === 0) return null;
+
   return (
     <div ref={rootRef} className="flex flex-wrap items-center gap-2 pt-0.5">
-      {badges.map((b) => {
+      {shown.map((b) => {
         const isOpen = open === b.id;
+        const isHidden = hiddenSet.has(b.hideKey);
         return (
-          <div key={b.id} className="relative">
+          <div key={b.id} className={`relative${isHidden ? " opacity-40" : ""}`}>
             <button
               type="button"
               aria-expanded={isOpen}
-              aria-label={b.title}
+              aria-label={isHidden ? `${b.title} (hidden from visitors)` : b.title}
               onPointerDown={(e) => {
                 lastPointer.current = e.pointerType;
               }}
@@ -221,6 +253,11 @@ export default function ProfileBadges({
                     {line}
                   </p>
                 ))}
+                {isHidden && (
+                  <p className="pixel-text text-[11px] uppercase tracking-wider text-text-muted pt-1">
+                    Hidden from visitors — only you see this
+                  </p>
+                )}
               </div>
             )}
           </div>

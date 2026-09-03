@@ -436,13 +436,17 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             </p>
 
             {/* Badges — reviews trophy, likes trophy, years of service,
-                plus any awarded event badges. Hover / tap for detail. */}
+                plus any awarded event badges. Hover / tap for detail.
+                Badges the member hid in Settings (migration 040) are
+                skipped for visitors and dimmed for the owner. */}
             <ProfileBadges
               reviewCount={stats.review_count}
               likesReceived={stats.total_likes_received}
               createdAt={profile.created_at}
               awarded={awardedBadges}
               accentColor={accentColor}
+              hidden={profile.hidden_badges ?? null}
+              isOwner={isOwnProfile}
             />
 
             {/* Flair: pronouns · location — quiet, OSD-flavored */}

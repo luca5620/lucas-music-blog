@@ -29,8 +29,15 @@ import {
   type PlatformKey,
 } from "@/lib/social-links";
 import PlatformIcon from "@/components/profile/PlatformIcons";
+import {
+  COMPUTED_BADGE_INFO,
+  COMPUTED_BADGE_KEYS,
+  eventBadge,
+  hiddenBadgeSet,
+} from "@/lib/badges";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
+import SettingsSection from "@/components/settings/SettingsSection";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
@@ -167,6 +174,18 @@ export default function ProfileSettingsPage() {
   // page (Luca 2026-09-02). Gated on the column existing, as above.
   const [preferredPlayer, setPreferredPlayer] = useState<"spotify" | "apple">("spotify");
   const [supportsPreferredPlayer, setSupportsPreferredPlayer] = useState(false);
+  // Hidden badges (migration 040, Luca 2026-09-03): the keys the
+  // member does NOT want under their username — "reviews" / "likes" /
+  // "tenure" for the computed trophies, or an awarded event badge's
+  // key. Nothing is deleted; the owner still sees hidden ones dimmed.
+  // myEventBadges = this member's profile_badges rows, so the list
+  // offers a toggle for every badge they actually hold. Gated on the
+  // column existing, like every other supportsX flag here.
+  const [hiddenBadges, setHiddenBadges] = useState<string[]>([]);
+  const [supportsHiddenBadges, setSupportsHiddenBadges] = useState(false);
+  const [myEventBadges, setMyEventBadges] = useState<
+    { badge_key: string; note: string | null }[]
+  >([]);
 
   const themeHex = THEMES.find((t) => t.id === theme)?.hex ?? "#1e90ff";
 
@@ -193,16 +212,24 @@ export default function ProfileSettingsPage() {
 
       setUserId(user.id);
 
-      const [{ data: profile }, { data: reviews }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", user.id).single(),
-        supabase
-          .from("reviews")
-          .select("id, title, artist, rating")
-          .eq("user_id", user.id)
-          .eq("is_published", true)
-          .order("created_at", { ascending: false })
-          .limit(50),
-      ]);
+      const [{ data: profile }, { data: reviews }, { data: eventBadges }] =
+        await Promise.all([
+          supabase.from("profiles").select("*").eq("id", user.id).single(),
+          supabase
+            .from("reviews")
+            .select("id, title, artist, rating")
+            .eq("user_id", user.id)
+            .eq("is_published", true)
+            .order("created_at", { ascending: false })
+            .limit(50),
+          // Awarded event badges (migration 039) — errors (table not
+          // there yet) just read as no badges.
+          supabase
+            .from("profile_badges")
+            .select("badge_key, note")
+            .eq("user_id", user.id)
+            .order("awarded_at", { ascending: true }),
+        ]);
 
       if (profile) {
         const p = profile as Profile;
@@ -254,7 +281,16 @@ export default function ProfileSettingsPage() {
         setSupportsFeaturedPlaylist("featured_playlist_id" in p);
         setPreferredPlayer(p.preferred_player === "apple" ? "apple" : "spotify");
         setSupportsPreferredPlayer("preferred_player" in p);
+        setSupportsHiddenBadges("hidden_badges" in p);
+        setHiddenBadges([...hiddenBadgeSet(p.hidden_badges)]);
       }
+
+      setMyEventBadges(
+        (Array.isArray(eventBadges) ? eventBadges : []) as {
+          badge_key: string;
+          note: string | null;
+        }[]
+      );
 
       setMyReviews(
         (reviews ?? []) as Pick<Review, "id" | "title" | "artist" | "rating">[]
@@ -457,6 +493,10 @@ export default function ProfileSettingsPage() {
         ? { featured_playlist_id: parsePlaylistUrl(featuredPlaylistLink) }
         : {}),
       ...(supportsPreferredPlayer ? { preferred_player: preferredPlayer } : {}),
+      // Hidden badges — only once migration 040 exists. An empty list
+      // is stored as an empty array (= everything shows), never null,
+      // so a member who un-hides everything ends up in a clean state.
+      ...(supportsHiddenBadges ? { hidden_badges: hiddenBadges } : {}),
       updated_at: new Date().toISOString(),
     };
 
@@ -578,9 +618,18 @@ export default function ProfileSettingsPage() {
       </div>
 
       <form id="profile-settings-form" onSubmit={handleSave} className="space-y-6">
+        {/* Every section below is a collapsible SettingsSection (Luca
+            2026-09-03: "dropdowns for settings since the page is
+            starting to get a bit lengthy") — collapsed by default,
+            open state remembered per section in localStorage. */}
+
         {/* ========== IDENTITY ========== */}
-        <fieldset className="panel-xbox p-5 space-y-4">
-          <legend className="label-xbox">Identity</legend>
+        <SettingsSection
+          id="identity"
+          title="Identity"
+          hint="Display name, username, tagline, pronouns, location, bio."
+          defaultOpen
+        >
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField label="Display Name">
@@ -678,11 +727,14 @@ export default function ProfileSettingsPage() {
               className="form-input resize-none"
             />
           </FormField>
-        </fieldset>
+        </SettingsSection>
 
         {/* ========== APPEARANCE ========== */}
-        <fieldset className="panel-xbox p-5 space-y-5">
-          <legend className="label-xbox">Appearance</legend>
+        <SettingsSection
+          id="appearance"
+          title="Appearance"
+          hint="Theme preset, avatar, banner, streak icon."
+        >
 
           {/* Theme presets — one card per preset. Each card wears its
               own theme-* class so the LABEL renders in that preset's
@@ -809,11 +861,14 @@ export default function ProfileSettingsPage() {
               ))}
             </div>
           </FormField>
-        </fieldset>
+        </SettingsSection>
 
         {/* ========== SHOWCASES ========== */}
-        <fieldset className="panel-xbox p-5 space-y-4">
-          <legend className="label-xbox">Showcases</legend>
+        <SettingsSection
+          id="showcases"
+          title="Showcases"
+          hint="Which blocks appear on your profile, and in what order."
+        >
           <p className="text-xs text-text-muted">
             Pick which blocks appear on your profile and drag their order
             with the arrows. Top of the list = top of your page.
@@ -910,13 +965,108 @@ export default function ProfileSettingsPage() {
               </p>
             )}
           </FormField>
-        </fieldset>
+        </SettingsSection>
+
+        {/* ========== BADGES (migration 040) — every profile wears the
+            three computed badges + any awarded ones under the username;
+            here you untick the ones you'd rather keep to yourself.
+            Nothing is deleted — hidden badges still show for YOU,
+            dimmed. Appears once the column exists. ========== */}
+        {supportsHiddenBadges && (
+          <SettingsSection
+            id="badges"
+            title="Badges"
+            hint="Choose which badges show under your username."
+          >
+            <p className="text-xs text-text-muted">
+              Every profile wears a reviews trophy, a likes trophy and a
+              years-of-service badge under the username, plus any badge
+              you&apos;ve been awarded. Untick the ones you&apos;d rather
+              keep to yourself — nothing is deleted, and you&apos;ll still
+              see hidden ones dimmed on your own profile.
+            </p>
+
+            <div className="space-y-2">
+              {[
+                ...COMPUTED_BADGE_KEYS.map((key) => ({
+                  key,
+                  label: COMPUTED_BADGE_INFO[key].label,
+                  description: COMPUTED_BADGE_INFO[key].description,
+                })),
+                // Awarded event badges this member holds — only the ones
+                // this build can draw (an unknown key never shows on the
+                // profile either, so there's nothing to hide).
+                ...myEventBadges.flatMap((b) => {
+                  const def = eventBadge(b.badge_key);
+                  if (!def) return [];
+                  return [
+                    {
+                      key: b.badge_key,
+                      label: `${def.glyph} ${def.label}`,
+                      description: b.note ?? def.description,
+                    },
+                  ];
+                }),
+              ].map((b) => {
+                const shown = !hiddenBadges.includes(b.key);
+                return (
+                  <label
+                    key={b.key}
+                    className="flex items-start gap-2.5 p-3 rounded-lg border cursor-pointer select-none transition-colors"
+                    style={{
+                      borderColor: shown ? `${themeHex}40` : "rgba(255,255,255,0.12)",
+                      background: shown ? `${themeHex}0d` : "rgba(0,0,0,0.25)",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={shown}
+                      onChange={(e) => {
+                        const show = e.target.checked;
+                        setHiddenBadges((prev) =>
+                          show
+                            ? prev.filter((k) => k !== b.key)
+                            : prev.includes(b.key)
+                              ? prev
+                              : [...prev, b.key]
+                        );
+                        setSaved(false);
+                      }}
+                      className="w-4 h-4 mt-0.5 shrink-0 accent-current cursor-pointer"
+                      style={{ color: themeHex }}
+                      aria-label={`Show ${b.label} on my profile`}
+                    />
+                    <span className="min-w-0">
+                      <span
+                        className="block text-sm font-bold font-[family-name:var(--font-heading)]"
+                        style={{ color: shown ? themeHex : "#c8c8cc" }}
+                      >
+                        {b.label}
+                        {!shown && (
+                          <span className="ml-2 pixel-text text-[11px] uppercase tracking-wider text-text-muted">
+                            hidden
+                          </span>
+                        )}
+                      </span>
+                      <span className="block text-xs text-text-muted">
+                        {b.description}
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </SettingsSection>
+        )}
 
         {/* ========== PREVIEW PLAYER (migration 036) — which player
             release pages show YOU. One or the other, never both. ========== */}
         {supportsPreferredPlayer && (
-          <fieldset className="panel-xbox p-5 space-y-3">
-            <legend className="label-xbox">Preview Player</legend>
+          <SettingsSection
+            id="preview-player"
+            title="Preview Player"
+            hint="Spotify or Apple Music on release pages."
+          >
             <p className="text-xs text-text-muted">
               Release pages show one preview player. Pick the service you
               actually use — signed in to it in your browser, previews
@@ -956,15 +1106,19 @@ export default function ProfileSettingsPage() {
                 );
               })}
             </div>
-          </fieldset>
+          </SettingsSection>
         )}
 
         {/* ========== PROFILE SONG — picked from the catalog, same
             flow as reviews. No pasted URLs. When Spotify has a 30s
             preview for the track it plays right on your profile;
             otherwise the song shows as a tappable link. ========== */}
-        <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
-          <legend className="label-xbox">Profile Song</legend>
+        <SettingsSection
+          id="profile-song"
+          title="Profile Song"
+          hint="One track from the catalog, playing on your profile."
+          overflowVisible
+        >
 
           {profileSongTitle ? (
             <div className="flex items-center gap-3 p-3 rounded-lg border border-border-medium bg-bg-elevated/50">
@@ -1042,7 +1196,7 @@ export default function ProfileSettingsPage() {
               placeholder="Search for your profile song…"
             />
           )}
-        </fieldset>
+        </SettingsSection>
 
         {/* ========== CONNECTED PLATFORMS ==========
             (Luca 2026-09-02) One row per platform: paste a link, tick
@@ -1051,8 +1205,11 @@ export default function ProfileSettingsPage() {
             the rest. Pre-039 databases only get the four original
             streaming platforms and no show/order controls (legacy:
             every saved link shows). */}
-        <fieldset className="panel-xbox p-5 space-y-4">
-          <legend className="label-xbox">Connected Platforms</legend>
+        <SettingsSection
+          id="connected-platforms"
+          title="Connected Platforms"
+          hint="Streaming and social links, featured playlist, link privacy."
+        >
           <p className="text-xs text-text-muted">
             Drop a link for any platform you use. Ticked ones show on
             your profile, left to right in this order — use the arrows
@@ -1211,7 +1368,7 @@ export default function ProfileSettingsPage() {
               </span>
             </label>
           )}
-        </fieldset>
+        </SettingsSection>
 
       </form>
 
@@ -1264,12 +1421,26 @@ export default function ProfileSettingsPage() {
       </div>
 
       {/* ========== PASSWORD ========== */}
-      <ChangePasswordSection />
+      <SettingsSection
+        id="password"
+        title="Password"
+        hint="Pick a new one — takes effect everywhere you're signed in."
+      >
+        <ChangePasswordSection />
+      </SettingsSection>
 
       {/* ========== ACCOUNT DELETION ==========
           In-app account deletion — App Store guideline 5.1.1(v)
           requires it wherever account creation exists. Always LAST. */}
-      <DeleteAccountSection username={username} />
+      <SettingsSection
+        id="account-deletion"
+        title="Account Deletion"
+        hint="Remove your profile and everything you made. No undo."
+        accent="#e05575"
+        className="border-[#e0557540]"
+      >
+        <DeleteAccountSection username={username} />
+      </SettingsSection>
     </div>
   );
 }

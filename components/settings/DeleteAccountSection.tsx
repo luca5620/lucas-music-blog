@@ -54,10 +54,11 @@ export default function DeleteAccountSection({
     }
   };
 
+  // No panel or title of its own: the Settings page wraps this in a
+  // collapsible SettingsSection (rose-tinted) that carries both
+  // (2026-09-03).
   return (
-    <fieldset className="panel-xbox p-5 space-y-4 border-[#e0557540]">
-      <legend className="label-xbox text-accent-rose">Account Deletion</legend>
-
+    <div className="space-y-4">
       <p className="text-sm text-text-secondary leading-relaxed">
         Deleting your account removes your profile and{" "}
         <strong className="text-text-primary">everything you made</strong> —
@@ -115,6 +116,6 @@ export default function DeleteAccountSection({
           )}
         </div>
       )}
-    </fieldset>
+    </div>
   );
 }

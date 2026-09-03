@@ -67,5 +67,151 @@
   },
   "pending": {
     "tuning": "AFSTEMMEN…"
+  },
+  "home": {
+    "appStore": {
+      "downloadOn": "Download in de",
+      "appStore": "App Store"
+    },
+    "plug": {
+      "title": "Voor een betere ervaring, bekijk onze website",
+      "body": "op een computer — het grote scherm, waar de echte uitgebreide recensies worden geschreven."
+    },
+    "hero": {
+      "tagline": "elk album. elke leak. elke discussie.",
+      "copy": "Beoordeel albums en leaks van 0 tot 10, maak lijsten, volg mensen en zit in de live room als een album om middernacht uitkomt. Gratis, op web en iOS.",
+      "createAccount": "Account aanmaken",
+      "browseReviews": "Recensies bekijken"
+    },
+    "dashboard": {
+      "title": "HOME",
+      "writeReview": "✚ Recensie schrijven",
+      "startDebate": "⚔ Debat starten",
+      "onAir": "ON AIR",
+      "coverAlt": "Hoes van {title}",
+      "tasteTitle": "Wil je een kanaal dat alleen op jou is afgestemd?",
+      "tasteBody": "Jouw smaak bouwt een feed op uit wie je volgt en wat je beoordeelt.",
+      "tuneIn": "Afstemmen →"
+    },
+    "closing": {
+      "eyebrow": "Je kanaal wacht op je",
+      "title": "Begin het logboek dat je écht bijhoudt.",
+      "body": "Gratis. Je eerste beoordeling kost twee tikken. Web en iOS.",
+      "createAccount": "Account aanmaken",
+      "signIn": "Inloggen"
+    },
+    "howItWorks": {
+      "eyebrow": "Hoe het werkt",
+      "title": "Drie stappen. Daarna is het jouw kanaal.",
+      "sub": "Vind het, beoordeel het, zeg het hardop.",
+      "step1Label": "Vind de plaat",
+      "step1Body": "Elk album en elke single op Spotify, plus Genius voor leaks en onuitgebracht werk. Nog niet uit? Plak de Spotify-link en het krijgt een aftelklok.",
+      "step1Prop": "zoek een album, nummer of artiest…",
+      "step2Label": "Geef het een cijfer",
+      "step2Body": "Nul tot tien, één decimaal. Je cijfer staat op elke kaart die je plaatst, gekleurd naar de score.",
+      "step3Label": "Discussieer live",
+      "step3Body": "Elke release heeft een live room, open voordat het album om middernacht uitkomt. Zin in een ruzie? Start een debat met twee kampen.",
+      "onAir": "On air",
+      "step3Prop": "“track 4 is de beste, ga maar tegen een muur praten”",
+      "stepFour": "stap vier is optioneel en dat zijn <link>lijsten</link>. iedereen maakt uiteindelijk lijsten."
+    },
+    "liveRooms": {
+      "eyebrow": "Live release rooms",
+      "title": "Elke release heeft een room. Om middernacht loopt hij vol.",
+      "sub": "Het album komt uit, de room is al open en het hele platform zit erin, track voor track.",
+      "point1H": "Track voor track",
+      "point1B": "Reacties komen binnen terwijl de tracklist speelt. Je ziet bij welk nummer de room is.",
+      "point2H": "Open vóór de release",
+      "point2B": "Albums met een aftelklok krijgen al een room vóór de release. De chat is live om 23:59.",
+      "point3H": "Lezen zonder account",
+      "point3B": "Rooms zijn openbaar. Meld je aan om mee te praten en te beoordelen.",
+      "point4H": "Debatten als het heet wordt",
+      "point4B": "Twee kampen, elk één plaat, de room stemt.",
+      "seeOnAir": "Kijk wat er on air is",
+      "onAir": "On air",
+      "roomMeta": "· release room · {count} in de room",
+      "nowPlaying": "NU · {n}",
+      "chat1": "track 4 is net begonnen. dit is hem.",
+      "chat2": "de sampleflip in de outro 😭",
+      "chat3": "nee, track 2 wint. ga maar in discussie",
+      "chat4": "7.8 van mij, kan stijgen bij een tweede luisterbeurt",
+      "you": "jij",
+      "input": "zeg iets over track 4…",
+      "onAirNow": "Nu on air"
+    },
+    "makeItYours": {
+      "eyebrow": "Maak het van jou",
+      "title": "Een profiel dat een kanaal is, geen formulier.",
+      "sub": "Tien thema's, showcases die jij indeelt, je eigen previewspeler, een nummer en een playlist op je profiel.",
+      "themesLabel": "Meeslepende thema's",
+      "themesBody": "Tien looks uit console-tijdperken en de internetgeschiedenis. Elk kleurt de hele pagina opnieuw.",
+      "showcasesLabel": "Showcases die jij indeelt",
+      "showcasesBody": "Zet de blokken in de volgorde die jij wilt: histogram, vastgezette recensie, wat er in rotatie is.",
+      "playerLabel": "Je eigen previewspeler",
+      "playerBody": "Spotify of Apple Music op elke releasepagina. Ingelogd worden previews volledige tracks.",
+      "badgesLabel": "Badges die iets betekenen",
+      "badgesBody": "Geverifieerde recensenten, vroege testers, staf, elk met een eigen gloed. Gewone leden dragen er geen.",
+      "songLabel": "Een nummer en een playlist bij de deur",
+      "songBody": "Een profielnummer dat speelt als iemand bij je binnenkomt, plus een uitgelichte Spotify-playlist met eigen speler.",
+      "profileSong": "Profielnummer",
+      "yourPick": "Jouw keuze — Elke artiest",
+      "playlist": "Uitgelichte playlist · 100 tracks · sla op als lijst",
+      "tasteLabel": "Jouw smaak, een kanaal",
+      "tasteBody": "Een feed op volledig scherm, afgestemd op wie je volgt en wat je beoordeelt, één mening tegelijk, met muziek eronder.",
+      "tasteTag": "Jouw smaak",
+      "nextUp": "hierna: een 9.2 van iemand die je volgt"
+    },
+    "showcases": {
+      "tasteReadout": "Smaakuitlezing",
+      "nowShowing": "Nu te zien",
+      "featurePresentation": "Hoofdfilm",
+      "mixtapes": "Mixtapes",
+      "waitingOn": "Wachten op",
+      "onRotation": "In rotatie",
+      "songOfTheDay": "Nummer van de dag"
+    },
+    "community": {
+      "eyebrow": "Community",
+      "title": "Wat de community beoordeelde",
+      "sub": "Eén tegel per plaat, beoordeeld door een lid. Tik op een hoes om de recensie te lezen.",
+      "allReviews": "alle recensies →",
+      "tileTitle": "{title} — {artist} · {rating} door {name}",
+      "coverAlt": "Hoes van {title}",
+      "wallLabel": "Recent beoordeelde platen"
+    },
+    "unreleased": {
+      "eyebrow": "Onuitgebracht · leaks · losse tracks",
+      "title": "Als het bestaat, kun je het beoordelen.",
+      "sub": "Spotify is de basis. Genius brengt de leaks en losse tracks, en een geplakte Spotify-link zet een aangekondigd album hier al vóór de release, aftelklok inbegrepen.",
+      "stamp1": "ONUITGEBRACHT",
+      "h1": "Beoordeel de leak",
+      "b1": "Nummers die nooit zijn uitgebracht krijgen een pagina, een cijfer en een room, net als al het andere.",
+      "stamp2": "AFTELKLOK",
+      "h2": "Vóór de release",
+      "b2": "Plak de Spotify-link van een aangekondigd album. Het krijgt een aftelklok tot middernacht (Eastern Time) en een room.",
+      "stamp3": "MET DE HAND",
+      "h3": "Helemaal niet op Spotify?",
+      "b3": "Alleen op Bandcamp, eigen beheer, regionaal. Mail ons de link en we voegen het met de hand toe.",
+      "onPeak": "Nu onuitgebracht op Peak",
+      "badge": "Onuitgebracht",
+      "coverAlt": "Hoes van {title}"
+    },
+    "dropBox": {
+      "albumLinksOnly": "Alleen Spotify-ALBUMLINKS — open het aankomende album in Spotify, tik op delen en plak de link hier.",
+      "cantRead": "Die link kon niet worden gelezen — controleer hem en probeer opnieuw.",
+      "alreadyOut": "“{title}” is al uit — zoek het via de zoekfunctie. Dit vak is voor albums die nog niet zijn uitgekomen.",
+      "hiccup": "Er ging iets mis — probeer het zo opnieuw.",
+      "placeholder": "Plak de Spotify-link van een aankomend album…",
+      "ariaLabel": "Spotify-link naar een aankomend album",
+      "tuning": "AFSTEMMEN…",
+      "openRoom": "OPEN DE ROOM"
+    },
+    "dropping": {
+      "title": "Binnenkort uit",
+      "viewAll": "Alles bekijken →",
+      "dropsIn": "Komt uit over",
+      "coverAlt": "Hoes van {title}",
+      "addBody": "Weet je van een album dat eraan komt? Plak de Spotify-link en de aftelpagina + live room gaan open vóór het album."
+    }
   }
 }

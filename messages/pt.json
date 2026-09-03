@@ -67,5 +67,151 @@
   },
   "pending": {
     "tuning": "SINTONIZANDO…"
+  },
+  "home": {
+    "appStore": {
+      "downloadOn": "Baixar na",
+      "appStore": "App Store"
+    },
+    "plug": {
+      "title": "Para uma experiência melhor, confira nosso site",
+      "body": "em um computador — a tela grande, casa das resenhas escritas com calma."
+    },
+    "hero": {
+      "tagline": "todo álbum. todo vazamento. toda discussão.",
+      "copy": "Avalie álbuns e vazamentos de 0 a 10, monte listas, siga pessoas e esteja na sala ao vivo quando um álbum sai à meia-noite. Grátis, na web e no iOS.",
+      "createAccount": "Criar conta",
+      "browseReviews": "Ver resenhas"
+    },
+    "dashboard": {
+      "title": "INÍCIO",
+      "writeReview": "✚ Escrever uma resenha",
+      "startDebate": "⚔ Abrir um debate",
+      "onAir": "NO AR",
+      "coverAlt": "Capa de {title}",
+      "tasteTitle": "Quer um canal sintonizado só em você?",
+      "tasteBody": "Seu gosto monta um feed a partir de quem você segue e do que você avalia.",
+      "tuneIn": "Sintonizar →"
+    },
+    "closing": {
+      "eyebrow": "Seu canal está esperando",
+      "title": "Comece o registro que você vai manter de verdade.",
+      "body": "Grátis. Sua primeira nota leva dois toques. Web e iOS.",
+      "createAccount": "Criar conta",
+      "signIn": "Entrar"
+    },
+    "howItWorks": {
+      "eyebrow": "Como funciona",
+      "title": "Três passos. Depois, o canal é seu.",
+      "sub": "Encontre, avalie, fale em voz alta.",
+      "step1Label": "Encontre o disco",
+      "step1Body": "Todo álbum e single do Spotify, mais o Genius para vazamentos e inéditas. Ainda não saiu? Cole o link do Spotify e ele ganha uma contagem regressiva.",
+      "step1Prop": "busque qualquer álbum, música ou artista…",
+      "step2Label": "Dê uma nota",
+      "step2Body": "De zero a dez, uma casa decimal. Sua nota aparece em cada card que você publica, colorida pela pontuação.",
+      "step3Label": "Discuta ao vivo",
+      "step3Body": "Todo lançamento tem uma sala ao vivo, aberta antes de o álbum sair à meia-noite. Quer briga? Abra um debate de dois lados.",
+      "onAir": "No ar",
+      "step3Prop": "“a faixa 4 é a melhor, discute com a parede”",
+      "stepFour": "o passo quatro é opcional e são as <link>listas</link>. todo mundo acaba fazendo listas."
+    },
+    "liveRooms": {
+      "eyebrow": "Salas de lançamento ao vivo",
+      "title": "Todo lançamento tem uma sala. À meia-noite ela lota.",
+      "sub": "O álbum sai, a sala já está aberta e a plataforma inteira está lá, faixa por faixa.",
+      "point1H": "Faixa por faixa",
+      "point1B": "As reações chegam enquanto a tracklist toca. Dá para saber em que música a sala está.",
+      "point2H": "Aberta antes do lançamento",
+      "point2B": "Álbuns com contagem regressiva ganham sala antes de sair. O chat está ao vivo às 23h59.",
+      "point3H": "Leia sem conta",
+      "point3B": "As salas são públicas. Cadastre-se para falar e avaliar.",
+      "point4H": "Debates quando esquenta",
+      "point4B": "Dois lados, um disco cada, a sala vota.",
+      "seeOnAir": "Ver o que está no ar",
+      "onAir": "No ar",
+      "roomMeta": "· sala de lançamento · {count} na sala",
+      "nowPlaying": "TOCANDO · {n}",
+      "chat1": "a faixa 4 acabou de começar. é essa.",
+      "chat2": "o flip do sample no outro 😭",
+      "chat3": "nada, a faixa 2 ganha. discute comigo",
+      "chat4": "7.8 pra mim, pode subir numa reescuta",
+      "you": "você",
+      "input": "diga algo sobre a faixa 4…",
+      "onAirNow": "No ar agora"
+    },
+    "makeItYours": {
+      "eyebrow": "Deixe do seu jeito",
+      "title": "Um perfil que é um canal, não um formulário.",
+      "sub": "Dez temas, vitrines que você organiza, seu próprio player de prévias, uma música e uma playlist no seu perfil.",
+      "themesLabel": "Temas imersivos",
+      "themesBody": "Dez visuais das eras dos consoles e da história da internet. Cada um recolore a página inteira.",
+      "showcasesLabel": "Vitrines que você organiza",
+      "showcasesBody": "Coloque os blocos na ordem que quiser: histograma, resenha fixada, o que está em rotação.",
+      "playerLabel": "Seu player de prévias",
+      "playerBody": "Spotify ou Apple Music em toda página de lançamento. Logado, as prévias viram faixas completas.",
+      "badgesLabel": "Emblemas que significam algo",
+      "badgesBody": "Resenhistas verificados, testadores iniciais, equipe, cada um com seu próprio brilho. Membros comuns não usam nenhum.",
+      "songLabel": "Uma música e uma playlist na porta",
+      "songBody": "Uma música de perfil que toca quando alguém chega em você, mais uma playlist do Spotify em destaque com player próprio.",
+      "profileSong": "Música do perfil",
+      "yourPick": "Sua escolha — Qualquer artista",
+      "playlist": "Playlist em destaque · 100 faixas · salve como lista",
+      "tasteLabel": "Seu gosto, um canal",
+      "tasteBody": "Um feed em tela cheia sintonizado em quem você segue e no que você avalia, uma opinião por vez, com música tocando embaixo.",
+      "tasteTag": "Seu gosto",
+      "nextUp": "a seguir: um 9.2 de alguém que você segue"
+    },
+    "showcases": {
+      "tasteReadout": "Leitura de gosto",
+      "nowShowing": "Em cartaz",
+      "featurePresentation": "Atração principal",
+      "mixtapes": "Mixtapes",
+      "waitingOn": "Esperando",
+      "onRotation": "Em rotação",
+      "songOfTheDay": "Música do dia"
+    },
+    "community": {
+      "eyebrow": "Comunidade",
+      "title": "O que a comunidade avaliou",
+      "sub": "Um card por disco, avaliado por um membro. Toque numa capa para ler a resenha.",
+      "allReviews": "todas as resenhas →",
+      "tileTitle": "{title} — {artist} · {rating} por {name}",
+      "coverAlt": "Capa de {title}",
+      "wallLabel": "Discos avaliados recentemente"
+    },
+    "unreleased": {
+      "eyebrow": "Inéditas · vazamentos · avulsas",
+      "title": "Se existe, você pode avaliar.",
+      "sub": "O Spotify é a base. O Genius traz os vazamentos e as avulsas, e um link do Spotify colado coloca aqui um álbum anunciado antes de sair, com contagem regressiva.",
+      "stamp1": "INÉDITA",
+      "h1": "Avalie o vazamento",
+      "b1": "Músicas que nunca foram lançadas ganham página, nota e sala como qualquer outra.",
+      "stamp2": "CONTAGEM",
+      "h2": "Antes de sair",
+      "b2": "Cole o link do Spotify de um álbum anunciado. Ele ganha uma contagem regressiva até a meia-noite (horário do Leste dos EUA) e uma sala.",
+      "stamp3": "À MÃO",
+      "h3": "Não está no Spotify?",
+      "b3": "Só no Bandcamp, prensagem independente, regional. Mande o link por e-mail e a gente adiciona à mão.",
+      "onPeak": "Inéditas no Peak agora",
+      "badge": "Inédita",
+      "coverAlt": "Capa de {title}"
+    },
+    "dropBox": {
+      "albumLinksOnly": "Só links de ÁLBUM do Spotify — abra o álbum que vai sair no Spotify, toque em compartilhar e cole o link aqui.",
+      "cantRead": "Não deu para ler esse link — confira e tente de novo.",
+      "alreadyOut": "“{title}” já saiu — procure pela busca. Este espaço é para álbuns que ainda não foram lançados.",
+      "hiccup": "Algo engasgou — tente de novo daqui a pouco.",
+      "placeholder": "Cole o link do Spotify de um álbum que vai sair…",
+      "ariaLabel": "Link do Spotify para um álbum que vai sair",
+      "tuning": "SINTONIZANDO…",
+      "openRoom": "ABRIR A SALA"
+    },
+    "dropping": {
+      "title": "Saindo em breve",
+      "viewAll": "Ver tudo →",
+      "dropsIn": "Sai em",
+      "coverAlt": "Capa de {title}",
+      "addBody": "Sabe de um álbum que vem aí? Cole o link do Spotify e a página de contagem regressiva + a sala ao vivo abrem antes do álbum."
+    }
   }
 }

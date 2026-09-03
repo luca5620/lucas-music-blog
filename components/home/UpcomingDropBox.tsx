@@ -16,6 +16,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface CatalogResult {
   source: "local" | "spotify" | "spotify_track" | "genius";
@@ -33,6 +34,9 @@ const SPOTIFY_LINK =
   /^(https?:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(?:album|prerelease)\/[A-Za-z0-9]{10,30}|spotify:album:[A-Za-z0-9]{10,30})/i;
 
 export default function UpcomingDropBox() {
+  // LANGUAGES: every message this box shows (messages → "home.dropBox").
+  // The server's own `notice` text stays as the API sent it.
+  const t = useTranslations("home.dropBox");
   const router = useRouter();
   const [link, setLink] = useState("");
   const [busy, setBusy] = useState(false);
@@ -44,9 +48,7 @@ export default function UpcomingDropBox() {
     setMessage(null);
 
     if (!SPOTIFY_LINK.test(trimmed)) {
-      setMessage(
-        "Spotify ALBUM links only — open the upcoming album on Spotify, hit share, and paste the link here."
-      );
+      setMessage(t("albumLinksOnly"));
       return;
     }
 
@@ -65,18 +67,13 @@ export default function UpcomingDropBox() {
 
       const hit = data.results[0];
       if (!hit) {
-        setMessage(
-          data.notice ??
-            "Couldn't read that link — double-check it and try again."
-        );
+        setMessage(data.notice ?? t("cantRead"));
         return;
       }
 
       // The whole point of this box: future drops only.
       if (!hit.upcoming) {
-        setMessage(
-          `"${hit.title}" is already out — find it through search instead. This slot is for albums that haven't dropped yet.`
-        );
+        setMessage(t("alreadyOut", { title: hit.title }));
         return;
       }
 
@@ -101,7 +98,7 @@ export default function UpcomingDropBox() {
 
       router.push(`/releases/${impData.release.slug}`);
     } catch {
-      setMessage("Something hiccuped — try again in a moment.");
+      setMessage(t("hiccup"));
     } finally {
       setBusy(false);
     }
@@ -117,9 +114,9 @@ export default function UpcomingDropBox() {
             setLink(e.target.value);
             if (message) setMessage(null);
           }}
-          placeholder="Paste an upcoming album's Spotify link…"
+          placeholder={t("placeholder")}
           className="form-input flex-1"
-          aria-label="Spotify link to an upcoming album"
+          aria-label={t("ariaLabel")}
           disabled={busy}
         />
         <button
@@ -127,7 +124,7 @@ export default function UpcomingDropBox() {
           disabled={busy || link.trim().length === 0}
           className="btn-y2k btn-y2k-primary shrink-0 disabled:opacity-50"
         >
-          {busy ? "TUNING…" : "OPEN THE ROOM"}
+          {busy ? t("tuning") : t("openRoom")}
         </button>
       </div>
       {message && <p className="text-xs text-osd-amber">{message}</p>}

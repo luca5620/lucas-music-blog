@@ -67,5 +67,151 @@
   },
   "pending": {
     "tuning": "SENDERSUCHE…"
+  },
+  "home": {
+    "appStore": {
+      "downloadOn": "Laden im",
+      "appStore": "App Store"
+    },
+    "plug": {
+      "title": "Für ein besseres Erlebnis schau auf unsere Website",
+      "body": "am Computer — der große Bildschirm, wo die richtigen, ausführlichen Rezensionen entstehen."
+    },
+    "hero": {
+      "tagline": "jedes Album. jeder Leak. jede Diskussion.",
+      "copy": "Bewerte Alben und Leaks von 0 bis 10, bau Listen, folge Leuten und sei im Live-Raum, wenn ein Album um Mitternacht erscheint. Kostenlos, im Web und auf iOS.",
+      "createAccount": "Konto erstellen",
+      "browseReviews": "Rezensionen ansehen"
+    },
+    "dashboard": {
+      "title": "START",
+      "writeReview": "✚ Rezension schreiben",
+      "startDebate": "⚔ Debatte starten",
+      "onAir": "ON AIR",
+      "coverAlt": "Cover von {title}",
+      "tasteTitle": "Willst du einen Kanal, der nur auf dich eingestellt ist?",
+      "tasteBody": "Dein Geschmack baut einen Feed daraus, wem du folgst und was du bewertest.",
+      "tuneIn": "Einschalten →"
+    },
+    "closing": {
+      "eyebrow": "Dein Kanal wartet",
+      "title": "Fang das Logbuch an, das du wirklich führst.",
+      "body": "Kostenlos. Deine erste Bewertung braucht zwei Tipps. Web und iOS.",
+      "createAccount": "Konto erstellen",
+      "signIn": "Anmelden"
+    },
+    "howItWorks": {
+      "eyebrow": "So funktioniert's",
+      "title": "Drei Schritte. Dann ist es dein Kanal.",
+      "sub": "Finde es, bewerte es, sag es laut.",
+      "step1Label": "Finde die Platte",
+      "step1Body": "Jedes Album und jede Single auf Spotify, plus Genius für Leaks und Unveröffentlichtes. Noch nicht draußen? Füg den Spotify-Link ein und es bekommt einen Countdown.",
+      "step1Prop": "such ein Album, einen Song oder Artist…",
+      "step2Label": "Gib ihm eine Zahl",
+      "step2Body": "Null bis zehn, eine Nachkommastelle. Deine Zahl steht auf jeder Karte, die du postest, gefärbt nach der Wertung.",
+      "step3Label": "Diskutier live",
+      "step3Body": "Jedes Release hat einen Live-Raum, offen bevor das Album um Mitternacht erscheint. Lust auf Streit? Starte eine Debatte mit zwei Seiten.",
+      "onAir": "On air",
+      "step3Prop": "„Track 4 ist der Beste, diskutier mit einer Wand“",
+      "stepFour": "Schritt vier ist optional und das sind <link>Listen</link>. am Ende macht jeder Listen."
+    },
+    "liveRooms": {
+      "eyebrow": "Live-Release-Räume",
+      "title": "Jedes Release hat einen Raum. Um Mitternacht füllt er sich.",
+      "sub": "Das Album erscheint, der Raum ist schon offen, und die ganze Plattform ist drin, Track für Track.",
+      "point1H": "Track für Track",
+      "point1B": "Reaktionen kommen, während die Tracklist läuft. Man merkt, bei welchem Song der Raum gerade ist.",
+      "point2H": "Offen vor dem Release",
+      "point2B": "Countdown-Alben bekommen schon vor dem Release einen Raum. Der Chat ist um 23:59 live.",
+      "point3H": "Lesen ohne Konto",
+      "point3B": "Räume sind öffentlich. Registrier dich, um mitzureden und zu bewerten.",
+      "point4H": "Debatten, wenn's hitzig wird",
+      "point4B": "Zwei Seiten, je eine Platte, der Raum stimmt ab.",
+      "seeOnAir": "Schau, was on air ist",
+      "onAir": "On air",
+      "roomMeta": "· Release-Raum · {count} im Raum",
+      "nowPlaying": "LÄUFT · {n}",
+      "chat1": "track 4 hat gerade angefangen. das ist er.",
+      "chat2": "der sample-flip im outro 😭",
+      "chat3": "nee, track 2 ist besser. diskutier mit mir",
+      "chat4": "7.8 von mir, kann beim zweiten hören steigen",
+      "you": "du",
+      "input": "sag was zu Track 4…",
+      "onAirNow": "Gerade on air"
+    },
+    "makeItYours": {
+      "eyebrow": "Mach es zu deinem",
+      "title": "Ein Profil, das ein Kanal ist, kein Formular.",
+      "sub": "Zehn Themes, Showcases, die du anordnest, dein eigener Vorschau-Player, ein Song und eine Playlist auf deinem Profil.",
+      "themesLabel": "Immersive Themes",
+      "themesBody": "Zehn Looks aus Konsolen-Ären und Internetgeschichte. Jeder färbt die ganze Seite neu.",
+      "showcasesLabel": "Showcases, die du anordnest",
+      "showcasesBody": "Bring die Blöcke in die Reihenfolge, die du willst: Histogramm, angepinnte Rezension, was gerade in Rotation ist.",
+      "playerLabel": "Dein Vorschau-Player",
+      "playerBody": "Spotify oder Apple Music auf jeder Release-Seite. Angemeldet werden aus Vorschauen ganze Tracks.",
+      "badgesLabel": "Badges, die etwas bedeuten",
+      "badgesBody": "Verifizierte Rezensenten, frühe Tester, Team, jedes mit eigenem Leuchten. Normale Mitglieder tragen keins.",
+      "songLabel": "Ein Song und eine Playlist an der Tür",
+      "songBody": "Ein Profilsong, der läuft, wenn jemand bei dir landet, plus eine hervorgehobene Spotify-Playlist mit eigenem Player.",
+      "profileSong": "Profilsong",
+      "yourPick": "Deine Wahl — Jeder Artist",
+      "playlist": "Playlist im Fokus · 100 Tracks · als Liste speichern",
+      "tasteLabel": "Dein Geschmack, ein Kanal",
+      "tasteBody": "Ein Vollbild-Feed, eingestellt auf wem du folgst und was du bewertest, eine Meinung nach der anderen, mit Musik darunter.",
+      "tasteTag": "Dein Geschmack",
+      "nextUp": "als nächstes: eine 9.2 von jemandem, dem du folgst"
+    },
+    "showcases": {
+      "tasteReadout": "Geschmacksanzeige",
+      "nowShowing": "Jetzt im Programm",
+      "featurePresentation": "Hauptfilm",
+      "mixtapes": "Mixtapes",
+      "waitingOn": "Warten auf",
+      "onRotation": "In Rotation",
+      "songOfTheDay": "Song des Tages"
+    },
+    "community": {
+      "eyebrow": "Community",
+      "title": "Was die Community bewertet hat",
+      "sub": "Eine Kachel pro Platte, bewertet von einem Mitglied. Tipp auf ein Cover, um die Rezension zu lesen.",
+      "allReviews": "alle Rezensionen →",
+      "tileTitle": "{title} — {artist} · {rating} von {name}",
+      "coverAlt": "Cover von {title}",
+      "wallLabel": "Kürzlich bewertete Platten"
+    },
+    "unreleased": {
+      "eyebrow": "Unveröffentlicht · Leaks · Loosies",
+      "title": "Wenn es existiert, kannst du es bewerten.",
+      "sub": "Spotify ist die Basis. Genius bringt die Leaks und Loosies, und ein eingefügter Spotify-Link holt ein angekündigtes Album schon vor dem Release hierher, Countdown inklusive.",
+      "stamp1": "UNVERÖFFENTLICHT",
+      "h1": "Bewerte den Leak",
+      "b1": "Songs, die nie erschienen sind, bekommen eine Seite, eine Bewertung und einen Raum wie alles andere.",
+      "stamp2": "COUNTDOWN",
+      "h2": "Bevor es erscheint",
+      "b2": "Füg den Spotify-Link eines angekündigten Albums ein. Es bekommt einen Countdown bis Mitternacht (Eastern Time) und einen Raum.",
+      "stamp3": "VON HAND",
+      "h3": "Gar nicht auf Spotify?",
+      "b3": "Nur auf Bandcamp, Eigenpressung, regional. Schick uns den Link per Mail und es wird von Hand hinzugefügt.",
+      "onPeak": "Gerade unveröffentlicht auf Peak",
+      "badge": "Unveröffentlicht",
+      "coverAlt": "Cover von {title}"
+    },
+    "dropBox": {
+      "albumLinksOnly": "Nur Spotify-ALBUM-Links — öffne das kommende Album in Spotify, tipp auf Teilen und füg den Link hier ein.",
+      "cantRead": "Der Link ließ sich nicht lesen — prüf ihn und versuch es noch mal.",
+      "alreadyOut": "„{title}“ ist schon draußen — such es über die Suche. Dieses Feld ist für Alben, die noch nicht erschienen sind.",
+      "hiccup": "Da hat etwas gehakt — versuch es gleich noch mal.",
+      "placeholder": "Füg den Spotify-Link eines kommenden Albums ein…",
+      "ariaLabel": "Spotify-Link zu einem kommenden Album",
+      "tuning": "SENDERSUCHE…",
+      "openRoom": "RAUM ÖFFNEN"
+    },
+    "dropping": {
+      "title": "Bald draußen",
+      "viewAll": "Alle ansehen →",
+      "dropsIn": "Erscheint in",
+      "coverAlt": "Cover von {title}",
+      "addBody": "Du kennst ein Album, das kommt? Füg den Spotify-Link ein und die Countdown-Seite + der Live-Raum öffnen vor dem Album."
+    }
   }
 }

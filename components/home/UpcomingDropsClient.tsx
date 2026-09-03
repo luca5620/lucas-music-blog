@@ -22,6 +22,7 @@ import { formatDropDate } from "@/lib/upcoming";
 import LiveCountdown from "@/components/releases/LiveCountdown";
 import UpcomingDropBox from "@/components/home/UpcomingDropBox";
 import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
+import { useTranslations } from "next-intl";
 
 export interface UpcomingItem {
   id: string;
@@ -45,6 +46,9 @@ export default function UpcomingDropsClient({
   canAdd?: boolean;
 }) {
   const [view, setView] = useReviewView();
+  // LANGUAGES: header, View All, "Drops in", the add-box copy
+  // (messages → "home.dropping"). Titles/artists/dates are data.
+  const t = useTranslations("home.dropping");
 
   // Guests with nothing upcoming would see a header floating over
   // nothing — the add box is what earns the empty state its keep.
@@ -60,7 +64,7 @@ export default function UpcomingDropsClient({
       <div className="flex items-center gap-2 sm:gap-3">
         <span className="glow-orb shrink-0" style={{ animationDelay: "1.2s" }} />
         <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary min-w-0 truncate">
-          Dropping Soon
+          {t("title")}
         </h2>
         <div className="flex-1 divider-glow" />
         {items.length > 0 && <ViewToggle view={view} onChange={setView} />}
@@ -68,7 +72,7 @@ export default function UpcomingDropsClient({
           href="/releases"
           className="label-xbox shrink-0 hover:text-accent-primary transition-colors"
         >
-          View All →
+          {t("viewAll")}
         </Link>
       </div>
 
@@ -87,7 +91,7 @@ export default function UpcomingDropsClient({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={smallCover(item.cover_image)}
-                    alt={`${item.title} cover`}
+                    alt={t("coverAlt", { title: item.title })}
                     loading="lazy"
                     decoding="async"
                   />
@@ -175,7 +179,7 @@ export default function UpcomingDropsClient({
                     src={item.cover_image}
                     srcSet={`${smallCover(item.cover_image)} 300w, ${item.cover_image} 640w`}
                     sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                    alt={`${item.title} cover`}
+                    alt={t("coverAlt", { title: item.title })}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -209,7 +213,7 @@ export default function UpcomingDropsClient({
                   countdown card shows the clock — big and ticking. */}
               <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
                 <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">
-                  Drops in
+                  {t("dropsIn")}
                 </span>
                 <span className="pixel-text text-base font-bold text-osd-amber tracking-widest">
                   <LiveCountdown releaseDate={item.release_date} />
@@ -226,10 +230,7 @@ export default function UpcomingDropsClient({
           Signed-in only: the ensure route wants a session. */}
       {canAdd && (
         <div className="panel-xbox p-4 sm:p-5 space-y-3 border-osd-amber/30">
-          <p className="text-xs text-text-secondary">
-            Know an album that&apos;s coming? Paste its Spotify link and the
-            countdown page + live room open before the album does.
-          </p>
+          <p className="text-xs text-text-secondary">{t("addBody")}</p>
           <UpcomingDropBox />
         </div>
       )}

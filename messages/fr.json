@@ -67,5 +67,151 @@
   },
   "pending": {
     "tuning": "RÉGLAGE…"
+  },
+  "home": {
+    "appStore": {
+      "downloadOn": "Télécharger dans l'",
+      "appStore": "App Store"
+    },
+    "plug": {
+      "title": "Pour une meilleure expérience, passe sur notre site web",
+      "body": "sur un ordinateur — le grand écran, là où s'écrivent les vraies critiques posées."
+    },
+    "hero": {
+      "tagline": "chaque album. chaque leak. chaque débat.",
+      "copy": "Note albums et leaks de 0 à 10, fais des listes, suis des gens et sois dans la salle en direct quand un album sort à minuit. Gratuit, sur le web et iOS.",
+      "createAccount": "Créer un compte",
+      "browseReviews": "Voir les critiques"
+    },
+    "dashboard": {
+      "title": "ACCUEIL",
+      "writeReview": "✚ Écrire une critique",
+      "startDebate": "⚔ Lancer un débat",
+      "onAir": "À L'ANTENNE",
+      "coverAlt": "Pochette de {title}",
+      "tasteTitle": "Envie d'une chaîne réglée rien que pour toi ?",
+      "tasteBody": "Tes goûts construisent un flux à partir de qui tu suis et de ce que tu notes.",
+      "tuneIn": "Se brancher →"
+    },
+    "closing": {
+      "eyebrow": "Ta chaîne t'attend",
+      "title": "Commence le journal que tu vas vraiment tenir.",
+      "body": "Gratuit. Ta première note prend deux tapes. Web et iOS.",
+      "createAccount": "Créer un compte",
+      "signIn": "Se connecter"
+    },
+    "howItWorks": {
+      "eyebrow": "Comment ça marche",
+      "title": "Trois étapes. Ensuite, c'est ta chaîne.",
+      "sub": "Trouve-le, note-le, dis-le tout haut.",
+      "step1Label": "Trouve le disque",
+      "step1Body": "Chaque album et single sur Spotify, plus Genius pour les leaks et les inédits. Pas encore sorti ? Colle le lien Spotify et il reçoit un compte à rebours.",
+      "step1Prop": "cherche un album, un morceau, un artiste…",
+      "step2Label": "Mets-lui un chiffre",
+      "step2Body": "De zéro à dix, une décimale. Ton chiffre apparaît sur chaque carte que tu publies, coloré selon la note.",
+      "step3Label": "Débats-en en direct",
+      "step3Body": "Chaque sortie a une salle en direct, ouverte avant que l'album sorte à minuit. Envie de bagarre ? Lance un débat à deux camps.",
+      "onAir": "À l'antenne",
+      "step3Prop": "« le titre 4 est LE morceau, va discuter avec un mur »",
+      "stepFour": "l'étape quatre est facultative et c'est les <link>listes</link>. tout le monde finit par faire des listes."
+    },
+    "liveRooms": {
+      "eyebrow": "Salles de sortie en direct",
+      "title": "Chaque sortie a sa salle. À minuit, elle se remplit.",
+      "sub": "L'album sort, la salle est déjà ouverte, et toute la plateforme y est, titre par titre.",
+      "point1H": "Titre par titre",
+      "point1B": "Les réactions tombent pendant que la tracklist défile. On sait sur quel morceau la salle en est.",
+      "point2H": "Ouverte avant la sortie",
+      "point2B": "Les albums en compte à rebours ont une salle avant leur sortie. Le chat est en direct à 23 h 59.",
+      "point3H": "Lisible sans compte",
+      "point3B": "Les salles sont publiques. Inscris-toi pour parler et noter.",
+      "point4H": "Des débats quand ça chauffe",
+      "point4B": "Deux camps, un disque chacun, la salle vote.",
+      "seeOnAir": "Voir ce qui est à l'antenne",
+      "onAir": "À l'antenne",
+      "roomMeta": "· salle de sortie · {count} dans la salle",
+      "nowPlaying": "EN LECTURE · {n}",
+      "chat1": "le titre 4 vient de commencer. c'est LE morceau.",
+      "chat2": "le flip du sample sur l'outro 😭",
+      "chat3": "non, le titre 2 est au-dessus. viens débattre",
+      "chat4": "7,8 pour moi, ça peut monter à la réécoute",
+      "you": "toi",
+      "input": "dis quelque chose sur le titre 4…",
+      "onAirNow": "À l'antenne en ce moment"
+    },
+    "makeItYours": {
+      "eyebrow": "Fais-en le tien",
+      "title": "Un profil qui est une chaîne, pas un formulaire.",
+      "sub": "Dix thèmes, des vitrines que tu arranges, ton propre lecteur d'extraits, un morceau et une playlist sur ton profil.",
+      "themesLabel": "Thèmes immersifs",
+      "themesBody": "Dix looks tirés des ères de consoles et de l'histoire d'internet. Chacun recolore toute la page.",
+      "showcasesLabel": "Des vitrines que tu arranges",
+      "showcasesBody": "Mets les blocs dans l'ordre que tu veux : histogramme, critique épinglée, ce qui tourne en ce moment.",
+      "playerLabel": "Ton lecteur d'extraits",
+      "playerBody": "Spotify ou Apple Music sur chaque page de sortie. Connecté, les extraits deviennent des morceaux entiers.",
+      "badgesLabel": "Des badges qui veulent dire quelque chose",
+      "badgesBody": "Critiques vérifiés, premiers testeurs, équipe, chacun avec sa propre lueur. Les membres normaux n'en portent pas.",
+      "songLabel": "Un morceau et une playlist sur la porte",
+      "songBody": "Un morceau de profil qui se lance quand quelqu'un arrive chez toi, plus une playlist Spotify mise en avant avec son propre lecteur.",
+      "profileSong": "Morceau de profil",
+      "yourPick": "Ton choix — N'importe quel artiste",
+      "playlist": "Playlist à la une · 100 titres · enregistre-la en liste",
+      "tasteLabel": "Tes goûts, une chaîne",
+      "tasteBody": "Un flux plein écran réglé sur qui tu suis et ce que tu notes, un avis à la fois, avec la musique en dessous.",
+      "tasteTag": "Tes goûts",
+      "nextUp": "à suivre : un 9,2 de quelqu'un que tu suis"
+    },
+    "showcases": {
+      "tasteReadout": "Relevé de goûts",
+      "nowShowing": "À l'affiche",
+      "featurePresentation": "Film principal",
+      "mixtapes": "Mixtapes",
+      "waitingOn": "En attente",
+      "onRotation": "En rotation",
+      "songOfTheDay": "Morceau du jour"
+    },
+    "community": {
+      "eyebrow": "Communauté",
+      "title": "Ce que la communauté a noté",
+      "sub": "Une tuile par disque, noté par un membre. Tape une pochette pour lire la critique.",
+      "allReviews": "toutes les critiques →",
+      "tileTitle": "{title} — {artist} · {rating} par {name}",
+      "coverAlt": "Pochette de {title}",
+      "wallLabel": "Disques notés récemment"
+    },
+    "unreleased": {
+      "eyebrow": "Inédits · leaks · loosies",
+      "title": "Si ça existe, tu peux le noter.",
+      "sub": "Spotify est le plancher. Genius apporte les leaks et les loosies, et un lien Spotify collé met ici un album annoncé avant sa sortie, compte à rebours inclus.",
+      "stamp1": "INÉDIT",
+      "h1": "Note le leak",
+      "b1": "Les morceaux jamais sortis ont une page, une note et une salle comme tout le reste.",
+      "stamp2": "COMPTE À REBOURS",
+      "h2": "Avant la sortie",
+      "b2": "Colle le lien Spotify d'un album annoncé. Il reçoit un compte à rebours jusqu'à minuit (heure de l'Est) et une salle.",
+      "stamp3": "À LA MAIN",
+      "h3": "Pas du tout sur Spotify ?",
+      "b3": "Bandcamp uniquement, pressage privé, régional. Envoie-nous le lien par mail et on l'ajoute à la main.",
+      "onPeak": "Inédits sur Peak en ce moment",
+      "badge": "Inédit",
+      "coverAlt": "Pochette de {title}"
+    },
+    "dropBox": {
+      "albumLinksOnly": "Liens d'ALBUM Spotify uniquement — ouvre l'album à venir sur Spotify, appuie sur partager et colle le lien ici.",
+      "cantRead": "Impossible de lire ce lien — vérifie-le et réessaie.",
+      "alreadyOut": "« {title} » est déjà sorti — passe par la recherche. Cet emplacement est pour les albums pas encore sortis.",
+      "hiccup": "Petit raté — réessaie dans un instant.",
+      "placeholder": "Colle le lien Spotify d'un album à venir…",
+      "ariaLabel": "Lien Spotify vers un album à venir",
+      "tuning": "RÉGLAGE…",
+      "openRoom": "OUVRIR LA SALLE"
+    },
+    "dropping": {
+      "title": "Bientôt",
+      "viewAll": "Tout voir →",
+      "dropsIn": "Sort dans",
+      "coverAlt": "Pochette de {title}",
+      "addBody": "Tu connais un album qui arrive ? Colle son lien Spotify et la page de compte à rebours + la salle en direct ouvrent avant l'album."
+    }
   }
 }

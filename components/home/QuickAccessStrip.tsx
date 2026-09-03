@@ -32,13 +32,16 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { hapticTap } from "@/lib/native";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import { useTranslations } from "next-intl";
 
+// LANGUAGES: `label` is a key into messages → "nav" — the same words
+// the top navigation uses, so the two can never drift apart.
 const CHIPS = [
-  { href: "/reviews", label: "Reviews" },
-  { href: "/releases", label: "Releases" },
-  { href: "/debates", label: "Debates" },
-  { href: "/lists", label: "Lists" },
-];
+  { href: "/reviews", label: "reviews" },
+  { href: "/releases", label: "releases" },
+  { href: "/debates", label: "debates" },
+  { href: "/lists", label: "lists" },
+] as const;
 
 /** env(safe-area-inset-top) in real pixels, via a fixed probe. */
 function measureSafeTop(): number {
@@ -52,6 +55,7 @@ function measureSafeTop(): number {
 }
 
 export default function QuickAccessStrip() {
+  const t = useTranslations("nav");
   const wrapRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -161,7 +165,7 @@ export default function QuickAccessStrip() {
               onClick={() => hapticTap()}
               className="text-center px-1 py-1.5 rounded-full text-[11px] font-bold tracking-wide uppercase text-text-secondary border border-border-medium bg-bg-elevated hover:text-accent-primary hover:border-accent-primary/40 transition-all font-[family-name:var(--font-heading)] whitespace-nowrap"
             >
-              {chip.label}
+              {t(chip.label)}
             </Link>
           ))}
         </div>

@@ -5,8 +5,15 @@
  * previews, etc."). Six cards, each with a live-looking prop rather
  * than a paragraph: theme swatches, showcase chips, the player
  * toggle, the badge, the song + playlist, the taste channel.
+ *
+ * LANGUAGES: server component → getTranslations("home.makeItYours")
+ * for the copy and "home.showcases" for the showcase chip names (a
+ * namespace the profile editor can reuse when its batch lands). Theme
+ * names (Broadcast, PS2 · Nebula, …) are proper names — never
+ * translated.
  */
 
+import { getTranslations } from "next-intl/server";
 import RoleBadge from "@/components/ui/RoleBadge";
 import HomeSection from "./HomeSection";
 import Reveal from "./Reveal";
@@ -26,15 +33,16 @@ const THEMES: { label: string; hex: string }[] = [
   { label: "Robot Rock", hex: "#f0b93c" },
 ];
 
-const SHOWCASES = [
-  "Taste Readout",
-  "Now Showing",
-  "Feature Presentation",
-  "Mixtapes",
-  "Waiting On",
-  "On Rotation",
-  "Song of the Day",
-];
+/** Keys into home.showcases — the display order of the chips. */
+const SHOWCASE_KEYS = [
+  "tasteReadout",
+  "nowShowing",
+  "featurePresentation",
+  "mixtapes",
+  "waitingOn",
+  "onRotation",
+  "songOfTheDay",
+] as const;
 
 function Card({
   label,
@@ -55,29 +63,25 @@ function Card({
   );
 }
 
-export default function MakeItYours() {
+export default async function MakeItYours() {
+  const t = await getTranslations("home.makeItYours");
+  const ts = await getTranslations("home.showcases");
+
   return (
-    <HomeSection
-      eyebrow="Make it yours"
-      title="A profile that's a channel, not a form."
-      sub="Ten themes, showcases you arrange, your own preview player, a song and a playlist on your profile."
-    >
+    <HomeSection eyebrow={t("eyebrow")} title={t("title")} sub={t("sub")}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
         <Reveal delay={0}>
-          <Card
-            label="Immersive themes"
-            body="Ten looks from console eras and internet history. Each one recolors the whole page."
-          >
+          <Card label={t("themesLabel")} body={t("themesBody")}>
             <div className="flex flex-wrap gap-2">
-              {THEMES.map((t) => (
+              {THEMES.map((theme) => (
                 <span
-                  key={t.label}
+                  key={theme.label}
                   className="inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] text-text-secondary"
-                  style={{ borderColor: `${t.hex}55`, background: `${t.hex}12` }}
-                  title={t.label}
+                  style={{ borderColor: `${theme.hex}55`, background: `${theme.hex}12` }}
+                  title={theme.label}
                 >
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: t.hex, boxShadow: `0 0 8px ${t.hex}` }} />
-                  {t.label}
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: theme.hex, boxShadow: `0 0 8px ${theme.hex}` }} />
+                  {theme.label}
                 </span>
               ))}
             </div>
@@ -85,14 +89,11 @@ export default function MakeItYours() {
         </Reveal>
 
         <Reveal delay={90}>
-          <Card
-            label="Showcases you arrange"
-            body="Put the blocks in the order you want: histogram, pinned review, what's on rotation."
-          >
+          <Card label={t("showcasesLabel")} body={t("showcasesBody")}>
             <div className="flex flex-wrap gap-1.5">
-              {SHOWCASES.map((s, i) => (
+              {SHOWCASE_KEYS.map((key, i) => (
                 <span
-                  key={s}
+                  key={key}
                   className={`rounded border px-2 py-1 text-[11px] ${
                     i < 3
                       ? "border-[rgba(var(--accent-rgb),0.5)] bg-[rgba(var(--accent-rgb),0.12)] text-text-primary"
@@ -100,7 +101,7 @@ export default function MakeItYours() {
                   }`}
                 >
                   {i < 3 ? `${i + 1} · ` : ""}
-                  {s}
+                  {ts(key)}
                 </span>
               ))}
             </div>
@@ -108,10 +109,7 @@ export default function MakeItYours() {
         </Reveal>
 
         <Reveal delay={180}>
-          <Card
-            label="Your preview player"
-            body="Spotify or Apple Music on every release page. Signed in, previews become full tracks."
-          >
+          <Card label={t("playerLabel")} body={t("playerBody")}>
             <div className="grid grid-cols-2 gap-2">
               {[
                 ["Spotify", true, "#1db954"],
@@ -135,10 +133,7 @@ export default function MakeItYours() {
         </Reveal>
 
         <Reveal delay={0}>
-          <Card
-            label="Badges that mean something"
-            body="Verified reviewers, early testers, staff, each with its own glow. Regular members don't wear one."
-          >
+          <Card label={t("badgesLabel")} body={t("badgesBody")}>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
               <RoleBadge role="reviewer" size="sm" showLabel />
               <RoleBadge role="tester" size="sm" showLabel />
@@ -148,45 +143,37 @@ export default function MakeItYours() {
         </Reveal>
 
         <Reveal delay={90}>
-          <Card
-            label="A song and a playlist on the door"
-            body="A profile song that plays when someone lands on you, plus a featured Spotify playlist with its own player."
-          >
+          <Card label={t("songLabel")} body={t("songBody")}>
             <div className="space-y-2">
               <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm">
                 <span className="text-lg">♪</span>
                 <span className="min-w-0">
                   <span className="block font-[family-name:var(--font-vt323)] text-[11px] uppercase tracking-wider text-text-muted">
-                    Profile song
+                    {t("profileSong")}
                   </span>
-                  <span className="block text-text-primary truncate font-bold">Your pick — Any artist</span>
+                  <span className="block text-text-primary truncate font-bold">{t("yourPick")}</span>
                 </span>
               </div>
               <div className="flex items-center gap-2 rounded-lg border border-[#1db954]/40 bg-[#1db954]/10 px-3 py-2 text-sm">
                 <span className="text-[#1db954]">♫</span>
-                <span className="text-text-secondary truncate">Featured playlist · 100 tracks · save it as a list</span>
+                <span className="text-text-secondary truncate">{t("playlist")}</span>
               </div>
             </div>
           </Card>
         </Reveal>
 
         <Reveal delay={180}>
-          <Card
-            label="Your Taste, a channel"
-            body="A fullscreen feed tuned to who you follow and what you rate, one take at a time, music playing under it."
-          >
+          <Card label={t("tasteLabel")} body={t("tasteBody")}>
             <div className="rounded-lg border border-white/10 bg-black/40 p-3 space-y-2">
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
-                <span className="vhs-label text-[10px] text-accent-glow">Your taste</span>
+                <span className="vhs-label text-[10px] text-accent-glow">{t("tasteTag")}</span>
                 <span className="ml-auto pixel-text text-[10px] text-text-muted">CH 07</span>
               </div>
               <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <div className="h-full w-2/3 rounded-full bg-[rgb(var(--accent-rgb))]" />
               </div>
-              <p className="text-xs text-text-secondary truncate">
-                next up: a 9.2 from someone you follow
-              </p>
+              <p className="text-xs text-text-secondary truncate">{t("nextUp")}</p>
             </div>
           </Card>
         </Reveal>

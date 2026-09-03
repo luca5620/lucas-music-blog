@@ -37,6 +37,8 @@ import { BreadcrumbSchema } from "@/app/schema";
    shared constant in lib/app-store.ts (also used by the SEO landing
    pages). The listing goes live the moment Apple approves the app. */
 import { APP_STORE_URL } from "@/lib/app-store";
+// LANGUAGES: server page → getTranslations (messages → "home.*").
+import { getTranslations } from "next-intl/server";
 
 // The dashboard is per-viewer and realtime-ish — always render fresh.
 export const dynamic = "force-dynamic";
@@ -44,7 +46,8 @@ export const dynamic = "force-dynamic";
 /** The bitten apple (Font Awesome path, CC BY 4.0) + the classic
     two-line badge text. Web-only via .app-hide — if you can see the
     app shell you already have the app. */
-function AppStoreBadge() {
+async function AppStoreBadge() {
+  const t = await getTranslations("home.appStore");
   return (
     <a
       href={APP_STORE_URL}
@@ -61,10 +64,10 @@ function AppStoreBadge() {
       </svg>
       <span className="text-left leading-tight">
         <span className="block text-[9px] uppercase tracking-widest text-text-muted">
-          Download on the
+          {t("downloadOn")}
         </span>
         <span className="block text-sm font-bold text-text-primary">
-          App Store
+          {t("appStore")}
         </span>
       </span>
     </a>
@@ -78,18 +81,17 @@ function AppStoreBadge() {
     it invisible on web. Deliberately not a link: the shell IS the
     site, so tapping would just reload this page — people carry the
     address to a computer instead. */
-function WebsitePlug() {
+async function WebsitePlug() {
+  const t = await getTranslations("home.plug");
   return (
     <div className="app-only">
       <section className="panel-xbox p-5 text-center space-y-1.5 relative overflow-hidden">
-        <p className="osd-text text-sm">
-          For a better experience, check out our website
-        </p>
+        <p className="osd-text text-sm">{t("title")}</p>
         <p className="text-xs text-text-secondary">
           <span className="text-text-primary font-bold">
             peakmusicreviews.com
           </span>{" "}
-          on a computer — the big-screen home for proper sit-down reviews.
+          {t("body")}
         </p>
         <div className="scan-bar" />
       </section>
@@ -116,7 +118,8 @@ export default async function Home() {
    A PROFILE THAT'S YOURS) grew into full sections on 2026-09-02:
    Unreleased, LiveRooms, MakeItYours — see components/home. */
 
-function Splash() {
+async function Splash() {
+  const t = await getTranslations("home.hero");
   return (
     <>
       {/* ===== Hero — the chrome disc floating on liquid light,
@@ -149,15 +152,14 @@ function Splash() {
         <h1 className="crt-title text-4xl sm:text-6xl tracking-tight uppercase">Peak Music Reviews</h1>
 
         <p className="pixel-text text-lg sm:text-2xl text-accent-glow">
-          every album. every leak. every argument.
+          {t("tagline")}
         </p>
 
         {/* Hero copy trimmed 2026-09-03 (Luca: "all the important
             information straight up with no filler") — headline and
             tagline stay as they are, per his standing rule. */}
         <p className="hero-copy max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
-          Rate albums and leaks 0–10, build lists, follow people, and be in
-          the live room when an album drops at midnight. Free, on web and iOS.
+          {t("copy")}
         </p>
 
         {/* CTAs + the App Store badge on ONE line (Luca 2026-08-24:
@@ -166,10 +168,10 @@ function Splash() {
             it web-only. */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 justify-center pt-2">
           <Link href="/signup" className="btn-y2k btn-y2k-primary">
-            Create Account
+            {t("createAccount")}
           </Link>
           <Link href="/reviews" className="btn-y2k btn-y2k-outline">
-            Browse Reviews
+            {t("browseReviews")}
           </Link>
           <AppStoreBadge />
         </div>
@@ -230,6 +232,7 @@ function Splash() {
    ============================================================ */
 
 async function Dashboard() {
+  const t = await getTranslations("home.dashboard");
   // ON AIR candidates — degrades to an empty array on any error.
   const feed = await getReleaseDiscoveryFeed(12).catch(() => []);
 
@@ -271,16 +274,16 @@ async function Dashboard() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/35 to-black/10" />
         </div>
         <div className="space-y-4 text-center sm:text-left">
-          <h1 className="crt-title text-3xl sm:text-4xl">HOME</h1>
+          <h1 className="crt-title text-3xl sm:text-4xl">{t("title")}</h1>
           {/* Badge rides the same line as the buttons (Luca 2026-08-24:
               "not under the blue button"); app-hide keeps it web-only —
               the shell already IS the app. */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-center sm:justify-start">
             <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
-              ✚ Write a Review
+              {t("writeReview")}
             </Link>
             <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
-              ⚔ Start a Debate
+              {t("startDebate")}
             </Link>
             <AppStoreBadge />
           </div>
@@ -294,7 +297,7 @@ async function Dashboard() {
         <section className="space-y-4">
           <div className="flex items-center gap-3">
             <span className="glow-orb" />
-            <span className="vhs-label text-sm">ON AIR</span>
+            <span className="vhs-label text-sm">{t("onAir")}</span>
             <div className="flex-1 divider-glow" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -308,7 +311,7 @@ async function Dashboard() {
                 <span className="poster">
                   {r.cover_image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={smallCover(r.cover_image)} alt={`${r.title} cover`} loading="lazy" decoding="async" />
+                    <img src={smallCover(r.cover_image)} alt={t("coverAlt", { title: r.title })} loading="lazy" decoding="async" />
                   ) : (
                     <span className="w-full h-full flex items-center justify-center text-4xl">💿</span>
                   )}
@@ -368,15 +371,11 @@ async function Dashboard() {
           shell (Luca 2026-08-26). */}
       <section className="app-hide panel-xbox p-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
         <div>
-          <p className="pixel-text text-lg text-accent-glow">
-            Want a channel tuned to just you?
-          </p>
-          <p className="text-xs text-text-secondary mt-1">
-            Your Taste builds a feed from who you follow and what you rate.
-          </p>
+          <p className="pixel-text text-lg text-accent-glow">{t("tasteTitle")}</p>
+          <p className="text-xs text-text-secondary mt-1">{t("tasteBody")}</p>
         </div>
         <Link href="/your-taste" className="btn-y2k btn-y2k-outline shrink-0">
-          Tune In →
+          {t("tuneIn")}
         </Link>
       </section>
 

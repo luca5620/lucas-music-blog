@@ -109,6 +109,19 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **Batch 1 (home) shipped:** app/page.tsx (splash hero, App Store
+    badge, website plug, dashboard band, ON AIR, Your Taste teaser) +
+    every components/home module (RatedWall, HowItWorks incl. the rich
+    <link>lists</link> sentence, LiveRooms incl. the mock chat lines,
+    Unreleased, MakeItYours + a reusable "home.showcases" namespace,
+    ClosingCta, QuickAccessStrip reusing "nav", UpcomingDropBox messages,
+    UpcomingDropsClient). Theme names, handles, titles/artists stay.
+    Verified: Spanish + German home rendered from the built server with
+    zero English leftovers. NOT translated yet (shared feed modules on
+    the dashboard, batch 5/6): DiscoveryFeed, PostsFeed, ReleasesFeed,
+    ListsRail, ViewToggle labels, LiveCountdown "OUT NOW".
+  - Language picker is now pill BUTTONS in footer + Settings (38bad88,
+    Luca: "make the language change buttons bigger").
   - **Batch 0 translated:** Navigation (links, search, create menu,
     account dropdown, admin, sign in/out), TabBar, CreateSheet, SiteFooter,
     LowDetailToggle, Settings Performance/Language sections, TUNING….

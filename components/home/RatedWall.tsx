@@ -14,6 +14,7 @@
  */
 
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getDiscoveryFeed } from "@/lib/db/reviews";
 import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import { smallCover } from "@/lib/images";
@@ -24,6 +25,9 @@ import HomeSection from "./HomeSection";
 const TILE_CAP = 24;
 
 export default async function RatedWall() {
+  // LANGUAGES: the section copy + the tile's hover/alt text. Titles,
+  // artists and names inside them are data and stay as they are.
+  const t = await getTranslations("home.community");
   const [raw, blocked] = await Promise.all([
     getDiscoveryFeed(60) as unknown as Promise<FeedReview[]>,
     getViewerBlockedIdSet(),
@@ -53,13 +57,18 @@ export default async function RatedWall() {
       <Link
         href={`/reviews/${r.slug}`}
         className="wall-tile poster"
-        title={`${r.title} — ${r.artist} · ${formatRating(r.rating)} by ${p.display_name || p.username}`}
+        title={t("tileTitle", {
+          title: r.title,
+          artist: r.artist,
+          rating: formatRating(r.rating),
+          name: p.display_name || p.username,
+        })}
         tabIndex={i === 0 ? 0 : -1}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={smallCover(r.cover_image!)}
-          alt={`${r.title} cover`}
+          alt={t("coverAlt", { title: r.title })}
           loading="lazy"
           decoding="async"
           draggable={false}
@@ -96,21 +105,21 @@ export default async function RatedWall() {
 
   return (
     <HomeSection
-      eyebrow="Community"
-      title="What the community rated"
-      sub="One tile per record, rated by a member. Tap a cover to read the review."
+      eyebrow={t("eyebrow")}
+      title={t("title")}
+      sub={t("sub")}
       aside={
         <Link
           href="/reviews"
           className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
         >
-          all reviews →
+          {t("allReviews")}
         </Link>
       }
     >
       {/* Full-bleed row: breaks out of the page padding so the covers
           run edge to edge like a ticker. */}
-      <div className="wall -mx-4 sm:-mx-6 lg:-mx-8" aria-label="Recently rated records">
+      <div className="wall -mx-4 sm:-mx-6 lg:-mx-8" aria-label={t("wallLabel")}>
         <div className="wall-track">
           {track.map((r, i) => (
             <Tile key={`a-${r.id}-${i}`} r={r} i={i} />

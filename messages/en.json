@@ -67,5 +67,151 @@
   },
   "pending": {
     "tuning": "TUNING…"
+  },
+  "home": {
+    "appStore": {
+      "downloadOn": "Download on the",
+      "appStore": "App Store"
+    },
+    "plug": {
+      "title": "For a better experience, check out our website",
+      "body": "on a computer — the big-screen home for proper sit-down reviews."
+    },
+    "hero": {
+      "tagline": "every album. every leak. every argument.",
+      "copy": "Rate albums and leaks 0–10, build lists, follow people, and be in the live room when an album drops at midnight. Free, on web and iOS.",
+      "createAccount": "Create Account",
+      "browseReviews": "Browse Reviews"
+    },
+    "dashboard": {
+      "title": "HOME",
+      "writeReview": "✚ Write a Review",
+      "startDebate": "⚔ Start a Debate",
+      "onAir": "ON AIR",
+      "coverAlt": "{title} cover",
+      "tasteTitle": "Want a channel tuned to just you?",
+      "tasteBody": "Your Taste builds a feed from who you follow and what you rate.",
+      "tuneIn": "Tune In →"
+    },
+    "closing": {
+      "eyebrow": "Your channel is waiting",
+      "title": "Start the log you'll actually keep.",
+      "body": "Free. Your first rating takes two taps. Web and iOS.",
+      "createAccount": "Create Account",
+      "signIn": "Sign In"
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "title": "Three steps. Then it's your channel.",
+      "sub": "Find it, rate it, say it out loud.",
+      "step1Label": "Find the record",
+      "step1Body": "Every album and single on Spotify, plus Genius for leaks and unreleased. Not out yet? Paste the Spotify link and it gets a countdown.",
+      "step1Prop": "search any album, song, or artist…",
+      "step2Label": "Give it a number",
+      "step2Body": "Zero to ten, one decimal. Your number shows on every card you post, colored by the score.",
+      "step3Label": "Argue it live",
+      "step3Body": "Every release has a live room, open before the album drops at midnight. Want a fight? Start a two-sided debate.",
+      "onAir": "On air",
+      "step3Prop": "“track 4 is the one, argue with a wall”",
+      "stepFour": "step four is optional and it's <link>lists</link>. everyone ends up making lists."
+    },
+    "liveRooms": {
+      "eyebrow": "Live release rooms",
+      "title": "Every release has a room. Midnight is when it fills up.",
+      "sub": "The album drops, the room is already open, and the whole platform is in there track by track.",
+      "point1H": "Track by track",
+      "point1B": "Reactions land as the tracklist plays. You can tell which song the room is on.",
+      "point2H": "Open before the drop",
+      "point2B": "Countdown albums get a room before release. The chat is live at 11:59.",
+      "point3H": "Read without an account",
+      "point3B": "Rooms are public. Sign up to talk and rate.",
+      "point4H": "Debates when it gets heated",
+      "point4B": "Two sides, one record each, the room votes.",
+      "seeOnAir": "See what's on air",
+      "onAir": "On air",
+      "roomMeta": "· release room · {count} in the room",
+      "nowPlaying": "NOW PLAYING · {n}",
+      "chat1": "track 4 just started. it's the one.",
+      "chat2": "the sample flip on the outro 😭",
+      "chat3": "nah track 2 clears. argue with me",
+      "chat4": "7.8 from me, could go up on a relisten",
+      "you": "you",
+      "input": "say something about track 4…",
+      "onAirNow": "On air right now"
+    },
+    "makeItYours": {
+      "eyebrow": "Make it yours",
+      "title": "A profile that's a channel, not a form.",
+      "sub": "Ten themes, showcases you arrange, your own preview player, a song and a playlist on your profile.",
+      "themesLabel": "Immersive themes",
+      "themesBody": "Ten looks from console eras and internet history. Each one recolors the whole page.",
+      "showcasesLabel": "Showcases you arrange",
+      "showcasesBody": "Put the blocks in the order you want: histogram, pinned review, what's on rotation.",
+      "playerLabel": "Your preview player",
+      "playerBody": "Spotify or Apple Music on every release page. Signed in, previews become full tracks.",
+      "badgesLabel": "Badges that mean something",
+      "badgesBody": "Verified reviewers, early testers, staff, each with its own glow. Regular members don't wear one.",
+      "songLabel": "A song and a playlist on the door",
+      "songBody": "A profile song that plays when someone lands on you, plus a featured Spotify playlist with its own player.",
+      "profileSong": "Profile song",
+      "yourPick": "Your pick — Any artist",
+      "playlist": "Featured playlist · 100 tracks · save it as a list",
+      "tasteLabel": "Your Taste, a channel",
+      "tasteBody": "A fullscreen feed tuned to who you follow and what you rate, one take at a time, music playing under it.",
+      "tasteTag": "Your taste",
+      "nextUp": "next up: a 9.2 from someone you follow"
+    },
+    "showcases": {
+      "tasteReadout": "Taste Readout",
+      "nowShowing": "Now Showing",
+      "featurePresentation": "Feature Presentation",
+      "mixtapes": "Mixtapes",
+      "waitingOn": "Waiting On",
+      "onRotation": "On Rotation",
+      "songOfTheDay": "Song of the Day"
+    },
+    "community": {
+      "eyebrow": "Community",
+      "title": "What the community rated",
+      "sub": "One tile per record, rated by a member. Tap a cover to read the review.",
+      "allReviews": "all reviews →",
+      "tileTitle": "{title} — {artist} · {rating} by {name}",
+      "coverAlt": "{title} cover",
+      "wallLabel": "Recently rated records"
+    },
+    "unreleased": {
+      "eyebrow": "Unreleased · leaks · loosies",
+      "title": "If it exists, you can rate it.",
+      "sub": "Spotify is the floor. Genius brings the leaks and loosies, and a pasted Spotify link puts an announced album here before it's out, countdown included.",
+      "stamp1": "UNRELEASED",
+      "h1": "Rate the leak",
+      "b1": "Songs that never got a release get a page, a rating, and a room like anything else.",
+      "stamp2": "COUNTDOWN",
+      "h2": "Before it drops",
+      "b2": "Paste an announced album's Spotify link. It gets a countdown to midnight Eastern and a room.",
+      "stamp3": "BY HAND",
+      "h3": "Not on Spotify at all?",
+      "b3": "Bandcamp-only, private press, regional. Email us the link and it's added by hand.",
+      "onPeak": "Unreleased on Peak right now",
+      "badge": "Unreleased",
+      "coverAlt": "{title} cover"
+    },
+    "dropBox": {
+      "albumLinksOnly": "Spotify ALBUM links only — open the upcoming album on Spotify, hit share, and paste the link here.",
+      "cantRead": "Couldn't read that link — double-check it and try again.",
+      "alreadyOut": "“{title}” is already out — find it through search instead. This slot is for albums that haven't dropped yet.",
+      "hiccup": "Something hiccuped — try again in a moment.",
+      "placeholder": "Paste an upcoming album's Spotify link…",
+      "ariaLabel": "Spotify link to an upcoming album",
+      "tuning": "TUNING…",
+      "openRoom": "OPEN THE ROOM"
+    },
+    "dropping": {
+      "title": "Dropping Soon",
+      "viewAll": "View All →",
+      "dropsIn": "Drops in",
+      "coverAlt": "{title} cover",
+      "addBody": "Know an album that's coming? Paste its Spotify link and the countdown page + live room open before the album does."
+    }
   }
 }

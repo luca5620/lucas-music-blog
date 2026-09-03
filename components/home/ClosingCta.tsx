@@ -22,9 +22,7 @@ export default function ClosingCta({ badge }: { badge?: ReactNode }) {
         Start the log you&apos;ll actually keep.
       </h2>
       <p className="hero-copy max-w-xl mx-auto text-xs sm:text-sm leading-relaxed">
-        Free. One account per inbox. Your first rating takes two taps, and
-        the profile is yours to arrange — themes, showcases, a featured
-        playlist.
+        Free. Your first rating takes two taps. Web and iOS.
       </p>
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 justify-center pt-1">
         <Link href="/signup" className="btn-y2k btn-y2k-primary">

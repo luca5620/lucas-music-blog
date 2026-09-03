@@ -60,13 +60,13 @@ export default function MakeItYours() {
     <HomeSection
       eyebrow="Make it yours"
       title="A profile that's a channel, not a form."
-      sub="Ten immersive themes, showcases you arrange yourself, your own preview player, a song and a playlist on the door. Set it once, or keep tuning it."
+      sub="Ten themes, showcases you arrange, your own preview player, a song and a playlist on your profile."
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
         <Reveal delay={0}>
           <Card
             label="Immersive themes"
-            body="Ten looks built from console eras and internet history — each one recolors the whole page, liquid light included."
+            body="Ten looks from console eras and internet history. Each one recolors the whole page."
           >
             <div className="flex flex-wrap gap-2">
               {THEMES.map((t) => (
@@ -87,7 +87,7 @@ export default function MakeItYours() {
         <Reveal delay={90}>
           <Card
             label="Showcases you arrange"
-            body="Drag the blocks into the order you want. Lead with the histogram, or the pinned review, or what's on rotation."
+            body="Put the blocks in the order you want: histogram, pinned review, what's on rotation."
           >
             <div className="flex flex-wrap gap-1.5">
               {SHOWCASES.map((s, i) => (
@@ -110,7 +110,7 @@ export default function MakeItYours() {
         <Reveal delay={180}>
           <Card
             label="Your preview player"
-            body="Spotify or Apple Music — pick the one you actually use and every release page shows that player. Signed in to it, previews become full tracks."
+            body="Spotify or Apple Music on every release page. Signed in, previews become full tracks."
           >
             <div className="grid grid-cols-2 gap-2">
               {[
@@ -137,7 +137,7 @@ export default function MakeItYours() {
         <Reveal delay={0}>
           <Card
             label="Badges that mean something"
-            body="Verified reviewers, early testers, staff — each with its own glow. Regular members don't wear one, which is the point."
+            body="Verified reviewers, early testers, staff, each with its own glow. Regular members don't wear one."
           >
             <div className="flex flex-wrap gap-x-4 gap-y-2">
               <RoleBadge role="reviewer" size="sm" showLabel />
@@ -150,7 +150,7 @@ export default function MakeItYours() {
         <Reveal delay={90}>
           <Card
             label="A song and a playlist on the door"
-            body="A profile song that plays when someone lands on you, and a featured Spotify playlist with its own player underneath."
+            body="A profile song that plays when someone lands on you, plus a featured Spotify playlist with its own player."
           >
             <div className="space-y-2">
               <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm">
@@ -173,7 +173,7 @@ export default function MakeItYours() {
         <Reveal delay={180}>
           <Card
             label="Your Taste, a channel"
-            body="A feed tuned to who you follow and what you rate — fullscreen, one take at a time, with the music playing under it."
+            body="A fullscreen feed tuned to who you follow and what you rate, one take at a time, music playing under it."
           >
             <div className="rounded-lg border border-white/10 bg-black/40 p-3 space-y-2">
               <div className="flex items-center gap-2">

@@ -14,7 +14,7 @@ const STEPS = [
   {
     n: "01",
     label: "Find the record",
-    body: "Every album and single on Spotify, plus the Genius deep catalog. Not out yet? Paste the Spotify link and it's on the platform with a countdown.",
+    body: "Every album and single on Spotify, plus Genius for leaks and unreleased. Not out yet? Paste the Spotify link and it gets a countdown.",
     prop: (
       <div className="form-input text-sm text-text-muted flex items-center gap-2 pointer-events-none select-none">
         <span className="opacity-60">⌕</span>
@@ -25,7 +25,7 @@ const STEPS = [
   {
     n: "02",
     label: "Give it a number",
-    body: "Zero to ten, one decimal. No stars, no rounding. Your number rides on every card you post, in the color it earns.",
+    body: "Zero to ten, one decimal. Your number shows on every card you post, colored by the score.",
     prop: (
       <div className="flex items-center gap-3">
         {[
@@ -47,7 +47,7 @@ const STEPS = [
   {
     n: "03",
     label: "Argue it live",
-    body: "Every release has a live room. The album drops at midnight and the chat is already going. Sure of yourself? Start a two-sided debate.",
+    body: "Every release has a live room, open before the album drops at midnight. Want a fight? Start a two-sided debate.",
     prop: (
       <div className="flex items-center gap-2 text-xs">
         <span className="glow-orb" />
@@ -63,7 +63,7 @@ export default function HowItWorks() {
     <HomeSection
       eyebrow="How it works"
       title="Three steps. Then it's your channel."
-      sub="No onboarding maze. Find it, rate it, say it out loud."
+      sub="Find it, rate it, say it out loud."
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
         {STEPS.map((s, i) => (

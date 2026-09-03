@@ -35,7 +35,7 @@ export default async function LiveRooms() {
     <HomeSection
       eyebrow="Live release rooms"
       title="Every release has a room. Midnight is when it fills up."
-      sub="No scheduled club, no appointment. The album drops, the room is already going, and the whole platform is in there track by track."
+      sub="The album drops, the room is already open, and the whole platform is in there track by track."
     >
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-stretch">
         {/* The pitch */}
@@ -43,10 +43,10 @@ export default async function LiveRooms() {
           <div className="panel-xbox p-5 sm:p-6 h-full flex flex-col gap-4 relative overflow-hidden">
             <ul className="space-y-3 text-sm text-text-secondary leading-relaxed">
               {[
-                ["Track by track", "Reactions and takes land as the tracklist plays. You can tell which song the room is on."],
-                ["Open the second it exists", "Countdown albums get a room before they drop. The chat is live at 11:59."],
-                ["Read without an account", "Rooms are public. Join to talk, argue, and put a number on it."],
-                ["Debates when it gets heated", "Two-sided, pick a side, the room votes."],
+                ["Track by track", "Reactions land as the tracklist plays. You can tell which song the room is on."],
+                ["Open before the drop", "Countdown albums get a room before release. The chat is live at 11:59."],
+                ["Read without an account", "Rooms are public. Sign up to talk and rate."],
+                ["Debates when it gets heated", "Two sides, one record each, the room votes."],
               ].map(([h, b]) => (
                 <li key={h} className="flex gap-3">
                   <span className="glow-orb mt-1.5 shrink-0" />

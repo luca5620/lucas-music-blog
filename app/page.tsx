@@ -152,11 +152,12 @@ function Splash() {
           every album. every leak. every argument.
         </p>
 
+        {/* Hero copy trimmed 2026-09-03 (Luca: "all the important
+            information straight up with no filler") — headline and
+            tagline stay as they are, per his standing rule. */}
         <p className="hero-copy max-w-2xl mx-auto leading-relaxed text-xs sm:text-sm">
-          The music social network. Rate what you hear, build lists, follow
-          people with taste (or terrible taste — more fun to argue with),
-          and pile into live rooms when the album of the year drops at
-          midnight.
+          Rate albums and leaks 0–10, build lists, follow people, and be in
+          the live room when an album drops at midnight. Free, on web and iOS.
         </p>
 
         {/* CTAs + the App Store badge on ONE line (Luca 2026-08-24:

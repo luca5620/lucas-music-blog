@@ -19,24 +19,24 @@ export default async function Unreleased() {
     <HomeSection
       eyebrow="Unreleased · leaks · loosies"
       title="If it exists, you can rate it."
-      sub="Spotify's catalog is the floor, not the ceiling. The Genius deep catalog brings the leaks and the loosies; a pasted Spotify link brings an album onto the platform before it's out, countdown included."
+      sub="Spotify is the floor. Genius brings the leaks and loosies, and a pasted Spotify link puts an announced album here before it's out, countdown included."
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
         {[
           {
             stamp: "UNRELEASED",
             h: "Rate the leak",
-            b: "Genius tracks the songs that never got a release. On Peak they get a page, a rating, and a room like anything else.",
+            b: "Songs that never got a release get a page, a rating, and a room like anything else.",
           },
           {
             stamp: "COUNTDOWN",
             h: "Before it drops",
-            b: "Paste the Spotify link of an announced album. It lands here with a countdown to midnight Eastern and a room waiting.",
+            b: "Paste an announced album's Spotify link. It gets a countdown to midnight Eastern and a room.",
           },
           {
             stamp: "BY HAND",
             h: "Not on Spotify at all?",
-            b: "Bandcamp-only, private press, regional catalog — email us the link and it gets added by hand so you can review it.",
+            b: "Bandcamp-only, private press, regional. Email us the link and it's added by hand.",
           },
         ].map((c, i) => (
           <Reveal key={c.h} delay={i * 110}>

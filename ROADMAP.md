@@ -364,6 +364,24 @@ pending (parked, his call).
     dormant until real bills), merge/upgrade-release tool for
     Genius→Spotify dupes.
 
+- **2026-09-03 (Windows): LOGGED-OUT HOME COPY TRIMMED** (Luca: "cut
+  down the wordiness in the home page and have it give you all the
+  important information straight up with no filler"). Headline and
+  the "every album. every leak. every argument." tagline untouched
+  (his standing rule). Everything else on the page lost its filler:
+  hero copy is now one sentence of facts + "Free, on web and iOS";
+  every HomeSection sub is one line; every card body in How It Works,
+  Live Rooms, Unreleased and Make It Yours is fact-first and shorter;
+  the closing panel reads "Free. Your first rating takes two taps.
+  Web and iOS." No layout change. Context: the r/Musicboard post
+  links the homepage as the door, so it has to land in five seconds.
+  Reddit plan the same day: r/music is OFF (its rules 2/7/10/11 kill
+  any app post — and rule 11 bans the unreleased angle outright);
+  r/shareyourmusic is for artists' own music, not posts, but it's
+  the small-artist pool to work in COMMENTS (review a track on Peak,
+  reply with the review). Posting order: r/Musicboard first, then
+  r/iosapps + r/androidapps (Play testers ask), r/SideProject.
+
 - **2026-09-03 (Windows): UNRELEASED FILTER + LINT BACKLOG CLEARED
   (0 errors, was 16).** No migration.
   1. **/releases → Unreleased filter** (Luca: "for unreleased add a

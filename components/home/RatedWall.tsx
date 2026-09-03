@@ -98,7 +98,7 @@ export default async function RatedWall() {
     <HomeSection
       eyebrow="Community"
       title="What the community rated"
-      sub="Real verdicts from real people, one tile per record. Tap a cover to read the take."
+      sub="One tile per record, rated by a member. Tap a cover to read the review."
       aside={
         <Link
           href="/reviews"

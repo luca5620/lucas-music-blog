@@ -403,6 +403,39 @@ The physical-media version, closest to the site's own language.
 > glossy stock-photo cleanliness. No readable text anywhere, no
 > watermarks, no logos. 4:5 portrait, 1080x1350.
 
+### Version C — the vault
+
+Added 2026-09-04 after Luca preferred B to A in generation: he liked
+the physical object, so this is the same family with a more specific
+one. An unlabeled external drive is where leak collections actually
+live — it's the object that audience owns, which makes the post about
+them before it's about us.
+
+> The attached image is a finished iPhone mockup. Do not change the
+> phone, its angle, its frame, or anything on its screen — keep the
+> screenshot exactly as provided, pixel for pixel. Build only the
+> scene around it.
+>
+> Place it on a dark desk, standing upright and leaning against a
+> scuffed black external hard drive that lies on its side. The drive
+> is completely blank — no brand, no label, no lettering, no logo
+> anywhere on it, just worn plastic and a scratched surface. A
+> tangled USB cable coils across the desk in front of them. A single
+> hard electric-blue light from the upper left, everything else
+> falling into true black. Blue rim light down the phone's left edge
+> and a long shadow to the right. Dust on the desk, real fingerprints
+> and scuffs on the drive, heavy film grain. Generous empty black
+> space above.
+>
+> Photographic still life — 50mm lens, shallow depth of field,
+> cinematic, the feeling of something private. Not a 3D render, not
+> an illustration, no glossy stock-photo cleanliness. No readable
+> text anywhere, no watermarks, no logos. 4:5 portrait, 1080x1350.
+
+The "completely blank drive" line is load-bearing for the same reason
+the CRT failed: any lettering the model invents comes back garbled,
+and a nonsense brand name on the hero object kills the shot.
+
 **Caption:**
 Every music app pretends leaks don't exist.
 

@@ -126,49 +126,51 @@ scanlines that make our screens look like ours). Clear notification
 banners, use a clean account with a real-looking library, and check
 that no personal email or real username is visible.
 
-| # | Screen | State to capture |
-|---|--------|------------------|
-| S1 | Home, logged in | Feed with covers visible, scrolled to the top |
-| S2 | Release page, upcoming album | LiveCountdown running, cover large |
-| S3 | Live release room | Chat mid-conversation, LIVE badge + presence pile visible |
-| S4 | /releases | Unreleased filter chip ON, grid of unreleased records |
-| S5 | Debate page | Both covers, VS, vote bar split (not 50/50) |
-| S6 | /your-taste | One fullscreen card, rating badge and review visible |
-| S7a | Profile, PS2 theme | Nebula backdrop, full page |
-| S7b | Profile, Xbox OG theme | Green on black, full page |
-| S7c | Profile, Wii or LimeWire theme | Light theme, for contrast |
-| S8 | Review page, big release | Rating badge + first lines of the review |
-| S8b | Review page, unknown artist | Same crop, same zoom as S8 |
-| S9 | The rating sheet | Mid-rating — the "two taps" moment |
-| S10 | A list page | Ranked covers |
+| Screen | Where | State to capture |
+|--------|-------|------------------|
+| **The home feed** | Home tab, logged in | Scrolled to the top, feed covers and ratings visible |
+| **The countdown page** | A release page for an upcoming album | Countdown running, cover large |
+| **The live room** | The room on a release page | Chat mid-conversation, LIVE badge and presence pile visible |
+| **The unreleased grid** | /releases | Unreleased filter chip ON, full grid of unreleased records |
+| **The debate page** | Any debate | Both covers, the VS, vote bar split — not 50/50 |
+| **The Your Taste card** | /your-taste | One fullscreen card, rating badge and review readable |
+| **The PS2 profile** | Your profile, PS2 theme | Nebula backdrop, full page |
+| **The Xbox OG profile** | Your profile, Xbox OG theme | Green on black, full page |
+| **The light-theme profile** | Your profile, Wii or LimeWire | The bright one, for contrast |
+| **The review page** | A review of a big release | Rating badge + the first lines of the review |
+| **The unknown-artist review** | A review of someone nobody's heard of | Same crop, same zoom as the review page above |
+| **The rating sheet** | Mid-rating on any record | The "two taps" moment |
+| **The list page** | Any list | Ranked covers |
 
-S7 needs three theme switches on your own profile — switch,
-screenshot, switch back. S8 and S8b must be framed identically; the
-whole point of post 7 is that the two pages are the same.
+The three profile shots are three theme switches on your own profile —
+switch, screenshot, switch back. The review page and the
+unknown-artist review have to be framed identically; the whole point
+of post 7 is that the two pages are the same page.
 
-### Status — week 1 shot on 2026-09-04
+### Status — week 1, shot on 2026-09-04
 
-- **S1 home — good, use as-is.** Feed density and ratings read well.
-- **S2 Pylon countdown — good, one reshoot pending.** "1 here" and
-  "No reviews yet" are both in frame and together they read quiet.
-  Crop below the cover, or reshoot near the drop so the countdown
-  reads hours rather than 13D.
-- **S3 live room — rejected.** One message, "1 HERE", 60% empty black.
-  The picture argued against the caption. Post 3 was restructured
-  around the countdown instead; the room shot is deferred to the
-  **Pylon drop, 18 September 2026** — get four or five people into
-  the room first, then shoot it live.
-- **S4 unreleased grid — the best shot in the batch**, and the whole
+- **The home feed — good, use as-is.** Density and ratings read well.
+- **The countdown page (Pylon) — good, one reshoot pending.** "1 here"
+  and "No reviews yet" are both in frame, and together they read
+  quiet. Crop below the cover, or reshoot near the drop so the
+  countdown reads hours rather than 13 days.
+- **The live room — rejected.** One message, "1 HERE", 60% empty
+  black. The picture argued against the caption. Post 3 was
+  restructured around the countdown instead, and the room moved to
+  the **Pylon drop, 18 September 2026** — get four or five people
+  into the room first, then shoot it live.
+- **The unreleased grid — the best shot in the batch**, and the whole
   wedge in one image (Carti, Juice WRLD, Young Nudy, Kendrick, Uzi,
   Kanye, Ariana, d4vd). Two fixes before use: it was captured
   mid-scroll so the status bar sits on the filter chips — scroll to
   the very top — and 11 of 12 tiles read UNRATED, which looks like an
   empty catalog. Rate five or six first, then reshoot.
-- **S8 — use the MF DOOM one.** 9.6, readable review text, and
-  "review by slim" — a reviewer who isn't Luca, which is the social
-  proof. Back off ~150px so the status bar isn't on the artwork. The
-  House of Balloons alternative was dropped: no review text in frame,
-  and the cover is an implied nude that Instagram removes posts over.
+- **The review page — use the MF DOOM one.** 9.6, readable review
+  text, and "review by slim", a reviewer who isn't Luca, which is the
+  social proof. Back off about 150px so the status bar isn't sitting
+  on the artwork. The House of Balloons alternative was dropped: no
+  review text in frame, and the cover is an implied nude that
+  Instagram removes posts over.
 
 Album art in these shots is fine for Instagram — it's our own product
 UI. It is a different bar for the App Store, where Apple expects
@@ -196,8 +198,9 @@ the 1.1.1 set gets made; it doesn't affect this batch.
 
 ## Post 1 — the introduction
 
-**Use:** S1 inside the CRT screen. Slides 2–3: raw S1, raw S8.
-**Attach to ChatGPT:** S1, S8.
+**Use:** the home feed, inside the CRT screen. Slides 2–3: the home
+feed raw, then the review page raw.
+**Attach to ChatGPT:** the home feed, the review page.
 
 This is the signature shot for the account. The whole brand is that
 the site lives inside a CRT, so the real app goes inside the tube.
@@ -213,7 +216,7 @@ blue. Deep black surroundings, heavy negative space above the set.
 Photographic still life.
 + style block
 
-**Composite:** drop S1 into the empty screen, scale to fill the glass,
+**Composite:** drop the home feed into the empty screen, scale to fill the glass,
 add a slight barrel warp so it follows the curve, lay a scanline
 overlay across it at about 15% opacity, and add a soft blue bloom
 spilling past the bezel onto the floor.
@@ -242,9 +245,9 @@ Free. Web and iOS. Link in bio.
 
 ## Post 2 — unreleased
 
-**Use:** S4 in a phone frame, leaning in the scene. Slides 2–3: raw
-S4, raw S2.
-**Attach to ChatGPT:** S4, S2.
+**Use:** the unreleased grid in a phone frame, leaning in the scene.
+Slides 2–3: the unreleased grid raw, then the countdown page raw.
+**Attach to ChatGPT:** the unreleased grid, the countdown page.
 
 **Plate prompt:**
 A blank white CD-R in a cracked jewel case lying on black velvet, shot
@@ -256,13 +259,13 @@ the frame is empty black velvet with nothing on it — leave that space
 completely clear. Photographic still life, cinematic, mysterious.
 + style block
 
-**Composite:** stand a framed phone showing S4 in the empty right
-third, as if propped against something out of frame. Blue rim light
-down its left edge, long shadow to the right.
+**Composite:** stand a framed phone showing the unreleased grid in the
+empty right third, as if propped against something out of frame. Blue
+rim light down its left edge, long shadow to the right.
 
-**One-shot alternative:** attach S4 and add — *stand a modern iPhone
-in the empty right third of the scene showing the attached
-screenshot, keeping the screenshot exactly as provided.*
+**One-shot alternative:** attach the unreleased grid and add — *stand
+a modern iPhone in the empty right third of the scene showing the
+attached screenshot, keeping the screenshot exactly as provided.*
 
 **Caption:**
 Every music app pretends leaks don't exist.
@@ -280,10 +283,10 @@ There's an Unreleased filter on the whole catalog. Link in bio.
 
 ## Post 3 — release night
 
-**Use:** S2 (countdown) as slide 1's phone — **angled hero, see "The
-angled phone" above.** Slide 2: raw S2, full bleed. Slide 3: raw S4
-(the unreleased grid — "here's what's coming").
-**Attach to ChatGPT:** S2, S4.
+**Use:** the countdown page as slide 1's phone — **angled hero, see
+"The angled phone" above.** Slide 2: the countdown page raw, full
+bleed. Slide 3: the unreleased grid raw — "here's what's coming".
+**Attach to ChatGPT:** the countdown page, the unreleased grid.
 
 This is the hero shot of the batch: one phone tilted in space, lit
 blue, floating in a dark room at midnight.
@@ -310,7 +313,7 @@ Motion blur in the light points, heavy grain, late-night stillness.
 Photographic, available light.
 + style block
 
-**Composite:** export S2 from shots.so as an iPhone at a three-quarter
+**Composite:** export the countdown page from shots.so as an iPhone at a three-quarter
 angle, tilted maybe 15–20°, transparent background. Drop it into the
 empty centre so it floats. Light comes from the upper left in this
 plate, so: rim light down the phone's left edge, soft shadow falling
@@ -332,9 +335,10 @@ Follow a release. Be in the room. Link in bio.
 
 ## Post 4 — debates
 
-**Use:** S5 in a phone frame, centred. Slides 2–3: raw S5, and a raw
-shot of the same debate's chat scrolled down.
-**Attach to ChatGPT:** S5.
+**Use:** the debate page in a phone frame, centred. Slides 2–3: the
+debate page raw, and a raw shot of the same debate's chat scrolled
+down.
+**Attach to ChatGPT:** the debate page.
 
 **Plate prompt:**
 A black room split down the middle by light: the left half washed in
@@ -345,7 +349,7 @@ has a clear vertical column of empty space running top to bottom.
 Photographic, theatrical lighting, high contrast, arcade energy.
 + style block
 
-**Composite:** framed phone showing S5 standing in the centre column,
+**Composite:** framed phone showing the debate page standing in the centre column,
 straddling the seam so blue lights its left edge and red lights its
 right. Don't add a chrome "VS" — the screenshot already has one.
 
@@ -363,11 +367,12 @@ same song. Link in bio.
 
 ## Post 5 — profile themes
 
-**Use:** S7a, S7b, S7c as **three angled phones, see "The angled
-phone" above** — the post closest to Luca's reference. Slides 2–4:
-each theme raw, full bleed. Best carousel in the batch; the themes
-sell themselves in screenshots and die in description.
-**Attach to ChatGPT:** S7a, S7b, S7c.
+**Use:** the three profile shots — PS2, Xbox OG, light theme — as
+**three angled phones, see "The angled phone" above.** This is the
+post closest to Luca's reference. Slides 2–4: each theme raw, full
+bleed. Best carousel in the batch; the themes sell themselves in
+screenshots and die in description.
+**Attach to ChatGPT:** the three profile shots.
 
 **Plate prompt:**
 An empty black studio space: a black brushed-metal floor receding into
@@ -378,11 +383,11 @@ the scene is completely empty, no objects, no phones, no screens, no
 text. Photographic product still life, deep falloff into black.
 + style block
 
-**Composite:** export S7a, S7b, S7c from shots.so as three angled
-iPhones, same tilt, transparent background. Stand them in a staggered
-row with the middle one slightly forward, overlapping a little, left
-to right: indigo nebula, acid green, then the light theme last so the
-row ends bright. Light is upper left, so every phone gets its rim
+**Composite:** export the three profile shots from shots.so as three
+angled iPhones, same tilt, transparent background. Stand them in a
+staggered row with the middle one slightly forward, overlapping a
+little, left to right: PS2 nebula, Xbox OG green, then the light
+theme last so the row ends bright. Light is upper left, so every phone gets its rim
 light on the left edge and its shadow stretching down-right across
 the metal — three shadows, all parallel.
 
@@ -400,9 +405,10 @@ Add a playlist. Link in bio.
 
 ## Post 6 — Your Taste
 
-**Use:** S6, screen filling most of the frame. Slides 2–3: raw S6, and
-a second S6 on a different card to show the swipe.
-**Attach to ChatGPT:** S6.
+**Use:** the Your Taste card, screen filling most of the frame.
+Slides 2–3: the Your Taste card raw, then a second one on a different
+card to show the swipe.
+**Attach to ChatGPT:** the Your Taste card.
 
 **Plate prompt:**
 A hand holding a modern smartphone vertically at arm's length in a
@@ -414,7 +420,7 @@ slight handheld motion. Photographic, available light, shallow depth
 of field.
 + style block
 
-**Composite:** drop S6 into the black screen at full brightness, then
+**Composite:** drop the Your Taste card into the black screen at full brightness, then
 add blue spill onto the fingers so the light matches the screen.
 
 **Caption:**
@@ -430,9 +436,9 @@ Rate a few records and it starts tuning. Link in bio.
 
 ## Post 7 — small artists
 
-**Use:** S8 (big release) and S8b (nobody's heard of them), side by
-side. Slides 2–3: both raw.
-**Attach to ChatGPT:** S8, S8b.
+**Use:** the review page (big release) and the unknown-artist review,
+side by side. Slides 2–3: both raw.
+**Attach to ChatGPT:** the review page, the unknown-artist review.
 
 This one only works with real screenshots. The claim is "these two
 pages are identical", and an AI drawing of two album covers proves
@@ -466,9 +472,9 @@ about yet. Link in bio.
 
 ## Post 8 — Android testers
 
-**Use:** S1 in a phone frame. Slide 2: raw S1. A single image is fine
-here — it's a recruitment post, not a showcase.
-**Attach to ChatGPT:** S1.
+**Use:** the home feed in a phone frame. Slide 2: the home feed raw. A
+single image is fine here — it's a recruitment post, not a showcase.
+**Attach to ChatGPT:** the home feed.
 
 **Plate prompt:**
 An Android phone lying face up on a black desk next to a vintage CRT
@@ -479,7 +485,7 @@ everything else is blue. Cables, dust, a workbench feel, like
 something mid-build. Photographic, available light.
 + style block
 
-**Composite:** drop S1 into the black Android screen. Leave the CRT
+**Composite:** drop the home feed into the black Android screen. Leave the CRT
 dark — the joke is that this one isn't switched on yet.
 
 **Caption:**
@@ -495,8 +501,8 @@ You get the app early. We get to launch. Link in bio.
 
 ## Post 9 — the room, after the Pylon drop (18 September 2026)
 
-**Use:** a real S3 captured on release night, full bleed, no AI at
-all. Slide 2: the countdown at 00:00:0x if you catch it. Slide 3: the
+**Use:** a real live room captured on release night, full bleed, no AI
+at all. Slide 2: the countdown at 00:00:0x if you catch it. Slide 3: the
 release page the morning after with the first ratings on it.
 
 Not a plate post. The whole value is that it's unretouched proof the

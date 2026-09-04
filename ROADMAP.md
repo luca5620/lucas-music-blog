@@ -125,6 +125,25 @@ don't wait to be asked:**
   light and shadow must agree with the plate's light direction.
   Deliberately only two posts — a tilted device is an event on a grid
   of still lifes and a template on a grid of floating phones.
+  **Week 1 screenshots shot + reviewed (2026-09-04, C:\Users\lucap\
+  claudework\ss).** Verdicts logged in the doc's "Status — week 1"
+  section. S4 (the Unreleased grid — Carti, Juice WRLD, Nudy,
+  Kendrick, Uzi, Kanye, Ariana) is the best asset we have, the whole
+  wedge in one image; needs a reshoot from the top of the page with
+  five or six of the tiles actually rated, since 11 of 12 read
+  UNRATED. S8 = the MF DOOM review (9.6, readable review text,
+  "review by slim" — a reviewer who isn't Luca, which is the social
+  proof); the House of Balloons alternative was dropped (no review
+  text in frame, implied-nude cover that Instagram removes posts
+  over). S1 home and S2 Pylon countdown are good as-is. **S3 the live
+  room was rejected** — one message, "1 HERE", 60% empty black, the
+  picture arguing against the caption. So **post 3 was restructured
+  around the countdown alone**, and the room became **post 9, shot
+  live on the Pylon drop, 18 September 2026**, with 4–5 people in the
+  room first — unretouched, no plate, caption drafted in the doc.
+  Album art in our own UI is fine for Instagram; it's a different bar
+  for the App Store listing (Apple expects rights to third-party
+  content), to plan around when the 1.1.1 screenshots get made.
 
 - **2026-09-03 (Windows): LANGUAGES — CODE SIDE DONE.** Every area of
   the site we wrote is translated into ES/FR/PT/NL/DE (1208 keys, all

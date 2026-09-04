@@ -146,6 +146,35 @@ S7 needs three theme switches on your own profile — switch,
 screenshot, switch back. S8 and S8b must be framed identically; the
 whole point of post 7 is that the two pages are the same.
 
+### Status — week 1 shot on 2026-09-04
+
+- **S1 home — good, use as-is.** Feed density and ratings read well.
+- **S2 Pylon countdown — good, one reshoot pending.** "1 here" and
+  "No reviews yet" are both in frame and together they read quiet.
+  Crop below the cover, or reshoot near the drop so the countdown
+  reads hours rather than 13D.
+- **S3 live room — rejected.** One message, "1 HERE", 60% empty black.
+  The picture argued against the caption. Post 3 was restructured
+  around the countdown instead; the room shot is deferred to the
+  **Pylon drop, 18 September 2026** — get four or five people into
+  the room first, then shoot it live.
+- **S4 unreleased grid — the best shot in the batch**, and the whole
+  wedge in one image (Carti, Juice WRLD, Young Nudy, Kendrick, Uzi,
+  Kanye, Ariana, d4vd). Two fixes before use: it was captured
+  mid-scroll so the status bar sits on the filter chips — scroll to
+  the very top — and 11 of 12 tiles read UNRATED, which looks like an
+  empty catalog. Rate five or six first, then reshoot.
+- **S8 — use the MF DOOM one.** 9.6, readable review text, and
+  "review by slim" — a reviewer who isn't Luca, which is the social
+  proof. Back off ~150px so the status bar isn't on the artwork. The
+  House of Balloons alternative was dropped: no review text in frame,
+  and the cover is an implied nude that Instagram removes posts over.
+
+Album art in these shots is fine for Instagram — it's our own product
+UI. It is a different bar for the App Store, where Apple expects
+rights to third-party content shown in a listing. Plan around it when
+the 1.1.1 set gets made; it doesn't affect this batch.
+
 ---
 
 ## Profile
@@ -252,12 +281,22 @@ There's an Unreleased filter on the whole catalog. Link in bio.
 ## Post 3 — release night
 
 **Use:** S2 (countdown) as slide 1's phone — **angled hero, see "The
-angled phone" above.** Slide 2: raw S3 (the live room). Slide 3: raw
-S1.
-**Attach to ChatGPT:** S2, S3.
+angled phone" above.** Slide 2: raw S2, full bleed. Slide 3: raw S4
+(the unreleased grid — "here's what's coming").
+**Attach to ChatGPT:** S2, S4.
 
 This is the hero shot of the batch: one phone tilted in space, lit
 blue, floating in a dark room at midnight.
+
+**The post is the countdown, not the room (decided 2026-09-04).**
+The room screenshot was rejected — one message and "1 HERE" in an
+empty black panel argues against every word of the caption. The
+countdown carries the post on its own: it's the anticipation, and
+anticipation is what a still image can actually show. **The room gets
+its own post after the Pylon drop on 18 September** — get four or
+five people in the room first, shoot it live while it's moving, and
+run it as the follow-up with a "this is what it looked like" caption.
+That post is worth more once it's real than this one is by faking it.
 
 **Plate prompt:**
 A dark bedroom at midnight, seen from slightly above and to the left.
@@ -454,12 +493,42 @@ You get the app early. We get to launch. Link in bio.
 
 ---
 
+## Post 9 — the room, after the Pylon drop (18 September 2026)
+
+**Use:** a real S3 captured on release night, full bleed, no AI at
+all. Slide 2: the countdown at 00:00:0x if you catch it. Slide 3: the
+release page the morning after with the first ratings on it.
+
+Not a plate post. The whole value is that it's unretouched proof the
+room filled up, so it should look like a screenshot, not like an ad.
+
+**Before the drop:** get four or five people into the room — friends,
+the r/Musicboard arrivals, anyone from the Discord — and be in there
+yourself from a few minutes before midnight. Shoot while the chat is
+moving. Ten messages beats one perfect one.
+
+**Caption (draft):**
+Pylon dropped at midnight and the room filled up.
+
+This is what release night looks like here. Countdown runs on the
+release page, the room opens before the drop, and everyone who
+followed it lands in the same chat when it hits. No 40 separate
+threads.
+
+Next one's already on the calendar. Follow a release and you'll get
+pulled in. Link in bio.
+
+---
+
 ## Cadence for the first two weeks
 
 - Week 1: posts 1, 3, 2 (Mon / Wed / Fri). Stories daily: one raw
-  screenshot each, a release room when something drops.
+  screenshot each.
 - Week 2: posts 4, 5, 7 (Mon / Wed / Fri). Post 8 whenever the Play
   tester count is low. Post 6 saved for week 3.
+- **18 September: post 9**, the night of the Pylon drop, out of
+  sequence. It's the only post in the batch that can't be made early,
+  so it goes up when it happens.
 - Every post: reply to every comment within the first hour. Instagram
   weights early replies.
 

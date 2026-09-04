@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 
 /**
  * The 404 page — and the note on WHY the site's notFound() calls live
@@ -30,6 +32,7 @@ export const metadata: Metadata = {
 };
 
 export default function NotFound() {
+  const t = useTranslations("notFound");
   return (
     <div
       className="flex flex-col items-center justify-center gap-4 py-24 px-6 text-center"
@@ -45,23 +48,22 @@ export default function NotFound() {
             "0 0 8px rgba(30,144,255,0.8), 0 0 24px rgba(30,144,255,0.35)",
         }}
       >
-        NOT FOUND
+        {t("title")}
       </p>
 
       <p className="text-sm text-text-secondary max-w-sm">
-        There&apos;s nothing at this address. It may have been deleted, or the
-        link that brought you here is wrong.
+        {t("body")}
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
         <Link href="/" className="btn-y2k btn-y2k-primary">
-          Home
+          {t("home")}
         </Link>
         <Link href="/releases" className="btn-y2k btn-y2k-outline">
-          Browse releases
+          {t("browse")}
         </Link>
         <Link href="/search" className="btn-y2k btn-y2k-outline">
-          Search
+          {t("search")}
         </Link>
       </div>
     </div>

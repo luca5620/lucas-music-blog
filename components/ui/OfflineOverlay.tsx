@@ -8,6 +8,8 @@ import {
   useSyncExternalStore,
 } from "react";
 import { useIsNativeApp } from "@/lib/useIsNativeApp";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 
 /**
  * Ask the actual network, not navigator.onLine — WKWebView is
@@ -67,6 +69,7 @@ const subscribeOnline = (onChange: () => void) => {
 };
 
 export default function OfflineOverlay() {
+  const t = useTranslations("offline");
   const native = useIsNativeApp();
   const offline = !useSyncExternalStore(
     subscribeOnline,
@@ -125,11 +128,10 @@ export default function OfflineOverlay() {
             "0 0 8px rgba(30,144,255,0.8), 0 0 24px rgba(30,144,255,0.35)",
         }}
       >
-        NO SIGNAL
+        {t("noSignal")}
       </p>
       <p className="text-sm text-text-secondary max-w-xs">
-        Peak Music Reviews lost the connection. Check your service — the
-        picture comes back on its own the moment you do.
+        {t("body")}
       </p>
       <button
         type="button"
@@ -137,11 +139,11 @@ export default function OfflineOverlay() {
         disabled={retuning === "checking"}
         className="btn-y2k btn-y2k-primary mt-2 disabled:opacity-60"
       >
-        {retuning === "checking" ? "Tuning…" : "Retune"}
+        {retuning === "checking" ? t("tuning") : t("retune")}
       </button>
       {retuning === "dead" && (
         <p className="osd-text text-xs opacity-80" role="status">
-          STILL NO SIGNAL — try again in a moment.
+          {t("still")}
         </p>
       )}
     </div>

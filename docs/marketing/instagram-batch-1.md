@@ -340,39 +340,89 @@ wants a friendly face. Everything in between stays product-first.
 
 ## Post 2 — unreleased
 
-**Use:** the unreleased grid in a phone frame, leaning in the scene.
-Slides 2–3: the unreleased grid raw, then the countdown page raw.
-**Attach to ChatGPT:** the unreleased grid, the countdown page.
+**Use:** the unreleased grid. Slides 2–3: the unreleased grid raw,
+then the countdown page raw.
 
-**Plate prompt:**
-A blank white CD-R in a cracked jewel case lying on black velvet, shot
-from directly above, handwriting on the disc in black marker that is
-deliberately illegible scrawl. A single hard electric-blue light from
-the left, everything else falling into black. Heavy film grain, dust
-on the velvet, real fingerprints on the plastic. The right third of
-the frame is empty black velvet with nothing on it — leave that space
-completely clear. Photographic still life, cinematic, mysterious.
-+ style block
+**Before anything:** reshoot the unreleased grid — rate five or six
+tiles first so it isn't a wall of UNRATED, and capture from the very
+top of the page so the status bar isn't sitting on the filter chips.
+The screenshot *is* the pitch on this post; the scene is packaging.
 
-**Composite:** stand a framed phone showing the unreleased grid in the
-empty right third, as if propped against something out of frame. Blue
-rim light down its left edge, long shadow to the right.
+**Prep:** run that screenshot through shots.so as an angled iPhone,
+transparent background. That mockup PNG is what gets attached — see
+"The flow that actually worked".
 
-**One-shot alternative:** attach the unreleased grid and add — *stand
-a modern iPhone in the empty right third of the scene showing the
-attached screenshot, keeping the screenshot exactly as provided.*
+Two versions were written on 2026-09-04 so Luca could generate both
+and pick. **Attach the mockup PNG only** — nothing else. Both prompts
+are self-contained; no style block to append.
+
+### Version A — pure product
+
+Cleanest, most professional, almost nothing generated so almost
+nothing can go wrong. Slightly generic.
+
+> The attached image is a finished iPhone mockup. Do not change the
+> phone, its angle, its frame, or anything on its screen — keep the
+> screenshot exactly as provided, pixel for pixel. Build only the
+> scene around it.
+>
+> Place it floating in a deep black void, tilted as it already is, lit
+> by a single hard electric-blue light from the upper left. Electric
+> blue glow (#1e90ff) blooming softly outward from behind the phone,
+> a long soft shadow falling down and to the right, a faint mirror
+> reflection of the phone on a black glass floor beneath it, fine
+> dust drifting in the light. Everything else falls into true black
+> (#000000) with generous empty space above the phone.
+>
+> Photographic — 50mm lens, shallow depth of field, light film grain,
+> real imperfection. Not a 3D render, not an illustration, no glossy
+> stock-photo cleanliness. No text of any kind, no watermarks, no
+> logos. 4:5 portrait, 1080x1350.
+
+### Version B — the burned CD-R
+
+The physical-media version, closest to the site's own language.
+
+> The attached image is a finished iPhone mockup. Do not change the
+> phone, its angle, its frame, or anything on its screen — keep the
+> screenshot exactly as provided, pixel for pixel. Build only the
+> scene around it.
+>
+> Place it standing upright on black velvet, propped as if leaning
+> against something just out of frame, occupying the right side of
+> the picture. On the left, lying on the velvet, is a blank white
+> CD-R half out of a cracked jewel case, with handwriting on the disc
+> in black marker that is deliberately illegible scrawl. A single
+> hard electric-blue light from the upper left, everything else
+> falling into true black. Blue rim light down the phone's left edge
+> and a long shadow to the right. Heavy film grain, dust on the
+> velvet, real fingerprints on the plastic.
+>
+> Photographic still life — 50mm lens, shallow depth of field,
+> cinematic, mysterious. Not a 3D render, not an illustration, no
+> glossy stock-photo cleanliness. No readable text anywhere, no
+> watermarks, no logos. 4:5 portrait, 1080x1350.
 
 **Caption:**
 Every music app pretends leaks don't exist.
 
-Half your library is snippets, reference tracks, and albums that got
-shelved. You have opinions about them. Nowhere to put them.
+Rate the leak next to the official release. Rank the vault. Argue
+about which version was better.
 
-Peak catalogs unreleased music by name and metadata only, never files,
-so you can rate the leak next to the official release, rank the vault,
-and argue about which version was better.
+Unreleased filter on the whole catalog. Link in bio.
 
-There's an Unreleased filter on the whole catalog. Link in bio.
+**Longer version, if the short one underperforms:**
+
+> Every music app pretends leaks don't exist.
+>
+> Half your library is snippets, reference tracks, and albums that
+> got shelved. You have opinions about them. Nowhere to put them.
+>
+> Peak catalogs unreleased music by name and metadata only, never
+> files, so you can rate the leak next to the official release, rank
+> the vault, and argue about which version was better.
+>
+> There's an Unreleased filter on the whole catalog. Link in bio.
 
 ---
 

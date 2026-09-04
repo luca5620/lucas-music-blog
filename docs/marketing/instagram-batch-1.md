@@ -379,9 +379,13 @@ nothing can go wrong. Slightly generic.
 > stock-photo cleanliness. No text of any kind, no watermarks, no
 > logos. 4:5 portrait, 1080x1350.
 
-### Version B — the burned CD-R
+### Version B — the burned CD-R ✅ CHOSEN (Luca, 2026-09-04)
 
-The physical-media version, closest to the site's own language.
+The physical-media version, closest to the site's own language. Luca
+generated A, B and C and picked this one. Worth remembering for later
+posts: the two versions with a real object in frame both beat the
+floating-product one, because the object gives the eye somewhere to
+land and the phone reads as a thing in a place rather than a render.
 
 > The attached image is a finished iPhone mockup. Do not change the
 > phone, its angle, its frame, or anything on its screen — keep the
@@ -443,6 +447,11 @@ Rate the leak next to the official release. Rank the vault. Argue
 about which version was better.
 
 Unreleased filter on the whole catalog. Link in bio.
+
+**Hashtags for this post** (the unreleased-leaning half of the set):
+#unreleasedmusic #leakedmusic #musicreviews #albumrating #musicapp
+#hiphopheads #musiccommunity #musicboard #newmusic #musicnerd
+#musicdiscovery #albumreview
 
 **Longer version, if the short one underperforms:**
 

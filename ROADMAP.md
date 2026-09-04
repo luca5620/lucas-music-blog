@@ -109,6 +109,19 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **TRANSLATION QUALITY (2026-09-03, later):** Luca's friend found the
+    Spanish "very off". Tolgee cloud hit the free ceiling (500 keys vs our
+    893; glossary-aware AI = €179/mo) → parked; Lingo.dev considered
+    (pay-as-you-go, a few $) → Luca chose "just redo them". **Spanish
+    (3e4ac77) and French (42fba4d) fully rewritten** against
+    docs/TRANSLATION-GUIDE.md: informal tú/tu, neutral LatAm Spanish,
+    natural phrasing, French typography; "showcase" → sección/section,
+    "low detail" → modo ligero/mode léger. Two review pages published as
+    artifacts for native readers (Spanish: claude.ai/code/artifact/
+    99bfd3f2-de6f-4874-8d15-d262221ec9f5, French: …/b6dd6b9d-8b94-40c7-91d3-
+    bdda10bfe54f) — friends select a line and comment; fixes go into
+    messages/es|fr.json by hand. PT/NL/DE still first-pass quality;
+    remaining string batches (8–12) still paused pending Luca's call.
   - **TOLGEE SET UP (2026-09-03, Luca: "some of the translations are not
     very good … let's go with Tolgee").** Translation platform = Tolgee
     cloud, synced with the repo by the Tolgee CLI: `.tolgeerc.json`

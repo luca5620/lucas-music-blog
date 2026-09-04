@@ -90,6 +90,30 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-04 (Windows): INSTAGRAM BATCH 1 REWRITTEN around real
+  screenshots.** Luca generated post 1 in ChatGPT and it read "a
+  little too much AI"; he wants the grid to be an extension of the
+  real app, not a parallel imaginary version of it. New method in
+  `docs/marketing/instagram-batch-1.md`: **AI never draws the
+  product, AI draws the room the product sits in.** Every post is now
+  (1) a real screenshot captured on device, (2) an AI *background
+  plate* with deliberate empty space and "do not invent any app
+  interface" in the prompt, (3) composited in Canva with an Apple
+  device frame. Added: a 13-item master screenshot list (S1–S10,
+  capture once, reuse — and turn full effects ON in Settings →
+  Performance first, low detail strips the glow), a reusable style
+  block with our real hex values, a one-shot alternative per post for
+  when ChatGPT does the compositing (with the caveat that GPT Image
+  redraws attached UI, so only use it where the phone is small or
+  tilted), and carousel structure = composite hook first, raw
+  untouched screenshots after. Post 1 now puts the real home screen
+  inside the CRT tube — the signature shot for the account. Luca's
+  reference image (a competitor's App Store listing, angled phones +
+  big headline): **do not feed it to ChatGPT** (it copies their
+  palette and composition, which is the clone tell we avoid) — but
+  that format is the answer to the 1.1.1 App Store screenshots that
+  have been waiting on a designer. Same plate + screenshot method.
+
 - **2026-09-03 (Windows): LANGUAGES — CODE SIDE DONE.** Every area of
   the site we wrote is translated into ES/FR/PT/NL/DE (1208 keys, all
   six message files in parity) and all five languages were rewritten

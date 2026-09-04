@@ -16,56 +16,71 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useLocale, useTranslations } from "next-intl";
 import type { NotificationRow } from "@/lib/db/notifications";
 
 const POLL_MS = 60_000;
 
-function timeAgo(dateStr: string): string {
+// The labels come from the component so they are translated; the locale
+// formats the fallback date the viewer's way.
+function timeAgo(
+  dateStr: string,
+  label: (key: "justNow" | "minsAgo" | "hoursAgo" | "daysAgo", n: number) => string,
+  locale: string
+): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m`;
+  if (mins < 1) return label("justNow", 0);
+  if (mins < 60) return label("minsAgo", mins);
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
+  if (hours < 24) return label("hoursAgo", hours);
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d`;
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  if (days < 30) return label("daysAgo", days);
+  return new Date(dateStr).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
 }
 
 /** "slim liked your review of Take Care" — the verb line per type. */
-function message(n: NotificationRow): string {
-  const t = n.title ? ` "${n.title}"` : "";
+// `title` is either "" or ` "The Record"` — it lands inside the sentence
+// where each language wants it ({title} placeholder).
+function message(
+  n: NotificationRow,
+  t: ReturnType<typeof useTranslations>
+): string {
+  const title = n.title ? ` "${n.title}"` : "";
   switch (n.type) {
     case "follow":
-      return "started following you";
+      return t("follow");
     case "review_like":
-      return `liked your review of${t}`;
+      return t("reviewLike", { title });
     case "comment":
-      return `commented on your review of${t}`;
+      return t("comment", { title });
     case "comment_reply":
-      return `replied to your comment on${t}`;
+      return t("commentReply", { title });
     case "post_like":
-      return `liked your post${t}`;
+      return t("postLike", { title });
     case "list_like":
-      return `liked your list${t}`;
+      return t("listLike", { title });
     // Follow-feed (033): these read as news, not as flattery.
     case "new_review":
-      return `posted a review of${t}`;
+      return t("newReview", { title });
     case "new_post":
-      return `posted${t}`;
+      return t("newPost", { title });
     case "new_list":
-      return `made a new list${t}`;
+      return t("newList", { title });
     case "new_debate":
-      return `started a debate${t}`;
+      return t("newDebate", { title });
     default:
-      return "did something";
+      return t("other");
   }
 }
 
 export default function NotificationsBell() {
+  const t = useTranslations("notifications");
+  const locale = useLocale();
   const [items, setItems] = useState<NotificationRow[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
@@ -166,7 +181,7 @@ export default function NotificationsBell() {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={
-          unread > 0 ? `Notifications (${unread} unread)` : "Notifications"
+          unread > 0 ? t("ariaUnread", { n: unread }) : t("aria")
         }
         // Same pill as SEARCH/CREATE (Luca 2026-08-28: matching size
         // + shape) — identical paddings/radius/typography, and on the
@@ -193,7 +208,7 @@ export default function NotificationsBell() {
         {/* Web-only label — gives the pill the same height/width as
             Search and Create; below sm (and so in the app) the bell
             stays icon-only. */}
-        <span className="hidden sm:inline">Alerts</span>
+        <span className="hidden sm:inline">{t("alerts")}</span>
         {unread > 0 && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent-rose text-white text-[10px] font-bold flex items-center justify-center border border-black/40">
             {unread > 9 ? "9+" : unread}
@@ -207,18 +222,18 @@ export default function NotificationsBell() {
           style={{ right: -panelShift }}
         >
           <p className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-text-secondary border-b border-white/10 font-[family-name:var(--font-heading)]">
-            Notifications
+            {t("title")}
           </p>
 
           {items.length === 0 ? (
             <p className="px-4 py-6 text-sm text-text-muted text-center">
-              Nothing yet — go start some noise.
+              {t("empty")}
             </p>
           ) : (
             <div className="max-h-[60vh] overflow-y-auto divide-y divide-white/5">
               {items.map((n) => {
                 const actor = n.actor;
-                const name = actor?.display_name || actor?.username || "Someone";
+                const name = actor?.display_name || actor?.username || t("someone");
                 return (
                   <Link
                     key={n.id}
@@ -247,10 +262,10 @@ export default function NotificationsBell() {
                         <span className="font-bold text-text-primary">
                           {name}
                         </span>{" "}
-                        {message(n)}
+                        {message(n, t)}
                       </span>
                       <span className="block text-[11px] text-text-muted mt-0.5">
-                        {timeAgo(n.created_at)} ago
+                        {timeAgo(n.created_at, (k, v) => t(k, { n: v }), locale)}
                       </span>
                     </span>
                     {!n.read && (

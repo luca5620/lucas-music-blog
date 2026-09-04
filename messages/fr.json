@@ -1248,5 +1248,104 @@
   "chat": {
     "like": "Aimer le message",
     "unlike": "Ne plus aimer le message"
+  },
+  "social": {
+    "guest": {
+      "title": "SOCIAL",
+      "body": "Les salles en direct, les plus grosses critiques de la semaine et ce qu'écoutent les gens que tu suis — tout au même endroit.",
+      "signIn": "Se connecter",
+      "createAccount": "Créer un compte"
+    },
+    "title": "SOCIAL",
+    "sub": "Salles en direct, classements de la semaine et ce que tes gens font tourner.",
+    "topWeek": "Top critiques de la semaine",
+    "resetsFriday": "remise à zéro le vendredi",
+    "popular": "Populaire chez tes amis",
+    "recent": "Activité récente",
+    "nothingYet": "Rien ici pour l'instant.",
+    "followHint": "Suis quelques personnes et leurs écoutes, critiques et listes apparaîtront dans ce flux.",
+    "findPeople": "Trouver des gens",
+    "reviewBy": "{artist} · critique de {name}",
+    "unknown": "inconnu",
+    "listensFromFriends": "{title} — {artist} · {n, plural, one {# écoute} other {# écoutes}} chez tes amis",
+    "justNow": "à l'instant",
+    "minsAgo": "il y a {n} min",
+    "hoursAgo": "il y a {n} h",
+    "daysAgo": "il y a {n} j",
+    "activity": {
+      "startedDebate": "a lancé un débat :",
+      "sides": "({a} vs {b})",
+      "reviewed": "a critiqué",
+      "byArtist": "de {artist}",
+      "madeList": "a fait une liste :",
+      "albums": "{n, plural, one {# album} other {# albums}}",
+      "ranked": ", classée",
+      "likedReview": "a aimé une critique de"
+    }
+  },
+  "connections": {
+    "title": "CONNEXIONS",
+    "sub": "Toi seul peux voir cette page.",
+    "followers": "Abonnés ({n})",
+    "following": "Abonnements ({n})",
+    "noFollowers": "Personne pour l'instant — publie des avis qui valent le coup d'être suivis.",
+    "noFollowing": "Tu ne suis encore personne — trouve des gens sur la page Social."
+  },
+  "search": {
+    "title": "RECHERCHE",
+    "sub": "Toutes les chaînes à la fois — gens, artistes, sorties, critiques, débats, listes, posts.",
+    "placeholder": "Cherche n'importe quoi — gens, artistes, sorties…",
+    "aria": "Tout rechercher",
+    "tuning": "RÉGLAGE…",
+    "hint": "Tape au moins deux caractères — utilisateurs, artistes, sorties, critiques, débats, listes et posts arrivent tous en même temps.",
+    "noSignal": "PAS DE SIGNAL",
+    "nothing": "Rien sur aucune chaîne pour « {query} ». Essaie un artiste, un album ou un nom d'utilisateur.",
+    "sections": {
+      "users": "Utilisateurs",
+      "artists": "Artistes",
+      "releases": "Sorties",
+      "reviews": "Critiques",
+      "debates": "Débats",
+      "lists": "Listes",
+      "posts": "Posts"
+    },
+    "communityAvg": "moyenne",
+    "closed": "TERMINÉ",
+    "byOwner": "par @{owner}"
+  },
+  "userSearch": {
+    "placeholder": "Trouve des gens par nom d'utilisateur…",
+    "aria": "Rechercher des utilisateurs",
+    "tuning": "RÉGLAGE…",
+    "nobody": "Personne de ce nom pour l'instant."
+  },
+  "topRooms": {
+    "title": "Top salles",
+    "sub": "qui est en direct maintenant",
+    "here": "{n} ici",
+    "recentlyLive": "en direct récemment"
+  },
+  "notifications": {
+    "aria": "Notifications",
+    "ariaUnread": "Notifications ({n} non lues)",
+    "alerts": "Alertes",
+    "title": "Notifications",
+    "empty": "Rien pour l'instant — va faire du bruit.",
+    "someone": "Quelqu'un",
+    "justNow": "à l'instant",
+    "minsAgo": "il y a {n} min",
+    "hoursAgo": "il y a {n} h",
+    "daysAgo": "il y a {n} j",
+    "follow": "a commencé à te suivre",
+    "reviewLike": "a aimé ta critique de{title}",
+    "comment": "a commenté ta critique de{title}",
+    "commentReply": "a répondu à ton commentaire sur{title}",
+    "postLike": "a aimé ton post{title}",
+    "listLike": "a aimé ta liste{title}",
+    "newReview": "a publié une critique de{title}",
+    "newPost": "a publié{title}",
+    "newList": "a fait une nouvelle liste{title}",
+    "newDebate": "a lancé un débat{title}",
+    "other": "a fait quelque chose"
   }
 }

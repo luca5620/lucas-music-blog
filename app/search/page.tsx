@@ -8,6 +8,8 @@
 import type { Metadata } from "next";
 import UniversalSearch from "@/components/search/UniversalSearch";
 import PageHero from "@/components/ui/PageHero";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
   title: "Search",
@@ -15,11 +17,12 @@ export const metadata: Metadata = {
 };
 
 export default function SearchPage() {
+  const t = useTranslations("search");
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-12">
       <PageHero
-        title="SEARCH"
-        sub="Every channel at once — people, artists, releases, reviews, debates, lists, posts."
+        title={t("title")}
+        sub={t("sub")}
       />
       <UniversalSearch />
     </div>

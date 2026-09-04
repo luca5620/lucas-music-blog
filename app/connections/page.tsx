@@ -5,6 +5,8 @@ import type { ConnectionProfile } from "@/lib/db/profiles";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import PageHero from "@/components/ui/PageHero";
 import type { Metadata } from "next";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Connections",
@@ -23,6 +25,7 @@ export const dynamic = "force-dynamic";
  */
 export default async function ConnectionsPage() {
   const user = await requireAuth();
+  const t = await getTranslations("connections");
 
   const [followers, following] = await Promise.all([
     getFollowers(user.id),
@@ -32,18 +35,18 @@ export default async function ConnectionsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
       {/* Page header — boxed hero, same as HOME */}
-      <PageHero title="CONNECTIONS" sub="Only you can see this page." />
+      <PageHero title={t("title")} sub={t("sub")} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <ConnectionColumn
-          title={`Followers (${followers.length})`}
+          title={t("followers", { n: followers.length })}
           people={followers}
-          empty="Nobody yet — post some takes worth following."
+          empty={t("noFollowers")}
         />
         <ConnectionColumn
-          title={`Following (${following.length})`}
+          title={t("following", { n: following.length })}
           people={following}
-          empty="You don't follow anyone yet — find people on the Social page."
+          empty={t("noFollowing")}
         />
       </div>
     </div>

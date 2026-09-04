@@ -21,6 +21,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { ActiveRoomCandidate } from "@/lib/db/social";
 import { smallCover } from "@/lib/images";
@@ -33,6 +35,7 @@ export default function TopRooms({
   maxShown?: number;
 }) {
   // roomId -> live head-count (users + guests, deduped by presence key).
+  const t = useTranslations("topRooms");
   const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -75,9 +78,9 @@ export default function TopRooms({
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2">
-        <h2 className="label-xbox">Top Rooms</h2>
+        <h2 className="label-xbox">{t("title")}</h2>
         <span className="text-xs text-text-muted">
-          who&apos;s live right now
+          {t("sub")}
         </span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -115,11 +118,11 @@ export default function TopRooms({
                 {here > 0 ? (
                   <span className="inline-flex items-center gap-1.5 mt-0.5 text-xs font-bold text-accent-primary tabular-nums">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent-primary animate-pulse" />
-                    {here} here
+                    {t("here", { n: here })}
                   </span>
                 ) : (
                   <span className="block mt-0.5 pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted">
-                    recently live
+                    {t("recentlyLive")}
                   </span>
                 )}
               </span>

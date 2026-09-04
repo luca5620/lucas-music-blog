@@ -19,6 +19,11 @@
  */
 
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+// The async page uses getTranslations; the small sync components below
+// use useTranslations/useLocale, which next-intl supports in server components.
+import { useLocale, useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { formatRating } from "@/lib/rating";
 import { getUser } from "@/lib/auth";
 import UserSearch from "@/components/friends/UserSearch";
@@ -51,19 +56,25 @@ export const dynamic = "force-dynamic";
    ============================================ */
 
 /** "3m ago" / "2h ago" / "5d ago" / "Mar 3" — relative timestamps. */
-function timeAgo(iso: string): string {
+// The labels come from the component so they are translated; the locale
+// formats the fallback date the viewer's way.
+function timeAgo(
+  iso: string,
+  label: (key: "justNow" | "minsAgo" | "hoursAgo" | "daysAgo", n: number) => string,
+  locale: string
+): string {
   const then = new Date(iso).getTime();
   const seconds = Math.max(0, Math.floor((Date.now() - then) / 1000));
 
-  if (seconds < 60) return "just now";
+  if (seconds < 60) return label("justNow", 0);
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return label("minsAgo", minutes);
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return label("hoursAgo", hours);
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) return label("daysAgo", days);
   // Older than a week: just show the date.
-  return new Date(iso).toLocaleDateString("en-US", {
+  return new Date(iso).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
@@ -92,6 +103,7 @@ function getRatingColor(rating: number): string {
 
 export default async function SocialPage() {
   const user = await getUser();
+  const t = await getTranslations("social");
 
   // --- Logged out: a friendly sign-in prompt ---
   if (!user) {
@@ -99,18 +111,17 @@ export default async function SocialPage() {
       <div className="max-w-2xl mx-auto py-16">
         <div className="panel-xbox panel-xbox-glow p-8 text-center space-y-4">
           <h1 className="font-[family-name:var(--font-space-grotesk)] text-3xl font-extrabold text-[#e8e6e3]">
-            SOCIAL
+            {t("guest.title")}
           </h1>
           <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-            Live rooms, the week&apos;s biggest reviews, and what the
-            people you follow are listening to — all in one place.
+            {t("guest.body")}
           </p>
           <div className="flex justify-center gap-3 pt-2">
             <Link href="/login" className="btn-y2k btn-y2k-primary">
-              Sign In
+              {t("guest.signIn")}
             </Link>
             <Link href="/signup" className="btn-y2k btn-y2k-outline">
-              Create Account
+              {t("guest.createAccount")}
             </Link>
           </div>
         </div>
@@ -141,8 +152,8 @@ export default async function SocialPage() {
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
       {/* Page header — boxed hero, same as HOME */}
       <PageHero
-        title="SOCIAL"
-        sub="Live rooms, weekly charts, and what your people are spinning."
+        title={t("title")}
+        sub={t("sub")}
       />
 
       {/* Find people — type a username, click through, hit Follow */}
@@ -156,8 +167,8 @@ export default async function SocialPage() {
       {topWeek.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <h2 className="label-xbox">Top Reviews This Week</h2>
-            <span className="text-xs text-text-muted">resets Friday</span>
+            <h2 className="label-xbox">{t("topWeek")}</h2>
+            <span className="text-xs text-text-muted">{t("resetsFriday")}</span>
           </div>
           <div className="space-y-2">
             {topWeek.map((review, i) => (
@@ -170,7 +181,7 @@ export default async function SocialPage() {
       {/* ===== Popular with friends ===== */}
       {popular.length > 0 && (
         <section className="space-y-3">
-          <h2 className="label-xbox">Popular With Friends</h2>
+          <h2 className="label-xbox">{t("popular")}</h2>
           <div className="poster-grid">
             {popular.map((item) => (
               <PopularPoster key={`${item.title}|${item.artist}`} item={item} />
@@ -181,16 +192,15 @@ export default async function SocialPage() {
 
       {/* ===== Activity feed ===== */}
       <section className="space-y-3">
-        <h2 className="label-xbox">Recent Activity</h2>
+        <h2 className="label-xbox">{t("recent")}</h2>
 
         {activity.length === 0 ? (
           <div className="panel-xbox p-8 text-center space-y-2">
             <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
-              Nothing here yet.
+              {t("nothingYet")}
             </p>
             <p className="text-sm text-[#9a9a9e]">
-              Follow some people and their listens, reviews, and lists
-              will show up in this feed.
+              {t("followHint")}
             </p>
           </div>
         ) : (
@@ -205,7 +215,7 @@ export default async function SocialPage() {
       {/* ===== Find people (shown while the feed is quiet) ===== */}
       {activity.length === 0 && suggestions.length > 0 && (
         <section className="space-y-3">
-          <h2 className="label-xbox">Find People</h2>
+          <h2 className="label-xbox">{t("findPeople")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {suggestions.map((profile) => (
               <SuggestionCard key={profile.id} profile={profile} />
@@ -238,7 +248,8 @@ function TopWeekRow({
 }) {
   const cover = safeImage(review.cover_image);
   const author = review.profiles;
-  const authorName = author?.display_name || author?.username || "unknown";
+  const t = useTranslations("social");
+  const authorName = author?.display_name || author?.username || t("unknown");
 
   return (
     <Link
@@ -275,7 +286,7 @@ function TopWeekRow({
           {review.title}
         </span>
         <span className="block text-xs text-text-muted truncate">
-          {review.artist} · review by {authorName}
+          {t("reviewBy", { artist: review.artist, name: authorName })}
           {author && author.role !== "user" && (
             <span className="inline-flex align-middle ml-1">
               <VerifiedBadge role={author.role} />
@@ -320,9 +331,12 @@ function TopWeekRow({
 
 function PopularPoster({ item }: { item: PopularItem }) {
   const cover = safeImage(item.cover_image);
-  const label = `${item.title} — ${item.artist} · ${item.count} ${
-    item.count === 1 ? "listen" : "listens"
-  } from friends`;
+  const t = useTranslations("social");
+  const label = t("listensFromFriends", {
+    title: item.title,
+    artist: item.artist,
+    n: item.count,
+  });
 
   const inner = (
     <>
@@ -368,6 +382,8 @@ function PopularPoster({ item }: { item: PopularItem }) {
    ============================================ */
 
 function ActivityRow({ item }: { item: ActivityItem }) {
+  const t = useTranslations("social");
+  const locale = useLocale();
   const { actor } = item;
   const name = actor.display_name || actor.username;
   const avatar = safeImage(actor.avatar_url);
@@ -401,7 +417,7 @@ function ActivityRow({ item }: { item: ActivityItem }) {
           <ActivitySentence item={item} />
         </p>
         <p className="font-[family-name:var(--font-vt323)] text-xs text-[#5a5a60] mt-0.5">
-          {timeAgo(item.created_at)}
+          {timeAgo(item.created_at, (k, n) => t(k, { n }), locale)}
         </p>
       </div>
     </article>
@@ -410,12 +426,13 @@ function ActivityRow({ item }: { item: ActivityItem }) {
 
 /** The verb + object part of the sentence, per activity type. */
 function ActivitySentence({ item }: { item: ActivityItem }) {
+  const t = useTranslations("social.activity");
   switch (item.type) {
     case "debate": {
       const p = item.payload;
       return (
         <>
-          started a debate:{" "}
+          {t("startedDebate")}{" "}
           <Link
             href={`/debates/${p.slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
@@ -423,7 +440,7 @@ function ActivitySentence({ item }: { item: ActivityItem }) {
             {p.title}
           </Link>{" "}
           <span className="text-[#5a5a60]">
-            ({p.side_a_label} vs {p.side_b_label})
+            {t("sides", { a: p.side_a_label, b: p.side_b_label })}
           </span>
         </>
       );
@@ -432,14 +449,14 @@ function ActivitySentence({ item }: { item: ActivityItem }) {
       const p = item.payload;
       return (
         <>
-          reviewed{" "}
+          {t("reviewed")}{" "}
           <Link
             href={`/reviews/${p.slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
           >
             {p.title}
           </Link>{" "}
-          by {p.artist}
+          {t("byArtist", { artist: p.artist })}
           <RatingChip rating={p.rating} />
         </>
       );
@@ -448,7 +465,7 @@ function ActivitySentence({ item }: { item: ActivityItem }) {
       const p = item.payload;
       return (
         <>
-          made a list:{" "}
+          {t("madeList")}{" "}
           <Link
             href={`/lists/${item.actor.username}/${p.slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
@@ -456,8 +473,8 @@ function ActivitySentence({ item }: { item: ActivityItem }) {
             {p.title}
           </Link>{" "}
           <span className="text-[#5a5a60]">
-            ({p.item_count} {p.item_count === 1 ? "album" : "albums"}
-            {p.is_ranked ? ", ranked" : ""})
+            ({t("albums", { n: p.item_count })}
+            {p.is_ranked ? t("ranked") : ""})
           </span>
         </>
       );
@@ -466,14 +483,14 @@ function ActivitySentence({ item }: { item: ActivityItem }) {
       const p = item.payload;
       return (
         <>
-          liked a review of{" "}
+          {t("likedReview")}{" "}
           <Link
             href={`/reviews/${p.review_slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
           >
             {p.review_title}
           </Link>{" "}
-          by {p.review_artist}
+          {t("byArtist", { artist: p.review_artist })}
         </>
       );
     }

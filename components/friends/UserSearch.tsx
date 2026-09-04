@@ -12,6 +12,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import type { Profile } from "@/lib/types/database";
@@ -22,6 +24,7 @@ type Result = Pick<
 >;
 
 export default function UserSearch() {
+  const t = useTranslations("userSearch");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [open, setOpen] = useState(false);
@@ -83,13 +86,13 @@ export default function UserSearch() {
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
-          placeholder="Find people by username…"
+          placeholder={t("placeholder")}
           className="form-input pr-20"
-          aria-label="Search for users"
+          aria-label={t("aria")}
         />
         {searching && (
           <span className="osd-text absolute right-3 top-1/2 -translate-y-1/2 text-xs animate-pulse">
-            TUNING…
+            {t("tuning")}
           </span>
         )}
       </div>
@@ -98,7 +101,7 @@ export default function UserSearch() {
         <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-96 overflow-y-auto rounded-lg border border-border-medium bg-[#0c0c0f] shadow-[0_16px_50px_rgba(0,0,0,0.8)]">
           {results.length === 0 ? (
             <p className="px-4 py-3 text-sm text-text-muted">
-              Nobody by that name yet.
+              {t("nobody")}
             </p>
           ) : (
             results.map((r) => (

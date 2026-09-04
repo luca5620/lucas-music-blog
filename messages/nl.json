@@ -1248,5 +1248,104 @@
   "chat": {
     "like": "Bericht liken",
     "unlike": "Like ongedaan maken"
+  },
+  "social": {
+    "guest": {
+      "title": "SOCIAL",
+      "body": "Live rooms, de grootste recensies van de week en wat de mensen die je volgt luisteren: alles op één plek.",
+      "signIn": "Inloggen",
+      "createAccount": "Account maken"
+    },
+    "title": "SOCIAL",
+    "sub": "Live rooms, weeklijsten en wat jouw mensen draaien.",
+    "topWeek": "Toprecensies van de week",
+    "resetsFriday": "reset op vrijdag",
+    "popular": "Populair bij vrienden",
+    "recent": "Recente activiteit",
+    "nothingYet": "Hier is nog niets.",
+    "followHint": "Volg een paar mensen en hun luistersessies, recensies en lijsten verschijnen in deze feed.",
+    "findPeople": "Mensen vinden",
+    "reviewBy": "{artist} · recensie door {name}",
+    "unknown": "onbekend",
+    "listensFromFriends": "{title} — {artist} · {n, plural, one {# luisterbeurt} other {# luisterbeurten}} van vrienden",
+    "justNow": "zonet",
+    "minsAgo": "{n} min geleden",
+    "hoursAgo": "{n} u geleden",
+    "daysAgo": "{n} d geleden",
+    "activity": {
+      "startedDebate": "startte een debat:",
+      "sides": "({a} vs {b})",
+      "reviewed": "recenseerde",
+      "byArtist": "van {artist}",
+      "madeList": "maakte een lijst:",
+      "albums": "{n, plural, one {# album} other {# albums}}",
+      "ranked": ", gerangschikt",
+      "likedReview": "likete een recensie van"
+    }
+  },
+  "connections": {
+    "title": "CONNECTIES",
+    "sub": "Alleen jij ziet deze pagina.",
+    "followers": "Volgers ({n})",
+    "following": "Volgend ({n})",
+    "noFollowers": "Nog niemand. Post meningen die het volgen waard zijn.",
+    "noFollowing": "Je volgt nog niemand. Vind mensen op de Social-pagina."
+  },
+  "search": {
+    "title": "ZOEKEN",
+    "sub": "Alle kanalen tegelijk: mensen, artiesten, releases, recensies, debatten, lijsten, posts.",
+    "placeholder": "Zoek wat je wilt: mensen, artiesten, releases…",
+    "aria": "Alles doorzoeken",
+    "tuning": "AFSTEMMEN…",
+    "hint": "Typ minstens twee tekens: gebruikers, artiesten, releases, recensies, debatten, lijsten en posts komen allemaal tegelijk terug.",
+    "noSignal": "GEEN SIGNAAL",
+    "nothing": "Niets op welk kanaal dan ook voor “{query}”. Probeer een artiest, een album of een gebruikersnaam.",
+    "sections": {
+      "users": "Gebruikers",
+      "artists": "Artiesten",
+      "releases": "Releases",
+      "reviews": "Recensies",
+      "debates": "Debatten",
+      "lists": "Lijsten",
+      "posts": "Posts"
+    },
+    "communityAvg": "gemiddelde",
+    "closed": "GESLOTEN",
+    "byOwner": "door @{owner}"
+  },
+  "userSearch": {
+    "placeholder": "Zoek mensen op gebruikersnaam…",
+    "aria": "Gebruikers zoeken",
+    "tuning": "AFSTEMMEN…",
+    "nobody": "Nog niemand met die naam."
+  },
+  "topRooms": {
+    "title": "Toprooms",
+    "sub": "wie nu live is",
+    "here": "{n} hier",
+    "recentlyLive": "recent live"
+  },
+  "notifications": {
+    "aria": "Meldingen",
+    "ariaUnread": "Meldingen ({n} ongelezen)",
+    "alerts": "Meldingen",
+    "title": "Meldingen",
+    "empty": "Nog niets. Ga wat lawaai maken.",
+    "someone": "Iemand",
+    "justNow": "zonet",
+    "minsAgo": "{n} min geleden",
+    "hoursAgo": "{n} u geleden",
+    "daysAgo": "{n} d geleden",
+    "follow": "volgt je nu",
+    "reviewLike": "likete je recensie van{title}",
+    "comment": "reageerde op je recensie van{title}",
+    "commentReply": "antwoordde op je reactie bij{title}",
+    "postLike": "likete je post{title}",
+    "listLike": "likete je lijst{title}",
+    "newReview": "plaatste een recensie van{title}",
+    "newPost": "plaatste{title}",
+    "newList": "maakte een nieuwe lijst{title}",
+    "newDebate": "startte een debat{title}",
+    "other": "deed iets"
   }
 }

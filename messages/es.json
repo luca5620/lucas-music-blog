@@ -1248,5 +1248,104 @@
   "chat": {
     "like": "Me gusta el mensaje",
     "unlike": "Quitar me gusta"
+  },
+  "social": {
+    "guest": {
+      "title": "SOCIAL",
+      "body": "Salas en vivo, las reseñas más grandes de la semana y lo que escucha la gente que sigues, todo en un solo lugar.",
+      "signIn": "Iniciar sesión",
+      "createAccount": "Crear cuenta"
+    },
+    "title": "SOCIAL",
+    "sub": "Salas en vivo, rankings semanales y lo que está sonando entre tu gente.",
+    "topWeek": "Reseñas top de la semana",
+    "resetsFriday": "se reinicia el viernes",
+    "popular": "Popular entre tus amigos",
+    "recent": "Actividad reciente",
+    "nothingYet": "Todavía no hay nada aquí.",
+    "followHint": "Sigue a algunas personas y sus escuchas, reseñas y listas aparecerán en este feed.",
+    "findPeople": "Encuentra gente",
+    "reviewBy": "{artist} · reseña de {name}",
+    "unknown": "desconocido",
+    "listensFromFriends": "{title} — {artist} · {n, plural, one {# escucha} other {# escuchas}} de tus amigos",
+    "justNow": "ahora mismo",
+    "minsAgo": "hace {n} min",
+    "hoursAgo": "hace {n} h",
+    "daysAgo": "hace {n} d",
+    "activity": {
+      "startedDebate": "abrió un debate:",
+      "sides": "({a} vs {b})",
+      "reviewed": "reseñó",
+      "byArtist": "de {artist}",
+      "madeList": "hizo una lista:",
+      "albums": "{n, plural, one {# álbum} other {# álbumes}}",
+      "ranked": ", con ranking",
+      "likedReview": "le gustó una reseña de"
+    }
+  },
+  "connections": {
+    "title": "CONEXIONES",
+    "sub": "Solo tú puedes ver esta página.",
+    "followers": "Seguidores ({n})",
+    "following": "Siguiendo ({n})",
+    "noFollowers": "Nadie todavía. Publica opiniones que valga la pena seguir.",
+    "noFollowing": "Todavía no sigues a nadie. Encuentra gente en la página Social."
+  },
+  "search": {
+    "title": "BUSCAR",
+    "sub": "Todos los canales a la vez: gente, artistas, lanzamientos, reseñas, debates, listas, publicaciones.",
+    "placeholder": "Busca lo que sea: gente, artistas, lanzamientos…",
+    "aria": "Buscar en todo",
+    "tuning": "SINTONIZANDO…",
+    "hint": "Escribe al menos dos caracteres: usuarios, artistas, lanzamientos, reseñas, debates, listas y publicaciones aparecen a la vez.",
+    "noSignal": "SIN SEÑAL",
+    "nothing": "Nada en ningún canal para “{query}”. Prueba con un artista, un álbum o un nombre de usuario.",
+    "sections": {
+      "users": "Usuarios",
+      "artists": "Artistas",
+      "releases": "Lanzamientos",
+      "reviews": "Reseñas",
+      "debates": "Debates",
+      "lists": "Listas",
+      "posts": "Publicaciones"
+    },
+    "communityAvg": "promedio",
+    "closed": "CERRADO",
+    "byOwner": "de @{owner}"
+  },
+  "userSearch": {
+    "placeholder": "Busca gente por nombre de usuario…",
+    "aria": "Buscar usuarios",
+    "tuning": "SINTONIZANDO…",
+    "nobody": "Nadie con ese nombre todavía."
+  },
+  "topRooms": {
+    "title": "Salas top",
+    "sub": "quién está en vivo ahora",
+    "here": "{n} aquí",
+    "recentlyLive": "en vivo hace poco"
+  },
+  "notifications": {
+    "aria": "Notificaciones",
+    "ariaUnread": "Notificaciones ({n} sin leer)",
+    "alerts": "Avisos",
+    "title": "Notificaciones",
+    "empty": "Nada todavía. Ve a hacer ruido.",
+    "someone": "Alguien",
+    "justNow": "ahora mismo",
+    "minsAgo": "hace {n} min",
+    "hoursAgo": "hace {n} h",
+    "daysAgo": "hace {n} d",
+    "follow": "empezó a seguirte",
+    "reviewLike": "le gustó tu reseña de{title}",
+    "comment": "comentó tu reseña de{title}",
+    "commentReply": "respondió a tu comentario en{title}",
+    "postLike": "le gustó tu publicación{title}",
+    "listLike": "le gustó tu lista{title}",
+    "newReview": "publicó una reseña de{title}",
+    "newPost": "publicó{title}",
+    "newList": "hizo una lista nueva{title}",
+    "newDebate": "abrió un debate{title}",
+    "other": "hizo algo"
   }
 }

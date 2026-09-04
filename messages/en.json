@@ -1248,5 +1248,104 @@
   "chat": {
     "like": "Like message",
     "unlike": "Unlike message"
+  },
+  "social": {
+    "guest": {
+      "title": "SOCIAL",
+      "body": "Live rooms, the week's biggest reviews, and what the people you follow are listening to — all in one place.",
+      "signIn": "Sign In",
+      "createAccount": "Create Account"
+    },
+    "title": "SOCIAL",
+    "sub": "Live rooms, weekly charts, and what your people are spinning.",
+    "topWeek": "Top Reviews This Week",
+    "resetsFriday": "resets Friday",
+    "popular": "Popular With Friends",
+    "recent": "Recent Activity",
+    "nothingYet": "Nothing here yet.",
+    "followHint": "Follow some people and their listens, reviews, and lists will show up in this feed.",
+    "findPeople": "Find People",
+    "reviewBy": "{artist} · review by {name}",
+    "unknown": "unknown",
+    "listensFromFriends": "{title} — {artist} · {n, plural, one {# listen} other {# listens}} from friends",
+    "justNow": "just now",
+    "minsAgo": "{n}m ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago",
+    "activity": {
+      "startedDebate": "started a debate:",
+      "sides": "({a} vs {b})",
+      "reviewed": "reviewed",
+      "byArtist": "by {artist}",
+      "madeList": "made a list:",
+      "albums": "{n, plural, one {# album} other {# albums}}",
+      "ranked": ", ranked",
+      "likedReview": "liked a review of"
+    }
+  },
+  "connections": {
+    "title": "CONNECTIONS",
+    "sub": "Only you can see this page.",
+    "followers": "Followers ({n})",
+    "following": "Following ({n})",
+    "noFollowers": "Nobody yet — post some takes worth following.",
+    "noFollowing": "You don't follow anyone yet — find people on the Social page."
+  },
+  "search": {
+    "title": "SEARCH",
+    "sub": "Every channel at once — people, artists, releases, reviews, debates, lists, posts.",
+    "placeholder": "Search anything — people, artists, releases…",
+    "aria": "Search everything",
+    "tuning": "TUNING…",
+    "hint": "Type at least two characters — users, artists, releases, reviews, debates, lists, and posts all come back at once.",
+    "noSignal": "NO SIGNAL",
+    "nothing": "Nothing on any channel for “{query}”. Try an artist, an album, or a username.",
+    "sections": {
+      "users": "Users",
+      "artists": "Artists",
+      "releases": "Releases",
+      "reviews": "Reviews",
+      "debates": "Debates",
+      "lists": "Lists",
+      "posts": "Posts"
+    },
+    "communityAvg": "community avg",
+    "closed": "CLOSED",
+    "byOwner": "by @{owner}"
+  },
+  "userSearch": {
+    "placeholder": "Find people by username…",
+    "aria": "Search for users",
+    "tuning": "TUNING…",
+    "nobody": "Nobody by that name yet."
+  },
+  "topRooms": {
+    "title": "Top Rooms",
+    "sub": "who's live right now",
+    "here": "{n} here",
+    "recentlyLive": "recently live"
+  },
+  "notifications": {
+    "aria": "Notifications",
+    "ariaUnread": "Notifications ({n} unread)",
+    "alerts": "Alerts",
+    "title": "Notifications",
+    "empty": "Nothing yet — go start some noise.",
+    "someone": "Someone",
+    "justNow": "just now",
+    "minsAgo": "{n}m ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago",
+    "follow": "started following you",
+    "reviewLike": "liked your review of{title}",
+    "comment": "commented on your review of{title}",
+    "commentReply": "replied to your comment on{title}",
+    "postLike": "liked your post{title}",
+    "listLike": "liked your list{title}",
+    "newReview": "posted a review of{title}",
+    "newPost": "posted{title}",
+    "newList": "made a new list{title}",
+    "newDebate": "started a debate{title}",
+    "other": "did something"
   }
 }

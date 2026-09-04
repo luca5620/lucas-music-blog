@@ -1248,5 +1248,104 @@
   "chat": {
     "like": "Nachricht liken",
     "unlike": "Like entfernen"
+  },
+  "social": {
+    "guest": {
+      "title": "SOCIAL",
+      "body": "Live-Räume, die größten Rezensionen der Woche und was die Leute hören, denen du folgst: alles an einem Ort.",
+      "signIn": "Anmelden",
+      "createAccount": "Konto erstellen"
+    },
+    "title": "SOCIAL",
+    "sub": "Live-Räume, Wochencharts und was deine Leute gerade hören.",
+    "topWeek": "Top-Rezensionen der Woche",
+    "resetsFriday": "startet freitags neu",
+    "popular": "Beliebt bei Freunden",
+    "recent": "Neueste Aktivität",
+    "nothingYet": "Hier ist noch nichts.",
+    "followHint": "Folge ein paar Leuten und ihre Hörsessions, Rezensionen und Listen tauchen in diesem Feed auf.",
+    "findPeople": "Leute finden",
+    "reviewBy": "{artist} · Rezension von {name}",
+    "unknown": "unbekannt",
+    "listensFromFriends": "{title} — {artist} · {n, plural, one {# Hörsession} other {# Hörsessions}} von Freunden",
+    "justNow": "gerade eben",
+    "minsAgo": "vor {n} Min.",
+    "hoursAgo": "vor {n} Std.",
+    "daysAgo": "vor {n} T.",
+    "activity": {
+      "startedDebate": "hat eine Debatte eröffnet:",
+      "sides": "({a} vs {b})",
+      "reviewed": "hat rezensiert:",
+      "byArtist": "von {artist}",
+      "madeList": "hat eine Liste gemacht:",
+      "albums": "{n, plural, one {# Album} other {# Alben}}",
+      "ranked": ", als Rangliste",
+      "likedReview": "hat eine Rezension geliked:"
+    }
+  },
+  "connections": {
+    "title": "VERBINDUNGEN",
+    "sub": "Nur du siehst diese Seite.",
+    "followers": "Follower ({n})",
+    "following": "Folge ich ({n})",
+    "noFollowers": "Noch niemand. Poste Meinungen, denen es sich zu folgen lohnt.",
+    "noFollowing": "Du folgst noch niemandem. Finde Leute auf der Social-Seite."
+  },
+  "search": {
+    "title": "SUCHE",
+    "sub": "Alle Sender auf einmal: Leute, Artists, Releases, Rezensionen, Debatten, Listen, Posts.",
+    "placeholder": "Such, was du willst: Leute, Artists, Releases…",
+    "aria": "Alles durchsuchen",
+    "tuning": "SENDERSUCHE…",
+    "hint": "Tipp mindestens zwei Zeichen: Nutzer, Artists, Releases, Rezensionen, Debatten, Listen und Posts kommen alle auf einmal.",
+    "noSignal": "KEIN SIGNAL",
+    "nothing": "Auf keinem Sender etwas zu „{query}“. Versuch einen Artist, ein Album oder einen Nutzernamen.",
+    "sections": {
+      "users": "Nutzer",
+      "artists": "Artists",
+      "releases": "Releases",
+      "reviews": "Rezensionen",
+      "debates": "Debatten",
+      "lists": "Listen",
+      "posts": "Posts"
+    },
+    "communityAvg": "Durchschnitt",
+    "closed": "BEENDET",
+    "byOwner": "von @{owner}"
+  },
+  "userSearch": {
+    "placeholder": "Finde Leute über den Nutzernamen…",
+    "aria": "Nutzer suchen",
+    "tuning": "SENDERSUCHE…",
+    "nobody": "Noch niemand mit diesem Namen."
+  },
+  "topRooms": {
+    "title": "Top-Räume",
+    "sub": "wer gerade live ist",
+    "here": "{n} hier",
+    "recentlyLive": "kürzlich live"
+  },
+  "notifications": {
+    "aria": "Benachrichtigungen",
+    "ariaUnread": "Benachrichtigungen ({n} ungelesen)",
+    "alerts": "Alerts",
+    "title": "Benachrichtigungen",
+    "empty": "Noch nichts. Geh und mach Lärm.",
+    "someone": "Jemand",
+    "justNow": "gerade eben",
+    "minsAgo": "vor {n} Min.",
+    "hoursAgo": "vor {n} Std.",
+    "daysAgo": "vor {n} T.",
+    "follow": "folgt dir jetzt",
+    "reviewLike": "hat deine Rezension zu{title} geliked",
+    "comment": "hat deine Rezension zu{title} kommentiert",
+    "commentReply": "hat auf deinen Kommentar zu{title} geantwortet",
+    "postLike": "hat deinen Post{title} geliked",
+    "listLike": "hat deine Liste{title} geliked",
+    "newReview": "hat eine Rezension zu{title} veröffentlicht",
+    "newPost": "hat{title} gepostet",
+    "newList": "hat eine neue Liste{title} gemacht",
+    "newDebate": "hat eine Debatte{title} eröffnet",
+    "other": "hat etwas gemacht"
   }
 }

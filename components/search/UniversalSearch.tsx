@@ -14,6 +14,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import { getRatingHex, formatRating } from "@/lib/rating";
@@ -93,6 +95,7 @@ function one<T>(v: T | T[] | null): T | null {
 const PER_SECTION = 5;
 
 export default function UniversalSearch() {
+  const t = useTranslations("search");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Results>(EMPTY);
   const [searching, setSearching] = useState(false);
@@ -244,14 +247,14 @@ export default function UniversalSearch() {
           type="search"
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          placeholder="Search anything — people, artists, releases…"
+          placeholder={t("placeholder")}
           autoFocus
           className="form-input !pl-10 pr-24"
-          aria-label="Search everything"
+          aria-label={t("aria")}
         />
         {searching && (
           <span className="osd-text absolute right-3 top-1/2 -translate-y-1/2 text-xs animate-pulse">
-            TUNING…
+            {t("tuning")}
           </span>
         )}
       </div>
@@ -259,24 +262,22 @@ export default function UniversalSearch() {
       {/* States */}
       {!searched && !searching && (
         <p className="text-sm text-text-muted text-center py-8">
-          Type at least two characters — users, artists, releases, reviews,
-          debates, lists, and posts all come back at once.
+          {t("hint")}
         </p>
       )}
       {searched && total === 0 && !searching && (
         /* Same NO SIGNAL voice as every other empty surface. */
         <div className="panel-xbox p-8 text-center space-y-3">
-          <p className="osd-text text-sm">NO SIGNAL</p>
+          <p className="osd-text text-sm">{t("noSignal")}</p>
           <p className="text-sm text-text-secondary">
-            Nothing on any channel for &ldquo;{query.trim()}&rdquo;. Try an
-            artist, an album, or a username.
+            {t("nothing", { query: query.trim() })}
           </p>
         </div>
       )}
 
       {/* ===== Users ===== */}
       {results.users.length > 0 && (
-        <Section label="Users">
+        <Section label={t("sections.users")}>
           {results.users.map((u) => (
             <Row key={u.username} href={`/profile/${u.username}`}>
               <Thumb src={u.avatar_url} fallback={u.username[0]} round />
@@ -296,7 +297,7 @@ export default function UniversalSearch() {
 
       {/* ===== Artists ===== */}
       {results.artists.length > 0 && (
-        <Section label="Artists">
+        <Section label={t("sections.artists")}>
           {results.artists.map((a) => (
             <Row key={a.slug} href={`/artists/${a.slug}`}>
               <Thumb src={a.image_url} fallback="♪" round />
@@ -310,7 +311,7 @@ export default function UniversalSearch() {
 
       {/* ===== Releases ===== */}
       {results.releases.length > 0 && (
-        <Section label="Releases">
+        <Section label={t("sections.releases")}>
           {results.releases.map((r) => (
             <Row key={r.slug} href={`/releases/${r.slug}`}>
               <Thumb src={r.cover_image} fallback="💿" />
@@ -333,7 +334,7 @@ export default function UniversalSearch() {
                     {formatRating(r.avg_rating)}
                   </span>
                   <span className="block pixel-text text-[8px] uppercase tracking-widest text-text-muted">
-                    community avg
+                    {t("communityAvg")}
                   </span>
                 </span>
               )}
@@ -347,7 +348,7 @@ export default function UniversalSearch() {
 
       {/* ===== Reviews ===== */}
       {results.reviews.length > 0 && (
-        <Section label="Reviews">
+        <Section label={t("sections.reviews")}>
           {results.reviews.map((r) => (
             <Row key={r.slug} href={`/reviews/${r.slug}`}>
               <Thumb src={r.cover_image} fallback="★" />
@@ -372,7 +373,7 @@ export default function UniversalSearch() {
 
       {/* ===== Debates ===== */}
       {results.debates.length > 0 && (
-        <Section label="Debates">
+        <Section label={t("sections.debates")}>
           {results.debates.map((d) => (
             <Row key={d.slug} href={`/debates/${d.slug}`}>
               <Thumb src={null} fallback="🎙️" />
@@ -386,7 +387,7 @@ export default function UniversalSearch() {
               </span>
               {d.status === "closed" && (
                 <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
-                  CLOSED
+                  {t("closed")}
                 </span>
               )}
             </Row>
@@ -396,7 +397,7 @@ export default function UniversalSearch() {
 
       {/* ===== Lists ===== */}
       {results.lists.length > 0 && (
-        <Section label="Lists">
+        <Section label={t("sections.lists")}>
           {results.lists.map((l) => {
             const owner = one(l.profiles)?.username;
             if (!owner) return null;
@@ -408,7 +409,7 @@ export default function UniversalSearch() {
                     {l.title}
                   </span>
                   <span className="block text-xs text-text-secondary truncate">
-                    by @{owner}
+                    {t("byOwner", { owner })}
                   </span>
                 </span>
               </Row>
@@ -419,7 +420,7 @@ export default function UniversalSearch() {
 
       {/* ===== Posts ===== */}
       {results.posts.length > 0 && (
-        <Section label="Posts">
+        <Section label={t("sections.posts")}>
           {results.posts.map((p) => (
             <Row key={p.slug} href={`/posts/${p.slug}`}>
               <Thumb src={null} fallback="▶" />

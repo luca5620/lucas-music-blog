@@ -20,7 +20,14 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import type { NotificationRow } from "@/lib/db/notifications";
 
-const POLL_MS = 60_000;
+/* Poll interval. Was 60s and ran regardless of whether the tab was even
+   on screen — a single forgotten background tab was making ~900 calls to
+   /api/notifications every 12 hours, which by 2026-09-04 made it the
+   second-most expensive route on the site. Now: 2 minutes, and only
+   while the tab is visible. Coming back to the tab refetches
+   immediately (see the visibilitychange handler), so nothing feels
+   staler than before. */
+const POLL_MS = 120_000;
 
 // The labels come from the component so they are translated; the locale
 // formats the fallback date the viewer's way.
@@ -116,7 +123,13 @@ export default function NotificationsBell() {
   // Initial load + poll + refetch when the tab comes back.
   useEffect(() => {
     void fetchAll();
-    const interval = setInterval(() => void fetchAll(), POLL_MS);
+    const interval = setInterval(() => {
+      /* A hidden tab has nobody looking at the bell. Skip the round-trip
+         entirely; the visibility handler below catches us up the moment
+         the tab comes back. */
+      if (document.visibilityState !== "visible") return;
+      void fetchAll();
+    }, POLL_MS);
     const onVisible = () => {
       if (document.visibilityState === "visible") void fetchAll();
     };

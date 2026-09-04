@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { publicClient } from "@/lib/supabase/public";
+import { unstable_cache } from "next/cache";
 import {
   hasDropped,
   isDroppingSoonEligible,
@@ -260,10 +262,16 @@ export interface ReleaseFeedItem {
   last_activity_at: string | null;
 }
 
-export async function getReleaseDiscoveryFeed(
+/* CACHED — see the header of lib/supabase/public.ts for why.
+   Public catalog data, identical for every visitor, so it is read with
+   the cookie-less client and held for 60s. Short window on purpose: this
+   feed carries `release_rooms.last_activity_at`, which drives the LIVE
+   badge, and a room shouldn't look dead for five minutes after it wakes
+   up. */
+async function getReleaseDiscoveryFeedUncached(
   limit: number = 12
 ): Promise<ReleaseFeedItem[]> {
-  const supabase = await createClient();
+  const supabase = publicClient();
   const { data, error } = await supabase
     .from("releases")
     .select(
@@ -328,15 +336,26 @@ export async function getReleaseDiscoveryFeed(
   });
 }
 
+/** Public release feed for the home page and the live-rooms section. */
+export const getReleaseDiscoveryFeed = unstable_cache(
+  getReleaseDiscoveryFeedUncached,
+  ["release-discovery-feed"],
+  { revalidate: 60 }
+);
+
 /**
  * Releases whose release_date is still in the future — the countdown
  * albums people pre-added via a pasted Spotify link. Soonest first,
  * primary artist name joined in for the "Dropping Soon" rail.
  */
-export async function listUpcomingReleases(limit = 12): Promise<
+/* CACHED (5 min) — see lib/supabase/public.ts. The shelf changes when a
+   release drops or one gets imported, and the countdown itself ticks on
+   the client from release_date, so five minutes of staleness is
+   invisible. */
+async function listUpcomingReleasesUncached(limit = 12): Promise<
   (Release & { artists: { name: string; slug: string } | null })[]
 > {
-  const supabase = await createClient();
+  const supabase = publicClient();
 
   // Date filter at Eastern-day granularity, then the exact
   // eligibility check from lib/upcoming. A release stays on the shelf
@@ -378,6 +397,13 @@ export async function listUpcomingReleases(limit = 12): Promise<
       )
   );
 }
+
+/** Upcoming drops — the countdown shelf. */
+export const listUpcomingReleases = unstable_cache(
+  listUpcomingReleasesUncached,
+  ["upcoming-releases"],
+  { revalidate: 300 }
+);
 
 /**
  * Community stats for a whole PAGE of releases — review count, the
@@ -587,10 +613,13 @@ export async function listReleases(opts?: {
  * the primary artist's name. Feeds the Unreleased section on the
  * logged-out home.
  */
-export async function listUnreleasedReleases(limit = 8): Promise<
+/* CACHED (5 min) — see lib/supabase/public.ts. The unreleased shelf only
+   changes when someone imports a leak, so it can go stale for minutes
+   without anyone noticing. */
+async function listUnreleasedReleasesUncached(limit = 8): Promise<
   { id: string; slug: string; title: string; cover_image: string | null; artist: string }[]
 > {
-  const supabase = await createClient();
+  const supabase = publicClient();
   const { data, error } = await supabase
     .from("releases")
     .select("id, slug, title, cover_image, artists!releases_primary_artist_id_fkey(name)")
@@ -611,3 +640,10 @@ export async function listUnreleasedReleases(limit = 8): Promise<
     return { id: r.id, slug: r.slug, title: r.title, cover_image: r.cover_image, artist: a?.name ?? "" };
   });
 }
+
+/** The unreleased shelf — the wedge section on the home page. */
+export const listUnreleasedReleases = unstable_cache(
+  listUnreleasedReleasesUncached,
+  ["unreleased-releases"],
+  { revalidate: 300 }
+);

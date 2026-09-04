@@ -1,18 +1,27 @@
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
 
 /**
  * Get the currently authenticated user (server-side).
  * Returns null if not logged in.
+ *
+ * Wrapped in React's `cache()`, which dedupes by arguments for the
+ * duration of a single request render. `supabase.auth.getUser()` is a
+ * network round-trip to Supabase Auth (it verifies the JWT server-side,
+ * it doesn't just decode the cookie), and the same page often asks
+ * "who's watching?" from several components — the page itself, the
+ * blocked-list helper, a feed section. Before this, each of those paid
+ * for its own round-trip; now the first call pays and the rest are free.
  */
-export async function getUser() {
+export const getUser = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
-}
+});
 
 /**
  * Get the current user's profile from the profiles table.

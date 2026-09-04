@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { publicClient } from "@/lib/supabase/public";
+import { unstable_cache } from "next/cache";
 import type { Profile, Release, Review } from "@/lib/types/database";
 
 /** Profile fields we join onto review rows for attribution. */
@@ -239,28 +241,66 @@ export async function hasUserLiked(
  * with profile data (username, display_name, avatar, role) plus
  * like_count and viewer_has_liked for the like UI.
  */
+const DISCOVERY_SELECT =
+  "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role), review_likes(count), releases(slug)";
+
+type DiscoveryRawRow = Record<string, unknown> & {
+  id: string;
+  review_likes?: { count: number }[] | null;
+};
+
+/** Shape a raw review row for the feed, folding in the viewer's likes. */
+function shapeDiscoveryRow(row: DiscoveryRawRow, likedSet: Set<string>) {
+  const { review_likes, ...rest } = row;
+  const like_count = Array.isArray(review_likes)
+    ? review_likes[0]?.count ?? 0
+    : 0;
+  return { ...rest, like_count, viewer_has_liked: likedSet.has(row.id) };
+}
+
+/**
+ * The signed-out community wall: one query, identical bytes for every
+ * visitor, so it goes through the cookie-less client and is held for two
+ * minutes (see lib/supabase/public.ts). This is the version bots and
+ * first-time visitors get, and it was the single most-repeated query on
+ * the site.
+ */
+const publicDiscoveryFeed = unstable_cache(
+  async (limit: number) => {
+    const { data, error } = await publicClient()
+      .from("reviews")
+      .select(DISCOVERY_SELECT)
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error || !data) return [];
+    const empty = new Set<string>();
+    return (data as DiscoveryRawRow[]).map((r) => shapeDiscoveryRow(r, empty));
+  },
+  ["discovery-feed"],
+  { revalidate: 120 }
+);
+
 export async function getDiscoveryFeed(limit = 12, viewerId?: string) {
+  /* No viewer → nothing personal in the response → serve it from cache. */
+  if (!viewerId) return publicDiscoveryFeed(limit);
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("reviews")
-    .select(
-      "*, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url, role), review_likes(count), releases(slug)"
-    )
+    .select(DISCOVERY_SELECT)
     .eq("is_published", true)
     .order("created_at", { ascending: false })
     .limit(limit);
 
   if (error || !data) return [];
 
-  type RawRow = Record<string, unknown> & {
-    id: string;
-    review_likes?: { count: number }[] | null;
-  };
-  const rows = data as RawRow[];
+  const rows = data as DiscoveryRawRow[];
   const reviewIds = rows.map((r) => r.id);
 
   let likedSet = new Set<string>();
-  if (viewerId && reviewIds.length > 0) {
+  if (reviewIds.length > 0) {
     const { data: likesData } = await supabase
       .from("review_likes")
       .select("review_id")
@@ -273,15 +313,5 @@ export async function getDiscoveryFeed(limit = 12, viewerId?: string) {
     }
   }
 
-  return rows.map((row) => {
-    const { review_likes, ...rest } = row;
-    const like_count = Array.isArray(review_likes)
-      ? review_likes[0]?.count ?? 0
-      : 0;
-    return {
-      ...rest,
-      like_count,
-      viewer_has_liked: likedSet.has(row.id),
-    };
-  });
+  return rows.map((row) => shapeDiscoveryRow(row, likedSet));
 }

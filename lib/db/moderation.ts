@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/auth";
 
 /**
  * Moderation data helpers — reports + blocks (migration 007).
@@ -143,10 +144,11 @@ export async function setReportStatus(
  */
 export async function getViewerBlockedIdSet(): Promise<Set<string>> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    /* getUser() is request-deduped (React cache) — the page has almost
+       always asked already, so this costs nothing. Doing our own
+       auth.getUser() here used to buy a second round-trip to Supabase
+       Auth on every render, logged out included. */
+    const user = await getUser();
     if (!user) return new Set();
     return new Set(await getBlockedIds(user.id));
   } catch {

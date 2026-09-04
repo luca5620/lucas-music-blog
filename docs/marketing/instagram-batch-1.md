@@ -39,6 +39,40 @@ Free device frames: Apple's own Design Resources
 PNG), or Canva's "phone mockup" frames. Use a real iPhone frame, not
 a generic rounded rectangle.
 
+### The angled phone — posts 3 and 5
+
+The one thing worth taking from Luca's reference is that the device is
+a **physical object in the scene**: tilted in three-quarter
+perspective, edge and thickness visible, catching light down one
+side. That reads as a product photograph. A flat rectangle pasted on
+a background reads as a slide.
+
+Two posts in this batch use it — **post 3** (one hero phone, floating)
+and **post 5** (three phones staggered in a row, the closest thing to
+the reference). Everything else stays straight-on or flat, so the
+angle keeps its impact.
+
+Don't ask AI for the angled phone, and don't warp the screenshot by
+hand in Canva — hand-warping smears the text and that's the whole
+thing we're protecting. Use a mockup generator, which rotates the
+device in real 3D while keeping the screenshot pixel-accurate:
+
+- **shots.so** — free tier, best angles, exports transparent PNG
+- **previewed.app** / **appmockup.com** — free, App-Store-shaped
+  angled devices, also transparent PNG
+- **Rotato** — paid, nicest output, has a trial
+
+Flow: upload the real screenshot → pick an iPhone at a three-quarter
+angle → turn the background off so it exports as a transparent PNG →
+drop that PNG onto the AI plate in Canva → add the blue glow behind
+it and a shadow beneath it.
+
+**The one rule: the light has to agree.** If the plate is lit hard
+from the left, the phone's rim light goes down its left edge and its
+shadow falls to the right. A shadow pointing the wrong way gives away
+a composite faster than anything else in the image. Every plate
+prompt below says where its light comes from — match it.
+
 ### Why not let ChatGPT do the compositing
 
 You can attach the screenshot and ask it to build the scene around it
@@ -217,25 +251,33 @@ There's an Unreleased filter on the whole catalog. Link in bio.
 
 ## Post 3 — release night
 
-**Use:** S2 (countdown) as slide 1's phone. Slide 2: raw S3 (the live
-room). Slide 3: raw S1.
+**Use:** S2 (countdown) as slide 1's phone — **angled hero, see "The
+angled phone" above.** Slide 2: raw S3 (the live room). Slide 3: raw
+S1.
 **Attach to ChatGPT:** S2, S3.
 
+This is the hero shot of the batch: one phone tilted in space, lit
+blue, floating in a dark room at midnight.
+
 **Plate prompt:**
-A dark bedroom at midnight seen from behind and slightly above. No
-people, no phone, no screen anywhere in frame. Blue light from an
-unseen source washing across an unmade bed and a wall. Dozens of tiny
-out-of-focus blue and white light points drifting upward through the
-air like rising bokeh. The centre of the frame is empty dark space
-with nothing in it — leave that clear. Motion blur in the light
-points, heavy grain, late-night stillness. Photographic, available
-light.
+A dark bedroom at midnight, seen from slightly above and to the left.
+No people, no phone, no screen, no furniture in the centre of the
+frame. Hard electric-blue light coming from the upper left, washing
+across an unmade bed and a wall and falling off fast into black.
+Dozens of tiny out-of-focus blue and white light points drifting
+upward through the air like rising bokeh. The centre of the frame is
+completely empty dark space — leave it clear, nothing floating in it.
+Motion blur in the light points, heavy grain, late-night stillness.
+Photographic, available light.
 + style block
 
-**Composite:** framed phone showing S2 centred in the empty space, as
-if held by an invisible hand, with a blue glow behind it lighting the
-bokeh. If you can catch the countdown at something dramatic —
-00:00:07 — capture that frame.
+**Composite:** export S2 from shots.so as an iPhone at a three-quarter
+angle, tilted maybe 15–20°, transparent background. Drop it into the
+empty centre so it floats. Light comes from the upper left in this
+plate, so: rim light down the phone's left edge, soft shadow falling
+down and right, and a blue bloom behind the phone that pushes the
+bokeh out of focus around it. If you can catch the countdown at
+something dramatic — 00:00:07 — capture that frame.
 
 **Caption:**
 Album drops at midnight. Everyone listens alone. Then 40 separate
@@ -282,24 +324,28 @@ same song. Link in bio.
 
 ## Post 5 — profile themes
 
-**Use:** S7a, S7b, S7c in three phone frames. Slides 2–4: each theme
-raw, full bleed. Best carousel in the batch — the themes sell
-themselves in screenshots and die in description.
+**Use:** S7a, S7b, S7c as **three angled phones, see "The angled
+phone" above** — the post closest to Luca's reference. Slides 2–4:
+each theme raw, full bleed. Best carousel in the batch; the themes
+sell themselves in screenshots and die in description.
 **Attach to ChatGPT:** S7a, S7b, S7c.
 
 **Plate prompt:**
-Three modern smartphones lying fanned out on a black brushed-metal
-surface, shot from directly above, evenly spaced, each rotated
-slightly differently. Every screen is switched off — pure black glass,
-completely empty, no interface, no content, no reflected image. Soft
-blue rim light along the phone edges, dust and fingerprints on the
-metal, real shadows under each phone. Photographic product still
-life.
+An empty black studio space: a black brushed-metal floor receding into
+darkness, shot from slightly above at eye level with the floor. Hard
+electric-blue light from the upper left, dust hanging in the air,
+faint reflections on the metal. Nothing is standing on the floor —
+the scene is completely empty, no objects, no phones, no screens, no
+text. Photographic product still life, deep falloff into black.
 + style block
 
-**Composite:** drop S7a, S7b, S7c into the three empty screens in that
-order, left to right — indigo nebula, then acid green, then the light
-theme last so the row ends bright.
+**Composite:** export S7a, S7b, S7c from shots.so as three angled
+iPhones, same tilt, transparent background. Stand them in a staggered
+row with the middle one slightly forward, overlapping a little, left
+to right: indigo nebula, acid green, then the light theme last so the
+row ends bright. Light is upper left, so every phone gets its rim
+light on the left edge and its shadow stretching down-right across
+the metal — three shadows, all parallel.
 
 **Caption:**
 Your profile is a channel, not a form.
@@ -421,10 +467,16 @@ You get the app early. We get to launch. Link in bio.
 
 The reference Luca dropped is a competitor's App Store listing:
 angled phone mockups on a flat colour ground, big two-line headline
-with the first word in an accent colour. Two notes:
+with the first word in an accent colour. Three notes:
 
-- **Don't feed it to ChatGPT.** It's a competitor's marketing art —
-  the model will copy their teal-on-charcoal palette and their exact
+- **The angled phone is worth taking, and it's taken** — posts 3 and
+  5 use it, built with a mockup generator so the screenshot stays
+  pixel-accurate. See "The angled phone" above. Kept to two posts on
+  purpose: on a grid where everything else is flat-on or a still
+  life, the tilted device is an event. On a grid where every post is
+  a floating phone, it's a template.
+- **Don't feed the image to ChatGPT.** It's a competitor's marketing
+  art — the model will copy their teal-on-charcoal palette and their exact
   composition, which is the one thing the standing naming rule says
   to stay away from. What's useful in it is the *layout*, and layout
   is free: it's the standard App Store screenshot convention, and it

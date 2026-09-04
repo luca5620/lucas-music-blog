@@ -113,6 +113,18 @@ don't wait to be asked:**
   palette and composition, which is the clone tell we avoid) — but
   that format is the answer to the 1.1.1 App Store screenshots that
   have been waiting on a designer. Same plate + screenshot method.
+  **Follow-up the same day: the angled phone is in.** Luca liked the
+  physical tilted device from the reference and wants it in 1–2
+  images. Added a "The angled phone" section: built with a mockup
+  generator (shots.so / previewed.app / Rotato — transparent PNG),
+  never AI and never hand-warped in Canva, because those smear the
+  screenshot text. Used on **post 3** (one hero phone floating in the
+  midnight room) and **post 5** (three staggered phones, one per
+  theme). Both plates rewritten to be empty scenes lit from the upper
+  left, and the standing rule is that the composited phone's rim
+  light and shadow must agree with the plate's light direction.
+  Deliberately only two posts — a tilted device is an event on a grid
+  of still lifes and a template on a grid of floating phones.
 
 - **2026-09-03 (Windows): LANGUAGES — CODE SIDE DONE.** Every area of
   the site we wrote is translated into ES/FR/PT/NL/DE (1208 keys, all

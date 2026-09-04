@@ -15,5 +15,6 @@
     "path": "./messages",
     "fileStructureTemplate": "{languageTag}.json",
     "delimiter": "."
-  }
+  },
+  "projectId": 34706
 }

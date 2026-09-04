@@ -84,7 +84,29 @@ shadow falls to the right. A shadow pointing the wrong way gives away
 a composite faster than anything else in the image. Every plate
 prompt below says where its light comes from — match it.
 
-### Why not let ChatGPT do the compositing
+### The flow that actually worked (validated 2026-09-04)
+
+Luca ran post 1 this way and it came out right, so this is the
+method now — it beats the three-step version above:
+
+1. **Screenshot → shots.so.** Build the device mockup first (he used
+   an iPhone 17), so the screenshot is already sitting in a real
+   phone at a real angle with correct glass and edges.
+2. **Hand the finished mockup to ChatGPT** as an attachment, with the
+   scene prompt, and tell it plainly **not to change the phone or
+   anything on its screen** — only to build the world around it.
+3. It places the mockup into the generated scene and lights it.
+
+That works because the model is being asked to composite an object it
+can see, not to imagine an interface. The screen survives. Check the
+ratings and the tab bar labels on the way out anyway — when it does
+drift, it drifts subtly.
+
+Keep the empty-screen plate version below in your pocket for any
+scene where this drifts, or where you want the screen brighter than
+the model will render it.
+
+### Why not let ChatGPT do the compositing from scratch
 
 You can attach the screenshot and ask it to build the scene around it
 — each post below has a one-shot prompt for that. But GPT Image
@@ -192,9 +214,22 @@ the 1.1.1 set gets made; it doesn't affect this batch.
 
 ## Profile
 
-- **Name:** Peak Music Reviews
-- **Bio:** Rate albums, leaks and all. Live rooms on release night. Two-sided debates. Free, web + iOS.
+- **Handle:** @peakmusicreviews
+- **Name field:** Peak Music Reviews — this field is keyword-indexed
+  by Instagram search, so it carries "music reviews" for us. Don't
+  put a slogan here.
+- **Bio** (150 char limit):
+
+  > every album. every leak. every argument.
+  > Rate 0–10 · live rooms on release night · debates
+  > Free. Web + iOS ↓
+
+  Same opening line as post 1 and the homepage, so the ad, the bio
+  and the door all say one thing. Lowercase on the tagline is
+  deliberate.
+
 - **Link:** peakmusicreviews.com
+- **Category:** Music / App Page.
 - **Pinned:** posts 1, 3 and 2 (intro, release night, unreleased).
 
 ## Hashtag set (rotate 10–15 per post, never the same 30)

@@ -9,7 +9,10 @@
     "lint": "eslint",
     "mobile:sync": "cap sync",
     "mobile:ios": "cap open ios",
-    "mobile:android": "cap open android"
+    "mobile:android": "cap open android",
+    "i18n:push": "tolgee push",
+    "i18n:push:force": "tolgee push --force-mode OVERRIDE",
+    "i18n:pull": "tolgee pull"
   },
   "dependencies": {
     "@capacitor/android": "^7.6.8",
@@ -35,6 +38,7 @@
   "devDependencies": {
     "@capacitor/cli": "^7.6.8",
     "@tailwindcss/postcss": "^4",
+    "@tolgee/cli": "^2.20.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.tolgee.io/cli-schema.json",
+  "// what": "Tolgee CLI config — syncs messages/<locale>.json with the Tolgee project. Use a PROJECT-scoped API key (app.tolgee.io → project → Integrate → API keys) in TOLGEE_API_KEY via .env.local (never Vercel); a project key needs no projectId here. Full steps: docs/TRANSLATION-GUIDE.md.",
+  "apiUrl": "https://app.tolgee.io",
+  "format": "JSON_ICU",
+  "push": {
+    "filesTemplate": "./messages/{languageTag}.json",
+    "forceMode": "KEEP",
+    "overrideKeyDescriptions": false,
+    "tagNewKeys": [
+      "from-repo"
+    ]
+  },
+  "pull": {
+    "path": "./messages",
+    "fileStructureTemplate": "{languageTag}.json",
+    "delimiter": "."
+  }
+}

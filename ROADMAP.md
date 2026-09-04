@@ -109,6 +109,19 @@ don't wait to be asked:**
     fr,pt,nl,de}.json, components/ui/LanguagePicker.tsx (footer codes +
     Settings → Language section), next.config wrapped with
     createNextIntlPlugin, layout: `<html lang>` + NextIntlClientProvider.
+  - **TOLGEE SET UP (2026-09-03, Luca: "some of the translations are not
+    very good … let's go with Tolgee").** Translation platform = Tolgee
+    cloud, synced with the repo by the Tolgee CLI: `.tolgeerc.json`
+    (JSON_ICU, messages/{languageTag}.json), `npm run i18n:push` /
+    `i18n:pull` / `i18n:push:force`, key = TOLGEE_API_KEY in .env.local
+    (project-scoped; never on Vercel). docs/TRANSLATION-GUIDE.md = style
+    guide (tú/tu/você/je/du, length rules, what never gets translated)
+    + glossary table + the 7-step first-time setup; docs/tolgee-glossary.csv
+    = the same glossary for Tolgee's import. ⏸ PAUSED further string
+    batches until ES/FR are re-translated + reviewed in Tolgee. Honest
+    limit: click-on-the-page editing needs Tolgee's own SDK rendering
+    strings; we render with next-intl, so Tolgee is the editor/AI/review
+    platform, not an in-page overlay. Luca's hands next: the 7 steps.
   - **Batch 7 (posts) shipped:** /posts hero + empty state + "by name",
     post page (draft chip, post by, dates in locale, Tied To, view
     release), /posts/new + edit headers, PostForm (every label,

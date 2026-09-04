@@ -134,7 +134,7 @@ states, error copy, placeholders. **Never** translate:
 | follow / following (a person or release) | | seguir / siguiendo | suivre / abonné | seguir / seguindo | volgen / volgend | folgen / folge ich |
 | follower(s) | | seguidor(es) | abonné(s) | seguidor(es) | volger(s) | Follower |
 | like(s) | | me gusta | like(s) | curtida(s) | like(s) | Like(s) |
-| showcase | a block a member arranges on their profile (plain "section" in ES/FR — "vitrina" read as a shop window) | sección | section | vitrine | showcase | Showcase |
+| showcase | a block a member arranges on their profile (plain "section" in ES/FR/PT — "vitrina" read as a shop window) | sección | section | seção | showcase | Showcase |
 | badge | trophy/role marker under a username | insignia | badge | emblema | badge | Badge |
 | streak | consecutive days of Song of the Day | racha | série | sequência | reeks | Streak |
 | Your Taste | the personalised fullscreen feed (product name, translated) | Tu gusto | Tes goûts | Seu gosto | Jouw smaak | Dein Geschmack |
@@ -143,7 +143,7 @@ states, error copy, placeholders. **Never** translate:
 | ON AIR | live-room status stamp | AL AIRE | À L'ANTENNE | NO AR | ON AIR | ON AIR |
 | NO SIGNAL | the empty-state voice | SIN SEÑAL | PAS DE SIGNAL | SEM SINAL | GEEN SIGNAAL | KEIN SIGNAL |
 | TUNING… | loading state | SINTONIZANDO… | RÉGLAGE… | SINTONIZANDO… | AFSTEMMEN… | SENDERSUCHE… |
-| low detail mode | the performance toggle | modo ligero | mode léger | modo de baixo detalhe | lage-detailmodus | Modus mit wenig Details |
+| low detail mode | the performance toggle | modo ligero | mode léger | modo leve | lichte modus | Sparmodus |
 | sign in / sign up | | iniciar sesión / registrarse | se connecter / s'inscrire | entrar / cadastrar-se | inloggen / aanmelden | anmelden / registrieren |
 | draft | unpublished | borrador | brouillon | rascunho | concept | Entwurf |
 
@@ -158,8 +158,14 @@ cloud project is parked. The CLI config and scripts stay in the repo for
 the day a self-hosted Tolgee (Docker, no key limit) is worth an afternoon.
 Until then the loop is: translate against this guide, then a native
 reader marks lines on a side-by-side review page (English | target) and
-the fixes land in `messages/<locale>.json` by hand. Spanish and French
-were fully rewritten this way on 2026-09-03.
+the fixes land in `messages/<locale>.json` by hand. All five languages
+were fully rewritten this way on 2026-09-03, and every area of the site
+we wrote is now translated (1208 keys): chrome, home, auth, settings,
+profile, reviews, releases, lists, posts, debates + live rooms, social,
+search, notifications, Your Taste, artists, About, 404, offline screen.
+Deliberately still English: Privacy, Terms, the Musicboard comparison
+page (an English-search SEO page), page metadata/JSON-LD, admin tools,
+and the report reason string sent to moderators.
 
 ## The review loop
 

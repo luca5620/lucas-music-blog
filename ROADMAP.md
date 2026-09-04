@@ -90,8 +90,27 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-- **2026-09-03 (Windows): LANGUAGES — batch 0 shipped (infrastructure +
-  shared chrome), string extraction continues in batches.** Luca: Spanish,
+- **2026-09-03 (Windows): LANGUAGES — CODE SIDE DONE.** Every area of
+  the site we wrote is translated into ES/FR/PT/NL/DE (1208 keys, all
+  six message files in parity) and all five languages were rewritten
+  as whole texts against docs/TRANSLATION-GUIDE.md (ES 3e4ac77, FR
+  42fba4d, PT 40e5653, NL de63ee3, DE 6d91d7c). Batches 8–12 shipped
+  the same night: debates + live rooms (5a85f28), social/connections/
+  search/notifications (74957f1), Your Taste + artists (ee61782),
+  About/404/offline (bcc7441). Deliberately English: Privacy, Terms,
+  /musicboard-alternative (English-search SEO page), metadata/JSON-LD,
+  admin, the report reason sent to mods. **NEXT = Luca's hands:** open
+  the five review pages below, have a native reader select lines and
+  comment, then fix messages/<locale>.json by hand (validate keys +
+  placeholders against en.json, build, push). Review pages (private
+  artifacts, share from the page menu): Spanish claude.ai/code/artifact/
+  99bfd3f2-de6f-4874-8d15-d262221ec9f5 · French …/b6dd6b9d-8b94-40c7-
+  91d3-bdda10bfe54f · Portuguese …/4c33899d-5195-40a6-aef3-b46ef83403c9
+  · Dutch …/87fc1837-441e-4444-bdb1-994351d629b0 · German …/30159069-
+  9a3a-4cf7-b76d-d888b8bc2569. Nothing eyeballed on device yet — the
+  history below is how it got here.
+  - **History — batch 0 (infrastructure + shared chrome)** and the
+    batches that followed: Luca: Spanish,
   French, Portuguese, Dutch, German ("easier languages"); China parked as
   a far-off business decision (needs a Chinese entity, in-country hosting,
   ICP filing, and a second catalog source — Spotify/YouTube are blocked;
@@ -120,8 +139,8 @@ don't wait to be asked:**
     artifacts for native readers (Spanish: claude.ai/code/artifact/
     99bfd3f2-de6f-4874-8d15-d262221ec9f5, French: …/b6dd6b9d-8b94-40c7-91d3-
     bdda10bfe54f) — friends select a line and comment; fixes go into
-    messages/es|fr.json by hand. PT/NL/DE still first-pass quality;
-    remaining string batches (8–12) still paused pending Luca's call.
+    messages/es|fr.json by hand. (Later the same night: PT/NL/DE were
+    rewritten the same way and batches 8–12 shipped — see the top.)
   - **TOLGEE SET UP (2026-09-03, Luca: "some of the translations are not
     very good … let's go with Tolgee").** Translation platform = Tolgee
     cloud, synced with the repo by the Tolgee CLI: `.tolgeerc.json`

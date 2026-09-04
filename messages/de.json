@@ -1101,5 +1101,152 @@
       "aMember": "ein Mitglied",
       "playlistBadge": "♫ PLAYLIST"
     }
+  },
+  "debates": {
+    "index": {
+      "title": "DEBATTEN",
+      "sub": "Zwei Seiten. Eine Stimme. Endloses Streiten. Wähl deine Seite und verteidige sie on air: deine Meinungen tragen den Stempel deiner Seite.",
+      "stake": "Debatte eröffnen",
+      "yourDrafts": "Deine Entwürfe",
+      "draft": "Entwurf",
+      "openPublish": "öffnen und veröffentlichen ►",
+      "noSignal": "KEIN SIGNAL",
+      "empty": "Noch keine Debatten on air. Eröffne die erste und such dir einen Streit, der sich lohnt."
+    },
+    "new": {
+      "title": "Eine Debatte eröffnen",
+      "sub": "Stell die Frage, benenne die zwei Seiten und pinn bei Bedarf die Platte an, die vor Gericht steht. Den Rest macht die Community."
+    },
+    "edit": {
+      "title": "Debatte bearbeiten",
+      "back": "Zurück",
+      "draftNote": "Entwurf: nur du siehst ihn.",
+      "liveNote": "Live: Änderungen sind sofort sichtbar."
+    },
+    "page": {
+      "draftBanner": "Entwurf: nur du siehst das",
+      "back": "Zurück",
+      "edit": "Bearbeiten",
+      "openedBy": "eröffnet von",
+      "unknown": "unbekannt"
+    },
+    "card": {
+      "onAir": "ON AIR",
+      "signOff": "BEENDET",
+      "takes": "{n} MEINUNGEN",
+      "vs": "VS",
+      "openedBy": "eröffnet von",
+      "unknown": "unbekannt"
+    },
+    "voteBar": {
+      "aria": "{a}: {pctA} %, {b}: {pctB} %",
+      "votes": "{n, plural, one {# Stimme} other {# Stimmen}}"
+    },
+    "delete": {
+      "couldnt": "Konnte nicht gelöscht werden.",
+      "network": "Netzwerkfehler. Versuch es noch mal.",
+      "confirm": "„{title}“ löschen? Stimmen und Meinungen gehen mit.",
+      "yes": "Ja",
+      "no": "Nein",
+      "delete": "Löschen"
+    },
+    "publish": {
+      "couldnt": "Die Debatte konnte nicht veröffentlicht werden.",
+      "broke": "Etwas ist schiefgelaufen.",
+      "publishing": "VERÖFFENTLICHE…",
+      "openFloor": "DEBATTE ERÖFFNEN"
+    },
+    "room": {
+      "castVote": "Stimm ab",
+      "closed": "— Debatte beendet",
+      "yourSide": "DEINE SEITE",
+      "votesSwitch": "{n, plural, one {# Stimme} other {# Stimmen}} · wechsle jederzeit die Seite",
+      "signInToVote": "<a>Melde dich an</a>, um abzustimmen und mitzureden.",
+      "floor": "Die Debatte",
+      "messagesAria": "Debattennachrichten",
+      "deadAir": "SENDEPAUSE",
+      "nobody": "Noch hat niemand gestritten: die erste Meinung gewinnt.",
+      "sending": "wird gesendet…",
+      "deleteMessage": "Nachricht löschen",
+      "deleteYours": "Deine Nachricht löschen",
+      "modDelete": "Löschen (Mod)",
+      "archived": "Beendet: diese Debatte ist archiviert.",
+      "argueFor": "Argumentier für {side}…",
+      "dropTake": "Sag deine Meinung (stimm ab, um eine Seite zu vertreten)…",
+      "inputAria": "Debattennachricht eingeben",
+      "send": "Senden",
+      "signInToArgue": "Anmelden, um mitzureden",
+      "spectator": "Zuschauer",
+      "voteFailed": "Abstimmen fehlgeschlagen",
+      "sendFailed": "Senden fehlgeschlagen",
+      "reactionFailed": "Reaktion fehlgeschlagen",
+      "confirmDelete": "Nachricht von {name} löschen?",
+      "justNow": "gerade eben"
+    },
+    "form": {
+      "errors": {
+        "topic": "Das Thema braucht mindestens 3 Zeichen.",
+        "sides": "Beide Seiten brauchen einen Namen.",
+        "disagree": "Die zwei Seiten müssen sich wirklich unterscheiden.",
+        "save": "Die Debatte konnte nicht gespeichert werden.",
+        "open": "Die Debatte konnte nicht eröffnet werden.",
+        "broke": "Etwas ist schiefgelaufen."
+      },
+      "topic": "Das Thema",
+      "topicPlaceholder": "z. B. „Ist MBDTF überbewertet?“",
+      "frame": "Rahmen setzen (optional)",
+      "framePlaceholder": "Leg die Regeln des Streits fest…",
+      "sideAPlaceholder": "z. B. „Klassiker“",
+      "sideBPlaceholder": "z. B. „Überbewertet“",
+      "locked": "Es wurde unter diesen Seiten schon abgestimmt oder gestritten, deshalb sind die Namen gesperrt. Releases, Thema und Rahmen lassen sich noch ändern.",
+      "pinLabel": "Ein Release an die ganze Debatte pinnen (optional)",
+      "pinPlaceholder": "Häng das Album oder den Song an, der vor Gericht steht…",
+      "floorIs": "Die Debatte ist",
+      "onAir": "ON AIR",
+      "signedOff": "BEENDET",
+      "saving": "SPEICHERE…",
+      "saveChanges": "ÄNDERUNGEN SPEICHERN",
+      "opening": "ERÖFFNE…",
+      "openFloor": "DEBATTE ERÖFFNEN",
+      "savingDraft": "Wird gespeichert…",
+      "saveDraft": "Als Entwurf speichern",
+      "cancel": "Abbrechen",
+      "side": "Seite {tone}",
+      "lockedTitle": "Gesperrt: unter diesem Namen wurde schon abgestimmt",
+      "sideRecord": "Die Platte von Seite {tone} (optional)…",
+      "detach": "entfernen"
+    }
+  },
+  "rooms": {
+    "live": "Live",
+    "liveAria": "Der Raum ist gerade live",
+    "here": "{n} hier",
+    "guests": "{n, plural, one {# Gast} other {# Gäste}}",
+    "more": "{n} weitere",
+    "moreAndGuests": "{more} weitere, {guests}",
+    "user": "Nutzer",
+    "liveRoom": "Live-Raum",
+    "openSheet": "Den Live-Raum öffnen",
+    "sheetAria": "Chat des Live-Raums",
+    "collapse": "Den Live-Raum einklappen",
+    "messagesAria": "Nachrichten im Live-Raum",
+    "empty": "Noch ist niemand im Raum. Sei der Erste mit einer Meinung.",
+    "placeholder": "Sag deine Meinung…",
+    "inputAria": "Nachricht eingeben",
+    "send": "Senden",
+    "signInToChat": "Anmelden, um zu chatten",
+    "sending": "wird gesendet…",
+    "anonymous": "anonym",
+    "deleteMessage": "Nachricht löschen",
+    "deleteYours": "Deine Nachricht löschen",
+    "modDelete": "Löschen (Mod)",
+    "sendFailed": "Senden fehlgeschlagen",
+    "sendMessageFailed": "Nachricht konnte nicht gesendet werden",
+    "confirmDelete": "Nachricht von {name} löschen?",
+    "justNow": "gerade eben"
+  },
+  "chat": {
+    "like": "Nachricht liken",
+    "unlike": "Like entfernen"
   }
 }

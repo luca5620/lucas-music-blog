@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { requireAuth } from "@/lib/auth";
 import NewDebateForm from "@/components/debates/NewDebateForm";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Open a debate",
@@ -13,14 +15,14 @@ export const metadata: Metadata = {
  */
 export default async function NewDebatePage() {
   await requireAuth();
+  const t = await getTranslations("debates.new");
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <section className="space-y-2">
-        <h1 className="crt-title text-3xl sm:text-4xl">Open a debate</h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">{t("title")}</h1>
         <p className="text-sm text-text-secondary">
-          Frame the question, name the two sides, optionally pin the
-          record on trial. The community does the rest.
+          {t("sub")}
         </p>
       </section>
 

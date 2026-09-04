@@ -1101,5 +1101,152 @@
       "aMember": "een lid",
       "playlistBadge": "♫ PLAYLIST"
     }
+  },
+  "debates": {
+    "index": {
+      "title": "DEBATTEN",
+      "sub": "Twee kanten. Eén stem. Eindeloos ruziën. Kies je kant en verdedig hem on air: je meningen krijgen het stempel van jouw kant.",
+      "stake": "Start een debat",
+      "yourDrafts": "Je concepten",
+      "draft": "Concept",
+      "openPublish": "openen en publiceren ►",
+      "noSignal": "GEEN SIGNAAL",
+      "empty": "Nog geen debatten on air. Open de eerste en zoek een strijd op die het waard is."
+    },
+    "new": {
+      "title": "Een debat starten",
+      "sub": "Stel de vraag, noem de twee kanten en pin eventueel de plaat vast die terechtstaat. De community doet de rest."
+    },
+    "edit": {
+      "title": "Debat bewerken",
+      "back": "Terug",
+      "draftNote": "Concept: alleen jij ziet het.",
+      "liveNote": "Live: wijzigingen zijn meteen zichtbaar."
+    },
+    "page": {
+      "draftBanner": "Concept: alleen jij ziet dit",
+      "back": "Terug",
+      "edit": "Bewerken",
+      "openedBy": "gestart door",
+      "unknown": "onbekend"
+    },
+    "card": {
+      "onAir": "ON AIR",
+      "signOff": "AFGESLOTEN",
+      "takes": "{n} MENINGEN",
+      "vs": "VS",
+      "openedBy": "gestart door",
+      "unknown": "onbekend"
+    },
+    "voteBar": {
+      "aria": "{a}: {pctA}%, {b}: {pctB}%",
+      "votes": "{n, plural, one {# stem} other {# stemmen}}"
+    },
+    "delete": {
+      "couldnt": "Verwijderen mislukt.",
+      "network": "Netwerkfout. Probeer het opnieuw.",
+      "confirm": "“{title}” verwijderen? Stemmen en meningen gaan mee.",
+      "yes": "Ja",
+      "no": "Nee",
+      "delete": "Verwijderen"
+    },
+    "publish": {
+      "couldnt": "Het debat kon niet worden gepubliceerd.",
+      "broke": "Er ging iets mis.",
+      "publishing": "PUBLICEREN…",
+      "openFloor": "OPEN HET DEBAT"
+    },
+    "room": {
+      "castVote": "Stem",
+      "closed": "— debat gesloten",
+      "yourSide": "JOUW KANT",
+      "votesSwitch": "{n, plural, one {# stem} other {# stemmen}} · wissel wanneer je wilt van kant",
+      "signInToVote": "<a>Log in</a> om te stemmen en mee te praten.",
+      "floor": "Het debat",
+      "messagesAria": "Debatberichten",
+      "deadAir": "STILTE",
+      "nobody": "Nog niemand heeft iets gezegd: de eerste mening wint.",
+      "sending": "versturen…",
+      "deleteMessage": "Bericht verwijderen",
+      "deleteYours": "Je bericht verwijderen",
+      "modDelete": "Verwijderen (mod)",
+      "archived": "Afgesloten: dit debat is gearchiveerd.",
+      "argueFor": "Verdedig {side}…",
+      "dropTake": "Geef je mening (stem om een kant te vertegenwoordigen)…",
+      "inputAria": "Debatbericht typen",
+      "send": "Versturen",
+      "signInToArgue": "Log in om mee te praten",
+      "spectator": "Toeschouwer",
+      "voteFailed": "Stemmen mislukt",
+      "sendFailed": "Versturen mislukt",
+      "reactionFailed": "Reageren mislukt",
+      "confirmDelete": "Bericht van {name} verwijderen?",
+      "justNow": "zonet"
+    },
+    "form": {
+      "errors": {
+        "topic": "Het onderwerp heeft minstens 3 tekens nodig.",
+        "sides": "Beide kanten hebben een naam nodig.",
+        "disagree": "De twee kanten moeten echt verschillen.",
+        "save": "Het debat kon niet worden opgeslagen.",
+        "open": "Het debat kon niet worden gestart.",
+        "broke": "Er ging iets mis."
+      },
+      "topic": "Het onderwerp",
+      "topicPlaceholder": "bijv. “Is MBDTF overschat?”",
+      "frame": "Kader het in (optioneel)",
+      "framePlaceholder": "Bepaal de spelregels van de discussie…",
+      "sideAPlaceholder": "bijv. “Klassieker”",
+      "sideBPlaceholder": "bijv. “Overschat”",
+      "locked": "Er is al gestemd of gediscussieerd onder deze kanten, dus de namen staan vast. De releases, het onderwerp en het kader kunnen nog veranderen.",
+      "pinLabel": "Pin een release aan het hele debat (optioneel)",
+      "pinPlaceholder": "Koppel het album of nummer dat terechtstaat…",
+      "floorIs": "Het debat is",
+      "onAir": "ON AIR",
+      "signedOff": "AFGESLOTEN",
+      "saving": "OPSLAAN…",
+      "saveChanges": "WIJZIGINGEN OPSLAAN",
+      "opening": "OPENEN…",
+      "openFloor": "OPEN HET DEBAT",
+      "savingDraft": "Opslaan…",
+      "saveDraft": "Opslaan als concept",
+      "cancel": "Annuleren",
+      "side": "Kant {tone}",
+      "lockedTitle": "Vergrendeld: er is al gestemd onder deze naam",
+      "sideRecord": "De plaat van kant {tone} (optioneel)…",
+      "detach": "loskoppelen"
+    }
+  },
+  "rooms": {
+    "live": "Live",
+    "liveAria": "De room is nu live",
+    "here": "{n} hier",
+    "guests": "{n, plural, one {# gast} other {# gasten}}",
+    "more": "{n} meer",
+    "moreAndGuests": "{more} meer, {guests}",
+    "user": "gebruiker",
+    "liveRoom": "Live room",
+    "openSheet": "De live room openen",
+    "sheetAria": "Chat van de live room",
+    "collapse": "De live room inklappen",
+    "messagesAria": "Berichten in de live room",
+    "empty": "Er is nog niemand in de room. Wees de eerste met een mening.",
+    "placeholder": "Geef je mening…",
+    "inputAria": "Bericht typen",
+    "send": "Versturen",
+    "signInToChat": "Log in om te chatten",
+    "sending": "versturen…",
+    "anonymous": "anoniem",
+    "deleteMessage": "Bericht verwijderen",
+    "deleteYours": "Je bericht verwijderen",
+    "modDelete": "Verwijderen (mod)",
+    "sendFailed": "Versturen mislukt",
+    "sendMessageFailed": "Bericht versturen mislukt",
+    "confirmDelete": "Bericht van {name} verwijderen?",
+    "justNow": "zonet"
+  },
+  "chat": {
+    "like": "Bericht liken",
+    "unlike": "Like ongedaan maken"
   }
 }

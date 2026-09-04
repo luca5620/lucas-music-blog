@@ -24,6 +24,8 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useLocale, useTranslations } from "next-intl";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import ReportButton from "@/components/moderation/ReportButton";
@@ -77,7 +79,14 @@ interface ChatPanelProps {
 
 /* ─── Time-ago, ticks each minute via panel-level interval ─── */
 
-function timeAgo(dateString: string, _tick: number): string {
+// justNow + locale come from the component (translated label, viewer's
+// date format) so this helper stays a plain function.
+function timeAgo(
+  dateString: string,
+  _tick: number,
+  justNow: string,
+  locale: string
+): string {
   const now = Date.now();
   const then = new Date(dateString).getTime();
   const diffSec = Math.max(0, Math.floor((now - then) / 1000));
@@ -85,11 +94,11 @@ function timeAgo(dateString: string, _tick: number): string {
   const diffHr = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHr / 24);
 
-  if (diffSec < 60) return "just now";
+  if (diffSec < 60) return justNow;
   if (diffMin < 60) return `${diffMin}m`;
   if (diffHr < 24) return `${diffHr}h`;
   if (diffDay < 7) return `${diffDay}d`;
-  return new Date(dateString).toLocaleDateString("en-US", {
+  return new Date(dateString).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
@@ -153,10 +162,12 @@ function MessageRow({
   onToggleReaction: (emoji: string) => void;
   accentColor: string;
 }) {
+  const t = useTranslations("rooms");
+  const locale = useLocale();
   const name =
     message.profile.display_name ||
     message.profile.username ||
-    "anonymous";
+    t("anonymous");
   return (
     <div className="flex gap-2.5 items-start">
       <MessageAvatar profile={message.profile} />
@@ -170,10 +181,10 @@ function MessageRow({
           </Link>
           <VerifiedBadge role={message.profile.role} />
           <span className="text-[10px] text-text-muted tabular-nums">
-            {timeAgo(message.created_at, tick)}
+            {timeAgo(message.created_at, tick, t("justNow"), locale)}
           </span>
           {pending && (
-            <span className="text-[10px] text-text-muted italic">sending…</span>
+            <span className="text-[10px] text-text-muted italic">{t("sending")}</span>
           )}
           {/* Universal action order for chat rows: ✕ (delete) first,
               then 🚩 (report). Both always visible — hover doesn't
@@ -182,8 +193,8 @@ function MessageRow({
             <button
               type="button"
               onClick={onDelete}
-              aria-label="Delete message"
-              title={isOwn ? "Delete your message" : "Mod delete"}
+              aria-label={t("deleteMessage")}
+              title={isOwn ? t("deleteYours") : t("modDelete")}
               className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-rose transition-colors"
             >
               ✕
@@ -246,6 +257,7 @@ export default function ChatPanel({
     () => [...initialMessages].reverse(),
     [initialMessages]
   );
+  const t = useTranslations("rooms");
   const [messages, setMessages] = useState<ChatMessageWithProfile[]>(seed);
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [content, setContent] = useState("");
@@ -312,8 +324,7 @@ export default function ChatPanel({
     const el = listRef.current;
     if (!el) return;
     el.scrollTop = el.scrollHeight;
-    // Only on mount — eslint-disable below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Only on mount.
   }, []);
 
   /* ─── Append helper that respects user scroll position ─── */
@@ -531,7 +542,7 @@ export default function ChatPanel({
           const data = (await res.json().catch(() => ({}))) as {
             error?: string;
           };
-          throw new Error(data.error ?? "Failed to send");
+          throw new Error(data.error ?? t("sendFailed"));
         }
         const data = (await res.json()) as { message: ChatMessageWithProfile };
         // Cache the real profile for future realtime payloads.
@@ -548,7 +559,7 @@ export default function ChatPanel({
         // Revert optimistic on failure.
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
         setErrorMsg(
-          err instanceof Error ? err.message : "Failed to send message"
+          err instanceof Error ? err.message : t("sendMessageFailed")
         );
       } finally {
         setPendingIds((s) => {
@@ -559,7 +570,7 @@ export default function ChatPanel({
         setSubmitting(false);
       }
     },
-    [content, submitting, user, releaseId, initialRoom.id, appendMessage]
+    [content, submitting, user, releaseId, initialRoom.id, appendMessage, t]
   );
 
   /* ─── Delete a message: your own, or any as staff. Confirm guards
@@ -570,7 +581,7 @@ export default function ChatPanel({
       const isOwn = m.user_id === (user?.id ?? "");
       if (!isOwn) {
         const name = m.profile.display_name || m.profile.username;
-        if (!window.confirm(`Delete ${name}'s message?`)) return;
+        if (!window.confirm(t("confirmDelete", { name }))) return;
       }
       const res = await fetch(
         `/api/rooms/${releaseId}/messages/${m.id}`,
@@ -580,7 +591,7 @@ export default function ChatPanel({
         setMessages((prev) => prev.filter((x) => x.id !== m.id));
       }
     },
-    [user?.id, releaseId]
+    [user?.id, releaseId, t]
   );
 
   /* ─── Auto-grow textarea (max ~4 rows) ─── */
@@ -626,7 +637,7 @@ export default function ChatPanel({
           pile on the right carries the "N here" head-count). */}
       <div className="flex items-center gap-2 flex-wrap">
         <span className="glow-orb" />
-        <span className="label-xbox">Live Room</span>
+        <span className="label-xbox">{t("liveRoom")}</span>
         <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
         <div className="ml-auto flex items-center gap-2">
           <PresencePile
@@ -638,7 +649,7 @@ export default function ChatPanel({
             <button
               type="button"
               onClick={onCollapse}
-              aria-label="Collapse the live room"
+              aria-label={t("collapse")}
               className="w-8 h-8 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
             >
               <svg
@@ -664,7 +675,7 @@ export default function ChatPanel({
         ref={listRef}
         role="log"
         aria-live="polite"
-        aria-label="Live room messages"
+        aria-label={t("messagesAria")}
         // Panel on phone: capped height, page scrolls past the room.
         // Panel on desktop (xl, the full-height column) and the sheet:
         // the cap lifts and the list flexes to fill its container.
@@ -684,7 +695,7 @@ export default function ChatPanel({
               }}
             />
             <p className="text-sm text-text-muted max-w-xs">
-              No one&apos;s in the room yet — be first to drop a take.
+              {t("empty")}
             </p>
           </div>
         ) : (
@@ -720,10 +731,10 @@ export default function ChatPanel({
             value={content}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
-            placeholder="Drop a take…"
+            placeholder={t("placeholder")}
             rows={1}
             maxLength={1000}
-            aria-label="Message input"
+            aria-label={t("inputAria")}
             className="w-full px-3 py-2 rounded-lg bg-bg-elevated border border-border-subtle text-text-primary placeholder:text-text-muted text-sm focus:outline-none transition-all resize-none"
             style={
               {
@@ -756,7 +767,7 @@ export default function ChatPanel({
                 border: `1px solid ${accentColor}55`,
               }}
             >
-              {submitting ? "…" : "Send"}
+              {submitting ? "…" : t("send")}
             </button>
           </div>
         </form>
@@ -771,7 +782,7 @@ export default function ChatPanel({
               border: `1px solid ${accentColor}55`,
             }}
           >
-            Sign in to chat
+            {t("signInToChat")}
           </Link>
         </div>
       )}

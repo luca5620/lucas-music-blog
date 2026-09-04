@@ -1101,5 +1101,152 @@
       "aMember": "un membre",
       "playlistBadge": "♫ PLAYLIST"
     }
+  },
+  "debates": {
+    "index": {
+      "title": "DÉBATS",
+      "sub": "Deux camps. Un vote. Des disputes sans fin. Choisis ton camp et défends-le à l'antenne : tes avis portent la couleur de ton côté.",
+      "stake": "Lance un débat",
+      "yourDrafts": "Tes brouillons",
+      "draft": "Brouillon",
+      "openPublish": "ouvrir et publier ►",
+      "noSignal": "PAS DE SIGNAL",
+      "empty": "Aucun débat à l'antenne pour l'instant. Ouvre le premier et cherche une dispute qui en vaut la peine."
+    },
+    "new": {
+      "title": "Lancer un débat",
+      "sub": "Pose la question, nomme les deux camps et, si tu veux, épingle le disque en procès. La communauté fait le reste."
+    },
+    "edit": {
+      "title": "Modifier le débat",
+      "back": "Retour",
+      "draftNote": "Brouillon — toi seul peux le voir.",
+      "liveNote": "En direct — les changements s'affichent aussitôt."
+    },
+    "page": {
+      "draftBanner": "Brouillon — toi seul peux le voir",
+      "back": "Retour",
+      "edit": "Modifier",
+      "openedBy": "lancé par",
+      "unknown": "inconnu"
+    },
+    "card": {
+      "onAir": "À L'ANTENNE",
+      "signOff": "TERMINÉ",
+      "takes": "{n} AVIS",
+      "vs": "VS",
+      "openedBy": "lancé par",
+      "unknown": "inconnu"
+    },
+    "voteBar": {
+      "aria": "{a} : {pctA} %, {b} : {pctB} %",
+      "votes": "{n, plural, one {# vote} other {# votes}}"
+    },
+    "delete": {
+      "couldnt": "Impossible de le supprimer.",
+      "network": "Souci de connexion — réessaie.",
+      "confirm": "Supprimer « {title} » ? Les votes et les avis partent avec.",
+      "yes": "Oui",
+      "no": "Non",
+      "delete": "Supprimer"
+    },
+    "publish": {
+      "couldnt": "Impossible de publier le débat.",
+      "broke": "Quelque chose a cassé.",
+      "publishing": "PUBLICATION…",
+      "openFloor": "OUVRIR LE DÉBAT"
+    },
+    "room": {
+      "castVote": "Vote",
+      "closed": "— débat terminé",
+      "yourSide": "TON CAMP",
+      "votesSwitch": "{n, plural, one {# vote} other {# votes}} · change de camp quand tu veux",
+      "signInToVote": "<a>Connecte-toi</a> pour voter et débattre.",
+      "floor": "Le débat",
+      "messagesAria": "Messages du débat",
+      "deadAir": "SILENCE RADIO",
+      "nobody": "Personne n'a encore débattu — le premier avis gagne.",
+      "sending": "envoi…",
+      "deleteMessage": "Supprimer le message",
+      "deleteYours": "Supprimer ton message",
+      "modDelete": "Supprimer (modo)",
+      "archived": "Terminé — ce débat est archivé.",
+      "argueFor": "Défends {side}…",
+      "dropTake": "Donne ton avis (vote pour représenter un camp)…",
+      "inputAria": "Saisie d'un message du débat",
+      "send": "Envoyer",
+      "signInToArgue": "Connecte-toi pour débattre",
+      "spectator": "Spectateur",
+      "voteFailed": "Le vote a échoué",
+      "sendFailed": "Échec de l'envoi",
+      "reactionFailed": "La réaction a échoué",
+      "confirmDelete": "Supprimer le message de {name} ?",
+      "justNow": "à l'instant"
+    },
+    "form": {
+      "errors": {
+        "topic": "Le sujet doit faire au moins 3 caractères.",
+        "sides": "Les deux camps ont besoin d'un nom.",
+        "disagree": "Les deux camps doivent vraiment s'opposer.",
+        "save": "Impossible d'enregistrer le débat.",
+        "open": "Impossible de lancer le débat.",
+        "broke": "Quelque chose a cassé."
+      },
+      "topic": "Le sujet",
+      "topicPlaceholder": "ex. « MBDTF est-il surcoté ? »",
+      "frame": "Pose le cadre (facultatif)",
+      "framePlaceholder": "Fixe les termes du débat…",
+      "sideAPlaceholder": "ex. « Classique »",
+      "sideBPlaceholder": "ex. « Surcoté »",
+      "locked": "Des gens ont déjà voté ou débattu sous ces camps, donc les noms sont verrouillés — les sorties, le sujet et le cadre peuvent encore changer.",
+      "pinLabel": "Épingle une sortie à tout le débat (facultatif)",
+      "pinPlaceholder": "Attache l'album ou le morceau en procès…",
+      "floorIs": "Le débat est",
+      "onAir": "À L'ANTENNE",
+      "signedOff": "TERMINÉ",
+      "saving": "ENREGISTREMENT…",
+      "saveChanges": "ENREGISTRER",
+      "opening": "OUVERTURE…",
+      "openFloor": "OUVRIR LE DÉBAT",
+      "savingDraft": "Enregistrement…",
+      "saveDraft": "Enregistrer en brouillon",
+      "cancel": "Annuler",
+      "side": "Camp {tone}",
+      "lockedTitle": "Verrouillé — des gens ont déjà voté sous ce nom",
+      "sideRecord": "Le disque du camp {tone} (facultatif)…",
+      "detach": "détacher"
+    }
+  },
+  "rooms": {
+    "live": "En direct",
+    "liveAria": "La salle est en direct",
+    "here": "{n} ici",
+    "guests": "{n, plural, one {# invité} other {# invités}}",
+    "more": "{n} de plus",
+    "moreAndGuests": "{more} de plus, {guests}",
+    "user": "utilisateur",
+    "liveRoom": "Salle en direct",
+    "openSheet": "Ouvrir la salle en direct",
+    "sheetAria": "Chat de la salle en direct",
+    "collapse": "Replier la salle en direct",
+    "messagesAria": "Messages de la salle en direct",
+    "empty": "Personne dans la salle pour l'instant — sois le premier à donner ton avis.",
+    "placeholder": "Donne ton avis…",
+    "inputAria": "Saisie d'un message",
+    "send": "Envoyer",
+    "signInToChat": "Connecte-toi pour discuter",
+    "sending": "envoi…",
+    "anonymous": "anonyme",
+    "deleteMessage": "Supprimer le message",
+    "deleteYours": "Supprimer ton message",
+    "modDelete": "Supprimer (modo)",
+    "sendFailed": "Échec de l'envoi",
+    "sendMessageFailed": "Échec de l'envoi du message",
+    "confirmDelete": "Supprimer le message de {name} ?",
+    "justNow": "à l'instant"
+  },
+  "chat": {
+    "like": "Aimer le message",
+    "unlike": "Ne plus aimer le message"
   }
 }

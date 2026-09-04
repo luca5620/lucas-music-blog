@@ -1101,5 +1101,152 @@
       "aMember": "um membro",
       "playlistBadge": "♫ PLAYLIST"
     }
+  },
+  "debates": {
+    "index": {
+      "title": "DEBATES",
+      "sub": "Dois lados. Um voto. Discussão sem fim. Escolha seu lado e defenda no ar: suas opiniões levam o selo do seu lado.",
+      "stake": "Abrir um debate",
+      "yourDrafts": "Seus rascunhos",
+      "draft": "Rascunho",
+      "openPublish": "abrir e publicar ►",
+      "noSignal": "SEM SINAL",
+      "empty": "Nenhum debate no ar ainda. Abra o primeiro e compre uma briga que valha a pena."
+    },
+    "new": {
+      "title": "Abrir um debate",
+      "sub": "Formule a pergunta, nomeie os dois lados e, se quiser, fixe o disco em julgamento. A comunidade faz o resto."
+    },
+    "edit": {
+      "title": "Editar debate",
+      "back": "Voltar",
+      "draftNote": "Rascunho: só você vê.",
+      "liveNote": "No ar: as mudanças aparecem na hora."
+    },
+    "page": {
+      "draftBanner": "Rascunho: só você vê isto",
+      "back": "Voltar",
+      "edit": "Editar",
+      "openedBy": "aberto por",
+      "unknown": "desconhecido"
+    },
+    "card": {
+      "onAir": "NO AR",
+      "signOff": "ENCERRADO",
+      "takes": "{n} OPINIÕES",
+      "vs": "VS",
+      "openedBy": "aberto por",
+      "unknown": "desconhecido"
+    },
+    "voteBar": {
+      "aria": "{a}: {pctA}%, {b}: {pctB}%",
+      "votes": "{n, plural, one {# voto} other {# votos}}"
+    },
+    "delete": {
+      "couldnt": "Não deu para excluir.",
+      "network": "Falha de conexão. Tente de novo.",
+      "confirm": "Excluir “{title}”? Os votos e as opiniões vão junto.",
+      "yes": "Sim",
+      "no": "Não",
+      "delete": "Excluir"
+    },
+    "publish": {
+      "couldnt": "Não deu para publicar o debate.",
+      "broke": "Algo deu errado.",
+      "publishing": "PUBLICANDO…",
+      "openFloor": "ABRIR O DEBATE"
+    },
+    "room": {
+      "castVote": "Vote",
+      "closed": "— debate encerrado",
+      "yourSide": "SEU LADO",
+      "votesSwitch": "{n, plural, one {# voto} other {# votos}} · troque de lado quando quiser",
+      "signInToVote": "<a>Entre</a> para votar e discutir.",
+      "floor": "O debate",
+      "messagesAria": "Mensagens do debate",
+      "deadAir": "SILÊNCIO",
+      "nobody": "Ninguém discutiu ainda: a primeira opinião ganha.",
+      "sending": "enviando…",
+      "deleteMessage": "Excluir mensagem",
+      "deleteYours": "Excluir sua mensagem",
+      "modDelete": "Excluir (mod)",
+      "archived": "Encerrado: este debate está arquivado.",
+      "argueFor": "Defenda {side}…",
+      "dropTake": "Solte sua opinião (vote para representar um lado)…",
+      "inputAria": "Escrever mensagem do debate",
+      "send": "Enviar",
+      "signInToArgue": "Entre para discutir",
+      "spectator": "Espectador",
+      "voteFailed": "Não deu para votar",
+      "sendFailed": "Não deu para enviar",
+      "reactionFailed": "Não deu para reagir",
+      "confirmDelete": "Excluir a mensagem de {name}?",
+      "justNow": "agora mesmo"
+    },
+    "form": {
+      "errors": {
+        "topic": "O tema precisa de pelo menos 3 caracteres.",
+        "sides": "Os dois lados precisam de um nome.",
+        "disagree": "Os dois lados precisam ser diferentes.",
+        "save": "Não deu para salvar o debate.",
+        "open": "Não deu para abrir o debate.",
+        "broke": "Algo deu errado."
+      },
+      "topic": "O tema",
+      "topicPlaceholder": "ex.: “MBDTF é superestimado?”",
+      "frame": "Contextualize (opcional)",
+      "framePlaceholder": "Defina os termos da discussão…",
+      "sideAPlaceholder": "ex.: “Clássico”",
+      "sideBPlaceholder": "ex.: “Superestimado”",
+      "locked": "Já tem gente que votou ou discutiu nesses lados, então os nomes ficam travados. Os lançamentos, o tema e o contexto ainda podem mudar.",
+      "pinLabel": "Fixe um lançamento ao debate inteiro (opcional)",
+      "pinPlaceholder": "Anexe o álbum ou a música em julgamento…",
+      "floorIs": "O debate está",
+      "onAir": "NO AR",
+      "signedOff": "ENCERRADO",
+      "saving": "SALVANDO…",
+      "saveChanges": "SALVAR ALTERAÇÕES",
+      "opening": "ABRINDO…",
+      "openFloor": "ABRIR O DEBATE",
+      "savingDraft": "Salvando…",
+      "saveDraft": "Salvar como rascunho",
+      "cancel": "Cancelar",
+      "side": "Lado {tone}",
+      "lockedTitle": "Travado: já tem votos com esse nome",
+      "sideRecord": "O disco do lado {tone} (opcional)…",
+      "detach": "remover"
+    }
+  },
+  "rooms": {
+    "live": "Ao vivo",
+    "liveAria": "A sala está ao vivo agora",
+    "here": "{n} aqui",
+    "guests": "{n, plural, one {# visitante} other {# visitantes}}",
+    "more": "mais {n}",
+    "moreAndGuests": "mais {more}, {guests}",
+    "user": "usuário",
+    "liveRoom": "Sala ao vivo",
+    "openSheet": "Abrir a sala ao vivo",
+    "sheetAria": "Chat da sala ao vivo",
+    "collapse": "Fechar a sala ao vivo",
+    "messagesAria": "Mensagens da sala ao vivo",
+    "empty": "Ainda não tem ninguém na sala. Seja o primeiro a dar sua opinião.",
+    "placeholder": "Solte sua opinião…",
+    "inputAria": "Escrever mensagem",
+    "send": "Enviar",
+    "signInToChat": "Entre para conversar",
+    "sending": "enviando…",
+    "anonymous": "anônimo",
+    "deleteMessage": "Excluir mensagem",
+    "deleteYours": "Excluir sua mensagem",
+    "modDelete": "Excluir (mod)",
+    "sendFailed": "Não deu para enviar",
+    "sendMessageFailed": "Não deu para enviar a mensagem",
+    "confirmDelete": "Excluir a mensagem de {name}?",
+    "justNow": "agora mesmo"
+  },
+  "chat": {
+    "like": "Curtir mensagem",
+    "unlike": "Descurtir mensagem"
   }
 }

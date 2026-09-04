@@ -6,6 +6,8 @@ import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import DebateCard from "@/components/debates/DebateCard";
 import PageHero from "@/components/ui/PageHero";
 import BackToHome from "@/components/ui/BackToHome";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Debates",
@@ -36,6 +38,7 @@ export default async function DebatesPage() {
     (d) => d.is_published === false && d.created_by === user?.id
   );
   const debates = allDebates.filter((d) => d.is_published !== false);
+  const t = await getTranslations("debates.index");
 
   return (
     <div className="space-y-6 circuit-bg">
@@ -44,12 +47,12 @@ export default async function DebatesPage() {
 
       {/* ══════════ Header — boxed hero, same as HOME ══════════ */}
       <PageHero
-        title="DEBATES"
-        sub="Two sides. One vote. Endless arguing. Pick where you stand and defend it on air — your takes get stamped with your side."
+        title={t("title")}
+        sub={t("sub")}
       >
         <div className="pt-1">
           <Link href="/debates/new" className="btn-y2k btn-y2k-primary">
-            Stake a claim
+            {t("stake")}
           </Link>
         </div>
       </PageHero>
@@ -57,7 +60,7 @@ export default async function DebatesPage() {
       {/* ══════════ Your drafts — hidden until you have one ══════════ */}
       {drafts.length > 0 && (
         <section className="space-y-3">
-          <h2 className="label-xbox">Your Drafts</h2>
+          <h2 className="label-xbox">{t("yourDrafts")}</h2>
           <div className="panel-xbox divide-y divide-border-subtle">
             {drafts.map((d) => (
               <Link
@@ -67,13 +70,13 @@ export default async function DebatesPage() {
               >
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)] shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                  Draft
+                  {t("draft")}
                 </span>
                 <span className="min-w-0 flex-1 text-sm font-bold text-[#e8e6e3] truncate">
                   {d.title}
                 </span>
                 <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
-                  open &amp; publish ►
+                  {t("openPublish")}
                 </span>
               </Link>
             ))}
@@ -84,10 +87,9 @@ export default async function DebatesPage() {
       {/* ══════════ Debate grid ══════════ */}
       {debates.length === 0 ? (
         <div className="panel-xbox p-10 text-center space-y-3">
-          <p className="osd-text text-sm">NO SIGNAL</p>
+          <p className="osd-text text-sm">{t("noSignal")}</p>
           <p className="text-sm text-text-muted">
-            No debates on air yet. Open the first one and pick a fight
-            worth having.
+            {t("empty")}
           </p>
         </div>
       ) : (

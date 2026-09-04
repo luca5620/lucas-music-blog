@@ -8,6 +8,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 
 interface Props {
   debateId: string;
@@ -23,6 +25,7 @@ export default function DeleteDebateButton({
   stayOnPage = false,
 }: Props) {
   const router = useRouter();
+  const t = useTranslations("debates.delete");
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,9 +41,9 @@ export default function DeleteDebateButton({
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { error?: string };
-      setError(data.error ?? "Couldn't delete it.");
+      setError(data.error ?? t("couldnt"));
     } catch {
-      setError("Network hiccup — try again.");
+      setError(t("network"));
     }
     setDeleting(false);
     setConfirming(false);
@@ -50,20 +53,20 @@ export default function DeleteDebateButton({
     return (
       <div className="inline-flex items-center gap-1.5 flex-wrap">
         <span className="text-xs text-[#9a9a9e] font-[family-name:var(--font-vt323)]">
-          Delete &quot;{debateTitle}&quot;? Votes and takes go with it.
+          {t("confirm", { title: debateTitle })}
         </span>
         <button
           onClick={handleDelete}
           disabled={deleting}
           className="px-2 py-0.5 rounded text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wider disabled:opacity-50"
         >
-          {deleting ? "..." : "Yes"}
+          {deleting ? "..." : t("yes")}
         </button>
         <button
           onClick={() => setConfirming(false)}
           className="px-2 py-0.5 rounded text-xs font-bold text-[#9a9a9e] hover:text-[#e8e6e3] transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wider"
         >
-          No
+          {t("no")}
         </button>
       </div>
     );
@@ -83,7 +86,7 @@ export default function DeleteDebateButton({
             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
           />
         </svg>
-        Delete
+        {t("delete")}
       </button>
       {error && <span className="text-xs text-red-400">{error}</span>}
     </span>

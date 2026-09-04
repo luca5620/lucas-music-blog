@@ -1,4 +1,6 @@
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import VoteBar from "@/components/debates/VoteBar";
 import type { DebateRelease, DebateWithMeta } from "@/lib/db/debates";
@@ -9,8 +11,9 @@ import type { DebateRelease, DebateWithMeta } from "@/lib/db/debates";
  * debate is pinned to a release) the cover as physical-media flair.
  */
 export default function DebateCard({ debate }: { debate: DebateWithMeta }) {
+  const t = useTranslations("debates.card");
   const creatorName =
-    debate.creator?.display_name || debate.creator?.username || "unknown";
+    debate.creator?.display_name || debate.creator?.username || t("unknown");
 
   return (
     <Link
@@ -23,14 +26,14 @@ export default function DebateCard({ debate }: { debate: DebateWithMeta }) {
           {debate.status === "open" ? (
             <>
               {/* .osd-rec only styles inside .crt-osd — inline the red dot */}
-              <span className="text-[#ff4455] animate-pulse">●</span> ON AIR
+              <span className="text-[#ff4455] animate-pulse">●</span> {t("onAir")}
             </>
           ) : (
-            <span className="opacity-60">SIGN-OFF</span>
+            <span className="opacity-60">{t("signOff")}</span>
           )}
         </span>
         <span className="osd-text text-xs opacity-80">
-          {debate.message_count} TAKES
+          {t("takes", { n: debate.message_count })}
         </span>
       </div>
 
@@ -68,7 +71,7 @@ export default function DebateCard({ debate }: { debate: DebateWithMeta }) {
 
       {/* Creator byline */}
       <div className="flex items-center gap-1.5 text-xs text-text-muted">
-        <span>opened by</span>
+        <span>{t("openedBy")}</span>
         <span className="font-bold text-text-secondary">{creatorName}</span>
         {debate.creator && <VerifiedBadge role={debate.creator.role} />}
       </div>

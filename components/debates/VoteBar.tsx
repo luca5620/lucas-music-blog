@@ -9,6 +9,9 @@
  * bar never looks broken — an empty debate is still a debate.
  */
 
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
+
 interface VoteBarProps {
   a: number;
   b: number;
@@ -25,6 +28,7 @@ export default function VoteBar({
   sideBLabel,
   compact = false,
 }: VoteBarProps) {
+  const t = useTranslations("debates.voteBar");
   const total = a + b;
   const pctA = total === 0 ? 50 : Math.round((a / total) * 100);
   const pctB = total === 0 ? 50 : 100 - pctA;
@@ -46,7 +50,7 @@ export default function VoteBar({
         className="debate-bar"
         style={{ opacity: total === 0 ? 0.45 : 1 }}
         role="img"
-        aria-label={`${sideALabel}: ${pctA}%, ${sideBLabel}: ${pctB}%`}
+        aria-label={t("aria", { a: sideALabel, pctA, b: sideBLabel, pctB })}
       >
         <div className="side-a" style={{ width: `${pctA}%` }} />
         <div className="side-b" style={{ width: `${pctB}%` }} />
@@ -56,7 +60,7 @@ export default function VoteBar({
         <div className="flex items-baseline justify-between gap-3 text-[10px] uppercase tracking-wide text-text-muted">
           <span className="truncate">{sideALabel}</span>
           <span className="pixel-text tabular-nums shrink-0">
-            {total} {total === 1 ? "vote" : "votes"}
+            {t("votes", { n: total })}
           </span>
           <span className="truncate text-right">{sideBLabel}</span>
         </div>

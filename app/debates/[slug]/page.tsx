@@ -14,6 +14,8 @@ import DebateRoom from "@/components/debates/DebateRoom";
 import PublishDebateButton from "@/components/debates/PublishDebateButton";
 import DeleteDebateButton from "@/components/debates/DeleteDebateButton";
 import BackLink from "@/components/ui/BackLink";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
 
 // Live rooms: votes, messages, and reactions change second to second.
 export const dynamic = "force-dynamic";
@@ -47,6 +49,7 @@ export default async function DebatePage({ params }: PageProps) {
   if (!debate) notFound();
 
   const user = await getUser();
+  const t = await getTranslations("debates.page");
   const [messages, userVote] = await Promise.all([
     getDebateMessages(debate.id),
     user ? getUserVote(debate.id, user.id) : Promise.resolve(null),
@@ -61,7 +64,7 @@ export default async function DebatePage({ params }: PageProps) {
   ]);
 
   const creatorName =
-    debate.creator?.display_name || debate.creator?.username || "unknown";
+    debate.creator?.display_name || debate.creator?.username || t("unknown");
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -73,7 +76,7 @@ export default async function DebatePage({ params }: PageProps) {
         <section className="panel-xbox p-4 border-yellow-500/30 bg-yellow-500/5 flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
             <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-            Draft — only you can see this
+            {t("draftBanner")}
           </span>
           <PublishDebateButton debateId={debate.id} />
         </section>
@@ -86,7 +89,7 @@ export default async function DebatePage({ params }: PageProps) {
         <div className="flex items-center justify-between gap-3">
           <BackLink
             fallback="/debates"
-            label="Back"
+            label={t("back")}
             className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
           />
           {/* Creator's controls (Luca 2026-09-02): edit here, or from
@@ -97,7 +100,7 @@ export default async function DebatePage({ params }: PageProps) {
                 href={`/debates/${debate.slug}/edit`}
                 className="btn-y2k btn-y2k-outline text-xs"
               >
-                Edit
+                {t("edit")}
               </Link>
               <DeleteDebateButton debateId={debate.id} debateTitle={debate.title} />
             </span>
@@ -183,7 +186,7 @@ export default async function DebatePage({ params }: PageProps) {
               </div>
             )}
             <div className="flex items-center gap-1.5 text-xs text-text-muted">
-              <span>opened by</span>
+              <span>{t("openedBy")}</span>
               {debate.creator ? (
                 <Link
                   href={`/profile/${debate.creator.username}`}

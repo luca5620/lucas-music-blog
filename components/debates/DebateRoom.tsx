@@ -24,6 +24,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useLocale, useTranslations } from "next-intl";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
@@ -57,7 +59,14 @@ interface DebateRoomProps {
 
 /* ─── Small helpers ─── */
 
-function timeAgo(dateString: string, _tick: number): string {
+// justNow + locale come from the component (translated label, viewer's
+// date format) so this helper stays a plain function.
+function timeAgo(
+  dateString: string,
+  _tick: number,
+  justNow: string,
+  locale: string
+): string {
   void _tick; // referenced so per-minute re-renders refresh the label
   const diffSec = Math.max(
     0,
@@ -66,11 +75,11 @@ function timeAgo(dateString: string, _tick: number): string {
   const diffMin = Math.floor(diffSec / 60);
   const diffHr = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHr / 24);
-  if (diffSec < 60) return "just now";
+  if (diffSec < 60) return justNow;
   if (diffMin < 60) return `${diffMin}m`;
   if (diffHr < 24) return `${diffHr}h`;
   if (diffDay < 7) return `${diffDay}d`;
-  return new Date(dateString).toLocaleDateString("en-US", {
+  return new Date(dateString).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
@@ -107,6 +116,7 @@ function SideTag({
   side: "a" | "b" | null;
   labels: { a: string; b: string };
 }) {
+  const t = useTranslations("debates.room");
   if (side === "a") {
     return (
       <span className="pixel-text text-[10px] uppercase px-1 py-px rounded border border-accent-primary/50 text-accent-primary shrink-0">
@@ -123,7 +133,7 @@ function SideTag({
   }
   return (
     <span className="pixel-text text-[10px] uppercase px-1 py-px rounded border border-border-medium text-text-muted shrink-0">
-      Spectator
+      {t("spectator")}
     </span>
   );
 }
@@ -153,6 +163,8 @@ export default function DebateRoom({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const t = useTranslations("debates.room");
+  const locale = useLocale();
   const [votes, setVotes] = useState<VoteCounts>(debate.votes);
   const [myVote, setMyVote] = useState<"a" | "b" | null>(initialUserVote);
   const [voting, setVoting] = useState(false);
@@ -240,10 +252,10 @@ export default function DebateRoom({
         const data = (await res.json().catch(() => ({}))) as {
           error?: string;
         };
-        throw new Error(data.error ?? "Reaction failed");
+        throw new Error(data.error ?? t("reactionFailed"));
       }
     },
-    [debate.id]
+    [debate.id, t]
   );
 
   const { countsFor, mineFor, toggle, applyRemoteAdd, applyRemoteRemove } =
@@ -431,19 +443,19 @@ export default function DebateRoom({
           votes?: VoteCounts;
           error?: string;
         };
-        if (!res.ok) throw new Error(data.error ?? "Vote failed");
+        if (!res.ok) throw new Error(data.error ?? t("voteFailed"));
         // Reconcile with the authoritative counts.
         if (data.votes) setVotes(data.votes);
       } catch (err) {
         // Roll back the optimistic move.
         setMyVote(prevVote);
         setVotes(prevCounts);
-        setErrorMsg(err instanceof Error ? err.message : "Vote failed");
+        setErrorMsg(err instanceof Error ? err.message : t("voteFailed"));
       } finally {
         setVoting(false);
       }
     },
-    [user, voting, isClosed, myVote, votes, debate.id]
+    [user, voting, isClosed, myVote, votes, debate.id, t]
   );
 
   /* ─── Sending a take ─── */
@@ -496,7 +508,7 @@ export default function DebateRoom({
           const data = (await res.json().catch(() => ({}))) as {
             error?: string;
           };
-          throw new Error(data.error ?? "Failed to send");
+          throw new Error(data.error ?? t("sendFailed"));
         }
         const data = (await res.json()) as {
           message: DebateMessageWithProfile;
@@ -513,7 +525,7 @@ export default function DebateRoom({
         });
       } catch (err) {
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
-        setErrorMsg(err instanceof Error ? err.message : "Failed to send");
+        setErrorMsg(err instanceof Error ? err.message : t("sendFailed"));
       } finally {
         setPendingIds((s) => {
           const n = new Set(s);
@@ -523,7 +535,7 @@ export default function DebateRoom({
         setSubmitting(false);
       }
     },
-    [content, submitting, user, isClosed, debate.id, myVote, scrollIfNearBottom]
+    [content, submitting, user, isClosed, debate.id, myVote, scrollIfNearBottom, t]
   );
 
   /* ─── Delete a take: your own, or any as staff. Confirm guards the
@@ -534,7 +546,7 @@ export default function DebateRoom({
       const isOwn = m.user_id === (user?.id ?? "");
       if (!isOwn) {
         const name = m.profile.display_name || m.profile.username;
-        if (!window.confirm(`Delete ${name}'s message?`)) return;
+        if (!window.confirm(t("confirmDelete", { name }))) return;
       }
       const res = await fetch(
         `/api/debates/${debate.id}/messages/${m.id}`,
@@ -544,7 +556,7 @@ export default function DebateRoom({
         setMessages((prev) => prev.filter((x) => x.id !== m.id));
       }
     },
-    [user?.id, debate.id]
+    [user?.id, debate.id, t]
   );
 
   const sideLabels = { a: debate.side_a_label, b: debate.side_b_label };
@@ -558,10 +570,10 @@ export default function DebateRoom({
       <section className="panel-xbox-glow p-4 sm:p-6 space-y-4 relative overflow-hidden">
         <div className="flex items-center gap-2">
           <span className="glow-orb" />
-          <span className="label-xbox">Cast your vote</span>
+          <span className="label-xbox">{t("castVote")}</span>
           {isClosed && (
             <span className="pixel-text text-xs text-text-muted uppercase">
-              — debate closed
+              {t("closed")}
             </span>
           )}
         </div>
@@ -582,7 +594,7 @@ export default function DebateRoom({
             {debate.side_a_label}
             {myVote === "a" && (
               <span className="block pixel-text text-[10px] mt-1 opacity-80">
-                YOUR SIDE
+                {t("yourSide")}
               </span>
             )}
           </button>
@@ -601,7 +613,7 @@ export default function DebateRoom({
             {debate.side_b_label}
             {myVote === "b" && (
               <span className="block pixel-text text-[10px] mt-1 opacity-80">
-                YOUR SIDE
+                {t("yourSide")}
               </span>
             )}
           </button>
@@ -615,15 +627,18 @@ export default function DebateRoom({
         />
 
         <p className="text-[10px] text-text-muted text-center tabular-nums">
-          {votes.a + votes.b} votes · switch sides any time
+          {t("votesSwitch", { n: votes.a + votes.b })}
         </p>
 
         {!user && (
           <p className="text-xs text-text-muted text-center">
-            <Link href="/login" className="text-accent-primary hover:underline">
-              Sign in
-            </Link>{" "}
-            to vote and argue.
+            {t.rich("signInToVote", {
+              a: (chunks) => (
+                <Link href="/login" className="text-accent-primary hover:underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         )}
         <div className="scan-bar" />
@@ -633,7 +648,7 @@ export default function DebateRoom({
       <section className="panel-xbox p-4 sm:p-5 space-y-4 relative overflow-hidden">
         <div className="flex items-center gap-2">
           <span className="glow-orb" style={{ animationDelay: "1s" }} />
-          <span className="label-xbox">The floor</span>
+          <span className="label-xbox">{t("floor")}</span>
           <span className="text-xs text-text-muted">({realCount})</span>
         </div>
 
@@ -643,15 +658,15 @@ export default function DebateRoom({
           ref={listRef}
           role="log"
           aria-live="polite"
-          aria-label="Debate messages"
+          aria-label={t("messagesAria")}
           className="overflow-y-auto pr-1 space-y-3"
           style={{ maxHeight: "min(60vh, 500px)", minHeight: "240px" }}
         >
           {visibleMessages.length === 0 ? (
             <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center gap-3 py-8">
-              <span className="osd-text text-sm">DEAD AIR</span>
+              <span className="osd-text text-sm">{t("deadAir")}</span>
               <p className="text-sm text-text-muted max-w-xs">
-                Nobody has argued yet — first take wins.
+                {t("nobody")}
               </p>
             </div>
           ) : (
@@ -669,11 +684,11 @@ export default function DebateRoom({
                     <VerifiedBadge role={m.profile.role} />
                     <SideTag side={m.side} labels={sideLabels} />
                     <span className="text-[10px] text-text-muted tabular-nums">
-                      {timeAgo(m.created_at, tick)}
+                      {timeAgo(m.created_at, tick, t("justNow"), locale)}
                     </span>
                     {pendingIds.has(m.id) && (
                       <span className="text-[10px] text-text-muted italic">
-                        sending…
+                        {t("sending")}
                       </span>
                     )}
                     {/* Universal action order for chat rows: ✕ (delete)
@@ -685,11 +700,11 @@ export default function DebateRoom({
                         <button
                           type="button"
                           onClick={() => void handleDeleteMessage(m)}
-                          aria-label="Delete message"
+                          aria-label={t("deleteMessage")}
                           title={
                             m.user_id === (user?.id ?? "")
-                              ? "Delete your message"
-                              : "Mod delete"
+                              ? t("deleteYours")
+                              : t("modDelete")
                           }
                           className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-rose transition-colors"
                         >
@@ -728,7 +743,7 @@ export default function DebateRoom({
         {/* Composer */}
         {isClosed ? (
           <p className="text-center text-xs text-text-muted py-2 pixel-text uppercase">
-            Sign-off — this debate is archived.
+            {t("archived")}
           </p>
         ) : user ? (
           <form onSubmit={handleSubmit} className="space-y-2">
@@ -743,12 +758,12 @@ export default function DebateRoom({
               }}
               placeholder={
                 myVote
-                  ? `Argue for ${myVote === "a" ? debate.side_a_label : debate.side_b_label}…`
-                  : "Drop a take (vote to rep a side)…"
+                  ? t("argueFor", { side: myVote === "a" ? debate.side_a_label : debate.side_b_label })
+                  : t("dropTake")
               }
               rows={1}
               maxLength={500}
-              aria-label="Debate message input"
+              aria-label={t("inputAria")}
               className="form-input resize-none"
             />
             {errorMsg && <p className="text-xs text-accent-rose">{errorMsg}</p>}
@@ -761,14 +776,14 @@ export default function DebateRoom({
                 disabled={!content.trim() || submitting}
                 className="btn-y2k btn-y2k-primary !py-1.5 !px-4 !text-xs disabled:opacity-40"
               >
-                {submitting ? "…" : "Send"}
+                {submitting ? "…" : t("send")}
               </button>
             </div>
           </form>
         ) : (
           <div className="card-y2k p-4 text-center">
             <Link href="/login" className="btn-y2k btn-y2k-outline !py-1.5 !px-4 !text-xs">
-              Sign in to argue
+              {t("signInToArgue")}
             </Link>
           </div>
         )}

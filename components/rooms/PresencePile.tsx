@@ -28,6 +28,8 @@ import { useEffect, useRef, useState } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 
 interface PresencePileProps {
   roomId: string;
@@ -189,6 +191,7 @@ export default function PresencePile({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, user?.id]);
 
+  const t = useTranslations("rooms");
   const totalCount = snapshot.users.length + snapshot.anonCount;
 
   // Report the head-count upward (must sit above the early return —
@@ -220,8 +223,13 @@ export default function PresencePile({
             }}
             title={
               snapshot.anonCount > 0
-                ? `${userOverflow > 0 ? `${userOverflow} more, ` : ""}${snapshot.anonCount} guest${snapshot.anonCount === 1 ? "" : "s"}`
-                : `${userOverflow} more`
+                ? userOverflow > 0
+                  ? t("moreAndGuests", {
+                      more: userOverflow,
+                      guests: t("guests", { n: snapshot.anonCount }),
+                    })
+                  : t("guests", { n: snapshot.anonCount })
+                : t("more", { n: userOverflow })
             }
           >
             +{tailCount}
@@ -232,7 +240,7 @@ export default function PresencePile({
         className="pixel-text text-xs uppercase tracking-widest tabular-nums"
         style={{ color: accentColor }}
       >
-        {totalCount} here
+        {t("here", { n: totalCount })}
       </span>
     </div>
   );
@@ -245,7 +253,8 @@ function UserAvatar({
   user: UserEntry;
   accentColor: string;
 }) {
-  const name = user.display_name || user.username || "user";
+  const t = useTranslations("rooms");
+  const name = user.display_name || user.username || t("user");
   const initial = name.charAt(0).toUpperCase();
 
   if (user.avatar_url) {

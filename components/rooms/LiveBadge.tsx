@@ -7,6 +7,9 @@
  * callers can mount it unconditionally and let it self-hide.
  */
 
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
+
 interface LiveBadgeProps {
   lastActivityAt: string | null;
   /** Threshold in minutes for "LIVE" classification. Default 30. */
@@ -17,6 +20,7 @@ export default function LiveBadge({
   lastActivityAt,
   thresholdMinutes = 30,
 }: LiveBadgeProps) {
+  const t = useTranslations("rooms");
   if (!lastActivityAt) return null;
 
   const last = Date.parse(lastActivityAt);
@@ -43,7 +47,7 @@ export default function LiveBadge({
         background: "rgba(255, 51, 68, 0.12)",
         border: "1px solid rgba(255, 51, 68, 0.5)",
       }}
-      aria-label="Room is live now"
+      aria-label={t("liveAria")}
     >
       <span
         aria-hidden="true"
@@ -57,7 +61,7 @@ export default function LiveBadge({
         className="pixel-text text-[0.6rem] font-bold uppercase tracking-widest"
         style={{ color: "#ff3344" }}
       >
-        Live
+        {t("live")}
       </span>
     </span>
   );

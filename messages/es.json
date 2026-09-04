@@ -1101,5 +1101,152 @@
       "aMember": "un miembro",
       "playlistBadge": "♫ PLAYLIST"
     }
+  },
+  "debates": {
+    "index": {
+      "title": "DEBATES",
+      "sub": "Dos bandos. Un voto. Discusiones sin fin. Elige tu lado y defiéndelo al aire: tus opiniones llevan el sello de tu bando.",
+      "stake": "Planta bandera",
+      "yourDrafts": "Tus borradores",
+      "draft": "Borrador",
+      "openPublish": "abrir y publicar ►",
+      "noSignal": "SIN SEÑAL",
+      "empty": "Todavía no hay debates al aire. Abre el primero y busca una pelea que valga la pena."
+    },
+    "new": {
+      "title": "Abrir un debate",
+      "sub": "Plantea la pregunta, nombra los dos bandos y, si quieres, fija el disco en cuestión. La comunidad hace el resto."
+    },
+    "edit": {
+      "title": "Editar debate",
+      "back": "Volver",
+      "draftNote": "Borrador: solo tú puedes verlo.",
+      "liveNote": "Al aire: los cambios se ven al instante."
+    },
+    "page": {
+      "draftBanner": "Borrador: solo tú puedes verlo",
+      "back": "Volver",
+      "edit": "Editar",
+      "openedBy": "abierto por",
+      "unknown": "desconocido"
+    },
+    "card": {
+      "onAir": "AL AIRE",
+      "signOff": "CERRADO",
+      "takes": "{n} OPINIONES",
+      "vs": "VS",
+      "openedBy": "abierto por",
+      "unknown": "desconocido"
+    },
+    "voteBar": {
+      "aria": "{a}: {pctA} %, {b}: {pctB} %",
+      "votes": "{n, plural, one {# voto} other {# votos}}"
+    },
+    "delete": {
+      "couldnt": "No se pudo eliminar.",
+      "network": "Falló la conexión. Inténtalo de nuevo.",
+      "confirm": "¿Eliminar “{title}”? Los votos y las opiniones se van con él.",
+      "yes": "Sí",
+      "no": "No",
+      "delete": "Eliminar"
+    },
+    "publish": {
+      "couldnt": "No se pudo publicar el debate.",
+      "broke": "Algo salió mal.",
+      "publishing": "PUBLICANDO…",
+      "openFloor": "ABRIR EL DEBATE"
+    },
+    "room": {
+      "castVote": "Vota",
+      "closed": "— debate cerrado",
+      "yourSide": "TU BANDO",
+      "votesSwitch": "{n, plural, one {# voto} other {# votos}} · cambia de bando cuando quieras",
+      "signInToVote": "<a>Inicia sesión</a> para votar y discutir.",
+      "floor": "El debate",
+      "messagesAria": "Mensajes del debate",
+      "deadAir": "SILENCIO",
+      "nobody": "Nadie ha discutido todavía: la primera opinión gana.",
+      "sending": "enviando…",
+      "deleteMessage": "Eliminar mensaje",
+      "deleteYours": "Eliminar tu mensaje",
+      "modDelete": "Eliminar (mod)",
+      "archived": "Cerrado: este debate está archivado.",
+      "argueFor": "Defiende a {side}…",
+      "dropTake": "Suelta tu opinión (vota para representar a un bando)…",
+      "inputAria": "Escribir mensaje del debate",
+      "send": "Enviar",
+      "signInToArgue": "Inicia sesión para discutir",
+      "spectator": "Espectador",
+      "voteFailed": "No se pudo votar",
+      "sendFailed": "No se pudo enviar",
+      "reactionFailed": "No se pudo reaccionar",
+      "confirmDelete": "¿Eliminar el mensaje de {name}?",
+      "justNow": "ahora mismo"
+    },
+    "form": {
+      "errors": {
+        "topic": "El tema necesita al menos 3 caracteres.",
+        "sides": "Los dos bandos necesitan un nombre.",
+        "disagree": "Los dos bandos tienen que ser distintos.",
+        "save": "No se pudo guardar el debate.",
+        "open": "No se pudo abrir el debate.",
+        "broke": "Algo salió mal."
+      },
+      "topic": "El tema",
+      "topicPlaceholder": "p. ej. “¿MBDTF está sobrevalorado?”",
+      "frame": "Plantéalo (opcional)",
+      "framePlaceholder": "Define los términos de la discusión…",
+      "sideAPlaceholder": "p. ej. “Clásico”",
+      "sideBPlaceholder": "p. ej. “Sobrevalorado”",
+      "locked": "Ya hay gente que votó o discutió bajo estos bandos, así que los nombres quedan fijos. Los lanzamientos, el tema y el planteamiento sí se pueden cambiar.",
+      "pinLabel": "Fija un lanzamiento a todo el debate (opcional)",
+      "pinPlaceholder": "Adjunta el álbum o la canción en cuestión…",
+      "floorIs": "El debate está",
+      "onAir": "AL AIRE",
+      "signedOff": "CERRADO",
+      "saving": "GUARDANDO…",
+      "saveChanges": "GUARDAR CAMBIOS",
+      "opening": "ABRIENDO…",
+      "openFloor": "ABRIR EL DEBATE",
+      "savingDraft": "Guardando…",
+      "saveDraft": "Guardar como borrador",
+      "cancel": "Cancelar",
+      "side": "Bando {tone}",
+      "lockedTitle": "Bloqueado: ya hay votos con este nombre",
+      "sideRecord": "El disco del bando {tone} (opcional)…",
+      "detach": "quitar"
+    }
+  },
+  "rooms": {
+    "live": "En vivo",
+    "liveAria": "La sala está en vivo ahora",
+    "here": "{n} aquí",
+    "guests": "{n, plural, one {# invitado} other {# invitados}}",
+    "more": "{n} más",
+    "moreAndGuests": "{more} más, {guests}",
+    "user": "usuario",
+    "liveRoom": "Sala en vivo",
+    "openSheet": "Abrir la sala en vivo",
+    "sheetAria": "Chat de la sala en vivo",
+    "collapse": "Cerrar la sala en vivo",
+    "messagesAria": "Mensajes de la sala en vivo",
+    "empty": "Todavía no hay nadie en la sala. Sé el primero en dar tu opinión.",
+    "placeholder": "Suelta tu opinión…",
+    "inputAria": "Escribir mensaje",
+    "send": "Enviar",
+    "signInToChat": "Inicia sesión para chatear",
+    "sending": "enviando…",
+    "anonymous": "anónimo",
+    "deleteMessage": "Eliminar mensaje",
+    "deleteYours": "Eliminar tu mensaje",
+    "modDelete": "Eliminar (mod)",
+    "sendFailed": "No se pudo enviar",
+    "sendMessageFailed": "No se pudo enviar el mensaje",
+    "confirmDelete": "¿Eliminar el mensaje de {name}?",
+    "justNow": "ahora mismo"
+  },
+  "chat": {
+    "like": "Me gusta el mensaje",
+    "unlike": "Quitar me gusta"
   }
 }

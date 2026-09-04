@@ -1101,5 +1101,152 @@
       "aMember": "a member",
       "playlistBadge": "♫ PLAYLIST"
     }
+  },
+  "debates": {
+    "index": {
+      "title": "DEBATES",
+      "sub": "Two sides. One vote. Endless arguing. Pick where you stand and defend it on air — your takes get stamped with your side.",
+      "stake": "Stake a claim",
+      "yourDrafts": "Your Drafts",
+      "draft": "Draft",
+      "openPublish": "open & publish ►",
+      "noSignal": "NO SIGNAL",
+      "empty": "No debates on air yet. Open the first one and pick a fight worth having."
+    },
+    "new": {
+      "title": "Open a debate",
+      "sub": "Frame the question, name the two sides, optionally pin the record on trial. The community does the rest."
+    },
+    "edit": {
+      "title": "Edit debate",
+      "back": "Back",
+      "draftNote": "Draft — only you can see it.",
+      "liveNote": "Live — changes show at once."
+    },
+    "page": {
+      "draftBanner": "Draft — only you can see this",
+      "back": "Back",
+      "edit": "Edit",
+      "openedBy": "opened by",
+      "unknown": "unknown"
+    },
+    "card": {
+      "onAir": "ON AIR",
+      "signOff": "SIGN-OFF",
+      "takes": "{n} TAKES",
+      "vs": "VS",
+      "openedBy": "opened by",
+      "unknown": "unknown"
+    },
+    "voteBar": {
+      "aria": "{a}: {pctA}%, {b}: {pctB}%",
+      "votes": "{n, plural, one {# vote} other {# votes}}"
+    },
+    "delete": {
+      "couldnt": "Couldn't delete it.",
+      "network": "Network hiccup — try again.",
+      "confirm": "Delete \"{title}\"? Votes and takes go with it.",
+      "yes": "Yes",
+      "no": "No",
+      "delete": "Delete"
+    },
+    "publish": {
+      "couldnt": "Couldn't publish the debate.",
+      "broke": "Something broke.",
+      "publishing": "PUBLISHING…",
+      "openFloor": "OPEN THE FLOOR"
+    },
+    "room": {
+      "castVote": "Cast your vote",
+      "closed": "— debate closed",
+      "yourSide": "YOUR SIDE",
+      "votesSwitch": "{n, plural, one {# vote} other {# votes}} · switch sides any time",
+      "signInToVote": "<a>Sign in</a> to vote and argue.",
+      "floor": "The floor",
+      "messagesAria": "Debate messages",
+      "deadAir": "DEAD AIR",
+      "nobody": "Nobody has argued yet — first take wins.",
+      "sending": "sending…",
+      "deleteMessage": "Delete message",
+      "deleteYours": "Delete your message",
+      "modDelete": "Mod delete",
+      "archived": "Sign-off — this debate is archived.",
+      "argueFor": "Argue for {side}…",
+      "dropTake": "Drop a take (vote to rep a side)…",
+      "inputAria": "Debate message input",
+      "send": "Send",
+      "signInToArgue": "Sign in to argue",
+      "spectator": "Spectator",
+      "voteFailed": "Vote failed",
+      "sendFailed": "Failed to send",
+      "reactionFailed": "Reaction failed",
+      "confirmDelete": "Delete {name}'s message?",
+      "justNow": "just now"
+    },
+    "form": {
+      "errors": {
+        "topic": "Give the topic at least 3 characters.",
+        "sides": "Both sides need a label.",
+        "disagree": "The two sides have to actually disagree.",
+        "save": "Couldn't save the debate.",
+        "open": "Couldn't open the debate.",
+        "broke": "Something broke."
+      },
+      "topic": "The topic",
+      "topicPlaceholder": "e.g. \"Is MBDTF overrated?\"",
+      "frame": "Frame it (optional)",
+      "framePlaceholder": "Set the terms of the argument…",
+      "sideAPlaceholder": "e.g. \"Classic\"",
+      "sideBPlaceholder": "e.g. \"Overrated\"",
+      "locked": "People have already voted or argued under these sides, so the labels are locked — the releases, topic and framing can still change.",
+      "pinLabel": "Pin a release to the whole debate (optional)",
+      "pinPlaceholder": "Attach the album/song on trial…",
+      "floorIs": "The floor is",
+      "onAir": "ON AIR",
+      "signedOff": "SIGNED OFF",
+      "saving": "SAVING…",
+      "saveChanges": "SAVE CHANGES",
+      "opening": "OPENING…",
+      "openFloor": "OPEN THE FLOOR",
+      "savingDraft": "Saving…",
+      "saveDraft": "Save as Draft",
+      "cancel": "Cancel",
+      "side": "Side {tone}",
+      "lockedTitle": "Locked — people already voted under this label",
+      "sideRecord": "Side {tone}'s record (optional)…",
+      "detach": "detach"
+    }
+  },
+  "rooms": {
+    "live": "Live",
+    "liveAria": "Room is live now",
+    "here": "{n} here",
+    "guests": "{n, plural, one {# guest} other {# guests}}",
+    "more": "{n} more",
+    "moreAndGuests": "{more} more, {guests}",
+    "user": "user",
+    "liveRoom": "Live Room",
+    "openSheet": "Open the live room",
+    "sheetAria": "Live room chat",
+    "collapse": "Collapse the live room",
+    "messagesAria": "Live room messages",
+    "empty": "No one's in the room yet — be first to drop a take.",
+    "placeholder": "Drop a take…",
+    "inputAria": "Message input",
+    "send": "Send",
+    "signInToChat": "Sign in to chat",
+    "sending": "sending…",
+    "anonymous": "anonymous",
+    "deleteMessage": "Delete message",
+    "deleteYours": "Delete your message",
+    "modDelete": "Mod delete",
+    "sendFailed": "Failed to send",
+    "sendMessageFailed": "Failed to send message",
+    "confirmDelete": "Delete {name}'s message?",
+    "justNow": "just now"
+  },
+  "chat": {
+    "like": "Like message",
+    "unlike": "Unlike message"
   }
 }

@@ -19,6 +19,9 @@
 import { hapticTap } from "@/lib/native";
 
 /** The one canonical reaction the UI writes now. */
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
+
 export const LIKE_EMOJI = "❤️";
 
 interface MessageReactionsProps {
@@ -39,6 +42,7 @@ export default function MessageReactions({
   canReact,
   onToggle,
 }: MessageReactionsProps) {
+  const t = useTranslations("chat");
   const count = counts[LIKE_EMOJI] ?? 0;
   const liked = mine.has(LIKE_EMOJI);
 
@@ -57,7 +61,7 @@ export default function MessageReactions({
         disabled={!canReact}
         onClick={toggle}
         aria-pressed={liked}
-        aria-label={liked ? "Unlike message" : "Like message"}
+        aria-label={liked ? t("unlike") : t("like")}
         className={`inline-flex items-center gap-1 ${
           liked ? "text-[#ff4d6d]" : "text-text-muted hover:text-[#ff4d6d]"
         } transition-colors select-none disabled:cursor-default`}

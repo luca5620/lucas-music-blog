@@ -27,6 +27,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import ChatPanel, {
   type ChatMessageWithProfile,
 } from "@/components/rooms/ChatPanel";
@@ -92,6 +94,7 @@ function LiveRoomSheet({
   // turn position:fixed into position:absolute-in-the-panel. So
   // nothing renders until hydration is done (a store read, not a
   // mounted-flag effect).
+  const t = useTranslations("rooms");
   const mounted = useHydrated();
   const [open, setOpen] = useState(false);
   // Live head-count for the collapsed bar (Luca 2026-08-28: rooms
@@ -155,7 +158,7 @@ function LiveRoomSheet({
       <button
         type="button"
         onClick={openSheet}
-        aria-label="Open the live room"
+        aria-label={t("openSheet")}
         aria-expanded={open}
         className={`live-sheet-fixed live-sheet-bottom live-sheet-pad w-full text-left bg-[#0c0c0f] border-t transition-opacity duration-200 ${
           // delay-150 on the return trip only: the bar fades back in
@@ -172,12 +175,12 @@ function LiveRoomSheet({
               boxShadow: `0 0 10px ${accentColor}`,
             }}
           />
-          <span className="label-xbox">Live Room</span>
+          <span className="label-xbox">{t("liveRoom")}</span>
           {/* Who's here right now — not a comment tally. Hidden until
               the presence sync lands (a beat after page load). */}
           {present > 0 && (
             <span className="text-xs text-text-muted tabular-nums">
-              {present} here
+              {t("here", { n: present })}
             </span>
           )}
           <LiveBadge lastActivityAt={initialRoom.last_activity_at} />
@@ -208,7 +211,7 @@ function LiveRoomSheet({
       <div
         ref={sheetRef}
         role="dialog"
-        aria-label="Live room chat"
+        aria-label={t("sheetAria")}
         inert={!open}
         onFocus={handleFocus}
         onBlur={handleBlur}

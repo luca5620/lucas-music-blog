@@ -18,6 +18,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import CatalogSearch, {
   type CatalogPick,
 } from "@/components/catalog/CatalogSearch";
@@ -60,6 +62,7 @@ export default function NewDebateForm({
   initial?: DebateFormInitial;
 }) {
   const router = useRouter();
+  const t = useTranslations("debates.form");
   const editing = !!initial;
   const [title, setTitle] = useState(initial?.title ?? "");
   const [prompt, setPrompt] = useState(initial?.prompt ?? "");
@@ -85,15 +88,15 @@ export default function NewDebateForm({
 
     // Mirror the server's rules so most mistakes never leave the page.
     if (title.trim().length < 3) {
-      setError("Give the topic at least 3 characters.");
+      setError(t("errors.topic"));
       return;
     }
     if (!sideA.trim() || !sideB.trim()) {
-      setError("Both sides need a label.");
+      setError(t("errors.sides"));
       return;
     }
     if (sideA.trim().toLowerCase() === sideB.trim().toLowerCase()) {
-      setError("The two sides have to actually disagree.");
+      setError(t("errors.disagree"));
       return;
     }
 
@@ -118,7 +121,7 @@ export default function NewDebateForm({
           }),
         });
         const data = (await res.json()) as { error?: string };
-        if (!res.ok) throw new Error(data.error ?? "Couldn't save the debate.");
+        if (!res.ok) throw new Error(data.error ?? t("errors.save"));
         router.push(`/debates/${initial.slug}`);
         router.refresh();
         return;
@@ -143,11 +146,11 @@ export default function NewDebateForm({
         error?: string;
       };
       if (!res.ok || !data.debate) {
-        throw new Error(data.error ?? "Couldn't open the debate.");
+        throw new Error(data.error ?? t("errors.open"));
       }
       router.push(`/debates/${data.debate.slug}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something broke.");
+      setError(err instanceof Error ? err.message : t("errors.broke"));
       setSubmitting(false);
     }
   }
@@ -163,14 +166,14 @@ export default function NewDebateForm({
       {/* Topic */}
       <div>
         <label className="block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]">
-          The topic
+          {t("topic")}
         </label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={140}
-          placeholder='e.g. "Is MBDTF overrated?"'
+          placeholder={t("topicPlaceholder")}
           className="form-input"
           autoFocus={!editing}
         />
@@ -182,14 +185,14 @@ export default function NewDebateForm({
       {/* Optional framing */}
       <div>
         <label className="block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]">
-          Frame it (optional)
+          {t("frame")}
         </label>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           maxLength={500}
           rows={3}
-          placeholder="Set the terms of the argument…"
+          placeholder={t("framePlaceholder")}
           className="form-input resize-none"
         />
       </div>
@@ -200,7 +203,7 @@ export default function NewDebateForm({
           tone="a"
           label={sideA}
           onLabel={setSideA}
-          placeholder='e.g. "Classic"'
+          placeholder={t("sideAPlaceholder")}
           locked={!!initial?.sidesLocked}
           release={sideARelease}
           onRelease={setSideARelease}
@@ -209,7 +212,7 @@ export default function NewDebateForm({
           tone="b"
           label={sideB}
           onLabel={setSideB}
-          placeholder='e.g. "Overrated"'
+          placeholder={t("sideBPlaceholder")}
           locked={!!initial?.sidesLocked}
           release={sideBRelease}
           onRelease={setSideBRelease}
@@ -217,9 +220,7 @@ export default function NewDebateForm({
       </div>
       {initial?.sidesLocked && (
         <p className="text-xs text-text-muted -mt-2">
-          People have already voted or argued under these sides, so the
-          labels are locked — the releases, topic and framing can still
-          change.
+          {t("locked")}
         </p>
       )}
 
@@ -230,8 +231,8 @@ export default function NewDebateForm({
           onClear={() => setAttached(null)}
           picker={
             <CatalogSearch
-              label="Pin a release to the whole debate (optional)"
-              placeholder="Attach the album/song on trial…"
+              label={t("pinLabel")}
+              placeholder={t("pinPlaceholder")}
               onPick={(pick) => setAttached(fromPick(pick))}
             />
           }
@@ -242,7 +243,7 @@ export default function NewDebateForm({
       {editing && (
         <div className="flex items-center gap-3">
           <span className="text-xs uppercase tracking-widest text-text-muted font-[family-name:var(--font-heading)]">
-            The floor is
+            {t("floorIs")}
           </span>
           <div className="flex gap-1">
             {(["open", "closed"] as const).map((s) => (
@@ -252,7 +253,7 @@ export default function NewDebateForm({
                 onClick={() => setStatus(s)}
                 className={`tab-y2k ${status === s ? "tab-active" : ""}`}
               >
-                {s === "open" ? "ON AIR" : "SIGNED OFF"}
+                {s === "open" ? t("onAir") : t("signedOff")}
               </button>
             ))}
           </div>
@@ -269,11 +270,11 @@ export default function NewDebateForm({
         >
           {editing
             ? submitting
-              ? "SAVING…"
-              : "SAVE CHANGES"
+              ? t("saving")
+              : t("saveChanges")
             : submitting
-              ? "OPENING…"
-              : "OPEN THE FLOOR"}
+              ? t("opening")
+              : t("openFloor")}
         </button>
 
         {!editing && (
@@ -283,7 +284,7 @@ export default function NewDebateForm({
             disabled={submitting}
             className="btn-y2k btn-y2k-outline disabled:opacity-50"
           >
-            {submitting ? "Saving…" : "Save as Draft"}
+            {submitting ? t("savingDraft") : t("saveDraft")}
           </button>
         )}
 
@@ -293,7 +294,7 @@ export default function NewDebateForm({
           disabled={submitting}
           className="btn-y2k btn-y2k-outline disabled:opacity-50"
         >
-          Cancel
+          {t("cancel")}
         </button>
       </div>
     </form>
@@ -319,13 +320,14 @@ function SidePanel({
   release: Attached | null;
   onRelease: (r: Attached | null) => void;
 }) {
+  const t = useTranslations("debates.form");
   const color = tone === "a" ? "text-accent-primary" : "text-accent-rose";
   return (
     <div className="space-y-2">
       <label
         className={`block text-xs uppercase tracking-widest ${color} mb-1.5 font-[family-name:var(--font-heading)]`}
       >
-        Side {tone.toUpperCase()}
+        {t("side", { tone: tone.toUpperCase() })}
       </label>
       <input
         type="text"
@@ -335,7 +337,7 @@ function SidePanel({
         placeholder={placeholder}
         className="form-input disabled:opacity-60"
         disabled={locked}
-        title={locked ? "Locked — people already voted under this label" : undefined}
+        title={locked ? t("lockedTitle") : undefined}
       />
       <AttachedChip
         value={release}
@@ -343,7 +345,7 @@ function SidePanel({
         compact
         picker={
           <CatalogSearch
-            placeholder={`Side ${tone.toUpperCase()}'s record (optional)…`}
+            placeholder={t("sideRecord", { tone: tone.toUpperCase() })}
             onPick={(pick) => onRelease(fromPick(pick))}
           />
         }
@@ -365,6 +367,7 @@ function AttachedChip({
   picker: React.ReactNode;
   compact?: boolean;
 }) {
+  const t = useTranslations("debates.form");
   if (!value) return <>{picker}</>;
   const size = compact ? "w-10 h-10" : "w-12 h-12";
   return (
@@ -390,7 +393,7 @@ function AttachedChip({
         onClick={onClear}
         className="text-xs text-accent-rose hover:underline shrink-0"
       >
-        detach
+        {t("detach")}
       </button>
     </div>
   );

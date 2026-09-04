@@ -4,6 +4,8 @@ import { getDebateBySlug } from "@/lib/db/debates";
 import { requireAuth } from "@/lib/auth";
 import NewDebateForm from "@/components/debates/NewDebateForm";
 import BackLink from "@/components/ui/BackLink";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Edit debate",
@@ -26,18 +28,19 @@ export default async function EditDebatePage({
   if (!debate || debate.created_by !== user.id) notFound();
 
   const sidesLocked = debate.votes.a + debate.votes.b > 0 || debate.message_count > 0;
+  const t = await getTranslations("debates.edit");
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <BackLink
         fallback={`/debates/${debate.slug}`}
-        label="Back"
+        label={t("back")}
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
       />
       <div className="space-y-1">
-        <h1 className="crt-title text-2xl sm:text-3xl">Edit debate</h1>
+        <h1 className="crt-title text-2xl sm:text-3xl">{t("title")}</h1>
         <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
-          {debate.is_published === false ? "Draft — only you can see it." : "Live — changes show at once."}
+          {debate.is_published === false ? t("draftNote") : t("liveNote")}
         </p>
       </div>
       <div className="panel-xbox p-5 sm:p-6">

@@ -144,6 +144,23 @@ don't wait to be asked:**
   Album art in our own UI is fine for Instagram; it's a different bar
   for the App Store listing (Apple expects rights to third-party
   content), to plan around when the 1.1.1 screenshots get made.
+  **Post 1 rebuilt as the mascot post (2026-09-04, later).** Luca
+  generated the CRT version and rejected it: a portrait phone
+  screenshot forced into a 4:3 tube is stretched or letterboxed no
+  matter what, and the generated set's brand badge garbles. New
+  standing rule in the doc: **screenshots only ever go in
+  phone-shaped frames** — the CRT is our design language inside the
+  app, not a container for a photo of the app. Post 1 is now the
+  penguin mascot (`public/penguin-logo.png`, attached to the prompt
+  as a likeness reference) standing on Antarctic ice beside an iPhone
+  showing the home feed. Deliberately simple — one subject, empty
+  sky, product-first — because Luca asked for "compelling simple
+  advertising, decently professional", not a tangible-object build.
+  Needs its own **daylight style block** (the main one's true black
+  and CRT scanlines fight an overcast ice scene); both blocks now
+  live in the doc. Antarctic ice happens to already be our blue.
+  Mascot kept rare on purpose: post 1, and post 8 (the Android
+  recruitment ask) as its natural second home.
 
 - **2026-09-03 (Windows): LANGUAGES — CODE SIDE DONE.** Every area of
   the site we wrote is translated into ES/FR/PT/NL/DE (1208 keys, all

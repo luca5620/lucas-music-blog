@@ -67,6 +67,17 @@ angle → turn the background off so it exports as a transparent PNG →
 drop that PNG onto the AI plate in Canva → add the blue glow behind
 it and a shadow beneath it.
 
+### Screenshots only go in phone-shaped frames
+
+Learned the hard way on 2026-09-04: the first version of post 1 put
+the home feed inside a CRT television, and it looked wrong. A
+portrait phone screenshot forced into a 4:3 tube is stretched or
+letterboxed no matter what, the interface reads as the wrong shape,
+and the generated set's brand badge and knob labels garble into
+nonsense. The CRT is our design language *inside* the app; it is not
+a container for a photo of the app. **Screenshots go in phone frames.
+Nothing else.**
+
 **The one rule: the light has to agree.** If the plate is lit hard
 from the left, the phone's rim light goes down its left edge and its
 shadow falls to the right. A shadow pointing the wrong way gives away
@@ -198,35 +209,48 @@ the 1.1.1 set gets made; it doesn't affect this batch.
 
 ## Post 1 — the introduction
 
-**Use:** the home feed, inside the CRT screen. Slides 2–3: the home
-feed raw, then the review page raw.
-**Attach to ChatGPT:** the home feed, the review page.
+**Use:** the home feed, in the phone standing in the snow. Slides 2–3:
+the home feed raw, then the review page raw.
+**Attach to ChatGPT:** `public/penguin-logo.png` (the mascot) and the
+home feed.
 
-This is the signature shot for the account. The whole brand is that
-the site lives inside a CRT, so the real app goes inside the tube.
+This is the mascot post, and it's the account's face. One subject, a
+lot of empty sky, nothing cluttering it. Simple reads as confident;
+busy reads as a vibecoded app trying too hard.
+
+**This post does not use the style block.** It's a daylight scene, not
+a black room — the style block's true black and CRT scanlines would
+fight it. The palette comes free: Antarctic ice is already our blue.
+Use the alternate block at the bottom of this post instead.
 
 **Plate prompt:**
-A vintage 1990s CRT television standing alone on a black void floor,
-photographed slightly from below, three-quarter angle. The screen is
-switched off and completely empty — a dark curved glass rectangle,
-no image, no content, nothing on it. Faint blue light spills from
-somewhere off frame onto the plastic housing and the dust on the
-bezel. A chrome compact disc leans against the base, catching the
-blue. Deep black surroundings, heavy negative space above the set.
-Photographic still life.
-+ style block
+A single fluffy baby emperor penguin chick wearing large black padded
+over-ear headphones, standing on smooth blue-white Antarctic ice
+under a pale overcast sky, photographed at eye level with a long
+lens. Standing upright in the snow beside it is a modern black
+iPhone, tilted slightly, and its screen is switched off — pure black
+glass, completely empty, no interface, no content, no reflected
+image. Soft cold daylight, drifting snow in the air, the ice and a
+distant ridge falling out of focus behind. Generous empty sky above
+the penguin.
 
-**Composite:** drop the home feed into the empty screen, scale to fill the glass,
-add a slight barrel warp so it follows the curve, lay a scanline
-overlay across it at about 15% opacity, and add a soft blue bloom
-spilling past the bezel onto the floor.
+**Match the penguin in the attached image exactly** — same species,
+same grey down, same black padded over-ear headphones, same
+proportions. Photographic wildlife shot, 85mm lens, natural light,
+real depth of field, no invented interfaces, no text of any kind, no
+watermarks, no logos. 4:5 portrait, 1080x1350.
 
-**One-shot alternative (screenshot attached):** *Place the attached
-phone screenshot onto the screen of a vintage CRT television standing
-in a black void. Keep the screenshot exactly as it is — do not
-redraw, relabel or reinterpret anything on it. Curve it slightly to
-follow the glass and add scanlines over it. Blue light spills onto
-the housing. A chrome CD leans against the base.* + style block
+**Composite:** run the home feed through shots.so as a slightly angled
+iPhone, transparent background, and drop it into the scene where the
+plate's phone is. Light in this one is flat overcast daylight, so
+keep the shadow short and soft and add a faint cool reflection across
+the glass — a screen this bright in daylight needs a little haze on
+it or it looks pasted.
+
+**If the penguin comes back wrong** (wrong species, no headphones,
+cartoon style), regenerate rather than settling — it's the mascot and
+people will see it a hundred times. Say *"keep the penguin identical
+to the attached photo, change only the scene around it."*
 
 **Caption:**
 Letterboxd for music. Except this one does leaks.
@@ -240,6 +264,20 @@ and a live room the second it drops, debates have two sides and a
 scoreboard, and unreleased music gets a page like anything else.
 
 Free. Web and iOS. Link in bio.
+
+**Alternate style block — daylight scenes only (this post):**
+
+> Photographic, natural light, 85mm lens, shallow depth of field,
+> real texture and imperfection. Cold overcast palette: blue-white
+> ice, pale grey sky, black. Not a 3D render, not an illustration,
+> not a cartoon, no glossy stock-photo cleanliness. Do not invent any
+> app interface, screen content or user interface elements. No text
+> of any kind, no watermarks, no logos. 4:5 portrait, 1080x1350.
+
+**The mascot is available for other posts too**, but keep it rare —
+it's the account's face, not a sticker. Post 8 (the Android testers
+ask) is the natural second home for it, since a recruitment post
+wants a friendly face. Everything in between stays product-first.
 
 ---
 

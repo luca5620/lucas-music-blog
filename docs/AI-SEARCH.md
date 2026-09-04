@@ -106,7 +106,14 @@ the generic one last (needs directory + Reddit presence).
 - No standalone "X vs Y" comparison pages — ⛔ per ROADMAP. The
   Musicboard page is the one exception and already exists.
 - Never adopt "Rate & Review" phrasing (the clone tell). "Music review
-  app" / "music social network" / "Letterboxd for music" are fine.
+  app" / "music social network" are fine.
+- **"Letterboxd for music" is retired from our own voice** (Luca,
+  2026-09-04): it explains us in a competitor's terms, and brand names
+  win this category. The distinction that matters here — it's still
+  the phrase we *want other people and the models* to reach for,
+  because it's how the category gets understood in a search answer.
+  So: fine in a directory's category field or someone else's listicle,
+  never in copy that reads as us talking (captions, ads, bio, home).
 - Don't ask friends to post fake reviews/listings — assistants cite
   sources, and a thin astroturf trail is worse than none.
 

@@ -253,17 +253,39 @@ people will see it a hundred times. Say *"keep the penguin identical
 to the attached photo, change only the scene around it."*
 
 **Caption:**
-Letterboxd for music. Except this one does leaks.
+every album. every leak. every argument.
 
-Rate albums and songs 0 to 10. Write the review. Build the list.
-Follow people whose taste you trust, or whose taste you want to argue
-with.
-
-Then the parts nobody else has: every upcoming album gets a countdown
-and a live room the second it drops, debates have two sides and a
-scoreboard, and unreleased music gets a page like anything else.
+Rate anything 0 to 10, released or not. Live rooms on release night.
+Debates with two sides and a scoreboard.
 
 Free. Web and iOS. Link in bio.
+
+Keep the tagline in lowercase — it's stylized that way on the
+homepage and matching it makes the line read as a brand mark instead
+of a sentence. The link in bio goes to that same homepage, so the ad
+and the door now open with the same words.
+
+**"Letterboxd for music" is retired** (Luca, 2026-09-04). It explains
+us in a competitor's terms, and the strategy is that brand names win
+this category — borrowing one makes us sound like the clones we're
+trying not to be. Don't reintroduce it in TikTok scripts or ad copy.
+
+**Longer version, for when the post gets pinned** — a cold audience
+decides in two seconds, but people arriving at a pinned post will
+read:
+
+> every album. every leak. every argument.
+>
+> Rate albums and songs 0 to 10. Write the review. Build the list.
+> Follow people whose taste you trust, or whose taste you want to
+> argue with.
+>
+> Then the parts nobody else has: every upcoming album gets a
+> countdown and a live room the second it drops, debates have two
+> sides and a scoreboard, and unreleased music gets a page like
+> anything else.
+>
+> Free. Web and iOS. Link in bio.
 
 **Alternate style block — daylight scenes only (this post):**
 

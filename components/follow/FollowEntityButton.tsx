@@ -2,6 +2,8 @@
 
 import { useState, useTransition, type MouseEvent } from "react";
 import { useRouter } from "next/navigation";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 type FollowKind = "user" | "artist" | "release";
@@ -34,9 +36,11 @@ export default function FollowEntityButton({
   entityId,
   initialFollowing,
   accentColor = "#1e90ff",
-  labelFollow = "Follow",
-  labelFollowing = "Following",
+  labelFollow,
+  labelFollowing,
 }: FollowEntityButtonProps) {
+  // Callers may pass their own labels; the defaults are translated.
+  const t = useTranslations("follow");
   const { user } = useAuth();
   const router = useRouter();
   const [following, setFollowing] = useState(initialFollowing);
@@ -118,7 +122,11 @@ export default function FollowEntityButton({
       className="btn-y2k transition-all disabled:opacity-50"
       style={following ? outlinedStyle : filledStyle}
     >
-      {isPending ? "..." : following ? labelFollowing : labelFollow}
+      {isPending
+        ? "..."
+        : following
+          ? (labelFollowing ?? t("following"))
+          : (labelFollow ?? t("follow"))}
     </button>
   );
 }

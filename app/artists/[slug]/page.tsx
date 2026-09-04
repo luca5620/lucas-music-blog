@@ -8,6 +8,8 @@ import Link from "next/link";
 import BackLink from "@/components/ui/BackLink";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
 import {
   getArtistBySlug,
   getArtistFollowers,
@@ -70,6 +72,7 @@ export default async function ArtistPage({ params }: PageProps) {
     notFound();
   }
 
+  const t = await getTranslations("artists.page");
   const [stats, releases, followers, currentUser] = await Promise.all([
     getArtistStats(artist.id),
     getArtistReleases(artist.id),
@@ -232,9 +235,9 @@ export default async function ArtistPage({ params }: PageProps) {
         {/* Stats row */}
         <div className="flex gap-6">
           {[
-            { label: "Releases", value: stats.release_count },
-            { label: "Followers", value: stats.follower_count },
-            { label: "Reviews", value: stats.review_count },
+            { label: t("stats.releases"), value: stats.release_count },
+            { label: t("stats.followers"), value: stats.follower_count },
+            { label: t("stats.reviews"), value: stats.review_count },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <p
@@ -265,9 +268,9 @@ export default async function ArtistPage({ params }: PageProps) {
       {/* ========== RELEASES ========== */}
       <div className="px-4 sm:px-8 space-y-4">
         <div className="flex items-center gap-3">
-          <span className="label-xbox">Releases</span>
+          <span className="label-xbox">{t("releases")}</span>
           <h2 className="font-[family-name:var(--font-space-grotesk)] text-xl font-bold text-[#e8e6e3]">
-            Discography
+            {t("discography")}
           </h2>
           <div
             className="flex-1 h-[1px]"
@@ -283,14 +286,14 @@ export default async function ArtistPage({ params }: PageProps) {
               border: `1px solid ${accentColor}30`,
             }}
           >
-            {releases.length} {releases.length === 1 ? "Release" : "Releases"}
+            {t("releaseCount", { n: releases.length })}
           </span>
         </div>
 
         {releaseStats.length === 0 ? (
           <div className="panel-xbox p-8 text-center">
             <p className="font-[family-name:var(--font-vt323)] text-lg text-[#5a5a60]">
-              No releases yet.
+              {t("noReleases")}
             </p>
           </div>
         ) : (
@@ -311,9 +314,9 @@ export default async function ArtistPage({ params }: PageProps) {
       {followers.length > 0 && (
         <div className="px-4 sm:px-8 space-y-4">
           <div className="flex items-center gap-3">
-            <span className="label-xbox">Followers</span>
+            <span className="label-xbox">{t("followers")}</span>
             <h2 className="font-[family-name:var(--font-space-grotesk)] text-xl font-bold text-[#e8e6e3]">
-              Fans
+              {t("fans")}
             </h2>
             <div
               className="flex-1 h-[1px]"
@@ -325,7 +328,7 @@ export default async function ArtistPage({ params }: PageProps) {
           <FansGrid fans={followers} accentColor={accentColor} />
           {stats.follower_count > followers.length && (
             <p className="pixel-text text-xs text-text-muted">
-              + {stats.follower_count - followers.length} more
+              {t("more", { n: stats.follower_count - followers.length })}
             </p>
           )}
         </div>
@@ -335,7 +338,7 @@ export default async function ArtistPage({ params }: PageProps) {
       <div className="px-4 sm:px-8 pb-8">
         <BackLink
           fallback="/artists"
-          label="Back"
+          label={t("back")}
           className="pixel-text text-sm text-text-muted hover:text-accent-primary transition-colors"
         />
       </div>

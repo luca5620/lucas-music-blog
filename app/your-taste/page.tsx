@@ -19,6 +19,9 @@ import PageHero from "@/components/ui/PageHero";
 import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou } from "@/lib/taste";
 
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
+
 export const metadata = {
   title: "Your Taste",
   robots: { index: false, follow: false },
@@ -29,6 +32,7 @@ export const dynamic = "force-dynamic";
 
 export default async function YourTastePage() {
   const user = await requireAuth();
+  const t = await getTranslations("taste.page");
   const supabase = await createClient();
 
   /* ---- Taste profile + the people the viewer follows (the pager
@@ -51,8 +55,8 @@ export default async function YourTastePage() {
     <div className="space-y-8 pb-12">
       {/* Header — boxed hero, same as HOME */}
       <PageHero
-        title="YOUR TASTE"
-        sub="Built from who you follow and what you rate."
+        title={t("title")}
+        sub={t("sub")}
       />
 
       {/* ===== Tuned to you — the channel-surf pager, the whole
@@ -61,9 +65,9 @@ export default async function YourTastePage() {
              CD module line up like they do on the website). ===== */}
       <section className="space-y-3">
         <div className="flex items-center gap-3">
-          <span className="vhs-label text-sm">TUNED TO YOU</span>
+          <span className="vhs-label text-sm">{t("tunedToYou")}</span>
           <span className="text-text-secondary text-xs hidden sm:inline">
-            swipe / arrow through your channel
+            {t("swipeHint")}
           </span>
           <div className="flex-1 divider-glow" />
         </div>
@@ -71,13 +75,12 @@ export default async function YourTastePage() {
           <ChannelSurf items={tunedItems} />
         ) : (
           <div className="panel-xbox p-6 sm:p-8 text-center space-y-4">
-            <p className="osd-text text-sm">NO SIGNAL</p>
+            <p className="osd-text text-sm">{t("noSignal")}</p>
             <p className="text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
-              Static, for now. Rate a few releases and follow some people —
-              your channel tunes itself from what you love.
+              {t("empty")}
             </p>
             <Link href="/releases" className="btn-y2k btn-y2k-outline inline-block">
-              Browse Releases
+              {t("browse")}
             </Link>
           </div>
         )}

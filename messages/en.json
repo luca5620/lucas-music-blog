@@ -1347,5 +1347,152 @@
     "newList": "made a new list{title}",
     "newDebate": "started a debate{title}",
     "other": "did something"
+  },
+  "taste": {
+    "page": {
+      "title": "YOUR TASTE",
+      "sub": "Built from who you follow and what you rate.",
+      "tunedToYou": "TUNED TO YOU",
+      "swipeHint": "swipe / arrow through your channel",
+      "noSignal": "NO SIGNAL",
+      "empty": "Static, for now. Rate a few releases and follow some people — your channel tunes itself from what you love.",
+      "browse": "Browse Releases"
+    },
+    "surf": {
+      "like": "Like",
+      "unlike": "Unlike",
+      "types": {
+        "review": "REVIEW",
+        "post": "POST",
+        "debate": "DEBATE",
+        "release": "RELEASE"
+      },
+      "ratedThisRelease": "rated this release",
+      "ratedIt": "rated it",
+      "playVideo": "Play video",
+      "arena": "{a} vs {b} · {activity} in the arena",
+      "readFullReview": "Read the full review →",
+      "readFullPost": "Read the full post →",
+      "via": "via {source}",
+      "viaLink": "via {source} ↗",
+      "spotifyPreview": "Spotify preview of {title}",
+      "listenSpotify": "Listen on Spotify",
+      "comments": "Comments ({n})",
+      "open": "Open {type}",
+      "view": "VIEW",
+      "carouselAria": "Tuned to you — scroll for the next pick",
+      "commentsTitle": "Comments",
+      "closeComments": "Close comments",
+      "exitFullscreen": "Exit fullscreen",
+      "fullscreen": "Fullscreen",
+      "prev": "Previous pick",
+      "next": "Next pick",
+      "swipe": "swipe"
+    }
+  },
+  "artists": {
+    "index": {
+      "title": "ARTISTS",
+      "sub": "Every artist with a release, review, or follower in the system.",
+      "sort": {
+        "popularity": "Popularity",
+        "recent": "Recent",
+        "alpha": "A–Z"
+      },
+      "empty": "No artists yet — check back soon.",
+      "prev": "← Prev",
+      "next": "Next →",
+      "page": "Page {n}"
+    },
+    "page": {
+      "back": "Back",
+      "stats": {
+        "releases": "Releases",
+        "followers": "Followers",
+        "reviews": "Reviews"
+      },
+      "releases": "Releases",
+      "discography": "Discography",
+      "releaseCount": "{n, plural, one {# Release} other {# Releases}}",
+      "noReleases": "No releases yet.",
+      "followers": "Followers",
+      "fans": "Fans",
+      "more": "+ {n} more"
+    },
+    "card": {
+      "followers": "{n, plural, one {# follower} other {# followers}}"
+    }
+  },
+  "follow": {
+    "follow": "Follow",
+    "following": "Following"
+  },
+  "notFound": {
+    "title": "NOT FOUND",
+    "body": "There's nothing at this address. It may have been deleted, or the link that brought you here is wrong.",
+    "home": "Home",
+    "browse": "Browse releases",
+    "search": "Search"
+  },
+  "offline": {
+    "noSignal": "NO SIGNAL",
+    "body": "Peak Music Reviews lost the connection. Check your service — the picture comes back on its own the moment you do.",
+    "tuning": "Tuning…",
+    "retune": "Retune",
+    "still": "STILL NO SIGNAL — try again in a moment."
+  },
+  "about": {
+    "title": "About Peak Music Reviews",
+    "sub": "What it is, why it exists, and the questions people ask.",
+    "inOneBreath": "IN ONE BREATH",
+    "intro": "<strong>Peak Music Reviews</strong> is a free music social network and review app: members rate albums and songs from 0 to 10.0, write reviews, build lists, join live chat rooms the night a record drops, and pick a side in two-sided debates. Every review is tied to a real release — the whole Spotify catalog plus Genius's deep library, so unreleased and leaked songs can be rated too (by metadata, never files). It runs in any browser and as an iOS app, with one account across both. Think Letterboxd, for music.",
+    "facts": {
+      "what": "What",
+      "whatV": "Music review app + social network",
+      "price": "Price",
+      "priceV": "Free — every core feature",
+      "where": "Where",
+      "whereV": "Web (any browser) and iOS. Android planned.",
+      "scale": "Scale",
+      "scaleV": "0–10.0, one decimal, community average per release",
+      "catalog": "Catalog",
+      "catalogV": "All of Spotify + Genius's deep library, unreleased included",
+      "live": "Live",
+      "liveV": "Release-night chat rooms and two-sided debates"
+    },
+    "joinFree": "Join free",
+    "iosApp": "iOS app",
+    "theStory": "THE STORY",
+    "story1": "Peak Music Reviews started with a simple frustration: film lovers have a home. They log what they watch, rate it, argue about it, and build a taste profile that actually says something about them. Music — the thing most of us spend more hours with than any film — never got that place.",
+    "story2": "So we built it. Not another streaming app, not another algorithm feeding you what it thinks you already like — a place where the listening itself is the point. Every review here is tied to a real release, from the biggest album of the year to a loosie that never touched streaming.",
+    "thePurpose": "THE PURPOSE",
+    "purpose1": "One place for your whole listening life: rate records 0–10, build lists, pick a side in debates, and be in the room — live — the moment an album drops. Your profile is yours to arrange and theme; your feed is built from who you follow and what you rate, not from ads.",
+    "purpose2": "The bet is simple: the best music discovery engine ever made is other people who care. Everything on this site exists to put you closer to them.",
+    "whatsDifferent": "WHAT'S DIFFERENT",
+    "diff1H": "Unreleased music.",
+    "diff1B": "Leaks, loosies and songs that never hit streaming are in the catalog and clearly tagged, so the most opinionated corner of music culture finally has a place to rate and argue.",
+    "diff2H": "Release nights.",
+    "diff2B": "Every big drop gets a live room the moment it lands — the weekly ritual, not just a feature.",
+    "diff3H": "Debates.",
+    "diff3B": "Two sides, live votes, each side tied to a record.",
+    "diff4H": "Physical media.",
+    "diff4B": "The whole site lives inside a CRT — VHS labels, console dashboards, badges that glow like a perfect 10.",
+    "questions": "QUESTIONS",
+    "faq": {
+      "q1": "What is Peak Music Reviews?",
+      "a1": "Peak Music Reviews is a music social network — think Letterboxd, but for albums. Members rate and review releases, build shareable lists, join live chat rooms when new albums drop, and argue their side in community debates. Every review is tied to a real release from the Spotify catalog or Genius's deep library, unreleased tracks included.",
+      "q2": "How are albums rated on Peak Music Reviews?",
+      "a2": "Members rate releases from 0 to 10.0 with decimal precision. Ratings reflect genuine personal enjoyment rather than purely technical analysis — liking something for a dumb reason is just as valid as a technical breakdown. Release pages show the community average across all reviews.",
+      "q3": "Can I review unreleased or leaked music on Peak Music Reviews?",
+      "a3": "Yes. The site's catalog is powered by both Spotify (the canonical released catalog) and Genius (the deep library — unreleased tracks, loosies, and songs that never hit streaming). Unreleased releases are clearly tagged on their pages.",
+      "q4": "Do I need an account to use Peak Music Reviews?",
+      "a4": "Browsing is open to everyone. Rating, reviewing, building lists, joining live release rooms, and voting in debates require a free account with a unique username and a confirmed email address.",
+      "q5": "Is Peak Music Reviews free, and what platforms is it on?",
+      "a5": "Yes — rating, reviews, lists, live release rooms, debates, posts and profile customization are all free. It runs in any web browser at peakmusicreviews.com and as an iOS app on the App Store, with the same account and content on both. An Android app is planned.",
+      "q6": "Is Peak Music Reviews a Musicboard alternative?",
+      "a6": "Yes. It covers what Musicboard did — 0–10.0 decimal ratings, written reviews, lists and social profiles — and adds live release-night rooms, two-sided debates, and a catalog that includes unreleased music. Musicboard users looking to switch can read the dedicated guide at peakmusicreviews.com/musicboard-alternative."
+    },
+    "getInTouch": "GET IN TOUCH",
+    "contact": "Questions, ideas, problems?"
   }
 }

@@ -1347,5 +1347,152 @@
     "newList": "maakte een nieuwe lijst{title}",
     "newDebate": "startte een debat{title}",
     "other": "deed iets"
+  },
+  "taste": {
+    "page": {
+      "title": "JOUW SMAAK",
+      "sub": "Gemaakt van wie je volgt en wat je beoordeelt.",
+      "tunedToYou": "AFGESTEMD OP JOU",
+      "swipeHint": "swipe of gebruik de pijltjes om door je kanaal te gaan",
+      "noSignal": "GEEN SIGNAAL",
+      "empty": "Voorlopig alleen ruis. Beoordeel een paar releases en volg een paar mensen: je kanaal stemt zichzelf af op wat je goed vindt.",
+      "browse": "Releases bekijken"
+    },
+    "surf": {
+      "like": "Liken",
+      "unlike": "Like ongedaan maken",
+      "types": {
+        "review": "RECENSIE",
+        "post": "POST",
+        "debate": "DEBAT",
+        "release": "RELEASE"
+      },
+      "ratedThisRelease": "beoordeelde deze release",
+      "ratedIt": "gaf het een",
+      "playVideo": "Video afspelen",
+      "arena": "{a} vs {b} · {activity} in de arena",
+      "readFullReview": "Hele recensie lezen →",
+      "readFullPost": "Hele post lezen →",
+      "via": "via {source}",
+      "viaLink": "via {source} ↗",
+      "spotifyPreview": "Spotify-preview van {title}",
+      "listenSpotify": "Luister op Spotify",
+      "comments": "Reacties ({n})",
+      "open": "{type} openen",
+      "view": "BEKIJK",
+      "carouselAria": "Afgestemd op jou: scrol voor de volgende keuze",
+      "commentsTitle": "Reacties",
+      "closeComments": "Reacties sluiten",
+      "exitFullscreen": "Volledig scherm sluiten",
+      "fullscreen": "Volledig scherm",
+      "prev": "Vorige keuze",
+      "next": "Volgende keuze",
+      "swipe": "swipe"
+    }
+  },
+  "artists": {
+    "index": {
+      "title": "ARTIESTEN",
+      "sub": "Elke artiest met een release, recensie of volger in het systeem.",
+      "sort": {
+        "popularity": "Populariteit",
+        "recent": "Recent",
+        "alpha": "A–Z"
+      },
+      "empty": "Nog geen artiesten. Kom snel terug.",
+      "prev": "← Vorige",
+      "next": "Volgende →",
+      "page": "Pagina {n}"
+    },
+    "page": {
+      "back": "Terug",
+      "stats": {
+        "releases": "Releases",
+        "followers": "Volgers",
+        "reviews": "Recensies"
+      },
+      "releases": "Releases",
+      "discography": "Discografie",
+      "releaseCount": "{n, plural, one {# release} other {# releases}}",
+      "noReleases": "Nog geen releases.",
+      "followers": "Volgers",
+      "fans": "Fans",
+      "more": "+ {n} meer"
+    },
+    "card": {
+      "followers": "{n, plural, one {# volger} other {# volgers}}"
+    }
+  },
+  "follow": {
+    "follow": "Volgen",
+    "following": "Volgend"
+  },
+  "notFound": {
+    "title": "NIET GEVONDEN",
+    "body": "Er is niets op dit adres. Het is misschien verwijderd, of de link die je hier bracht klopt niet.",
+    "home": "Home",
+    "browse": "Releases bekijken",
+    "search": "Zoeken"
+  },
+  "offline": {
+    "noSignal": "GEEN SIGNAAL",
+    "body": "Peak Music Reviews heeft de verbinding verloren. Controleer je netwerk: het beeld komt vanzelf terug zodra je weer online bent.",
+    "tuning": "Afstemmen…",
+    "retune": "Opnieuw afstemmen",
+    "still": "NOG STEEDS GEEN SIGNAAL: probeer het zo nog eens."
+  },
+  "about": {
+    "title": "Over Peak Music Reviews",
+    "sub": "Wat het is, waarom het bestaat en de vragen die mensen stellen.",
+    "inOneBreath": "IN ÉÉN ADEM",
+    "intro": "<strong>Peak Music Reviews</strong> is een gratis muzieksociaalnetwerk en recensie-app: leden geven albums en nummers een cijfer van 0 tot 10,0, schrijven recensies, maken lijsten, zitten in live chatrooms op de avond dat een plaat uitkomt en kiezen een kant in debatten met twee kanten. Elke recensie hangt aan een echte release: de hele Spotify-catalogus plus de diepe bibliotheek van Genius, dus ook onuitgebrachte en gelekte nummers kunnen een cijfer krijgen (op basis van metadata, nooit bestanden). Het werkt in elke browser en als iOS-app, met één account voor beide. Denk Letterboxd, maar voor muziek.",
+    "facts": {
+      "what": "Wat",
+      "whatV": "Muziekrecensie-app + sociaal netwerk",
+      "price": "Prijs",
+      "priceV": "Gratis: alle kernfuncties",
+      "where": "Waar",
+      "whereV": "Web (elke browser) en iOS. Android gepland.",
+      "scale": "Schaal",
+      "scaleV": "0–10,0, één decimaal, communitygemiddelde per release",
+      "catalog": "Catalogus",
+      "catalogV": "Heel Spotify + de diepe bibliotheek van Genius, onuitgebracht inbegrepen",
+      "live": "Live",
+      "liveV": "Chatrooms op releaseavond en debatten met twee kanten"
+    },
+    "joinFree": "Gratis meedoen",
+    "iosApp": "iOS-app",
+    "theStory": "HET VERHAAL",
+    "story1": "Peak Music Reviews begon met een simpele frustratie: filmliefhebbers hebben een thuis. Ze loggen wat ze kijken, geven het een cijfer, discussiëren erover en bouwen een smaakprofiel dat echt iets over ze zegt. Muziek, waar de meesten van ons meer uren mee doorbrengen dan met welke film ook, kreeg die plek nooit.",
+    "story2": "Dus bouwden we het. Geen nieuwe streamingapp, geen nieuw algoritme dat je voert wat het denkt dat je al leuk vindt: een plek waar het luisteren zelf het punt is. Elke recensie hier hangt aan een echte release, van het grootste album van het jaar tot een losse track die nooit op streaming stond.",
+    "thePurpose": "HET DOEL",
+    "purpose1": "Eén plek voor je hele luisterleven: geef platen een cijfer van 0 tot 10, maak lijsten, kies een kant in debatten en zit in de room, live, op het moment dat een album uitkomt. Je profiel is van jou om in te delen en een thema te geven; je feed wordt gemaakt van wie je volgt en wat je beoordeelt, niet van advertenties.",
+    "purpose2": "De gok is simpel: de beste muziekontdekkingsmachine ooit gemaakt zijn andere mensen die erom geven. Alles op deze site bestaat om je dichter bij hen te brengen.",
+    "whatsDifferent": "WAT ANDERS IS",
+    "diff1H": "Onuitgebrachte muziek.",
+    "diff1B": "Leaks, losse tracks en nummers die nooit op streaming kwamen staan in de catalogus, duidelijk gemarkeerd, zodat de meest uitgesproken hoek van de muziekcultuur eindelijk een plek heeft om te beoordelen en te discussiëren.",
+    "diff2H": "Releaseavonden.",
+    "diff2B": "Elke grote release krijgt een live room op het moment dat hij landt: het wekelijkse ritueel, niet zomaar een functie.",
+    "diff3H": "Debatten.",
+    "diff3B": "Twee kanten, live stemmen, elke kant gekoppeld aan een plaat.",
+    "diff4H": "Fysieke media.",
+    "diff4B": "De hele site leeft in een beeldbuis: VHS-labels, consolemenu's, badges die gloeien als een perfecte 10.",
+    "questions": "VRAGEN",
+    "faq": {
+      "q1": "Wat is Peak Music Reviews?",
+      "a1": "Peak Music Reviews is een muzieksociaalnetwerk: denk Letterboxd, maar voor albums. Leden beoordelen en recenseren releases, maken deelbare lijsten, zitten in live chatrooms als nieuwe albums uitkomen en verdedigen hun kant in communitydebatten. Elke recensie hangt aan een echte release uit de Spotify-catalogus of de diepe bibliotheek van Genius, onuitgebrachte tracks inbegrepen.",
+      "q2": "Hoe worden albums beoordeeld op Peak Music Reviews?",
+      "a2": "Leden geven releases een cijfer van 0 tot 10,0 met één decimaal. Cijfers weerspiegelen echt persoonlijk plezier, niet puur technische analyse: iets goed vinden om een stomme reden telt net zo hard als een technische ontleding. Releasepagina's tonen het communitygemiddelde over alle recensies.",
+      "q3": "Kan ik onuitgebrachte of gelekte muziek recenseren op Peak Music Reviews?",
+      "a3": "Ja. De catalogus van de site draait op Spotify (de officiële catalogus van uitgebrachte muziek) en Genius (de diepe bibliotheek: onuitgebrachte tracks, losse tracks en nummers die nooit op streaming kwamen). Onuitgebrachte releases zijn duidelijk gemarkeerd op hun pagina's.",
+      "q4": "Heb ik een account nodig om Peak Music Reviews te gebruiken?",
+      "a4": "Rondkijken kan iedereen. Beoordelen, recenseren, lijsten maken, live releaserooms bezoeken en stemmen in debatten vragen een gratis account met een unieke gebruikersnaam en een bevestigd e-mailadres.",
+      "q5": "Is Peak Music Reviews gratis, en op welke platforms is het?",
+      "a5": "Ja: beoordelen, recensies, lijsten, live releaserooms, debatten, posts en profielaanpassing zijn allemaal gratis. Het werkt in elke browser op peakmusicreviews.com en als iOS-app in de App Store, met hetzelfde account en dezelfde inhoud op beide. Een Android-app is gepland.",
+      "q6": "Is Peak Music Reviews een alternatief voor Musicboard?",
+      "a6": "Ja. Het dekt wat Musicboard deed (cijfers van 0 tot 10,0 met decimaal, geschreven recensies, lijsten en sociale profielen) en voegt live rooms op releaseavond, debatten met twee kanten en een catalogus met onuitgebrachte muziek toe. Musicboard-gebruikers die willen overstappen lezen de gids op peakmusicreviews.com/musicboard-alternative (in het Engels)."
+    },
+    "getInTouch": "CONTACT",
+    "contact": "Vragen, ideeën, problemen?"
   }
 }

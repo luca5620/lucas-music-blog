@@ -5,6 +5,8 @@
 
 import Link from "next/link";
 import type { Metadata } from "next";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { getTranslations } from "next-intl/server";
 import { listArtists } from "@/lib/db/artists";
 import ArtistCard from "@/components/artists/ArtistCard";
 
@@ -19,11 +21,8 @@ export const metadata: Metadata = {
 
 type SortKey = "popularity" | "recent" | "alpha";
 
-const SORT_TABS: { key: SortKey; label: string }[] = [
-  { key: "popularity", label: "Popularity" },
-  { key: "recent", label: "Recent" },
-  { key: "alpha", label: "A–Z" },
-];
+// Labels live in messages (artists.index.sort.<key>).
+const SORT_TABS: SortKey[] = ["popularity", "recent", "alpha"];
 
 const PAGE_SIZE = 24;
 
@@ -52,6 +51,7 @@ function buildHref(sort: SortKey, page: number): string {
 
 export default async function ArtistsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const t = await getTranslations("artists.index");
   const sort = parseSort(params.sort);
   const page = parsePage(params.page);
   const offset = (page - 1) * PAGE_SIZE;
@@ -69,28 +69,28 @@ export default async function ArtistsPage({ searchParams }: PageProps) {
     <div className="space-y-6">
       {/* ========== HEADER ========== */}
       <div className="space-y-3">
-        <h1 className="crt-title text-3xl sm:text-4xl">ARTISTS</h1>
+        <h1 className="crt-title text-3xl sm:text-4xl">{t("title")}</h1>
         <p className="text-text-secondary text-sm">
-          Every artist with a release, review, or follower in the system.
+          {t("sub")}
         </p>
         <div className="divider-glow" />
       </div>
 
       {/* ========== SORT TABS ========== */}
       <div className="flex flex-wrap items-center gap-2">
-        {SORT_TABS.map((tab) => {
-          const active = tab.key === sort;
+        {SORT_TABS.map((key) => {
+          const active = key === sort;
           return (
             <Link
-              key={tab.key}
-              href={buildHref(tab.key, 1)}
+              key={key}
+              href={buildHref(key, 1)}
               className={
                 active
                   ? "px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider font-[family-name:var(--font-space-grotesk)] bg-accent-primary/15 text-accent-primary border border-accent-primary/30"
                   : "px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider font-[family-name:var(--font-space-grotesk)] text-text-muted border border-border-subtle hover:text-accent-primary hover:border-accent-primary/30 transition-colors"
               }
             >
-              {tab.label}
+              {t(`sort.${key}`)}
             </Link>
           );
         })}
@@ -100,7 +100,7 @@ export default async function ArtistsPage({ searchParams }: PageProps) {
       {artists.length === 0 ? (
         <div className="panel-xbox p-8 text-center">
           <p className="font-[family-name:var(--font-vt323)] text-lg text-text-muted">
-            No artists yet — check back soon.
+            {t("empty")}
           </p>
         </div>
       ) : (
@@ -119,14 +119,14 @@ export default async function ArtistsPage({ searchParams }: PageProps) {
               href={buildHref(sort, page - 1)}
               className="btn-y2k btn-y2k-outline"
             >
-              ← Prev
+              {t("prev")}
             </Link>
           ) : (
             <span />
           )}
 
           <span className="pixel-text text-sm text-text-muted">
-            Page {page}
+            {t("page", { n: page })}
           </span>
 
           {hasMore ? (
@@ -134,7 +134,7 @@ export default async function ArtistsPage({ searchParams }: PageProps) {
               href={buildHref(sort, page + 1)}
               className="btn-y2k btn-y2k-outline"
             >
-              Next →
+              {t("next")}
             </Link>
           ) : (
             <span />

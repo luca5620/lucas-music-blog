@@ -32,6 +32,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
@@ -91,6 +93,7 @@ function RailLike({
   );
   // In-flight guard stays per button — it throttles this button's own
   // fetch, not the shared state.
+  const t = useTranslations("taste.surf");
   const [pending, setPending] = useState(false);
 
   const toggle = async () => {
@@ -124,7 +127,7 @@ function RailLike({
       <button
         type="button"
         onClick={toggle}
-        aria-label={liked ? "Unlike" : "Like"}
+        aria-label={liked ? t("unlike") : t("like")}
         className={`${railBtnClass} ${liked ? "!text-accent-rose !border-accent-rose/60" : ""}`}
       >
         <svg
@@ -171,6 +174,7 @@ function SurfCard({
   /** Opens the in-place comments sheet (reviews only). */
   onOpenComments?: () => void;
 }) {
+  const t = useTranslations("taste.surf");
   const rootRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -192,12 +196,12 @@ function SurfCard({
 
   const typeLabel =
     item.type === "review"
-      ? "REVIEW"
+      ? t("types.review")
       : item.type === "post"
-        ? "POST"
+        ? t("types.post")
         : item.type === "debate"
-          ? "DEBATE"
-          : "RELEASE";
+          ? t("types.debate")
+          : t("types.release");
 
   const hasVideo =
     item.type === "post" && !!item.video_kind && !!item.video_id;
@@ -373,7 +377,7 @@ function SurfCard({
                 <span className="font-bold text-text-primary">
                   {item.display_name || item.username}
                 </span>{" "}
-                rated this release
+                {t("ratedThisRelease")}
               </span>
               <span
                 className={`rating-badge text-xs w-8 h-8 shrink-0 ${getRatingColor(item.rating)}`}
@@ -403,7 +407,7 @@ function SurfCard({
                 <span className="font-bold text-text-primary">
                   {item.display_name || item.username}
                 </span>{" "}
-                rated it{" "}
+                {t("ratedIt")}{" "}
                 <span
                   className="font-bold tabular-nums"
                   style={{ color: getRatingHex(item.rating) }}
@@ -474,7 +478,7 @@ function SurfCard({
                   hapticTap();
                   setPlaying(true);
                 }}
-                aria-label="Play video"
+                aria-label={t("playVideo")}
                 className="absolute inset-0 flex items-center justify-center bg-black/35 hover:bg-black/20 transition-colors"
               >
                 <span className="w-14 h-14 rounded-full bg-black/70 border border-white/30 flex items-center justify-center text-2xl text-white pl-1">
@@ -497,8 +501,11 @@ function SurfCard({
             {item.type === "review" && item.artist}
             {item.type === "debate" && (
               <>
-                {item.side_a_label} vs {item.side_b_label} · {item.activity} in
-                the arena
+                {t("arena", {
+                  a: item.side_a_label,
+                  b: item.side_b_label,
+                  activity: item.activity,
+                })}
               </>
             )}
             {item.type === "release" && item.artist}
@@ -541,7 +548,7 @@ function SurfCard({
                 onClick={() => hapticTap()}
                 className="shrink-0 pixel-text text-[10px] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
               >
-                Read the full {item.type === "review" ? "review" : "post"} →
+                {item.type === "review" ? t("readFullReview") : t("readFullPost")}
               </Link>
             )}
           </>
@@ -580,11 +587,11 @@ function SurfCard({
                   rel="noopener noreferrer"
                   className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors shrink-0"
                 >
-                  via {item.description_source === "genius" ? "Genius" : "Wikipedia"} ↗
+                  {t("viaLink", { source: item.description_source === "genius" ? "Genius" : "Wikipedia" })}
                 </a>
               ) : (
                 <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
-                  via {item.description_source === "genius" ? "Genius" : "Wikipedia"}
+                  {t("via", { source: item.description_source === "genius" ? "Genius" : "Wikipedia" })}
                 </span>
               )
             )}
@@ -614,7 +621,7 @@ function SurfCard({
                   height={embedHeight}
                   frameBorder="0"
                   allow="autoplay; clipboard-write; encrypted-media"
-                  title={`Spotify preview of ${item.title}`}
+                  title={t("spotifyPreview", { title: item.title })}
                   className="w-full rounded-lg"
                 />
               )}
@@ -630,7 +637,7 @@ function SurfCard({
               <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
                 <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm4.6 14.5a.62.62 0 0 1-.86.2c-2.36-1.44-5.33-1.77-8.82-.97a.62.62 0 1 1-.28-1.21c3.82-.88 7.1-.5 9.75 1.12.3.18.39.57.21.86zm1.23-2.73a.78.78 0 0 1-1.07.26c-2.7-1.66-6.82-2.14-10.01-1.17a.78.78 0 1 1-.45-1.49c3.65-1.11 8.18-.57 11.28 1.33.36.22.48.7.25 1.07zm.1-2.85C14.7 9 9.35 8.82 6.26 9.76a.93.93 0 1 1-.54-1.79c3.55-1.08 9.45-.87 13.18 1.34a.93.93 0 0 1-.95 1.6z" />
               </svg>
-              Listen on Spotify
+              {t("listenSpotify")}
             </a>
           ))}
       </div>
@@ -662,7 +669,7 @@ function SurfCard({
                   hapticTap();
                   onOpenComments();
                 }}
-                aria-label={`Comments (${item.comment_count})`}
+                aria-label={t("comments", { n: item.comment_count })}
                 className={railBtnClass}
               >
                 <svg
@@ -688,7 +695,7 @@ function SurfCard({
             <Link
               href={href}
               onClick={() => hapticTap()}
-              aria-label={`Open ${typeLabel.toLowerCase()}`}
+              aria-label={t("open", { type: typeLabel })}
               className={railBtnClass}
             >
               <svg
@@ -704,7 +711,7 @@ function SurfCard({
               </svg>
             </Link>
             <span className="pixel-text text-[9px] uppercase tracking-widest text-text-secondary">
-              VIEW
+              {t("view")}
             </span>
           </span>
         </div>
@@ -746,6 +753,7 @@ export default function ChannelSurf({
       watched/resume state (sessionStorage pmr_taste_session). */
   onExit?: (lastIndex: number) => void;
 }) {
+  const t = useTranslations("taste.surf");
   const frameRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(() =>
     Math.max(0, Math.min(items.length - 1, initialIndex))
@@ -898,7 +906,7 @@ export default function ChannelSurf({
         tabIndex={0}
         role="region"
         aria-roledescription="carousel"
-        aria-label="Tuned to you — scroll for the next pick"
+        aria-label={t("carouselAria")}
         className={`relative overflow-y-auto snap-y snap-mandatory focus:outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
           fullscreen
             ? "h-full"
@@ -941,11 +949,11 @@ export default function ChannelSurf({
             }`}
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 shrink-0">
-              <span className="label-xbox">Comments</span>
+              <span className="label-xbox">{t("commentsTitle")}</span>
               <button
                 type="button"
                 onClick={closeComments}
-                aria-label="Close comments"
+                aria-label={t("closeComments")}
                 className="w-8 h-8 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
               >
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
@@ -964,7 +972,7 @@ export default function ChannelSurf({
       <button
         type="button"
         onClick={() => (fullscreen ? close() : setFullscreen(true))}
-        aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
+        aria-label={fullscreen ? t("exitFullscreen") : t("fullscreen")}
         className={`absolute right-3 z-10 w-9 h-9 rounded-full border border-border-medium bg-black/50 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-all flex items-center justify-center ${
           // Fullscreen: clear the notch/status bar in the app shell.
           fullscreen ? "top-[max(0.75rem,env(safe-area-inset-top))]" : "top-3"
@@ -992,7 +1000,7 @@ export default function ChannelSurf({
           type="button"
           onClick={() => surf(-1)}
           disabled={index === 0}
-          aria-label="Previous pick"
+          aria-label={t("prev")}
           className="w-9 h-9 rounded-full border border-border-medium bg-black/40 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
         >
           ▲
@@ -1001,7 +1009,7 @@ export default function ChannelSurf({
           type="button"
           onClick={() => surf(1)}
           disabled={index >= items.length - 1}
-          aria-label="Next pick"
+          aria-label={t("next")}
           className="w-9 h-9 rounded-full border border-border-medium bg-black/40 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
         >
           ▼
@@ -1017,7 +1025,7 @@ export default function ChannelSurf({
           className="sm:hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none flex flex-col items-center animate-bounce text-accent-glow drop-shadow-[0_0_6px_rgba(0,0,0,0.9)]"
         >
           <span className="pixel-text text-[9px] uppercase tracking-widest">
-            swipe
+            {t("swipe")}
           </span>
           <span className="text-sm leading-none">▼</span>
         </div>

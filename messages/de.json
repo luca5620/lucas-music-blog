@@ -1347,5 +1347,152 @@
     "newList": "hat eine neue Liste{title} gemacht",
     "newDebate": "hat eine Debatte{title} eröffnet",
     "other": "hat etwas gemacht"
+  },
+  "taste": {
+    "page": {
+      "title": "DEIN GESCHMACK",
+      "sub": "Gebaut aus den Leuten, denen du folgst, und dem, was du bewertest.",
+      "tunedToYou": "AUF DICH EINGESTELLT",
+      "swipeHint": "wische oder nutz die Pfeile, um durch deinen Sender zu gehen",
+      "noSignal": "KEIN SIGNAL",
+      "empty": "Bisher nur Rauschen. Bewerte ein paar Releases und folge ein paar Leuten: dein Sender stellt sich selbst auf das ein, was du liebst.",
+      "browse": "Releases ansehen"
+    },
+    "surf": {
+      "like": "Liken",
+      "unlike": "Like entfernen",
+      "types": {
+        "review": "REZENSION",
+        "post": "POST",
+        "debate": "DEBATTE",
+        "release": "RELEASE"
+      },
+      "ratedThisRelease": "hat dieses Release bewertet",
+      "ratedIt": "gab",
+      "playVideo": "Video abspielen",
+      "arena": "{a} vs {b} · {activity} in der Arena",
+      "readFullReview": "Ganze Rezension lesen →",
+      "readFullPost": "Ganzen Post lesen →",
+      "via": "via {source}",
+      "viaLink": "via {source} ↗",
+      "spotifyPreview": "Spotify-Vorschau von {title}",
+      "listenSpotify": "Auf Spotify hören",
+      "comments": "Kommentare ({n})",
+      "open": "{type} öffnen",
+      "view": "ANSEHEN",
+      "carouselAria": "Auf dich eingestellt: scrolle zur nächsten Auswahl",
+      "commentsTitle": "Kommentare",
+      "closeComments": "Kommentare schließen",
+      "exitFullscreen": "Vollbild verlassen",
+      "fullscreen": "Vollbild",
+      "prev": "Vorherige Auswahl",
+      "next": "Nächste Auswahl",
+      "swipe": "wischen"
+    }
+  },
+  "artists": {
+    "index": {
+      "title": "ARTISTS",
+      "sub": "Jeder Artist mit einem Release, einer Rezension oder einem Follower im System.",
+      "sort": {
+        "popularity": "Beliebtheit",
+        "recent": "Neu",
+        "alpha": "A–Z"
+      },
+      "empty": "Noch keine Artists. Schau bald wieder rein.",
+      "prev": "← Zurück",
+      "next": "Weiter →",
+      "page": "Seite {n}"
+    },
+    "page": {
+      "back": "Zurück",
+      "stats": {
+        "releases": "Releases",
+        "followers": "Follower",
+        "reviews": "Rezensionen"
+      },
+      "releases": "Releases",
+      "discography": "Diskografie",
+      "releaseCount": "{n, plural, one {# Release} other {# Releases}}",
+      "noReleases": "Noch keine Releases.",
+      "followers": "Follower",
+      "fans": "Fans",
+      "more": "+ {n} weitere"
+    },
+    "card": {
+      "followers": "{n, plural, one {# Follower} other {# Follower}}"
+    }
+  },
+  "follow": {
+    "follow": "Folgen",
+    "following": "Folge ich"
+  },
+  "notFound": {
+    "title": "NICHT GEFUNDEN",
+    "body": "Unter dieser Adresse ist nichts. Es wurde vielleicht gelöscht, oder der Link, der dich hergebracht hat, ist falsch.",
+    "home": "Startseite",
+    "browse": "Releases ansehen",
+    "search": "Suchen"
+  },
+  "offline": {
+    "noSignal": "KEIN SIGNAL",
+    "body": "Peak Music Reviews hat die Verbindung verloren. Prüf dein Netz: das Bild kommt von selbst zurück, sobald du wieder online bist.",
+    "tuning": "Sendersuche…",
+    "retune": "Neu einstellen",
+    "still": "IMMER NOCH KEIN SIGNAL: versuch es gleich noch mal."
+  },
+  "about": {
+    "title": "Über Peak Music Reviews",
+    "sub": "Was es ist, warum es existiert und die Fragen, die Leute stellen.",
+    "inOneBreath": "IN EINEM SATZ",
+    "intro": "<strong>Peak Music Reviews</strong> ist ein kostenloses Musik-Social-Network und eine Rezensions-App: Mitglieder bewerten Alben und Songs von 0 bis 10,0, schreiben Rezensionen, bauen Listen, sitzen in Live-Chaträumen in der Nacht, in der eine Platte erscheint, und wählen in Debatten mit zwei Seiten ihre Seite. Jede Rezension hängt an einem echten Release: der ganze Spotify-Katalog plus die tiefe Bibliothek von Genius, sodass auch unveröffentlichte und geleakte Songs bewertet werden können (über Metadaten, nie über Dateien). Es läuft in jedem Browser und als iOS-App, mit einem Konto für beides. Denk Letterboxd, für Musik.",
+    "facts": {
+      "what": "Was",
+      "whatV": "Musikrezensions-App + soziales Netzwerk",
+      "price": "Preis",
+      "priceV": "Kostenlos: alle Kernfunktionen",
+      "where": "Wo",
+      "whereV": "Web (jeder Browser) und iOS. Android geplant.",
+      "scale": "Skala",
+      "scaleV": "0–10,0, eine Nachkommastelle, Community-Durchschnitt pro Release",
+      "catalog": "Katalog",
+      "catalogV": "Ganz Spotify + die tiefe Bibliothek von Genius, Unveröffentlichtes inklusive",
+      "live": "Live",
+      "liveV": "Chaträume in der Release-Nacht und Debatten mit zwei Seiten"
+    },
+    "joinFree": "Kostenlos mitmachen",
+    "iosApp": "iOS-App",
+    "theStory": "DIE GESCHICHTE",
+    "story1": "Peak Music Reviews begann mit einem einfachen Frust: Filmfans haben ein Zuhause. Sie loggen, was sie sehen, bewerten es, streiten darüber und bauen ein Geschmacksprofil, das wirklich etwas über sie sagt. Musik, mit der die meisten von uns mehr Stunden verbringen als mit jedem Film, hat diesen Ort nie bekommen.",
+    "story2": "Also haben wir es gebaut. Keine weitere Streaming-App, kein weiterer Algorithmus, der dir vorsetzt, was er glaubt, dass du schon magst: ein Ort, an dem das Hören selbst der Punkt ist. Jede Rezension hier hängt an einem echten Release, vom größten Album des Jahres bis zur Loosie, die nie auf Streaming war.",
+    "thePurpose": "DER ZWECK",
+    "purpose1": "Ein Ort für dein ganzes Hörleben: bewerte Platten von 0 bis 10, bau Listen, wähl in Debatten eine Seite und sei im Raum, live, in dem Moment, in dem ein Album erscheint. Dein Profil ist deins zum Ordnen und Gestalten; dein Feed entsteht aus den Leuten, denen du folgst, und dem, was du bewertest, nicht aus Werbung.",
+    "purpose2": "Die Wette ist einfach: Die beste Musikentdeckungsmaschine, die je gebaut wurde, sind andere Leute, denen es etwas bedeutet. Alles auf dieser Seite existiert, um dich näher an sie zu bringen.",
+    "whatsDifferent": "WAS ANDERS IST",
+    "diff1H": "Unveröffentlichte Musik.",
+    "diff1B": "Leaks, Loosies und Songs, die nie auf Streaming kamen, stehen klar markiert im Katalog, sodass die meinungsstärkste Ecke der Musikkultur endlich einen Ort zum Bewerten und Streiten hat.",
+    "diff2H": "Release-Nächte.",
+    "diff2B": "Jedes große Release bekommt einen Live-Raum in dem Moment, in dem es landet: das wöchentliche Ritual, nicht nur ein Feature.",
+    "diff3H": "Debatten.",
+    "diff3B": "Zwei Seiten, Live-Abstimmung, jede Seite an eine Platte gebunden.",
+    "diff4H": "Physische Medien.",
+    "diff4B": "Die ganze Seite lebt in einem Röhrenfernseher: VHS-Etiketten, Konsolenmenüs, Badges, die leuchten wie eine perfekte 10.",
+    "questions": "FRAGEN",
+    "faq": {
+      "q1": "Was ist Peak Music Reviews?",
+      "a1": "Peak Music Reviews ist ein Musik-Social-Network: denk Letterboxd, aber für Alben. Mitglieder bewerten und rezensieren Releases, bauen teilbare Listen, sitzen in Live-Chaträumen, wenn neue Alben erscheinen, und verteidigen ihre Seite in Community-Debatten. Jede Rezension hängt an einem echten Release aus dem Spotify-Katalog oder der tiefen Bibliothek von Genius, unveröffentlichte Tracks inklusive.",
+      "q2": "Wie werden Alben auf Peak Music Reviews bewertet?",
+      "a2": "Mitglieder bewerten Releases von 0 bis 10,0 mit einer Nachkommastelle. Die Bewertungen spiegeln echten persönlichen Genuss wider, nicht rein technische Analyse: etwas aus einem dummen Grund zu mögen zählt genauso wie eine technische Zerlegung. Release-Seiten zeigen den Community-Durchschnitt über alle Rezensionen.",
+      "q3": "Kann ich unveröffentlichte oder geleakte Musik auf Peak Music Reviews rezensieren?",
+      "a3": "Ja. Der Katalog der Seite speist sich aus Spotify (der offizielle Katalog des Veröffentlichten) und Genius (die tiefe Bibliothek: unveröffentlichte Tracks, Loosies und Songs, die nie auf Streaming kamen). Unveröffentlichte Releases sind auf ihren Seiten klar markiert.",
+      "q4": "Brauche ich ein Konto, um Peak Music Reviews zu nutzen?",
+      "a4": "Stöbern kann jeder. Bewerten, rezensieren, Listen bauen, Live-Release-Räume besuchen und in Debatten abstimmen erfordern ein kostenloses Konto mit einem eindeutigen Nutzernamen und einer bestätigten E-Mail-Adresse.",
+      "q5": "Ist Peak Music Reviews kostenlos, und auf welchen Plattformen gibt es das?",
+      "a5": "Ja: Bewerten, Rezensionen, Listen, Live-Release-Räume, Debatten, Posts und Profilgestaltung sind alle kostenlos. Es läuft in jedem Browser auf peakmusicreviews.com und als iOS-App im App Store, mit demselben Konto und denselben Inhalten auf beiden. Eine Android-App ist geplant.",
+      "q6": "Ist Peak Music Reviews eine Alternative zu Musicboard?",
+      "a6": "Ja. Es deckt ab, was Musicboard gemacht hat (Bewertungen von 0 bis 10,0 mit Nachkommastelle, geschriebene Rezensionen, Listen und soziale Profile), und ergänzt Live-Räume in der Release-Nacht, Debatten mit zwei Seiten und einen Katalog mit unveröffentlichter Musik. Wer von Musicboard wechseln will, findet den Guide auf peakmusicreviews.com/musicboard-alternative (auf Englisch)."
+    },
+    "getInTouch": "KONTAKT",
+    "contact": "Fragen, Ideen, Probleme?"
   }
 }

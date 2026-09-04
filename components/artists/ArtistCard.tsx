@@ -6,6 +6,8 @@
  */
 
 import Link from "next/link";
+// LANGUAGES: every word we wrote comes from messages/<locale>.json.
+import { useTranslations } from "next-intl";
 import type { Artist } from "@/lib/types/database";
 
 interface ArtistCardProps {
@@ -14,6 +16,7 @@ interface ArtistCardProps {
 }
 
 export default function ArtistCard({ artist, followerCount }: ArtistCardProps) {
+  const t = useTranslations("artists.card");
   const initial = artist.name[0]?.toUpperCase() ?? "?";
   const genres = artist.genres?.slice(0, 3) ?? [];
 
@@ -63,8 +66,7 @@ export default function ArtistCard({ artist, followerCount }: ArtistCardProps) {
         {/* Follower count */}
         {typeof followerCount === "number" && (
           <p className="pixel-text text-xs text-text-muted">
-            {followerCount.toLocaleString()}{" "}
-            {followerCount === 1 ? "follower" : "followers"}
+            {t("followers", { n: followerCount })}
           </p>
         )}
       </div>

@@ -90,6 +90,54 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-04 (Windows): VERCEL FLUID ACTIVE CPU — 86% OF THE HOBBY
+  CAP, fixed in 5b04505.** Luca spotted it in Observability. Numbers
+  at diagnosis: **Active CPU 3h27m / 4h** on a rolling 30 days (every
+  other meter comfortable — invocations 259K/1M, edge requests
+  149K/1M, fast origin transfer 1.6/10 GB, ISR reads 1.3K/1M). At
+  that burn the cap was ~4–5 days out, right as marketing starts.
+  **`/` was the whole bill:** 3 minutes of CPU per 12h vs 26s for the
+  next-worst route (`/api/notifications`) — about 7× the rest of the
+  site combined — from **12K Supabase calls across 766 renders, ~16
+  round-trips per render**, on a `force-dynamic` route, so every bot
+  hit paid full price (and we had just pointed IndexNow, Bing and
+  Google at all 98 sitemap URLs).
+  - **Shipped:** `getUser()` wrapped in React `cache()` (the page, the
+    blocked-list helper and feed sections each used to buy their own
+    round-trip to Supabase Auth — `auth.getUser()` verifies the JWT
+    over the network, it doesn't just decode the cookie);
+    `getViewerBlockedIdSet()` uses it instead of calling auth itself;
+    new **`lib/supabase/public.ts`** cookie-less anon client (because
+    `cookies()` cannot be called inside `unstable_cache`, any query
+    touching the session client could never be cached); public
+    catalog reads cached through it — `getReleaseDiscoveryFeed` 60s
+    (short: it carries the LIVE badge timestamp), `listUnreleased
+    Releases` + `listUpcomingReleases` 5min, the signed-out community
+    wall 2min. **Signed-in feeds still read live through the session
+    client — nothing viewer-specific is ever cached.** Notifications
+    bell: polled every 60s regardless of tab visibility (~900 calls
+    /12h from one forgotten background tab) → 2min and only while
+    visible; returning to the tab still refetches at once.
+  - **Verify next:** re-read Observability ~12h after deploy. Target
+    is `/` well under 1 min per 12h. If it's still heavy, the next
+    step is the bigger one — middleware rewrites anonymous hits to a
+    per-locale static splash route so bots never invoke a function at
+    all (needs six static routes because of the `pmr-lang` cookie).
+  - **PRO PLAN — the actual numbers (Vercel docs, 2026-09-04).**
+    Hobby: 4 CPU-hours included, **no on-demand option**, so it's a
+    hard cap. Pro ($20/mo): **no included allotment at all** — usage
+    is metered and offset by the $20 monthly credit. iad1 rate is
+    **$0.128 per CPU-hour**, so the credit alone covers ~156
+    CPU-hours ≈ **39× the Hobby cap**. Priced at today's usage: CPU
+    3.45h × $0.128 = $0.44, memory 20.8 GB-hr × $0.0106 = $0.22,
+    invocations 259K × $0.60/M = $0.16 → **under $1/month, entirely
+    inside the credit.** So Pro is not "more CPU", it's removing the
+    cliff. **Upgrade when:** real users arrive and the fix above
+    stops being enough, or the moment we sell anything (a paused
+    Hobby project takes the iOS/Android apps down with the site).
+    Not before — don't buy out of a homepage doing 16 queries for a
+    crawler.
+
 - **2026-09-04 (Windows): INSTAGRAM BATCH 1 REWRITTEN around real
   screenshots.** Luca generated post 1 in ChatGPT and it read "a
   little too much AI"; he wants the grid to be an extension of the

@@ -523,11 +523,22 @@ and the number carries it.
 Album drops at midnight. Everyone listens alone. Then 40 separate
 threads.
 
-Not here. Every upcoming album gets a countdown and a live room that
-opens before the drop. When it lands, everyone who followed it is in
-one chat, reacting track by track.
+Not here. Every upcoming album gets a countdown and a room that opens
+before the drop.
 
-Follow a release. Be in the room. Link in bio.
+Follow a release. Be in the room when it lands. Link in bio.
+
+**Optional first comment** — the screenshot names the record, so
+naming it in a comment gives the post something to react to and seeds
+the room before the 18th:
+
+> That's Pylon on the screen — beabadoobee, September 18. Room's
+> already open.
+
+**Hashtags for this post** (the release-day-leaning half of the set):
+#releaseday #newmusic #albumoftheyear #musicreviews #musicapp
+#musiccommunity #listeningparty #musicdiscovery #albumreview
+#musicnerd #newmusicfriday #musicsocial
 
 ---
 

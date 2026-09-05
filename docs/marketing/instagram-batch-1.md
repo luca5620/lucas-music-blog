@@ -519,14 +519,18 @@ If you can catch the countdown at something dramatic — 00:00:07 — go
 back and screenshot that frame first; the whole post is anticipation
 and the number carries it.
 
-**Caption:**
-Album drops at midnight. Everyone listens alone. Then 40 separate
-threads.
+**Caption** (Luca picked this one, 2026-09-04):
+Music is better with an audience. So is arguing about it.
 
-Not here. Every upcoming album gets a countdown and a room that opens
-before the drop.
+Countdown on every upcoming release, and a room that opens before it
+drops.
 
-Follow a release. Be in the room when it lands. Link in bio.
+Follow one. Link in bio.
+
+*Earlier draft, kept in case this one underperforms:* "Album drops at
+midnight. Everyone listens alone. Then 40 separate threads. / Not
+here. Every upcoming album gets a countdown and a room that opens
+before the drop. / Follow a release. Be in the room when it lands."
 
 **Optional first comment** — the screenshot names the record, so
 naming it in a comment gives the post something to react to and seeds

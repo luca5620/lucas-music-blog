@@ -488,25 +488,36 @@ five people in the room first, shoot it live while it's moving, and
 run it as the follow-up with a "this is what it looked like" caption.
 That post is worth more once it's real than this one is by faking it.
 
-**Plate prompt:**
-A dark bedroom at midnight, seen from slightly above and to the left.
-No people, no phone, no screen, no furniture in the centre of the
-frame. Hard electric-blue light coming from the upper left, washing
-across an unmade bed and a wall and falling off fast into black.
-Dozens of tiny out-of-focus blue and white light points drifting
-upward through the air like rising bokeh. The centre of the frame is
-completely empty dark space — leave it clear, nothing floating in it.
-Motion blur in the light points, heavy grain, late-night stillness.
-Photographic, available light.
-+ style block
+**Prep:** run the countdown page through shots.so as an angled iPhone
+(tilt it more than the others — 15–20° — this is the one post where
+the device is the hero), transparent background. Attach that mockup
+and nothing else.
 
-**Composite:** export the countdown page from shots.so as an iPhone at a three-quarter
-angle, tilted maybe 15–20°, transparent background. Drop it into the
-empty centre so it floats. Light comes from the upper left in this
-plate, so: rim light down the phone's left edge, soft shadow falling
-down and right, and a blue bloom behind the phone that pushes the
-bokeh out of focus around it. If you can catch the countdown at
-something dramatic — 00:00:07 — capture that frame.
+**Prompt:**
+
+> The attached image is a finished iPhone mockup. Do not change the
+> phone, its angle, its frame, or anything on its screen — keep the
+> screenshot exactly as provided, pixel for pixel. Build only the
+> scene around it.
+>
+> Place it floating in the middle of a dark bedroom at midnight, seen
+> from slightly above and to the left. Hard electric-blue light from
+> the upper left washes across an unmade bed and a wall and falls off
+> fast into black. Dozens of tiny out-of-focus blue and white light
+> points drift upward through the air around the phone like rising
+> bokeh, thrown out of focus by the glow coming off the screen. Rim
+> light down the phone's left edge, soft shadow falling down and to
+> the right. Motion blur in the light points, heavy film grain,
+> late-night stillness, nobody in the room.
+>
+> Photographic, available light, 50mm lens, shallow depth of field,
+> real imperfection. Not a 3D render, not an illustration, no glossy
+> stock-photo cleanliness. No text of any kind, no watermarks, no
+> logos. 4:5 portrait, 1080x1350.
+
+If you can catch the countdown at something dramatic — 00:00:07 — go
+back and screenshot that frame first; the whole post is anticipation
+and the number carries it.
 
 **Caption:**
 Album drops at midnight. Everyone listens alone. Then 40 separate

@@ -209,6 +209,20 @@ don't wait to be asked:**
   live in the doc. Antarctic ice happens to already be our blue.
   Mascot kept rare on purpose: post 1, and post 8 (the Android
   recruitment ask) as its natural second home.
+  **Week 1 is finished end to end (2026-09-04).** Posts 1, 2 and 3 all
+  have a final prompt in the mockup-first format, a short caption and
+  a hashtag set: post 1 = the penguin on Antarctic ice (generated,
+  worked — Luca ran shots.so → ChatGPT → "don't change it"), post 2 =
+  version B the burned CD-R (he generated A/B/C and picked B; both
+  object-in-frame versions beat the floating-product one), post 3 =
+  the angled countdown hero with an optional first comment naming
+  Pylon/Sept 18 to seed the room. IG profile copy (name field, bio,
+  link) is in the doc. **Luca's hands next:** reshoot the unreleased
+  grid (rate 5–6 tiles, capture from the top) — it blocks post 2's
+  mockup and post 3's slide 3; set up the profile; shoot week 2 in
+  one sitting (debate page, three theme profiles, an unknown-artist
+  review framed identically to the MF DOOM one). **Then mine:** the
+  marketing plan proper — TikTok scripts, Meta ads, weekly cadence.
 
 - **2026-09-03 (Windows): LANGUAGES — CODE SIDE DONE.** Every area of
   the site we wrote is translated into ES/FR/PT/NL/DE (1208 keys, all

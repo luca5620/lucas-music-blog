@@ -210,6 +210,45 @@ UI. It is a different bar for the App Store, where Apple expects
 rights to third-party content shown in a listing. Plan around it when
 the 1.1.1 set gets made; it doesn't affect this batch.
 
+### Week 2 — shoot list, one sitting (2026-09-05)
+
+Week 1 closed out: the unreleased grid was reshot and the Instagram
+profile is set up. Week 2 is posts **4, 5, 7** (Mon / Wed / Fri), with
+post 6 held for week 3 — but shoot its screenshot in the same sitting,
+because switching themes and setting up a debate twice is the tax.
+
+**Before you start: Settings → Performance → full effects ON.** Low
+detail is the default now and it strips the glow and the scanlines.
+Then clean account, no notification banners, no real email on screen.
+
+Six shots, in the order that minimises setup:
+
+1. **The debate page** — both covers, the VS, and the vote bar split
+   **not** 50/50. A 50/50 bar looks like nothing has happened. If no
+   live debate has a lopsided vote, start one and vote it uneven.
+2. **The same debate's chat, scrolled down** — mid-argument, several
+   messages visible. This is slide 3, and the lesson from the rejected
+   live room applies: a nearly empty chat argues against the caption.
+   If it's thin, get two people in and let it run before shooting.
+3. **PS2 nebula profile** — full page, from the top.
+4. **Xbox OG profile** — same page, same scroll position, same crop.
+5. **Light theme profile** (Wii or LimeWire) — again identical framing.
+   Posts 5's row only works if the three shots differ *only* in colour.
+6. **The unknown-artist review** — **framed exactly like the MF DOOM
+   shot**: same zoom, same scroll position, backed off ~150px so the
+   status bar isn't sitting on the artwork. Pull up the DOOM screenshot
+   next to you and match it. Post 7's entire claim is that the two
+   pages are the same page, so any difference in crop breaks it.
+7. **The Your Taste card** (for week 3) — one fullscreen card, rating
+   badge and review text both readable.
+
+Two judgement calls worth making while you're in there: prefer a
+debate between two records people actually argue about over whatever
+is currently open, and pick an unknown artist who genuinely has a
+review written on them, not an empty page — the same "UNRATED" problem
+that sent the unreleased grid back for a reshoot.
+
+
 ---
 
 ## Profile
@@ -548,33 +587,71 @@ the room before the 18th:
 
 ## Post 4 — debates
 
-**Use:** the debate page in a phone frame, centred. Slides 2–3: the
-debate page raw, and a raw shot of the same debate's chat scrolled
-down.
-**Attach to ChatGPT:** the debate page.
+**Use:** the debate page in a **straight-on** phone frame — no tilt.
+The angled device stays on posts 3 and 5; that's what keeps it an
+event. Slides 2–3: the debate page raw, and the same debate's chat
+scrolled down mid-argument.
+**Attach to ChatGPT:** the finished mockup only.
 
-**Plate prompt:**
-A black room split down the middle by light: the left half washed in
-electric blue, the right half in deep red, the two colours meeting in
-a hard vertical seam at the centre. Empty — no objects, no people, no
-screens, no text. Smoke or haze catching both beams. The centre seam
-has a clear vertical column of empty space running top to bottom.
-Photographic, theatrical lighting, high contrast, arcade energy.
-+ style block
+**Prep:** run the debate screenshot through shots.so as a front-facing
+iPhone, no rotation, transparent background.
 
-**Composite:** framed phone showing the debate page standing in the centre column,
-straddling the seam so blue lights its left edge and red lights its
-right. Don't add a chrome "VS" — the screenshot already has one.
+**Prompt** — the object version. Post 2 taught us that both scenes
+with a real object in frame beat the floating product, because the
+object gives the eye somewhere to land and the phone reads as a thing
+in a place:
+
+> The attached image is a finished iPhone mockup. Do not change the
+> phone, its frame, or anything on its screen — keep the screenshot
+> exactly as provided, pixel for pixel. Build only the scene around
+> it.
+>
+> Place it standing upright on a scuffed black table, dead centre,
+> shot straight on at eye level. Leaning on the table on either side
+> of it, facing each other, are two blank record sleeves — completely
+> plain, no artwork, no lettering, no logos, just worn cardboard with
+> soft corners and ring wear. Hard electric-blue light rakes in from
+> the left and hard deep-red light from the right, the two colours
+> meeting in a seam right at the phone, so the left sleeve is blue and
+> the right sleeve is red. Haze in the air catching both beams.
+> Everything behind falls into true black.
+>
+> Photographic still life — 50mm lens, shallow depth of field, high
+> contrast, theatrical, dust and fingerprints, heavy film grain. Not a
+> 3D render, not an illustration, no glossy stock-photo cleanliness.
+> No readable text anywhere, no watermarks, no logos. 4:5 portrait,
+> 1080x1350.
+
+The "completely plain, no lettering" line on the sleeves is
+load-bearing for the same reason it was on the hard drive — invented
+type comes back garbled and kills the shot.
+
+**Alternative if the sleeves crowd the frame:** drop them and run the
+empty split-light room — a black room cut down the middle by a hard
+vertical seam, blue left, red right, haze in both beams, the phone
+standing in the seam. Simpler, colder, less to go wrong. Generate both
+and pick, the way post 2 was picked.
+
+Don't let it add a "VS" anywhere — the screenshot already has one.
 
 **Caption:**
 Blonde or Channel Orange. Pick a side.
 
-Debates on Peak have two sides, a record on each, a live vote, and a
-chat where you defend yourself. The scoreboard updates as the room
-decides.
+Two albums, a live vote, and a chat where you have to defend yourself.
+The scoreboard moves as the room decides.
 
-Start one about anything. Two albums. Two eras. Two versions of the
-same song. Link in bio.
+Start one about anything. Link in bio.
+
+**Optional first comment** — the post is an argument, so hand people
+the argument instead of waiting for one:
+
+> Whatever's on the screen isn't the point. Drop the matchup you
+> actually want settled and I'll open it.
+
+**Hashtags for this post** (the argument-leaning half of the set):
+#musicdebate #albumreview #musicreviews #hiphopheads #popheads
+#albumoftheyear #musicapp #musiccommunity #musictaste #musicnerd
+#albumranking #musicsocial
 
 ---
 
@@ -582,104 +659,162 @@ same song. Link in bio.
 
 **Use:** the three profile shots — PS2, Xbox OG, light theme — as
 **three angled phones, see "The angled phone" above.** This is the
-post closest to Luca's reference. Slides 2–4: each theme raw, full
-bleed. Best carousel in the batch; the themes sell themselves in
-screenshots and die in description.
-**Attach to ChatGPT:** the three profile shots.
+post closest to Luca's reference, and the best carousel in the batch:
+the themes sell themselves in screenshots and die in description.
+Slides 2–4: each theme raw, full bleed.
 
-**Plate prompt:**
-An empty black studio space: a black brushed-metal floor receding into
-darkness, shot from slightly above at eye level with the floor. Hard
-electric-blue light from the upper left, dust hanging in the air,
-faint reflections on the metal. Nothing is standing on the floor —
-the scene is completely empty, no objects, no phones, no screens, no
-text. Photographic product still life, deep falloff into black.
-+ style block
+**Prep — the important bit.** Don't hand ChatGPT three separate phones
+and ask it to arrange them; it resizes and re-angles them
+independently and the row stops reading as one object. Build the
+**whole arrangement first** as a single transparent PNG:
 
-**Composite:** export the three profile shots from shots.so as three
-angled iPhones, same tilt, transparent background. Stand them in a
-staggered row with the middle one slightly forward, overlapping a
-little, left to right: PS2 nebula, Xbox OG green, then the light
-theme last so the row ends bright. Light is upper left, so every phone gets its rim
-light on the left edge and its shadow stretching down-right across
-the metal — three shadows, all parallel.
+1. Three shots.so exports, **same device, same tilt**, transparent
+   background.
+2. Arrange them in Canva on a transparent canvas: a staggered row,
+   middle phone slightly forward, each overlapping the next a little.
+   Left to right — PS2 nebula, Xbox OG green, light theme last so the
+   row ends bright.
+3. Export that one PNG and attach only that.
+
+**Prompt:**
+
+> The attached image is a finished arrangement of three iPhone
+> mockups. Do not change the phones, their angles, their spacing, or
+> anything on their screens — keep all three screenshots exactly as
+> provided, pixel for pixel. Build only the scene around them.
+>
+> Stand them on a black brushed-metal floor that recedes into
+> darkness, shot from slightly above at close to floor level. One hard
+> electric-blue light from the upper left, dust hanging in the air,
+> faint reflections of the phones in the metal beneath them. Every
+> phone gets its rim light down its left edge and its shadow
+> stretching down and to the right — three shadows, all parallel.
+> Nothing else is standing on the floor. Deep falloff into true black
+> behind.
+>
+> Photographic product still life — 50mm lens, shallow depth of field,
+> real dust and imperfection, heavy film grain. Not a 3D render, not
+> an illustration, no glossy stock-photo cleanliness. No text of any
+> kind, no watermarks, no logos. 4:5 portrait, 1080x1350.
 
 **Caption:**
 Your profile is a channel, not a form.
 
-Ten themes built from console eras and internet history. PS2 boot
-screen. Xbox OG. Xbox 360. PS3. PS4. Wii. LimeWire. Each one recolors
-the whole page.
+Ten themes built from console eras and internet history — PS2 boot
+screen, Xbox OG, Wii, LimeWire. Each one recolors the whole page.
 
-Arrange the blocks you want. Pin a review. Put a song on the door.
-Add a playlist. Link in bio.
+Pin a review. Put a song on the door. Link in bio.
+
+**Hashtags for this post** (the nostalgia-leaning half of the set):
+#ps2 #nostalgiacore #musicapp #musicreviews #albumrating
+#musiccommunity #musictaste #retroaesthetic #musicnerd #musicsocial
+#customprofile #musicdiscovery
 
 ---
 
-## Post 6 — Your Taste
+## Post 6 — Your Taste (held for week 3)
 
-**Use:** the Your Taste card, screen filling most of the frame.
-Slides 2–3: the Your Taste card raw, then a second one on a different
-card to show the swipe.
-**Attach to ChatGPT:** the Your Taste card.
+**Use:** the Your Taste card filling most of the frame. Slides 2–3:
+the card raw, then a second card to show the swipe.
 
-**Plate prompt:**
-A hand holding a modern smartphone vertically at arm's length in a
-dark room, shot from the front. The phone screen is switched off and
-completely black — no interface, no content, no glare. Blue light
-coming from the screen's direction lights the fingers and the edge of
-the frame. Everything behind falls into black. Real skin texture,
-slight handheld motion. Photographic, available light, shallow depth
-of field.
-+ style block
+**This one stays plate-first, on purpose.** A hand holding the phone
+is the whole idea here, and no mockup generator gives you a hand — so
+generate the hand holding a **switched-off** phone, then composite the
+screenshot into the black screen yourself in Canva. It's the
+documented fallback: use it wherever you want the screen brighter than
+the model will ever render it.
 
-**Composite:** drop the Your Taste card into the black screen at full brightness, then
-add blue spill onto the fingers so the light matches the screen.
+**Plate prompt** (attach 2–3 real screenshots for palette only, and
+say so):
+
+> A hand holding a modern smartphone vertically at arm's length in a
+> dark room, shot from the front. The phone screen is switched off and
+> completely black — no interface, no content, no glare, no
+> reflection. Blue light coming from the screen's direction lights the
+> fingers and the edge of the frame. Everything behind falls into
+> black. Real skin texture, slight handheld motion blur.
+>
+> + style block
+
+**Composite:** drop the Your Taste card into the black screen at full
+brightness, then paint a little blue spill onto the fingertips so the
+light agrees with the screen. If the fingers stay unlit it reads as a
+sticker.
 
 **Caption:**
-A feed tuned to you. Not the algorithm.
+A feed tuned to you. Not to the algorithm.
 
-Your Taste is a fullscreen channel of reviews from people who rate
-the way you do. One take at a time, the music playing under it. Swipe
-to the next.
+Your Taste is a fullscreen channel of reviews from people who rate the
+way you do, with the music playing underneath. One take at a time.
+Swipe.
 
 Rate a few records and it starts tuning. Link in bio.
+
+**Hashtags for this post:**
+#musicdiscovery #musictaste #musicreviews #musicapp #newmusic
+#musiccommunity #albumreview #musicnerd #musicsocial #albumrating
+#foryoupage #newmusicfriday
 
 ---
 
 ## Post 7 — small artists
 
 **Use:** the review page (big release) and the unknown-artist review,
-side by side. Slides 2–3: both raw.
-**Attach to ChatGPT:** the review page, the unknown-artist review.
+side by side, identical in every way. Slides 2–3: both raw.
 
 This one only works with real screenshots. The claim is "these two
 pages are identical", and an AI drawing of two album covers proves
 nothing.
 
-**Plate prompt:**
-A black shelf photographed straight on in a dark room, two identical
-empty slots side by side, nothing on the shelf — no objects, no
-covers, no screens, no text. Both slots lit by exactly the same
-electric-blue light from above so neither is favoured. Dust on the
-shelf, real shadows, heavy grain. Photographic still life,
-symmetrical, calm.
-+ style block
+**Prep:** same as post 5 — build the pair as **one** transparent PNG
+before ChatGPT sees it. Two straight-on shots.so exports, same device,
+no tilt, then place them side by side in Canva at exactly the same
+size with even spacing. Big release on the left, unknown on the right.
+If the two phones come out even slightly different sizes, the post
+argues against itself.
 
-**Composite:** a framed phone in each slot — same size, same angle,
-same glow. The symmetry is the message. Big release on the left,
-unknown on the right.
+**Prompt:**
+
+> The attached image is a finished arrangement of two iPhone mockups.
+> Do not change the phones, their size, their spacing, or anything on
+> their screens — keep both screenshots exactly as provided, pixel for
+> pixel. Build only the scene around them.
+>
+> Stand them in two identical empty slots of a black shelf,
+> photographed straight on in a dark room, perfectly symmetrical. Both
+> slots are lit by exactly the same soft electric-blue light from
+> above, so neither phone is favoured and neither shadow is longer.
+> Dust on the shelf, worn edges on the wood, nothing else on it. Deep
+> falloff into true black around the shelf.
+>
+> Photographic still life — 50mm lens, symmetrical, calm, real
+> shadows, heavy film grain. Not a 3D render, not an illustration, no
+> glossy stock-photo cleanliness. No text of any kind, no watermarks,
+> no logos. 4:5 portrait, 1080x1350.
+
+The symmetry *is* the message — if the light favours one side, kill
+the generation and run it again.
 
 **Caption:**
 Small artists get the same page as the big drop.
 
 Same rating. Same review. Same live room on release night. If someone
-here writes about your record, it sits next to the album of the year,
+writes about your record here, it sits next to the album of the year,
 not under it.
 
-If you make music, get your record on here and send the link to your
-people. If you write about music, go find someone nobody has written
-about yet. Link in bio.
+Make music? Get your record on here. Write about it? Go find someone
+nobody's covered yet. Link in bio.
+
+**Optional first comment** — this is the post most likely to convert a
+lurking artist, so make the ask concrete:
+
+> If your record isn't in the catalog, paste a Spotify link in the
+> comments and I'll add it tonight.
+
+**Hashtags for this post** (the artist-leaning half of the set):
+#indiemusic #unsignedartist #smallartist #musicreviews #albumreview
+#newmusic #independentartist #musiccommunity #musicapp #bandcamp
+#musicdiscovery #supportsmallartists
 
 ---
 

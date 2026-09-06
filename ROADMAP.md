@@ -90,6 +90,83 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-05 (Windows): INSTAGRAM WEEK 2 WRITTEN, and the growth
+  conversation Luca actually needed.** Week 1 closed out on his side
+  (unreleased grid reshot, IG profile set up). Posts **4 (debates), 5
+  (profile themes) and 7 (small artists)** are now in the mockup-first
+  format that worked for week 1 — prep steps, a single final prompt, a
+  short caption, a first comment where it earns one, and a per-post
+  hashtag set. Post 6 (Your Taste) rewritten too and held for week 3.
+  New craft notes baked in: post 4 gets the **object-in-frame**
+  treatment (two blank record sleeves in a blue/red split light),
+  because post 2 proved both object versions beat the floating product;
+  posts 5 and 7 must have their **multi-phone arrangement built as ONE
+  transparent PNG in Canva before ChatGPT sees it**, or the model
+  resizes and re-angles each phone independently and the row stops
+  reading as one object; post 6 deliberately stays **plate-first**
+  (no mockup generator gives you a hand, so generate a switched-off
+  phone and composite the screen in Canva). One six-shot list for a
+  single sitting is in the doc's "Week 2 — shoot list" section, with
+  the two traps called out: the debate vote bar must not read 50/50,
+  and the unknown-artist review must be framed *identically* to the MF
+  DOOM shot or post 7's whole claim collapses.
+  - **THE WALL (Luca, 2026-09-05).** He's discouraged and said the app
+    "may be destined to fail". Worth writing down because the diagnosis
+    changes what we build next.
+    - **The Reddit post landed badly** — downvoted on the technicality
+      that Musicboard isn't literally dead. **Standing lesson: never
+      make a falsifiable claim about a competitor's status; it makes
+      the thread about them.** Lead with what only we have. A separate
+      commenter called the site vibecoded and Luca talked him around —
+      the app survives contact, and the answer to that criticism is
+      craft evidence, never argument.
+    - **The real problem is retention, not reach.** His own line:
+      users may fade out faster than they arrive. At our size the
+      social feed can't retain anyone because it's empty — so the work
+      that matters is **single-player value**: a rating history that is
+      the best-looking page on the site and worth linking in a bio.
+      That's the same thing that makes reviewer outreach land.
+    - **His idea, and the one we're running: contact YouTube music
+      reviewers personally** (Turning the Table, Bridging the Gap, Bob
+      the poppop, JonDenton, others). Ask them to genuinely try it, not
+      to shout it out. Three conditions agreed: send **one at a time**,
+      make **backfilling their existing ratings fast** before the first
+      DM goes out (an empty profile spends the one shot), and ask only
+      for "try it and tell me what's broken".
+    - **He will not do on-camera / personal marketing.** Introverted,
+      doesn't want corny TikTok ads. Faceless screen-recording formats
+      are the norm in this niche and are the version to plan.
+  - **UNRELEASED FRONT DOOR — reframed to the VAULT.** Luca's objection
+    ("there isn't a crazy amount of anticipated music going around") is
+    correct about *countdowns*, which are thin and seasonal. But leak
+    culture isn't about announced albums — it's the enormous evergreen
+    archive of tracks that already leaked and will never be released
+    (Carti, Juice WRLD). **So the front door is the vault, not a
+    countdown wall.** Today unreleased is only a filter chip on
+    `/releases` — no section, no hub, nothing linkable, nothing for
+    Google. The same reframe answers the owed SEO conversation:
+    **per-artist unreleased hubs** ("<artist> unreleased songs") are
+    real, evergreen, high-volume queries currently served by Reddit
+    threads and dead Google Docs. One build = the product bet + the
+    retention hook + the SEO play.
+  - **AGREED ORDER:** (1) Instagram week 2 ✓ this entry, (2) the
+    reviewer outreach kit + the profile-backfill work it depends on,
+    (3) the unreleased vault + per-artist hubs. **A site-wide UI
+    overhaul explored with GPT-6 Astra sits either side of (3)** —
+    Luca's call, and he's right that it's worth exploring; he'll have
+    Astra generate several directions and may pick none. Guardrail from
+    the reverted Your Taste overhaul: have it produce **the look**
+    (static mockups of a few key screens, palette, type scale,
+    component treatments), not a rewrite of the app — the real frontend
+    is entangled with i18n across six locales, low-detail mode, the
+    approved top chrome and tab bar, server components and the caching
+    that just fixed the CPU ceiling. Feed it the week-1/week-2
+    screenshots as the input; apply anything he picks incrementally on
+    a branch with a dev-server preview.
+  - **Google Play testers: still zero.** Remembered, still not now.
+  - **Language review pages:** Luca will bring friends' feedback when
+    it arrives — not a standing to-do.
+
 - **2026-09-04 (Windows): VERCEL FLUID ACTIVE CPU — 86% OF THE HOBBY
   CAP, fixed in 5b04505.** Luca spotted it in Observability. Numbers
   at diagnosis: **Active CPU 3h27m / 4h** on a rolling 30 days (every

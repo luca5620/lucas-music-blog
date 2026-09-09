@@ -38,7 +38,9 @@
     "list": "Liste",
     "listSub": "sammle und sortiere deine Favoriten",
     "debate": "Debatte",
-    "debateSub": "such dir Streit und lass die Stimmen entscheiden"
+    "debateSub": "such dir Streit und lass die Stimmen entscheiden",
+    "quick": "Schnellbewertung",
+    "quickSub": "zwanzig Platten in zwei Minuten"
   },
   "footer": {
     "foundAProblem": "Etwas kaputt?",
@@ -847,7 +849,8 @@
       "votes": "{n, plural, one {# Stimme} other {# Stimmen}}",
       "takes": "{n, plural, one {# Meinung} other {# Meinungen}}",
       "onAir": "On Air",
-      "signedOff": "Beendet"
+      "signedOff": "Beendet",
+      "quickRate": "Schnellbewertung"
     }
   },
   "releases": {
@@ -1509,5 +1512,22 @@
     },
     "getInTouch": "KONTAKT",
     "contact": "Fragen, Ideen, Probleme?"
+  },
+  "quickRate": {
+    "title": "Schnellbewertung",
+    "sub": "Zwanzig Platten, zwei Minuten. Schieben, bewerten, weiter — dein Profil füllt sich nebenbei.",
+    "rated": "Bewertet · {n}",
+    "left": "{n, plural, one {# übrig} other {# übrig}}",
+    "skip": "Nie gehört",
+    "rate": "Bewerten",
+    "undo": "Rückgängig",
+    "already": "Schon bewertet — übersprungen.",
+    "error": "Konnte nicht gespeichert werden — versuch es nochmal.",
+    "ratingAria": "Deine Bewertung für {title}",
+    "doneTitle": "Der Stapel ist leer",
+    "doneSub": "{n, plural, one {Du hast # Platte bewertet} other {Du hast # Platten bewertet}} in dieser Sitzung — such unten weiter.",
+    "profile": "Dein Profil ansehen",
+    "searchLabel": "Eine bestimmte Platte bewerten",
+    "searchPlaceholder": "Album oder Artist suchen — oder einen Spotify-Link einfügen…"
   }
 }

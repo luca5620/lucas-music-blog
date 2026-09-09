@@ -38,7 +38,9 @@
     "list": "Liste",
     "listSub": "rassemble et classe tes préférés",
     "debate": "Débat",
-    "debateSub": "lance la bagarre, les votes tranchent"
+    "debateSub": "lance la bagarre, les votes tranchent",
+    "quick": "Notation rapide",
+    "quickSub": "vingt disques en deux minutes"
   },
   "footer": {
     "foundAProblem": "Un problème ?",
@@ -847,7 +849,8 @@
       "votes": "{n, plural, one {# vote} other {# votes}}",
       "takes": "{n, plural, one {# avis} other {# avis}}",
       "onAir": "À l'antenne",
-      "signedOff": "Terminé"
+      "signedOff": "Terminé",
+      "quickRate": "Notation rapide"
     }
   },
   "releases": {
@@ -1509,5 +1512,22 @@
     },
     "getInTouch": "NOUS CONTACTER",
     "contact": "Des questions, des idées, des problèmes ?"
+  },
+  "quickRate": {
+    "title": "Notation rapide",
+    "sub": "Vingt disques, deux minutes. Glisse, note, suivant — ton profil se remplit au fur et à mesure.",
+    "rated": "Notés · {n}",
+    "left": "{n, plural, one {# restant} other {# restants}}",
+    "skip": "Jamais écouté",
+    "rate": "Noter",
+    "undo": "Annuler",
+    "already": "Déjà noté — passé.",
+    "error": "Impossible d'enregistrer — réessaie.",
+    "ratingAria": "Ta note pour {title}",
+    "doneTitle": "Plus rien dans le paquet",
+    "doneSub": "{n, plural, one {Tu as noté # disque} other {Tu as noté # disques}} cette session — cherche ci-dessous pour continuer.",
+    "profile": "Voir ton profil",
+    "searchLabel": "Noter un disque précis",
+    "searchPlaceholder": "Cherche un album ou un artiste — ou colle un lien Spotify…"
   }
 }

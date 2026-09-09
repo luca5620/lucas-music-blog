@@ -27,7 +27,6 @@ import { useTranslations } from "next-intl";
 // (LANGUAGES, i18n/config.ts); the words are looked up at render time.
 const CREATE_OPTIONS = [
   { href: "/reviews/new", icon: "★", label: "review", sub: "reviewSub" },
-  { href: "/quick-rate", icon: "⚡", label: "quick", sub: "quickSub" },
   { href: "/posts/new", icon: "▶", label: "post", sub: "postSub" },
   { href: "/lists/new", icon: "≣", label: "list", sub: "listSub" },
   { href: "/debates/new", icon: "⚔", label: "debate", sub: "debateSub" },

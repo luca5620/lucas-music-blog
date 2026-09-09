@@ -38,9 +38,7 @@
     "list": "List",
     "listSub": "stack and rank your picks",
     "debate": "Debate",
-    "debateSub": "pick a fight, let the votes decide",
-    "quick": "Quick Rate",
-    "quickSub": "twenty records in two minutes"
+    "debateSub": "pick a fight, let the votes decide"
   },
   "footer": {
     "foundAProblem": "Found a problem?",
@@ -849,8 +847,7 @@
       "votes": "{n, plural, one {# vote} other {# votes}}",
       "takes": "{n, plural, one {# take} other {# takes}}",
       "onAir": "On air",
-      "signedOff": "Signed off",
-      "quickRate": "Quick Rate"
+      "signedOff": "Signed off"
     }
   },
   "releases": {
@@ -1512,22 +1509,5 @@
     },
     "getInTouch": "GET IN TOUCH",
     "contact": "Questions, ideas, problems?"
-  },
-  "quickRate": {
-    "title": "Quick Rate",
-    "sub": "Twenty records, two minutes. Slide, rate, next — your profile fills up as you go.",
-    "rated": "Rated · {n}",
-    "left": "{n, plural, one {# left} other {# left}}",
-    "skip": "Haven't heard it",
-    "rate": "Rate it",
-    "undo": "Undo last",
-    "already": "Already rated — skipped.",
-    "error": "Couldn't save that one — try again.",
-    "ratingAria": "Your rating for {title}",
-    "doneTitle": "Deck's empty",
-    "doneSub": "{n, plural, one {You rated # record} other {You rated # records}} this session — search below to keep going.",
-    "profile": "See your profile",
-    "searchLabel": "Rate a specific record",
-    "searchPlaceholder": "Search an album or artist — or paste a Spotify link…"
   }
 }

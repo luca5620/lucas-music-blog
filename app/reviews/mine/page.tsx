@@ -67,9 +67,6 @@ export default async function MyReviewsPage() {
           </nav>
         </div>
 
-        <Link href="/quick-rate" className="btn-y2k btn-y2k-outline shrink-0">
-          ⚡ {t("quickRate")}
-        </Link>
         <Link href="/reviews/new" className="btn-y2k btn-y2k-primary shrink-0">
           <svg
             className="w-4 h-4"

@@ -80,36 +80,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: Record<string, unknown>;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
-  }
-
-  // Quick Rate (Luca 2026-09-08): the /quick-rate deck posts one
-  // wordless, published review per tap — twenty in two minutes is the
-  // whole point, so it gets its own, looser limit, and it never rings
-  // followers' bells (twenty "new review" notifications in a row is
-  // spam, not news). Everything else about the review is identical.
-  const quick = body.quick === true;
-  // Max 5 new reviews per user per 5 minutes; 60 for the deck.
-  const limited = quick
-    ? await rateLimit(`quick-rate:${user.id}`, 60, 300_000)
-    : await rateLimit(`reviews:${user.id}`, 5, 300_000);
+  // Max 5 new reviews per user per 5 minutes.
+  const limited = await rateLimit(`reviews:${user.id}`, 5, 300_000);
   if (limited) return limited;
 
   try {
+    const body = await request.json();
     const { release_id, rating, summary, snippet, standout_tracks, is_published } =
-      body as {
-        release_id?: unknown;
-        rating?: unknown;
-        // isOptionalText() below is the runtime check on these two.
-        summary?: string | null;
-        snippet?: string | null;
-        standout_tracks?: unknown;
-        is_published?: boolean;
-      };
+      body;
 
     // --- Validate. Nothing in the body is trusted. ---
     if (!isUuid(release_id)) {
@@ -235,7 +213,7 @@ export async function POST(request: Request) {
     // Followers hear about it — but only once it's actually public.
     // A draft is nobody's business until it's published (the edit
     // route fires this when a draft goes live).
-    if (is_published && !quick) {
+    if (is_published) {
       await notifyFollowers({
         actorId: user.id,
         type: "new_review",
@@ -246,10 +224,6 @@ export async function POST(request: Request) {
       // community average just changed) exist — fire and forget, so
       // a slow IndexNow never delays the response. See lib/indexnow.
       void pingIndexNow([`/reviews/${slug}`, `/releases/${release.slug}`]);
-    } else if (is_published) {
-      // Quick rates: only the release page changed in a way worth
-      // indexing — a wordless review page is thin.
-      void pingIndexNow([`/releases/${release.slug}`]);
     }
 
     return NextResponse.json(review, { status: 201 });

@@ -38,9 +38,7 @@
     "list": "Lijst",
     "listSub": "verzamel en rangschik je favorieten",
     "debate": "Debat",
-    "debateSub": "zoek de strijd op en laat de stemmen beslissen",
-    "quick": "Snel beoordelen",
-    "quickSub": "twintig platen in twee minuten"
+    "debateSub": "zoek de strijd op en laat de stemmen beslissen"
   },
   "footer": {
     "foundAProblem": "Iets kapot?",
@@ -849,8 +847,7 @@
       "votes": "{n, plural, one {# stem} other {# stemmen}}",
       "takes": "{n, plural, one {# mening} other {# meningen}}",
       "onAir": "On air",
-      "signedOff": "Afgesloten",
-      "quickRate": "Snel beoordelen"
+      "signedOff": "Afgesloten"
     }
   },
   "releases": {
@@ -1512,22 +1509,5 @@
     },
     "getInTouch": "CONTACT",
     "contact": "Vragen, ideeën, problemen?"
-  },
-  "quickRate": {
-    "title": "Snel beoordelen",
-    "sub": "Twintig platen, twee minuten. Schuif, beoordeel, volgende — je profiel vult zich vanzelf.",
-    "rated": "Beoordeeld · {n}",
-    "left": "{n, plural, one {# over} other {# over}}",
-    "skip": "Nooit gehoord",
-    "rate": "Beoordelen",
-    "undo": "Ongedaan maken",
-    "already": "Al beoordeeld — overgeslagen.",
-    "error": "Opslaan mislukt — probeer het opnieuw.",
-    "ratingAria": "Jouw cijfer voor {title}",
-    "doneTitle": "De stapel is leeg",
-    "doneSub": "{n, plural, one {Je beoordeelde # plaat} other {Je beoordeelde # platen}} deze sessie — zoek hieronder om door te gaan.",
-    "profile": "Bekijk je profiel",
-    "searchLabel": "Een specifieke plaat beoordelen",
-    "searchPlaceholder": "Zoek een album of artiest — of plak een Spotify-link…"
   }
 }

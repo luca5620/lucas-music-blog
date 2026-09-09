@@ -38,9 +38,7 @@
     "list": "Lista",
     "listSub": "junte e ordene seus favoritos",
     "debate": "Debate",
-    "debateSub": "compre a briga e deixe os votos decidirem",
-    "quick": "Nota rápida",
-    "quickSub": "vinte discos em dois minutos"
+    "debateSub": "compre a briga e deixe os votos decidirem"
   },
   "footer": {
     "foundAProblem": "Encontrou um problema?",
@@ -849,8 +847,7 @@
       "votes": "{n, plural, one {# voto} other {# votos}}",
       "takes": "{n, plural, one {# opinião} other {# opiniões}}",
       "onAir": "No ar",
-      "signedOff": "Encerrado",
-      "quickRate": "Nota rápida"
+      "signedOff": "Encerrado"
     }
   },
   "releases": {
@@ -1512,22 +1509,5 @@
     },
     "getInTouch": "FALE COM A GENTE",
     "contact": "Perguntas, ideias, problemas?"
-  },
-  "quickRate": {
-    "title": "Nota rápida",
-    "sub": "Vinte discos, dois minutos. Desliza, avalia, próximo — o teu perfil vai-se enchendo.",
-    "rated": "Avaliados · {n}",
-    "left": "{n, plural, one {falta #} other {faltam #}}",
-    "skip": "Nunca ouvi",
-    "rate": "Avaliar",
-    "undo": "Anular",
-    "already": "Já avaliado — saltado.",
-    "error": "Não foi possível guardar — tenta de novo.",
-    "ratingAria": "A tua nota para {title}",
-    "doneTitle": "Acabou o baralho",
-    "doneSub": "{n, plural, one {Avaliaste # disco} other {Avaliaste # discos}} nesta sessão — pesquisa abaixo para continuar.",
-    "profile": "Ver o teu perfil",
-    "searchLabel": "Avaliar um disco específico",
-    "searchPlaceholder": "Pesquisa um álbum ou artista — ou cola um link do Spotify…"
   }
 }

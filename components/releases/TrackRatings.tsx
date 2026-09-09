@@ -33,11 +33,15 @@ interface Props {
   releaseId: string;
   tracks: TrackRatingTrack[];
   initial: Record<number, TrackRatingSummary>;
+  /** Inside PlayerTabs the card chrome + title belong to the tab
+      strip — bare renders just the strip's hint, the fan-favorite
+      line and the rows. */
+  bare?: boolean;
 }
 
 type Summary = { avg: number | null; count: number; mine: number | null };
 
-export default function TrackRatings({ releaseId, tracks, initial }: Props) {
+export default function TrackRatings({ releaseId, tracks, initial, bare = false }: Props) {
   const t = useTranslations("releases.trackRatings");
   const { user } = useAuth();
   const router = useRouter();
@@ -145,16 +149,22 @@ export default function TrackRatings({ releaseId, tracks, initial }: Props) {
   if (tracks.length === 0) return null;
 
   return (
-    <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="glow-orb" />
-          <span className="label-xbox">{t("title")}</span>
-        </div>
-        <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest text-right">
+    <div className={bare ? "space-y-3" : "card-y2k p-4 sm:p-5 space-y-3 overflow-hidden"}>
+      {bare ? (
+        <p className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
           {user ? t("tapToRate") : t("signIn")}
-        </span>
-      </div>
+        </p>
+      ) : (
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="glow-orb" />
+            <span className="label-xbox">{t("title")}</span>
+          </div>
+          <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest text-right">
+            {user ? t("tapToRate") : t("signIn")}
+          </span>
+        </div>
+      )}
 
       {favorite && (
         <div

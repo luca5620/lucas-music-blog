@@ -23,9 +23,12 @@ import { getTranslations } from "next-intl/server";
 interface SpotifyEmbedProps {
   release: Release;
   tracks: ReleaseTrack[];
+  /** Inside PlayerTabs: the tab strip is the card header, so render
+      the iframe alone (no card, no PREVIEW label). */
+  bare?: boolean;
 }
 
-export default async function SpotifyEmbed({ release, tracks }: SpotifyEmbedProps) {
+export default async function SpotifyEmbed({ release, tracks, bare = false }: SpotifyEmbedProps) {
   if (!release.spotify_id) return null;
   const t = await getTranslations("releases.embed"); // Genius-only imports: nothing to embed
 
@@ -37,6 +40,22 @@ export default async function SpotifyEmbed({ release, tracks }: SpotifyEmbedProp
   // it replaced the Tracks card, so it should show the tracks).
   // theme=0 = dark, matching the CRT.
   const height = isTrackId ? 152 : 550;
+
+  const iframe = (
+    <iframe
+      src={`https://open.spotify.com/embed/${kind}/${release.spotify_id}?theme=0`}
+      width="100%"
+      // The height attribute rules on phones; at xl the flex-1
+      // class overrides it and the player fills the column.
+      height={height}
+      frameBorder="0"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+      title={t("spotifyTitle", { title: release.title })}
+      className="rounded-lg xl:flex-1 xl:min-h-0"
+    />
+  );
+  if (bare) return iframe;
 
   return (
     // xl: the card grows to fill its grid column so the preview box
@@ -53,18 +72,7 @@ export default async function SpotifyEmbed({ release, tracks }: SpotifyEmbedProp
           {t("spotifyClips")}
         </span>
       </div>
-      <iframe
-        src={`https://open.spotify.com/embed/${kind}/${release.spotify_id}?theme=0`}
-        width="100%"
-        // The height attribute rules on phones; at xl the flex-1
-        // class overrides it and the player fills the column.
-        height={height}
-        frameBorder="0"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-        title={t("spotifyTitle", { title: release.title })}
-        className="rounded-lg xl:flex-1 xl:min-h-0"
-      />
+      {iframe}
     </div>
   );
 }

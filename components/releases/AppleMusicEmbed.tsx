@@ -20,15 +20,35 @@ import { getTranslations } from "next-intl/server";
 export default async function AppleMusicEmbed({
   release,
   apple,
+  bare = false,
 }: {
   release: Release;
   apple: AppleMusicRef;
+  /** Inside PlayerTabs: the tab strip is the card header, so render
+      the iframe alone (no card, no PREVIEW label). */
+  bare?: boolean;
 }) {
   // Apple's song player is 175px; the album player shows its tracklist
   // at 450 (their documented sizes). Same xl: fill-the-column rule as
   // the Spotify card so the two are interchangeable in the grid.
   const height = apple.trackId ? 175 : 450;
   const t = await getTranslations("releases.embed");
+
+  const iframe = (
+    <iframe
+      src={appleMusicEmbedSrc(apple)}
+      width="100%"
+      height={height}
+      frameBorder="0"
+      allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+      sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+      loading="lazy"
+      title={t("appleTitle", { title: release.title })}
+      className="rounded-lg xl:flex-1 xl:min-h-0"
+      style={{ background: "transparent", overflow: "hidden" }}
+    />
+  );
+  if (bare) return iframe;
 
   return (
     <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden xl:flex-1 xl:flex xl:flex-col">
@@ -46,18 +66,7 @@ export default async function AppleMusicEmbed({
           {t("appleClips")}
         </a>
       </div>
-      <iframe
-        src={appleMusicEmbedSrc(apple)}
-        width="100%"
-        height={height}
-        frameBorder="0"
-        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
-        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-        loading="lazy"
-        title={t("appleTitle", { title: release.title })}
-        className="rounded-lg xl:flex-1 xl:min-h-0"
-        style={{ background: "transparent", overflow: "hidden" }}
-      />
+      {iframe}
     </div>
   );
 }

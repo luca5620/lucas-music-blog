@@ -138,16 +138,30 @@ don't wait to be asked:**
     front. Deck = most-reviewed catalog minus unreleased/upcoming/
     already-reviewed. Entry points: Create sheet (⚡) and My Stuff.
     Not eyeballed.
-  - **OPEN DECISION — the two tracklists.** With TRACK RATINGS under
-    the player, the release page shows the tracklist twice (Spotify/
-    Apple embed + our rating rows). Luca: previews matter more.
-    Options given: (1) ONE card with a `PREVIEW | RATINGS` segmented
-    switch, preview default, count badge on the ratings tab —
-    recommended, ~30 min; (2) collapse ratings to the FAN FAVORITE
-    strip + "Rate the tracks" expander; (3) our rows become THE
-    tracklist with ▶ per row driving Spotify's compact player via
-    the iframe API (Apple: src swap + press play) — the ideal, bigger,
-    retires the tall album embed. Waiting on his pick.
+  - **QUICK RATE REVERTED the same evening** (2a15d0e). Luca: "this
+    just gives people too many options." Standing principle now: no
+    parallel ways to do the same thing.
+  - **TWO TRACKLISTS → RESOLVED with option 1 (PlayerTabs).** The
+    release page showed the tracklist twice (Spotify/Apple embed +
+    our rating rows). Luca saw option 3 on localhost (our rows as THE
+    tracklist driving Spotify's compact player through the iframe
+    API) and said no — branch deleted, nothing of it on main. Shipped:
+    **one card, `PREVIEW | RATINGS` segmented switch in the header,
+    preview default, count chip on RATINGS.** Both panes stay mounted
+    (inactive one is `hidden`) so the music keeps playing while you
+    rate. `SpotifyEmbed`/`AppleMusicEmbed`/`TrackRatings` grew a
+    `bare` prop for use inside the tabs; Genius-only imports (no
+    player) keep the plain tracklist + a standalone ratings card.
+    Not eyeballed on device.
+  - **Direction locked in tonight (details in memory, all standing):**
+    Astra writes an .md UI brief, I do the frontend; the BLOBS must be
+    redone (Reddit's "vibecoded" read was right — differentiate from
+    every vibecoded app); cartridge borders on the website = exploring;
+    Your Taste v2 = step by step with a localhost preview before EVERY
+    push; debates = recommendations only; unreleased vault held;
+    **reviewer outreach kit starts by 2026-09-10**; rebrand pending;
+    SEO leftovers still owed; Supabase Pro "perhaps soon"; Sentry
+    already live.
 
 - **2026-09-05 (Windows): INSTAGRAM WEEK 2 WRITTEN, and the growth
   conversation Luca actually needed.** Week 1 closed out on his side

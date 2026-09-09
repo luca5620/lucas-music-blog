@@ -36,11 +36,16 @@ import LiveCountdown from "@/components/releases/LiveCountdown";
 import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
 import TrackRatings from "@/components/releases/TrackRatings";
+import PlayerTabs from "@/components/releases/PlayerTabs";
 import {
   getTrackRatingSummaries,
   type TrackRatingSummary,
 } from "@/lib/db/track-ratings";
-import { resolveAppleMusic, type AppleMusicRef } from "@/lib/apple-music";
+import {
+  appleMusicUrl,
+  resolveAppleMusic,
+  type AppleMusicRef,
+} from "@/lib/apple-music";
 import { createClient } from "@/lib/supabase/server";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
@@ -402,6 +407,7 @@ async function ReleaseContent({
 }: ReleaseContentProps) {
   const t = await getTranslations("releases.page");
   const tc = await getTranslations("common");
+  const tEmbed = await getTranslations("releases.embed");
   const locale = await getLocale();
   // Countdown album: the page (and its live room) exists BEFORE the
   // music does. isUpcoming flips to false on release day by itself.
@@ -633,23 +639,65 @@ async function ReleaseContent({
             Settings (when Apple carries the record), Spotify's for
             everyone else. Both stream 30s snippets under the
             platform's own licenses (we host no audio). */}
-        {apple ? (
-          <AppleMusicEmbed release={release} apple={apple} />
-        ) : (
-          <SpotifyEmbed release={release} tracks={tracks} />
-        )}
-
-        {/* TRACK RATINGS — the tracklist as a scoreboard (Luca
-            2026-09-08). The review rates the record; this rates each
-            song, community average per row, tap a row to add yours.
-            Sits under the player so the Spotify/Apple tracklist and
-            the scores read as one column. */}
-        {tracks.length > 0 && (
-          <TrackRatings
-            releaseId={release.id}
-            tracks={tracks.map((tr) => ({ position: tr.position, title: tr.title }))}
-            initial={trackRatings}
+        {/* ONE card: PREVIEW | RATINGS (Luca 2026-09-08 — the player
+            already shows the tracklist, so the per-song scores live
+            behind a tab in the same card instead of as a second list).
+            Preview = Apple's player for members who picked it in
+            Settings (when Apple carries the record), Spotify's for
+            everyone else; both stream 30s snippets under the
+            platform's own licenses (we host no audio). Genius-only
+            imports have no player: the plain tracklist above stays
+            and the ratings get their own card. */}
+        {(apple || release.spotify_id) && tracks.length > 0 ? (
+          <PlayerTabs
+            ratingsCount={Object.values(trackRatings).reduce((n, s) => n + s.count, 0)}
+            previewNote={
+              apple ? (
+                <a
+                  href={appleMusicUrl(apple)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pixel-text text-[10px] text-text-muted hover:text-accent-primary uppercase tracking-widest transition-colors shrink-0"
+                >
+                  {tEmbed("appleClips")}
+                </a>
+              ) : (
+                <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest shrink-0">
+                  {tEmbed("spotifyClips")}
+                </span>
+              )
+            }
+            preview={
+              apple ? (
+                <AppleMusicEmbed bare release={release} apple={apple} />
+              ) : (
+                <SpotifyEmbed bare release={release} tracks={tracks} />
+              )
+            }
+            ratings={
+              <TrackRatings
+                bare
+                releaseId={release.id}
+                tracks={tracks.map((tr) => ({ position: tr.position, title: tr.title }))}
+                initial={trackRatings}
+              />
+            }
           />
+        ) : (
+          <>
+            {apple ? (
+              <AppleMusicEmbed release={release} apple={apple} />
+            ) : (
+              <SpotifyEmbed release={release} tracks={tracks} />
+            )}
+            {tracks.length > 0 && (
+              <TrackRatings
+                releaseId={release.id}
+                tracks={tracks.map((tr) => ({ position: tr.position, title: tr.title }))}
+                initial={trackRatings}
+              />
+            )}
+          </>
         )}
       </div>
 

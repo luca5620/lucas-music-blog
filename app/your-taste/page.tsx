@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/server";
 import PageHero from "@/components/ui/PageHero";
 import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou } from "@/lib/taste";
+import { resolveAppleEmbedsForReleases } from "@/lib/apple-music";
 
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { getTranslations } from "next-intl/server";
@@ -47,9 +48,38 @@ export default async function YourTastePage() {
   );
 
   /* ---- The TUNED TO YOU picks ---- */
-  const tunedItems = await getTunedToYou(profile, user.id, {
+  const tunedRaw = await getTunedToYou(profile, user.id, {
     followedUserIds: peopleIds,
   });
+
+  /* ---- Apple Music in the pager (Luca 2026-09-08: the Settings pick
+     "did not carry over" here). Same rule as the release page: Apple's
+     embed only for members who chose it, resolved lazily and cached
+     on the release row; Spotify for everyone else, and for records
+     Apple doesn't carry. ---- */
+  const { data: pref } = await supabase
+    .from("profiles")
+    .select("preferred_player")
+    .eq("id", user.id)
+    .maybeSingle();
+  const wantsApple =
+    (pref as { preferred_player?: string } | null)?.preferred_player === "apple";
+  let tunedItems = tunedRaw;
+  if (wantsApple) {
+    const releaseIds = tunedRaw.flatMap((it) =>
+      it.type === "release" ? [it.id] : it.type === "review" && it.release_id ? [it.release_id] : []
+    );
+    const embeds = await resolveAppleEmbedsForReleases(releaseIds);
+    tunedItems = tunedRaw.map((it) => {
+      if (it.type === "release") {
+        return { ...it, apple_embed_url: embeds.get(it.id) ?? null };
+      }
+      if (it.type === "review" && it.release_id) {
+        return { ...it, apple_embed_url: embeds.get(it.release_id) ?? null };
+      }
+      return it;
+    });
+  }
 
   return (
     <div className="space-y-8 pb-12">

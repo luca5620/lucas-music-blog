@@ -774,7 +774,9 @@
       "review": "Recensie",
       "noWords": "Beoordeeld zonder woorden: het cijfer zegt genoeg.",
       "favorites": "Persoonlijke favorieten",
-      "spotify": "Spotify ↗"
+      "spotify": "Spotify ↗",
+      "trackByTrack": "Nummer voor nummer",
+      "trackByTrackAll": "Alle cijfers ↗"
     },
     "form": {
       "editTitle": "Recensie bewerken",
@@ -928,6 +930,18 @@
     "feed": {
       "latestDrops": "Nieuwste releases",
       "freshLists": "Verse lijsten"
+    },
+    "trackRatings": {
+      "title": "Cijfers per nummer",
+      "tapToRate": "Tik op een nummer om het te beoordelen",
+      "signIn": "Log in om nummers te beoordelen",
+      "fanFavorite": "Publieksfavoriet",
+      "ratings": "{n, plural, one {# cijfer} other {# cijfers}}",
+      "unrated": "Geen cijfer",
+      "you": "Jij",
+      "clear": "Wissen",
+      "error": "Cijfer kon niet worden opgeslagen — probeer het opnieuw.",
+      "sliderAria": "Jouw cijfer voor {title}"
     }
   },
   "catalog": {
@@ -1387,7 +1401,8 @@
       "fullscreen": "Volledig scherm",
       "prev": "Vorige keuze",
       "next": "Volgende keuze",
-      "swipe": "swipe"
+      "swipe": "swipe",
+      "applePreview": "Apple Music-voorbeeld van {title}"
     }
   },
   "artists": {

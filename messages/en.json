@@ -774,7 +774,9 @@
       "review": "Review",
       "noWords": "Rated, no words — the number speaks for itself.",
       "favorites": "Personal Favorites",
-      "spotify": "Spotify ↗"
+      "spotify": "Spotify ↗",
+      "trackByTrack": "Track by Track",
+      "trackByTrackAll": "All ratings ↗"
     },
     "form": {
       "editTitle": "Edit Review",
@@ -928,6 +930,18 @@
     "feed": {
       "latestDrops": "Latest Drops",
       "freshLists": "Fresh Lists"
+    },
+    "trackRatings": {
+      "title": "Track Ratings",
+      "tapToRate": "Tap a track to rate it",
+      "signIn": "Sign in to rate tracks",
+      "fanFavorite": "Fan favorite",
+      "ratings": "{n, plural, one {# rating} other {# ratings}}",
+      "unrated": "Unrated",
+      "you": "You",
+      "clear": "Clear",
+      "error": "Couldn't save that rating — try again.",
+      "sliderAria": "Your rating for {title}"
     }
   },
   "catalog": {
@@ -1387,7 +1401,8 @@
       "fullscreen": "Fullscreen",
       "prev": "Previous pick",
       "next": "Next pick",
-      "swipe": "swipe"
+      "swipe": "swipe",
+      "applePreview": "Apple Music preview of {title}"
     }
   },
   "artists": {

@@ -774,7 +774,9 @@
       "review": "Resenha",
       "noWords": "Avaliado sem palavras: o número fala por si.",
       "favorites": "Favoritas pessoais",
-      "spotify": "Spotify ↗"
+      "spotify": "Spotify ↗",
+      "trackByTrack": "Faixa a faixa",
+      "trackByTrackAll": "Todas as notas ↗"
     },
     "form": {
       "editTitle": "Editar resenha",
@@ -928,6 +930,18 @@
     "feed": {
       "latestDrops": "Últimos lançamentos",
       "freshLists": "Listas recentes"
+    },
+    "trackRatings": {
+      "title": "Notas por faixa",
+      "tapToRate": "Toca numa faixa para a avaliar",
+      "signIn": "Inicia sessão para avaliar faixas",
+      "fanFavorite": "Favorita do público",
+      "ratings": "{n, plural, one {# nota} other {# notas}}",
+      "unrated": "Sem nota",
+      "you": "Tu",
+      "clear": "Limpar",
+      "error": "Não foi possível guardar a nota — tenta de novo.",
+      "sliderAria": "A tua nota para {title}"
     }
   },
   "catalog": {
@@ -1387,7 +1401,8 @@
       "fullscreen": "Tela cheia",
       "prev": "Escolha anterior",
       "next": "Próxima escolha",
-      "swipe": "deslize"
+      "swipe": "deslize",
+      "applePreview": "Pré-visualização de {title} no Apple Music"
     }
   },
   "artists": {

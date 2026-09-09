@@ -35,6 +35,11 @@ import { isUpcoming } from "@/lib/upcoming";
 import LiveCountdown from "@/components/releases/LiveCountdown";
 import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
+import TrackRatings from "@/components/releases/TrackRatings";
+import {
+  getTrackRatingSummaries,
+  type TrackRatingSummary,
+} from "@/lib/db/track-ratings";
 import { resolveAppleMusic, type AppleMusicRef } from "@/lib/apple-music";
 import { createClient } from "@/lib/supabase/server";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
@@ -236,13 +241,17 @@ export default async function ReleasePage({ params }: Props) {
     }
   }
 
-  const [stats, reviewsRaw, followers, isFollowing, room] = await Promise.all([
-    getReleaseStats(release.id),
-    getReleaseReviews(release.id),
-    getReleaseFollowers(release.id, 12),
-    user ? isFollowingRelease(user.id, release.id) : Promise.resolve(false),
-    getOrCreateRoom(release.id).catch(() => null),
-  ]);
+  const [stats, reviewsRaw, followers, isFollowing, room, trackRatings] =
+    await Promise.all([
+      getReleaseStats(release.id),
+      getReleaseReviews(release.id),
+      getReleaseFollowers(release.id, 12),
+      user ? isFollowingRelease(user.id, release.id) : Promise.resolve(false),
+      getOrCreateRoom(release.id).catch(() => null),
+      // Per-song scores (migration 041) — one read, viewer's own
+      // rows folded in.
+      getTrackRatingSummaries(release.id, user?.id),
+    ]);
 
   const reviews = reviewsRaw as unknown as ReviewWithProfile[];
 
@@ -337,6 +346,7 @@ export default async function ReleasePage({ params }: Props) {
         initialMessages={initialMessages}
         initialReactionCounts={initialReactionCounts}
         initialViewerReactions={initialViewerReactions}
+        trackRatings={trackRatings}
         reviews={reviews}
         followers={followers}
         releaseDateFormatted={releaseDateFormatted}
@@ -359,6 +369,9 @@ interface ReleaseContentProps {
   initialMessages: ChatMessageWithProfile[];
   initialReactionCounts: { message_id: string; emoji: string; count: number }[];
   initialViewerReactions: { message_id: string; emoji: string }[];
+  /** Per-song community scores + the viewer's own, keyed by track
+      position (migration 041). */
+  trackRatings: Record<number, TrackRatingSummary>;
   reviews: ReviewWithProfile[];
   followers: Profile[];
   releaseDateFormatted: string | null;
@@ -380,6 +393,7 @@ async function ReleaseContent({
   initialMessages,
   initialReactionCounts,
   initialViewerReactions,
+  trackRatings,
   reviews,
   followers,
   releaseDateFormatted,
@@ -623,6 +637,19 @@ async function ReleaseContent({
           <AppleMusicEmbed release={release} apple={apple} />
         ) : (
           <SpotifyEmbed release={release} tracks={tracks} />
+        )}
+
+        {/* TRACK RATINGS — the tracklist as a scoreboard (Luca
+            2026-09-08). The review rates the record; this rates each
+            song, community average per row, tap a row to add yours.
+            Sits under the player so the Spotify/Apple tracklist and
+            the scores read as one column. */}
+        {tracks.length > 0 && (
+          <TrackRatings
+            releaseId={release.id}
+            tracks={tracks.map((tr) => ({ position: tr.position, title: tr.title }))}
+            initial={trackRatings}
+          />
         )}
       </div>
 

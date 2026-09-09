@@ -239,3 +239,60 @@ export async function resolveAppleMusic(
 
   return ref;
 }
+
+/* ------------------------------------------------------------------
+   Batch: Apple embed srcs for a set of releases (/your-taste)
+   ------------------------------------------------------------------ */
+
+/**
+ * Release id → Apple embed src for every release Apple carries, for
+ * the pager on /your-taste (Luca 2026-09-08: the Settings pick has to
+ * carry over there too). Cached ids are free; at most `maxLookups`
+ * uncached releases get resolved (and cached) per call so one page
+ * load never fans out into dozens of iTunes requests. Only ever
+ * called for members who chose Apple Music.
+ */
+export async function resolveAppleEmbedsForReleases(
+  releaseIds: string[],
+  maxLookups = 6
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  const ids = [...new Set(releaseIds.filter(Boolean))];
+  if (ids.length === 0) return out;
+
+  let rows: (Release & { artists?: { name: string } | { name: string }[] | null })[] = [];
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("releases")
+      .select("*, artists!releases_primary_artist_id_fkey(name)")
+      .in("id", ids);
+    rows = (data ?? []) as typeof rows;
+  } catch {
+    return out;
+  }
+
+  const pending: (typeof rows)[number][] = [];
+  for (const row of rows) {
+    const cached = parseAppleMusicId(row.apple_music_id);
+    if (cached) {
+      out.set(row.id, appleMusicEmbedSrc(cached));
+      continue;
+    }
+    if (row.apple_music_checked_at) {
+      const age = Date.now() - new Date(row.apple_music_checked_at).getTime();
+      if (age < RECHECK_AFTER_MS) continue;
+    }
+    if (pending.length < maxLookups) pending.push(row);
+  }
+
+  await Promise.allSettled(
+    pending.map(async (row) => {
+      const a = Array.isArray(row.artists) ? row.artists[0] : row.artists;
+      const ref = await resolveAppleMusic(row, a?.name ?? "");
+      if (ref) out.set(row.id, appleMusicEmbedSrc(ref));
+    })
+  );
+
+  return out;
+}

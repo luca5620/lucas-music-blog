@@ -236,23 +236,33 @@ function SurfCard({
   // a double press). Instead the player mounts while the card fills
   // the frame and unmounts as it leaves — unmounting is what stops
   // the audio when you swipe to the next channel.
+  // Apple Music instead of Spotify for members who picked it in
+  // Settings (Luca 2026-09-08) — the page hands us the embed src
+  // already resolved; nothing here builds an Apple URL.
+  const appleSrc =
+    item.type === "review" || item.type === "release"
+      ? (item.apple_embed_url ?? null)
+      : null;
   const wantsEmbed =
     fullscreen &&
     (item.type === "review" || item.type === "release") &&
-    !!item.spotify_url &&
-    !!toSpotifyEmbed(item.spotify_url);
+    (!!appleSrc || (!!item.spotify_url && !!toSpotifyEmbed(item.spotify_url)));
   // Album embeds get real room (Luca 2026-08-31: the 152px compact
   // player is too small to actually use on albums): the web goes
   // wide + tall (352 = Spotify's full album player, tracklist
   // scrollable inside), the app elongates a bit (232 — deliberately
   // not the drastic web resize). Singles stay compact everywhere.
-  const spotifyKind =
-    (item.type === "review" || item.type === "release"
-      ? item.spotify_url
-      : null
-    )?.match(/open\.spotify\.com\/(track|album)\//)?.[1] ?? null;
+  const spotifyKind = appleSrc
+    ? appleSrc.includes("?i=")
+      ? "track"
+      : "album"
+    : ((item.type === "review" || item.type === "release"
+        ? item.spotify_url
+        : null
+      )?.match(/open\.spotify\.com\/(track|album)\//)?.[1] ?? null);
+  // Apple's song player is 175px (Spotify's compact one is 152).
   const embedHeight =
-    spotifyKind === "album" ? (native ? 232 : 352) : 152;
+    spotifyKind === "album" ? (native ? 232 : 352) : appleSrc ? 175 : 152;
   const embedWidthClass =
     spotifyKind === "album" && !native ? "max-w-2xl" : "max-w-md";
   // Web-fullscreen body budget: the card has no inner scroll any
@@ -608,25 +618,37 @@ function SurfCard({
             item's page. */}
         {fullscreen &&
           (item.type === "review" || item.type === "release") &&
-          item.spotify_url &&
           (wantsEmbed ? (
             <div
               className={`w-full ${embedWidthClass} shrink-0`}
               style={{ height: embedHeight }}
             >
-              {embedLive && (
-                <iframe
-                  src={toSpotifyEmbed(item.spotify_url)!}
-                  width="100%"
-                  height={embedHeight}
-                  frameBorder="0"
-                  allow="autoplay; clipboard-write; encrypted-media"
-                  title={t("spotifyPreview", { title: item.title })}
-                  className="w-full rounded-lg"
-                />
-              )}
+              {embedLive &&
+                (appleSrc ? (
+                  <iframe
+                    src={appleSrc}
+                    width="100%"
+                    height={embedHeight}
+                    frameBorder="0"
+                    allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+                    sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                    title={t("applePreview", { title: item.title })}
+                    className="w-full rounded-lg"
+                    style={{ background: "transparent", overflow: "hidden" }}
+                  />
+                ) : (
+                  <iframe
+                    src={toSpotifyEmbed(item.spotify_url!)!}
+                    width="100%"
+                    height={embedHeight}
+                    frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media"
+                    title={t("spotifyPreview", { title: item.title })}
+                    className="w-full rounded-lg"
+                  />
+                ))}
             </div>
-          ) : (
+          ) : item.spotify_url ? (
             <a
               href={item.spotify_url}
               target="_blank"
@@ -639,7 +661,7 @@ function SurfCard({
               </svg>
               {t("listenSpotify")}
             </a>
-          ))}
+          ) : null)}
       </div>
 
       {/* Action rail — fullscreen only. Heart + comments on cards

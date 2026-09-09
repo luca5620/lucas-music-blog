@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getReviewWithContextBySlug } from "@/lib/db/reviews";
 import { getReleaseBySlug } from "@/lib/db/releases";
+import { getMemberTrackRatings } from "@/lib/db/track-ratings";
 import { getRatingColor, getGenreColor, formatRating } from "@/lib/rating";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -106,6 +107,16 @@ export default async function ReviewPage({
   const author = review.profiles;
   const release = review.releases;
   const isVerified = author.role !== "user";
+  // The author's per-song scores on this record (migration 041) —
+  // rendered as a "Track by Track" card under Personal Favorites when
+  // they've rated at least one track. Fails soft to nothing.
+  const authorTrackRatings =
+    release && (release.tracks ?? []).length > 0
+      ? await getMemberTrackRatings(review.user_id, release.id)
+      : {};
+  const ratedTracks = release
+    ? (release.tracks ?? []).filter((tr) => authorTrackRatings[tr.position] !== undefined)
+    : [];
   const t = await getTranslations("reviews.page");
   const tc = await getTranslations("common");
   const locale = await getLocale();
@@ -381,6 +392,57 @@ export default async function ReviewPage({
                   );
                 })}
               </div>
+            </div>
+          </>
+        )}
+
+        {/* Track by Track — the author's per-song scores from the
+            release page's TRACK RATINGS card (Luca 2026-09-08). Only
+            the tracks they actually rated; the record's score above
+            is the review, these are the songs. */}
+        {release && ratedTracks.length > 0 && (
+          <>
+            <div className="divider-glow" />
+
+            <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="glow-orb" />
+                  <span className="label-xbox">{t("trackByTrack")}</span>
+                </div>
+                <Link
+                  href={`/releases/${release.slug}`}
+                  className="pixel-text text-[10px] text-text-muted hover:text-accent-primary uppercase tracking-widest transition-colors"
+                >
+                  {t("trackByTrackAll")}
+                </Link>
+              </div>
+
+              <ol className="space-y-1">
+                {ratedTracks.map((track) => {
+                  const score = authorTrackRatings[track.position];
+                  return (
+                    <li
+                      key={`${track.position}-${track.title}`}
+                      className="flex items-center justify-between gap-2 py-2 border-b border-border-subtle last:border-0"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="pixel-text text-sm text-text-muted shrink-0 w-6 tabular-nums">
+                          {track.position}
+                        </span>
+                        <span className="text-sm font-medium text-text-primary truncate">
+                          {track.title}
+                        </span>
+                      </div>
+                      <span
+                        className={`pixel-text text-base tabular-nums shrink-0 ${getRatingColor(score)}`}
+                      >
+                        {formatRating(score)}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
           </>
         )}

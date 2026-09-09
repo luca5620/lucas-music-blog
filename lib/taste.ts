@@ -306,6 +306,13 @@ export type TunedItem =
       /** Direct link to the exact track/album (fullscreen card CTA —
           Luca 2026-08-22: "check out immediately, no extra clicks"). */
       spotify_url: string | null;
+      /** The catalog release under review — lets /your-taste swap in
+          the Apple Music player for members who picked it. */
+      release_id: string | null;
+      /** Apple's embed src, set by app/your-taste/page.tsx ONLY for
+          Apple-preferring viewers when Apple carries the record
+          (Luca 2026-09-08: the Settings pick must carry over here). */
+      apple_embed_url?: string | null;
       /** For the chyron's "REC {timeAgo}" stamp. */
       created_at: string;
       reason: string | null;
@@ -398,6 +405,9 @@ export type TunedItem =
       genius_id: string | null;
       /** Direct link to the exact track/album on Spotify. */
       spotify_url: string | null;
+      /** See the review variant — Apple's player for members who
+          chose it in Settings. */
+      apple_embed_url?: string | null;
       reason: string | null;
     };
 
@@ -734,6 +744,7 @@ export async function getTunedToYou(
         viewer_has_liked: myReviewLikes.has(r.id),
         comment_count: commentCounts.get(r.id) ?? 0,
         spotify_url: spotifyUrlFor(first(r.releases)),
+        release_id: r.release_id,
         created_at: r.created_at,
         reason: null,
       },

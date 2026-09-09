@@ -90,6 +90,46 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-08 (Windows): TRACK RATINGS + APPLE MUSIC IN YOUR TASTE +
+  the Vercel cap question.** Luca's three asks, all shipped in one
+  commit, none eyeballed on device yet.
+  - **⚠️ MIGRATION 041 MUST BE RUN** (`supabase/migrations/041-track-
+    ratings.sql`, SQL Editor, after 040). Until it runs the card
+    renders empty/unrated and rating a track returns a 500 — every
+    read fails soft, nothing else on the page breaks.
+  - **Track ratings.** "Restructure releases to show ratings for
+    individual songs off of an album." New `track_ratings` table (one
+    row per member per track position, 0–10 one decimal, same color
+    language as reviews). Release page: **TRACK RATINGS** card under
+    the player — community avg + count per row, a FAN FAVORITE strip
+    (highest avg, ties → more ratings), your own score as a YOU chip,
+    tap a row → the review form's slider (0.5 steps, debounced save,
+    Clear). Signed out: numbers visible, tap → /login. Review pages:
+    **Track by Track** card with the author's per-song scores when
+    they rated any, linking back to the release. API:
+    `POST /api/releases/[id]/track-ratings {position, rating|null}`,
+    90/min, position must exist on that release. Deliberately NOT in
+    the review form — rating tracks is the one-tap action on the
+    release page, no review required (retention hook: "come back and
+    rate the songs").
+  - **Apple Music in Your Taste.** The pager hard-coded the Spotify
+    embed, so the Settings pick "did not carry over". Now
+    `app/your-taste/page.tsx` reads `preferred_player`, and for Apple
+    members batch-resolves embed srcs for the picked releases
+    (`resolveAppleEmbedsForReleases` in lib/apple-music.ts — cached
+    ids free, ≤6 fresh iTunes lookups per load, results cached on the
+    row like the release page). `ChannelSurf` renders Apple's iframe
+    in the same slot (175px song / same album heights). Records Apple
+    doesn't carry fall back to Spotify. Spotify members: untouched.
+  - **Vercel:** over the 4h Active CPU cap on a rolling 30 days but
+    not paused yet. The pause is what happens (not throttling), and
+    it takes the iOS app down with the site. Post-fix burn of 5–10
+    min/day = 2.5–5h/month — STILL at the cap steady-state, so Hobby
+    is not sustainable even after 5b04505. Decision pending: Pro
+    ($20 credit, real bill ~$1) vs the middleware-splash lever.
+  - Marketing / retention conversation happened this session — see
+    the memory entry; next build candidates are logged there.
+
 - **2026-09-05 (Windows): INSTAGRAM WEEK 2 WRITTEN, and the growth
   conversation Luca actually needed.** Week 1 closed out on his side
   (unreleased grid reshot, IG profile set up). Posts **4 (debates), 5

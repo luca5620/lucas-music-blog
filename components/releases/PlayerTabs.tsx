@@ -35,54 +35,60 @@ export default function PlayerTabs({ preview, ratings, ratingsCount, previewNote
   const tRatings = useTranslations("releases.trackRatings");
   const [tab, setTab] = useState<"preview" | "ratings">("preview");
 
-  const tabClass = (active: boolean) =>
-    `label-xbox px-2.5 py-1 rounded-md transition-colors ${
+  // Same segmented pill as BrowseSwitch (the app's Reviews | Releases
+  // switch) — one rounded track, the active segment lit in the
+  // accent, the other plain text. No chip-inside-a-box.
+  const segClass = (active: boolean) =>
+    `flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase whitespace-nowrap transition-all duration-200 font-[family-name:var(--font-heading)] ${
       active
-        ? "bg-accent-primary/15 text-accent-primary"
-        : "text-text-muted hover:text-text-primary"
+        ? "bg-accent-primary/15 text-accent-primary border border-accent-primary/30"
+        : "text-text-secondary border border-transparent hover:text-text-primary"
     }`;
 
   return (
     // Same xl: fill-the-column rule as the old preview card so the
     // bottom edge still lines up with the live room beside it.
     <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden xl:flex-1 xl:flex xl:flex-col">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="glow-orb shrink-0" />
-          <div
-            role="tablist"
-            className="flex items-center gap-1 rounded-lg border border-border-subtle p-0.5"
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div
+          role="tablist"
+          className="flex w-full sm:w-auto rounded-full border border-border-medium bg-bg-elevated p-1 gap-1"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "preview"}
+            onClick={() => {
+              hapticTap();
+              setTab("preview");
+            }}
+            className={segClass(tab === "preview")}
           >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "preview"}
-              onClick={() => {
-                hapticTap();
-                setTab("preview");
-              }}
-              className={tabClass(tab === "preview")}
-            >
-              {tEmbed("preview")}
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "ratings"}
-              onClick={() => {
-                hapticTap();
-                setTab("ratings");
-              }}
-              className={`${tabClass(tab === "ratings")} inline-flex items-center gap-1.5`}
-            >
-              {tRatings("title")}
-              {ratingsCount > 0 && (
-                <span className="pixel-text text-[10px] tabular-nums px-1.5 rounded border border-current/40">
-                  {ratingsCount}
-                </span>
-              )}
-            </button>
-          </div>
+            {tEmbed("preview")}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "ratings"}
+            onClick={() => {
+              hapticTap();
+              setTab("ratings");
+            }}
+            className={segClass(tab === "ratings")}
+          >
+            {tRatings("title")}
+            {ratingsCount > 0 && (
+              <span
+                className={`min-w-[1.25rem] px-1.5 py-px rounded-full text-[10px] tabular-nums font-[family-name:var(--font-vt323)] ${
+                  tab === "ratings"
+                    ? "bg-accent-primary/25 text-accent-primary"
+                    : "bg-white/10 text-text-secondary"
+                }`}
+              >
+                {ratingsCount}
+              </span>
+            )}
+          </button>
         </div>
         {tab === "preview" && previewNote}
       </div>

@@ -129,6 +129,25 @@ don't wait to be asked:**
     ($20 credit, real bill ~$1) vs the middleware-splash lever.
   - Marketing / retention conversation happened this session — see
     the memory entry; next build candidates are logged there.
+  - **Later the same day: 041 RUN ✓, Vercel PRO ✓, QUICK RATE
+    SHIPPED.** `/quick-rate` = the backfill deck: cover + slider +
+    RATE IT / HAVEN'T HEARD IT, each rate a real published wordless
+    review (`quick: true` on POST /api/reviews → own 60/5min limit,
+    no follower notification, IndexNow for the release page only).
+    UNDO deletes and rewinds; the search box pulls any record to the
+    front. Deck = most-reviewed catalog minus unreleased/upcoming/
+    already-reviewed. Entry points: Create sheet (⚡) and My Stuff.
+    Not eyeballed.
+  - **OPEN DECISION — the two tracklists.** With TRACK RATINGS under
+    the player, the release page shows the tracklist twice (Spotify/
+    Apple embed + our rating rows). Luca: previews matter more.
+    Options given: (1) ONE card with a `PREVIEW | RATINGS` segmented
+    switch, preview default, count badge on the ratings tab —
+    recommended, ~30 min; (2) collapse ratings to the FAN FAVORITE
+    strip + "Rate the tracks" expander; (3) our rows become THE
+    tracklist with ▶ per row driving Spotify's compact player via
+    the iframe API (Apple: src swap + press play) — the ideal, bigger,
+    retires the tall album embed. Waiting on his pick.
 
 - **2026-09-05 (Windows): INSTAGRAM WEEK 2 WRITTEN, and the growth
   conversation Luca actually needed.** Week 1 closed out on his side

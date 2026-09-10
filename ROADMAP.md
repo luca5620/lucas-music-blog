@@ -90,6 +90,78 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-09 (Windows): THE OUTREACH KIT — shipped, all three parts.**
+  Luca picked "all of it, backfill first". Direction changes logged the
+  same day: the email ask is **"if you like it, let me know"** (never
+  "tell me what's broken" — we market a finished app); **Meta ads
+  closed**; TikTok = his friends run it later; after the marketing
+  close-out the work is the app + the SOLO experience.
+  - **Backfill lives inside the review form now (e0e6649).** Publishing
+    in create mode no longer bounces to My Stuff: the record lands in a
+    strip at the top (cover, PUBLISHED ✓, score, VIEW), the form resets
+    to the search box, every record from the sitting lines up as thumbs
+    with a count, and DONE → My Stuff is the one way out. Sub-copy now
+    says a score alone counts. API: wordless reviews get their own
+    60/5min lane (worded stay 5/5min); the follower ping is skipped
+    when the member already published in the last 20 minutes, so a
+    backfill night is one notification, not thirty. No new page, no
+    second flow — this is still the only review form.
+  - **Home first-run (66b0967).** Zero published reviews → the hero's
+    primary button reads RATE YOUR FIRST RECORD and one line under it
+    says start with the records you know, a score is enough.
+  - **`docs/marketing/reviewer-outreach.md`** — target sheet (Turning
+    the Tables, Bridging the Gap, Bob the Poppop, Jon Denton, three
+    candidates to verify), four emails in each channel's register, one
+    follow-up, the pre-send walk (profile stocked to 40+ ratings, a
+    release with every track rated, throwaway-signup path check), the
+    reply playbook, a send log.
+  - **`docs/marketing/closeout-2026-09.md`** — the checklist to close
+    Reddit / Instagram / emails, with the r/iosapps, r/SideProject and
+    r/androidapps drafts (no competitor named, ever).
+  - **Not eyeballed:** the form strip and the first-run hero. Luca
+    still owes the device pass on track ratings / PlayerTabs / Apple in
+    Your Taste from 09-08.
+  - **ONE-AND-DONE — the ideas (Luca asked; nothing built).** The
+    problem: a member writes one review and has no reason to return.
+    Each of these lives inside an existing surface (no parallel flows):
+    1. **The sitting, not the review** — shipped today. One review
+       becomes ten because the form never sends you away.
+    2. **Score vs. the room, right after you publish** — the strip
+       shows the community average next to your score ("you're 0.9
+       under"). Instant payoff per record, one query. Cheapest next.
+    3. **Chain on the release page** — after you rate, the page offers
+       three records people who rated this also rated that you haven't.
+       Tap → prefilled form (`?release_id`) → publish → strip. Same
+       surfaces, one new query.
+    4. **Profile stats at the forefront + the hover card (Luca's
+       idea)** — followers / following / reviews / likes at the top of
+       the profile and in an Instagram-style card on any username, with
+       a mini of their theme; replaces the badges row + the stats
+       showcase, keeps the trophy colors. Cost: one shared
+       `UserLink` component + a small profile-summary endpoint + ~17
+       call-site swaps (there is no shared username link today). Add
+       near trophy tiers (10 / 25 / 50) so a new member crosses one on
+       night one — 100 is too far away to pull anyone.
+    5. **Sunday recap push** — push is live; a weekly "you rated N
+       records, average X, highest Y, M people saw your reviews" with
+       zero new UI. Retention lever that costs one cron.
+    6. **Friday drops you follow** — "three records from artists you
+       follow dropped this week" → release page → rate. Existing
+       follow + upcoming data.
+    7. **The unrated favorite** — "you listed X in your four favorites
+       and never rated it." Personal, one-line, on the profile you own.
+    8. **The diary with a twist (Luca's idea, to DISCUSS, not
+       design)** — held until after the orb pass with Astra. Twist
+       candidates for that conversation: (a) a monthly cover grid, one
+       square per day you rated something, that fills like a punch
+       card; (b) a shareable year card generated from ratings, the
+       bio-link object; (c) log verdicts, not listens — the day you
+       decided. Name candidates: Rotation, The Log, Ledger. Never
+       "diary".
+  - **Order after today:** Luca's send + shoots (his hands) → orb pass
+    after Astra → profile stats + hover card → diary twist → the rest
+    of the solo list above, cheapest first (2, 5, 3).
+
 - **2026-09-08 (Windows): TRACK RATINGS + APPLE MUSIC IN YOUR TASTE +
   the Vercel cap question.** Luca's three asks, all shipped in one
   commit, none eyeballed on device yet.

@@ -782,7 +782,8 @@
       "editTitle": "Rezension bearbeiten",
       "writeTitle": "Rezension schreiben",
       "editSub": "Aktualisier dein Urteil. Das Release lässt sich nicht ändern.",
-      "writeSub": "Such die Platte und sag, was du wirklich denkst.",
+      "writeSub": "Such die Platte, gib die Note. Worte sind optional – eine Note allein zählt.",
+      "nextSub": "Die nächste. Gleiches Spiel: Platte suchen, Note geben.",
       "draftRestored": "<b>Entwurf wiederhergestellt</b>: du machst da weiter, wo du aufgehört hast.",
       "discard": "Verwerfen",
       "theRelease": "Das Release",
@@ -805,7 +806,11 @@
       "networkError": "Netzwerkfehler. Versuch es noch mal.",
       "updatePublish": "Aktualisieren und veröffentlichen",
       "publish": "Rezension veröffentlichen",
-      "saveDraft": "Als Entwurf speichern"
+      "saveDraft": "Als Entwurf speichern",
+      "published": "Veröffentlicht",
+      "view": "Ansehen",
+      "streakCount": "{n, plural, one {# bewertet in dieser Sitzung} other {# bewertet in dieser Sitzung}}",
+      "done": "Fertig"
     },
     "feed": {
       "title": "Community-Feed",

@@ -782,7 +782,8 @@
       "editTitle": "Editar resenha",
       "writeTitle": "Escrever resenha",
       "editSub": "Atualize sua opinião. O lançamento não pode ser trocado.",
-      "writeSub": "Encontre o disco e diga o que você pensa de verdade.",
+      "writeSub": "Encontre o disco e dê a nota. Palavras são opcionais: só a nota já conta.",
+      "nextSub": "Próximo. Mesma coisa: busque o disco e dê a nota.",
       "draftRestored": "<b>Rascunho recuperado</b>: continuando de onde você parou.",
       "discard": "Descartar",
       "theRelease": "O lançamento",
@@ -805,7 +806,11 @@
       "networkError": "Erro de conexão. Tente de novo.",
       "updatePublish": "Atualizar e publicar",
       "publish": "Publicar resenha",
-      "saveDraft": "Salvar como rascunho"
+      "saveDraft": "Salvar como rascunho",
+      "published": "Publicada",
+      "view": "Ver",
+      "streakCount": "{n, plural, one {# avaliado nesta sessão} other {# avaliados nesta sessão}}",
+      "done": "Pronto"
     },
     "feed": {
       "title": "Feed da comunidade",

@@ -782,7 +782,8 @@
       "editTitle": "Edit Review",
       "writeTitle": "Write a Review",
       "editSub": "Update your take — the release stays locked in.",
-      "writeSub": "Find the record, drop your honest take.",
+      "writeSub": "Find the record, drop the score. Words optional — a rating alone counts.",
+      "nextSub": "Next one. Same drill — search the record, drop the score.",
       "draftRestored": "<b>Draft restored</b> — picked up where you left off.",
       "discard": "Discard",
       "theRelease": "The Release",
@@ -805,7 +806,11 @@
       "networkError": "Network error. Please try again.",
       "updatePublish": "Update & Publish",
       "publish": "Publish Review",
-      "saveDraft": "Save as Draft"
+      "saveDraft": "Save as Draft",
+      "published": "Published",
+      "view": "View",
+      "streakCount": "{n, plural, one {# rated this sitting} other {# rated this sitting}}",
+      "done": "Done"
     },
     "feed": {
       "title": "Community Feed",

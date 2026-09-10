@@ -16,6 +16,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { Release, Review } from "@/lib/types/database";
 import CatalogSearch, {
   type CatalogPick,
@@ -57,6 +58,18 @@ export default function ReviewForm({
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  /* ── The backfill loop (2026-09-09). Publishing a review in create
+     mode does NOT leave the page: the record lands in this strip, the
+     form resets to the search box, and the next one is a search away.
+     A new member with thirty records in their head rates them in one
+     sitting without ever seeing a second flow — this IS the review
+     form, the only way in (Quick Rate was rejected for being a second
+     way). Drafts still go to My Stuff; an essay is a different mood. ── */
+  const [streak, setStreak] = useState<
+    { slug: string; title: string; cover: string | null; rating: number }[]
+  >([]);
+  const last = streak.length > 0 ? streak[streak.length - 1] : null;
   // LANGUAGES: messages → reviews.form (+ common for cover alt / cancel).
   const t = useTranslations("reviews.form");
   const tc = useTranslations("common");
@@ -225,6 +238,34 @@ export default function ReviewForm({
       }
 
       clearDraft(); // the words made it to the DB — retire the backup
+
+      if (mode === "create" && isPublished) {
+        const created = (await res.json().catch(() => null)) as
+          | { slug?: string }
+          | null;
+        setStreak((prev) => [
+          ...prev,
+          {
+            slug: created?.slug ?? "",
+            title: release.title,
+            cover: release.cover_image ?? null,
+            rating,
+          },
+        ]);
+        // Reset to a clean form — the search box comes back focused.
+        setRelease(null);
+        setPickedArtist("");
+        setRating(7);
+        setSummary("");
+        setSnippet("");
+        setPickedTracks(new Set());
+        setRestoredDraft(false);
+        setSaving(false);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        router.refresh();
+        return;
+      }
+
       router.push("/reviews/mine");
       router.refresh();
     } catch {
@@ -243,9 +284,85 @@ export default function ReviewForm({
           {mode === "edit" ? t("editTitle") : t("writeTitle")}
         </h1>
         <p className="text-sm text-text-secondary">
-          {mode === "edit" ? t("editSub") : t("writeSub")}
+          {mode === "edit" ? t("editSub") : last ? t("nextSub") : t("writeSub")}
         </p>
       </div>
+
+      {/* The streak strip — what you just published, everything from
+          this sitting, and the one way out (DONE → My Stuff). */}
+      {last && (
+        <div className="panel-xbox p-4 space-y-3 border-[rgba(var(--accent-rgb),0.4)]">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-md overflow-hidden border border-white/10 bg-bg-elevated shrink-0">
+              {last.cover ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={last.cover}
+                  alt={tc("coverAlt", { title: last.title })}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="w-full h-full flex items-center justify-center text-lg">
+                  💿
+                </span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="label-xbox text-accent-primary">{t("published")} ✓</p>
+              <p className="font-[family-name:var(--font-heading)] font-bold text-text-primary truncate">
+                {last.title}
+              </p>
+            </div>
+            <div
+              className={`rating-badge shrink-0 w-10 h-10 text-base ${getRatingColor(last.rating)}`}
+              style={{
+                color: getRatingHex(last.rating),
+                borderColor: getRatingHex(last.rating),
+              }}
+            >
+              {formatRating(last.rating)}
+            </div>
+            {last.slug && (
+              <Link
+                href={`/reviews/${last.slug}`}
+                className="label-xbox hover:text-accent-primary transition-colors text-[0.65rem] shrink-0"
+              >
+                {t("view")}
+              </Link>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap border-t border-border-subtle pt-3">
+            <span className="pixel-text text-xs text-text-muted shrink-0">
+              {t("streakCount", { n: streak.length })}
+            </span>
+            <div className="flex items-center gap-1 flex-wrap">
+              {streak.map((r, i) => (
+                <div
+                  key={`${r.slug}-${i}`}
+                  title={`${r.title} · ${formatRating(r.rating)}`}
+                  className="w-7 h-7 rounded overflow-hidden border border-white/10 bg-bg-elevated"
+                >
+                  {r.cover ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={r.cover} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="w-full h-full flex items-center justify-center text-xs">
+                      💿
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+            <Link
+              href="/reviews/mine"
+              className="label-xbox hover:text-accent-primary transition-colors text-[0.65rem] ml-auto shrink-0"
+            >
+              {t("done")} →
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Autosave pickup — quiet, dismissible, only after a restore */}
       {restoredDraft && (

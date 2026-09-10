@@ -782,7 +782,8 @@
       "editTitle": "Modifier la critique",
       "writeTitle": "Écrire une critique",
       "editSub": "Mets ton avis à jour. La sortie, elle, ne change pas.",
-      "writeSub": "Trouve le disque et dis ce que tu en penses vraiment.",
+      "writeSub": "Trouve le disque, mets la note. Les mots sont facultatifs : une note seule compte.",
+      "nextSub": "Au suivant. Même chose : cherche le disque, mets la note.",
       "draftRestored": "<b>Brouillon récupéré</b> : on reprend là où tu t'étais arrêté.",
       "discard": "Abandonner",
       "theRelease": "La sortie",
@@ -805,7 +806,11 @@
       "networkError": "Erreur de connexion. Réessaie.",
       "updatePublish": "Mettre à jour et publier",
       "publish": "Publier la critique",
-      "saveDraft": "Enregistrer en brouillon"
+      "saveDraft": "Enregistrer en brouillon",
+      "published": "Publiée",
+      "view": "Voir",
+      "streakCount": "{n, plural, one {# noté cette session} other {# notés cette session}}",
+      "done": "Terminé"
     },
     "feed": {
       "title": "Flux de la communauté",

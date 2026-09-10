@@ -782,7 +782,8 @@
       "editTitle": "Recensie bewerken",
       "writeTitle": "Recensie schrijven",
       "editSub": "Werk je oordeel bij. De release kan niet veranderen.",
-      "writeSub": "Zoek de plaat en zeg wat je er echt van vindt.",
+      "writeSub": "Zoek de plaat, geef je cijfer. Woorden zijn optioneel: een cijfer alleen telt ook.",
+      "nextSub": "De volgende. Zelfde verhaal: zoek de plaat, geef je cijfer.",
       "draftRestored": "<b>Concept hersteld</b>: je gaat verder waar je was gebleven.",
       "discard": "Weggooien",
       "theRelease": "De release",
@@ -805,7 +806,11 @@
       "networkError": "Netwerkfout. Probeer het opnieuw.",
       "updatePublish": "Bijwerken en publiceren",
       "publish": "Recensie publiceren",
-      "saveDraft": "Opslaan als concept"
+      "saveDraft": "Opslaan als concept",
+      "published": "Gepubliceerd",
+      "view": "Bekijk",
+      "streakCount": "{n, plural, one {# beoordeeld deze sessie} other {# beoordeeld deze sessie}}",
+      "done": "Klaar"
     },
     "feed": {
       "title": "Communityfeed",

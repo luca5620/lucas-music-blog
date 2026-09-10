@@ -80,14 +80,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Max 5 new reviews per user per 5 minutes.
-  const limited = await rateLimit(`reviews:${user.id}`, 5, 300_000);
-  if (limited) return limited;
-
   try {
     const body = await request.json();
     const { release_id, rating, summary, snippet, standout_tracks, is_published } =
       body;
+
+    // Rate limits. A review WITH words is the slow, considered thing:
+    // 5 per 5 minutes. A wordless rating (score only — how a new
+    // member backfills the records they already know, thirty in a
+    // sitting) gets its own lane at 60 per 5 minutes so the form's
+    // "rate another" loop never trips a 429. Same endpoint, same
+    // rules, just two buckets — the form is the only flow (Luca
+    // 2026-09-08: no parallel ways to do the same thing).
+    const wordless = !snippet && !summary;
+    const limited = wordless
+      ? await rateLimit(`reviews:rating:${user.id}`, 60, 300_000)
+      : await rateLimit(`reviews:${user.id}`, 5, 300_000);
+    if (limited) return limited;
 
     // --- Validate. Nothing in the body is trusted. ---
     if (!isUuid(release_id)) {
@@ -214,12 +223,26 @@ export async function POST(request: Request) {
     // A draft is nobody's business until it's published (the edit
     // route fires this when a draft goes live).
     if (is_published) {
-      await notifyFollowers({
-        actorId: user.id,
-        type: "new_review",
-        href: `/reviews/${slug}`,
-        title: release.title,
-      });
+      // A backfill streak (the form's "rate another" loop) must not
+      // become thirty pings in a row. If this member already published
+      // another review in the last 20 minutes, followers were told by
+      // that one — the streak shows up on the profile, not the bell.
+      const since = new Date(Date.now() - 20 * 60_000).toISOString();
+      const { count: recent } = await supabase
+        .from("reviews")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_published", true)
+        .neq("id", review.id)
+        .gte("created_at", since);
+      if (!recent) {
+        await notifyFollowers({
+          actorId: user.id,
+          type: "new_review",
+          href: `/reviews/${slug}`,
+          title: release.title,
+        });
+      }
       // Tell Bing the new review page (and the release page whose
       // community average just changed) exist — fire and forget, so
       // a slow IndexNow never delays the response. See lib/indexnow.

@@ -251,6 +251,8 @@
     "dashboard": {
       "title": "ACCUEIL",
       "writeReview": "✚ Écrire une critique",
+      "rateFirst": "✚ Note ton premier disque",
+      "firstRunLine": "Ton étagère est vide. Commence par les disques que tu connais par cœur : une note suffit, les mots sont facultatifs.",
       "startDebate": "⚔ Lancer un débat",
       "onAir": "À L'ANTENNE",
       "coverAlt": "Pochette de {title}",

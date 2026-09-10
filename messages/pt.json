@@ -251,6 +251,8 @@
     "dashboard": {
       "title": "INÍCIO",
       "writeReview": "✚ Escrever resenha",
+      "rateFirst": "✚ Avalie seu primeiro disco",
+      "firstRunLine": "Sua estante está vazia. Comece pelos discos que você já sabe de cor: a nota basta, palavras são opcionais.",
       "startDebate": "⚔ Abrir debate",
       "onAir": "NO AR",
       "coverAlt": "Capa de {title}",

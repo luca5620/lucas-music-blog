@@ -251,6 +251,8 @@
     "dashboard": {
       "title": "HOME",
       "writeReview": "✚ Recensie schrijven",
+      "rateFirst": "✚ Beoordeel je eerste plaat",
+      "firstRunLine": "Je kast is leeg. Begin met de platen die je al uit je hoofd kent: een cijfer is genoeg, woorden zijn optioneel.",
       "startDebate": "⚔ Debat starten",
       "onAir": "ON AIR",
       "coverAlt": "Hoes van {title}",

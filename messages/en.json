@@ -251,6 +251,8 @@
     "dashboard": {
       "title": "HOME",
       "writeReview": "✚ Write a Review",
+      "rateFirst": "✚ Rate Your First Record",
+      "firstRunLine": "Your shelf is empty. Start with the records you already know by heart — a score is enough, words optional.",
       "startDebate": "⚔ Start a Debate",
       "onAir": "ON AIR",
       "coverAlt": "{title} cover",

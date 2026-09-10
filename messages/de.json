@@ -251,6 +251,8 @@
     "dashboard": {
       "title": "START",
       "writeReview": "✚ Rezension schreiben",
+      "rateFirst": "✚ Bewerte deine erste Platte",
+      "firstRunLine": "Dein Regal ist leer. Fang mit den Platten an, die du auswendig kennst – eine Note reicht, Worte sind optional.",
       "startDebate": "⚔ Debatte starten",
       "onAir": "ON AIR",
       "coverAlt": "Cover von {title}",

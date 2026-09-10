@@ -15,6 +15,7 @@ import Link from "next/link";
 import { smallCover } from "@/lib/images";
 import { Suspense } from "react";
 import { getUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { getReleaseDiscoveryFeed } from "@/lib/db/releases";
 import ReleasesFeed from "@/components/feed/ReleasesFeed";
 import QuickAccessStrip from "@/components/home/QuickAccessStrip";
@@ -105,7 +106,7 @@ export default async function Home() {
   return (
     <div className="space-y-8 circuit-bg">
       <BreadcrumbSchema items={[{ name: "Home", href: "/" }]} />
-      {user ? <Dashboard /> : <Splash />}
+      {user ? <Dashboard userId={user.id} /> : <Splash />}
     </div>
   );
 }
@@ -231,10 +232,25 @@ async function Splash() {
    LOGGED IN — the dashboard
    ============================================================ */
 
-async function Dashboard() {
+async function Dashboard({ userId }: { userId: string }) {
   const t = await getTranslations("home.dashboard");
   // ON AIR candidates — degrades to an empty array on any error.
   const feed = await getReleaseDiscoveryFeed(12).catch(() => []);
+
+  // First-run check (2026-09-09): has this member published anything
+  // yet? A fresh account — the reviewer we just emailed, the friend
+  // who just installed it — lands here with a generic "Write a
+  // Review" and an empty shelf. Zero reviews flips the hero's primary
+  // button to "rate your first record" and adds the one sentence
+  // that matters: a score is enough. One head-count query, fails
+  // soft to the normal hero.
+  const supabase = await createClient();
+  const { count: reviewCount } = await supabase
+    .from("reviews")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("is_published", true);
+  const firstRun = reviewCount === 0;
 
   // "On air" = releases whose live room saw activity in the last 24h.
   // Dashboard is an async SERVER component rendered once per request,
@@ -280,13 +296,20 @@ async function Dashboard() {
               the shell already IS the app. */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-center sm:justify-start">
             <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
-              {t("writeReview")}
+              {firstRun ? t("rateFirst") : t("writeReview")}
             </Link>
             <Link href="/debates/new" className="btn-y2k btn-y2k-outline">
               {t("startDebate")}
             </Link>
             <AppStoreBadge />
           </div>
+          {/* Empty shelf → the one line that gets a backfill started.
+              Disappears the moment the first review is published. */}
+          {firstRun && (
+            <p className="text-sm text-text-secondary font-[family-name:var(--font-vt323)]">
+              {t("firstRunLine")}
+            </p>
+          )}
         </div>
         <div className="scan-bar" />
       </section>

@@ -16,8 +16,8 @@ follow-up, the pre-send walk, the reply playbook).
 - [ ] Luca: profile stocked to 40+ ratings via the review form loop
 - [ ] Luca: two or three albums with every track rated (the release link)
 - [ ] Luca: pull the four business emails from the channels' About pages
-- [ ] Luca: send #1 Turning the Tables; log it in the send table
-- [ ] Luca: #2, #3, #4 five days apart; one follow-up each at seven days
+- [ ] Luca: send all four in one sitting; log them in the send table
+- [ ] Luca: one follow-up each at seven days if no reply
 - [ ] Claude: fix anything they report the same day
 
 ## Instagram

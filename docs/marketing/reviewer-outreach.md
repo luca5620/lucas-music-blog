@@ -8,8 +8,9 @@ emails says beta, early, or broken.
 
 Three rules, all standing:
 
-1. **One at a time.** Send one, wait five days, send the next. A reply
-   from the first one changes what you say to the second.
+1. **Send them all in one sitting.** (Luca 2026-09-09: all at once is
+   fine.) Each email is already written for its channel, so there is
+   nothing to learn from one reply before the next goes out.
 2. **The proof link is your own profile.** Nobody clicks a homepage to
    understand a rating app; they click a page with forty records on it.
    Before the first email goes out, your profile has at least forty
@@ -47,10 +48,10 @@ resort, it reads as spam.
 
 | # | Channel | Who they are | Their format | Why PMR fits them | Send order |
 |---|---------|--------------|--------------|-------------------|------------|
-| 1 | **Turning the Tables** | Conner and his dad Kevin, tea in hand, track by track through Conner's picks (Radiohead, Kid Cudi, Daft Punk, Phoebe Bridgers, Charli XCX; the MBDTF episode is the big one). 100k subs in four months. | Two people, one album, every track | Two profiles rating the same record, side by side, plus our per-track ratings — their show is literally our release page | 1st. Warmest fit, and a reply from them is the best social proof for the others |
+| 1 | **Turning the Tables** | Conner and his dad Kevin, tea in hand, track by track through Conner's picks (Radiohead, Kid Cudi, Daft Punk, Phoebe Bridgers, Charli XCX; the MBDTF episode is the big one). 100k subs in four months. | Two people, one album, every track | Two profiles rating the same record, side by side, plus our per-track ratings — their show is literally our release page | 1st |
 | 2 | **Bridging the Gap** | Son turning his dad — a lifelong R&B/soul/funk/jazz listener — into a hip-hop fan. Started with a Jay-Z album; two years later the dad is a fan. | Father-son hip-hop education, album by album | The dad's rating history *is* the show: a profile where you can scroll his journey in order, Jay-Z at the bottom | 2nd |
 | 3 | **Bob the Poppop** | "Your average rocker/metalhead that decided to take a deliberate journey into the world of rap." 37M+ views; the Whole Lotta Red reaction alone is 1.3M. Reacts to Carti's MUSIC, JACKBOYS. Uncut versions on Patreon. | Blunt live reactions, Carti-heavy | Unreleased. His audience lives in Carti leak culture and we're the only rating site where the leaks are real catalog entries | 3rd |
-| 4 | **Jon Denton** | "Jon Denton's Music Review" — 522k subs, ~1,400 videos, reactions, reviews, requests, "focused on vibes." Also streams on Twitch. | High volume, request-driven, community in the chat | 1,400 videos of takes with no ledger. One page where every album he's ever scored lives, and his chat rates next to him | 4th — biggest, send last with the earlier replies in your pocket |
+| 4 | **Jon Denton** | "Jon Denton's Music Review" — 522k subs, ~1,400 videos, reactions, reviews, requests, "focused on vibes." Also streams on Twitch. | High volume, request-driven, community in the chat | 1,400 videos of takes with no ledger. One page where every album he's ever scored lives, and his chat rates next to him | 4th |
 
 **"A few others" — candidates to verify before adding** (check the
 channel is still active this month; I haven't confirmed these

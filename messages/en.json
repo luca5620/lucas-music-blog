@@ -631,6 +631,7 @@
       "streakTitle": "{n}-day song-of-the-day streak"
     },
     "histogram": {
+      "ratingsCount": "{n, plural, one {# rating} other {# ratings}}",
       "aria": "Rating distribution across {n} ratings",
       "bar": "{bucket}: {n, plural, one {# rating} other {# ratings}}"
     },

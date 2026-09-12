@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
       username: profile.username,
       display_name: profile.display_name,
       avatar_url: profile.avatar_url,
+      banner_url: profile.banner_url ?? null,
       role: profile.role,
       theme: resolveTheme(profile.theme),
       tagline: profile.tagline ?? null,

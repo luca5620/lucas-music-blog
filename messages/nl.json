@@ -631,6 +631,7 @@
       "streakTitle": "Streak van {n} dagen Nummer van de dag"
     },
     "histogram": {
+      "ratingsCount": "{n, plural, one {# beoordeling} other {# beoordelingen}}",
       "aria": "Verdeling van {n} cijfers",
       "bar": "{bucket}: {n, plural, one {# cijfer} other {# cijfers}}"
     },

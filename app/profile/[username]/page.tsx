@@ -51,7 +51,6 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import type {
   ProfileTheme,
-  RatingBucket,
   Review,
   ShowcaseType,
 } from "@/lib/types/database";
@@ -197,7 +196,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   // --- Showcase data: fetch only what the arrangement needs. ---
   const supabase = await createClient();
 
-  const needsDistribution = showcases.includes("stats");
   // Featured review works even with nothing pinned: fall back to the
   // user's highest-rated published review so enabling the showcase
   // always shows SOMETHING (a pin in Settings overrides the pick).
@@ -214,7 +212,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     stats,
     reviews,
     profilePosts,
-    distributionRes,
     featuredRes,
     profileLists,
     anticipatedRes,
@@ -225,11 +222,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     getProfileReviews(profile.id),
     // Posts tab data — only fetched when that tab is open.
     activeTab === "posts" ? getUserPosts(profile.id) : Promise.resolve([]),
-    needsDistribution
-      ? supabase.rpc("get_rating_distribution", {
-          user_uuid: profile.id,
-        } as never)
-      : Promise.resolve({ data: null }),
     needsFeatured
       ? profile.featured_review_id
         ? supabase
@@ -281,9 +273,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         ])
       : [false, false];
 
-  const ratingDistribution: RatingBucket[] = Array.isArray(distributionRes.data)
-    ? (distributionRes.data as RatingBucket[])
-    : [];
   const featuredReview = (featuredRes.data as Review | null) ?? null;
   const anticipated: AnticipatedRelease[] = (
     (anticipatedRes.data as { releases: AnticipatedRelease | AnticipatedRelease[] }[] | null) ?? []
@@ -296,14 +285,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     month: "long",
     year: "numeric",
   });
-  const avgRating =
-    reviews.length > 0
-      ? formatRating(
-          (reviews as Review[]).reduce((sum, r) => sum + r.rating, 0) /
-            reviews.length
-        )
-      : null;
-
   // --- Sanitize user-controlled banner URL (goes into a CSS url()). ---
   const safeBannerUrl =
     profile.banner_url &&
@@ -580,31 +561,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               return (
                 <section key={type} className="space-y-3">
                   <div className="vhs-label inline-block text-sm">{t("ratingOverview")}</div>
-                  <div className="panel-xbox p-5 space-y-6">
-                    {/* The four headline numbers lead the profile now
-                        (ProfileStats, 2026-09-12); this block is the
-                        RATING side of the story — the average, then the
-                        histogram. */}
-                    <div className="text-center">
-                      <p
-                        className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
-                        style={{ color: accentColor }}
-                      >
-                        {avgRating ?? "—"}
-                      </p>
-                      <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                        {t("averageRating")}
-                      </p>
-                    </div>
-
-                    {/* Histogram gets its own full-width row below the
-                        stats; hidden entirely until ratings exist. */}
-                    {ratingDistribution.length > 0 && (
-                      <RatingHistogram
-                        distribution={ratingDistribution}
-                        accentColor={accentColor}
-                      />
-                    )}
+                  <div className="panel-xbox p-5">
+                    {/* The average, stated, and the frequency graph of
+                        every published rating (Luca 2026-09-12). The
+                        four headline numbers lead the profile header
+                        (ProfileStats). */}
+                    <RatingHistogram
+                      ratings={(reviews as Review[]).map((r) => r.rating)}
+                      accentColor={accentColor}
+                    />
                   </div>
                 </section>
               );

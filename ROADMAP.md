@@ -98,6 +98,17 @@ don't wait to be asked:**
   saw nothing on hover). Round 2 already in: the stats are baked into
   the header as plain text (no boxed module), and the card warms its
   data on hover and only opens while the mouse is still on the name.**
+  - **Round 3 (same day):** RATING OVERVIEW is a real graph now —
+    the average stated on the left (big number, "12 ratings"), and a
+    21-bar half-point frequency graph on the right, each bar in the
+    rating ladder's colour for its value, counts above the bars, a
+    dashed marker at the average, 0/2.5/5/7.5/10 axis. Built from the
+    page's own reviews list. FOUND + FIXED on the way: the page had
+    been calling get_rating_distribution with `user_uuid` while the
+    function takes `profile_uuid` — the old histogram never rendered
+    once. The hover card lost the theme-name pill: its band is now the
+    member's own banner (theme colours only as the fallback), a mini
+    of their profile rather than a label of what they picked.
   - **The strip (`components/profile/ProfileStats.tsx`):** FOLLOWERS ·
     FOLLOWING · REVIEWS · LIKES right under the name row, full width.
     Reviews/likes wear the trophy colours with a 2px progress bar and

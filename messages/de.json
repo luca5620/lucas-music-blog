@@ -631,6 +631,7 @@
       "streakTitle": "Song-des-Tages-Streak von {n} Tagen"
     },
     "histogram": {
+      "ratingsCount": "{n, plural, one {# Bewertung} other {# Bewertungen}}",
       "aria": "Verteilung von {n} Bewertungen",
       "bar": "{bucket}: {n, plural, one {# Bewertung} other {# Bewertungen}}"
     },

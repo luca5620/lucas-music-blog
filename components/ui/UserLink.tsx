@@ -5,9 +5,11 @@
  * <Link> to /profile/<username> and, on the web with a mouse, opens
  * an Instagram-style hover card after a short pause (Luca's idea,
  * 2026-09-12): avatar, name, role, tagline, the four profile numbers
- * (followers / following / reviews / likes, trophy colours and all)
- * and a mini of the member's theme — the theme's own liquid colours
- * as the card's top band, with its name.
+ * (followers / following / reviews / likes, trophy colours and all),
+ * under a mini of their own profile banner (their theme's liquid
+ * colours when they have none). Never the theme's name — the card is
+ * a small version of how their profile looks, not a label of what
+ * they picked (Luca 2026-09-12).
  *
  * Touch never opens it (a tap should just navigate; the app has no
  * hover), and neither does the native shell. Data comes from
@@ -34,6 +36,7 @@ interface Summary {
   username: string;
   display_name: string | null;
   avatar_url: string | null;
+  banner_url: string | null;
   role: Profile["role"];
   theme: string;
   tagline: string | null;
@@ -192,8 +195,7 @@ function HoverCard({
 }) {
   const t = useTranslations("profile.stats");
   const theme = resolveTheme(summary.theme);
-  const spec = THEME_SPECS[theme];
-  const accent = spec.accent;
+  const accent = THEME_SPECS[theme].accent;
   const hidden = hiddenBadgeSet(summary.hidden_badges);
   const reviews = trophyTier(summary.stats.review_count);
   const likes = trophyTier(summary.stats.total_likes_received);
@@ -201,6 +203,13 @@ function HoverCard({
   const avatarOk =
     summary.avatar_url &&
     (summary.avatar_url.startsWith("https://") || summary.avatar_url.startsWith("/"));
+  // Same guard the profile page applies before a URL enters CSS url().
+  const banner =
+    summary.banner_url &&
+    (summary.banner_url.startsWith("https://") || summary.banner_url.startsWith("/")) &&
+    !/["'()\\]/.test(summary.banner_url)
+      ? summary.banner_url
+      : null;
 
   const tiles = [
     { label: t("followers"), value: summary.stats.follower_count, color: accent, glyph: null, tier: null },
@@ -230,10 +239,16 @@ function HoverCard({
       onPointerEnter={onEnter}
       onPointerLeave={onLeave}
     >
-      {/* The theme mini: its own liquid colours as the top band */}
-      <div className="user-card-band" style={{ background: themeGradient(theme) }}>
-        <span className="user-card-theme">{spec.label}</span>
-      </div>
+      {/* Mini banner: their own banner image, else their theme's
+          liquid colours — the same fallback the profile page paints */}
+      <div
+        className="user-card-band"
+        style={{
+          background: banner
+            ? `url(${banner}) center / cover no-repeat`
+            : themeGradient(theme),
+        }}
+      />
       <div className="user-card-body">
         <div className="flex items-center gap-3">
           <span
@@ -249,7 +264,7 @@ function HoverCard({
               </span>
             )}
           </span>
-          <span className="min-w-0 flex-1">
+          <span className="user-card-id min-w-0 flex-1">
             <span className="flex items-center gap-1.5 min-w-0">
               <span className="user-card-name truncate">{name}</span>
               <RoleBadge role={summary.role} size="xs" />

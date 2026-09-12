@@ -631,6 +631,7 @@
       "streakTitle": "Série de {n} jours de morceau du jour"
     },
     "histogram": {
+      "ratingsCount": "{n, plural, one {# note} other {# notes}}",
       "aria": "Répartition de {n} notes",
       "bar": "{bucket} : {n, plural, one {# note} other {# notes}}"
     },

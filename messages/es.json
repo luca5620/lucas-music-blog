@@ -631,6 +631,7 @@
       "streakTitle": "Racha de {n} días de canción del día"
     },
     "histogram": {
+      "ratingsCount": "{n, plural, one {# valoración} other {# valoraciones}}",
       "aria": "Distribución de {n} calificaciones",
       "bar": "{bucket}: {n, plural, one {# calificación} other {# calificaciones}}"
     },

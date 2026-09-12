@@ -1,69 +1,104 @@
 /**
- * RatingHistogram — a small pure-CSS bar chart of a user's rating
- * distribution (whole-number buckets 0–10, from the
- * get_rating_distribution() SQL function).
+ * RatingHistogram — the RATING OVERVIEW module: the average rating
+ * stated on the left, and on the right a frequency graph of every
+ * rating the member has published (Luca 2026-09-12: "a graph showing
+ * all of the frequency of ratings with it saying the average rating
+ * as well").
  *
- * No chart library: just an 11-column flex row where each bar's
- * height is its count relative to the busiest bucket. Hovering a bar
- * shows the exact count via the native title tooltip. Server-friendly
- * (no hooks), so profile pages can render it directly.
+ * Half-point buckets (0, 0.5, … 10 — 21 bars) because ratings carry
+ * one decimal and a 9.5 is not a 9. Each bar wears the rating
+ * ladder's colour for its value (lib/rating.ts), so the graph reads
+ * like the rating badges do: greys → reds → greens → cyan → blue →
+ * purple → the perfect-10 blue. The count sits above every non-empty
+ * bar; a dashed marker drops through the graph at the average.
+ *
+ * Pure markup, no chart library, no hooks beyond translations —
+ * profile pages render it straight from the server. The ratings come
+ * from the page's own reviews list, so the graph always agrees with
+ * the REVIEWS number in the header. (The old get_rating_distribution
+ * RPC was being called with the wrong parameter name and never
+ * returned a row — the graph had been invisible since day one.)
  */
 
-import type { RatingBucket } from "@/lib/types/database";
 import { useTranslations } from "next-intl";
+import { formatRating, getRatingHex } from "@/lib/rating";
+
+const BUCKETS = 21; // 0.0 … 10.0 in halves
 
 interface RatingHistogramProps {
-  distribution: RatingBucket[];
-  /** Bar color — usually the profile's accent color. */
+  /** Every published rating, 0–10 with one decimal. */
+  ratings: number[];
+  /** Headline colour for the average — the profile's accent. */
   accentColor?: string;
 }
 
 export default function RatingHistogram({
-  distribution,
+  ratings,
   accentColor = "#1e90ff",
 }: RatingHistogramProps) {
-  // Fill all 11 buckets (0–10) so gaps render as empty columns.
-  const t = useTranslations("profile.histogram");
-  const counts = Array.from({ length: 11 }, (_, bucket) => {
-    const match = distribution.find((d) => d.bucket === bucket);
-    return match?.count ?? 0;
-  });
-
-  const total = counts.reduce((sum, c) => sum + c, 0);
-  if (total === 0) return null; // nothing rated yet — skip the chart
-
-  // Tallest bucket = 100% height; everything else scales off it.
-  const max = Math.max(...counts);
+  const t = useTranslations("profile");
+  const counts = new Array<number>(BUCKETS).fill(0);
+  let sum = 0;
+  for (const r of ratings) {
+    if (!Number.isFinite(r)) continue;
+    const clamped = Math.min(10, Math.max(0, r));
+    counts[Math.min(BUCKETS - 1, Math.floor(clamped * 2))] += 1;
+    sum += clamped;
+  }
+  const total = counts.reduce((a, b) => a + b, 0);
+  const average = total > 0 ? sum / total : null;
+  const max = Math.max(1, ...counts);
 
   return (
-    <div className="space-y-1">
-      {/* The bars. items-end makes them grow up from the baseline. */}
-      <div
-        className="flex items-end gap-1 h-16"
-        role="img"
-        aria-label={t("aria", { n: total })}
-      >
-        {counts.map((count, bucket) => (
-          <div
-            key={bucket}
-            className="flex-1 rounded-t-sm transition-all"
-            // Hover shows the exact numbers, e.g. "8: 12 ratings"
-            title={t("bar", { bucket, n: count })}
-            style={{
-              // Zero-count buckets keep a 2px stub so the axis reads
-              // as continuous; rated buckets scale to the max.
-              height: count > 0 ? `${Math.max((count / max) * 100, 6)}%` : "2px",
-              background: count > 0 ? accentColor : "rgba(255,255,255,0.08)",
-              opacity: count > 0 ? 0.55 + 0.45 * (count / max) : 1,
-            }}
-          />
-        ))}
+    <div className="rating-overview">
+      {/* The average, stated */}
+      <div className="rating-overview-avg">
+        <p className="rating-overview-number" style={{ color: accentColor }}>
+          {average === null ? "—" : formatRating(average)}
+        </p>
+        <p className="stat-label">{t("averageRating")}</p>
+        <p className="rating-overview-count">{t("histogram.ratingsCount", { n: total })}</p>
       </div>
 
-      {/* Axis ends: 0 on the left, 10 on the right */}
-      <div className="flex justify-between">
-        <span className="pixel-text text-[0.6rem] text-[#5a5a60]">0</span>
-        <span className="pixel-text text-[0.6rem] text-[#5a5a60]">10</span>
+      {/* The frequency graph */}
+      <div className="rating-graph">
+        <div
+          className="rating-graph-bars"
+          role="img"
+          aria-label={t("histogram.aria", { n: total })}
+        >
+          {counts.map((count, i) => {
+            const value = i / 2;
+            const label = Number.isInteger(value) ? String(value) : value.toFixed(1);
+            return (
+              <div key={i} className="rating-bar" title={t("histogram.bar", { bucket: label, n: count })}>
+                {count > 0 && <span className="rating-bar-count">{count}</span>}
+                <span
+                  className="rating-bar-fill"
+                  style={{
+                    height: count > 0 ? `${Math.max((count / max) * 100, 8)}%` : "2px",
+                    background: count > 0 ? getRatingHex(value) : "rgba(255,255,255,0.08)",
+                  }}
+                />
+              </div>
+            );
+          })}
+          {average !== null && (
+            <span
+              className="rating-avg-line"
+              style={{ left: `${(average / 10) * 100}%`, borderColor: accentColor }}
+              aria-hidden="true"
+            />
+          )}
+        </div>
+        {/* Axis */}
+        <div className="rating-graph-axis" aria-hidden="true">
+          <span>0</span>
+          <span>2.5</span>
+          <span>5</span>
+          <span>7.5</span>
+          <span>10</span>
+        </div>
       </div>
     </div>
   );

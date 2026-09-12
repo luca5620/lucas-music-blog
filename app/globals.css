@@ -3746,30 +3746,21 @@ fieldset {
 }
 .user-card-band {
   position: relative;
-  height: 44px;
-}
-.user-card-theme {
-  position: absolute;
-  right: 10px;
-  bottom: 8px;
-  font-family: var(--font-pixel);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.45);
-  padding: 3px 7px;
-  border-radius: 999px;
+  height: 72px;
 }
 .user-card-body {
   padding: 0 14px 12px;
-  margin-top: -18px;
+  margin-top: -22px;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
+/* The avatar overlaps the banner; the name starts just under it */
 .user-card-body > div:first-child {
-  align-items: flex-end;
+  align-items: flex-start;
+}
+.user-card-id {
+  padding-top: 26px;
 }
 .user-card-avatar {
   width: 48px;
@@ -3846,6 +3837,113 @@ fieldset {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   align-self: flex-end;
+}
+
+/* --- RATING OVERVIEW: the average stated, the frequency graph of
+   every rating in half-point bars wearing the rating ladder's colours
+   (components/profile/RatingHistogram.tsx, Luca 2026-09-12). --- */
+.rating-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+@media (min-width: 640px) {
+  .rating-overview {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 2rem;
+  }
+}
+.rating-overview-avg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+@media (min-width: 640px) {
+  .rating-overview-avg {
+    min-width: 9rem;
+    padding-right: 2rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+.rating-overview-number {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 640px) {
+  .rating-overview-number {
+    font-size: 3rem;
+  }
+}
+.rating-overview-count {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+}
+.rating-graph {
+  flex: 1;
+  min-width: 0;
+}
+.rating-graph-bars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 7rem;
+  padding-top: 0.9rem; /* room for the counts above the tallest bars */
+}
+@media (min-width: 640px) {
+  .rating-graph-bars {
+    height: 9rem;
+    gap: 3px;
+  }
+}
+.rating-bar {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2px;
+}
+.rating-bar-fill {
+  display: block;
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+}
+.rating-bar-count {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  line-height: 1;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.rating-avg-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.rating-graph-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.35rem;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: #5a5a60;
 }
 
 /* ============================================================

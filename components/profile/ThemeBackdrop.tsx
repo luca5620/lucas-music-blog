@@ -45,13 +45,11 @@ export default function ThemeBackdrop({ theme }: { theme: ProfileTheme }) {
       className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
       aria-hidden="true"
     >
-      {/* Themed liquid wash — the blob colors come from the theme's
-          --liquid-* vars (set by the theme-* class wrapping the
-          profile), so a PS3 profile drifts silver-blue, Xbox OG acid
-          green, Robot Rock gold, and so on. */}
-      <div className="liquid-blob liquid-a w-[460px] h-[460px] -top-32 -left-24" />
-      <div className="liquid-blob liquid-b w-[400px] h-[400px] top-[30%] -right-28" />
-      <div className="liquid-blob liquid-c w-[420px] h-[420px] top-[65%] -left-28" />
+      {/* No liquid layer of its own: ThemeLiquidSync pushes the
+          theme's trio onto <html>, so the site-wide LiquidField
+          already flows in this profile's colours (PS3 silver-blue,
+          Xbox OG acid green, Robot Rock gold…) — one renderer, a
+          quieter crop behind identity and content. */}
 
       {/* Prerendered 3D loop when public/backdrops/<theme>.webm exists;
           hides itself when the file is absent and the CSS scene below

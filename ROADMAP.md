@@ -90,6 +90,46 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-11 (Windows): THE LIQUID MATERIAL — built on branch
+  `liquid-material`, NOT on main, waiting for Luca's eyes.** Astra's
+  handoff (`FABLE-LIQUID-ATMOSPHERE-HANDOFF.md` at the workspace root,
+  referencing the monopo saigon `DESIGN.md` + hero screenshot) asked
+  for the drifting blurred circles to become one connected flowing
+  material: pigment currents under smoked glass, one oversized fold
+  with an edge light, calm dark space, patient motion, colours still
+  driven by album covers and profile themes.
+  - **What shipped on the branch:** `lib/liquidMaterial.ts` (the
+    fragment shader + OKLab palette maths: the existing --liquid-1/2/3
+    trio becomes six material roles — base, main, second, third, edge
+    light, occlusion) and `components/ui/LiquidField.tsx` (the canvas
+    renderer). Every blob string is gone: CRTShell (web screen + the
+    app's one field), the room in layout.tsx, LiquidAtmosphere's
+    heroes, ThemeBackdrop's three blobs (the site field already wears
+    the profile theme via ThemeLiquidSync). CoverLiquidSync and
+    ThemeLiquidSync now fire `pmr-liquid-change` so the glide to new
+    colours (1.1s, in OKLab) starts instantly.
+  - **Thermal rules kept, one renderer per surface:** phones and
+    low-detail render ONE still frame (a single painted texture — the
+    cheapest thing on the page); the app moves only while
+    html.motion-on; desktop runs 30fps, sleeps when the tab is hidden
+    or the canvas scrolls out of view; no WebGL → a CSS fallback in
+    the same palette (`.liquid-fallback`), never the old orbs. The
+    site canvas is viewport-sized and sticky inside the page-tall
+    wrapper (no page-tall canvas, no layout shift).
+  - **Verified headlessly (Chrome + SwiftShader):** home desktop,
+    home scrolled (sticky holds), release page (cover colours carried
+    into the fold), profile (theme colours), simulated native shell;
+    motion confirmed frame-to-frame; `npm run build` clean; lint 0
+    errors. NOT eyeballed on a real GPU or phone yet.
+  - **Luca's checks:** open the Vercel preview for the branch; turn
+    OFF low detail (footer switch) to see it move; judge the home
+    hero (site field + panel field + CD stack — may be too busy),
+    the release page and his own profile. Then: merge to main or
+    tune (intensity knobs are the INTENSITY table in LiquidField.tsx;
+    band/fold look is in the shader).
+  - Seen while testing, not mine: a React hydration mismatch on the
+    RatedWall avatar `<img>` className on the home page (dev only).
+
 - **2026-09-09 (Windows): THE OUTREACH KIT — shipped, all three parts.**
   Luca picked "all of it, backfill first". Direction changes logged the
   same day: the email ask is **"if you like it, let me know"** (never

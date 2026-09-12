@@ -13,6 +13,7 @@
 
 import { useEffect } from "react";
 import type { ProfileTheme } from "@/lib/types/database";
+import { LIQUID_CHANGE_EVENT } from "@/lib/liquidMaterial";
 
 const TRIOS: Record<ProfileTheme, [string, string, string]> = {
   "crt-blue": ["160, 224, 171", "255, 172, 46", "165, 45, 37"], // site default
@@ -34,10 +35,13 @@ export default function ThemeLiquidSync({ theme }: { theme: ProfileTheme }) {
     root.style.setProperty("--liquid-1", trio[0]);
     root.style.setProperty("--liquid-2", trio[1]);
     root.style.setProperty("--liquid-3", trio[2]);
+    // Wakes every LiquidField so the glide starts now, not on poll.
+    window.dispatchEvent(new Event(LIQUID_CHANGE_EVENT));
     return () => {
       root.style.removeProperty("--liquid-1");
       root.style.removeProperty("--liquid-2");
       root.style.removeProperty("--liquid-3");
+      window.dispatchEvent(new Event(LIQUID_CHANGE_EVENT));
     };
   }, [theme]);
 

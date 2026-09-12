@@ -19,6 +19,7 @@ import TabBar from "@/components/ui/TabBar";
 import PushRegistration from "@/components/ui/PushRegistration";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
+import LiquidField from "@/components/ui/LiquidField";
 import NavigationPending from "@/components/ui/NavigationPending";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
@@ -196,18 +197,10 @@ export default async function RootLayout({
             bezel — the side bars glow on wide screens. Painted first
             so the TV sits on top of it. */}
         <div className="liquid-room" aria-hidden="true">
-          {/* Sizes grown ~25% + one extra blob per side (Luca
-              2026-08-26, DESKTOP PROMINENCE in globals.css): the room
-              is web-only (hidden ≤640px and in the app), so it can
-              afford to glow bigger without touching mobile. */}
-          <div className="liquid-blob liquid-a w-[640px] h-[640px] top-[6%] -left-56" />
-          <div className="liquid-blob liquid-c w-[580px] h-[580px] top-[42%] -left-48" />
-          <div className="liquid-blob liquid-b w-[600px] h-[600px] top-[76%] -left-52" />
-          <div className="liquid-blob liquid-c w-[560px] h-[560px] top-[26%] -left-44" />
-          <div className="liquid-blob liquid-b w-[620px] h-[620px] top-[14%] -right-56" />
-          <div className="liquid-blob liquid-a w-[560px] h-[560px] top-[52%] -right-48" />
-          <div className="liquid-blob liquid-c w-[600px] h-[600px] top-[84%] -right-52" />
-          <div className="liquid-blob liquid-a w-[560px] h-[560px] top-[32%] -right-44" />
+          {/* The room is web-only (hidden ≤640px and in the app): one
+              quieter field of the same material behind the TV, so the
+              side bars on wide screens glow with the same light. */}
+          <LiquidField context="room" />
         </div>
 
         {/* CRT atmosphere: grain, scanlines, grille */}

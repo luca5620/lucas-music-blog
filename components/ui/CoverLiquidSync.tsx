@@ -24,6 +24,7 @@
  */
 
 import { useEffect } from "react";
+import { LIQUID_CHANGE_EVENT } from "@/lib/liquidMaterial";
 
 /** Only https:// or local /path images (same rule as safeImage). */
 function safeUrl(url: string | null): string | null {
@@ -144,6 +145,9 @@ export default function CoverLiquidSync({
       root.style.setProperty("--liquid-1", trio[0]);
       root.style.setProperty("--liquid-2", trio[1] ?? trio[0]);
       root.style.setProperty("--liquid-3", trio[2] ?? trio[0]);
+      // Wakes every LiquidField so the glide to the cover's colours
+      // starts now, not on its next poll.
+      window.dispatchEvent(new Event(LIQUID_CHANGE_EVENT));
     };
     // onerror: no CORS / broken image — defaults stay, nothing to do.
 
@@ -152,6 +156,7 @@ export default function CoverLiquidSync({
       root.style.removeProperty("--liquid-1");
       root.style.removeProperty("--liquid-2");
       root.style.removeProperty("--liquid-3");
+      window.dispatchEvent(new Event(LIQUID_CHANGE_EVENT));
     };
   }, [coverUrl]);
 

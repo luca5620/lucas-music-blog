@@ -1424,10 +1424,6 @@ body {
 .native-app .crt-screen > .crt-liquid {
   display: none;
 }
-.native-app .crt-bezel-liquid .liquid-blob {
-  filter: blur(72px);
-  opacity: 0.55;
-}
 
 /* The tab bar's bottom breathing room: the safe-area inset MINUS a
    10px shift-down. One shared var so every surface that stacks on
@@ -3088,20 +3084,41 @@ fieldset {
    phones — transform/opacity animations only.
    ============================================================ */
 
-/* --- The liquid atmosphere: three blurred blobs of sage, molten
-   amber, and oxblood drifting slowly behind hero content --- */
-.liquid-blob {
+/* --- The liquid atmosphere: one flowing pigment-under-glass field
+   per context, drawn by a fragment shader on a decorative canvas
+   (components/ui/LiquidField.tsx, lib/liquidMaterial.ts). The three
+   drifting blurred circles that used to live here are gone — Astra's
+   handoff 2026-09-11: connected material with internal motion, not
+   separate glowing objects. Colours still ride --liquid-1/2/3. --- */
+.liquid-field {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(68px);
-  opacity: 0.45;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
   pointer-events: none;
-  /* Each blob gets its own composited layer: the blur rasterizes ONCE
-     and the drift is pure compositor transform work. This is what
-     lets the motion run on phones/the app shell without the scroll
-     jank that froze it before. */
-  will-change: transform;
-  transform: translateZ(0);
+}
+
+/* Site-wide fields: the wrapper is page-tall (inset: 0 of the screen
+   or the TV), the canvas is one viewport riding along inside it.
+   min() keeps it inside a short page's wrapper so it never adds
+   scroll height. */
+.liquid-field-sticky {
+  position: sticky;
+  top: 0;
+  height: min(100vh, 100%);
+}
+
+/* No WebGL / lost context: a still composition in the same palette —
+   long diagonal bands and one open curved fold. Never the old orbs. */
+.liquid-fallback {
+  background:
+    radial-gradient(140% 90% at 108% 42%, transparent 56%, rgba(var(--liquid-1), 0.22) 60%, transparent 66%),
+    linear-gradient(112deg,
+      transparent 0%, rgba(var(--liquid-2), 0.20) 26%, transparent 44%,
+      rgba(var(--liquid-1), 0.26) 58%, transparent 72%,
+      rgba(var(--liquid-3), 0.22) 88%, transparent 100%),
+    linear-gradient(160deg, rgba(var(--liquid-1), 0.10), rgba(0, 0, 0, 0) 60%);
 }
 
 /* Page-level washes wear a veil: a radial mask fades the whole layer
@@ -3112,48 +3129,21 @@ fieldset {
   mask-image: radial-gradient(130% 110% at 50% 22%, black 35%, transparent 74%);
 }
 
-.liquid-veil .liquid-blob {
-  filter: blur(84px);
-  opacity: 0.38;
-}
-
-/* Durations were 13/17/21s — trimmed ~25% (Luca 2026-08-24: "a bit
-   more alive but not too alive"). More alive = faster travel, NOT
-   bigger opacity/blur, so readability is untouched. */
-.liquid-a {
-  background: radial-gradient(circle, rgba(var(--liquid-1), 0.6) 0%, transparent 70%);
-  animation: liquid-drift-a 10s ease-in-out infinite;
-}
-
-.liquid-b {
-  background: radial-gradient(circle, rgba(var(--liquid-2), 0.5) 0%, transparent 70%);
-  animation: liquid-drift-b 13s ease-in-out infinite;
-}
-
-.liquid-c {
-  background: radial-gradient(circle, rgba(var(--liquid-3), 0.55) 0%, transparent 70%);
-  animation: liquid-drift-c 16s ease-in-out infinite;
-}
-
-/* --- Site-wide canvas wash: blobs spread down the whole tube,
-   behind every panel and page. Much dimmer and blurrier than the
-   boxed heroes so content always wins. --- */
+/* --- Site-wide wash: the field behind every panel and page on the
+   web screen. No overflow:hidden — the sticky canvas needs the
+   viewport as its scroller — so the screen's rounded corners are
+   honoured with a clip-path instead. --- */
 .crt-liquid {
   position: absolute;
   inset: 0;
-  overflow: hidden;
   pointer-events: none;
+  clip-path: inset(0 round 0 10px 10px 0);
 }
 
 /* Must outrank the `.crt-screen > *` z-index:1 rule so the wash
    truly sits behind everything on the screen. */
 .crt-screen > .crt-liquid {
   z-index: 0;
-}
-
-.crt-liquid .liquid-blob {
-  filter: blur(80px);
-  opacity: 0.55;
 }
 
 /* --- BEZEL LIQUID: the molten light bleeding through the gray
@@ -3165,7 +3155,6 @@ fieldset {
 .crt-bezel-liquid {
   position: absolute;
   inset: 0;
-  overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
   /* APP-ONLY (Luca 2026-08-24): on the web the gray plastic ring
@@ -3176,13 +3165,6 @@ fieldset {
 
 .native-app .crt-bezel-liquid {
   display: block;
-}
-
-/* Tighter blur than the room: the visible ring is thin, so the light
-   needs enough edge definition to read as movement, not a tint. */
-.crt-bezel-liquid .liquid-blob {
-  filter: blur(48px);
-  opacity: 0.5;
 }
 
 /* --- The ROOM: liquid filling the black space AROUND the bezel —
@@ -3198,33 +3180,6 @@ fieldset {
   z-index: 0;
 }
 
-.liquid-room .liquid-blob {
-  filter: blur(72px);
-  opacity: 0.55;
-}
-
-/* DESKTOP PROMINENCE (Luca 2026-08-26): on the web the wash read as
-   small and sparse — a big monitor swallowed the phone-tuned sizes.
-   So above the thermal-mode cutoff (where everything animates anyway)
-   the wash runs brighter and blurrier, CRTShell's blobs grow ~40% at
-   md: (travel scales with size — the drift keyframes move in % of the
-   blob's own box — so bigger blobs also visibly roam farther), and a
-   second string of md:-only blobs densifies the field. Phones and the
-   app shell keep the exact tuning Luca already approved.
-   (Must sit BELOW both base .liquid-blob rules: a media query adds no
-   specificity, so only source order lets these win.) */
-@media (min-width: 769px) {
-  .crt-liquid .liquid-blob {
-    filter: blur(96px);
-    opacity: 0.7;
-  }
-
-  .liquid-room .liquid-blob {
-    filter: blur(84px);
-    opacity: 0.7;
-  }
-}
-
 /* Phones have no side bars (bezel is full-bleed) and the app shell
    never shows the room — skip the GPU work there. */
 @media (max-width: 640px) {
@@ -3236,34 +3191,6 @@ fieldset {
 .native-app .liquid-room {
   display: none;
 }
-
-/* Real wandering, not a gentle shiver: each blob roams a wide loop
-   through four waypoints so the light visibly travels. */
-@keyframes liquid-drift-a {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(24%, 16%) scale(1.3); }
-  50% { transform: translate(10%, 34%) scale(1.1); }
-  75% { transform: translate(-16%, 12%) scale(0.85); }
-}
-
-@keyframes liquid-drift-b {
-  0%, 100% { transform: translate(0, 0) scale(1.1); }
-  25% { transform: translate(-26%, -14%) scale(0.85); }
-  50% { transform: translate(-8%, -30%) scale(1.25); }
-  75% { transform: translate(18%, -10%) scale(1); }
-}
-
-@keyframes liquid-drift-c {
-  0%, 100% { transform: translate(0, 0) scale(0.95); }
-  25% { transform: translate(16%, -24%) scale(1.2); }
-  50% { transform: translate(30%, 2%) scale(1); }
-  75% { transform: translate(10%, 20%) scale(1.3); }
-}
-
-/* Desynchronize siblings so the field never moves in lockstep */
-.liquid-blob:nth-child(2n) { animation-delay: -7s; }
-.liquid-blob:nth-child(3n) { animation-delay: -13s; }
-.liquid-blob:nth-child(4n) { animation-delay: -4s; }
 
 /* --- The disc: tilted, spinning, chromed. The tilt wrapper adds
    perspective; the disc itself carries the chrome + diffraction
@@ -3356,7 +3283,7 @@ fieldset {
 
 @media (prefers-reduced-motion: reduce) {
   .cd-disc { animation: none; }
-  .liquid-a, .liquid-b, .liquid-c { animation: none; }
+  /* the liquid field reads this query itself and renders one still */
 }
 
 /* ============================================================
@@ -3432,13 +3359,12 @@ fieldset {
 
    The diet, on phones and in the app shell only (desktop keeps
    everything):
-   1. In-screen liquid holds still. A static blob costs ~nothing
-      after its first paint — the molten light stays PAINTED,
-      it just stops drifting behind content you're reading anyway.
-   2. The app's bezel liquid keeps moving (Luca 2026-08-24: alive
-      edges), minus its three biggest mid-canvas blobs
-      (.liquid-still in CRTShell) — the ring stays alive at a
-      fraction of the overdraw.
+   1. The liquid field holds still. LiquidField renders one
+      composed frame on phones and, in the app, only moves while
+      html.motion-on — a still canvas is a single painted texture,
+      it costs nothing after its first paint.
+   2. (The old bezel-blob exception is gone with the blobs: the
+      app's one field follows the same motion-on rule.)
    3. Panels drop backdrop-filter for a slightly more opaque solid
       smoke — visually a hair less glassy, massively cheaper to
       scroll. Themed panels (limewire/bleach/…) outrank these
@@ -3448,12 +3374,9 @@ fieldset {
    on the home hero (pause it in .native-app).
    ============================================================ */
 
-/* 1 + 3 — mobile web */
+/* 1 + 3 — mobile web (the liquid field holds still on phones by
+   itself — see LiquidField's motion policy) */
 @media (max-width: 768px) {
-  .crt-screen .liquid-blob {
-    animation: none;
-  }
-
   .panel-xbox,
   .panel-xbox-glow {
     backdrop-filter: none;
@@ -3464,19 +3387,10 @@ fieldset {
 
 /* 1 + 3 — the app shell (tablets included). :where() keeps the
    panel selector at base specificity so theme skins still win. */
-.native-app .crt-screen .liquid-blob {
-  animation: none;
-}
-
 .native-app :where(.panel-xbox, .panel-xbox-glow) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   background: rgba(12, 14, 22, 0.92);
-}
-
-/* 2 — bezel blobs marked still in CRTShell stay painted, parked */
-.liquid-blob.liquid-still {
-  animation: none;
 }
 
 /* ------------------------------------------------------------
@@ -3503,7 +3417,6 @@ fieldset {
    !important because the badge glows set `animation: ... !important`
    themselves, which would otherwise out-rank this play-state.
    ------------------------------------------------------------ */
-.native-app:not(.motion-on) .crt-bezel-liquid .liquid-blob,
 .native-app:not(.motion-on) .cd-disc,
 .native-app:not(.motion-on) .scan-bar::after,
 .native-app:not(.motion-on) .glow-orb,
@@ -3567,13 +3480,6 @@ fieldset {
   .aperture-grille {
     display: none;
   }
-
-  .liquid-blob {
-    filter: none !important;
-    will-change: auto !important;
-    transform: none !important;
-    animation: none !important;
-  }
 }
 
 .native-app .grain-overlay,
@@ -3582,49 +3488,7 @@ fieldset {
   display: none;
 }
 
-.native-app .liquid-blob {
-  filter: none !important;
-  will-change: auto !important;
-  transform: none !important;
-  animation: none !important;
-}
 
-/* ------------------------------------------------------------
-   BREATHING BLOB (Luca 2026-09-02) — the ONE exception to the
-   phone/app still.
-
-   Thermal mode above freezes every blob on phones and in the app.
-   Luca wanted the top blob — the one behind the status bar and
-   masthead, on screen more than any other — to feel alive again,
-   without reopening the overheating door. So exactly one blob per
-   field (marked .liquid-breathe in CRTShell) fades between two
-   opacities on a slow loop. Why this stays cool:
-   - opacity is a compositor-only property: no repaint, no layout,
-     one small layer re-blended per frame (the blur/transform work
-     that actually burned is still off — the !important rules above
-     hold)
-   - it is ONE element, not ~30
-   - 9s per cycle, so the GPU wakes for a blend and idles again
-   Runs even when idle (it IS the "alive" signal), so it also sits
-   outside the .motion-on play-state gate. Desktop keeps its full
-   drift and never sees this rule.
-   ------------------------------------------------------------ */
-@keyframes liquid-breathe {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 0.22; }
-}
-
-@media (max-width: 768px) {
-  .liquid-blob.liquid-breathe {
-    animation: liquid-breathe 9s ease-in-out infinite !important;
-  }
-}
-
-.native-app .liquid-blob.liquid-breathe,
-.native-app:not(.motion-on) .crt-bezel-liquid .liquid-blob.liquid-breathe {
-  animation: liquid-breathe 9s ease-in-out infinite !important;
-  animation-play-state: running !important;
-}
 
 /* ------------------------------------------------------------
    AUTH SHELL (Luca 2026-09-02) — one question per screen on
@@ -3814,17 +3678,6 @@ fieldset {
   display: none;
 }
 
-.low-detail .liquid-blob {
-  filter: none !important;
-  will-change: auto !important;
-  transform: none !important;
-  animation: none !important;
-}
-.low-detail .liquid-blob.liquid-breathe {
-  animation: liquid-breathe 9s ease-in-out infinite !important;
-  animation-play-state: running !important;
-}
-
 .low-detail :where(.panel-xbox, .panel-xbox-glow) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -3880,4 +3733,13 @@ fieldset {
 .low-detail .wall-track {
   animation: none;
   will-change: auto;
+}
+
+/* The liquid field: in low detail the canvas stops after one composed
+   frame (LiquidField reads html.low-detail — the still is a single
+   painted texture, the cheapest thing on the page) and the no-WebGL
+   fallback drops to a plainer wash. */
+.low-detail .liquid-fallback {
+  background:
+    linear-gradient(112deg, transparent 0%, rgba(var(--liquid-2), 0.16) 30%, transparent 50%, rgba(var(--liquid-1), 0.2) 62%, transparent 80%);
 }

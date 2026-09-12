@@ -1,8 +1,8 @@
 /**
- * LiquidAtmosphere — monopo's molten light: three blurred blobs of
- * sage green, molten amber, and deep oxblood drifting slowly behind
- * content. Pure CSS (see CHROME DISC + LIQUID LIGHT in globals.css),
- * transform-only animation, always aria-hidden.
+ * LiquidAtmosphere — the flowing pigment-under-glass material behind
+ * hero content (see LiquidField + lib/liquidMaterial.ts; this used to
+ * be three blurred circles drifting — Astra's handoff 2026-09-11
+ * replaced them with one connected field).
  *
  * Sits at -z behind content, so the PARENT must carry
  * `relative isolate` (same pattern as ThemeBackdrop) — without
@@ -10,9 +10,12 @@
  * and vanish.
  *
  * Variants:
- *  - "panel": blobs wrap around a contained hero panel
- *  - "page":  blobs concentrated across the top of a full page
+ *  - "panel": the richest expression, boxed inside a hero panel
+ *  - "page":  a full-page top wash, veiled so it dissolves toward
+ *             the edges instead of ending in a line
  */
+import LiquidField from "@/components/ui/LiquidField";
+
 export default function LiquidAtmosphere({
   variant = "panel",
 }: {
@@ -25,19 +28,7 @@ export default function LiquidAtmosphere({
       }`}
       aria-hidden="true"
     >
-      {variant === "panel" ? (
-        <>
-          <div className="liquid-blob liquid-a w-[420px] h-[420px] -top-32 -left-24" />
-          <div className="liquid-blob liquid-b w-[380px] h-[380px] top-1/3 -right-28" />
-          <div className="liquid-blob liquid-c w-[340px] h-[340px] -bottom-28 left-1/4" />
-        </>
-      ) : (
-        <>
-          <div className="liquid-blob liquid-a w-[460px] h-[460px] -top-40 -left-28" />
-          <div className="liquid-blob liquid-b w-[400px] h-[400px] -top-24 right-[15%]" />
-          <div className="liquid-blob liquid-c w-[360px] h-[360px] top-40 left-[35%]" />
-        </>
-      )}
+      <LiquidField context={variant} />
     </div>
   );
 }

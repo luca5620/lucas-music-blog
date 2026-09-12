@@ -90,8 +90,9 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-- **2026-09-11 (Windows): THE LIQUID MATERIAL — built on branch
-  `liquid-material`, NOT on main, waiting for Luca's eyes.** Astra's
+- **2026-09-11 (Windows): THE LIQUID MATERIAL — SHIPPED to main
+  (dcaac13, Luca: "it looks great", fine-tuning to come later on his
+  ask; branch `liquid-material` deleted after the merge).** Astra's
   handoff (`FABLE-LIQUID-ATMOSPHERE-HANDOFF.md` at the workspace root,
   referencing the monopo saigon `DESIGN.md` + hero screenshot) asked
   for the drifting blurred circles to become one connected flowing
@@ -128,10 +129,13 @@ don't wait to be asked:**
     mirror it) instead of green/copper; more true-black void for
     OLED (calm mask sinks whole regions to black, base is a whisper
     over black). Covers and profile themes still recolour it.
-  - **Luca's checks:** open the Vercel preview for the branch; turn
-    OFF low detail (footer switch) to see it move; then say merge or
-    tune (intensity knobs = the INTENSITY table in LiquidField.tsx;
-    band/fold look = the shader in liquidMaterial.ts).
+  - **Tuning knobs for the future asks:** intensity = the INTENSITY
+    table in LiquidField.tsx; band/fold look = the shader in
+    liquidMaterial.ts; default colours = :root --liquid-* (mirror in
+    ThemeLiquidSync crt-blue + DEFAULT_TRIO). Low detail must be OFF
+    (footer switch) to see motion.
+  - **NEXT (Luca's order):** profile stats at the forefront + the
+    hover card (item 4 below), then DISCUSS the diary twist.
   - Seen while testing, not mine: a React hydration mismatch on the
     RatedWall avatar `<img>` className on the home page (dev only).
 

@@ -117,7 +117,12 @@ don't wait to be asked:**
     line with the name). One TheLog element again, no web/phone
     copies. Phones: the whole header raised a bit more (-mt-28, the
     button margin-top 7.25rem so it still clears the banner); Luca:
-    "that's it for mobile". Waiting on his eyeball of the web fix.
+    "that's it for mobile". Web eyeballed: good, but the
+    log sat at the page edge past the button -> round 6b: the left
+    column hugs its content (flex 0 1 auto, capped), The Log sits
+    right after it, the button is pinned absolute at the far right
+    on web (top 5.5rem, right 2rem; margin-right 12rem on the log
+    keeps it clear, flex-wrap drops it under on narrow screens).
   - **Round 5 (same day, superseded by round 6 on web):** The Log
     inside the header row, numbers moved into the name block — wrong,
     reverted. Phone parts kept: header shifted up, tighter gaps in

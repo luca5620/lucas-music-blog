@@ -3927,16 +3927,34 @@ fieldset {
 @media (min-width: 640px) {
   .profile-header-wrap {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: 2.5rem;
   }
+  /* The left column hugs its content (name block, bio, links) so The
+     Log sits right after it instead of at the page edge (Luca
+     2026-09-12: "right justified, even bypassing the customize
+     button"). Capped so the name never runs under the button. */
   .profile-header-main {
-    flex: 1 1 0;
+    flex: 0 1 auto;
     min-width: 0;
+    max-width: calc(100% - 12rem);
   }
   .profile-header-log {
     flex: 0 0 auto;
     padding-top: 5.5rem;
+    /* room for the button pinned at the far right; if there is no
+       room the log wraps under the left column instead of crossing it */
+    margin-right: 12rem;
+  }
+  /* The Customize / Follow button stays pinned at the page's far
+     right on web, out of the flex flow, so the two columns can hug
+     their content without dragging it inward. */
+  .profile-header-wrap .profile-head-action {
+    position: absolute;
+    top: 5.5rem;
+    right: 2rem;
+    margin: 0;
   }
 }
 .the-log {

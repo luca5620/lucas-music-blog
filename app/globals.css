@@ -3877,7 +3877,12 @@ fieldset {
   .profile-head {
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: flex-end;
+    /* Top-aligned: the name block (name · handle · numbers) is taller
+       than the avatar now, so bottom alignment pushed the name up
+       into the banner. The row starts 5rem above the banner's edge
+       for the avatar overlap; the name and the button start just
+       under that edge. */
+    align-items: flex-start;
     gap: 1.5rem;
   }
   .profile-head-top {
@@ -3885,28 +3890,20 @@ fieldset {
   }
   .profile-head-name {
     order: 1;
-  }
-  .profile-head-stats {
-    order: 2;
-    align-self: flex-end;
-    padding-bottom: 0.4rem;
-    margin-left: 0.5rem;
+    padding-top: 5.5rem;
   }
   .profile-head-action {
     order: 10;
     margin-left: auto;
+    margin-top: 5.5rem;
   }
 }
-/* One set of numbers per screen size */
-.stats-slot-app {
-  display: none;
-}
+/* Phones: the button drops below the banner with a real gap (the row
+   starts 5rem up, overlapping the banner for the avatar) */
 @media (max-width: 639px) {
-  .stats-slot-app {
-    display: flex;
-  }
-  .stats-slot-web {
-    display: none;
+  .profile-head-action {
+    align-self: flex-start;
+    margin-top: 5.75rem;
   }
 }
 /* Beside the handle: small numbers, tight labels, no progress lines */
@@ -3928,24 +3925,6 @@ fieldset {
 .stats-strip-compact .stat-label {
   font-size: 0.6rem;
   letter-spacing: 0.04em;
-}
-/* Phones: beside the big name, at the name's size */
-@media (max-width: 639px) {
-  .stats-strip-name {
-    gap: 0.25rem 0.8rem;
-    padding-bottom: 0.15rem;
-  }
-  .stats-strip-name .stat-tile {
-    min-width: 2.25rem;
-  }
-  .stats-strip-name .stat-number {
-    font-size: 1.75rem;
-    line-height: 1;
-  }
-  .stats-strip-name .stat-glyph svg {
-    width: 14px;
-    height: 14px;
-  }
 }
 
 .the-log {

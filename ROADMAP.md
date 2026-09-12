@@ -107,6 +107,14 @@ don't wait to be asked:**
     theme accent, future days dimmed; foot line "3 days logged this
     month" / the empty nudge. A review counts on its review_date
     (stamped at publish); tap → the review.
+  - **Header order, round 3 (same day): BADGES ROW REMOVED ENTIRELY
+    (tenure + event badges no longer render on profiles; the settings
+    "hide badges" section and /admin/badges still exist, unused on
+    the profile — remove on Luca's word). The four numbers sit where
+    the row was, under the handle, one bar on every screen size. On
+    phones the Customize/Follow button drops 5.75rem so it clears the
+    banner with a gap; on web the row is top-aligned with the name
+    and the button starting just under the banner edge.**
   - **Header order, round 2 (Luca's layout, same day):** phones =
     avatar left + Customize/Follow top-right just under the banner,
     then the big name with the four numbers beside it AT ITS SIZE

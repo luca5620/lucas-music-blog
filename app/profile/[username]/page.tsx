@@ -16,7 +16,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
-  getProfileBadges,
   getProfileByUsername,
   getProfileReviews,
   getProfileStats,
@@ -36,7 +35,6 @@ import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
 import ProfileReviewsGrid from "@/components/profile/ProfileReviewsGrid";
 import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
-import ProfileBadges from "@/components/profile/ProfileBadges";
 import ProfileStats from "@/components/profile/ProfileStats";
 import TheLog from "@/components/profile/TheLog";
 import { THEME_SPECS, VALID_THEMES } from "@/lib/profile-theme";
@@ -216,7 +214,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     featuredRes,
     profileLists,
     anticipatedRes,
-    awardedBadges,
   ] = await Promise.all([
     getUser(),
     getProfileStats(profile.id),
@@ -250,8 +247,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           .order("created_at", { ascending: false })
           .limit(8)
       : Promise.resolve({ data: null }),
-    // Event badges (migration 039) — [] until the table exists.
-    getProfileBadges(profile.id),
   ]);
 
   const isOwnProfile = currentUser?.id === profile.id;
@@ -376,11 +371,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       <div className="px-4 sm:px-8 -mt-20 relative z-10 space-y-6">
         {/* Header (Luca 2026-09-12). Phones: the avatar on the left with
             the Customize / Follow button top-right just under the
-            banner, then the big name with the four numbers beside it
-            at its size. Web: one row — avatar · name block · the four
-            numbers right of the name · the button at the far right.
-            The two ProfileStats below are the same numbers in two
-            slots; CSS shows one per screen size (.stats-slot-*). */}
+            banner, then the name block. Web: one row — avatar · name
+            block · the button at the far right.
+            The four numbers sit under the handle on every screen. */}
         <div className="profile-head">
           <div className="profile-head-top">
           {/* Avatar */}
@@ -442,37 +435,23 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
           {/* Name + flair */}
           <div className="profile-head-name min-w-0 space-y-1.5">
-            <div className="profile-head-title">
-              <h1 className="crt-title text-3xl sm:text-5xl flex items-center gap-2 min-w-0">
-                <span className="truncate">{displayName}</span>
-                <RoleBadge role={profile.role} size="md" />
-              </h1>
-              {/* PHONES: the four numbers beside the big name, at its
-                  size (no progress lines). */}
-              <ProfileStats
-                stats={stats}
-                accentColor={accentColor}
-                isOwnProfile={isOwnProfile}
-                hidden={profile.hidden_badges ?? null}
-                compact
-                className="stats-slot-app stats-strip-name"
-              />
-            </div>
+            <h1 className="crt-title text-3xl sm:text-5xl flex items-center gap-2 min-w-0">
+              <span className="truncate">{displayName}</span>
+              <RoleBadge role={profile.role} size="md" />
+            </h1>
             <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
               @{profile.username}
             </p>
 
-            {/* Badges — years of service plus any awarded event badges
-                (the reviews/likes trophies live in the four numbers,
-                2026-09-12). Hover / tap for detail. Badges the member
-                hid in Settings (migration 040) are skipped for
-                visitors and dimmed for the owner. */}
-            <ProfileBadges
-              createdAt={profile.created_at}
-              awarded={awardedBadges}
+            {/* THE FOUR NUMBERS — followers · following · reviews ·
+                likes, under the handle where the badges row used to be
+                (Luca 2026-09-12: badges removed entirely; one bar,
+                same place on phones and web). */}
+            <ProfileStats
+              stats={stats}
               accentColor={accentColor}
+              isOwnProfile={isOwnProfile}
               hidden={profile.hidden_badges ?? null}
-              isOwner={isOwnProfile}
             />
 
             {/* Flair: pronouns · location — quiet, OSD-flavored */}
@@ -495,14 +474,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             )}
           </div>
 
-          {/* WEB: the four numbers to the right of the name */}
-          <ProfileStats
-            stats={stats}
-            accentColor={accentColor}
-            isOwnProfile={isOwnProfile}
-            hidden={profile.hidden_badges ?? null}
-            className="stats-slot-web profile-head-stats"
-          />
         </div>
 
         {/* Bio */}

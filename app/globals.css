@@ -3645,47 +3645,43 @@ fieldset {
    trophy glows are static text-shadows here (no animation), so they
    cost nothing to keep on screen.
    ============================================================ */
+/* Baked into the header, not a module of its own (Luca 2026-09-12:
+   the boxed strip "looks inconsistent with the sizing") — the same
+   typography the old three-number row wore, just four numbers and
+   the trophy colours. */
 .stats-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border: 1px solid;
-  border-radius: 1rem;
-  background: rgba(9, 11, 15, 0.55);
-  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.75rem;
 }
 .stat-tile {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
-  padding: 0.9rem 0.5rem 0.8rem;
+  gap: 0.1rem;
   text-align: center;
-  min-width: 0;
-}
-.stat-tile + .stat-tile {
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  min-width: 3.5rem;
 }
 .stat-tile-link {
-  transition: background 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 .stat-tile-link:hover {
-  background: rgba(255, 255, 255, 0.04);
+  opacity: 0.75;
 }
 .stat-number {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.01em;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
 @media (min-width: 640px) {
   .stat-number {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 }
 .stat-glyph {
@@ -3693,19 +3689,18 @@ fieldset {
   opacity: 0.9;
 }
 .stat-label {
-  font-family: var(--font-pixel);
-  font-size: 10px;
+  font-family: var(--font-vt323);
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   color: var(--text-muted);
-  margin-top: 0.15rem;
 }
 .stat-progress {
   display: block;
-  width: 64%;
-  max-width: 96px;
+  width: 100%;
+  max-width: 72px;
   height: 2px;
-  margin-top: 0.45rem;
+  margin-top: 0.35rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
   overflow: hidden;
@@ -3718,9 +3713,9 @@ fieldset {
 .stat-next {
   font-family: var(--font-pixel);
   font-size: 10px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--text-muted);
-  margin-top: 0.3rem;
+  margin-top: 0.25rem;
   opacity: 0.85;
 }
 .stat-glow-elite {
@@ -3839,8 +3834,9 @@ fieldset {
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-/* Four labels in ~75px each: tighter tracking than the profile strip */
+/* Four labels in ~75px each: the pixel face, tight */
 .user-card .stat-label {
+  font-family: var(--font-pixel);
   font-size: 9px;
   letter-spacing: 0.06em;
 }

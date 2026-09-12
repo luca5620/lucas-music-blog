@@ -91,8 +91,13 @@ don't wait to be asked:**
 ## ⏳ In progress
 
 - **2026-09-12 (Windows): PROFILE STATS AT THE FOREFRONT + THE HOVER
-  CARD — built on branch `profile-stats`, waiting for Luca's eyes
-  (his pick: both at once, stats first, preview branch).**
+  CARD — SHIPPED to main on Luca's "just push it all and I'll tell
+  you what to change" (preview branches are OVER: every Vercel
+  preview sits behind Vercel SSO + a fresh app login, and the hover
+  card's fetch never got past the SSO wall there — that is why he
+  saw nothing on hover). Round 2 already in: the stats are baked into
+  the header as plain text (no boxed module), and the card warms its
+  data on hover and only opens while the mouse is still on the name.**
   - **The strip (`components/profile/ProfileStats.tsx`):** FOLLOWERS ·
     FOLLOWING · REVIEWS · LIKES right under the name row, full width.
     Reviews/likes wear the trophy colours with a 2px progress bar and

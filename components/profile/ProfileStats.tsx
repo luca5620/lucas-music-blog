@@ -89,11 +89,7 @@ export default async function ProfileStats({
   ];
 
   return (
-    <div
-      className="stats-strip"
-      style={{ borderColor: `${accentColor}2e` }}
-      aria-label={t("aria")}
-    >
+    <div className="stats-strip" aria-label={t("aria")}>
       {tiles.map((tile) => {
         const glow = tile.tier?.perfect
           ? " stat-glow-perfect"

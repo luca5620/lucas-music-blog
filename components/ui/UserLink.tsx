@@ -77,6 +77,10 @@ export default function UserLink({
   const anchor = useRef<HTMLAnchorElement>(null);
   const openTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Is the mouse on the name (or the card) right now? A slow first
+  // answer from the endpoint (cold start on Vercel) must never pop the
+  // card open after the mouse has already moved on.
+  const hovering = useRef(false);
 
   const clearTimers = () => {
     if (openTimer.current) clearTimeout(openTimer.current);
@@ -105,13 +109,16 @@ export default function UserLink({
 
   const handleEnter = (e: React.PointerEvent<HTMLAnchorElement>) => {
     onPointerEnter?.(e);
-    if (e.pointerType !== "mouse") return;
+    if (e.pointerType === "touch") return;
     if (document.documentElement.classList.contains("native-app")) return;
     if (!username) return;
+    hovering.current = true;
     clearTimers();
+    // Warm the answer right away; only the SHOWING waits the delay.
+    const pending = loadSummary(username);
     openTimer.current = setTimeout(async () => {
-      const s = await loadSummary(username);
-      if (!s || !anchor.current) return;
+      const s = await pending;
+      if (!s || !anchor.current || !hovering.current) return;
       setSummary(s);
       place();
     }, OPEN_DELAY);
@@ -119,7 +126,8 @@ export default function UserLink({
 
   const handleLeave = (e: React.PointerEvent<HTMLAnchorElement>) => {
     onPointerLeave?.(e);
-    if (e.pointerType !== "mouse") return;
+    if (e.pointerType === "touch") return;
+    hovering.current = false;
     clearTimers();
     closeTimer.current = setTimeout(close, CLOSE_DELAY);
   };
@@ -154,8 +162,12 @@ export default function UserLink({
             <HoverCard
               summary={summary}
               pos={pos}
-              onEnter={() => clearTimers()}
+              onEnter={() => {
+                hovering.current = true;
+                clearTimers();
+              }}
               onLeave={() => {
+                hovering.current = false;
                 clearTimers();
                 closeTimer.current = setTimeout(close, CLOSE_DELAY);
               }}

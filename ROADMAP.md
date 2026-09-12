@@ -129,6 +129,11 @@ don't wait to be asked:**
     mirror it) instead of green/copper; more true-black void for
     OLED (calm mask sinks whole regions to black, base is a whisper
     over black). Covers and profile themes still recolour it.
+  - **2026-09-12 hotfix (Luca: black screen once you scroll — Safari
+    never stuck the sticky canvas):** the site canvases are page-tall
+    now (`tall` prop), composed at viewport scale (u_unit = the first
+    viewport height), with two more folds waiting ~2.4 and ~4.8
+    screens down so the modules area is material, not void.
   - **Tuning knobs for the future asks:** intensity = the INTENSITY
     table in LiquidField.tsx; band/fold look = the shader in
     liquidMaterial.ts; default colours = :root --liquid-* (mirror in

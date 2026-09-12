@@ -3103,15 +3103,10 @@ fieldset {
   pointer-events: none;
 }
 
-/* Site-wide fields: the wrapper is page-tall (inset: 0 of the screen
-   or the TV), the canvas is one viewport riding along inside it.
-   min() keeps it inside a short page's wrapper so it never adds
-   scroll height. */
-.liquid-field-sticky {
-  position: sticky;
-  top: 0;
-  height: min(100vh, 100%);
-}
+/* Site-wide fields are page-tall (inset: 0 of the screen or the TV)
+   and composed at viewport scale by the renderer (`tall`). No sticky
+   tricks: Safari painted nothing below the first screen with a
+   sticky viewport canvas (Luca 2026-09-12). */
 
 /* No WebGL / lost context: a still composition in the same palette —
    long diagonal bands and one open curved fold. Never the old orbs. */
@@ -3134,9 +3129,7 @@ fieldset {
 }
 
 /* --- Site-wide wash: the field behind every panel and page on the
-   web screen. No overflow:hidden — the sticky canvas needs the
-   viewport as its scroller — so the screen's rounded corners are
-   honoured with a clip-path instead. --- */
+   web screen, clipped to the screen's rounded corners. --- */
 .crt-liquid {
   position: absolute;
   inset: 0;

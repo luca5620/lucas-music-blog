@@ -31,6 +31,7 @@ export const FRAG = `
 precision highp float;
 uniform vec2 u_res;
 uniform vec2 u_size;
+uniform float u_unit;
 uniform float u_time;
 uniform float u_seed;
 uniform float u_intensity;
@@ -68,20 +69,31 @@ float fbm(vec2 p) {
   return v;
 }
 
-/* The fold: one oversized curved contour with its centre pushed off
+/* The fold: an oversized curved contour with its centre pushed off
    the frame, so only an open arc crosses the picture — never a
    complete sphere. Signed distance (negative = under the glass),
-   roughened by slow noise so the arc is not a perfect circle. */
+   roughened by slow noise so the arc is not a perfect circle.
+   A page-tall canvas keeps going below the first screen, so two more
+   folds wait further down (about 2.4 and 4.8 screens down, on
+   alternating sides — Luca 2026-09-12: the modules area must not be
+   a black void); a viewport-sized canvas never reaches them. */
 float fold(vec2 p, float t) {
   vec2 c = vec2(0.95 + 0.06 * sin(t * 0.021), 0.42 + 0.05 * cos(t * 0.017));
   float d = length(p - c) - 0.92;
+  d = min(d, length(p - vec2(-0.95 - 0.05 * cos(t * 0.019), -1.9 + 0.06 * sin(t * 0.015))) - 0.98);
+  d = min(d, length(p - vec2(0.95 + 0.05 * sin(t * 0.016), -4.3 + 0.06 * cos(t * 0.02))) - 0.92);
   d += 0.16 * (fbm(p * 1.1 + vec2(t * 0.012, -t * 0.009) + u_seed) - 0.5);
   return d;
 }
 
 void main() {
-  vec2 uv = gl_FragCoord.xy / u_res;
-  vec2 p = (uv - 0.5) * vec2(u_size.x / u_size.y, 1.0);
+  /* CSS pixels from the top-left, then composed at "one unit = the
+     first viewport height" (u_unit): a viewport-sized canvas maps to
+     x in [-aspect/2, aspect/2], y in [-0.5, 0.5] with +y up; a
+     page-tall canvas shows that same first screen (the fold lives up
+     top) and continues the currents and the calm void further down. */
+  vec2 px = vec2(gl_FragCoord.x, u_res.y - gl_FragCoord.y) / u_res * u_size;
+  vec2 p = vec2(px.x - u_size.x * 0.5, u_unit * 0.5 - px.y) / u_unit;
   float t = u_time;
 
   /* fold height + slope (finite differences) */
@@ -113,7 +125,7 @@ void main() {
      real negative space — true black for OLED, not colour everywhere
      (Luca 2026-09-11: "dark void-y aspects", "doesn't have to be all
      covered in the look") */
-  float calm = smoothstep(0.36, 0.68, fbm(sp * 0.35 + vec2(t * 0.004, t * 0.003) + 40.0));
+  float calm = smoothstep(0.33, 0.64, fbm(sp * 0.35 + vec2(t * 0.004, t * 0.003) + 40.0));
   float pig = calm;
 
   vec3 col = u_base;

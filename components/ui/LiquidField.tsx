@@ -8,8 +8,12 @@
  *
  * Where it goes:
  *  - CRTShell's .crt-liquid (web screen) and .crt-bezel-liquid (the
- *    app's one field) — `sticky`, so a viewport-sized canvas rides
- *    along inside the page-tall wrapper instead of a page-tall canvas
+ *    app's one field) — `tall`: the canvas is page-tall and the
+ *    picture is composed at viewport scale, so the first screen looks
+ *    like a hero and the same environment simply continues down
+ *    behind every module. (A sticky viewport-sized canvas was tried
+ *    first: Safari left everything below the first screen black —
+ *    Luca 2026-09-12.)
  *  - the fixed .liquid-room beside the bezel on wide screens
  *  - LiquidAtmosphere's hero panels
  *
@@ -97,12 +101,12 @@ const easeOut = (k: number) => 1 - Math.pow(1 - k, 3);
 
 export default function LiquidField({
   context,
-  sticky = false,
+  tall = false,
   className = "",
 }: {
   context: LiquidContext;
-  /** Viewport-sized canvas that rides inside a page-tall wrapper. */
-  sticky?: boolean;
+  /** Page-tall canvas composed at viewport scale (site-wide washes). */
+  tall?: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -150,6 +154,7 @@ export default function LiquidField({
     const u = (name: string) => gl!.getUniformLocation(program, name);
     const uRes = u("u_res");
     const uSize = u("u_size");
+    const uUnit = u("u_unit");
     const uTime = u("u_time");
     const roleLocs = ROLE_NAMES.map(u);
     gl.uniform1f(u("u_seed"), Math.random() * 100);
@@ -212,6 +217,9 @@ export default function LiquidField({
       gl!.viewport(0, 0, bw, bh);
       gl!.uniform2f(uRes, bw, bh);
       gl!.uniform2f(uSize, w, h);
+      // One "unit" of the composition = the first viewport height, so
+      // a page-tall canvas shows the hero crop up top and continues.
+      gl!.uniform1f(uUnit, tall ? Math.max(1, window.innerHeight) : h);
       needsFrame = true;
       schedule();
     };
@@ -272,6 +280,7 @@ export default function LiquidField({
     document.addEventListener("visibilitychange", onVisibility);
     mqReduce.addEventListener("change", schedule);
     mqPhone.addEventListener("change", resize);
+    if (tall) window.addEventListener("resize", resize);
     window.addEventListener(LIQUID_CHANGE_EVENT, readPalette);
     const poll = setInterval(readPalette, POLL_MS);
 
@@ -288,6 +297,7 @@ export default function LiquidField({
       window.removeEventListener(LIQUID_CHANGE_EVENT, readPalette);
       mqReduce.removeEventListener("change", schedule);
       mqPhone.removeEventListener("change", resize);
+      if (tall) window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("webglcontextlost", onLost);
       ro.disconnect();
@@ -296,9 +306,9 @@ export default function LiquidField({
       if (raf) cancelAnimationFrame(raf);
       gl!.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [context]);
+  }, [context, tall]);
 
-  const cls = `liquid-field ${sticky ? "liquid-field-sticky" : ""} ${className}`;
+  const cls = `liquid-field ${className}`;
   if (fallback) {
     return <div className={`liquid-fallback ${cls}`} aria-hidden="true" />;
   }

@@ -9,6 +9,7 @@
  */
 
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -793,9 +794,9 @@ async function ReleaseContent({
               </div>
               <div className="flex flex-wrap gap-2">
                 {followers.map((f) => (
-                  <Link
+                  <UserLink
                     key={f.id}
-                    href={`/profile/${f.username}`}
+                    username={f.username}
                     title={f.display_name ?? f.username}
                     className="w-10 h-10 rounded-full overflow-hidden border-2 hover:scale-110 transition-transform"
                     style={{ borderColor: `${accentColor}40` }}
@@ -818,7 +819,7 @@ async function ReleaseContent({
                         {(f.display_name ?? f.username)[0]?.toUpperCase()}
                       </div>
                     )}
-                  </Link>
+                  </UserLink>
                 ))}
               </div>
             </div>
@@ -939,8 +940,8 @@ function ReleaseReviewEntry({
       {/* Reviewer header: avatar + name lead, rating rides along */}
       <div className="flex items-center gap-3">
         {profile?.username ? (
-          <Link
-            href={`/profile/${profile.username}`}
+          <UserLink
+            username={profile.username}
             className="flex items-center gap-3 min-w-0 group"
           >
             <ReviewerAvatar profile={profile} ratingColor={ratingColor} />
@@ -953,7 +954,7 @@ function ReleaseReviewEntry({
                 {reviewedOn && ` · ${reviewedOn}`}
               </span>
             </span>
-          </Link>
+          </UserLink>
         ) : (
           <div className="flex items-center gap-3 min-w-0">
             <ReviewerAvatar profile={profile} ratingColor={ratingColor} />

@@ -24,6 +24,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { useLocale, useTranslations } from "next-intl";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -675,12 +676,12 @@ export default function DebateRoom({
                 <Avatar profile={m.profile} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <Link
-                      href={`/profile/${m.profile.username}`}
+                    <UserLink
+                      username={m.profile.username}
                       className="text-xs font-bold text-text-primary hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] truncate max-w-[10rem]"
                     >
                       {m.profile.display_name || m.profile.username}
-                    </Link>
+                    </UserLink>
                     <VerifiedBadge role={m.profile.role} />
                     <SideTag side={m.side} labels={sideLabels} />
                     <span className="text-[10px] text-text-muted tabular-nums">

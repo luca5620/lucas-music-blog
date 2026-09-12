@@ -1,4 +1,4 @@
-import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import { requireAuth } from "@/lib/auth";
 import { getFollowers, getFollowing } from "@/lib/db/profiles";
 import type { ConnectionProfile } from "@/lib/db/profiles";
@@ -70,9 +70,9 @@ function ConnectionColumn({
           <p className="p-4 text-sm text-text-muted">{empty}</p>
         ) : (
           people.map((p) => (
-            <Link
+            <UserLink
               key={p.username}
-              href={`/profile/${p.username}`}
+              username={p.username}
               className="flex items-center gap-3 px-3 py-2.5 hover:bg-bg-elevated transition-colors"
             >
               <span className="w-9 h-9 rounded-full overflow-hidden bg-accent-primary/20 border border-border-subtle shrink-0 flex items-center justify-center">
@@ -98,7 +98,7 @@ function ConnectionColumn({
                   @{p.username}
                 </span>
               </span>
-            </Link>
+            </UserLink>
           ))
         )}
       </div>

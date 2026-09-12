@@ -4,10 +4,13 @@
  * Profile badges row — sits under the username on every profile
  * (Luca 2026-09-02, replacing the "Credentials" showcase block).
  *
- *   🏆 REVIEWS trophy  — tiered by 100s, painted on the rating scale
- *   ♥  LIKES trophy    — same tiers, for likes received on reviews
  *   ⛨  YEARS OF SERVICE — months until year one, then years (Steam)
  *   +  any awarded event badges (profile_badges, migration 039)
+ *
+ * The REVIEWS and LIKES trophies left this row on 2026-09-12: their
+ * numbers now lead the profile in the stats strip (ProfileStats),
+ * painted in the same trophy colours, with the tier progress under
+ * them. The "reviews"/"likes" hide keys are honoured there.
  *
  * Every badge has a detail card: HOVER on web, TAP in the app (touch
  * has no hover). One card open at a time; outside tap / Escape closes
@@ -22,14 +25,9 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import {
-  eventBadge,
-  hiddenBadgeSet,
-  tenureFrom,
-  trophyTier,
-  TROPHY_STEP,
-} from "@/lib/badges";
+import { eventBadge, hiddenBadgeSet, tenureFrom } from "@/lib/badges";
 import { useLocale, useTranslations } from "next-intl";
+import { ShieldGlyph } from "@/components/profile/BadgeGlyphs";
 
 interface AwardedBadge {
   badge_key: string;
@@ -38,8 +36,6 @@ interface AwardedBadge {
 }
 
 interface Props {
-  reviewCount: number;
-  likesReceived: number;
   createdAt: string;
   awarded?: AwardedBadge[];
   /** The profile theme's accent — tints the tenure badge. */
@@ -72,8 +68,6 @@ interface BadgeSpec {
 }
 
 export default function ProfileBadges({
-  reviewCount,
-  likesReceived,
   createdAt,
   awarded = [],
   accentColor,
@@ -115,20 +109,7 @@ export default function ProfileBadges({
     };
   }, [open]);
 
-  const reviews = trophyTier(reviewCount);
-  const likes = trophyTier(likesReceived);
   const tenure = tenureFrom(createdAt);
-
-  const glowFor = (t: ReturnType<typeof trophyTier>) =>
-    t.perfect ? "perfect" : t.elite ? "elite" : t.tier >= 1 ? "soft" : "none";
-
-  const nextLine = (tier: ReturnType<typeof trophyTier>, noun: "reviews" | "likes") =>
-    tier.toNext === null
-      ? t("topTier")
-      : t(noun === "reviews" ? "reviewsToNext" : "likesToNext", {
-          n: tier.toNext,
-          target: (tier.tier + 1) * TROPHY_STEP,
-        });
   const joined = new Date(createdAt);
   const sinceLine = t("memberSince", {
     date: Number.isNaN(joined.getTime())
@@ -137,32 +118,6 @@ export default function ProfileBadges({
   });
 
   const badges: BadgeSpec[] = [
-    {
-      id: "reviews",
-      hideKey: "reviews",
-      face: <TrophyGlyph />,
-      caption: String(reviewCount),
-      color: reviews.color,
-      glow: glowFor(reviews),
-      title: t("reviewsTitle", { n: reviewCount }),
-      lines: [
-        t("reviewsLine", { tier: reviews.tier, step: TROPHY_STEP }),
-        nextLine(reviews, "reviews"),
-      ],
-    },
-    {
-      id: "likes",
-      hideKey: "likes",
-      face: <HeartGlyph />,
-      caption: String(likesReceived),
-      color: likes.color,
-      glow: glowFor(likes),
-      title: t("likesTitle", { n: likesReceived }),
-      lines: [
-        t("likesLine", { tier: likes.tier, step: TROPHY_STEP }),
-        nextLine(likes, "likes"),
-      ],
-    },
     {
       id: "tenure",
       hideKey: "tenure",
@@ -280,32 +235,5 @@ export default function ProfileBadges({
         );
       })}
     </div>
-  );
-}
-
-/* ---- Glyphs (16px, currentColor) ---- */
-
-function TrophyGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden>
-      <path d="M6 2h12v2h3v3c0 2.8-2.1 5.1-4.8 5.4A6 6 0 0 1 13 15.9V18h3v2H8v-2h3v-2.1a6 6 0 0 1-3.2-3.5C5.1 12.1 3 9.8 3 7V4h3V2zm0 4H5v1c0 1.5.9 2.8 2.2 3.3A6 6 0 0 1 6 7V6zm12 0v1c0 1.2-.4 2.3-1.2 3.3C18.1 9.8 19 8.5 19 7V6h-1z" />
-    </svg>
-  );
-}
-
-function HeartGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden>
-      <path d="M12 21s-7.5-4.6-9.6-9.1C.9 8.6 2.6 5 6.2 5c2 0 3.4 1.1 4.3 2.4h3C14.4 6.1 15.8 5 17.8 5c3.6 0 5.3 3.6 3.8 6.9C19.5 16.4 12 21 12 21z" />
-    </svg>
-  );
-}
-
-function ShieldGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-[18px] h-[18px]" aria-hidden>
-      <path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6l8-3z" strokeLinejoin="round" />
-      <path d="M8.5 12l2.3 2.3L15.5 9.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }

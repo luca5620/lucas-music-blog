@@ -3639,6 +3639,220 @@ fieldset {
 }
 
 /* ============================================================
+   PROFILE STATS STRIP + USER HOVER CARD (Luca 2026-09-12)
+   The four numbers a profile leads with, and the same four on the
+   Instagram-style card any username opens on mouse hover. The
+   trophy glows are static text-shadows here (no animation), so they
+   cost nothing to keep on screen.
+   ============================================================ */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid;
+  border-radius: 1rem;
+  background: rgba(9, 11, 15, 0.55);
+  overflow: hidden;
+}
+.stat-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.9rem 0.5rem 0.8rem;
+  text-align: center;
+  min-width: 0;
+}
+.stat-tile + .stat-tile {
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+.stat-tile-link {
+  transition: background 0.15s ease;
+}
+.stat-tile-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.stat-number {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 640px) {
+  .stat-number {
+    font-size: 2rem;
+  }
+}
+.stat-glyph {
+  display: inline-flex;
+  opacity: 0.9;
+}
+.stat-label {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+.stat-progress {
+  display: block;
+  width: 64%;
+  max-width: 96px;
+  height: 2px;
+  margin-top: 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.stat-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+.stat-next {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  opacity: 0.85;
+}
+.stat-glow-elite {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.7), 0 0 24px rgba(168, 85, 247, 0.35);
+}
+.stat-glow-perfect {
+  color: #fff !important;
+  text-shadow:
+    0 0 10px rgba(30, 144, 255, 0.9),
+    0 0 26px rgba(30, 144, 255, 0.55),
+    0 0 50px rgba(30, 144, 255, 0.3);
+}
+
+/* The hover card (components/ui/UserLink.tsx): fixed portal on body */
+.user-card {
+  position: fixed;
+  z-index: 90;
+  border: 1px solid;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: rgba(8, 10, 14, 0.97);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.65);
+  animation: user-card-in 0.18s ease-out;
+}
+@keyframes user-card-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.user-card-band {
+  position: relative;
+  height: 44px;
+}
+.user-card-theme {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 3px 7px;
+  border-radius: 999px;
+}
+.user-card-body {
+  padding: 0 14px 12px;
+  margin-top: -18px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.user-card-body > div:first-child {
+  align-items: flex-end;
+}
+.user-card-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid;
+  flex-shrink: 0;
+  background: #0a0a0c;
+  display: flex;
+}
+.user-card-avatar img,
+.user-card-avatar > span {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.user-card-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+.user-card-handle {
+  display: block;
+  font-family: var(--font-vt323);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+.user-card-tagline {
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.3;
+}
+.user-card-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+.user-card-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+.user-card-number {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+/* Four labels in ~75px each: tighter tracking than the profile strip */
+.user-card .stat-label {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
+.user-card-cta {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  align-self: flex-end;
+}
+
+/* ============================================================
    LOW DETAIL MODE (Luca 2026-09-03: "a low-detail mode for the
    website for users to toggle if they don't have a strong
    computer"). html.low-detail is stamped by the boot script in
@@ -3739,4 +3953,14 @@ fieldset {
 .low-detail .liquid-fallback {
   background:
     linear-gradient(112deg, transparent 0%, rgba(var(--liquid-2), 0.16) 30%, transparent 50%, rgba(var(--liquid-1), 0.2) 62%, transparent 80%);
+}
+
+/* Stats strip + hover card: the trophy glows go flat and the card
+   appears without its fade. */
+.low-detail .stat-glow-elite,
+.low-detail .stat-glow-perfect {
+  text-shadow: none;
+}
+.low-detail .user-card {
+  animation: none;
 }

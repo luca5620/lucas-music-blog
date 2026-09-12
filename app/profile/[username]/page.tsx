@@ -37,6 +37,8 @@ import ProfileReviewsGrid from "@/components/profile/ProfileReviewsGrid";
 import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
 import ProfileBadges from "@/components/profile/ProfileBadges";
+import ProfileStats from "@/components/profile/ProfileStats";
+import { THEME_SPECS, VALID_THEMES } from "@/lib/profile-theme";
 import PlatformIcon from "@/components/profile/PlatformIcons";
 import { resolveVisibleLinks } from "@/lib/social-links";
 import { getUserPosts } from "@/lib/db/posts";
@@ -87,21 +89,10 @@ function resolveTab(raw: string | undefined): ProfileTab {
   return raw === "lists" || raw === "posts" ? raw : "reviews";
 }
 
-/* --- Theme → accent hex. Client components (FollowButton, the
-       histogram) take a hex prop, so we resolve the theme's primary
-       color once here and pass it down. Must match globals.css. --- */
-const THEME_ACCENT: Record<ProfileTheme, string> = {
-  "crt-blue": "#1e90ff",
-  ps2: "#8ba7e8",
-  ps3: "#7ec9e8",
-  ps4: "#4a90d9",
-  "xbox-og": "#5dc21e",
-  "xbox-360": "#92c83e",
-  wii: "#35b7d8",
-  limewire: "#32cd32",
-  bleach: "#e3342f",
-  "daft-punk": "#f0b93c",
-};
+/* --- Theme → accent hex now lives in lib/profile-theme.ts (one
+       table with the labels and liquid trios, shared with the hover
+       card and the settings picker). Client components (FollowButton,
+       the histogram) take a hex prop, so we resolve it once here. --- */
 
 /* Wii and LimeWire are LIGHT presets: their theme classes flip the
    text tokens dark, so the page area behind them must go light too —
@@ -119,8 +110,6 @@ const THEME_PAGE_BG: Record<ProfileTheme, string | null> = {
   bleach: null,
   "daft-punk": null,
 };
-
-const VALID_THEMES = Object.keys(THEME_ACCENT) as ProfileTheme[];
 
 /** Default showcase arrangement for rows created before migration 006.
     "favorites" removed 2026-08-26 (Luca) — dropping it from this list
@@ -193,7 +182,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const theme: ProfileTheme = VALID_THEMES.includes(profile.theme)
     ? profile.theme
     : "crt-blue";
-  const accentColor = THEME_ACCENT[theme];
+  const accentColor = THEME_SPECS[theme].accent;
   const pageBg = THEME_PAGE_BG[theme];
 
   const rawShowcases = Array.isArray(profile.showcases)
@@ -440,13 +429,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               @{profile.username}
             </p>
 
-            {/* Badges — reviews trophy, likes trophy, years of service,
-                plus any awarded event badges. Hover / tap for detail.
-                Badges the member hid in Settings (migration 040) are
-                skipped for visitors and dimmed for the owner. */}
+            {/* Badges — years of service plus any awarded event badges
+                (the reviews/likes trophies moved into the stats strip
+                below, 2026-09-12). Hover / tap for detail. Badges the
+                member hid in Settings (migration 040) are skipped for
+                visitors and dimmed for the owner. */}
             <ProfileBadges
-              reviewCount={stats.review_count}
-              likesReceived={stats.total_likes_received}
               createdAt={profile.created_at}
               awarded={awardedBadges}
               accentColor={accentColor}
@@ -505,51 +493,22 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </div>
         </div>
 
+        {/* THE FOUR NUMBERS, at the forefront (Luca 2026-09-12):
+            followers · following · reviews · likes, the trophies'
+            colours on the last two with the next tier in sight. */}
+        <ProfileStats
+          stats={stats}
+          accentColor={accentColor}
+          isOwnProfile={isOwnProfile}
+          hidden={profile.hidden_badges ?? null}
+        />
+
         {/* Bio */}
         {profile.bio && (
           <p className="text-text-primary text-sm sm:text-base leading-relaxed max-w-2xl">
             {profile.bio}
           </p>
         )}
-
-        {/* Stats row. Privacy by design: follower/following counts are
-            clickable ONLY on your own profile (they link to the private
-            /connections page) — visitors just see numbers, never lists. */}
-        <div className="flex gap-6">
-          {[
-            { label: t("stats.reviews"), value: stats.review_count, link: false },
-            { label: t("stats.followers"), value: stats.follower_count, link: true },
-            { label: t("stats.following"), value: stats.following_count, link: true },
-          ].map((stat) => {
-            const inner = (
-              <>
-                <p
-                  className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold"
-                  style={{ color: accentColor }}
-                >
-                  {stat.value}
-                </p>
-                <p className="font-[family-name:var(--font-vt323)] text-xs text-text-muted uppercase tracking-wider">
-                  {stat.label}
-                </p>
-              </>
-            );
-            return isOwnProfile && stat.link ? (
-              <Link
-                key={stat.label}
-                href="/connections"
-                className="text-center hover:opacity-75 transition-opacity"
-                title={t("stats.viewConnections")}
-              >
-                {inner}
-              </Link>
-            ) : (
-              <div key={stat.label} className="text-center">
-                {inner}
-              </div>
-            );
-          })}
-        </div>
 
         {/* Streaming links + profile song */}
         <div className="flex flex-col sm:flex-row gap-4 items-start">
@@ -622,43 +581,20 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 <section key={type} className="space-y-3">
                   <div className="vhs-label inline-block text-sm">{t("ratingOverview")}</div>
                   <div className="panel-xbox p-5 space-y-6">
-                    {/* The three headline stats — evenly spaced, centered,
-                        original 3-column sizing. */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
-                      <div className="text-center">
-                        <p
-                          className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
-                          style={{ color: accentColor }}
-                        >
-                          {stats.review_count}
-                        </p>
-                        <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                          {t("recordsRated")}
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p
-                          className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
-                          style={{ color: accentColor }}
-                        >
-                          {avgRating ?? "—"}
-                        </p>
-                        <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                          {t("averageRating")}
-                        </p>
-                      </div>
-                      {/* Total likes across ALL of this user's reviews */}
-                      <div className="text-center">
-                        <p
-                          className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
-                          style={{ color: accentColor }}
-                        >
-                          {stats.total_likes_received}
-                        </p>
-                        <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
-                          {t("likesReceived")}
-                        </p>
-                      </div>
+                    {/* The four headline numbers lead the profile now
+                        (ProfileStats, 2026-09-12); this block is the
+                        RATING side of the story — the average, then the
+                        histogram. */}
+                    <div className="text-center">
+                      <p
+                        className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-extrabold"
+                        style={{ color: accentColor }}
+                      >
+                        {avgRating ?? "—"}
+                      </p>
+                      <p className="pixel-text text-xs text-text-muted uppercase tracking-widest mt-1">
+                        {t("averageRating")}
+                      </p>
                     </div>
 
                     {/* Histogram gets its own full-width row below the

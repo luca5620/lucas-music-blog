@@ -8,30 +8,19 @@
  * so CSS inheritance can't reach those global layers — this bridges
  * the gap. Colors reset when you leave the profile.
  *
- * Trios must mirror the --liquid-* values in globals.css.
+ * Trios live in lib/profile-theme.ts (one table with the accents and
+ * labels) and must mirror the --liquid-* values in globals.css.
  */
 
 import { useEffect } from "react";
 import type { ProfileTheme } from "@/lib/types/database";
 import { LIQUID_CHANGE_EVENT } from "@/lib/liquidMaterial";
-
-const TRIOS: Record<ProfileTheme, [string, string, string]> = {
-  "crt-blue": ["72, 142, 232", "140, 196, 244", "34, 58, 128"], // site default
-  ps2: ["100, 140, 220", "158, 130, 226", "36, 48, 112"],
-  ps3: ["126, 201, 232", "184, 228, 245", "74, 147, 179"],
-  ps4: ["74, 144, 217", "127, 179, 232", "32, 80, 150"],
-  "xbox-og": ["93, 194, 30", "143, 232, 79", "45, 110, 15"],
-  "xbox-360": ["146, 200, 62", "184, 226, 110", "90, 130, 35"],
-  wii: ["53, 183, 216", "111, 210, 234", "160, 205, 235"],
-  limewire: ["50, 205, 50", "102, 231, 102", "32, 140, 32"],
-  bleach: ["227, 52, 47", "232, 230, 227", "122, 22, 18"],
-  "daft-punk": ["240, 185, 60", "255, 215, 110", "150, 100, 22"],
-};
+import { THEME_SPECS, resolveTheme } from "@/lib/profile-theme";
 
 export default function ThemeLiquidSync({ theme }: { theme: ProfileTheme }) {
   useEffect(() => {
     const root = document.documentElement;
-    const trio = TRIOS[theme] ?? TRIOS["crt-blue"];
+    const trio = THEME_SPECS[resolveTheme(theme)].trio;
     root.style.setProperty("--liquid-1", trio[0]);
     root.style.setProperty("--liquid-2", trio[1]);
     root.style.setProperty("--liquid-3", trio[2]);

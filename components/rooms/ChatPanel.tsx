@@ -24,6 +24,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { useLocale, useTranslations } from "next-intl";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -173,12 +174,12 @@ function MessageRow({
       <MessageAvatar profile={message.profile} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <Link
-            href={`/profile/${message.profile.username}`}
+          <UserLink
+            username={message.profile.username}
             className="text-xs font-bold text-text-primary hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] truncate max-w-[10rem]"
           >
             {name}
-          </Link>
+          </UserLink>
           <VerifiedBadge role={message.profile.role} />
           <span className="text-[10px] text-text-muted tabular-nums">
             {timeAgo(message.created_at, tick, t("justNow"), locale)}

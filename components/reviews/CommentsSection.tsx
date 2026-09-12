@@ -13,6 +13,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import ReportButton from "@/components/moderation/ReportButton";
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import { hapticTap } from "@/lib/native";
 import { useLikeState } from "@/lib/likeStore";
 import { useLocale, useTranslations } from "next-intl";
@@ -351,12 +352,12 @@ function CommentItem({
       <div className="flex-1 min-w-0">
         {/* Header */}
         <div className="flex items-center gap-2 flex-wrap">
-          <Link
-            href={`/profile/${comment.profiles?.username || ""}`}
+          <UserLink
+            username={comment.profiles?.username || ""}
             className="text-sm font-bold text-text-primary hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)]"
           >
             {displayName}
-          </Link>
+          </UserLink>
           <span className="text-xs text-text-muted">
             {timeAgo(comment.created_at, tc, locale)}
           </span>

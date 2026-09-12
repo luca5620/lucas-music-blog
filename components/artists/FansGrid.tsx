@@ -5,7 +5,7 @@
  * Server component.
  */
 
-import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import type { Profile } from "@/lib/types/database";
 
 interface FansGridProps {
@@ -23,9 +23,9 @@ export default function FansGrid({ fans, accentColor }: FansGridProps) {
         const initial = displayName[0]?.toUpperCase() ?? "?";
 
         return (
-          <Link
+          <UserLink
             key={fan.id}
-            href={`/profile/${fan.username}`}
+            username={fan.username}
             title={`@${fan.username}`}
             className="block w-12 h-12 rounded-full overflow-hidden border-2 transition-transform hover:scale-110"
             style={{
@@ -50,7 +50,7 @@ export default function FansGrid({ fans, accentColor }: FansGridProps) {
                 {initial}
               </div>
             )}
-          </Link>
+          </UserLink>
         );
       })}
     </div>

@@ -90,6 +90,37 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-12 (Windows): PROFILE STATS AT THE FOREFRONT + THE HOVER
+  CARD — built on branch `profile-stats`, waiting for Luca's eyes
+  (his pick: both at once, stats first, preview branch).**
+  - **The strip (`components/profile/ProfileStats.tsx`):** FOLLOWERS ·
+    FOLLOWING · REVIEWS · LIKES right under the name row, full width.
+    Reviews/likes wear the trophy colours with a 2px progress bar and
+    "7 to 25" toward the next tier; followers/following in the theme
+    accent, clickable only on your own profile (→ /connections).
+    Replaced the three-number row under the bio and the three headline
+    numbers of RATING OVERVIEW (that block keeps average + histogram).
+    The badges row keeps tenure + event badges only.
+  - **Near trophy tiers (`lib/badges.ts`):** 10 · 25 · 50 · 100 · 200 ·
+    350 · 500 · 650 · 800 · 1000 — a new member crosses one on night
+    one. `trophyTier()` now also returns `nextAt` + `progress`.
+  - **The hover card (`components/ui/UserLink.tsx`):** every username
+    link (17 call sites swapped; search dropdown, nav menu and admin
+    skipped) is a UserLink now. Mouse hover for 320ms opens a fixed
+    card: theme band in the member's liquid colours + theme name,
+    avatar, name, role, @handle, tagline, the same four numbers, VIEW
+    PROFILE. Touch and the app never open it. Data:
+    `GET /api/profile/summary?u=` (public, 120/min per IP, edge-cached
+    60s), cached per username for the page's life.
+  - **Shared theme table (`lib/profile-theme.ts`):** label + accent +
+    liquid trio per theme; the profile page and ThemeLiquidSync read
+    it now (settings picker still has its own copy of the labels).
+  - Translations: profile.stats.{likes,toNext,topTier,viewProfile,aria}
+    in all six languages.
+  - **Verified headlessly:** profile page desktop + phone, the card on
+    /reviews (real numbers), endpoint 200/400; build + lint clean.
+    NOT eyeballed by Luca. Vercel preview for the branch is the check.
+
 - **2026-09-11 (Windows): THE LIQUID MATERIAL — SHIPPED to main
   (dcaac13, Luca: "it looks great", fine-tuning to come later on his
   ask; branch `liquid-material` deleted after the merge).** Astra's

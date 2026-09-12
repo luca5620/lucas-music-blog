@@ -3,11 +3,13 @@
  *
  * Three badges every profile carries, shown under the username:
  *
- *   REVIEWS TROPHY — how many reviews you've published. Tiered in
- *   100s and painted with the RATING colour scale (the same greys →
- *   reds → greens → cyan → blue → purple → glowing blue the rating
- *   badges use), so 100 reviews reads like a "1", 500 like a "5",
- *   and 1000+ is the glowing perfect-10 blue.
+ *   REVIEWS TROPHY — how many reviews you've published. Ten tiers,
+ *   painted with the RATING colour scale (the same greys → reds →
+ *   greens → cyan → blue → purple → glowing blue the rating badges
+ *   use). The early tiers are NEAR (10, 25, 50 — Luca 2026-09-12: a
+ *   new member should cross one on night one; 100 was too far away
+ *   to pull anyone), then 100, 200, 350, 500, 650, 800, and 1000+ is
+ *   the glowing perfect-10 blue.
  *
  *   LIKES TROPHY — same tiers, same colours, for likes RECEIVED on
  *   your reviews.
@@ -26,12 +28,15 @@
 import { getRatingHex } from "@/lib/rating";
 import { formatDate } from "@/lib/dates";
 
-/** Reviews / likes per tier step. 10 steps = the glowing blue. */
+/** The count that unlocks each tier (tier 1 at 10 … tier 10 at 1000).
+    Near at the start so the first trophy colour arrives on night one. */
+export const TROPHY_THRESHOLDS = [10, 25, 50, 100, 200, 350, 500, 650, 800, 1000];
+export const TROPHY_MAX_TIER = TROPHY_THRESHOLDS.length;
+/** Kept for older copy that quoted "one tier per 100". */
 export const TROPHY_STEP = 100;
-export const TROPHY_MAX_TIER = 10;
 
 export interface TrophyTier {
-  /** 0–10. 0 = under 100, 10 = 1000+. */
+  /** 0–10. 0 = under 10, 10 = 1000+. */
   tier: number;
   /** Hex from the rating scale. */
   color: string;
@@ -41,22 +46,32 @@ export interface TrophyTier {
   perfect: boolean;
   /** How many more until the next tier; null at the top. */
   toNext: number | null;
+  /** The count the next tier unlocks at; null at the top. */
+  nextAt: number | null;
+  /** 0..1 progress from this tier's threshold to the next (1 at the top). */
+  progress: number;
 }
 
 /** Map a count to its trophy tier + colour. */
 export function trophyTier(count: number): TrophyTier {
   const safe = Math.max(0, Math.floor(count));
-  const tier = Math.min(TROPHY_MAX_TIER, Math.floor(safe / TROPHY_STEP));
+  let tier = 0;
+  while (tier < TROPHY_MAX_TIER && safe >= TROPHY_THRESHOLDS[tier]) tier += 1;
   // The rating scale's bottom colour (0–1.9) is a readable light grey —
-  // exactly right for "hasn't hit 100 yet"; from tier 2 up the colours
+  // exactly right for "hasn't hit 10 yet"; from tier 2 up the colours
   // climb through the rating ladder.
   const color = getRatingHex(tier);
+  const top = tier >= TROPHY_MAX_TIER;
+  const nextAt = top ? null : TROPHY_THRESHOLDS[tier];
+  const floor = tier === 0 ? 0 : TROPHY_THRESHOLDS[tier - 1];
   return {
     tier,
     color,
     elite: tier === 9,
-    perfect: tier >= TROPHY_MAX_TIER,
-    toNext: tier >= TROPHY_MAX_TIER ? null : (tier + 1) * TROPHY_STEP - safe,
+    perfect: top,
+    toNext: nextAt === null ? null : nextAt - safe,
+    nextAt,
+    progress: nextAt === null ? 1 : Math.min(1, (safe - floor) / (nextAt - floor)),
   };
 }
 

@@ -529,7 +529,12 @@
       "reviews": "Reviews",
       "followers": "Followers",
       "following": "Following",
-      "viewConnections": "View your connections"
+      "viewConnections": "View your connections",
+      "likes": "Likes",
+      "toNext": "{n} to {target}",
+      "topTier": "Top tier",
+      "viewProfile": "View profile",
+      "aria": "Profile stats"
     },
     "hiddenFromVisitors": "Hidden from visitors",
     "playlistTitle": "{name}'s playlist",

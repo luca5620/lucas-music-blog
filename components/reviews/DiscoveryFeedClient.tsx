@@ -10,6 +10,7 @@
  */
 
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LikeButton from "@/components/reviews/LikeButton";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
@@ -264,8 +265,8 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                 {/* Centered in the card; a long display name wraps to
                     another line (break-words handles even a 20-char
                     no-space username) instead of ever spilling out. */}
-                <Link
-                  href={`/profile/${profile.username}`}
+                <UserLink
+                  username={profile.username}
                   className="flex items-center justify-center gap-2.5 group/author text-center"
                 >
                   {profile.avatar_url ? (
@@ -304,7 +305,7 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                   >
                     {formatRating(review.rating)}
                   </span>
-                </Link>
+                </UserLink>
 
                 {/* Cover + title → THE REVIEW (the release page is the
                     footer link below) */}

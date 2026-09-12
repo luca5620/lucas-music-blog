@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -105,9 +105,9 @@ export default function UserSearch() {
             </p>
           ) : (
             results.map((r) => (
-              <Link
+              <UserLink
                 key={r.username}
-                href={`/profile/${r.username}`}
+                username={r.username}
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-3 py-2.5 hover:bg-bg-elevated transition-colors"
               >
@@ -136,7 +136,7 @@ export default function UserSearch() {
                     @{r.username}
                   </span>
                 </span>
-              </Link>
+              </UserLink>
             ))
           )}
         </div>

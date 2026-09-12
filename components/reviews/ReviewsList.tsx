@@ -11,6 +11,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import type { ReviewWithAuthor } from "@/lib/db/reviews";
 import { getGenreColor, getRatingColor, getRatingHex, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
@@ -287,8 +288,8 @@ export default function ReviewsList({
               >
                 {/* The verdict line — who, then THE number in its own
                     box, exactly like the home Community Feed card. */}
-                <Link
-                  href={`/profile/${author.username}`}
+                <UserLink
+                  username={author.username}
                   className="flex items-center justify-center gap-2.5 group/author text-center"
                 >
                   {author.avatar_url ? (
@@ -323,7 +324,7 @@ export default function ReviewsList({
                   >
                     {formatRating(review.rating)}
                   </span>
-                </Link>
+                </UserLink>
 
                 {/* Big cover + title → the review itself */}
                 <Link href={`/reviews/${review.slug}`} className="block group space-y-2">

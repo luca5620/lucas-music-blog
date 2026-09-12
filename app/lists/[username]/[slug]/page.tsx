@@ -1,4 +1,5 @@
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import BackLink from "@/components/ui/BackLink";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -78,8 +79,8 @@ export default async function ListDetailPage({ params }: PageParams) {
             </h1>
 
             {/* Author byline */}
-            <Link
-              href={`/profile/${list.author.username}`}
+            <UserLink
+              username={list.author.username}
               className="inline-flex items-center gap-2 group"
             >
               <span className="w-7 h-7 rounded-full overflow-hidden bg-bg-elevated border border-[rgba(255,255,255,0.15)] flex items-center justify-center shrink-0">
@@ -101,7 +102,7 @@ export default async function ListDetailPage({ params }: PageParams) {
                   b: () => <span className="font-medium">{authorName}</span>,
                 })}
               </span>
-            </Link>
+            </UserLink>
           </div>
 
           {/* Owner-only edit link */}

@@ -19,6 +19,7 @@
  */
 
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 // The async page uses getTranslations; the small sync components below
 // use useTranslations/useLocale, which next-intl supports in server components.
@@ -391,8 +392,8 @@ function ActivityRow({ item }: { item: ActivityItem }) {
   return (
     <article className="card-y2k p-3 sm:p-4 flex items-start gap-3">
       {/* Actor avatar, linked to their profile */}
-      <Link
-        href={`/profile/${actor.username}`}
+      <UserLink
+        username={actor.username}
         className="w-9 h-9 rounded-full overflow-hidden bg-bg-elevated border border-[rgba(255,255,255,0.15)] flex items-center justify-center shrink-0"
       >
         {avatar ? (
@@ -403,17 +404,17 @@ function ActivityRow({ item }: { item: ActivityItem }) {
             {name[0]?.toUpperCase()}
           </span>
         )}
-      </Link>
+      </UserLink>
 
       {/* The sentence + timestamp */}
       <div className="flex-1 min-w-0">
         <p className="text-sm text-[#9a9a9e] leading-relaxed">
-          <Link
-            href={`/profile/${actor.username}`}
+          <UserLink
+            username={actor.username}
             className="font-bold text-[#e8e6e3] hover:text-accent-primary transition-colors"
           >
             {name}
-          </Link>{" "}
+          </UserLink>{" "}
           <ActivitySentence item={item} />
         </p>
         <p className="font-[family-name:var(--font-vt323)] text-xs text-[#5a5a60] mt-0.5">
@@ -522,8 +523,8 @@ function SuggestionCard({ profile }: { profile: SuggestedProfile }) {
   const avatar = safeImage(profile.avatar_url);
 
   return (
-    <Link
-      href={`/profile/${profile.username}`}
+    <UserLink
+      username={profile.username}
       className="card-y2k p-3 flex items-center gap-3"
     >
       <span className="w-10 h-10 rounded-full overflow-hidden bg-bg-elevated border border-[rgba(255,255,255,0.15)] flex items-center justify-center shrink-0">
@@ -544,6 +545,6 @@ function SuggestionCard({ profile }: { profile: SuggestedProfile }) {
           @{profile.username}
         </span>
       </span>
-    </Link>
+    </UserLink>
   );
 }

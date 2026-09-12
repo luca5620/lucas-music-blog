@@ -529,7 +529,12 @@
       "reviews": "Critiques",
       "followers": "Abonnés",
       "following": "Abonnements",
-      "viewConnections": "Voir tes connexions"
+      "viewConnections": "Voir tes connexions",
+      "likes": "J'aime",
+      "toNext": "{n} avant {target}",
+      "topTier": "Niveau max",
+      "viewProfile": "Voir le profil",
+      "aria": "Statistiques du profil"
     },
     "hiddenFromVisitors": "Masqué pour les visiteurs",
     "playlistTitle": "La playlist de {name}",

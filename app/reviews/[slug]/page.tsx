@@ -8,6 +8,7 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import { getReviewWithContextBySlug } from "@/lib/db/reviews";
 import { getReleaseBySlug } from "@/lib/db/releases";
 import { getMemberTrackRatings } from "@/lib/db/track-ratings";
@@ -244,8 +245,8 @@ export default async function ReviewPage({
         </div>
 
         {/* Reviewer identity */}
-        <Link
-          href={`/profile/${author.username}`}
+        <UserLink
+          username={author.username}
           className="inline-flex items-center gap-2.5 group"
         >
           {author.avatar_url ? (
@@ -266,7 +267,7 @@ export default async function ReviewPage({
             </span>
             {isVerified && <VerifiedBadge role={author.role} />}
           </span>
-        </Link>
+        </UserLink>
 
         {/* Like + report */}
         <div className="flex items-center gap-3">

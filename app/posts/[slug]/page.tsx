@@ -12,6 +12,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import BackLink from "@/components/ui/BackLink";
 import {
   getPostBySlug,
@@ -110,8 +111,8 @@ export default async function PostPage({
         {/* Author line */}
         <div className="flex flex-wrap items-center gap-3">
           {author ? (
-            <Link
-              href={`/profile/${author.username}`}
+            <UserLink
+              username={author.username}
               className="inline-flex items-center gap-2.5 group"
             >
               {author.avatar_url ? (
@@ -133,7 +134,7 @@ export default async function PostPage({
                 </span>
                 {isVerified && <VerifiedBadge role={author.role} />}
               </span>
-            </Link>
+            </UserLink>
           ) : (
             <span className="text-sm text-text-muted">{t("postByMember")}</span>
           )}

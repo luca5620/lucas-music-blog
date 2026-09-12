@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import UserLink from "@/components/ui/UserLink";
 import { notFound } from "next/navigation";
 import {
   getDebateBySlug,
@@ -188,12 +189,12 @@ export default async function DebatePage({ params }: PageProps) {
             <div className="flex items-center gap-1.5 text-xs text-text-muted">
               <span>{t("openedBy")}</span>
               {debate.creator ? (
-                <Link
-                  href={`/profile/${debate.creator.username}`}
+                <UserLink
+                  username={debate.creator.username}
                   className="font-bold text-text-secondary hover:text-accent-primary transition-colors"
                 >
                   {creatorName}
-                </Link>
+                </UserLink>
               ) : (
                 <span className="font-bold text-text-secondary">
                   {creatorName}

@@ -529,7 +529,12 @@
       "reviews": "Recensies",
       "followers": "Volgers",
       "following": "Volgend",
-      "viewConnections": "Bekijk je connecties"
+      "viewConnections": "Bekijk je connecties",
+      "likes": "Likes",
+      "toNext": "{n} tot {target}",
+      "topTier": "Hoogste niveau",
+      "viewProfile": "Profiel bekijken",
+      "aria": "Profielstatistieken"
     },
     "hiddenFromVisitors": "Verborgen voor bezoekers",
     "playlistTitle": "De playlist van {name}",

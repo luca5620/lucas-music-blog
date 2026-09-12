@@ -368,7 +368,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       </div>
 
       {/* ========== PROFILE HEADER ========== */}
-      <div className="px-4 sm:px-8 -mt-20 relative z-10 space-y-6">
+      <div className="px-4 sm:px-8 -mt-24 sm:-mt-20 relative z-10 space-y-6">
         {/* Header (Luca 2026-09-12). Phones: the avatar on the left with
             the Customize / Follow button top-right just under the
             banner, then the name block. Web: one row — avatar · name
@@ -443,6 +443,16 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               @{profile.username}
             </p>
 
+            {/* THE FOUR NUMBERS — under the handle, in the name block:
+                phones = left-justified under the name; web = the left
+                column next to The Log (Luca 2026-09-12). */}
+            <ProfileStats
+              stats={stats}
+              accentColor={accentColor}
+              isOwnProfile={isOwnProfile}
+              hidden={profile.hidden_badges ?? null}
+            />
+
 
             {/* Flair: pronouns · location — quiet, OSD-flavored */}
             {(profile.pronouns || profile.location) && (
@@ -464,18 +474,18 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             )}
           </div>
 
-        </div>
+          {/* WEB: The Log in the header's open space, right of the name
+              block (Luca 2026-09-12 — "a lot of dead space on web").
+              Phones keep their copy under everything (.log-slot-*). */}
+          <div className="profile-head-log log-slot-web">
+            <TheLog
+              reviews={reviews as Review[]}
+              locale={locale}
+              accentColor={accentColor}
+            />
+          </div>
 
-        {/* THE FOUR NUMBERS — followers · following · reviews · likes,
-            left-justified under the header on every screen (Luca
-            2026-09-12). Phones: right under the name block. Web: on the
-            page's left edge, in line with the bio and the links. */}
-        <ProfileStats
-          stats={stats}
-          accentColor={accentColor}
-          isOwnProfile={isOwnProfile}
-          hidden={profile.hidden_badges ?? null}
-        />
+        </div>
 
         {/* Bio */}
         {profile.bio && (
@@ -541,14 +551,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           )}
         </div>
 
-        {/* THE LOG — under everything in the header (Luca 2026-09-12):
-            the month punch card, full width on phones, a capped
-            column on web. */}
-        <TheLog
-          reviews={reviews as Review[]}
-          locale={locale}
-          accentColor={accentColor}
-        />
+        {/* PHONES: The Log under everything (web shows it in the header
+            row instead — .log-slot-*). */}
+        <div className="log-slot-phone">
+          <TheLog
+            reviews={reviews as Review[]}
+            locale={locale}
+            accentColor={accentColor}
+          />
+        </div>
 
         {/* Favorite genres removed 2026-08-22 (Luca) — the editor and
             this pill row both; old favorite_genres rows just sit

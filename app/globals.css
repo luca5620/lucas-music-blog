@@ -3654,6 +3654,15 @@ fieldset {
   flex-wrap: wrap;
   gap: 1rem 1.75rem;
 }
+/* Phones: tighter (Luca 2026-09-12) */
+@media (max-width: 639px) {
+  .stats-strip {
+    gap: 0.5rem 1.1rem;
+  }
+  .stats-strip .stat-tile {
+    min-width: 2.75rem;
+  }
+}
 .stat-tile {
   position: relative;
   display: flex;
@@ -3880,7 +3889,9 @@ fieldset {
 @media (max-width: 639px) {
   .profile-head-action {
     align-self: flex-start;
-    margin-top: 5.75rem;
+    /* the header starts 6rem above the banner edge on phones (avatar
+       collides with the banner); the button only rises a little */
+    margin-top: 6.5rem;
   }
 }
 /* Beside the handle: small numbers, tight labels, no progress lines */
@@ -3904,6 +3915,22 @@ fieldset {
   letter-spacing: 0.04em;
 }
 
+/* Where The Log lives: phones = under everything; web = in the
+   header row right of the name block, filling the dead space */
+.log-slot-web {
+  display: none;
+}
+@media (min-width: 640px) {
+  .log-slot-web {
+    display: block;
+    order: 2;
+    margin-top: 5.5rem;
+    margin-left: 1.5rem;
+  }
+  .log-slot-phone {
+    display: none;
+  }
+}
 .the-log {
   width: 100%;
 }

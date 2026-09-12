@@ -107,6 +107,15 @@ don't wait to be asked:**
     theme accent, future days dimmed; foot line "3 days logged this
     month" / the empty nudge. A review counts on its review_date
     (stamped at publish); tap → the review.
+  - **Round 5 (same day, Luca's web test + phone tweaks):** web = The
+    Log moves INTO the header row, right of the name block (the dead
+    space), so the left column reads name · handle · numbers and the
+    button stays far right; phones keep The Log under everything
+    (`.log-slot-web` / `.log-slot-phone`). The numbers bar lives in
+    the name block under the handle on every screen. Phones: header
+    shifted up (-mt-24, the avatar collides with the banner more), the
+    button raised only slightly (margin-top 6.5rem), tighter gaps in
+    the numbers bar. He will eyeball and adjust.
   - **Round 4 (same day, Luca: "the last change needed for the UI
     look"):** the "13 to 25" progress lines under reviews/likes are
     gone; how close the next colour is now shows only on hover (title

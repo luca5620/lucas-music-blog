@@ -630,6 +630,12 @@
       "dayStreak": "días de racha",
       "streakTitle": "Racha de {n} días de canción del día"
     },
+    "log": {
+      "title": "EL REGISTRO",
+      "aria": "Días con puntuación en {month}",
+      "logged": "{n, plural, one {# día} other {# días}} con registro este mes",
+      "empty": "Nada registrado este mes todavía: puntúa algo hoy."
+    },
     "histogram": {
       "ratingsCount": "{n, plural, one {# valoración} other {# valoraciones}}",
       "aria": "Distribución de {n} calificaciones",

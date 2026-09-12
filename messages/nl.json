@@ -630,6 +630,12 @@
       "dayStreak": "dagen streak",
       "streakTitle": "Streak van {n} dagen Nummer van de dag"
     },
+    "log": {
+      "title": "HET LOGBOEK",
+      "aria": "Beoordeelde dagen in {month}",
+      "logged": "{n, plural, one {# dag} other {# dagen}} gelogd deze maand",
+      "empty": "Nog niets gelogd deze maand — beoordeel vandaag iets."
+    },
     "histogram": {
       "ratingsCount": "{n, plural, one {# beoordeling} other {# beoordelingen}}",
       "aria": "Verdeling van {n} cijfers",

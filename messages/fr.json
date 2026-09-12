@@ -630,6 +630,12 @@
       "dayStreak": "jours de série",
       "streakTitle": "Série de {n} jours de morceau du jour"
     },
+    "log": {
+      "title": "LE REGISTRE",
+      "aria": "Jours notés en {month}",
+      "logged": "{n, plural, one {# jour} other {# jours}} au registre ce mois-ci",
+      "empty": "Rien au registre ce mois-ci — note quelque chose aujourd’hui."
+    },
     "histogram": {
       "ratingsCount": "{n, plural, one {# note} other {# notes}}",
       "aria": "Répartition de {n} notes",

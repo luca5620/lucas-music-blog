@@ -630,6 +630,12 @@
       "dayStreak": "day streak",
       "streakTitle": "{n}-day song-of-the-day streak"
     },
+    "log": {
+      "title": "THE LOG",
+      "aria": "Days rated in {month}",
+      "logged": "{n, plural, one {# day} other {# days}} logged this month",
+      "empty": "Nothing logged yet this month — rate something today."
+    },
     "histogram": {
       "ratingsCount": "{n, plural, one {# rating} other {# ratings}}",
       "aria": "Rating distribution across {n} ratings",

@@ -38,6 +38,7 @@ import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
 import ProfileBadges from "@/components/profile/ProfileBadges";
 import ProfileStats from "@/components/profile/ProfileStats";
+import TheLog from "@/components/profile/TheLog";
 import { THEME_SPECS, VALID_THEMES } from "@/lib/profile-theme";
 import PlatformIcon from "@/components/profile/PlatformIcons";
 import { resolveVisibleLinks } from "@/lib/social-links";
@@ -406,9 +407,22 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               <span className="truncate">{displayName}</span>
               <RoleBadge role={profile.role} size="md" />
             </h1>
-            <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
-              @{profile.username}
-            </p>
+            {/* APP: the four numbers sit right of the handle (Luca
+                2026-09-12) — compact, no progress lines. Hidden on the
+                web, where they get their own row with The Log. */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
+                @{profile.username}
+              </p>
+              <ProfileStats
+                stats={stats}
+                accentColor={accentColor}
+                isOwnProfile={isOwnProfile}
+                hidden={profile.hidden_badges ?? null}
+                compact
+                className="stats-slot-app"
+              />
+            </div>
 
             {/* Badges — years of service plus any awarded event badges
                 (the reviews/likes trophies moved into the stats strip
@@ -474,15 +488,24 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        {/* THE FOUR NUMBERS, at the forefront (Luca 2026-09-12):
-            followers · following · reviews · likes, the trophies'
-            colours on the last two with the next tier in sight. */}
-        <ProfileStats
-          stats={stats}
-          accentColor={accentColor}
-          isOwnProfile={isOwnProfile}
-          hidden={profile.hidden_badges ?? null}
-        />
+        {/* THE FOUR NUMBERS + THE LOG (Luca 2026-09-12). Web: the
+            numbers on the left, the month punch card in the open
+            space to their right. App: the numbers already sit beside
+            the handle above, so only The Log shows here. */}
+        <div className="log-row">
+          <ProfileStats
+            stats={stats}
+            accentColor={accentColor}
+            isOwnProfile={isOwnProfile}
+            hidden={profile.hidden_badges ?? null}
+            className="stats-slot-web"
+          />
+          <TheLog
+            reviews={reviews as Review[]}
+            locale={locale}
+            accentColor={accentColor}
+          />
+        </div>
 
         {/* Bio */}
         {profile.bio && (

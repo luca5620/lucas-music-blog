@@ -630,6 +630,12 @@
       "dayStreak": "Tage Streak",
       "streakTitle": "Song-des-Tages-Streak von {n} Tagen"
     },
+    "log": {
+      "title": "DAS LOGBUCH",
+      "aria": "Bewertete Tage im {month}",
+      "logged": "{n, plural, one {# Tag} other {# Tage}} eingetragen diesen Monat",
+      "empty": "Diesen Monat noch nichts eingetragen — bewerte heute etwas."
+    },
     "histogram": {
       "ratingsCount": "{n, plural, one {# Bewertung} other {# Bewertungen}}",
       "aria": "Verteilung von {n} Bewertungen",

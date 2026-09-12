@@ -630,6 +630,12 @@
       "dayStreak": "dias de sequência",
       "streakTitle": "Sequência de {n} dias de música do dia"
     },
+    "log": {
+      "title": "O REGISTRO",
+      "aria": "Dias avaliados em {month}",
+      "logged": "{n, plural, one {# dia} other {# dias}} registrados este mês",
+      "empty": "Nada registrado este mês ainda — avalie algo hoje."
+    },
     "histogram": {
       "ratingsCount": "{n, plural, one {# avaliação} other {# avaliações}}",
       "aria": "Distribuição de {n} notas",

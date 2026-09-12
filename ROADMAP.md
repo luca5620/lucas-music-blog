@@ -90,6 +90,30 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-12 (Windows): THE LOG — the diary with a twist, first cut,
+  SHIPPED to main.** Luca's decisions from the discussion: my
+  recommendation (the month punch card with the verdict-log rule);
+  re-rates REPLACE the old score (one square per record, never two);
+  ON by default on every profile, no showcase toggle; compact — on
+  web it lives in the open space right of the four numbers, in the
+  app the four numbers move up beside the @handle (compact, no
+  progress lines) and the grid sits below; the bigger "twist" is
+  parked until he knows what he wants ("wait on trying to figure
+  that out later"). Never called "diary" in copy.
+  - `components/profile/TheLog.tsx`: current month, Monday-first, one
+    square per day; a day with a published rating shows the newest
+    cover with the score in the corner and "+n" when more landed that
+    day; empty days are dark squares, today is outlined in the
+    theme accent, future days dimmed; foot line "3 days logged this
+    month" / the empty nudge. A review counts on its review_date
+    (stamped at publish); tap → the review.
+  - Placement: `.log-row` (web: numbers left + log right; app: the
+    `.stats-slot-app` compact strip beside the handle shows, the
+    `.stats-slot-web` strip hides). Translations profile.log.* in all
+    six languages. `.low-detail` line for the cell hover lift.
+  - **Later, when Luca wants it:** month navigation (previous
+    months), the year card (shareable image), the twist itself.
+
 - **2026-09-12 (Windows): PROFILE STATS AT THE FOREFRONT + THE HOVER
   CARD — SHIPPED to main on Luca's "just push it all and I'll tell
   you what to change" (preview branches are OVER: every Vercel

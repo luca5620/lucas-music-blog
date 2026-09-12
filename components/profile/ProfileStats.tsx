@@ -38,11 +38,17 @@ export default async function ProfileStats({
   accentColor,
   isOwnProfile,
   hidden,
+  compact = false,
+  className = "",
 }: {
   stats: Stats;
   accentColor: string;
   isOwnProfile: boolean;
   hidden: string[] | null;
+  /** The app's header slot beside the handle: smaller numbers, no
+      progress lines (Luca 2026-09-12: it has to fit on the screen). */
+  compact?: boolean;
+  className?: string;
 }) {
   const t = await getTranslations("profile.stats");
   const hiddenSet = hiddenBadgeSet(hidden);
@@ -89,7 +95,10 @@ export default async function ProfileStats({
   ];
 
   return (
-    <div className="stats-strip" aria-label={t("aria")}>
+    <div
+      className={`stats-strip${compact ? " stats-strip-compact" : ""} ${className}`}
+      aria-label={t("aria")}
+    >
       {tiles.map((tile) => {
         const glow = tile.tier?.perfect
           ? " stat-glow-perfect"
@@ -107,7 +116,7 @@ export default async function ProfileStats({
               {compactCount(tile.value)}
             </p>
             <p className="stat-label">{tile.label}</p>
-            {tile.tier && (
+            {tile.tier && !compact && (
               <span className="stat-progress" aria-hidden="true">
                 <span
                   className="stat-progress-fill"
@@ -118,7 +127,7 @@ export default async function ProfileStats({
                 />
               </span>
             )}
-            {tile.tier && (
+            {tile.tier && !compact && (
               <p className="stat-next">
                 {tile.tier.nextAt === null
                   ? t("topTier")

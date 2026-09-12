@@ -107,15 +107,21 @@ don't wait to be asked:**
     theme accent, future days dimmed; foot line "3 days logged this
     month" / the empty nudge. A review counts on its review_date
     (stamped at publish); tap → the review.
-  - **Round 5 (same day, Luca's web test + phone tweaks):** web = The
-    Log moves INTO the header row, right of the name block (the dead
-    space), so the left column reads name · handle · numbers and the
-    button stays far right; phones keep The Log under everything
-    (`.log-slot-web` / `.log-slot-phone`). The numbers bar lives in
-    the name block under the handle on every screen. Phones: header
-    shifted up (-mt-24, the avatar collides with the banner more), the
-    button raised only slightly (margin-top 6.5rem), tighter gaps in
-    the numbers bar. He will eyeball and adjust.
+  - **Round 6 (same day, Luca: "you messed up the whole format" on
+    web):** round 5 UNDONE on web. The web layout is round 4 again,
+    byte for byte — header row (avatar · name · button far right),
+    then the numbers bar left-justified under it, then bio, then
+    links — and The Log is simply a second column to the RIGHT of
+    all of that (`.profile-header-wrap` = flex row on web,
+    `.profile-header-main` + `.profile-header-log`, the log's top in
+    line with the name). One TheLog element again, no web/phone
+    copies. Phones: the whole header raised a bit more (-mt-28, the
+    button margin-top 7.25rem so it still clears the banner); Luca:
+    "that's it for mobile". Waiting on his eyeball of the web fix.
+  - **Round 5 (same day, superseded by round 6 on web):** The Log
+    inside the header row, numbers moved into the name block — wrong,
+    reverted. Phone parts kept: header shifted up, tighter gaps in
+    the numbers bar.
   - **Round 4 (same day, Luca: "the last change needed for the UI
     look"):** the "13 to 25" progress lines under reviews/likes are
     gone; how close the next colour is now shows only on hover (title

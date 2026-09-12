@@ -3889,9 +3889,9 @@ fieldset {
 @media (max-width: 639px) {
   .profile-head-action {
     align-self: flex-start;
-    /* the header starts 6rem above the banner edge on phones (avatar
-       collides with the banner); the button only rises a little */
-    margin-top: 6.5rem;
+    /* the header starts 7rem above the banner edge on phones (avatar
+       collides with the banner); the button sits just under the edge */
+    margin-top: 7.25rem;
   }
 }
 /* Beside the handle: small numbers, tight labels, no progress lines */
@@ -3915,20 +3915,28 @@ fieldset {
   letter-spacing: 0.04em;
 }
 
-/* Where The Log lives: phones = under everything; web = in the
-   header row right of the name block, filling the dead space */
-.log-slot-web {
-  display: none;
+/* Where The Log lives (Luca 2026-09-12): phones = one column, the
+   log under everything; web = two columns, everything as before on
+   the left and the log to the right of it all, its top in line with
+   the name (just under the banner edge). */
+.profile-header-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 @media (min-width: 640px) {
-  .log-slot-web {
-    display: block;
-    order: 2;
-    margin-top: 5.5rem;
-    margin-left: 1.5rem;
+  .profile-header-wrap {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2.5rem;
   }
-  .log-slot-phone {
-    display: none;
+  .profile-header-main {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .profile-header-log {
+    flex: 0 0 auto;
+    padding-top: 5.5rem;
   }
 }
 .the-log {

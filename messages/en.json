@@ -533,6 +533,7 @@
       "likes": "Likes",
       "toNext": "{n} to {target}",
       "topTier": "Top tier",
+      "nextHint": "{n} more to the next colour, at {target}",
       "viewProfile": "View profile",
       "aria": "Profile stats"
     },

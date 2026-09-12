@@ -533,6 +533,7 @@
       "likes": "J'aime",
       "toNext": "{n} avant {target}",
       "topTier": "Niveau max",
+      "nextHint": "{n} de plus pour la prochaine couleur, à {target}",
       "viewProfile": "Voir le profil",
       "aria": "Statistiques du profil"
     },

@@ -3695,29 +3695,6 @@ fieldset {
   letter-spacing: 0.08em;
   color: var(--text-muted);
 }
-.stat-progress {
-  display: block;
-  width: 100%;
-  max-width: 72px;
-  height: 2px;
-  margin-top: 0.35rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-}
-.stat-progress-fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-}
-.stat-next {
-  font-family: var(--font-pixel);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-top: 0.25rem;
-  opacity: 0.85;
-}
 .stat-glow-elite {
   text-shadow: 0 0 10px rgba(168, 85, 247, 0.7), 0 0 24px rgba(168, 85, 247, 0.35);
 }

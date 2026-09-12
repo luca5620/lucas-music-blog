@@ -533,6 +533,7 @@
       "likes": "Curtidas",
       "toNext": "{n} até {target}",
       "topTier": "Nível máximo",
+      "nextHint": "{n} a mais para a próxima cor, em {target}",
       "viewProfile": "Ver perfil",
       "aria": "Estatísticas do perfil"
     },

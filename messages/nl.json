@@ -533,6 +533,7 @@
       "likes": "Likes",
       "toNext": "{n} tot {target}",
       "topTier": "Hoogste niveau",
+      "nextHint": "nog {n} tot de volgende kleur, bij {target}",
       "viewProfile": "Profiel bekijken",
       "aria": "Profielstatistieken"
     },

@@ -107,6 +107,13 @@ don't wait to be asked:**
     theme accent, future days dimmed; foot line "3 days logged this
     month" / the empty nudge. A review counts on its review_date
     (stamped at publish); tap → the review.
+  - **Round 4 (same day, Luca: "the last change needed for the UI
+    look"):** the "13 to 25" progress lines under reviews/likes are
+    gone; how close the next colour is now shows only on hover (title
+    tooltip, profile.stats.nextHint). The bar is ONE placement again:
+    left-justified right under the header row on every screen — in
+    line with the bio and links on web, under the name block on
+    phones. UI LOOK = DONE per Luca; next = the one-and-done list.
   - **Header order, round 3 (same day): BADGES ROW REMOVED ENTIRELY
     (tenure + event badges no longer render on profiles; the settings
     "hide badges" section and /admin/badges still exist, unused on

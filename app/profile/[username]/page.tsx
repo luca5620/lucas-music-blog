@@ -443,16 +443,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               @{profile.username}
             </p>
 
-            {/* THE FOUR NUMBERS — followers · following · reviews ·
-                likes, under the handle where the badges row used to be
-                (Luca 2026-09-12: badges removed entirely; one bar,
-                same place on phones and web). */}
-            <ProfileStats
-              stats={stats}
-              accentColor={accentColor}
-              isOwnProfile={isOwnProfile}
-              hidden={profile.hidden_badges ?? null}
-            />
 
             {/* Flair: pronouns · location — quiet, OSD-flavored */}
             {(profile.pronouns || profile.location) && (
@@ -475,6 +465,17 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </div>
 
         </div>
+
+        {/* THE FOUR NUMBERS — followers · following · reviews · likes,
+            left-justified under the header on every screen (Luca
+            2026-09-12). Phones: right under the name block. Web: on the
+            page's left edge, in line with the bio and the links. */}
+        <ProfileStats
+          stats={stats}
+          accentColor={accentColor}
+          isOwnProfile={isOwnProfile}
+          hidden={profile.hidden_badges ?? null}
+        />
 
         {/* Bio */}
         {profile.bio && (

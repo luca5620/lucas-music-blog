@@ -6,9 +6,9 @@
  *
  * REVIEWS and LIKES wear the trophy colours (lib/badges.ts: tier 9 =
  * the purple ELITE, tier 10 = the glowing PERFECT blue — the same
- * ladder the rating badges climb), with a thin progress bar toward
- * the next tier and "7 to 25" under the number, so the next trophy
- * is always in sight. Followers / following sit in the theme accent.
+ * ladder the rating badges climb). How close you are to the next
+ * colour shows on hover only (Luca 2026-09-12: no progress lines
+ * under the numbers). Followers / following sit in the theme accent.
  *
  * Replaces the old three-number row under the bio AND the three
  * headline numbers of the RATING OVERVIEW block (that block keeps the
@@ -105,35 +105,20 @@ export default async function ProfileStats({
           : tile.tier?.elite
             ? " stat-glow-elite"
             : "";
+        // Hover: the exact count, or for the trophies how close the
+        // next colour is (the tier ladder is the reward, not a bar).
+        const hint = tile.tier
+          ? tile.tier.nextAt === null
+            ? t("topTier")
+            : t("nextHint", { n: tile.tier.toNext ?? 0, target: tile.tier.nextAt })
+          : String(tile.value);
         const inner = (
           <>
-            <p
-              className={`stat-number${glow}`}
-              style={{ color: tile.color }}
-              title={String(tile.value)}
-            >
+            <p className={`stat-number${glow}`} style={{ color: tile.color }}>
               {tile.glyph && <span className="stat-glyph">{tile.glyph}</span>}
               {compactCount(tile.value)}
             </p>
             <p className="stat-label">{tile.label}</p>
-            {tile.tier && !compact && (
-              <span className="stat-progress" aria-hidden="true">
-                <span
-                  className="stat-progress-fill"
-                  style={{
-                    width: `${Math.round(tile.tier.progress * 100)}%`,
-                    background: tile.tier.color,
-                  }}
-                />
-              </span>
-            )}
-            {tile.tier && !compact && (
-              <p className="stat-next">
-                {tile.tier.nextAt === null
-                  ? t("topTier")
-                  : t("toNext", { n: tile.tier.toNext ?? 0, target: tile.tier.nextAt })}
-              </p>
-            )}
           </>
         );
         return tile.link ? (
@@ -146,7 +131,7 @@ export default async function ProfileStats({
             {inner}
           </Link>
         ) : (
-          <div key={tile.key} className="stat-tile">
+          <div key={tile.key} className="stat-tile" title={hint}>
             {inner}
           </div>
         );

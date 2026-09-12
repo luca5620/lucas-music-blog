@@ -533,6 +533,7 @@
       "likes": "Me gusta",
       "toNext": "{n} para {target}",
       "topTier": "Nivel máximo",
+      "nextHint": "{n} más para el siguiente color, en {target}",
       "viewProfile": "Ver perfil",
       "aria": "Estadísticas del perfil"
     },

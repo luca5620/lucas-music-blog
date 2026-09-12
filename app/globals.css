@@ -3744,11 +3744,18 @@ fieldset {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: none; }
 }
+/* The band is positioned (so it can be painted at all) but must sit
+   BEHIND the body — the avatar overlaps its bottom edge, and a
+   positioned band would otherwise paint over the in-flow avatar and
+   cut its top off (Luca 2026-09-12). */
 .user-card-band {
   position: relative;
+  z-index: 0;
   height: 72px;
 }
 .user-card-body {
+  position: relative;
+  z-index: 1;
   padding: 0 14px 12px;
   margin-top: -22px;
   display: flex;

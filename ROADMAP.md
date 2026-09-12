@@ -98,16 +98,17 @@ don't wait to be asked:**
   (copy in six languages, empty states, phone + web look).
   1. **The last Instagram post** (post 5, image regenerated) — Luca's
      hands, prompts in `docs/marketing/instagram-batch-1.md`.
-  2. **Reviewer emails** — send Turning the Tables first, then one
-     every five days (`docs/marketing/reviewer-outreach.md`).
-  3. **Algorithm + element changes, one stage:** Your Taste
+  2. **Reviewer emails** — ALL of them within the same day, no
+     spacing (`docs/marketing/reviewer-outreach.md`).
+  3. **Algorithm + element changes, one stage.** AT THE FOREFRONT:
+     the two new ideas below (Completionist lists, the 3-D penguin
+     logo) — they go first in this stage. Then: Your Taste
      recommendation signals (Luca is brainstorming, wait for his
      prompt), the debates changes (he wants some, no specifics yet —
      ask), other elements he names, AND the minor engagement
      enhancements from the one-and-done list (score vs. the room,
      Sunday recap push, chain on the release page, Friday drops you
      follow, the unrated favorite) — each polished before it ships.
-     Plus the two ideas below.
   4. **Release-day advertising** — after this initial marketing run,
      advertise around future big releases the way the beabadoobee
      album was used for live release rooms: "Waiting for this album?

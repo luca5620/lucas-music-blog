@@ -26,8 +26,8 @@ Doc: `docs/marketing/instagram-batch-1.md`. Nine posts written; week 1
 posted; weeks 2 and 3 are shoots, not writing.
 
 - [ ] Luca: the week-2 six-shot sitting (doc §"Week 2 — shoot list")
-- [ ] Luca: post 4 (debates), 5 (profile themes), 7 (small artists)
-- [ ] Luca: post 6 (Your Taste) in week 3, screenshot from the same sitting
+- [ ] Luca: post 4 (debates), 7 (small artists), 6 (Your Taste) this week (2026-09-11: all images generated, penguin mascot in 5 and 7 — Antarctica for 7)
+- [ ] Luca: post 5 (profile themes) the week after — the penguin-from-behind image came out wrong, regenerate with the post-5 prompt
 - [ ] Post 8 (Android testers) only if the Play test is still wanted —
       it's a recruitment post, it can wait indefinitely
 - [ ] Post 9 (the room after Pylon) — 18 September, can't be made early

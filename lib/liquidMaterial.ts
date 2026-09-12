@@ -109,10 +109,12 @@ void main() {
   float f = fbm(sp * 0.8 + 1.7 * r + refr);
   float g = fbm(sp * 0.6 - 1.4 * r + refr * 0.5 + vec2(5.0, 2.0));
 
-  /* calm mask: whole regions sink to the base so the picture keeps
-     composed negative space instead of colour everywhere */
-  float calm = smoothstep(0.30, 0.62, fbm(sp * 0.35 + vec2(t * 0.004, t * 0.003) + 40.0));
-  float pig = mix(0.25, 1.0, calm);
+  /* calm mask: whole regions sink into the void so the picture keeps
+     real negative space — true black for OLED, not colour everywhere
+     (Luca 2026-09-11: "dark void-y aspects", "doesn't have to be all
+     covered in the look") */
+  float calm = smoothstep(0.36, 0.68, fbm(sp * 0.35 + vec2(t * 0.004, t * 0.003) + 40.0));
+  float pig = calm;
 
   vec3 col = u_base;
   col = mix(col, u_main, smoothstep(0.50 - k, 0.50 + k, f) * 0.95 * pig);
@@ -129,7 +131,7 @@ void main() {
   col = mix(col, col * 1.18 + u_edge * 0.10, inside * 0.5);
   col += u_edge * rim * 0.55;
 
-  col = mix(vec3(0.0), col, u_intensity);
+  col = mix(vec3(0.0), col, u_intensity * mix(0.35, 1.0, calm));
   col += (hash(gl_FragCoord.xy + fract(t)) - 0.5) * (1.5 / 255.0);
   gl_FragColor = vec4(col, 1.0);
 }
@@ -153,12 +155,13 @@ export const ROLE_NAMES = [
   "u_occl",
 ] as const;
 
-/** The site default trio (sage / molten amber / oxblood) — mirrors
-    :root --liquid-1/2/3 in globals.css, used when a var is missing. */
+/** The site default trio (cobalt / icy pale blue / deep indigo) —
+    mirrors :root --liquid-1/2/3 in globals.css, used when a var is
+    missing. */
 export const DEFAULT_TRIO: RGB[] = [
-  [160 / 255, 224 / 255, 171 / 255],
-  [255 / 255, 172 / 255, 46 / 255],
-  [165 / 255, 45 / 255, 37 / 255],
+  [72 / 255, 142 / 255, 232 / 255],
+  [140 / 255, 196 / 255, 244 / 255],
+  [34 / 255, 58 / 255, 128 / 255],
 ];
 
 const s2l = (c: number) =>
@@ -209,7 +212,7 @@ export function rolesFromTrio(trio: RGB[]): Roles {
   const c2 = trio[1] ?? c1;
   const c3 = trio[2] ?? c2;
   return [
-    shape(c1, 0.12, 0.25), // base: near-black floor tinted by the main colour
+    shape(c1, 0.07, 0.2), // base: a whisper of tint over true black
     shape(c1, 0.62, 1.05), // main pigment
     shape(c2, 0.58, 1.05), // secondary pigment
     shape(c3, 0.5, 1.1), // third pigment (pockets)

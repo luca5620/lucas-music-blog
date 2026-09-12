@@ -16,7 +16,7 @@ import type { ProfileTheme } from "@/lib/types/database";
 import { LIQUID_CHANGE_EVENT } from "@/lib/liquidMaterial";
 
 const TRIOS: Record<ProfileTheme, [string, string, string]> = {
-  "crt-blue": ["160, 224, 171", "255, 172, 46", "165, 45, 37"], // site default
+  "crt-blue": ["72, 142, 232", "140, 196, 244", "34, 58, 128"], // site default
   ps2: ["100, 140, 220", "158, 130, 226", "36, 48, 112"],
   ps3: ["126, 201, 232", "184, 228, 245", "74, 147, 179"],
   ps4: ["74, 144, 217", "127, 179, 232", "32, 80, 150"],

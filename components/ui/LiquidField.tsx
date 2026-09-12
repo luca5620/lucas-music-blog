@@ -51,10 +51,10 @@ export type LiquidContext = "site" | "room" | "panel" | "page";
 /* How much of the material shows (0 = black). Heroes are the richest
    expression; the site-wide wash stays calm behind content. */
 const INTENSITY: Record<LiquidContext, number> = {
-  site: 0.46,
-  room: 0.4,
-  panel: 0.7,
-  page: 0.6,
+  site: 0.42,
+  room: 0.36,
+  panel: 0.42, // modules toned down (Luca 2026-09-11)
+  page: 0.36,
 };
 
 const FPS = 30;

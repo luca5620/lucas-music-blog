@@ -121,12 +121,17 @@ don't wait to be asked:**
     into the fold), profile (theme colours), simulated native shell;
     motion confirmed frame-to-frame; `npm run build` clean; lint 0
     errors. NOT eyeballed on a real GPU or phone yet.
+  - **Round 2 (same night, Luca's verdict "it all looks great"):**
+    modules toned down (panel 0.7→0.42, page 0.6→0.36); the neutral
+    default trio is now BLUE (cobalt / icy pale blue / deep indigo —
+    :root --liquid-*, ThemeLiquidSync crt-blue, DEFAULT_TRIO all
+    mirror it) instead of green/copper; more true-black void for
+    OLED (calm mask sinks whole regions to black, base is a whisper
+    over black). Covers and profile themes still recolour it.
   - **Luca's checks:** open the Vercel preview for the branch; turn
-    OFF low detail (footer switch) to see it move; judge the home
-    hero (site field + panel field + CD stack — may be too busy),
-    the release page and his own profile. Then: merge to main or
-    tune (intensity knobs are the INTENSITY table in LiquidField.tsx;
-    band/fold look is in the shader).
+    OFF low detail (footer switch) to see it move; then say merge or
+    tune (intensity knobs = the INTENSITY table in LiquidField.tsx;
+    band/fold look = the shader in liquidMaterial.ts).
   - Seen while testing, not mine: a React hydration mismatch on the
     RatedWall avatar `<img>` className on the home page (dev only).
 

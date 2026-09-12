@@ -49,12 +49,16 @@
   --border-medium: #333338;
   --border-bright: #444448;
 
-  /* Liquid-atmosphere trio (RGB triplets) — the sage/amber/oxblood
-     molten light. Profile theme presets override these so a themed
-     profile's liquid glows in ITS colors. */
-  --liquid-1: 160, 224, 171;
-  --liquid-2: 255, 172, 46;
-  --liquid-3: 165, 45, 37;
+  /* Liquid-atmosphere trio (RGB triplets) — the site's own light:
+     cobalt currents, an icy pale-blue edge, deep indigo pockets
+     (Luca 2026-09-11: neutral pages read blue like the rest of the
+     site, not green/copper). Profile theme presets and album covers
+     override these so a themed profile or a release glows in ITS
+     colors. Mirror any change in ThemeLiquidSync's crt-blue entry
+     and DEFAULT_TRIO in lib/liquidMaterial.ts. */
+  --liquid-1: 72, 142, 232;
+  --liquid-2: 140, 196, 244;
+  --liquid-3: 34, 58, 128;
 
   --glow-primary: rgba(var(--accent-rgb), 0.25);
   /* CRT ambience, dialed back — texture, not a filter over the site */

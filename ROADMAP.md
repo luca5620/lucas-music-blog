@@ -107,10 +107,18 @@ don't wait to be asked:**
     theme accent, future days dimmed; foot line "3 days logged this
     month" / the empty nudge. A review counts on its review_date
     (stamped at publish); tap → the review.
-  - Placement: `.log-row` (web: numbers left + log right; app: the
-    `.stats-slot-app` compact strip beside the handle shows, the
-    `.stats-slot-web` strip hides). Translations profile.log.* in all
-    six languages. `.low-detail` line for the cell hover lift.
+  - **Header order, round 2 (Luca's layout, same day):** phones =
+    avatar left + Customize/Follow top-right just under the banner,
+    then the big name with the four numbers beside it AT ITS SIZE
+    (`.stats-strip-name`), handle, badges; web = one row avatar ·
+    name block · numbers right of the name · button far right
+    (`.profile-head`, `.profile-head-top` dissolves via
+    display: contents, `order` places the button last). Both: bio +
+    streaming links under the picture, then The Log under it all
+    (full width on phones, a 20rem column on web). The slots switch by
+    viewport width (≤639px), not by the native-app class, so mobile
+    web matches the app. Translations profile.log.* in all six
+    languages. `.low-detail` line for the cell hover lift.
   - **Later, when Luca wants it:** month navigation (previous
     months), the year card (shareable image), the twist itself.
 

@@ -3851,26 +3851,63 @@ fieldset {
    the month punch card in the open space to their right. App: the
    numbers move up beside the handle (compact) and the log lives
    alone in the row. --- */
-.log-row {
+/* The header (Luca 2026-09-12). Phones: avatar left + the button
+   top-right under the banner, then the big name with the numbers
+   beside it. Web: avatar · name · numbers · button in one row
+   (.profile-head-top dissolves into the row via display: contents,
+   `order` puts the button last). */
+.profile-head {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
+}
+.profile-head-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.profile-head-title {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 @media (min-width: 640px) {
-  .log-row {
+  .profile-head {
     flex-direction: row;
-    align-items: flex-start;
-    gap: 2.5rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+  .profile-head-top {
+    display: contents;
+  }
+  .profile-head-name {
+    order: 1;
+  }
+  .profile-head-stats {
+    order: 2;
+    align-self: flex-end;
+    padding-bottom: 0.4rem;
+    margin-left: 0.5rem;
+  }
+  .profile-head-action {
+    order: 10;
+    margin-left: auto;
   }
 }
+/* One set of numbers per screen size */
 .stats-slot-app {
   display: none;
 }
-.native-app .stats-slot-app {
-  display: flex;
-}
-.native-app .stats-slot-web {
-  display: none;
+@media (max-width: 639px) {
+  .stats-slot-app {
+    display: flex;
+  }
+  .stats-slot-web {
+    display: none;
+  }
 }
 /* Beside the handle: small numbers, tight labels, no progress lines */
 .stats-strip-compact {
@@ -3892,15 +3929,32 @@ fieldset {
   font-size: 0.6rem;
   letter-spacing: 0.04em;
 }
+/* Phones: beside the big name, at the name's size */
+@media (max-width: 639px) {
+  .stats-strip-name {
+    gap: 0.25rem 0.8rem;
+    padding-bottom: 0.15rem;
+  }
+  .stats-strip-name .stat-tile {
+    min-width: 2.25rem;
+  }
+  .stats-strip-name .stat-number {
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+  .stats-strip-name .stat-glyph svg {
+    width: 14px;
+    height: 14px;
+  }
+}
 
 .the-log {
   width: 100%;
 }
 @media (min-width: 640px) {
   .the-log {
-    width: auto;
-    flex: 0 1 17rem;
-    min-width: 13rem;
+    width: 20rem;
+    max-width: 100%;
   }
 }
 .the-log-head {

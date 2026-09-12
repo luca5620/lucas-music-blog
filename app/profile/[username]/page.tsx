@@ -374,7 +374,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
       {/* ========== PROFILE HEADER ========== */}
       <div className="px-4 sm:px-8 -mt-20 relative z-10 space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-6">
+        {/* Header (Luca 2026-09-12). Phones: the avatar on the left with
+            the Customize / Follow button top-right just under the
+            banner, then the big name with the four numbers beside it
+            at its size. Web: one row — avatar · name block · the four
+            numbers right of the name · the button at the far right.
+            The two ProfileStats below are the same numbers in two
+            slots; CSS shows one per screen size (.stats-slot-*). */}
+        <div className="profile-head">
+          <div className="profile-head-top">
           {/* Avatar */}
           <div
             className="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 shrink-0"
@@ -401,33 +409,63 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             )}
           </div>
 
-          {/* Name + flair row */}
-          <div className="flex-1 min-w-0 space-y-1.5">
-            <h1 className="crt-title text-3xl sm:text-5xl flex items-center gap-2">
-              <span className="truncate">{displayName}</span>
-              <RoleBadge role={profile.role} size="md" />
-            </h1>
-            {/* APP: the four numbers sit right of the handle (Luca
-                2026-09-12) — compact, no progress lines. Hidden on the
-                web, where they get their own row with The Log. */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
-                @{profile.username}
-              </p>
+          {/* Follow / Edit button */}
+          <div className="profile-head-action shrink-0">
+            {isOwnProfile ? (
+              <Link
+                href="/settings/profile"
+                className="btn-y2k btn-y2k-outline"
+                style={{ borderColor: accentColor, color: accentColor }}
+              >
+                {t("customize")}
+              </Link>
+            ) : currentUser ? (
+              <span className="inline-flex items-center gap-2">
+                <FollowButton
+                  profileId={profile.id}
+                  initialFollowing={userFollows}
+                  accentColor={accentColor}
+                />
+                <BlockButton
+                  targetUserId={profile.id}
+                  targetUsername={profile.username}
+                  initialBlocked={viewerHasBlocked}
+                />
+              </span>
+            ) : (
+              <Link href="/login" className="btn-y2k btn-y2k-outline">
+                {t("loginToFollow")}
+              </Link>
+            )}
+          </div>
+          </div>
+
+          {/* Name + flair */}
+          <div className="profile-head-name min-w-0 space-y-1.5">
+            <div className="profile-head-title">
+              <h1 className="crt-title text-3xl sm:text-5xl flex items-center gap-2 min-w-0">
+                <span className="truncate">{displayName}</span>
+                <RoleBadge role={profile.role} size="md" />
+              </h1>
+              {/* PHONES: the four numbers beside the big name, at its
+                  size (no progress lines). */}
               <ProfileStats
                 stats={stats}
                 accentColor={accentColor}
                 isOwnProfile={isOwnProfile}
                 hidden={profile.hidden_badges ?? null}
                 compact
-                className="stats-slot-app"
+                className="stats-slot-app stats-strip-name"
               />
             </div>
+            <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
+              @{profile.username}
+            </p>
 
             {/* Badges — years of service plus any awarded event badges
-                (the reviews/likes trophies moved into the stats strip
-                below, 2026-09-12). Hover / tap for detail. Badges the
-                member hid in Settings (migration 040) are skipped for
+                (the reviews/likes trophies live in the four numbers,
+                2026-09-12). Hover / tap for detail. Badges the member
+                hid in Settings (migration 040) are skipped for
                 visitors and dimmed for the owner. */}
             <ProfileBadges
               createdAt={profile.created_at}
@@ -457,53 +495,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             )}
           </div>
 
-          {/* Follow / Edit button */}
-          <div className="shrink-0">
-            {isOwnProfile ? (
-              <Link
-                href="/settings/profile"
-                className="btn-y2k btn-y2k-outline"
-                style={{ borderColor: accentColor, color: accentColor }}
-              >
-                {t("customize")}
-              </Link>
-            ) : currentUser ? (
-              <span className="inline-flex items-center gap-2">
-                <FollowButton
-                  profileId={profile.id}
-                  initialFollowing={userFollows}
-                  accentColor={accentColor}
-                />
-                <BlockButton
-                  targetUserId={profile.id}
-                  targetUsername={profile.username}
-                  initialBlocked={viewerHasBlocked}
-                />
-              </span>
-            ) : (
-              <Link href="/login" className="btn-y2k btn-y2k-outline">
-                {t("loginToFollow")}
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* THE FOUR NUMBERS + THE LOG (Luca 2026-09-12). Web: the
-            numbers on the left, the month punch card in the open
-            space to their right. App: the numbers already sit beside
-            the handle above, so only The Log shows here. */}
-        <div className="log-row">
+          {/* WEB: the four numbers to the right of the name */}
           <ProfileStats
             stats={stats}
             accentColor={accentColor}
             isOwnProfile={isOwnProfile}
             hidden={profile.hidden_badges ?? null}
-            className="stats-slot-web"
-          />
-          <TheLog
-            reviews={reviews as Review[]}
-            locale={locale}
-            accentColor={accentColor}
+            className="stats-slot-web profile-head-stats"
           />
         </div>
 
@@ -570,6 +568,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             </div>
           )}
         </div>
+
+        {/* THE LOG — under everything in the header (Luca 2026-09-12):
+            the month punch card, full width on phones, a capped
+            column on web. */}
+        <TheLog
+          reviews={reviews as Review[]}
+          locale={locale}
+          accentColor={accentColor}
+        />
 
         {/* Favorite genres removed 2026-08-22 (Luca) — the editor and
             this pill row both; old favorite_genres rows just sit

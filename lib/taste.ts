@@ -313,6 +313,9 @@ export type TunedItem =
           Apple-preferring viewers when Apple carries the record
           (Luca 2026-09-08: the Settings pick must carry over here). */
       apple_embed_url?: string | null;
+      /** SoundCloud's widget src, same rule for SoundCloud-preferring
+          viewers (2026-09-13). */
+      soundcloud_embed_url?: string | null;
       /** For the chyron's "REC {timeAgo}" stamp. */
       created_at: string;
       reason: string | null;
@@ -408,6 +411,9 @@ export type TunedItem =
       /** See the review variant — Apple's player for members who
           chose it in Settings. */
       apple_embed_url?: string | null;
+      /** SoundCloud's widget src, same rule for SoundCloud-preferring
+          viewers (2026-09-13). */
+      soundcloud_embed_url?: string | null;
       reason: string | null;
     };
 

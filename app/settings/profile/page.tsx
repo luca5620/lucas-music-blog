@@ -186,7 +186,8 @@ export default function ProfileSettingsPage() {
   // Preview player on release pages (migration 036): Spotify by
   // default, Apple Music as the one alternative — never both on a
   // page (Luca 2026-09-02). Gated on the column existing, as above.
-  const [preferredPlayer, setPreferredPlayer] = useState<"spotify" | "apple">("spotify");
+  // SoundCloud joined as the third pick on 2026-09-13 (migration 042).
+  const [preferredPlayer, setPreferredPlayer] = useState<"spotify" | "apple" | "soundcloud">("spotify");
   const [supportsPreferredPlayer, setSupportsPreferredPlayer] = useState(false);
   // Hidden badges (migration 040, Luca 2026-09-03): the keys the
   // member does NOT want under their username — "reviews" / "likes" /
@@ -293,7 +294,11 @@ export default function ProfileSettingsPage() {
           p.featured_playlist_id ? playlistUrl(p.featured_playlist_id) : ""
         );
         setSupportsFeaturedPlaylist("featured_playlist_id" in p);
-        setPreferredPlayer(p.preferred_player === "apple" ? "apple" : "spotify");
+        setPreferredPlayer(
+          p.preferred_player === "apple" || p.preferred_player === "soundcloud"
+            ? p.preferred_player
+            : "spotify"
+        );
         setSupportsPreferredPlayer("preferred_player" in p);
         setSupportsHiddenBadges("hidden_badges" in p);
         setHiddenBadges([...hiddenBadgeSet(p.hidden_badges)]);
@@ -1079,11 +1084,12 @@ export default function ProfileSettingsPage() {
             hint={tSettings("player.hint")}
           >
             <p className="text-xs text-text-muted">{tSettings("player.intro")}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {(
                 [
                   ["spotify", "Spotify", tSettings("player.spotifyBlurb")],
                   ["apple", "Apple Music", tSettings("player.appleBlurb")],
+                  ["soundcloud", "SoundCloud", tSettings("player.soundcloudBlurb")],
                 ] as const
               ).map(([id, label, blurb]) => {
                 const active = preferredPlayer === id;

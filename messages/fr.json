@@ -167,10 +167,11 @@
     },
     "player": {
       "title": "Lecteur",
-      "hint": "Spotify ou Apple Music sur les pages de sortie.",
+      "hint": "Spotify, Apple Music ou SoundCloud sur les pages de sortie.",
       "intro": "Chaque page de sortie affiche un seul lecteur. Choisis le service que tu utilises vraiment : connecté dans ton navigateur, les extraits deviennent des morceaux entiers.",
       "spotifyBlurb": "Celui par défaut. Toutes nos sorties y sont.",
-      "appleBlurb": "Quand Apple a le disque ; sinon, Spotify prend le relais."
+      "appleBlurb": "Quand Apple a le disque ; sinon, Spotify prend le relais.",
+      "soundcloudBlurb": "Quand SoundCloud a le disque ; sinon, Spotify prend le relais."
     },
     "song": {
       "title": "Morceau de profil",
@@ -945,7 +946,9 @@
       "spotifyClips": "extraits de 30 s · via Spotify",
       "appleClips": "extraits de 30 s · via Apple Music ↗",
       "spotifyTitle": "Extrait Spotify de {title}",
-      "appleTitle": "Extrait Apple Music de {title}"
+      "appleTitle": "Extrait Apple Music de {title}",
+      "soundcloudClips": "via SoundCloud ↗",
+      "soundcloudTitle": "Lecteur SoundCloud de {title}"
     },
     "feed": {
       "latestDrops": "Dernières sorties",
@@ -1515,7 +1518,8 @@
       "prev": "Sélection précédente",
       "next": "Sélection suivante",
       "swipe": "glisse",
-      "applePreview": "Aperçu Apple Music de {title}"
+      "applePreview": "Aperçu Apple Music de {title}",
+      "soundcloudPreview": "Lecteur SoundCloud de {title}"
     }
   },
   "artists": {

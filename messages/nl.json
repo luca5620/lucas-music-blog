@@ -167,10 +167,11 @@
     },
     "player": {
       "title": "Speler",
-      "hint": "Spotify of Apple Music op releasepagina's.",
+      "hint": "Spotify, Apple Music of SoundCloud op releasepagina's.",
       "intro": "Elke releasepagina toont één speler. Kies de dienst die je echt gebruikt: ben je daar in je browser ingelogd, dan worden de previews volledige nummers.",
       "spotifyBlurb": "De standaard. Heeft al onze releases.",
-      "appleBlurb": "Als Apple de plaat heeft; anders zie je Spotify."
+      "appleBlurb": "Als Apple de plaat heeft; anders zie je Spotify.",
+      "soundcloudBlurb": "Als SoundCloud de plaat heeft; anders zie je Spotify."
     },
     "song": {
       "title": "Profielnummer",
@@ -945,7 +946,9 @@
       "spotifyClips": "clips van 30 s · via Spotify",
       "appleClips": "clips van 30 s · via Apple Music ↗",
       "spotifyTitle": "Preview van {title} op Spotify",
-      "appleTitle": "Preview van {title} op Apple Music"
+      "appleTitle": "Preview van {title} op Apple Music",
+      "soundcloudClips": "via SoundCloud ↗",
+      "soundcloudTitle": "SoundCloud-speler van {title}"
     },
     "feed": {
       "latestDrops": "Nieuwste releases",
@@ -1515,7 +1518,8 @@
       "prev": "Vorige keuze",
       "next": "Volgende keuze",
       "swipe": "swipe",
-      "applePreview": "Apple Music-voorbeeld van {title}"
+      "applePreview": "Apple Music-voorbeeld van {title}",
+      "soundcloudPreview": "SoundCloud-speler van {title}"
     }
   },
   "artists": {

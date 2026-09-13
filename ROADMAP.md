@@ -123,10 +123,15 @@ don't wait to be asked:**
     `lib/soundcloud.ts`, `lib/youtube.ts`, `app/api/aux-battles/*`,
     `app/aux-battles/*`, `components/aux-battles/*`, CSS at the end
     of globals.css (`.aux-*`), messages `aux.*` in all six files.
-  - NEXT in this feature: SoundCloud as the third preview player
-    (Settings → Preview Player: Spotify / Apple Music / SoundCloud,
-    release page + Your Taste pager); then Luca's device pass —
-    nothing has been eyeballed on a phone yet.
+  - SoundCloud as the THIRD preview player — DONE same day: Settings →
+    Preview Player is now Spotify / Apple Music / SoundCloud; the
+    release page and the Your Taste pager show SoundCloud's widget
+    for members who picked it, resolved lazily through the SoundCloud
+    API (needs the keys above) and cached on the release row
+    (`soundcloud_url`, 042 part B); Spotify fills in when SoundCloud
+    doesn't carry the record or the keys aren't set.
+  - NEXT: Luca runs 042, adds the keys he wants, and does the device
+    pass — nothing has been eyeballed on a phone yet.
   - Still wired to the old tables, harmless: `lib/taste.ts` keeps the
     debate OnAir card type with an EMPTY pool (Your Taste signals are
     Luca's rework); `taste.surf.types.debate` + `notifications.newDebate`

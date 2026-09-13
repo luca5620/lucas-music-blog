@@ -167,10 +167,11 @@
     },
     "player": {
       "title": "Player",
-      "hint": "Spotify oder Apple Music auf Release-Seiten.",
+      "hint": "Spotify, Apple Music oder SoundCloud auf Release-Seiten.",
       "intro": "Jede Release-Seite zeigt einen Player. Wähl den Dienst, den du wirklich nutzt: bist du dort im Browser angemeldet, werden aus den Vorschauen ganze Songs.",
       "spotifyBlurb": "Der Standard. Hat alle unsere Releases.",
-      "appleBlurb": "Wenn Apple die Platte hat; sonst siehst du Spotify."
+      "appleBlurb": "Wenn Apple die Platte hat; sonst siehst du Spotify.",
+      "soundcloudBlurb": "Wenn SoundCloud die Platte hat; sonst siehst du Spotify."
     },
     "song": {
       "title": "Profilsong",
@@ -945,7 +946,9 @@
       "spotifyClips": "30-Sekunden-Clips · via Spotify",
       "appleClips": "30-Sekunden-Clips · via Apple Music ↗",
       "spotifyTitle": "Vorschau von {title} auf Spotify",
-      "appleTitle": "Vorschau von {title} auf Apple Music"
+      "appleTitle": "Vorschau von {title} auf Apple Music",
+      "soundcloudClips": "via SoundCloud ↗",
+      "soundcloudTitle": "SoundCloud-Player von {title}"
     },
     "feed": {
       "latestDrops": "Neueste Releases",
@@ -1515,7 +1518,8 @@
       "prev": "Vorherige Auswahl",
       "next": "Nächste Auswahl",
       "swipe": "wischen",
-      "applePreview": "Apple-Music-Vorschau von {title}"
+      "applePreview": "Apple-Music-Vorschau von {title}",
+      "soundcloudPreview": "SoundCloud-Player von {title}"
     }
   },
   "artists": {

@@ -167,10 +167,11 @@
     },
     "player": {
       "title": "Reproductor",
-      "hint": "Spotify o Apple Music en las páginas de lanzamiento.",
+      "hint": "Spotify, Apple Music o SoundCloud en las páginas de lanzamiento.",
       "intro": "Cada página de lanzamiento muestra un solo reproductor. Elige el servicio que usas de verdad: si tienes sesión iniciada en el navegador, los adelantos se convierten en canciones completas.",
       "spotifyBlurb": "El de siempre. Tiene todos nuestros lanzamientos.",
-      "appleBlurb": "Cuando Apple tiene el disco; si no, aparece Spotify."
+      "appleBlurb": "Cuando Apple tiene el disco; si no, aparece Spotify.",
+      "soundcloudBlurb": "Cuando SoundCloud tiene el disco; si no, aparece Spotify."
     },
     "song": {
       "title": "Canción de perfil",
@@ -945,7 +946,9 @@
       "spotifyClips": "clips de 30 s · vía Spotify",
       "appleClips": "clips de 30 s · vía Apple Music ↗",
       "spotifyTitle": "Adelanto de {title} en Spotify",
-      "appleTitle": "Adelanto de {title} en Apple Music"
+      "appleTitle": "Adelanto de {title} en Apple Music",
+      "soundcloudClips": "vía SoundCloud ↗",
+      "soundcloudTitle": "Reproductor de SoundCloud de {title}"
     },
     "feed": {
       "latestDrops": "Últimos lanzamientos",
@@ -1515,7 +1518,8 @@
       "prev": "Selección anterior",
       "next": "Siguiente selección",
       "swipe": "desliza",
-      "applePreview": "Vista previa de {title} en Apple Music"
+      "applePreview": "Vista previa de {title} en Apple Music",
+      "soundcloudPreview": "Reproductor de SoundCloud de {title}"
     }
   },
   "artists": {

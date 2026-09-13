@@ -36,6 +36,8 @@ import { isUpcoming } from "@/lib/upcoming";
 import LiveCountdown from "@/components/releases/LiveCountdown";
 import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
+import SoundCloudEmbed from "@/components/releases/SoundCloudEmbed";
+import { resolveSoundCloud } from "@/lib/soundcloud";
 import TrackRatings from "@/components/releases/TrackRatings";
 import PlayerTabs from "@/components/releases/PlayerTabs";
 import {
@@ -232,7 +234,12 @@ export default async function ReleasePage({ params }: Props) {
   // actually opens the page, so the Spotify-default majority costs
   // nothing. Any hiccup — column not there yet, Apple doesn't carry
   // the record — falls back to the Spotify player.
+  // SoundCloud is the third pick (Luca 2026-09-13, migration 042):
+  // same lazy resolve + cache, and it needs the SoundCloud API app
+  // keys on the server — without them (or when SoundCloud doesn't
+  // carry the record) the page falls back to Spotify like Apple does.
   let apple: AppleMusicRef | null = null;
+  let soundcloud: string | null = null;
   if (user) {
     const supabase = await createClient();
     const { data: pref } = await supabase
@@ -240,10 +247,11 @@ export default async function ReleasePage({ params }: Props) {
       .select("preferred_player")
       .eq("id", user.id)
       .maybeSingle();
-    const wantsApple =
-      (pref as { preferred_player?: string } | null)?.preferred_player === "apple";
-    if (wantsApple) {
+    const preferred = (pref as { preferred_player?: string } | null)?.preferred_player;
+    if (preferred === "apple") {
       apple = await resolveAppleMusic(release, artist?.name ?? "");
+    } else if (preferred === "soundcloud") {
+      soundcloud = await resolveSoundCloud(release, artist?.name ?? "");
     }
   }
 
@@ -343,6 +351,7 @@ export default async function ReleasePage({ params }: Props) {
 
       <ReleaseContent
         apple={apple}
+        soundcloud={soundcloud}
         release={release}
         stats={stats}
         isFollowing={isFollowing}
@@ -386,10 +395,13 @@ interface ReleaseContentProps {
   /** Set only when the viewer prefers Apple Music AND Apple carries
       the record — then the Apple player replaces the Spotify one. */
   apple: AppleMusicRef | null;
+  /** SoundCloud permalink when the viewer picked SoundCloud and it carries the record. */
+  soundcloud: string | null;
 }
 
 async function ReleaseContent({
   apple,
+  soundcloud,
   release,
   stats,
   isFollowing,
@@ -649,7 +661,7 @@ async function ReleaseContent({
             platform's own licenses (we host no audio). Genius-only
             imports have no player: the plain tracklist above stays
             and the ratings get their own card. */}
-        {(apple || release.spotify_id) && tracks.length > 0 ? (
+        {(apple || soundcloud || release.spotify_id) && tracks.length > 0 ? (
           <PlayerTabs
             ratingsCount={Object.values(trackRatings).reduce((n, s) => n + s.count, 0)}
             previewNote={
@@ -662,6 +674,15 @@ async function ReleaseContent({
                 >
                   {tEmbed("appleClips")}
                 </a>
+              ) : soundcloud ? (
+                <a
+                  href={soundcloud}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pixel-text text-[10px] text-text-muted hover:text-accent-primary uppercase tracking-widest transition-colors shrink-0"
+                >
+                  {tEmbed("soundcloudClips")}
+                </a>
               ) : (
                 <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest shrink-0">
                   {tEmbed("spotifyClips")}
@@ -671,6 +692,8 @@ async function ReleaseContent({
             preview={
               apple ? (
                 <AppleMusicEmbed bare release={release} apple={apple} />
+              ) : soundcloud ? (
+                <SoundCloudEmbed bare release={release} permalink={soundcloud} />
               ) : (
                 <SpotifyEmbed bare release={release} tracks={tracks} />
               )
@@ -688,6 +711,8 @@ async function ReleaseContent({
           <>
             {apple ? (
               <AppleMusicEmbed release={release} apple={apple} />
+            ) : soundcloud ? (
+              <SoundCloudEmbed release={release} permalink={soundcloud} />
             ) : (
               <SpotifyEmbed release={release} tracks={tracks} />
             )}

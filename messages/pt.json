@@ -167,10 +167,11 @@
     },
     "player": {
       "title": "Player",
-      "hint": "Spotify ou Apple Music nas páginas de lançamento.",
+      "hint": "Spotify, Apple Music ou SoundCloud nas páginas de lançamento.",
       "intro": "Cada página de lançamento mostra um único player. Escolha o serviço que você usa de verdade: logado nele no navegador, as prévias viram músicas completas.",
       "spotifyBlurb": "O padrão. Tem todos os nossos lançamentos.",
-      "appleBlurb": "Quando a Apple tem o disco; senão, aparece o Spotify."
+      "appleBlurb": "Quando a Apple tem o disco; senão, aparece o Spotify.",
+      "soundcloudBlurb": "Quando o SoundCloud tem o disco; senão, aparece o Spotify."
     },
     "song": {
       "title": "Música do perfil",
@@ -945,7 +946,9 @@
       "spotifyClips": "trechos de 30 s · via Spotify",
       "appleClips": "trechos de 30 s · via Apple Music ↗",
       "spotifyTitle": "Prévia de {title} no Spotify",
-      "appleTitle": "Prévia de {title} no Apple Music"
+      "appleTitle": "Prévia de {title} no Apple Music",
+      "soundcloudClips": "via SoundCloud ↗",
+      "soundcloudTitle": "Player do SoundCloud de {title}"
     },
     "feed": {
       "latestDrops": "Últimos lançamentos",
@@ -1515,7 +1518,8 @@
       "prev": "Escolha anterior",
       "next": "Próxima escolha",
       "swipe": "deslize",
-      "applePreview": "Pré-visualização de {title} no Apple Music"
+      "applePreview": "Pré-visualização de {title} no Apple Music",
+      "soundcloudPreview": "Player do SoundCloud de {title}"
     }
   },
   "artists": {

@@ -4,7 +4,7 @@ A music social platform with a CRT soul. Letterboxd's logging/review
 backbone + Real's live energy, for music — rate any album or song on
 Spotify **or** the deep Genius catalog (unreleased included), build
 lists, customize a Steam-style profile, join live release rooms, and
-argue in two-sided debates.
+go head to head in aux battles.
 
 Live at **[peakmusicreviews.com](https://peakmusicreviews.com)** ·
 deployed on Vercel from `main`.

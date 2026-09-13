@@ -90,6 +90,49 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-13 (Windows): DEBATES → AUX BATTLES, shipped to main.**
+  Luca: "lets replace debates with aux battles." His spec, all built:
+  a host opens a room on a topic (free text, preset chips, 🎲 random),
+  members grab a spot or watch, the host starts it; players go head
+  to head in a bracket (single round) or best-of-3 matches; odd
+  counts → a random player gets a bye (free win); each game both
+  players put a song on (Spotify / SoundCloud / YouTube — search
+  where a key is set, paste-a-link always), everyone listens through
+  the service's own embed, the crowd throws 🔥/💩 (float up on every
+  screen) and votes; the host calls it → majority wins, a tie goes
+  to OVERTIME (new songs), a second tie or 0 votes goes to the host;
+  "host decides" rooms skip the vote; WinnerBurst (flash + confetti
+  + stamp, low-detail fallback) per game and a CHAMPION burst at the
+  end; wins (battles + rounds) show on every player chip; PRIVATE
+  rooms take a six-letter code (host sees it on the room, copy
+  button; visitors hit a code gate); live chat in every room; six
+  languages; /debates → /aux-battles redirects; debates UI/API/lib
+  DELETED (tables kept — drop in a later migration on Luca's word).
+  - ⚠️ **MIGRATION 042 NOT RUN** — `supabase/migrations/042-aux-battles.sql`
+    must be run in the SQL Editor (after 041) or every aux page is
+    empty and hosting a room errors. Part B of the same file adds the
+    SoundCloud preview-player columns.
+  - ⚠️ Paths say `aux-battles`, never `aux`: "aux" is a reserved
+    device name on Windows and git could not even open the folder.
+  - Optional keys (Luca's hands, `.env.example`): SOUNDCLOUD_CLIENT_ID
+    + SOUNDCLOUD_CLIENT_SECRET (soundcloud.com/you/apps) turn on
+    SoundCloud search + the release-page SoundCloud player;
+    YOUTUBE_API_KEY (Google Cloud, YouTube Data API v3) turns on
+    YouTube search. Pasted links work with no keys at all.
+  - Files: `lib/aux-battles/{engine,songs,guard}.ts`, `lib/db/aux-battles.ts`,
+    `lib/soundcloud.ts`, `lib/youtube.ts`, `app/api/aux-battles/*`,
+    `app/aux-battles/*`, `components/aux-battles/*`, CSS at the end
+    of globals.css (`.aux-*`), messages `aux.*` in all six files.
+  - NEXT in this feature: SoundCloud as the third preview player
+    (Settings → Preview Player: Spotify / Apple Music / SoundCloud,
+    release page + Your Taste pager); then Luca's device pass —
+    nothing has been eyeballed on a phone yet.
+  - Still wired to the old tables, harmless: `lib/taste.ts` keeps the
+    debate OnAir card type with an EMPTY pool (Your Taste signals are
+    Luca's rework); `taste.surf.types.debate` + `notifications.newDebate`
+    keys stay for old rows; badge key `debate_champion` kept, relabelled
+    "Aux Champion".
+
 - **2026-09-12 (Windows, end of night): THE ORDER FROM HERE (Luca).**
   The Log + the profile header are approved on web and phones (last
   commit b09b479). The remaining one-and-done ideas are MINOR — not

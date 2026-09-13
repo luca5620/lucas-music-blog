@@ -25,7 +25,7 @@ import { APP_STORE_URL } from "@/lib/app-store";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Peak Music Reviews is a free music social network and review app: rate albums and songs 0–10, write reviews, build lists, join live release-night rooms and debates. Web + iOS. Unreleased music included.",
+    "Peak Music Reviews is a free music social network and review app: rate albums and songs 0–10, write reviews, build lists, join live release-night rooms and aux battles. Web + iOS. Unreleased music included.",
   alternates: {
     canonical: "https://peakmusicreviews.com/about",
   },

@@ -80,6 +80,8 @@ function message(
       return t("newList", { title });
     case "new_debate":
       return t("newDebate", { title });
+    case "new_aux":
+      return t("newAux", { title });
     default:
       return t("other");
   }

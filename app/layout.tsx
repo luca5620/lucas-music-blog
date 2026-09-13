@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     template: "%s — Peak Music Reviews",
   },
   description:
-    "Rate albums, log your taste, join live release rooms and debates. A music social platform — every record on Spotify and the deep Genius catalog, unreleased included.",
+    "Rate albums, log your taste, join live release rooms and aux battles. A music social platform — every record on Spotify and the deep Genius catalog, unreleased included.",
   alternates: {
     canonical: "https://peakmusicreviews.com",
   },
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     url: "https://peakmusicreviews.com",
     title: "Peak Music Reviews — the music social network",
     description:
-      "Rate albums, build lists, join live release rooms and debates. Letterboxd energy for music.",
+      "Rate albums, build lists, join live release rooms and aux battles. Letterboxd energy for music.",
     images: [
       {
         url: "/penguin-logo.png",
@@ -103,7 +103,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Peak Music Reviews — the music social network",
     description:
-      "Rate albums, build lists, join live release rooms and debates.",
+      "Rate albums, build lists, join live release rooms and aux battles.",
   },
   robots: {
     index: true,

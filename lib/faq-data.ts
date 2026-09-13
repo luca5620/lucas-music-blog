@@ -12,7 +12,7 @@ export const aboutFAQs: FAQItem[] = [
   {
     question: "What is Peak Music Reviews?",
     answer:
-      "Peak Music Reviews is a music social network — think Letterboxd, but for albums. Members rate and review releases, build shareable lists, join live chat rooms when new albums drop, and argue their side in community debates. Every review is tied to a real release from the Spotify catalog or Genius's deep library, unreleased tracks included.",
+      "Peak Music Reviews is a music social network — think Letterboxd, but for albums. Members rate and review releases, build shareable lists, join live chat rooms when new albums drop, and go head to head in aux battles. Every review is tied to a real release from the Spotify catalog or Genius's deep library, unreleased tracks included.",
   },
   {
     question: "How are albums rated on Peak Music Reviews?",
@@ -27,17 +27,17 @@ export const aboutFAQs: FAQItem[] = [
   {
     question: "Do I need an account to use Peak Music Reviews?",
     answer:
-      "Browsing is open to everyone. Rating, reviewing, building lists, joining live release rooms, and voting in debates require a free account with a unique username and a confirmed email address.",
+      "Browsing is open to everyone. Rating, reviewing, building lists, joining live release rooms, and voting in aux battles require a free account with a unique username and a confirmed email address.",
   },
   {
     question: "Is Peak Music Reviews free, and what platforms is it on?",
     answer:
-      "Yes — rating, reviews, lists, live release rooms, debates, posts and profile customization are all free. It runs in any web browser at peakmusicreviews.com and as an iOS app on the App Store, with the same account and content on both. An Android app is planned.",
+      "Yes — rating, reviews, lists, live release rooms, aux battles, posts and profile customization are all free. It runs in any web browser at peakmusicreviews.com and as an iOS app on the App Store, with the same account and content on both. An Android app is planned.",
   },
   {
     question: "Is Peak Music Reviews a Musicboard alternative?",
     answer:
-      "Yes. It covers what Musicboard did — 0–10.0 decimal ratings, written reviews, lists and social profiles — and adds live release-night rooms, two-sided debates, and a catalog that includes unreleased music. Musicboard users looking to switch can read the dedicated guide at peakmusicreviews.com/musicboard-alternative.",
+      "Yes. It covers what Musicboard did — 0–10.0 decimal ratings, written reviews, lists and social profiles — and adds live release-night rooms, aux battles, and a catalog that includes unreleased music. Musicboard users looking to switch can read the dedicated guide at peakmusicreviews.com/musicboard-alternative.",
   },
 ];
 
@@ -58,7 +58,7 @@ export function getMusicboardFAQs(appStoreLive: boolean): FAQItem[] {
   {
     question: "What is the best Musicboard alternative?",
     answer:
-      "Peak Music Reviews is the closest like-for-like replacement: 0–10.0 decimal album ratings, written reviews, lists, and social profiles — plus a few things Musicboard doesn't offer, like live release-night chat rooms, two-sided debates, a For You feed, and a catalog that includes unreleased tracks via Genius. It is free, actively updated, and works fully on the web as well as iOS. RateYourMusic and Album of the Year are solid web-only databases if you mainly want charts rather than a social app.",
+      "Peak Music Reviews is the closest like-for-like replacement: 0–10.0 decimal album ratings, written reviews, lists, and social profiles — plus a few things Musicboard doesn't offer, like live release-night chat rooms, aux battles, a For You feed, and a catalog that includes unreleased tracks via Genius. It is free, actively updated, and works fully on the web as well as iOS. RateYourMusic and Album of the Year are solid web-only databases if you mainly want charts rather than a social app.",
   },
   {
     question: "Can I import my Musicboard ratings into Peak Music Reviews?",
@@ -68,7 +68,7 @@ export function getMusicboardFAQs(appStoreLive: boolean): FAQItem[] {
   {
     question: "Is Peak Music Reviews free?",
     answer:
-      "Yes — all core functionality is free: rating, reviews, lists, live release rooms, debates, posts, and profile themes. An optional patron subscription with extra perks is planned, but the core experience stays free.",
+      "Yes — all core functionality is free: rating, reviews, lists, live release rooms, aux battles, posts, and profile themes. An optional patron subscription with extra perks is planned, but the core experience stays free.",
   },
   {
     question: "Does Peak Music Reviews have a mobile app?",

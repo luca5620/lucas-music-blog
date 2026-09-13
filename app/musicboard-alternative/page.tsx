@@ -41,7 +41,7 @@ import { APP_STORE_URL, isAppStoreLive } from "@/lib/app-store";
 export const metadata: Metadata = {
   title: "Musicboard Alternative — what to switch to in 2026",
   description:
-    "Looking for a Musicboard alternative? Peak Music Reviews is a free, actively-built option: 0–10 album ratings, reviews, lists, live release rooms and debates — on web and iOS. An honest comparison, including the options that aren't us.",
+    "Looking for a Musicboard alternative? Peak Music Reviews is a free, actively-built option: 0–10 album ratings, reviews, lists, live release rooms and aux battles — on web and iOS. An honest comparison, including the options that aren't us.",
   alternates: {
     canonical: "https://peakmusicreviews.com/musicboard-alternative",
   },
@@ -67,7 +67,7 @@ function buildComparison(appLive: boolean): { feature: string; peak: Cell; mb: C
     { feature: "Written reviews", peak: true, mb: true },
     { feature: "Lists", peak: true, mb: true },
     { feature: "Live release-night chat rooms", peak: true, mb: false },
-    { feature: "Two-sided debates with votes", peak: true, mb: false },
+    { feature: "Aux battles — song vs. song, the room votes", peak: true, mb: false },
     { feature: "Posts + For You feed", peak: true, mb: false },
     { feature: "Unreleased / leaked tracks in catalog", peak: "Via Genius deep library", mb: false },
     { feature: "Profile customization", peak: "Themes, showcases, favorites", mb: "Basic" },
@@ -142,7 +142,7 @@ export default async function MusicboardAlternativePage() {
           like-for-like Musicboard replacement — album ratings on a 0–10.0
           scale, written reviews, lists, and social profiles — plus a few
           things Musicboard doesn&apos;t offer: live release-night chat rooms,
-          two-sided debates, a For You feed, and a catalog that includes
+          aux battles, a For You feed, and a catalog that includes
           unreleased tracks. It&apos;s free, works fully on the web
           {appLive ? (
             <>

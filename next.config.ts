@@ -48,7 +48,9 @@ const securityHeaders = [
       // privacy-enhanced player, www.youtube.com covers player-internal
       // redirects. TikTok: the iframe player lives at www.tiktok.com.
       // Spotify: the /embed/... preview player on release pages.
-      "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com https://open.spotify.com https://embed.music.apple.com",
+      // SoundCloud: w.soundcloud.com is the widget player (release
+      // pages' third preview option + aux battle songs, 2026-09-13).
+      "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com https://open.spotify.com https://embed.music.apple.com https://w.soundcloud.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -73,6 +75,18 @@ const nextConfig: NextConfig = {
    * BUILD time here — a new key needs a redeploy to take effect,
    * which Vercel does on any env change. No key = no rewrite.
    */
+  /**
+   * Debates became aux battles (Luca 2026-09-13). Old links — shared
+   * posts, the sitemap Bing crawled, the App Store screenshots —
+   * land on the new arena instead of a 404. Permanent, so search
+   * engines move the page.
+   */
+  async redirects() {
+    return [
+      { source: "/debates", destination: "/aux-battles", permanent: true },
+      { source: "/debates/:path*", destination: "/aux-battles", permanent: true },
+    ];
+  },
   async rewrites() {
     const key = process.env.INDEXNOW_KEY?.trim();
     if (!key || !/^[a-zA-Z0-9-]{8,128}$/.test(key)) return [];

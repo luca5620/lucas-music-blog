@@ -2,8 +2,9 @@
  * /reviews/mine — MY STUFF: the one place to manage everything you
  * made (Luca 2026-09-02: "created debates and lists should be in my
  * reviews section to edit and delete directly on there, a hub for
- * all edits in one area"). Reviews, posts, lists, debates — each
- * with Edit + Delete in the row, drafts included.
+ * all edits in one area"). Reviews, posts, lists, aux battles (which
+ * replaced debates on 2026-09-13) — each with Edit + Delete in the
+ * row, drafts included.
  */
 
 import { requireAuth } from "@/lib/auth";
@@ -11,9 +12,9 @@ import { getReviewsByUser } from "@/lib/db/reviews";
 import { getUserPosts } from "@/lib/db/posts";
 import { getProfileById } from "@/lib/db/profiles";
 import { getListsByUsername } from "@/lib/db/lists";
-import { listDebatesByUser } from "@/lib/db/debates";
+import { listAuxRoomsByHost } from "@/lib/db/aux-battles";
 import DeleteListButton from "@/components/lists/DeleteListButton";
-import DeleteDebateButton from "@/components/debates/DeleteDebateButton";
+import DeleteRoomButton from "@/components/aux-battles/DeleteRoomButton";
 import { getRatingHex } from "@/lib/rating";
 import { formatDate } from "@/lib/dates";
 import Link from "next/link";
@@ -30,15 +31,16 @@ export const metadata: Metadata = {
 
 export default async function MyReviewsPage() {
   const user = await requireAuth();
-  const [reviews, posts, profile, debates] = await Promise.all([
+  const [reviews, posts, profile, rooms] = await Promise.all([
     getReviewsByUser(user.id, { includeUnpublished: true }),
     getUserPosts(user.id, { includeUnpublished: true }),
     getProfileById(user.id),
-    listDebatesByUser(user.id),
+    listAuxRoomsByHost(user.id),
   ]);
   // Lists are keyed by username; RLS lets the owner see private ones.
   const lists = profile ? await getListsByUsername(profile.username) : [];
   const t = await getTranslations("reviews.mine");
+  const ta = await getTranslations("aux.card");
   const tc = await getTranslations("common");
 
   return (
@@ -58,7 +60,7 @@ export default async function MyReviewsPage() {
               { href: "#reviews", label: t("reviewsCount", { n: reviews.length }) },
               { href: "#posts", label: t("postsCount", { n: posts.length }) },
               { href: "#lists", label: t("listsCount", { n: lists.length }) },
-              { href: "#debates", label: t("debatesCount", { n: debates.length }) },
+              { href: "#aux", label: t("auxCount", { n: rooms.length }) },
             ].map((t) => (
               <a key={t.href} href={t.href} className="tab-y2k">
                 {t.label}
@@ -427,92 +429,76 @@ export default async function MyReviewsPage() {
         </div>
       )}
 
-      {/* ===== My Debates (Luca 2026-09-02) ===== */}
+      {/* ===== My Aux Battles (debates → aux battles, Luca 2026-09-13) ===== */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
         <div className="space-y-1">
-          <h2 id="debates" className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-extrabold text-[#e8e6e3] scroll-mt-24">
-            {t("myDebates")}
+          <h2 id="aux" className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-extrabold text-[#e8e6e3] scroll-mt-24">
+            {t("myAux")}
           </h2>
           <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-            {t("debatesTotal", { n: debates.length })}
+            {t("auxTotal", { n: rooms.length })}
           </p>
         </div>
-        <Link href="/debates/new" className="btn-y2k btn-y2k-outline shrink-0">
-          {t("openDebate")}
+        <Link href="/aux-battles/new" className="btn-y2k btn-y2k-outline shrink-0">
+          {t("hostAux")}
         </Link>
       </div>
 
-      {debates.length === 0 ? (
+      {rooms.length === 0 ? (
         <div className="panel-xbox p-8 text-center">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
-            {t("noDebates")}
+            {t("noAux")}
           </p>
         </div>
       ) : (
         <div className="space-y-3">
-          {debates.map((debate) => (
-            <div key={debate.id} className="panel-xbox p-4 hover-glow">
+          {rooms.map((room) => (
+            <div key={room.id} className="panel-xbox p-4 hover-glow">
               <div className="flex items-start gap-4">
-                {/* Side covers when set, else the pinned release, else a mic */}
-                <div className="flex items-center gap-1 shrink-0">
-                  {debate.side_a_release || debate.side_b_release ? (
-                    <>
-                      <MiniCover url={debate.side_a_release?.cover_image} ring="border-accent-primary/60" />
-                      <span className="osd-text text-[9px] opacity-70">VS</span>
-                      <MiniCover url={debate.side_b_release?.cover_image} ring="border-accent-rose/60" />
-                    </>
-                  ) : (
-                    <MiniCover url={debate.release?.cover_image} ring="border-white/10" />
-                  )}
-                </div>
+                <span className="w-12 h-12 rounded-lg border border-white/10 bg-bg-elevated flex items-center justify-center shrink-0 text-xl">
+                  🎧
+                </span>
 
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/debates/${debate.slug}`}
+                    href={`/aux-battles/${room.slug}`}
                     className="font-[family-name:var(--font-heading)] font-bold text-[#e8e6e3] hover:text-accent-primary transition-colors truncate block"
                   >
-                    {debate.title}
+                    {room.topic}
                   </Link>
                   <p className="font-[family-name:var(--font-vt323)] text-[#9a9a9e] text-sm truncate">
-                    <span className="text-accent-primary">{debate.side_a_label}</span>
-                    <span className="text-[#5a5a60]"> {t("vs")} </span>
-                    <span className="text-accent-rose">{debate.side_b_label}</span>
-                    <span className="text-[#5a5a60]">
-                      {" "}&middot; {t("votes", { n: debate.votes.a + debate.votes.b })}
-                      {" "}&middot; {t("takes", { n: debate.message_count })}
-                    </span>
+                    {room.format === "bo3" ? ta("bo3") : ta("bo1")}
+                    <span className="text-[#5a5a60]"> &middot; </span>
+                    {room.judge === "host" ? ta("hostJudge") : ta("crowd")}
+                    <span className="text-[#5a5a60]"> &middot; {ta("players", { n: room.player_count })}</span>
+                    {room.is_private && (
+                      <span className="text-osd-amber"> &middot; {ta("private")}</span>
+                    )}
                   </p>
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
-                    {debate.is_published === false ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                        {tc("draft")}
-                      </span>
-                    ) : debate.status === "open" ? (
+                    {room.status === "live" ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                        {t("onAir")}
+                        {ta("live")}
+                      </span>
+                    ) : room.status === "lobby" ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                        {ta("lobby")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white/5 text-[#9a9a9e] border border-white/10 font-[family-name:var(--font-vt323)]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#9a9a9e]" />
-                        {t("signedOff")}
+                        {ta("final")}
                       </span>
                     )}
                     <span className="text-xs text-[#5a5a60] font-[family-name:var(--font-vt323)]">
-                      {formatDate(debate.created_at)}
+                      {formatDate(room.created_at)}
                     </span>
 
                     <div className="ml-auto flex items-center gap-2 shrink-0">
-                      <Link
-                        href={`/debates/${debate.slug}/edit`}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-accent-primary hover:bg-accent-primary/10 transition-colors font-[family-name:var(--font-heading)]"
-                      >
-                        <EditIcon />
-                        {tc("edit")}
-                      </Link>
-                      <DeleteDebateButton debateId={debate.id} debateTitle={debate.title} stayOnPage />
+                      <DeleteRoomButton roomId={room.id} topic={room.topic} />
                     </div>
                   </div>
                 </div>
@@ -525,7 +511,7 @@ export default async function MyReviewsPage() {
   );
 }
 
-/* Shared bits for the lists/debates rows */
+/* Shared bits for the lists rows */
 
 function EditIcon() {
   return (
@@ -537,18 +523,5 @@ function EditIcon() {
         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
       />
     </svg>
-  );
-}
-
-function MiniCover({ url, ring }: { url?: string | null; ring: string }) {
-  return (
-    <span className={`w-12 h-12 rounded-lg overflow-hidden border ${ring} bg-bg-elevated flex items-center justify-center shrink-0`}>
-      {url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt="" className="w-full h-full object-cover" />
-      ) : (
-        <span className="text-lg">🎙️</span>
-      )}
-    </span>
   );
 }

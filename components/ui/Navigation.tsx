@@ -22,7 +22,7 @@ const navLinks = [
   { href: "/releases", label: "releases" },
   { href: "/reviews", label: "reviews" },
   { href: "/lists", label: "lists" },
-  { href: "/debates", label: "debates" },
+  { href: "/aux-battles", label: "auxBattles" },
   { href: "/social", label: "social" },
   { href: "/your-taste", label: "yourTaste" },
 ] as const;
@@ -243,19 +243,19 @@ export default function Navigation() {
                     </span>
                   </Link>
                   <Link
-                    href="/debates/new"
+                    href="/aux-battles/new"
                     onClick={() => setCreateOpen(false)}
                     className="group flex items-center gap-3 rounded-lg border border-white/10 px-3 py-2.5 transition-all hover:border-accent-primary/60 hover:bg-accent-primary/10 focus-visible:border-accent-primary/60 focus-visible:bg-accent-primary/10 focus:outline-none"
                   >
                     <span className="w-8 h-8 shrink-0 rounded-full border border-accent-primary/30 bg-accent-primary/10 flex items-center justify-center text-base group-hover:border-accent-primary/60 transition-colors">
-                      ⚔
+                      🎧
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors font-[family-name:var(--font-heading)] uppercase tracking-wide">
-                        {tc("debate")}
+                        {tc("aux")}
                       </span>
                       <span className="block text-xs text-text-muted">
-                        {tc("debateSub")}
+                        {tc("auxSub")}
                       </span>
                     </span>
                   </Link>
@@ -357,7 +357,7 @@ export default function Navigation() {
                             [
                               { href: "/reviews", label: "reviews" },
                               { href: "/releases", label: "releases" },
-                              { href: "/debates", label: "debates" },
+                              { href: "/aux-battles", label: "auxBattles" },
                               { href: "/lists", label: "lists" },
                             ] as const
                           ).map((item) => (

@@ -51,12 +51,11 @@ export interface LikeActivityPayload {
   review_artist: string;
 }
 
-/** "luca started a debate: MBDTF vs Blonde" (links to /debates/[slug]) */
-export interface DebateActivityPayload {
+/** "luca is hosting an aux battle: Best summer song" (links to /aux-battles/[slug]) */
+export interface AuxActivityPayload {
   slug: string;
-  title: string;
-  side_a_label: string;
-  side_b_label: string;
+  topic: string;
+  status: "lobby" | "live" | "finished";
 }
 
 /**
@@ -68,7 +67,7 @@ export type ActivityItem =
   | { type: "review"; created_at: string; actor: ActivityActor; payload: ReviewActivityPayload }
   | { type: "list"; created_at: string; actor: ActivityActor; payload: ListActivityPayload }
   | { type: "like"; created_at: string; actor: ActivityActor; payload: LikeActivityPayload }
-  | { type: "debate"; created_at: string; actor: ActivityActor; payload: DebateActivityPayload };
+  | { type: "aux"; created_at: string; actor: ActivityActor; payload: AuxActivityPayload };
 
 /** One tile in the "Popular with friends" rail. */
 export interface PopularItem {
@@ -145,11 +144,10 @@ interface RawLikeRow {
     | null;
 }
 
-interface RawDebateRow {
+interface RawAuxRow {
   slug: string;
-  title: string;
-  side_a_label: string;
-  side_b_label: string;
+  topic: string;
+  status: "lobby" | "live" | "finished";
   created_at: string;
   profiles: JoinedProfile;
 }
@@ -182,7 +180,7 @@ export async function getFriendActivity(
   // their author column created_by, so that one spells the join out.
   const ACTOR = "profiles!inner(username, display_name, avatar_url)";
 
-  const [reviewsRes, listsRes, likesRes, debatesRes] = await Promise.all([
+  const [reviewsRes, listsRes, likesRes, auxRes] = await Promise.all([
     // 1. Published reviews by friends. The actor join here must name
     //    its FK: reviews↔profiles has two relationships since 006
     //    (author + featured_review_id) and unqualified embeds error.
@@ -213,13 +211,14 @@ export async function getFriendActivity(
       .order("created_at", { ascending: false })
       .limit(limit),
 
-    // 4. Debates started by friends (table added in migration 006 —
-    //    an error here just yields an empty slice, so the feed still
-    //    renders before the migration is applied)
+    // 4. Aux battles hosted by friends (migration 042 — an error here
+    //    just yields an empty slice, so the feed still renders before
+    //    the migration is applied). Private rooms are RLS-hidden
+    //    unless the viewer was let in, so they only show to members.
     supabase
-      .from("debates")
-      .select(`slug, title, side_a_label, side_b_label, created_at, ${ACTOR}`)
-      .in("created_by", followedIds)
+      .from("aux_rooms")
+      .select(`slug, topic, status, created_at, ${ACTOR}`)
+      .in("host_id", followedIds)
       .order("created_at", { ascending: false })
       .limit(limit),
   ]);
@@ -276,16 +275,15 @@ export async function getFriendActivity(
     });
   }
 
-  for (const row of (debatesRes.data ?? []) as unknown as RawDebateRow[]) {
+  for (const row of (auxRes.data ?? []) as unknown as RawAuxRow[]) {
     items.push({
-      type: "debate",
+      type: "aux",
       created_at: row.created_at,
       actor: unwrapActor(row.profiles),
       payload: {
         slug: row.slug,
-        title: row.title,
-        side_a_label: row.side_a_label,
-        side_b_label: row.side_b_label,
+        topic: row.topic,
+        status: row.status,
       },
     });
   }

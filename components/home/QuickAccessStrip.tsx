@@ -3,7 +3,7 @@
 /**
  * QuickAccessStrip — the app home's browse hub (Luca 2026-08-22).
  *
- * Four equal text buttons — Reviews / Releases / Debates / Lists —
+ * Four equal text buttons — Reviews / Releases / Aux Battles / Lists —
  * all visible at once (no side-scroll, no glyphs; Posts cut). Sits
  * right below the header (site name / CREATE / avatar), ABOVE the
  * HOME hero band. Scroll past it and it locks FLUSH to the very top
@@ -39,7 +39,7 @@ import { useTranslations } from "next-intl";
 const CHIPS = [
   { href: "/reviews", label: "reviews" },
   { href: "/releases", label: "releases" },
-  { href: "/debates", label: "debates" },
+  { href: "/aux-battles", label: "auxBattles" },
   { href: "/lists", label: "lists" },
 ] as const;
 

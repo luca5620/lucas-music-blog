@@ -3,7 +3,6 @@
     "releases": "Releases",
     "reviews": "Rezensionen",
     "lists": "Listen",
-    "debates": "Debatten",
     "social": "Social",
     "yourTaste": "Dein Geschmack",
     "search": "Suche",
@@ -18,7 +17,8 @@
     "badgeTool": "Badges",
     "signOut": "Abmelden",
     "signIn": "Anmelden",
-    "user": "Nutzer"
+    "user": "Nutzer",
+    "auxBattles": "Aux-Battles"
   },
   "tabBar": {
     "ariaLabel": "App-Navigation",
@@ -37,8 +37,8 @@
     "postSub": "schreib ausführlich, mit YouTube- oder TikTok-Video",
     "list": "Liste",
     "listSub": "sammle und sortiere deine Favoriten",
-    "debate": "Debatte",
-    "debateSub": "such dir Streit und lass die Stimmen entscheiden"
+    "aux": "Aux-Battle",
+    "auxSub": "gib das Aux weiter und lass den Raum entscheiden"
   },
   "footer": {
     "foundAProblem": "Etwas kaputt?",
@@ -221,7 +221,7 @@
     "deletion": {
       "title": "Konto löschen",
       "hint": "Löscht dein Profil und alles, was du erstellt hast. Lässt sich nicht rückgängig machen.",
-      "intro": "Das Konto zu löschen entfernt dein Profil und <b>alles, was du erstellt hast</b>: Rezensionen, Listen, Posts, Debattenstimmen, Chatnachrichten, Bilder. Es gibt kein Zurück und keine Wiederherstellung.",
+      "intro": "Das Konto zu löschen entfernt dein Profil und <b>alles, was du erstellt hast</b>: Rezensionen, Listen, Posts, Stimmen in Aux-Battles, Chatnachrichten, Bilder. Es gibt kein Zurück und keine Wiederherstellung.",
       "delete": "Konto löschen",
       "typeUsername": "Gib zur Bestätigung deinen Nutzernamen <b>@name</b> ein:",
       "deleting": "Wird gelöscht...",
@@ -253,12 +253,12 @@
       "writeReview": "✚ Rezension schreiben",
       "rateFirst": "✚ Bewerte deine erste Platte",
       "firstRunLine": "Dein Regal ist leer. Fang mit den Platten an, die du auswendig kennst – eine Note reicht, Worte sind optional.",
-      "startDebate": "⚔ Debatte starten",
       "onAir": "ON AIR",
       "coverAlt": "Cover von {title}",
       "tasteTitle": "Willst du einen Sender nur für dich?",
       "tasteBody": "Dein Geschmack baut einen Feed aus den Leuten, denen du folgst, und dem, was du bewertest.",
-      "tuneIn": "Einschalten →"
+      "tuneIn": "Einschalten →",
+      "startAux": "🎧 Aux-Battle hosten"
     },
     "closing": {
       "eyebrow": "Dein Sender wartet",
@@ -277,7 +277,7 @@
       "step2Label": "Gib eine Bewertung",
       "step2Body": "Von null bis zehn, mit einer Nachkommastelle. Deine Bewertung steht auf jeder Karte, die du postest, in der Farbe des Urteils.",
       "step3Label": "Diskutier live",
-      "step3Body": "Jedes Release hat einen Live-Raum, offen schon bevor das Album um Mitternacht erscheint. Lust auf Streit? Starte eine Debatte mit zwei Seiten.",
+      "step3Body": "Jedes Release hat einen Live-Raum, offen schon bevor das Album um Mitternacht erscheint. Lust auf Streit? Host eine Aux-Battle und gib das Aux weiter.",
       "onAir": "On Air",
       "step3Prop": "„track 4 ist der beste, diskutier mit der wand“",
       "stepFour": "schritt vier ist optional und heißt <link>listen</link>. am ende macht jeder listen."
@@ -292,7 +292,7 @@
       "point2B": "Alben mit Countdown bekommen ihren Raum vor dem Erscheinen. Um 23:59 ist der Chat schon live.",
       "point3H": "Mitlesen ohne Konto",
       "point3B": "Räume sind öffentlich. Registrier dich, um mitzureden und zu bewerten.",
-      "point4H": "Debatten, wenn es heiß wird",
+      "point4H": "Aux-Battles, wenn es heiß wird",
       "point4B": "Zwei Seiten, je eine Platte, und der Raum stimmt ab.",
       "seeOnAir": "Sieh, was on air ist",
       "onAir": "On Air",
@@ -666,8 +666,8 @@
         "description": "War im Live-Raum in der Nacht, in der eine Platte erschienen ist."
       },
       "debate_champion": {
-        "label": "Debattenchampion",
-        "description": "Hat eine hervorgehobene Community-Debatte gewonnen."
+        "label": "Aux-Champion",
+        "description": "Hat eine hervorgehobene Aux-Battle gewonnen."
       },
       "list_master": {
         "label": "Listenmeister",
@@ -844,7 +844,6 @@
       "reviewsCount": "Rezensionen · {n}",
       "postsCount": "Posts · {n}",
       "listsCount": "Listen · {n}",
-      "debatesCount": "Debatten · {n}",
       "writeReview": "Rezension schreiben",
       "myReviews": "Meine Rezensionen",
       "noReviews": "Du hast noch keine Rezensionen. Schreib deine erste!",
@@ -859,15 +858,16 @@
       "items": "{n, plural, one {# Platte} other {# Platten}}",
       "likes": "{n, plural, one {# Like} other {# Likes}}",
       "ranked": "als Rangliste",
-      "myDebates": "Meine Debatten",
-      "debatesTotal": "{n, plural, one {# Debatte} other {# Debatten}} insgesamt",
-      "openDebate": "+ Debatte starten",
-      "noDebates": "Du hast noch keine Debatten. Such dir einen Streit, der sich lohnt.",
       "vs": "vs",
       "votes": "{n, plural, one {# Stimme} other {# Stimmen}}",
       "takes": "{n, plural, one {# Meinung} other {# Meinungen}}",
       "onAir": "On Air",
-      "signedOff": "Beendet"
+      "signedOff": "Beendet",
+      "auxCount": "Aux-Battles · {n}",
+      "myAux": "Meine Aux-Battles",
+      "auxTotal": "{n, plural, one {# Battle} other {# Battles}} insgesamt",
+      "hostAux": "+ Battle hosten",
+      "noAux": "Noch keine Battles. Such dir ein Thema und gib das Aux weiter."
     }
   },
   "releases": {
@@ -1136,119 +1136,209 @@
       "playlistBadge": "♫ PLAYLIST"
     }
   },
-  "debates": {
+  "aux": {
     "index": {
-      "title": "DEBATTEN",
-      "sub": "Zwei Seiten. Eine Stimme. Endloses Streiten. Wähl deine Seite und verteidige sie on air: deine Meinungen tragen den Stempel deiner Seite.",
-      "stake": "Debatte eröffnen",
-      "yourDrafts": "Deine Entwürfe",
-      "draft": "Entwurf",
-      "openPublish": "öffnen und veröffentlichen ►",
+      "title": "AUX-BATTLES",
+      "sub": "Gib das Aux weiter. Zwei Songs gegeneinander, der Raum hört zu, der Raum stimmt ab. Brackets, Best-of-3, Live-Chat und am Ende ein Champion.",
+      "host": "Battle hosten",
+      "joinPlaceholder": "Raumlink einfügen…",
+      "joinGo": "Los",
+      "yourPrivate": "Deine privaten Räume",
+      "liveNow": "Jetzt live",
+      "fillingUp": "Füllt sich",
+      "lastResults": "Letzte Ergebnisse",
       "noSignal": "KEIN SIGNAL",
-      "empty": "Noch keine Debatten on air. Eröffne die erste und such dir einen Streit, der sich lohnt."
-    },
-    "new": {
-      "title": "Eine Debatte eröffnen",
-      "sub": "Stell die Frage, benenne die zwei Seiten und pinn bei Bedarf die Platte an, die vor Gericht steht. Den Rest macht die Community."
-    },
-    "edit": {
-      "title": "Debatte bearbeiten",
-      "back": "Zurück",
-      "draftNote": "Entwurf: nur du siehst ihn.",
-      "liveNote": "Live: Änderungen sind sofort sichtbar."
-    },
-    "page": {
-      "draftBanner": "Entwurf: nur du siehst das",
-      "back": "Zurück",
-      "edit": "Bearbeiten",
-      "openedBy": "eröffnet von",
-      "unknown": "unbekannt"
+      "empty": "Noch keine Battles auf Sendung. Host eine, such dir ein Thema und gib das Aux weiter."
     },
     "card": {
-      "onAir": "ON AIR",
-      "signOff": "BEENDET",
-      "takes": "{n} MEINUNGEN",
-      "vs": "VS",
-      "openedBy": "eröffnet von",
+      "live": "AUF SENDUNG",
+      "lobby": "LOBBY",
+      "final": "FINALE",
+      "players": "{n, plural, one {# SPIELER} other {# SPIELER}}",
+      "bo1": "Eine Runde",
+      "bo3": "Best of 3",
+      "hostJudge": "Host entscheidet",
+      "crowd": "Publikum stimmt ab",
+      "private": "Privat",
+      "hostedBy": "gehostet von",
       "unknown": "unbekannt"
     },
-    "voteBar": {
-      "aria": "{a}: {pctA} %, {b}: {pctB} %",
-      "votes": "{n, plural, one {# Stimme} other {# Stimmen}}"
-    },
-    "delete": {
-      "couldnt": "Konnte nicht gelöscht werden.",
-      "network": "Netzwerkfehler. Versuch es noch mal.",
-      "confirm": "„{title}“ löschen? Stimmen und Meinungen gehen mit.",
-      "yes": "Ja",
-      "no": "Nein",
-      "delete": "Löschen"
-    },
-    "publish": {
-      "couldnt": "Die Debatte konnte nicht veröffentlicht werden.",
-      "broke": "Etwas ist schiefgelaufen.",
-      "publishing": "VERÖFFENTLICHE…",
-      "openFloor": "DEBATTE ERÖFFNEN"
-    },
-    "room": {
-      "castVote": "Stimm ab",
-      "closed": "— Debatte beendet",
-      "yourSide": "DEINE SEITE",
-      "votesSwitch": "{n, plural, one {# Stimme} other {# Stimmen}} · wechsle jederzeit die Seite",
-      "signInToVote": "<a>Melde dich an</a>, um abzustimmen und mitzureden.",
-      "floor": "Die Debatte",
-      "messagesAria": "Debattennachrichten",
-      "deadAir": "SENDEPAUSE",
-      "nobody": "Noch hat niemand gestritten: die erste Meinung gewinnt.",
-      "sending": "wird gesendet…",
-      "deleteMessage": "Nachricht löschen",
-      "deleteYours": "Deine Nachricht löschen",
-      "modDelete": "Löschen (Mod)",
-      "archived": "Beendet: diese Debatte ist archiviert.",
-      "argueFor": "Argumentier für {side}…",
-      "dropTake": "Sag deine Meinung (stimm ab, um eine Seite zu vertreten)…",
-      "inputAria": "Debattennachricht eingeben",
-      "send": "Senden",
-      "signInToArgue": "Anmelden, um mitzureden",
-      "spectator": "Zuschauer",
-      "voteFailed": "Abstimmen fehlgeschlagen",
-      "sendFailed": "Senden fehlgeschlagen",
-      "reactionFailed": "Reaktion fehlgeschlagen",
-      "confirmDelete": "Nachricht von {name} löschen?",
-      "justNow": "gerade eben"
-    },
-    "form": {
+    "new": {
+      "back": "Zurück",
+      "title": "Host eine Aux-Battle",
+      "sub": "Wähl das Thema, das Format und wer entscheidet. Spieler kommen in die Lobby; du startest, wenn der Raum voll genug ist.",
+      "topic": "Das Thema",
+      "topicPlaceholder": "z. B. \"Bester Song, um eine Party zu eröffnen\"",
+      "random": "Zufälliges Thema",
+      "presetsLabel": "Oder nimm eins",
+      "format": "Format",
+      "bo1": "Eine Runde",
+      "bo1Sub": "Ein Song pro Person und Match. Das Bracket läuft, bis ein Spieler übrig ist.",
+      "bo3": "Best of 3",
+      "bo3Sub": "Wer zuerst zwei Games gewinnt, holt das Match. Länger, mehr Drama.",
+      "judge": "Wer entscheidet",
+      "crowd": "Das Publikum stimmt ab",
+      "crowdSub": "Die Mehrheit gewinnt. Ein Gleichstand geht in die Verlängerung (neue Songs), den zweiten entscheidest du.",
+      "hostJudge": "Du entscheidest",
+      "hostJudgeSub": "Du wählst den Sieger jedes Games. Der Raum reagiert trotzdem mit.",
+      "hostPlays": "Ich spiele selbst mit",
+      "hostPlaysSub": "Aus = du hostest nur und entscheidest.",
+      "private": "Privater Raum",
+      "privateSub": "Versteckt vor der Übersicht. Andere brauchen deinen sechsstelligen Code, um reinzukommen.",
+      "open": "Raum öffnen",
+      "opening": "Wird geöffnet…",
+      "cancel": "Abbrechen",
       "errors": {
         "topic": "Das Thema braucht mindestens 3 Zeichen.",
-        "sides": "Beide Seiten brauchen einen Namen.",
-        "disagree": "Die zwei Seiten müssen sich wirklich unterscheiden.",
-        "save": "Die Debatte konnte nicht gespeichert werden.",
-        "open": "Die Debatte konnte nicht eröffnet werden.",
+        "open": "Der Raum konnte nicht geöffnet werden.",
         "broke": "Etwas ist schiefgelaufen."
       },
-      "topic": "Das Thema",
-      "topicPlaceholder": "z. B. „Ist MBDTF überbewertet?“",
-      "frame": "Rahmen setzen (optional)",
-      "framePlaceholder": "Leg die Regeln des Streits fest…",
-      "sideAPlaceholder": "z. B. „Klassiker“",
-      "sideBPlaceholder": "z. B. „Überbewertet“",
-      "locked": "Es wurde unter diesen Seiten schon abgestimmt oder gestritten, deshalb sind die Namen gesperrt. Releases, Thema und Rahmen lassen sich noch ändern.",
-      "pinLabel": "Ein Release an die ganze Debatte pinnen (optional)",
-      "pinPlaceholder": "Häng das Album oder den Song an, der vor Gericht steht…",
-      "floorIs": "Die Debatte ist",
-      "onAir": "ON AIR",
-      "signedOff": "BEENDET",
-      "saving": "SPEICHERE…",
-      "saveChanges": "ÄNDERUNGEN SPEICHERN",
-      "opening": "ERÖFFNE…",
-      "openFloor": "DEBATTE ERÖFFNEN",
-      "savingDraft": "Wird gespeichert…",
-      "saveDraft": "Als Entwurf speichern",
-      "cancel": "Abbrechen",
-      "side": "Seite {tone}",
-      "lockedTitle": "Gesperrt: unter diesem Namen wurde schon abgestimmt",
-      "sideRecord": "Die Platte von Seite {tone} (optional)…",
-      "detach": "entfernen"
+      "presets": [
+        "Bester Song, um eine Party zu eröffnen",
+        "Beste Rap-Strophe aller Zeiten",
+        "Ein Song, der dich zum Weinen bringt",
+        "Bester Sommersong",
+        "Bester Album-Opener",
+        "Der überschätzteste Hit",
+        "Bester Song unter 2 Minuten",
+        "Bester Trennungssong",
+        "Bestes Gitarrenriff",
+        "Bester Song für Nachtfahrten",
+        "Der unterschätzteste Deep Cut",
+        "Bester Song eines One-Hit-Wonders",
+        "Bester Remix",
+        "Bester Song aus deinem Geburtsjahr",
+        "Bester Song in einer Sprache, die du nicht sprichst",
+        "Der Song, der auf deiner Beerdigung laufen soll"
+      ]
+    },
+    "gate": {
+      "private": "PRIVATER RAUM",
+      "title": "Hier brauchst du einen Code",
+      "sub": "Der Host hat einen sechsstelligen Code. Gib ihn ein und du bist drin: Chat, Stimmen, alles.",
+      "placeholder": "ABC123",
+      "enter": "Raum betreten",
+      "entering": "Wird geprüft…",
+      "signIn": "Melde dich an, um reinzukommen",
+      "wrong": "Dieser Code öffnet diesen Raum nicht."
+    },
+    "room": {
+      "back": "Zurück",
+      "share": "Teilen",
+      "end": "Battle beenden",
+      "endConfirm": "Die Battle jetzt beenden? Es wird kein Champion gekrönt.",
+      "onAir": "AUF SENDUNG",
+      "lobby": "LOBBY",
+      "final": "FINALE",
+      "bo1": "Eine Runde",
+      "bo3": "Best of 3",
+      "hostJudge": "Host entscheidet",
+      "crowdJudge": "Publikum stimmt ab",
+      "privateRoom": "Privat",
+      "publicRoom": "Öffentlich",
+      "hostedBy": "gehostet von",
+      "hostTag": "HOST",
+      "youTag": "DU",
+      "code": "Code",
+      "copy": "Kopieren",
+      "copied": "Kopiert",
+      "codeHint": "Schick den Raumlink und diesen Code an alle, die rein sollen.",
+      "players": "Spieler",
+      "noPlayers": "Noch hat sich niemand einen Platz geschnappt.",
+      "watching": "{n, plural, one {# Person schaut zu} other {# Personen schauen zu}}",
+      "signInToPlay": "<a>Melde dich an</a>, um mitzuspielen oder zuzuschauen.",
+      "grabSpot": "Platz schnappen",
+      "watchOnly": "Nur zuschauen",
+      "leave": "Verlassen",
+      "start": "Battle starten",
+      "starting": "Bracket wird ausgelost…",
+      "startNeed": "Es braucht mindestens zwei Spieler.",
+      "overtime": "VERLÄNGERUNG",
+      "gameN": "Game {n} · {a}–{b}",
+      "roundN": "Runde {n}",
+      "phasePicking": "Songs werden gewählt",
+      "phaseListening": "Anhören · jetzt abstimmen",
+      "votes": "{n, plural, one {# Stimme} other {# Stimmen}}",
+      "lockedInYou": "Fix: {song}. Warten auf die andere Seite.",
+      "lockedIn": "Fix",
+      "picking": "Wählt einen Song…",
+      "fire": "Feuer",
+      "poop": "Müll",
+      "vote": "Der hier",
+      "voted": "Deine Stimme",
+      "playersSitOut": "Spieler stimmen bei ihrem eigenen Game nicht ab.",
+      "signInToVote": "<a>Melde dich an</a>, um abzustimmen und Reaktionen zu werfen.",
+      "hostDecides": "Das hier entscheidet der Host.",
+      "crowdDecides": "Die Mehrheit gewinnt. Wechsle, bis der Host abpfeift.",
+      "hostControls": "Host-Steuerung",
+      "forfeitHint": "Jemand weg? Lass den anderen durch:",
+      "advance": "{name} kommt weiter",
+      "tieTwice": "Nach der Verlängerung wieder Gleichstand — du entscheidest.",
+      "noVotes": "Niemand hat abgestimmt — du entscheidest.",
+      "wins": "{name} gewinnt",
+      "callIt": "Abpfeifen",
+      "calling": "Wird abgepfiffen…",
+      "callHint": "Schließt die Abstimmung und krönt dieses Game.",
+      "standBy": "BITTE WARTEN",
+      "champion": "CHAMPION",
+      "championSub": "Hat das Aux bei \"{topic}\" gewonnen.",
+      "ended": "BATTLE BEENDET",
+      "endedSub": "Der Host hat den Stecker gezogen, bevor ein Champion gekrönt wurde.",
+      "hostAnother": "Noch eine hosten",
+      "series": "Die Serie",
+      "bracket": "Das Bracket",
+      "dismiss": "Schließen",
+      "round": "Runde {n}",
+      "bye": "Freilos",
+      "deleteRoom": "Löschen",
+      "deleteConfirm": "\"{topic}\" löschen? Bracket, Stimmen und Chat gehen mit.",
+      "deleting": "Wird gelöscht…",
+      "deleteFailed": "Konnte nicht gelöscht werden."
+    },
+    "chat": {
+      "title": "Der Raum",
+      "messagesAria": "Raum-Chat",
+      "deadAir": "FUNKSTILLE",
+      "nobody": "Noch hat niemand etwas gesagt. Feuer deine Seite an.",
+      "host": "HOST",
+      "justNow": "gerade eben",
+      "sending": "wird gesendet…",
+      "deleteMessage": "Nachricht löschen",
+      "confirmDelete": "Die Nachricht von {name} löschen?",
+      "archived": "Dieser Raum ist geschlossen.",
+      "placeholder": "Sag was…",
+      "inputAria": "Chatnachricht",
+      "send": "Senden",
+      "signIn": "Melde dich an, um zu chatten",
+      "sendFailed": "Nachricht wurde nicht gesendet."
+    },
+    "picker": {
+      "hiccup": "Die Suche hat gehakt — versuch es noch mal.",
+      "badLink": "Dieser Link konnte nicht gelesen werden.",
+      "change": "Ändern",
+      "putOn": "Auflegen",
+      "putting": "Wird aufgelegt…",
+      "placeholder": "Auf {source} suchen…",
+      "searching": "Wird gesucht…",
+      "noResults": "Nichts gefunden. Probier das Linkfeld darunter.",
+      "linkOnly": "Die {source}-Suche ist hier nicht eingeschaltet — füg stattdessen einen Link ein.",
+      "pastePlaceholder": "oder einen Spotify- / SoundCloud- / YouTube-Link einfügen",
+      "paste": "Laden",
+      "sources": {
+        "spotify": "Spotify",
+        "soundcloud": "SoundCloud",
+        "youtube": "YouTube"
+      }
+    },
+    "burst": {
+      "winner": "SIEGER",
+      "champion": "CHAMPION",
+      "overtime": "VERLÄNGERUNG",
+      "takesIt": "holt es mit \"{song}\""
+    },
+    "wins": {
+      "aria": "{battles} Battles gewonnen, {rounds} Runden gewonnen",
+      "rounds": "{n}S"
     }
   },
   "rooms": {
@@ -1307,14 +1397,13 @@
     "hoursAgo": "vor {n} Std.",
     "daysAgo": "vor {n} T.",
     "activity": {
-      "startedDebate": "hat eine Debatte eröffnet:",
-      "sides": "({a} vs {b})",
       "reviewed": "hat rezensiert:",
       "byArtist": "von {artist}",
       "madeList": "hat eine Liste gemacht:",
       "albums": "{n, plural, one {# Album} other {# Alben}}",
       "ranked": ", als Rangliste",
-      "likedReview": "hat eine Rezension geliked:"
+      "likedReview": "hat eine Rezension geliked:",
+      "hostedAux": "hostet eine Aux-Battle:"
     }
   },
   "connections": {
@@ -1327,11 +1416,11 @@
   },
   "search": {
     "title": "SUCHE",
-    "sub": "Alle Sender auf einmal: Leute, Artists, Releases, Rezensionen, Debatten, Listen, Posts.",
+    "sub": "Alle Sender auf einmal: Leute, Artists, Releases, Rezensionen, Aux-Battles, Listen, Posts.",
     "placeholder": "Such, was du willst: Leute, Artists, Releases…",
     "aria": "Alles durchsuchen",
     "tuning": "SENDERSUCHE…",
-    "hint": "Tipp mindestens zwei Zeichen: Nutzer, Artists, Releases, Rezensionen, Debatten, Listen und Posts kommen alle auf einmal.",
+    "hint": "Tipp mindestens zwei Zeichen: Nutzer, Artists, Releases, Rezensionen, Aux-Battles, Listen und Posts kommen alle auf einmal.",
     "noSignal": "KEIN SIGNAL",
     "nothing": "Auf keinem Sender etwas zu „{query}“. Versuch einen Artist, ein Album oder einen Nutzernamen.",
     "sections": {
@@ -1339,13 +1428,16 @@
       "artists": "Artists",
       "releases": "Releases",
       "reviews": "Rezensionen",
-      "debates": "Debatten",
       "lists": "Listen",
-      "posts": "Posts"
+      "posts": "Posts",
+      "auxBattles": "Aux-Battles"
     },
     "communityAvg": "Durchschnitt",
     "closed": "BEENDET",
-    "byOwner": "von @{owner}"
+    "byOwner": "von @{owner}",
+    "auxPlayers": "{n, plural, one {# Spieler} other {# Spieler}}",
+    "auxLive": "AUF SENDUNG",
+    "auxLobby": "LOBBY"
   },
   "userSearch": {
     "placeholder": "Finde Leute über den Nutzernamen…",
@@ -1380,7 +1472,8 @@
     "newPost": "hat{title} gepostet",
     "newList": "hat eine neue Liste{title} gemacht",
     "newDebate": "hat eine Debatte{title} eröffnet",
-    "other": "hat etwas gemacht"
+    "other": "hat etwas gemacht",
+    "newAux": "hostet eine Aux-Battle{title}"
   },
   "taste": {
     "page": {
@@ -1480,7 +1573,7 @@
     "title": "Über Peak Music Reviews",
     "sub": "Was es ist, warum es existiert und die Fragen, die Leute stellen.",
     "inOneBreath": "IN EINEM SATZ",
-    "intro": "<strong>Peak Music Reviews</strong> ist ein kostenloses Musik-Social-Network und eine Rezensions-App: Mitglieder bewerten Alben und Songs von 0 bis 10,0, schreiben Rezensionen, bauen Listen, sitzen in Live-Chaträumen in der Nacht, in der eine Platte erscheint, und wählen in Debatten mit zwei Seiten ihre Seite. Jede Rezension hängt an einem echten Release: der ganze Spotify-Katalog plus die tiefe Bibliothek von Genius, sodass auch unveröffentlichte und geleakte Songs bewertet werden können (über Metadaten, nie über Dateien). Es läuft in jedem Browser und als iOS-App, mit einem Konto für beides. Denk Letterboxd, für Musik.",
+    "intro": "<strong>Peak Music Reviews</strong> ist ein kostenloses Musik-Social-Network und eine Rezensions-App: Mitglieder bewerten Alben und Songs von 0 bis 10,0, schreiben Rezensionen, bauen Listen, sitzen in Live-Chaträumen in der Nacht, in der eine Platte erscheint, und treten in Aux-Battles gegeneinander an. Jede Rezension hängt an einem echten Release: der ganze Spotify-Katalog plus die tiefe Bibliothek von Genius, sodass auch unveröffentlichte und geleakte Songs bewertet werden können (über Metadaten, nie über Dateien). Es läuft in jedem Browser und als iOS-App, mit einem Konto für beides. Denk Letterboxd, für Musik.",
     "facts": {
       "what": "Was",
       "whatV": "Musikrezensions-App + soziales Netzwerk",
@@ -1493,7 +1586,7 @@
       "catalog": "Katalog",
       "catalogV": "Ganz Spotify + die tiefe Bibliothek von Genius, Unveröffentlichtes inklusive",
       "live": "Live",
-      "liveV": "Chaträume in der Release-Nacht und Debatten mit zwei Seiten"
+      "liveV": "Chaträume in der Release-Nacht und Aux-Battles"
     },
     "joinFree": "Kostenlos mitmachen",
     "iosApp": "iOS-App",
@@ -1501,31 +1594,31 @@
     "story1": "Peak Music Reviews begann mit einem einfachen Frust: Filmfans haben ein Zuhause. Sie loggen, was sie sehen, bewerten es, streiten darüber und bauen ein Geschmacksprofil, das wirklich etwas über sie sagt. Musik, mit der die meisten von uns mehr Stunden verbringen als mit jedem Film, hat diesen Ort nie bekommen.",
     "story2": "Also haben wir es gebaut. Keine weitere Streaming-App, kein weiterer Algorithmus, der dir vorsetzt, was er glaubt, dass du schon magst: ein Ort, an dem das Hören selbst der Punkt ist. Jede Rezension hier hängt an einem echten Release, vom größten Album des Jahres bis zur Loosie, die nie auf Streaming war.",
     "thePurpose": "DER ZWECK",
-    "purpose1": "Ein Ort für dein ganzes Hörleben: bewerte Platten von 0 bis 10, bau Listen, wähl in Debatten eine Seite und sei im Raum, live, in dem Moment, in dem ein Album erscheint. Dein Profil ist deins zum Ordnen und Gestalten; dein Feed entsteht aus den Leuten, denen du folgst, und dem, was du bewertest, nicht aus Werbung.",
+    "purpose1": "Ein Ort für dein ganzes Hörleben: bewerte Platten von 0 bis 10, bau Listen, hol dir das Aux in einer Battle und sei im Raum, live, in dem Moment, in dem ein Album erscheint. Dein Profil ist deins zum Ordnen und Gestalten; dein Feed entsteht aus den Leuten, denen du folgst, und dem, was du bewertest, nicht aus Werbung.",
     "purpose2": "Die Wette ist einfach: Die beste Musikentdeckungsmaschine, die je gebaut wurde, sind andere Leute, denen es etwas bedeutet. Alles auf dieser Seite existiert, um dich näher an sie zu bringen.",
     "whatsDifferent": "WAS ANDERS IST",
     "diff1H": "Unveröffentlichte Musik.",
     "diff1B": "Leaks, Loosies und Songs, die nie auf Streaming kamen, stehen klar markiert im Katalog, sodass die meinungsstärkste Ecke der Musikkultur endlich einen Ort zum Bewerten und Streiten hat.",
     "diff2H": "Release-Nächte.",
     "diff2B": "Jedes große Release bekommt einen Live-Raum in dem Moment, in dem es landet: das wöchentliche Ritual, nicht nur ein Feature.",
-    "diff3H": "Debatten.",
+    "diff3H": "Aux-Battles.",
     "diff3B": "Zwei Seiten, Live-Abstimmung, jede Seite an eine Platte gebunden.",
     "diff4H": "Physische Medien.",
     "diff4B": "Die ganze Seite lebt in einem Röhrenfernseher: VHS-Etiketten, Konsolenmenüs, Badges, die leuchten wie eine perfekte 10.",
     "questions": "FRAGEN",
     "faq": {
       "q1": "Was ist Peak Music Reviews?",
-      "a1": "Peak Music Reviews ist ein Musik-Social-Network: denk Letterboxd, aber für Alben. Mitglieder bewerten und rezensieren Releases, bauen teilbare Listen, sitzen in Live-Chaträumen, wenn neue Alben erscheinen, und verteidigen ihre Seite in Community-Debatten. Jede Rezension hängt an einem echten Release aus dem Spotify-Katalog oder der tiefen Bibliothek von Genius, unveröffentlichte Tracks inklusive.",
+      "a1": "Peak Music Reviews ist ein Musik-Social-Network: denk Letterboxd, aber für Alben. Mitglieder bewerten und rezensieren Releases, bauen teilbare Listen, sitzen in Live-Chaträumen, wenn neue Alben erscheinen, und treten in Aux-Battles gegeneinander an. Jede Rezension hängt an einem echten Release aus dem Spotify-Katalog oder der tiefen Bibliothek von Genius, unveröffentlichte Tracks inklusive.",
       "q2": "Wie werden Alben auf Peak Music Reviews bewertet?",
       "a2": "Mitglieder bewerten Releases von 0 bis 10,0 mit einer Nachkommastelle. Die Bewertungen spiegeln echten persönlichen Genuss wider, nicht rein technische Analyse: etwas aus einem dummen Grund zu mögen zählt genauso wie eine technische Zerlegung. Release-Seiten zeigen den Community-Durchschnitt über alle Rezensionen.",
       "q3": "Kann ich unveröffentlichte oder geleakte Musik auf Peak Music Reviews rezensieren?",
       "a3": "Ja. Der Katalog der Seite speist sich aus Spotify (der offizielle Katalog des Veröffentlichten) und Genius (die tiefe Bibliothek: unveröffentlichte Tracks, Loosies und Songs, die nie auf Streaming kamen). Unveröffentlichte Releases sind auf ihren Seiten klar markiert.",
       "q4": "Brauche ich ein Konto, um Peak Music Reviews zu nutzen?",
-      "a4": "Stöbern kann jeder. Bewerten, rezensieren, Listen bauen, Live-Release-Räume besuchen und in Debatten abstimmen erfordern ein kostenloses Konto mit einem eindeutigen Nutzernamen und einer bestätigten E-Mail-Adresse.",
+      "a4": "Stöbern kann jeder. Bewerten, rezensieren, Listen bauen, Live-Release-Räume besuchen und in Aux-Battles abstimmen erfordern ein kostenloses Konto mit einem eindeutigen Nutzernamen und einer bestätigten E-Mail-Adresse.",
       "q5": "Ist Peak Music Reviews kostenlos, und auf welchen Plattformen gibt es das?",
-      "a5": "Ja: Bewerten, Rezensionen, Listen, Live-Release-Räume, Debatten, Posts und Profilgestaltung sind alle kostenlos. Es läuft in jedem Browser auf peakmusicreviews.com und als iOS-App im App Store, mit demselben Konto und denselben Inhalten auf beiden. Eine Android-App ist geplant.",
+      "a5": "Ja: Bewerten, Rezensionen, Listen, Live-Release-Räume, Aux-Battles, Posts und Profilgestaltung sind alle kostenlos. Es läuft in jedem Browser auf peakmusicreviews.com und als iOS-App im App Store, mit demselben Konto und denselben Inhalten auf beiden. Eine Android-App ist geplant.",
       "q6": "Ist Peak Music Reviews eine Alternative zu Musicboard?",
-      "a6": "Ja. Es deckt ab, was Musicboard gemacht hat (Bewertungen von 0 bis 10,0 mit Nachkommastelle, geschriebene Rezensionen, Listen und soziale Profile), und ergänzt Live-Räume in der Release-Nacht, Debatten mit zwei Seiten und einen Katalog mit unveröffentlichter Musik. Wer von Musicboard wechseln will, findet den Guide auf peakmusicreviews.com/musicboard-alternative (auf Englisch)."
+      "a6": "Ja. Es deckt ab, was Musicboard gemacht hat (Bewertungen von 0 bis 10,0 mit Nachkommastelle, geschriebene Rezensionen, Listen und soziale Profile), und ergänzt Live-Räume in der Release-Nacht, Aux-Battles und einen Katalog mit unveröffentlichter Musik. Wer von Musicboard wechseln will, findet den Guide auf peakmusicreviews.com/musicboard-alternative (auf Englisch)."
     },
     "getInTouch": "KONTAKT",
     "contact": "Fragen, Ideen, Probleme?"

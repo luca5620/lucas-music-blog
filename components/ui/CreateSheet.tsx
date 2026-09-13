@@ -29,7 +29,7 @@ const CREATE_OPTIONS = [
   { href: "/reviews/new", icon: "★", label: "review", sub: "reviewSub" },
   { href: "/posts/new", icon: "▶", label: "post", sub: "postSub" },
   { href: "/lists/new", icon: "≣", label: "list", sub: "listSub" },
-  { href: "/debates/new", icon: "⚔", label: "debate", sub: "debateSub" },
+  { href: "/aux-battles/new", icon: "🎧", label: "aux", sub: "auxSub" },
 ] as const;
 
 export default function CreateSheet({

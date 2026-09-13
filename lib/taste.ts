@@ -519,14 +519,11 @@ export async function getTunedToYou(
       .neq("user_id", viewerId)
       .order("created_at", { ascending: false })
       .limit(50),
-    supabase
-      .from("debates")
-      .select(
-        "id, created_by, slug, title, prompt, side_a_label, side_b_label, release_id, message_count, created_at, releases(primary_artist_id, cover_image, title), profiles!debates_created_by_fkey(username, avatar_url)"
-      )
-      .eq("status", "open")
-      .order("created_at", { ascending: false })
-      .limit(30),
+    // Debates left the site on 2026-09-13 (replaced by aux battles).
+    // The OnAir card + its scoring stay wired for now — Luca is
+    // rethinking Your Taste's signals — but the pool is empty, so no
+    // debate ever airs. Aux rooms get their own card in that rework.
+    Promise.resolve({ data: [] as never[], error: null }),
     supabase
       .from("releases")
       .select(

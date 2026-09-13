@@ -66,6 +66,8 @@ function messageFor(type: string, title: string | null): string {
       return `made a new list${t}`;
     case "new_debate":
       return `started a debate${t}`;
+    case "new_aux":
+      return `is hosting an aux battle${t}`;
     default:
       return "did something";
   }

@@ -159,6 +159,13 @@ export async function getAuxRoomById(id: string): Promise<AuxRoom | null> {
   return (data as AuxRoom | null) ?? null;
 }
 
+/** Same as getAuxRoomBySlug, by id — the resync endpoint's read. */
+export async function getAuxRoomMetaById(id: string): Promise<AuxRoomWithMeta | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("aux_rooms").select(ROOM_SELECT).eq("id", id).maybeSingle();
+  return data ? shapeRoom(data as unknown as RoomRow) : null;
+}
+
 /**
  * Whether a private room exists at this slug at all — for the code
  * gate. RLS hides private rooms from outsiders, so the room getter

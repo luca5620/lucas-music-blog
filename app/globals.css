@@ -4305,3 +4305,176 @@ fieldset {
 .low-detail .log-cell-filled:hover {
   transform: none;
 }
+
+/* ============================================================
+   AUX BATTLES (2026-09-13) — the stage, the crowd noise, the burst
+   ============================================================ */
+
+/* The live match card in the bracket breathes in the accent. */
+.aux-match-live {
+  border-color: rgba(var(--accent-rgb), 0.6);
+  animation: aux-live-pulse 1.6s ease-in-out infinite;
+}
+@keyframes aux-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(var(--accent-rgb), 0); }
+  50% { box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.45); }
+}
+
+/* A 🔥 / 💩 tap: one pill button, thumb-sized on phones. */
+.aux-react {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-medium);
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.12s ease, border-color 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.aux-react:active { transform: scale(0.88); }
+.aux-react span { font-family: var(--font-vt323); font-size: 0.9rem; color: var(--text-secondary); }
+
+/* Reactions float up over the stage from the side they were thrown at. */
+.aux-stage { position: relative; }
+.aux-floaters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+.aux-floater {
+  position: absolute;
+  bottom: 12%;
+  font-size: 1.6rem;
+  animation: aux-float 1.8s ease-out forwards;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.6));
+}
+@keyframes aux-float {
+  0%   { transform: translateY(0) scale(0.6) rotate(-8deg); opacity: 0; }
+  12%  { opacity: 1; transform: translateY(-8%) scale(1.15) rotate(6deg); }
+  100% { transform: translateY(-420%) scale(0.9) rotate(-10deg); opacity: 0; }
+}
+
+/* ---- The winner burst: flash, confetti, stamp ---- */
+.aux-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  padding: 1rem;
+  --burst: var(--accent-primary);
+  --burst-rgb: var(--accent-rgb);
+}
+.aux-burst-b { --burst: var(--accent-rose); --burst-rgb: 224, 85, 117; }
+.aux-burst-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(var(--burst-rgb), 0.45), rgba(0, 0, 0, 0.55) 70%);
+  animation: aux-flash 3.4s ease-out forwards;
+}
+.aux-burst-stay .aux-burst-flash { animation: aux-flash-stay 0.8s ease-out forwards; }
+@keyframes aux-flash {
+  0%   { opacity: 0; }
+  6%   { opacity: 1; background: rgba(255, 255, 255, 0.85); }
+  14%  { opacity: 1; background: radial-gradient(ellipse at center, rgba(var(--burst-rgb), 0.45), rgba(0, 0, 0, 0.55) 70%); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes aux-flash-stay {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; background: rgba(255, 255, 255, 0.85); }
+  100% { opacity: 1; background: radial-gradient(ellipse at center, rgba(var(--burst-rgb), 0.45), rgba(0, 0, 0, 0.7) 70%); }
+}
+.aux-confetti { position: absolute; inset: 0; overflow: hidden; }
+.aux-confetti i {
+  position: absolute;
+  top: -6%;
+  display: block;
+  background: var(--burst);
+  box-shadow: 0 0 8px rgba(var(--burst-rgb), 0.8);
+  animation-name: aux-confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+.aux-confetti i:nth-child(3n) { background: #fff; box-shadow: 0 0 6px rgba(255, 255, 255, 0.8); }
+.aux-confetti i:nth-child(5n) { background: var(--osd-amber, #ffb648); box-shadow: 0 0 6px rgba(255, 182, 72, 0.8); }
+@keyframes aux-confetti-fall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  100% { transform: translateY(115vh) rotate(720deg); opacity: 0.9; }
+}
+.aux-burst-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  animation: aux-stamp-in 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  animation-delay: 0.18s;
+  max-width: min(90vw, 28rem);
+}
+@keyframes aux-stamp-in {
+  0%   { transform: scale(2.2) rotate(-6deg); opacity: 0; }
+  60%  { transform: scale(0.94) rotate(1deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-1.5deg); opacity: 1; }
+}
+.aux-burst-art {
+  width: 9rem;
+  height: 9rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 3px solid var(--burst);
+  box-shadow: 0 0 30px rgba(var(--burst-rgb), 0.7), 0 0 0 6px rgba(0, 0, 0, 0.5);
+  animation: aux-chroma 0.9s steps(2) 3;
+}
+.aux-burst-art-avatar { display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); }
+@keyframes aux-chroma {
+  0%   { filter: none; transform: translateX(0); }
+  50%  { filter: drop-shadow(3px 0 0 rgba(255, 0, 80, 0.7)) drop-shadow(-3px 0 0 rgba(0, 200, 255, 0.7)); transform: translateX(1px); }
+  100% { filter: none; transform: translateX(0); }
+}
+.aux-burst-stamp {
+  font-family: var(--font-vt323);
+  font-size: clamp(2.6rem, 9vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(var(--burst-rgb), 1), 0 0 40px rgba(var(--burst-rgb), 0.8), 3px 3px 0 rgba(0, 0, 0, 0.7);
+  border: 4px solid #fff;
+  padding: 0.15em 0.45em;
+  background: rgba(var(--burst-rgb), 0.35);
+  box-shadow: 0 0 24px rgba(var(--burst-rgb), 0.6);
+}
+.aux-burst-name {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+.aux-burst-song {
+  display: block;
+  font-family: var(--font-vt323);
+  font-weight: 400;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 0.15rem;
+}
+
+/* ---- low-detail (html.low-detail, the per-device thermal diet):
+   keep the stamp, drop the flash, the confetti and the chroma. ---- */
+.low-detail .aux-burst-flash { animation: none; opacity: 1; background: rgba(0, 0, 0, 0.6); }
+.low-detail .aux-confetti { display: none; }
+.low-detail .aux-burst-art { animation: none; }
+.low-detail .aux-burst-card { animation: none; }
+.low-detail .aux-match-live { animation: none; box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.5); }
+.low-detail .aux-floater { animation-duration: 1s; filter: none; }

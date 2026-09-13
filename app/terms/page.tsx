@@ -40,7 +40,7 @@ export default function TermsPage() {
         <p>Strong opinions about music are the point. These aren&apos;t:</p>
         <ul className="list-disc pl-5 space-y-2">
           <li>No harassment, hate speech, threats, or targeting people rather than takes.</li>
-          <li>No spam, scams, or flooding feeds, rooms, or debates.</li>
+          <li>No spam, scams, or flooding feeds, rooms, or aux battles.</li>
           <li>No sexually explicit content or shock content.</li>
           <li>No impersonating other people or artists.</li>
           <li>No posting other people&apos;s private information.</li>

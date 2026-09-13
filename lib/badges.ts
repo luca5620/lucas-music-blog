@@ -148,11 +148,13 @@ export const EVENT_BADGES: EventBadgeDef[] = [
     glyph: "◉",
   },
   {
+    // Key kept (badges already awarded point at it); the words moved
+    // with the feature — debates became aux battles on 2026-09-13.
     key: "debate_champion",
-    label: "Debate Champion",
-    description: "Won a featured community debate.",
+    label: "Aux Champion",
+    description: "Won a featured aux battle.",
     color: "#e3342f",
-    glyph: "⚔",
+    glyph: "🎧",
   },
   {
     key: "list_master",

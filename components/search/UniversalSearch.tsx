@@ -49,12 +49,11 @@ interface ReviewHit {
   rating: number;
   cover_image: string | null;
 }
-interface DebateHit {
+interface AuxHit {
   slug: string;
-  title: string;
-  side_a_label: string;
-  side_b_label: string;
-  status: "open" | "closed";
+  topic: string;
+  status: "lobby" | "live" | "finished";
+  player_count: number;
 }
 interface ListHit {
   slug: string;
@@ -72,7 +71,7 @@ interface Results {
   artists: ArtistHit[];
   releases: ReleaseHit[];
   reviews: ReviewHit[];
-  debates: DebateHit[];
+  aux: AuxHit[];
   lists: ListHit[];
   posts: PostHit[];
 }
@@ -82,7 +81,7 @@ const EMPTY: Results = {
   artists: [],
   releases: [],
   reviews: [],
-  debates: [],
+  aux: [],
   lists: [],
   posts: [],
 };
@@ -132,7 +131,7 @@ export default function UniversalSearch() {
 
       // All seven lanes at once — each degrades to [] on error so one
       // broken lane never blanks the page.
-      const [users, artists, releases, reviews, debates, lists, posts] =
+      const [users, artists, releases, reviews, aux, lists, posts] =
         await Promise.all([
           supabase
             .from("profiles")
@@ -188,14 +187,15 @@ export default function UniversalSearch() {
             .or(`title.ilike.${pattern},artist.ilike.${pattern}`)
             .limit(PER_SECTION)
             .then(({ data }) => (data as ReviewHit[]) ?? []),
+          // Aux battle rooms by topic — public ones (RLS also lets a
+          // member's own private rooms through, which is right).
           supabase
-            .from("debates")
-            .select("slug, title, side_a_label, side_b_label, status")
-            .or(
-              `title.ilike.${pattern},side_a_label.ilike.${pattern},side_b_label.ilike.${pattern}`,
-            )
+            .from("aux_rooms")
+            .select("slug, topic, status, player_count")
+            .ilike("topic", pattern)
+            .order("created_at", { ascending: false })
             .limit(PER_SECTION)
-            .then(({ data }) => (data as DebateHit[]) ?? []),
+            .then(({ data }) => (data as AuxHit[]) ?? []),
           supabase
             .from("lists")
             .select("slug, title, profiles!inner(username)")
@@ -213,7 +213,7 @@ export default function UniversalSearch() {
 
       // Ignore stale responses from older keystrokes.
       if (lastQueryRef.current !== cleaned) return;
-      setResults({ users, artists, releases, reviews, debates, lists, posts });
+      setResults({ users, artists, releases, reviews, aux, lists, posts });
       setSearching(false);
       setSearched(true);
     }, 300);
@@ -224,7 +224,7 @@ export default function UniversalSearch() {
     results.artists.length +
     results.releases.length +
     results.reviews.length +
-    results.debates.length +
+    results.aux.length +
     results.lists.length +
     results.posts.length;
 
@@ -371,25 +371,27 @@ export default function UniversalSearch() {
         </Section>
       )}
 
-      {/* ===== Debates ===== */}
-      {results.debates.length > 0 && (
-        <Section label={t("sections.debates")}>
-          {results.debates.map((d) => (
-            <Row key={d.slug} href={`/debates/${d.slug}`}>
-              <Thumb src={null} fallback="🎙️" />
+      {/* ===== Aux battles ===== */}
+      {results.aux.length > 0 && (
+        <Section label={t("sections.auxBattles")}>
+          {results.aux.map((r) => (
+            <Row key={r.slug} href={`/aux-battles/${r.slug}`}>
+              <Thumb src={null} fallback="🎧" />
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold text-text-primary truncate">
-                  {d.title}
+                  {r.topic}
                 </span>
                 <span className="block text-xs text-text-secondary truncate">
-                  {d.side_a_label} vs {d.side_b_label}
+                  {t("auxPlayers", { n: r.player_count })}
                 </span>
               </span>
-              {d.status === "closed" && (
-                <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
-                  {t("closed")}
-                </span>
-              )}
+              <span
+                className={`pixel-text text-[10px] uppercase tracking-widest shrink-0 ${
+                  r.status === "live" ? "text-[#ff4455]" : "text-text-muted"
+                }`}
+              >
+                {r.status === "live" ? t("auxLive") : r.status === "lobby" ? t("auxLobby") : t("closed")}
+              </span>
             </Row>
           ))}
         </Section>

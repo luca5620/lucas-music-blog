@@ -1,6 +1,6 @@
 /**
  * /search — universal search across the whole station: users,
- * artists, releases, reviews, debates, lists, posts. The app's
+ * artists, releases, reviews, aux battles, lists, posts. The app's
  * middle tab; the web header's magnifier. All querying happens
  * client-side in UniversalSearch (world-readable tables + RLS).
  */

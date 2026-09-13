@@ -3,7 +3,6 @@
     "releases": "Releases",
     "reviews": "Recensies",
     "lists": "Lijsten",
-    "debates": "Debatten",
     "social": "Social",
     "yourTaste": "Jouw smaak",
     "search": "Zoeken",
@@ -18,7 +17,8 @@
     "badgeTool": "Badges",
     "signOut": "Uitloggen",
     "signIn": "Inloggen",
-    "user": "Gebruiker"
+    "user": "Gebruiker",
+    "auxBattles": "Aux battles"
   },
   "tabBar": {
     "ariaLabel": "App-navigatie",
@@ -37,8 +37,8 @@
     "postSub": "schrijf uitgebreid, met een YouTube- of TikTok-video",
     "list": "Lijst",
     "listSub": "verzamel en rangschik je favorieten",
-    "debate": "Debat",
-    "debateSub": "zoek de strijd op en laat de stemmen beslissen"
+    "aux": "Aux battle",
+    "auxSub": "geef de aux door en laat de room beslissen"
   },
   "footer": {
     "foundAProblem": "Iets kapot?",
@@ -221,7 +221,7 @@
     "deletion": {
       "title": "Account verwijderen",
       "hint": "Wist je profiel en alles wat je hebt gemaakt. Kan niet ongedaan worden gemaakt.",
-      "intro": "Je account verwijderen wist je profiel en <b>alles wat je hebt gemaakt</b>: recensies, lijsten, posts, debatstemmen, chatberichten, afbeeldingen. Er is geen weg terug en niets is terug te halen.",
+      "intro": "Je account verwijderen wist je profiel en <b>alles wat je hebt gemaakt</b>: recensies, lijsten, posts, stemmen in aux battles, chatberichten, afbeeldingen. Er is geen weg terug en niets is terug te halen.",
       "delete": "Account verwijderen",
       "typeUsername": "Typ je gebruikersnaam <b>@name</b> om te bevestigen:",
       "deleting": "Verwijderen...",
@@ -253,12 +253,12 @@
       "writeReview": "✚ Recensie schrijven",
       "rateFirst": "✚ Beoordeel je eerste plaat",
       "firstRunLine": "Je kast is leeg. Begin met de platen die je al uit je hoofd kent: een cijfer is genoeg, woorden zijn optioneel.",
-      "startDebate": "⚔ Debat starten",
       "onAir": "ON AIR",
       "coverAlt": "Hoes van {title}",
       "tasteTitle": "Wil je een kanaal dat alleen voor jou draait?",
       "tasteBody": "Jouw smaak maakt een feed van wie je volgt en wat je beoordeelt.",
-      "tuneIn": "Afstemmen →"
+      "tuneIn": "Afstemmen →",
+      "startAux": "🎧 Aux battle hosten"
     },
     "closing": {
       "eyebrow": "Je kanaal staat klaar",
@@ -277,7 +277,7 @@
       "step2Label": "Geef een cijfer",
       "step2Body": "Van nul tot tien, met één decimaal. Je cijfer staat op elke kaart die je plaatst, in de kleur van het oordeel.",
       "step3Label": "Praat live mee",
-      "step3Body": "Elke release heeft een live room, al open voordat het album om middernacht uitkomt. Zin in ruzie? Start een debat met twee kanten.",
+      "step3Body": "Elke release heeft een live room, al open voordat het album om middernacht uitkomt. Zin in strijd? Host een aux battle en geef de aux door.",
       "onAir": "On air",
       "step3Prop": "“track 4 is de beste, ga maar tegen de muur praten”",
       "stepFour": "stap vier is optioneel en heet <link>lijsten</link>. iedereen eindigt uiteindelijk met lijsten."
@@ -292,7 +292,7 @@
       "point2B": "Albums met een aftelklok krijgen hun room voordat ze uitkomen. Om 23:59 is de chat al live.",
       "point3H": "Meelezen zonder account",
       "point3B": "Rooms zijn openbaar. Maak een account om mee te praten en te beoordelen.",
-      "point4H": "Debatten als het heet wordt",
+      "point4H": "Aux battles als het heet wordt",
       "point4B": "Twee kanten, elk één plaat, en de room stemt.",
       "seeOnAir": "Bekijk wat on air is",
       "onAir": "On air",
@@ -666,8 +666,8 @@
         "description": "Zat in de live room op de nacht dat een plaat uitkwam."
       },
       "debate_champion": {
-        "label": "Debatkampioen",
-        "description": "Won een uitgelicht communitydebat."
+        "label": "Aux-kampioen",
+        "description": "Won een uitgelichte aux battle."
       },
       "list_master": {
         "label": "Lijstenmeester",
@@ -844,7 +844,6 @@
       "reviewsCount": "Recensies · {n}",
       "postsCount": "Posts · {n}",
       "listsCount": "Lijsten · {n}",
-      "debatesCount": "Debatten · {n}",
       "writeReview": "Recensie schrijven",
       "myReviews": "Mijn recensies",
       "noReviews": "Je hebt nog geen recensies. Schrijf je eerste!",
@@ -859,15 +858,16 @@
       "items": "{n, plural, one {# plaat} other {# platen}}",
       "likes": "{n, plural, one {# like} other {# likes}}",
       "ranked": "gerangschikt",
-      "myDebates": "Mijn debatten",
-      "debatesTotal": "{n, plural, one {# debat} other {# debatten}} in totaal",
-      "openDebate": "+ Debat starten",
-      "noDebates": "Je hebt nog geen debatten. Zoek een strijd op die het waard is.",
       "vs": "vs",
       "votes": "{n, plural, one {# stem} other {# stemmen}}",
       "takes": "{n, plural, one {# mening} other {# meningen}}",
       "onAir": "On air",
-      "signedOff": "Afgesloten"
+      "signedOff": "Afgesloten",
+      "auxCount": "Aux battles · {n}",
+      "myAux": "Mijn aux battles",
+      "auxTotal": "{n, plural, one {# battle} other {# battles}} in totaal",
+      "hostAux": "+ Battle hosten",
+      "noAux": "Nog geen battles. Kies een thema en geef de aux door."
     }
   },
   "releases": {
@@ -1136,119 +1136,209 @@
       "playlistBadge": "♫ PLAYLIST"
     }
   },
-  "debates": {
+  "aux": {
     "index": {
-      "title": "DEBATTEN",
-      "sub": "Twee kanten. Eén stem. Eindeloos ruziën. Kies je kant en verdedig hem on air: je meningen krijgen het stempel van jouw kant.",
-      "stake": "Start een debat",
-      "yourDrafts": "Je concepten",
-      "draft": "Concept",
-      "openPublish": "openen en publiceren ►",
+      "title": "AUX BATTLES",
+      "sub": "Geef de aux door. Twee nummers tegenover elkaar, de room luistert, de room stemt. Brackets, best-of-3, live chat en aan het eind een kampioen.",
+      "host": "Battle hosten",
+      "joinPlaceholder": "Plak een roomlink…",
+      "joinGo": "Ga",
+      "yourPrivate": "Je privérooms",
+      "liveNow": "Nu live",
+      "fillingUp": "Loopt vol",
+      "lastResults": "Laatste uitslagen",
       "noSignal": "GEEN SIGNAAL",
-      "empty": "Nog geen debatten on air. Open de eerste en zoek een strijd op die het waard is."
-    },
-    "new": {
-      "title": "Een debat starten",
-      "sub": "Stel de vraag, noem de twee kanten en pin eventueel de plaat vast die terechtstaat. De community doet de rest."
-    },
-    "edit": {
-      "title": "Debat bewerken",
-      "back": "Terug",
-      "draftNote": "Concept: alleen jij ziet het.",
-      "liveNote": "Live: wijzigingen zijn meteen zichtbaar."
-    },
-    "page": {
-      "draftBanner": "Concept: alleen jij ziet dit",
-      "back": "Terug",
-      "edit": "Bewerken",
-      "openedBy": "gestart door",
-      "unknown": "onbekend"
+      "empty": "Nog geen battles op zender. Host er een, kies een thema en geef de aux door."
     },
     "card": {
-      "onAir": "ON AIR",
-      "signOff": "AFGESLOTEN",
-      "takes": "{n} MENINGEN",
-      "vs": "VS",
-      "openedBy": "gestart door",
+      "live": "LIVE",
+      "lobby": "LOBBY",
+      "final": "FINALE",
+      "players": "{n, plural, one {# SPELER} other {# SPELERS}}",
+      "bo1": "Eén ronde",
+      "bo3": "Best of 3",
+      "hostJudge": "Host beslist",
+      "crowd": "Publiek stemt",
+      "private": "Privé",
+      "hostedBy": "gehost door",
       "unknown": "onbekend"
     },
-    "voteBar": {
-      "aria": "{a}: {pctA}%, {b}: {pctB}%",
-      "votes": "{n, plural, one {# stem} other {# stemmen}}"
-    },
-    "delete": {
-      "couldnt": "Verwijderen mislukt.",
-      "network": "Netwerkfout. Probeer het opnieuw.",
-      "confirm": "“{title}” verwijderen? Stemmen en meningen gaan mee.",
-      "yes": "Ja",
-      "no": "Nee",
-      "delete": "Verwijderen"
-    },
-    "publish": {
-      "couldnt": "Het debat kon niet worden gepubliceerd.",
-      "broke": "Er ging iets mis.",
-      "publishing": "PUBLICEREN…",
-      "openFloor": "OPEN HET DEBAT"
-    },
-    "room": {
-      "castVote": "Stem",
-      "closed": "— debat gesloten",
-      "yourSide": "JOUW KANT",
-      "votesSwitch": "{n, plural, one {# stem} other {# stemmen}} · wissel wanneer je wilt van kant",
-      "signInToVote": "<a>Log in</a> om te stemmen en mee te praten.",
-      "floor": "Het debat",
-      "messagesAria": "Debatberichten",
-      "deadAir": "STILTE",
-      "nobody": "Nog niemand heeft iets gezegd: de eerste mening wint.",
-      "sending": "versturen…",
-      "deleteMessage": "Bericht verwijderen",
-      "deleteYours": "Je bericht verwijderen",
-      "modDelete": "Verwijderen (mod)",
-      "archived": "Afgesloten: dit debat is gearchiveerd.",
-      "argueFor": "Verdedig {side}…",
-      "dropTake": "Geef je mening (stem om een kant te vertegenwoordigen)…",
-      "inputAria": "Debatbericht typen",
-      "send": "Versturen",
-      "signInToArgue": "Log in om mee te praten",
-      "spectator": "Toeschouwer",
-      "voteFailed": "Stemmen mislukt",
-      "sendFailed": "Versturen mislukt",
-      "reactionFailed": "Reageren mislukt",
-      "confirmDelete": "Bericht van {name} verwijderen?",
-      "justNow": "zonet"
-    },
-    "form": {
+    "new": {
+      "back": "Terug",
+      "title": "Host een aux battle",
+      "sub": "Kies het thema, het format en wie beslist. Spelers komen binnen in de lobby; jij start als de room vol genoeg is.",
+      "topic": "Het thema",
+      "topicPlaceholder": "bijv. \"Beste nummer om een feest mee te openen\"",
+      "random": "Willekeurig thema",
+      "presetsLabel": "Of pak er een",
+      "format": "Format",
+      "bo1": "Eén ronde",
+      "bo1Sub": "Eén nummer per persoon per match. De bracket loopt door tot er één speler over is.",
+      "bo3": "Best of 3",
+      "bo3Sub": "Wie het eerst twee games wint, pakt de match. Langer, meer drama.",
+      "judge": "Wie beslist",
+      "crowd": "Het publiek stemt",
+      "crowdSub": "De meerderheid wint. Gelijkspel gaat naar overtime (nieuwe nummers) en bij een tweede gelijkspel hak jij de knoop door.",
+      "hostJudge": "Jij beslist",
+      "hostJudgeSub": "Jij kiest de winnaar van elke game. De room reageert gewoon mee.",
+      "hostPlays": "Ik speel zelf mee",
+      "hostPlaysSub": "Uit = je host en jureert alleen.",
+      "private": "Privéroom",
+      "privateSub": "Verborgen voor de index. Mensen hebben je code van zes tekens nodig om binnen te komen.",
+      "open": "Room openen",
+      "opening": "Openen…",
+      "cancel": "Annuleren",
       "errors": {
-        "topic": "Het onderwerp heeft minstens 3 tekens nodig.",
-        "sides": "Beide kanten hebben een naam nodig.",
-        "disagree": "De twee kanten moeten echt verschillen.",
-        "save": "Het debat kon niet worden opgeslagen.",
-        "open": "Het debat kon niet worden gestart.",
+        "topic": "Het thema moet minstens 3 tekens hebben.",
+        "open": "De room kon niet worden geopend.",
         "broke": "Er ging iets mis."
       },
-      "topic": "Het onderwerp",
-      "topicPlaceholder": "bijv. “Is MBDTF overschat?”",
-      "frame": "Kader het in (optioneel)",
-      "framePlaceholder": "Bepaal de spelregels van de discussie…",
-      "sideAPlaceholder": "bijv. “Klassieker”",
-      "sideBPlaceholder": "bijv. “Overschat”",
-      "locked": "Er is al gestemd of gediscussieerd onder deze kanten, dus de namen staan vast. De releases, het onderwerp en het kader kunnen nog veranderen.",
-      "pinLabel": "Pin een release aan het hele debat (optioneel)",
-      "pinPlaceholder": "Koppel het album of nummer dat terechtstaat…",
-      "floorIs": "Het debat is",
-      "onAir": "ON AIR",
-      "signedOff": "AFGESLOTEN",
-      "saving": "OPSLAAN…",
-      "saveChanges": "WIJZIGINGEN OPSLAAN",
-      "opening": "OPENEN…",
-      "openFloor": "OPEN HET DEBAT",
-      "savingDraft": "Opslaan…",
-      "saveDraft": "Opslaan als concept",
-      "cancel": "Annuleren",
-      "side": "Kant {tone}",
-      "lockedTitle": "Vergrendeld: er is al gestemd onder deze naam",
-      "sideRecord": "De plaat van kant {tone} (optioneel)…",
-      "detach": "loskoppelen"
+      "presets": [
+        "Beste nummer om een feest mee te openen",
+        "Beste rapvers aller tijden",
+        "Nummer waar je van moet huilen",
+        "Beste zomernummer",
+        "Beste albumopener",
+        "Meest overschatte hit",
+        "Beste nummer onder de 2 minuten",
+        "Beste breakupnummer",
+        "Beste gitaarriff",
+        "Beste nummer om 's nachts mee te rijden",
+        "Meest onderschatte deep cut",
+        "Beste nummer van een one-hit wonder",
+        "Beste remix",
+        "Beste nummer uit je geboortejaar",
+        "Beste nummer in een taal die je niet spreekt",
+        "Het nummer dat je op je begrafenis zou draaien"
+      ]
+    },
+    "gate": {
+      "private": "PRIVÉROOM",
+      "title": "Hier heb je een code voor nodig",
+      "sub": "De host heeft een code van zes tekens. Typ hem in en je bent binnen: chat, stemmen, alles.",
+      "placeholder": "ABC123",
+      "enter": "Room binnengaan",
+      "entering": "Controleren…",
+      "signIn": "Log in om binnen te komen",
+      "wrong": "Die code opent deze room niet."
+    },
+    "room": {
+      "back": "Terug",
+      "share": "Delen",
+      "end": "Battle beëindigen",
+      "endConfirm": "De battle nu beëindigen? Er wordt geen kampioen gekroond.",
+      "onAir": "LIVE",
+      "lobby": "LOBBY",
+      "final": "FINALE",
+      "bo1": "Eén ronde",
+      "bo3": "Best of 3",
+      "hostJudge": "Host beslist",
+      "crowdJudge": "Publiek stemt",
+      "privateRoom": "Privé",
+      "publicRoom": "Openbaar",
+      "hostedBy": "gehost door",
+      "hostTag": "HOST",
+      "youTag": "JIJ",
+      "code": "Code",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd",
+      "codeHint": "Stuur de roomlink en deze code naar wie je binnen wilt hebben.",
+      "players": "Spelers",
+      "noPlayers": "Nog niemand heeft een plek gepakt.",
+      "watching": "{n, plural, one {# kijker} other {# kijkers}}",
+      "signInToPlay": "<a>Log in</a> om een plek te pakken of mee te kijken.",
+      "grabSpot": "Pak een plek",
+      "watchOnly": "Alleen kijken",
+      "leave": "Weggaan",
+      "start": "Battle starten",
+      "starting": "Bracket loten…",
+      "startNeed": "Minstens twee spelers nodig.",
+      "overtime": "OVERTIME",
+      "gameN": "Game {n} · {a}–{b}",
+      "roundN": "Ronde {n}",
+      "phasePicking": "nummers kiezen",
+      "phaseListening": "luisteren · stem nu",
+      "votes": "{n, plural, one {# stem} other {# stemmen}}",
+      "lockedInYou": "Vast: {song}. Wachten op de andere kant.",
+      "lockedIn": "Vast",
+      "picking": "Kiest een nummer…",
+      "fire": "Vuur",
+      "poop": "Bagger",
+      "vote": "Deze",
+      "voted": "Jouw stem",
+      "playersSitOut": "Spelers stemmen niet over hun eigen game.",
+      "signInToVote": "<a>Log in</a> om te stemmen en reacties te gooien.",
+      "hostDecides": "Deze beslist de host.",
+      "crowdDecides": "De meerderheid wint. Wissel zolang de host nog niet afgefloten heeft.",
+      "hostControls": "Hostknoppen",
+      "forfeitHint": "Iemand weg? Laat de ander door:",
+      "advance": "{name} gaat door",
+      "tieTwice": "Weer gelijk na overtime — jij hakt de knoop door.",
+      "noVotes": "Niemand heeft gestemd — jij kiest.",
+      "wins": "{name} wint",
+      "callIt": "Affluiten",
+      "calling": "Affluiten…",
+      "callHint": "Sluit de stemming en kroont deze game.",
+      "standBy": "EVEN GEDULD",
+      "champion": "KAMPIOEN",
+      "championSub": "Won de aux op \"{topic}\".",
+      "ended": "BATTLE BEËINDIGD",
+      "endedSub": "De host trok de stekker eruit voordat er een kampioen was.",
+      "hostAnother": "Nog een hosten",
+      "series": "De serie",
+      "bracket": "De bracket",
+      "dismiss": "Sluiten",
+      "round": "Ronde {n}",
+      "bye": "Vrije doorgang",
+      "deleteRoom": "Verwijderen",
+      "deleteConfirm": "\"{topic}\" verwijderen? De bracket, de stemmen en de chat gaan mee.",
+      "deleting": "Verwijderen…",
+      "deleteFailed": "Verwijderen is niet gelukt."
+    },
+    "chat": {
+      "title": "De room",
+      "messagesAria": "Roomchat",
+      "deadAir": "STILTE",
+      "nobody": "Nog niemand heeft iets gezegd. Hype je kant op.",
+      "host": "HOST",
+      "justNow": "nu",
+      "sending": "versturen…",
+      "deleteMessage": "Bericht verwijderen",
+      "confirmDelete": "Het bericht van {name} verwijderen?",
+      "archived": "Deze room is gesloten.",
+      "placeholder": "Zeg iets…",
+      "inputAria": "Chatbericht",
+      "send": "Sturen",
+      "signIn": "Log in om te chatten",
+      "sendFailed": "Bericht niet verstuurd."
+    },
+    "picker": {
+      "hiccup": "Zoeken haperde — probeer opnieuw.",
+      "badLink": "Die link kon niet worden gelezen.",
+      "change": "Wijzigen",
+      "putOn": "Opzetten",
+      "putting": "Opzetten…",
+      "placeholder": "Zoek op {source}…",
+      "searching": "Zoeken…",
+      "noResults": "Niets gevonden. Probeer het linkvak hieronder.",
+      "linkOnly": "Zoeken op {source} staat hier niet aan — plak een link.",
+      "pastePlaceholder": "of plak een Spotify- / SoundCloud- / YouTube-link",
+      "paste": "Laden",
+      "sources": {
+        "spotify": "Spotify",
+        "soundcloud": "SoundCloud",
+        "youtube": "YouTube"
+      }
+    },
+    "burst": {
+      "winner": "WINNAAR",
+      "champion": "KAMPIOEN",
+      "overtime": "OVERTIME",
+      "takesIt": "pakt hem met \"{song}\""
+    },
+    "wins": {
+      "aria": "{battles} battles gewonnen, {rounds} rondes gewonnen",
+      "rounds": "{n}W"
     }
   },
   "rooms": {
@@ -1307,14 +1397,13 @@
     "hoursAgo": "{n} u geleden",
     "daysAgo": "{n} d geleden",
     "activity": {
-      "startedDebate": "startte een debat:",
-      "sides": "({a} vs {b})",
       "reviewed": "recenseerde",
       "byArtist": "van {artist}",
       "madeList": "maakte een lijst:",
       "albums": "{n, plural, one {# album} other {# albums}}",
       "ranked": ", gerangschikt",
-      "likedReview": "likete een recensie van"
+      "likedReview": "likete een recensie van",
+      "hostedAux": "host een aux battle:"
     }
   },
   "connections": {
@@ -1327,11 +1416,11 @@
   },
   "search": {
     "title": "ZOEKEN",
-    "sub": "Alle kanalen tegelijk: mensen, artiesten, releases, recensies, debatten, lijsten, posts.",
+    "sub": "Alle kanalen tegelijk: mensen, artiesten, releases, recensies, aux battles, lijsten, posts.",
     "placeholder": "Zoek wat je wilt: mensen, artiesten, releases…",
     "aria": "Alles doorzoeken",
     "tuning": "AFSTEMMEN…",
-    "hint": "Typ minstens twee tekens: gebruikers, artiesten, releases, recensies, debatten, lijsten en posts komen allemaal tegelijk terug.",
+    "hint": "Typ minstens twee tekens: gebruikers, artiesten, releases, recensies, aux battles, lijsten en posts komen allemaal tegelijk terug.",
     "noSignal": "GEEN SIGNAAL",
     "nothing": "Niets op welk kanaal dan ook voor “{query}”. Probeer een artiest, een album of een gebruikersnaam.",
     "sections": {
@@ -1339,13 +1428,16 @@
       "artists": "Artiesten",
       "releases": "Releases",
       "reviews": "Recensies",
-      "debates": "Debatten",
       "lists": "Lijsten",
-      "posts": "Posts"
+      "posts": "Posts",
+      "auxBattles": "Aux battles"
     },
     "communityAvg": "gemiddelde",
     "closed": "GESLOTEN",
-    "byOwner": "door @{owner}"
+    "byOwner": "door @{owner}",
+    "auxPlayers": "{n, plural, one {# speler} other {# spelers}}",
+    "auxLive": "LIVE",
+    "auxLobby": "LOBBY"
   },
   "userSearch": {
     "placeholder": "Zoek mensen op gebruikersnaam…",
@@ -1380,7 +1472,8 @@
     "newPost": "plaatste{title}",
     "newList": "maakte een nieuwe lijst{title}",
     "newDebate": "startte een debat{title}",
-    "other": "deed iets"
+    "other": "deed iets",
+    "newAux": "host een aux battle{title}"
   },
   "taste": {
     "page": {
@@ -1480,7 +1573,7 @@
     "title": "Over Peak Music Reviews",
     "sub": "Wat het is, waarom het bestaat en de vragen die mensen stellen.",
     "inOneBreath": "IN ÉÉN ADEM",
-    "intro": "<strong>Peak Music Reviews</strong> is een gratis muzieksociaalnetwerk en recensie-app: leden geven albums en nummers een cijfer van 0 tot 10,0, schrijven recensies, maken lijsten, zitten in live chatrooms op de avond dat een plaat uitkomt en kiezen een kant in debatten met twee kanten. Elke recensie hangt aan een echte release: de hele Spotify-catalogus plus de diepe bibliotheek van Genius, dus ook onuitgebrachte en gelekte nummers kunnen een cijfer krijgen (op basis van metadata, nooit bestanden). Het werkt in elke browser en als iOS-app, met één account voor beide. Denk Letterboxd, maar voor muziek.",
+    "intro": "<strong>Peak Music Reviews</strong> is een gratis muzieksociaalnetwerk en recensie-app: leden geven albums en nummers een cijfer van 0 tot 10,0, schrijven recensies, maken lijsten, zitten in live chatrooms op de avond dat een plaat uitkomt en gaan tegen elkaar in aux battles. Elke recensie hangt aan een echte release: de hele Spotify-catalogus plus de diepe bibliotheek van Genius, dus ook onuitgebrachte en gelekte nummers kunnen een cijfer krijgen (op basis van metadata, nooit bestanden). Het werkt in elke browser en als iOS-app, met één account voor beide. Denk Letterboxd, maar voor muziek.",
     "facts": {
       "what": "Wat",
       "whatV": "Muziekrecensie-app + sociaal netwerk",
@@ -1493,7 +1586,7 @@
       "catalog": "Catalogus",
       "catalogV": "Heel Spotify + de diepe bibliotheek van Genius, onuitgebracht inbegrepen",
       "live": "Live",
-      "liveV": "Chatrooms op releaseavond en debatten met twee kanten"
+      "liveV": "Chatrooms op releaseavond en aux battles"
     },
     "joinFree": "Gratis meedoen",
     "iosApp": "iOS-app",
@@ -1501,31 +1594,31 @@
     "story1": "Peak Music Reviews begon met een simpele frustratie: filmliefhebbers hebben een thuis. Ze loggen wat ze kijken, geven het een cijfer, discussiëren erover en bouwen een smaakprofiel dat echt iets over ze zegt. Muziek, waar de meesten van ons meer uren mee doorbrengen dan met welke film ook, kreeg die plek nooit.",
     "story2": "Dus bouwden we het. Geen nieuwe streamingapp, geen nieuw algoritme dat je voert wat het denkt dat je al leuk vindt: een plek waar het luisteren zelf het punt is. Elke recensie hier hangt aan een echte release, van het grootste album van het jaar tot een losse track die nooit op streaming stond.",
     "thePurpose": "HET DOEL",
-    "purpose1": "Eén plek voor je hele luisterleven: geef platen een cijfer van 0 tot 10, maak lijsten, kies een kant in debatten en zit in de room, live, op het moment dat een album uitkomt. Je profiel is van jou om in te delen en een thema te geven; je feed wordt gemaakt van wie je volgt en wat je beoordeelt, niet van advertenties.",
+    "purpose1": "Eén plek voor je hele luisterleven: geef platen een cijfer van 0 tot 10, maak lijsten, win de aux in een battle en zit in de room, live, op het moment dat een album uitkomt. Je profiel is van jou om in te delen en een thema te geven; je feed wordt gemaakt van wie je volgt en wat je beoordeelt, niet van advertenties.",
     "purpose2": "De gok is simpel: de beste muziekontdekkingsmachine ooit gemaakt zijn andere mensen die erom geven. Alles op deze site bestaat om je dichter bij hen te brengen.",
     "whatsDifferent": "WAT ANDERS IS",
     "diff1H": "Onuitgebrachte muziek.",
     "diff1B": "Leaks, losse tracks en nummers die nooit op streaming kwamen staan in de catalogus, duidelijk gemarkeerd, zodat de meest uitgesproken hoek van de muziekcultuur eindelijk een plek heeft om te beoordelen en te discussiëren.",
     "diff2H": "Releaseavonden.",
     "diff2B": "Elke grote release krijgt een live room op het moment dat hij landt: het wekelijkse ritueel, niet zomaar een functie.",
-    "diff3H": "Debatten.",
+    "diff3H": "Aux battles.",
     "diff3B": "Twee kanten, live stemmen, elke kant gekoppeld aan een plaat.",
     "diff4H": "Fysieke media.",
     "diff4B": "De hele site leeft in een beeldbuis: VHS-labels, consolemenu's, badges die gloeien als een perfecte 10.",
     "questions": "VRAGEN",
     "faq": {
       "q1": "Wat is Peak Music Reviews?",
-      "a1": "Peak Music Reviews is een muzieksociaalnetwerk: denk Letterboxd, maar voor albums. Leden beoordelen en recenseren releases, maken deelbare lijsten, zitten in live chatrooms als nieuwe albums uitkomen en verdedigen hun kant in communitydebatten. Elke recensie hangt aan een echte release uit de Spotify-catalogus of de diepe bibliotheek van Genius, onuitgebrachte tracks inbegrepen.",
+      "a1": "Peak Music Reviews is een muzieksociaalnetwerk: denk Letterboxd, maar voor albums. Leden beoordelen en recenseren releases, maken deelbare lijsten, zitten in live chatrooms als nieuwe albums uitkomen en gaan tegen elkaar in aux battles. Elke recensie hangt aan een echte release uit de Spotify-catalogus of de diepe bibliotheek van Genius, onuitgebrachte tracks inbegrepen.",
       "q2": "Hoe worden albums beoordeeld op Peak Music Reviews?",
       "a2": "Leden geven releases een cijfer van 0 tot 10,0 met één decimaal. Cijfers weerspiegelen echt persoonlijk plezier, niet puur technische analyse: iets goed vinden om een stomme reden telt net zo hard als een technische ontleding. Releasepagina's tonen het communitygemiddelde over alle recensies.",
       "q3": "Kan ik onuitgebrachte of gelekte muziek recenseren op Peak Music Reviews?",
       "a3": "Ja. De catalogus van de site draait op Spotify (de officiële catalogus van uitgebrachte muziek) en Genius (de diepe bibliotheek: onuitgebrachte tracks, losse tracks en nummers die nooit op streaming kwamen). Onuitgebrachte releases zijn duidelijk gemarkeerd op hun pagina's.",
       "q4": "Heb ik een account nodig om Peak Music Reviews te gebruiken?",
-      "a4": "Rondkijken kan iedereen. Beoordelen, recenseren, lijsten maken, live releaserooms bezoeken en stemmen in debatten vragen een gratis account met een unieke gebruikersnaam en een bevestigd e-mailadres.",
+      "a4": "Rondkijken kan iedereen. Beoordelen, recenseren, lijsten maken, live releaserooms bezoeken en stemmen in aux battles vragen een gratis account met een unieke gebruikersnaam en een bevestigd e-mailadres.",
       "q5": "Is Peak Music Reviews gratis, en op welke platforms is het?",
-      "a5": "Ja: beoordelen, recensies, lijsten, live releaserooms, debatten, posts en profielaanpassing zijn allemaal gratis. Het werkt in elke browser op peakmusicreviews.com en als iOS-app in de App Store, met hetzelfde account en dezelfde inhoud op beide. Een Android-app is gepland.",
+      "a5": "Ja: beoordelen, recensies, lijsten, live releaserooms, aux battles, posts en profielaanpassing zijn allemaal gratis. Het werkt in elke browser op peakmusicreviews.com en als iOS-app in de App Store, met hetzelfde account en dezelfde inhoud op beide. Een Android-app is gepland.",
       "q6": "Is Peak Music Reviews een alternatief voor Musicboard?",
-      "a6": "Ja. Het dekt wat Musicboard deed (cijfers van 0 tot 10,0 met decimaal, geschreven recensies, lijsten en sociale profielen) en voegt live rooms op releaseavond, debatten met twee kanten en een catalogus met onuitgebrachte muziek toe. Musicboard-gebruikers die willen overstappen lezen de gids op peakmusicreviews.com/musicboard-alternative (in het Engels)."
+      "a6": "Ja. Het dekt wat Musicboard deed (cijfers van 0 tot 10,0 met decimaal, geschreven recensies, lijsten en sociale profielen) en voegt live rooms op releaseavond, aux battles en een catalogus met onuitgebrachte muziek toe. Musicboard-gebruikers die willen overstappen lezen de gids op peakmusicreviews.com/musicboard-alternative (in het Engels)."
     },
     "getInTouch": "CONTACT",
     "contact": "Vragen, ideeën, problemen?"

@@ -3,7 +3,6 @@
     "releases": "Releases",
     "reviews": "Reviews",
     "lists": "Lists",
-    "debates": "Debates",
     "social": "Social",
     "yourTaste": "Your Taste",
     "search": "Search",
@@ -18,7 +17,8 @@
     "badgeTool": "Badge Tool",
     "signOut": "Sign Out",
     "signIn": "Sign In",
-    "user": "User"
+    "user": "User",
+    "auxBattles": "Aux Battles"
   },
   "tabBar": {
     "ariaLabel": "App navigation",
@@ -37,8 +37,8 @@
     "postSub": "write it up — embed YouTube / TikTok",
     "list": "List",
     "listSub": "stack and rank your picks",
-    "debate": "Debate",
-    "debateSub": "pick a fight, let the votes decide"
+    "aux": "Aux Battle",
+    "auxSub": "pass the aux, let the room decide"
   },
   "footer": {
     "foundAProblem": "Found a problem?",
@@ -221,7 +221,7 @@
     "deletion": {
       "title": "Account Deletion",
       "hint": "Remove your profile and everything you made. No undo.",
-      "intro": "Deleting your account removes your profile and <b>everything you made</b> — reviews, lists, posts, debate votes, chat messages, uploads. There is no undo and no recovery.",
+      "intro": "Deleting your account removes your profile and <b>everything you made</b> — reviews, lists, posts, aux battle votes, chat messages, uploads. There is no undo and no recovery.",
       "delete": "Delete Account",
       "typeUsername": "Type your username <b>@name</b> to confirm:",
       "deleting": "Deleting...",
@@ -253,12 +253,12 @@
       "writeReview": "✚ Write a Review",
       "rateFirst": "✚ Rate Your First Record",
       "firstRunLine": "Your shelf is empty. Start with the records you already know by heart — a score is enough, words optional.",
-      "startDebate": "⚔ Start a Debate",
       "onAir": "ON AIR",
       "coverAlt": "{title} cover",
       "tasteTitle": "Want a channel tuned to just you?",
       "tasteBody": "Your Taste builds a feed from who you follow and what you rate.",
-      "tuneIn": "Tune In →"
+      "tuneIn": "Tune In →",
+      "startAux": "🎧 Host an Aux Battle"
     },
     "closing": {
       "eyebrow": "Your channel is waiting",
@@ -277,7 +277,7 @@
       "step2Label": "Give it a number",
       "step2Body": "Zero to ten, one decimal. Your number shows on every card you post, colored by the score.",
       "step3Label": "Argue it live",
-      "step3Body": "Every release has a live room, open before the album drops at midnight. Want a fight? Start a two-sided debate.",
+      "step3Body": "Every release has a live room, open before the album drops at midnight. Want a fight? Host an aux battle and pass the aux.",
       "onAir": "On air",
       "step3Prop": "“track 4 is the one, argue with a wall”",
       "stepFour": "step four is optional and it's <link>lists</link>. everyone ends up making lists."
@@ -292,7 +292,7 @@
       "point2B": "Countdown albums get a room before release. The chat is live at 11:59.",
       "point3H": "Read without an account",
       "point3B": "Rooms are public. Sign up to talk and rate.",
-      "point4H": "Debates when it gets heated",
+      "point4H": "Aux battles when it gets heated",
       "point4B": "Two sides, one record each, the room votes.",
       "seeOnAir": "See what's on air",
       "onAir": "On air",
@@ -666,8 +666,8 @@
         "description": "Was in the live room the night a record dropped."
       },
       "debate_champion": {
-        "label": "Debate Champion",
-        "description": "Won a featured community debate."
+        "label": "Aux Champion",
+        "description": "Won a featured aux battle."
       },
       "list_master": {
         "label": "List Master",
@@ -844,7 +844,6 @@
       "reviewsCount": "Reviews · {n}",
       "postsCount": "Posts · {n}",
       "listsCount": "Lists · {n}",
-      "debatesCount": "Debates · {n}",
       "writeReview": "Write Review",
       "myReviews": "My Reviews",
       "noReviews": "No reviews yet. Write your first one!",
@@ -859,15 +858,16 @@
       "items": "{n, plural, one {# item} other {# items}}",
       "likes": "{n, plural, one {# like} other {# likes}}",
       "ranked": "ranked",
-      "myDebates": "My Debates",
-      "debatesTotal": "{n, plural, one {# debate} other {# debates}} total",
-      "openDebate": "+ Open a Debate",
-      "noDebates": "No debates yet. Pick a fight worth having.",
       "vs": "vs",
       "votes": "{n, plural, one {# vote} other {# votes}}",
       "takes": "{n, plural, one {# take} other {# takes}}",
       "onAir": "On air",
-      "signedOff": "Signed off"
+      "signedOff": "Signed off",
+      "auxCount": "Aux Battles · {n}",
+      "myAux": "My Aux Battles",
+      "auxTotal": "{n, plural, one {# battle} other {# battles}} total",
+      "hostAux": "+ Host a battle",
+      "noAux": "No battles yet. Pick a topic and pass the aux."
     }
   },
   "releases": {
@@ -1136,119 +1136,209 @@
       "playlistBadge": "♫ PLAYLIST"
     }
   },
-  "debates": {
+  "aux": {
     "index": {
-      "title": "DEBATES",
-      "sub": "Two sides. One vote. Endless arguing. Pick where you stand and defend it on air — your takes get stamped with your side.",
-      "stake": "Stake a claim",
-      "yourDrafts": "Your Drafts",
-      "draft": "Draft",
-      "openPublish": "open & publish ►",
+      "title": "AUX BATTLES",
+      "sub": "Pass the aux. Two songs go head to head, the room listens, the room votes. Brackets, best-of-3s, a live chat, and a champion at the end.",
+      "host": "Host a battle",
+      "joinPlaceholder": "Paste a room link…",
+      "joinGo": "Go",
+      "yourPrivate": "Your private rooms",
+      "liveNow": "Live now",
+      "fillingUp": "Filling up",
+      "lastResults": "Last results",
       "noSignal": "NO SIGNAL",
-      "empty": "No debates on air yet. Open the first one and pick a fight worth having."
-    },
-    "new": {
-      "title": "Open a debate",
-      "sub": "Frame the question, name the two sides, optionally pin the record on trial. The community does the rest."
-    },
-    "edit": {
-      "title": "Edit debate",
-      "back": "Back",
-      "draftNote": "Draft — only you can see it.",
-      "liveNote": "Live — changes show at once."
-    },
-    "page": {
-      "draftBanner": "Draft — only you can see this",
-      "back": "Back",
-      "edit": "Edit",
-      "openedBy": "opened by",
-      "unknown": "unknown"
+      "empty": "No battles on air yet. Host one, pick a topic, and pass the aux."
     },
     "card": {
-      "onAir": "ON AIR",
-      "signOff": "SIGN-OFF",
-      "takes": "{n} TAKES",
-      "vs": "VS",
-      "openedBy": "opened by",
+      "live": "ON AIR",
+      "lobby": "LOBBY",
+      "final": "FINAL",
+      "players": "{n, plural, one {# PLAYER} other {# PLAYERS}}",
+      "bo1": "Single round",
+      "bo3": "Best of 3",
+      "hostJudge": "Host decides",
+      "crowd": "Crowd votes",
+      "private": "Private",
+      "hostedBy": "hosted by",
       "unknown": "unknown"
     },
-    "voteBar": {
-      "aria": "{a}: {pctA}%, {b}: {pctB}%",
-      "votes": "{n, plural, one {# vote} other {# votes}}"
-    },
-    "delete": {
-      "couldnt": "Couldn't delete it.",
-      "network": "Network hiccup — try again.",
-      "confirm": "Delete \"{title}\"? Votes and takes go with it.",
-      "yes": "Yes",
-      "no": "No",
-      "delete": "Delete"
-    },
-    "publish": {
-      "couldnt": "Couldn't publish the debate.",
-      "broke": "Something broke.",
-      "publishing": "PUBLISHING…",
-      "openFloor": "OPEN THE FLOOR"
-    },
-    "room": {
-      "castVote": "Cast your vote",
-      "closed": "— debate closed",
-      "yourSide": "YOUR SIDE",
-      "votesSwitch": "{n, plural, one {# vote} other {# votes}} · switch sides any time",
-      "signInToVote": "<a>Sign in</a> to vote and argue.",
-      "floor": "The floor",
-      "messagesAria": "Debate messages",
-      "deadAir": "DEAD AIR",
-      "nobody": "Nobody has argued yet — first take wins.",
-      "sending": "sending…",
-      "deleteMessage": "Delete message",
-      "deleteYours": "Delete your message",
-      "modDelete": "Mod delete",
-      "archived": "Sign-off — this debate is archived.",
-      "argueFor": "Argue for {side}…",
-      "dropTake": "Drop a take (vote to rep a side)…",
-      "inputAria": "Debate message input",
-      "send": "Send",
-      "signInToArgue": "Sign in to argue",
-      "spectator": "Spectator",
-      "voteFailed": "Vote failed",
-      "sendFailed": "Failed to send",
-      "reactionFailed": "Reaction failed",
-      "confirmDelete": "Delete {name}'s message?",
-      "justNow": "just now"
-    },
-    "form": {
+    "new": {
+      "back": "Back",
+      "title": "Host an aux battle",
+      "sub": "Pick the topic, the format, and who calls it. Players join in the lobby; you start it when the room is full enough.",
+      "topic": "The topic",
+      "topicPlaceholder": "e.g. \"Best song to open a party\"",
+      "random": "Random topic",
+      "presetsLabel": "Or grab one",
+      "format": "Format",
+      "bo1": "Single round",
+      "bo1Sub": "One song each per match. The bracket runs until one player is left.",
+      "bo3": "Best of 3",
+      "bo3Sub": "First to two games wins every match. Longer, more drama.",
+      "judge": "Who decides",
+      "crowd": "The crowd votes",
+      "crowdSub": "Majority wins. A tie goes to overtime — new songs — and you break a second tie.",
+      "hostJudge": "You decide",
+      "hostJudgeSub": "You pick the winner of every game. The room still gets to react.",
+      "hostPlays": "I'm playing too",
+      "hostPlaysSub": "Off = you only host and judge.",
+      "private": "Private room",
+      "privateSub": "Hidden from the index. People need your six-letter code to get in.",
+      "open": "Open the room",
+      "opening": "Opening…",
+      "cancel": "Cancel",
       "errors": {
         "topic": "Give the topic at least 3 characters.",
-        "sides": "Both sides need a label.",
-        "disagree": "The two sides have to actually disagree.",
-        "save": "Couldn't save the debate.",
-        "open": "Couldn't open the debate.",
+        "open": "Couldn't open the room.",
         "broke": "Something broke."
       },
-      "topic": "The topic",
-      "topicPlaceholder": "e.g. \"Is MBDTF overrated?\"",
-      "frame": "Frame it (optional)",
-      "framePlaceholder": "Set the terms of the argument…",
-      "sideAPlaceholder": "e.g. \"Classic\"",
-      "sideBPlaceholder": "e.g. \"Overrated\"",
-      "locked": "People have already voted or argued under these sides, so the labels are locked — the releases, topic and framing can still change.",
-      "pinLabel": "Pin a release to the whole debate (optional)",
-      "pinPlaceholder": "Attach the album/song on trial…",
-      "floorIs": "The floor is",
+      "presets": [
+        "Best song to open a party",
+        "Best rap verse of all time",
+        "Song that makes you cry",
+        "Best summer song",
+        "Best album opener",
+        "Most overrated hit",
+        "Best song under 2 minutes",
+        "Best breakup song",
+        "Best guitar riff",
+        "Best song to drive at night to",
+        "Most underrated deep cut",
+        "Best song by a one-hit wonder",
+        "Best remix",
+        "Best song from the year you were born",
+        "Best song in a language you don't speak",
+        "Song you'd play at your funeral"
+      ]
+    },
+    "gate": {
+      "private": "PRIVATE ROOM",
+      "title": "This one needs a code",
+      "sub": "The host has a six-letter code. Type it in and you're in — chat, votes, the lot.",
+      "placeholder": "ABC123",
+      "enter": "Enter the room",
+      "entering": "Checking…",
+      "signIn": "Sign in to enter",
+      "wrong": "That code doesn't open this room."
+    },
+    "room": {
+      "back": "Back",
+      "share": "Share",
+      "end": "End battle",
+      "endConfirm": "End the battle now? No champion gets crowned.",
       "onAir": "ON AIR",
-      "signedOff": "SIGNED OFF",
-      "saving": "SAVING…",
-      "saveChanges": "SAVE CHANGES",
-      "opening": "OPENING…",
-      "openFloor": "OPEN THE FLOOR",
-      "savingDraft": "Saving…",
-      "saveDraft": "Save as Draft",
-      "cancel": "Cancel",
-      "side": "Side {tone}",
-      "lockedTitle": "Locked — people already voted under this label",
-      "sideRecord": "Side {tone}'s record (optional)…",
-      "detach": "detach"
+      "lobby": "LOBBY",
+      "final": "FINAL",
+      "bo1": "Single round",
+      "bo3": "Best of 3",
+      "hostJudge": "Host decides",
+      "crowdJudge": "Crowd votes",
+      "privateRoom": "Private",
+      "publicRoom": "Public",
+      "hostedBy": "hosted by",
+      "hostTag": "HOST",
+      "youTag": "YOU",
+      "code": "Code",
+      "copy": "Copy",
+      "copied": "Copied",
+      "codeHint": "Send the room link and this code to whoever you want in.",
+      "players": "Players",
+      "noPlayers": "Nobody has grabbed a spot yet.",
+      "watching": "{n, plural, one {# person watching} other {# people watching}}",
+      "signInToPlay": "<a>Sign in</a> to grab a spot or watch.",
+      "grabSpot": "Grab a spot",
+      "watchOnly": "Just watch",
+      "leave": "Leave",
+      "start": "Start the battle",
+      "starting": "Drawing the bracket…",
+      "startNeed": "Needs at least two players.",
+      "overtime": "OVERTIME",
+      "gameN": "Game {n} · {a}–{b}",
+      "roundN": "Round {n}",
+      "phasePicking": "songs going on",
+      "phaseListening": "listening · vote now",
+      "votes": "{n, plural, one {# vote} other {# votes}}",
+      "lockedInYou": "Locked in: {song}. Waiting on the other side.",
+      "lockedIn": "Locked in",
+      "picking": "Picking a song…",
+      "fire": "Fire",
+      "poop": "Trash",
+      "vote": "This one",
+      "voted": "Your pick",
+      "playersSitOut": "Players sit out the vote on their own game.",
+      "signInToVote": "<a>Sign in</a> to vote and throw reactions.",
+      "hostDecides": "The host calls this one.",
+      "crowdDecides": "Majority wins. Switch until the host calls it.",
+      "hostControls": "Host controls",
+      "forfeitHint": "Someone gone? Send the other one through:",
+      "advance": "{name} moves on",
+      "tieTwice": "Tied again after overtime — you break it.",
+      "noVotes": "Nobody voted — you pick.",
+      "wins": "{name} wins",
+      "callIt": "Call it",
+      "calling": "Calling…",
+      "callHint": "Closes the vote and crowns this game.",
+      "standBy": "STAND BY",
+      "champion": "CHAMPION",
+      "championSub": "Won the aux on \"{topic}\".",
+      "ended": "BATTLE ENDED",
+      "endedSub": "The host pulled the plug before a champion was crowned.",
+      "hostAnother": "Host another",
+      "series": "The series",
+      "bracket": "The bracket",
+      "dismiss": "Close",
+      "round": "Round {n}",
+      "bye": "Free win",
+      "deleteRoom": "Delete",
+      "deleteConfirm": "Delete \"{topic}\"? The bracket, votes and chat go with it.",
+      "deleting": "Deleting…",
+      "deleteFailed": "Couldn't delete it."
+    },
+    "chat": {
+      "title": "The room",
+      "messagesAria": "Room chat",
+      "deadAir": "DEAD AIR",
+      "nobody": "Nobody has said a word yet. Hype your side.",
+      "host": "HOST",
+      "justNow": "now",
+      "sending": "sending…",
+      "deleteMessage": "Delete message",
+      "confirmDelete": "Delete {name}'s message?",
+      "archived": "This room is closed.",
+      "placeholder": "Say something…",
+      "inputAria": "Chat message",
+      "send": "Send",
+      "signIn": "Sign in to chat",
+      "sendFailed": "Message didn't send."
+    },
+    "picker": {
+      "hiccup": "Search hiccup — try again.",
+      "badLink": "Couldn't read that link.",
+      "change": "Change",
+      "putOn": "Put it on",
+      "putting": "Putting it on…",
+      "placeholder": "Search {source}…",
+      "searching": "Searching…",
+      "noResults": "Nothing found. Try the link box below.",
+      "linkOnly": "{source} search isn't switched on here — paste a link instead.",
+      "pastePlaceholder": "or paste a Spotify / SoundCloud / YouTube link",
+      "paste": "Load",
+      "sources": {
+        "spotify": "Spotify",
+        "soundcloud": "SoundCloud",
+        "youtube": "YouTube"
+      }
+    },
+    "burst": {
+      "winner": "WINNER",
+      "champion": "CHAMPION",
+      "overtime": "OVERTIME",
+      "takesIt": "takes it with \"{song}\""
+    },
+    "wins": {
+      "aria": "{battles} battles won, {rounds} rounds won",
+      "rounds": "{n}W"
     }
   },
   "rooms": {
@@ -1307,14 +1397,13 @@
     "hoursAgo": "{n}h ago",
     "daysAgo": "{n}d ago",
     "activity": {
-      "startedDebate": "started a debate:",
-      "sides": "({a} vs {b})",
       "reviewed": "reviewed",
       "byArtist": "by {artist}",
       "madeList": "made a list:",
       "albums": "{n, plural, one {# album} other {# albums}}",
       "ranked": ", ranked",
-      "likedReview": "liked a review of"
+      "likedReview": "liked a review of",
+      "hostedAux": "is hosting an aux battle:"
     }
   },
   "connections": {
@@ -1327,11 +1416,11 @@
   },
   "search": {
     "title": "SEARCH",
-    "sub": "Every channel at once — people, artists, releases, reviews, debates, lists, posts.",
+    "sub": "Every channel at once — people, artists, releases, reviews, aux battles, lists, posts.",
     "placeholder": "Search anything — people, artists, releases…",
     "aria": "Search everything",
     "tuning": "TUNING…",
-    "hint": "Type at least two characters — users, artists, releases, reviews, debates, lists, and posts all come back at once.",
+    "hint": "Type at least two characters — users, artists, releases, reviews, aux battles, lists, and posts all come back at once.",
     "noSignal": "NO SIGNAL",
     "nothing": "Nothing on any channel for “{query}”. Try an artist, an album, or a username.",
     "sections": {
@@ -1339,13 +1428,16 @@
       "artists": "Artists",
       "releases": "Releases",
       "reviews": "Reviews",
-      "debates": "Debates",
       "lists": "Lists",
-      "posts": "Posts"
+      "posts": "Posts",
+      "auxBattles": "Aux Battles"
     },
     "communityAvg": "community avg",
     "closed": "CLOSED",
-    "byOwner": "by @{owner}"
+    "byOwner": "by @{owner}",
+    "auxPlayers": "{n, plural, one {# player} other {# players}}",
+    "auxLive": "ON AIR",
+    "auxLobby": "LOBBY"
   },
   "userSearch": {
     "placeholder": "Find people by username…",
@@ -1380,7 +1472,8 @@
     "newPost": "posted{title}",
     "newList": "made a new list{title}",
     "newDebate": "started a debate{title}",
-    "other": "did something"
+    "other": "did something",
+    "newAux": "is hosting an aux battle{title}"
   },
   "taste": {
     "page": {
@@ -1480,7 +1573,7 @@
     "title": "About Peak Music Reviews",
     "sub": "What it is, why it exists, and the questions people ask.",
     "inOneBreath": "IN ONE BREATH",
-    "intro": "<strong>Peak Music Reviews</strong> is a free music social network and review app: members rate albums and songs from 0 to 10.0, write reviews, build lists, join live chat rooms the night a record drops, and pick a side in two-sided debates. Every review is tied to a real release — the whole Spotify catalog plus Genius's deep library, so unreleased and leaked songs can be rated too (by metadata, never files). It runs in any browser and as an iOS app, with one account across both. Think Letterboxd, for music.",
+    "intro": "<strong>Peak Music Reviews</strong> is a free music social network and review app: members rate albums and songs from 0 to 10.0, write reviews, build lists, join live chat rooms the night a record drops, and go head to head in aux battles. Every review is tied to a real release — the whole Spotify catalog plus Genius's deep library, so unreleased and leaked songs can be rated too (by metadata, never files). It runs in any browser and as an iOS app, with one account across both. Think Letterboxd, for music.",
     "facts": {
       "what": "What",
       "whatV": "Music review app + social network",
@@ -1493,7 +1586,7 @@
       "catalog": "Catalog",
       "catalogV": "All of Spotify + Genius's deep library, unreleased included",
       "live": "Live",
-      "liveV": "Release-night chat rooms and two-sided debates"
+      "liveV": "Release-night chat rooms and aux battles"
     },
     "joinFree": "Join free",
     "iosApp": "iOS app",
@@ -1501,31 +1594,31 @@
     "story1": "Peak Music Reviews started with a simple frustration: film lovers have a home. They log what they watch, rate it, argue about it, and build a taste profile that actually says something about them. Music — the thing most of us spend more hours with than any film — never got that place.",
     "story2": "So we built it. Not another streaming app, not another algorithm feeding you what it thinks you already like — a place where the listening itself is the point. Every review here is tied to a real release, from the biggest album of the year to a loosie that never touched streaming.",
     "thePurpose": "THE PURPOSE",
-    "purpose1": "One place for your whole listening life: rate records 0–10, build lists, pick a side in debates, and be in the room — live — the moment an album drops. Your profile is yours to arrange and theme; your feed is built from who you follow and what you rate, not from ads.",
+    "purpose1": "One place for your whole listening life: rate records 0–10, build lists, win the aux in a battle, and be in the room — live — the moment an album drops. Your profile is yours to arrange and theme; your feed is built from who you follow and what you rate, not from ads.",
     "purpose2": "The bet is simple: the best music discovery engine ever made is other people who care. Everything on this site exists to put you closer to them.",
     "whatsDifferent": "WHAT'S DIFFERENT",
     "diff1H": "Unreleased music.",
     "diff1B": "Leaks, loosies and songs that never hit streaming are in the catalog and clearly tagged, so the most opinionated corner of music culture finally has a place to rate and argue.",
     "diff2H": "Release nights.",
     "diff2B": "Every big drop gets a live room the moment it lands — the weekly ritual, not just a feature.",
-    "diff3H": "Debates.",
+    "diff3H": "Aux battles.",
     "diff3B": "Two sides, live votes, each side tied to a record.",
     "diff4H": "Physical media.",
     "diff4B": "The whole site lives inside a CRT — VHS labels, console dashboards, badges that glow like a perfect 10.",
     "questions": "QUESTIONS",
     "faq": {
       "q1": "What is Peak Music Reviews?",
-      "a1": "Peak Music Reviews is a music social network — think Letterboxd, but for albums. Members rate and review releases, build shareable lists, join live chat rooms when new albums drop, and argue their side in community debates. Every review is tied to a real release from the Spotify catalog or Genius's deep library, unreleased tracks included.",
+      "a1": "Peak Music Reviews is a music social network — think Letterboxd, but for albums. Members rate and review releases, build shareable lists, join live chat rooms when new albums drop, and go head to head in aux battles. Every review is tied to a real release from the Spotify catalog or Genius's deep library, unreleased tracks included.",
       "q2": "How are albums rated on Peak Music Reviews?",
       "a2": "Members rate releases from 0 to 10.0 with decimal precision. Ratings reflect genuine personal enjoyment rather than purely technical analysis — liking something for a dumb reason is just as valid as a technical breakdown. Release pages show the community average across all reviews.",
       "q3": "Can I review unreleased or leaked music on Peak Music Reviews?",
       "a3": "Yes. The site's catalog is powered by both Spotify (the canonical released catalog) and Genius (the deep library — unreleased tracks, loosies, and songs that never hit streaming). Unreleased releases are clearly tagged on their pages.",
       "q4": "Do I need an account to use Peak Music Reviews?",
-      "a4": "Browsing is open to everyone. Rating, reviewing, building lists, joining live release rooms, and voting in debates require a free account with a unique username and a confirmed email address.",
+      "a4": "Browsing is open to everyone. Rating, reviewing, building lists, joining live release rooms, and voting in aux battles require a free account with a unique username and a confirmed email address.",
       "q5": "Is Peak Music Reviews free, and what platforms is it on?",
-      "a5": "Yes — rating, reviews, lists, live release rooms, debates, posts and profile customization are all free. It runs in any web browser at peakmusicreviews.com and as an iOS app on the App Store, with the same account and content on both. An Android app is planned.",
+      "a5": "Yes — rating, reviews, lists, live release rooms, aux battles, posts and profile customization are all free. It runs in any web browser at peakmusicreviews.com and as an iOS app on the App Store, with the same account and content on both. An Android app is planned.",
       "q6": "Is Peak Music Reviews a Musicboard alternative?",
-      "a6": "Yes. It covers what Musicboard did — 0–10.0 decimal ratings, written reviews, lists and social profiles — and adds live release-night rooms, two-sided debates, and a catalog that includes unreleased music. Musicboard users looking to switch can read the dedicated guide at peakmusicreviews.com/musicboard-alternative."
+      "a6": "Yes. It covers what Musicboard did — 0–10.0 decimal ratings, written reviews, lists and social profiles — and adds live release-night rooms, aux battles, and a catalog that includes unreleased music. Musicboard users looking to switch can read the dedicated guide at peakmusicreviews.com/musicboard-alternative."
     },
     "getInTouch": "GET IN TOUCH",
     "contact": "Questions, ideas, problems?"

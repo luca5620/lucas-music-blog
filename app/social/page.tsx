@@ -429,20 +429,17 @@ function ActivityRow({ item }: { item: ActivityItem }) {
 function ActivitySentence({ item }: { item: ActivityItem }) {
   const t = useTranslations("social.activity");
   switch (item.type) {
-    case "debate": {
+    case "aux": {
       const p = item.payload;
       return (
         <>
-          {t("startedDebate")}{" "}
+          {t("hostedAux")}{" "}
           <Link
-            href={`/debates/${p.slug}`}
+            href={`/aux-battles/${p.slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
           >
-            {p.title}
-          </Link>{" "}
-          <span className="text-[#5a5a60]">
-            {t("sides", { a: p.side_a_label, b: p.side_b_label })}
-          </span>
+            {p.topic}
+          </Link>
         </>
       );
     }

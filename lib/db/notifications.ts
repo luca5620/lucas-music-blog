@@ -27,14 +27,17 @@ export type NotificationType =
   | "new_review"
   | "new_post"
   | "new_list"
-  | "new_debate";
+  | "new_debate"
+  // Aux battles (042): someone you follow is hosting a room.
+  | "new_aux";
 
 /** The four the CREATE tab makes — the only types that fan out. */
 export type FollowFeedType =
   | "new_review"
   | "new_post"
   | "new_list"
-  | "new_debate";
+  | "new_debate"
+  | "new_aux";
 
 export interface NotificationRow {
   id: string;

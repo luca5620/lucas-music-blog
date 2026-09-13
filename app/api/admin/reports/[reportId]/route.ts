@@ -26,6 +26,7 @@ const DELETABLE: Record<string, string> = {
   review: "reviews",
   comment: "comments",
   debate_message: "debate_messages",
+  aux_message: "aux_messages",
   room_message: "room_messages",
   list: "lists",
   post: "posts",

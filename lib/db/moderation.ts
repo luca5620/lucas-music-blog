@@ -18,7 +18,11 @@ export type ReportTargetType =
   | "debate_message"
   | "room_message"
   | "profile"
-  | "post";
+  | "post"
+  // Aux battles (migration 042): the room itself (its topic) and a
+  // chat message in it.
+  | "aux_room"
+  | "aux_message";
 
 export const REPORT_TARGET_TYPES: ReportTargetType[] = [
   "review",
@@ -29,6 +33,8 @@ export const REPORT_TARGET_TYPES: ReportTargetType[] = [
   "room_message",
   "profile",
   "post",
+  "aux_room",
+  "aux_message",
 ];
 
 export interface ContentReport {

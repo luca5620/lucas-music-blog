@@ -35,7 +35,7 @@ export interface Profile {
   /** Which preview player release pages show this member (migration
       036): Spotify is the default, Apple Music the alternative — never
       both. Absent until the migration runs. */
-  preferred_player?: "spotify" | "apple";
+  preferred_player?: "spotify" | "apple" | "soundcloud";
   /** NULL for accounts that never picked genres (signup trigger
       doesn't set it) — always guard with ?? [] before iterating. */
   favorite_genres: string[] | null;
@@ -194,6 +194,10 @@ export interface Release {
       the migration runs. */
   apple_music_id?: string | null;
   apple_music_checked_at?: string | null;
+  /** SoundCloud track/set permalink for the preview player (migration
+      042) — same lazy resolve + cache as Apple. */
+  soundcloud_url?: string | null;
+  soundcloud_checked_at?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -409,6 +413,110 @@ export interface ProfileStats {
 export interface ReviewStats {
   like_count: number;
   comment_count: number;
+}
+
+/* --- Aux battles (migration 042) — head-to-head song rooms --- */
+
+/** One song a player put on. Built by lib/aux/songs.ts, stored as
+    JSON on the game (aux_pick_song checks the shape). */
+export interface AuxSong {
+  source: "spotify" | "soundcloud" | "youtube";
+  title: string;
+  artist: string | null;
+  artwork: string | null;
+  /** The public page for the song on its service. */
+  url: string;
+  /** Spotify: track id · YouTube: video id · SoundCloud: track URL. */
+  embed_id: string;
+  /** Set when the song is also a catalog release (Spotify picks). */
+  release_id?: string | null;
+  release_slug?: string | null;
+}
+
+export interface AuxRoom {
+  id: string;
+  slug: string;
+  host_id: string;
+  topic: string;
+  /** bo1 = one song each per match · bo3 = first to two games. */
+  format: "bo1" | "bo3";
+  /** crowd = majority vote (OT on ties) · host = the host picks. */
+  judge: "crowd" | "host";
+  is_private: boolean;
+  host_plays: boolean;
+  status: "lobby" | "live" | "finished";
+  champion_id: string | null;
+  current_game_id: string | null;
+  player_count: number;
+  message_count: number;
+  created_at: string;
+  started_at: string | null;
+  finished_at: string | null;
+}
+
+export interface AuxMember {
+  room_id: string;
+  user_id: string;
+  role: "player" | "viewer";
+  joined_at: string;
+}
+
+export interface AuxMatch {
+  id: string;
+  room_id: string;
+  round: number;
+  position: number;
+  player_a_id: string;
+  player_b_id: string | null;
+  is_bye: boolean;
+  wins_a: number;
+  wins_b: number;
+  winner_id: string | null;
+  status: "pending" | "live" | "done";
+  created_at: string;
+}
+
+export interface AuxGame {
+  id: string;
+  match_id: string;
+  room_id: string;
+  game_no: number;
+  is_ot: boolean;
+  song_a: AuxSong | null;
+  song_b: AuxSong | null;
+  phase: "picking" | "listening" | "done";
+  winner_side: "a" | "b" | null;
+  decided_by: "crowd" | "host" | "bye" | null;
+  votes_a: number;
+  votes_b: number;
+  created_at: string;
+  closed_at: string | null;
+}
+
+export interface AuxVote {
+  game_id: string;
+  room_id: string;
+  user_id: string;
+  side: "a" | "b";
+  created_at: string;
+}
+
+export interface AuxReaction {
+  id: string;
+  game_id: string;
+  room_id: string;
+  user_id: string;
+  side: "a" | "b";
+  kind: "fire" | "poop";
+  created_at: string;
+}
+
+export interface AuxMessage {
+  id: string;
+  room_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
 }
 
 /* --- Supabase Database type helper --- */
@@ -866,6 +974,79 @@ export type Database = {
             columns: ["release_id"];
             isOneToOne: false;
             referencedRelation: "releases";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      aux_rooms: {
+        Row: AuxRoom;
+        Insert: Pick<AuxRoom, "slug" | "host_id" | "topic"> & Partial<Omit<AuxRoom, "slug" | "host_id" | "topic">>;
+        Update: Partial<AuxRoom>;
+        Relationships: [
+          {
+            foreignKeyName: "aux_rooms_host_id_fkey";
+            columns: ["host_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "aux_rooms_champion_id_fkey";
+            columns: ["champion_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      aux_members: {
+        Row: AuxMember;
+        Insert: Pick<AuxMember, "room_id" | "user_id"> & Partial<Omit<AuxMember, "room_id" | "user_id">>;
+        Update: Partial<AuxMember>;
+        Relationships: [
+          {
+            foreignKeyName: "aux_members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      aux_matches: {
+        Row: AuxMatch;
+        Insert: Pick<AuxMatch, "room_id" | "round" | "position" | "player_a_id"> & Partial<Omit<AuxMatch, "room_id" | "round" | "position" | "player_a_id">>;
+        Update: Partial<AuxMatch>;
+        Relationships: [];
+      };
+      aux_games: {
+        Row: AuxGame;
+        Insert: Pick<AuxGame, "match_id" | "room_id" | "game_no"> & Partial<Omit<AuxGame, "match_id" | "room_id" | "game_no">>;
+        Update: Partial<AuxGame>;
+        Relationships: [];
+      };
+      aux_votes: {
+        Row: AuxVote;
+        Insert: Pick<AuxVote, "game_id" | "room_id" | "user_id" | "side"> & Partial<Omit<AuxVote, "game_id" | "room_id" | "user_id" | "side">>;
+        Update: Partial<AuxVote>;
+        Relationships: [];
+      };
+      aux_reactions: {
+        Row: AuxReaction;
+        Insert: Pick<AuxReaction, "game_id" | "room_id" | "user_id" | "side" | "kind"> & Partial<Omit<AuxReaction, "game_id" | "room_id" | "user_id" | "side" | "kind">>;
+        Update: Partial<AuxReaction>;
+        Relationships: [];
+      };
+      aux_messages: {
+        Row: AuxMessage;
+        Insert: Pick<AuxMessage, "room_id" | "user_id" | "content"> & Partial<Omit<AuxMessage, "room_id" | "user_id" | "content">>;
+        Update: Partial<AuxMessage>;
+        Relationships: [
+          {
+            foreignKeyName: "aux_messages_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           }
         ];

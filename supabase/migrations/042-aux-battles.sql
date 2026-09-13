@@ -665,10 +665,10 @@ grant execute on function public.aux_wins_for(uuid[]) to anon, authenticated;
 
 -- ---------- moderation: the new report targets ----------
 
-alter table public.reports
-  drop constraint if exists reports_target_type_check;
-alter table public.reports
-  add constraint reports_target_type_check
+alter table public.content_reports
+  drop constraint if exists content_reports_target_type_check;
+alter table public.content_reports
+  add constraint content_reports_target_type_check
   check (target_type in (
     'review', 'comment', 'list', 'debate', 'debate_message',
     'room_message', 'profile', 'post', 'aux_room', 'aux_message'

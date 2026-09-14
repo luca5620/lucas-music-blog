@@ -91,8 +91,8 @@ don't wait to be asked:**
 ## ⏳ In progress
 
 - **2026-09-14 (MacBook): AUX WARS — hidden rooms count on the
-  leaderboard. ⚠️ MIGRATION 047 TO RUN**
-  (`supabase/migrations/047-leaderboard-counts-hidden.sql`). Luca's
+  leaderboard. ✅ MIGRATION 047 RUN** (Luca, same day;
+  `supabase/migrations/047-leaderboard-counts-hidden.sql`). Luca's
   call, answering two questions he raised about private-room voting:
   - **Confirmed, no change needed:** in a truly private (hidden) room
     anyone holding the code CAN vote. The code writes the member row,
@@ -119,13 +119,40 @@ don't wait to be asked:**
     still applies everywhere. No UI copy changed: the leaderboard
     footnote only ever mentioned the self-judged rule, in all six
     locales.
-  - **OPEN IDEA, not built — "players don't vote, spectators do".**
-    In a SMALL hidden room the voting crowd is mostly the other
-    players waiting their turn, so two friends can vote each other up
-    the bracket. Now that hidden rooms count, that lever matters more.
-    A host setting ("only non-players vote") is the fix if it ever
-    becomes a real problem; deliberately NOT built on a hypothetical.
-    Ask Luca before building.
+  - **CLOSED, and now a STANDING RULE (Luca 2026-09-14):** the
+    "players don't vote, spectators do" idea is REJECTED, and the
+    current behaviour is exactly the rule he wants — *"i just dont
+    want players to vote during their OWN round, everywhere else they
+    should be able to vote if they are a player, just not any time
+    when they chose a song themselves."* His reason: the app is small
+    and there aren't enough users to field a real audience yet, so
+    players voting is what makes a small room work at all. The only
+    block is voting on a game you picked a song for. **No code change
+    was needed — this is already what ships**, and it must NOT be
+    "tightened" later:
+      · The `aux_votes` insert policy blocks a voter only when they
+        are `player_a_id` or `player_b_id` OF THE MATCH that game
+        belongs to. So a player is blocked across every game of their
+        own match (all three in a bo3) and free everywhere else,
+        including other matches in the same round.
+      · The client agrees: `mySide` comes off the current match and
+        `canVote` is `!mySide` (components/aux-wars/AuxRoom.tsx).
+      · Small-room consequence to expect, not a bug: in a TWO-player
+        war both players are in every match, so neither ever votes —
+        it falls to spectators, or to the host calling it. With no
+        spectators there are no votes at all. And if that host also
+        plays in a host-judged room, `aux_self_judged` voids their own
+        win (044).
+  - **NEW: `docs/RATE-LIMITS.md`** — the full inventory Luca asked for
+    (every Aux Wars limit, both live chats, the rest of the site) plus
+    how the limiter behaves. **One action for Luca: confirm
+    `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are set in
+    Vercel Production.** Without them `rateLimit()` silently falls
+    back to a per-instance in-memory counter, so every published
+    number becomes roughly limit × warm instances. Redis errors also
+    fail OPEN by design. Also noted there: signed-out traffic is
+    barely limited (limits key on user id), and auth endpoints are
+    rate limited by SUPABASE's dashboard settings, not by our code.
 
 - **2026-09-14 (Windows): AUX BATTLES → AUX WARS.** Shipped to main.
   No migration; every DB table is still `aux_*` and stays that way.

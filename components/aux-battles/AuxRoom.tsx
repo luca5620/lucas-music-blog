@@ -972,10 +972,17 @@ export default function AuxRoom({
                           {needsHost === "tie" ? t("tieTwice") : t("noVotes")}
                         </span>
                       )}
-                      <button type="button" onClick={() => void call("a")} disabled={!!busy} className="btn-y2k btn-y2k-primary !py-1.5 !px-3 !text-xs disabled:opacity-50">
+                      {/* Both sides wear the SAME button, tinted to
+                          their own colour — the picking phase's pair
+                          above. They used to be a filled primary
+                          against a primary with rose overrides, which
+                          read as one live button and one broken one
+                          (Luca 2026-09-14: "it looks weird with one
+                          side having red text"). */}
+                      <button type="button" onClick={() => void call("a")} disabled={!!busy} className="btn-y2k btn-y2k-outline !py-1.5 !px-3 !text-xs text-accent-primary disabled:opacity-50">
                         {t("wins", { name: playerA?.profile.display_name || playerA?.profile.username || "A" })}
                       </button>
-                      <button type="button" onClick={() => void call("b")} disabled={!!busy} className="btn-y2k btn-y2k-primary !py-1.5 !px-3 !text-xs !border-accent-rose !text-accent-rose disabled:opacity-50">
+                      <button type="button" onClick={() => void call("b")} disabled={!!busy} className="btn-y2k btn-y2k-outline !py-1.5 !px-3 !text-xs text-accent-rose disabled:opacity-50">
                         {t("wins", { name: playerB?.profile.display_name || playerB?.profile.username || "B" })}
                       </button>
                     </div>

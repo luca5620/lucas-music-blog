@@ -234,16 +234,23 @@ export default function SongPicker({ onPick, tone }: Props) {
             <p className="mt-1 text-xs text-text-muted">{t("noResults")}</p>
           )}
           {results.length > 0 && (
-            /* PHONES: no inner scroller. The results sit in the page
-               flow and the PAGE scrolls them (Luca 2026-09-14: "on
-               mobile it is difficult to scroll through songs when
-               searching up a song"). A ~290px window inside a page
-               that also scrolls is a thumb-trap on iOS — the drag
-               fights over which box moves. Desktop keeps the capped
-               window, where a mouse wheel over a list is normal, and
-               overscroll-contain stops the wheel leaking to the page
-               at the ends. */
-            <ul className="mt-2 panel-xbox divide-y divide-border-subtle sm:max-h-72 sm:overflow-y-auto sm:overscroll-contain">
+            /* The chrome and the SCROLLER have to be two elements.
+               .panel-xbox carries `overflow: hidden`, and globals.css
+               is loaded after Tailwind's utilities, so putting both on
+               one <ul> let that beat `overflow-y-auto` — the list was
+               capped AND clipped, five rows with no way down (Luca
+               2026-09-14: "its still a stuck select 5"). The panel is
+               the wrapper now; the <ul> inside does the scrolling.
+
+               PHONES still get no inner scroller: the results sit in
+               the page flow and the PAGE scrolls them. A short window
+               inside a page that also scrolls is a thumb-trap on iOS,
+               where the drag fights over which box moves. Desktop gets
+               the capped window a mouse wheel expects, and
+               overscroll-contain keeps the wheel from leaking to the
+               page at the ends. */
+            <div className="mt-2 panel-xbox">
+              <ul className="divide-y divide-border-subtle sm:max-h-[26rem] sm:overflow-y-auto sm:overscroll-contain">
               {results.map((s) => {
                 const tag = sourceTag(s.source);
                 return (
@@ -277,7 +284,8 @@ export default function SongPicker({ onPick, tone }: Props) {
                   </li>
                 );
               })}
-            </ul>
+              </ul>
+            </div>
           )}
         </div>
       ) : (

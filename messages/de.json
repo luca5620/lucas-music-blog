@@ -1201,7 +1201,10 @@
       "optionsHint": "eins davon oder beides",
       "hidden": "Wirklich privat",
       "hiddenOffSub": "Aus: das Publikum schaut zu und stimmt ab, nur der Code spielt.",
-      "hiddenOnSub": "Vor allen versteckt. Kein Publikum, keine Stimmen von außen."
+      "hiddenOnSub": "Vor allen versteckt. Kein Publikum, keine Stimmen von außen.",
+      "topicEachGame": "Pro Spiel ein neues Thema",
+      "topicEachGameOffSub": "Aus: ein Thema für das ganze Best-of-3.",
+      "topicEachGameOnSub": "Du gibst vor jedem Spiel eines Matches ein frisches Thema vor."
     },
     "gate": {
       "private": "PRIVATER RAUM",
@@ -1373,7 +1376,8 @@
         "Bester Song aus deinem Geburtsjahr",
         "Bester Song der 90er",
         "Bester Song in einer Sprache, die du nicht sprichst"
-      ]
+      ],
+      "titleGame": "Thema für Spiel {n}"
     },
     "leaderboard": {
       "title": "Top 10",

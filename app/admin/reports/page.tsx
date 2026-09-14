@@ -34,6 +34,7 @@ const DELETABLE_TYPES: ReportTargetType[] = [
   "list",
   "post",
   "aux_message",
+  "aux_room",
 ];
 
 /** Human label + (where possible) a link to look at the target. */

@@ -178,6 +178,11 @@ export default function AuxRoom({
           : null
       : null;
   const canVote = !!user && !!currentGame && currentGame.phase === "listening" && !mySide;
+  // The brief everyone is playing to. A bo3 room with "a topic each
+  // game" on (migration 046) sets it on the GAME; every other room
+  // sets it once per round, on the match. Game first, match second —
+  // one place to ask, so nothing on the stage can disagree.
+  const roundTopic = currentGame?.topic ?? currentMatch?.topic ?? null;
   // The 🔥 / 💩 tallies, read straight off the game row.
   const heat = useMemo(
     () => ({
@@ -725,7 +730,7 @@ export default function AuxRoom({
 
               {/* The round's topic (043) — the host names it as the round
                   opens; until then nobody can put a song on. */}
-              {currentMatch.topic ? (
+              {roundTopic ? (
                 /* The label sits on its OWN line now. Inside the
                    <p> it inherited .crt-title's chromatic-aberration
                    text-shadow at 10px, which smeared it into the
@@ -736,7 +741,7 @@ export default function AuxRoom({
                     {t("topicLabel")}
                   </span>
                   <p className="crt-title text-lg sm:text-2xl leading-snug break-words">
-                    {currentMatch.topic}
+                    {roundTopic}
                   </p>
                 </div>
               ) : (
@@ -780,11 +785,11 @@ export default function AuxRoom({
                       </div>
 
                       {/* Picking */}
-                      {currentGame.phase === "picking" && !currentMatch.topic && (
+                      {currentGame.phase === "picking" && !roundTopic && (
                         <p className="text-sm text-text-muted">{t("waitingTopic")}</p>
                       )}
                       {currentGame.phase === "picking" &&
-                        !!currentMatch.topic &&
+                        !!roundTopic &&
                         (mySide === side ? (
                           song ? (
                             <p className="text-sm text-text-secondary">✓ {t("lockedInYou", { song: song.title })}</p>
@@ -967,8 +972,12 @@ export default function AuxRoom({
               {isHost && (
                 <div className="rounded-lg border border-osd-amber/30 bg-osd-amber/5 p-3 space-y-2">
                   <span className="pixel-text text-[10px] uppercase tracking-widest text-osd-amber">{t("hostControls")}</span>
-                  {currentGame.phase === "picking" && !currentMatch.topic ? (
-                    <TopicPicker roomId={room.id} round={currentMatch.round} />
+                  {currentGame.phase === "picking" && !roundTopic ? (
+                    <TopicPicker
+                      roomId={room.id}
+                      round={currentMatch.round}
+                      game={room.topic_each_game ? currentGame.game_no : null}
+                    />
                   ) : currentGame.phase === "picking" ? (
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs text-text-muted">{t("forfeitHint")}</span>

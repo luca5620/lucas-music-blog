@@ -1201,7 +1201,10 @@
       "optionsHint": "kies er een, of allebei",
       "hidden": "Echt privé",
       "hiddenOffSub": "Uit: het publiek kijkt en stemt, alleen de code speelt.",
-      "hiddenOnSub": "Verborgen voor iedereen. Geen publiek, geen stemmen van buiten."
+      "hiddenOnSub": "Verborgen voor iedereen. Geen publiek, geen stemmen van buiten.",
+      "topicEachGame": "Elk potje een nieuw thema",
+      "topicEachGameOffSub": "Uit: één thema voor de hele best-of-3.",
+      "topicEachGameOnSub": "Je kiest een vers thema voor elk potje van een wedstrijd."
     },
     "gate": {
       "private": "PRIVÉROOM",
@@ -1373,7 +1376,8 @@
         "Beste nummer uit je geboortejaar",
         "Beste nummer uit de jaren 90",
         "Beste nummer in een taal die je niet spreekt"
-      ]
+      ],
+      "titleGame": "Thema potje {n}"
     },
     "leaderboard": {
       "title": "Top 10",

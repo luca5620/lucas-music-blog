@@ -105,31 +105,45 @@ export async function listAuxRooms(): Promise<{
 }> {
   const supabase = await createClient();
   const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const [liveRes, lobbyRes, doneRes] = await Promise.all([
-    supabase
-      .from("aux_rooms")
-      .select(ROOM_SELECT)
-      .eq("status", "live")
-      .eq("is_hidden", false)
-      .order("started_at", { ascending: false })
-      .limit(24),
-    supabase
-      .from("aux_rooms")
-      .select(ROOM_SELECT)
-      .eq("status", "lobby")
-      .eq("is_hidden", false)
-      .order("created_at", { ascending: false })
-      .limit(24),
-    supabase
-      .from("aux_rooms")
-      .select(ROOM_SELECT)
-      .eq("status", "finished")
-      .eq("is_hidden", false)
-      .not("champion_id", "is", null)
-      .gte("finished_at", dayAgo)
-      .order("finished_at", { ascending: false })
-      .limit(12),
-  ]);
+
+  /* Migrations are run BY HAND while a push deploys instantly, so
+     there is always a window where this code is ahead of the
+     database. It cost us a whole empty arena once (2026-09-14: the
+     is_hidden filter went out before migration 045 and PostgREST
+     answered 42703 for every section, which read as "my room
+     disappeared"). So: ask for is_hidden, and if the column isn't
+     there yet, fall back to is_private — the thing it replaced. */
+  const shelf = async (hideCol: "is_hidden" | "is_private") =>
+    Promise.all([
+      supabase
+        .from("aux_rooms")
+        .select(ROOM_SELECT)
+        .eq("status", "live")
+        .eq(hideCol, false)
+        .order("started_at", { ascending: false })
+        .limit(24),
+      supabase
+        .from("aux_rooms")
+        .select(ROOM_SELECT)
+        .eq("status", "lobby")
+        .eq(hideCol, false)
+        .order("created_at", { ascending: false })
+        .limit(24),
+      supabase
+        .from("aux_rooms")
+        .select(ROOM_SELECT)
+        .eq("status", "finished")
+        .eq(hideCol, false)
+        .not("champion_id", "is", null)
+        .gte("finished_at", dayAgo)
+        .order("finished_at", { ascending: false })
+        .limit(12),
+    ]);
+
+  let [liveRes, lobbyRes, doneRes] = await shelf("is_hidden");
+  if (liveRes.error?.code === "42703") {
+    [liveRes, lobbyRes, doneRes] = await shelf("is_private");
+  }
   const shape = (res: { data: unknown }) =>
     ((res.data ?? []) as unknown as RoomRow[]).map(shapeRoom);
   return { live: shape(liveRes), lobby: shape(lobbyRes), finished: shape(doneRes) };
@@ -226,12 +240,16 @@ export async function getAuxWins(userIds: string[]): Promise<Map<string, AuxWins
  */
 export async function hasAuxSeat(roomId: string, userId: string): Promise<boolean> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("aux_seats")
     .select("user_id")
     .eq("room_id", roomId)
     .eq("user_id", userId)
     .maybeSingle();
+  // Before migration 045 the table doesn't exist, and back then simply
+  // BEING in a private room meant you'd typed the code — so the honest
+  // fallback is yes, not a locked-out lobby.
+  if (error && /42P01|does not exist/i.test(error.message ?? "")) return true;
   return !!data;
 }
 

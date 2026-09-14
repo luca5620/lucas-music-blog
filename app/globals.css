@@ -4347,6 +4347,33 @@ fieldset {
 }
 .aux-react-mine span { color: var(--text-primary); }
 
+/* A SUB-OPTION THAT UNFOLDS (NewRoomForm). Ticking "private" or
+   picking "best of 3" reveals one more box; rendering it in and out
+   made the form snap and the buttons below jump (Luca 2026-09-14:
+   picking a private room "looks off"). It stays in the DOM at zero
+   height instead and grows into place. grid-template-rows 0fr → 1fr
+   is the one way to animate to a content-driven height without
+   measuring anything in JS. */
+.aux-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.28s cubic-bezier(0.32, 0.72, 0.33, 1),
+    opacity 0.2s ease;
+}
+.aux-reveal > * {
+  overflow: hidden;
+  min-height: 0;
+}
+.aux-reveal-on {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+/* Folded away = not there for anyone: the wrapper carries `inert`
+   while it's closed, which takes it out of the tab order and out of
+   the accessibility tree without fighting the height transition. */
+
 /* THE PLAY CARD — the side that isn't playing (AuxRoom). Two
    cross-origin iframes can't be paused from this page, so only ONE
    player is ever mounted; the other side sits as this card until you

@@ -27,6 +27,12 @@ const DELETABLE: Record<string, string> = {
   comment: "comments",
   debate_message: "debate_messages",
   aux_message: "aux_messages",
+  // A room's NAME and its round TOPICS are host-written text on a
+  // public page, so a reported room has to be removable from here
+  // too — not just by the host who wrote it (migration 046 adds the
+  // staff delete policy this leans on). Matches, games, votes,
+  // reactions and chat all cascade off it.
+  aux_room: "aux_rooms",
   room_message: "room_messages",
   list: "lists",
   post: "posts",

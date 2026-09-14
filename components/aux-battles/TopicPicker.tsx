@@ -14,7 +14,18 @@ import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { hapticTap } from "@/lib/native";
 
-export default function TopicPicker({ roomId, round }: { roomId: string; round: number }) {
+export default function TopicPicker({
+  roomId,
+  round,
+  game,
+}: {
+  roomId: string;
+  round: number;
+  /** The game number in a "topic each game" bo3 room (migration 046),
+      null everywhere else. Only changes the heading — the route knows
+      from the room row which one it's writing. */
+  game?: number | null;
+}) {
   const t = useTranslations("aux.topic");
   const presets = useMemo(() => {
     const raw = t.raw("presets");
@@ -63,7 +74,7 @@ export default function TopicPicker({ roomId, round }: { roomId: string; round: 
     <form onSubmit={submit} className="space-y-3">
       <div>
         <span className="block text-xs uppercase tracking-widest text-osd-amber font-[family-name:var(--font-heading)]">
-          {t("title", { n: round })}
+          {game ? t("titleGame", { n: game }) : t("title", { n: round })}
         </span>
         <p className="text-xs text-text-muted mt-0.5">{t("sub")}</p>
       </div>

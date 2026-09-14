@@ -452,6 +452,9 @@ export interface AuxRoom {
       room is still watched and VOTED ON by the crowd. */
   is_hidden: boolean;
   host_plays: boolean;
+  /** bo3 only (migration 046): the host names a fresh topic before
+      EVERY game of a match instead of one for the whole match. */
+  topic_each_game: boolean;
   status: "lobby" | "live" | "finished";
   champion_id: string | null;
   current_game_id: string | null;
@@ -493,6 +496,9 @@ export interface AuxGame {
   room_id: string;
   game_no: number;
   is_ot: boolean;
+  /** Set only in a topic_each_game room (046); otherwise the topic
+      comes off the match. Read them together, game first. */
+  topic: string | null;
   song_a: AuxSong | null;
   song_b: AuxSong | null;
   phase: "picking" | "listening" | "done";

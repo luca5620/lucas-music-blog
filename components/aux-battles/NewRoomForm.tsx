@@ -81,6 +81,9 @@ export default function NewRoomForm() {
   // about who can PLAY; by default the crowd still watches and votes.
   // This is the one that shuts the doors and the windows.
   const [isHidden, setIsHidden] = useState(false);
+  // bo3 only (migration 046): a fresh topic before every game of a
+  // match, instead of one brief for the whole best-of-3.
+  const [topicEachGame, setTopicEachGame] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,6 +108,8 @@ export default function NewRoomForm() {
           is_private: isPrivate,
           // Hiding only means anything for a private room.
           is_hidden: isPrivate && isHidden,
+          // …and a topic per game only means anything in a best-of-3.
+          topic_each_game: format === "bo3" && topicEachGame,
         }),
       });
       const data = (await res.json()) as { room?: { slug: string }; error?: string };
@@ -149,6 +154,39 @@ export default function NewRoomForm() {
             { id: "bo3", label: t("bo3"), sub: t("bo3Sub") },
           ]}
         />
+
+        {/* Only a best-of-3 has games to give separate topics to.
+            Same fold-in animation as the private sub-option, so the
+            form grows instead of jumping. */}
+        <div className={`aux-reveal ${format === "bo3" ? "aux-reveal-on" : ""}`} inert={format !== "bo3"}>
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={topicEachGame}
+            tabIndex={format === "bo3" ? 0 : -1}
+            onClick={() => {
+              hapticTap();
+              setTopicEachGame(!topicEachGame);
+            }}
+            className={`mt-2 w-full text-left p-3 rounded-lg border transition-colors ${
+              topicEachGame
+                ? "border-accent-primary bg-accent-primary/10"
+                : "border-border-medium bg-black/25"
+            }`}
+          >
+            <span
+              className={`block text-sm font-bold font-[family-name:var(--font-heading)] ${
+                topicEachGame ? "text-accent-primary" : "text-text-primary"
+              }`}
+            >
+              {topicEachGame ? "☑ " : "☐ "}
+              {t("topicEachGame")}
+            </span>
+            <span className="block text-xs text-text-muted mt-0.5">
+              {topicEachGame ? t("topicEachGameOnSub") : t("topicEachGameOffSub")}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Judge */}
@@ -203,14 +241,17 @@ export default function NewRoomForm() {
           ))}
         </div>
 
-        {/* The "truly private" box only appears once the room IS
-            private — on its own it would mean nothing. Indented under
-            the private option so it reads as a sub-choice. */}
-        {isPrivate && (
+        {/* The "truly private" box belongs to the private option — on
+            its own it would mean nothing. It UNFOLDS rather than
+            appearing (Luca 2026-09-14: picking private "looks off"):
+            it stays in the DOM at zero height and grows, so the form
+            never snaps and nothing below it jumps. */}
+        <div className={`aux-reveal ${isPrivate ? "aux-reveal-on" : ""}`} inert={!isPrivate}>
           <button
             type="button"
             role="checkbox"
             aria-checked={isHidden}
+            tabIndex={isPrivate ? 0 : -1}
             onClick={() => {
               hapticTap();
               setIsHidden(!isHidden);
@@ -231,7 +272,7 @@ export default function NewRoomForm() {
               {isHidden ? t("hiddenOnSub") : t("hiddenOffSub")}
             </span>
           </button>
-        )}
+        </div>
       </div>
 
       {error && <p className="text-sm text-accent-rose">{error}</p>}

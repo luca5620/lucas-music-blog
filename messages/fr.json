@@ -1201,7 +1201,10 @@
       "optionsHint": "coche l'une, l'autre ou les deux",
       "hidden": "Vraiment privé",
       "hiddenOffSub": "Désactivé : la foule regarde et vote, seul le code joue.",
-      "hiddenOnSub": "Caché pour tout le monde. Pas de public, pas de votes extérieurs."
+      "hiddenOnSub": "Caché pour tout le monde. Pas de public, pas de votes extérieurs.",
+      "topicEachGame": "Un nouveau thème par manche",
+      "topicEachGameOffSub": "Désactivé : un seul thème pour tout le best-of-3.",
+      "topicEachGameOnSub": "Tu donnes un thème frais avant chaque manche du match."
     },
     "gate": {
       "private": "SALLE PRIVÉE",
@@ -1373,7 +1376,8 @@
         "Le meilleur morceau de ton année de naissance",
         "Le meilleur morceau des années 90",
         "Le meilleur morceau dans une langue que tu ne parles pas"
-      ]
+      ],
+      "titleGame": "Thème de la manche {n}"
     },
     "leaderboard": {
       "title": "Top 10",

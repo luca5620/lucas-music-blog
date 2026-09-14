@@ -1201,7 +1201,10 @@
       "optionsHint": "pick any, or both",
       "hidden": "Truly private",
       "hiddenOffSub": "Off: the crowd watches and votes, only the code plays.",
-      "hiddenOnSub": "Hidden from everyone. No crowd, no outside votes."
+      "hiddenOnSub": "Hidden from everyone. No crowd, no outside votes.",
+      "topicEachGame": "A new topic each game",
+      "topicEachGameOffSub": "Off: one topic for the whole best-of-3.",
+      "topicEachGameOnSub": "You name a fresh topic before every game of a match."
     },
     "gate": {
       "private": "PRIVATE ROOM",
@@ -1373,7 +1376,8 @@
         "Best song from the year you were born",
         "Best 90s song",
         "Best song in a language you don't speak"
-      ]
+      ],
+      "titleGame": "Game {n} topic"
     },
     "leaderboard": {
       "title": "Top 10",

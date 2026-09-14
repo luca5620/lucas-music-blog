@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   const body = await readJson(request);
   if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
 
-  const { name, format, judge, is_private, is_hidden, host_plays } = body;
+  const { name, format, judge, is_private, is_hidden, host_plays, topic_each_game } = body;
 
   if (!isText(name, 120) || name.trim().length < 3) {
     return NextResponse.json({ error: "Room name must be 3–120 characters." }, { status: 400 });
@@ -53,6 +53,9 @@ export async function POST(request: Request) {
   }
   if (is_hidden !== undefined && typeof is_hidden !== "boolean") {
     return NextResponse.json({ error: "Invalid hidden flag." }, { status: 400 });
+  }
+  if (topic_each_game !== undefined && typeof topic_each_game !== "boolean") {
+    return NextResponse.json({ error: "Invalid topic flag." }, { status: 400 });
   }
   if (host_plays !== undefined && typeof host_plays !== "boolean") {
     return NextResponse.json({ error: "Invalid host flag." }, { status: 400 });
@@ -75,6 +78,9 @@ export async function POST(request: Request) {
       // opt-IN box (migration 045): private on its own still lets the
       // crowd watch and vote.
       is_hidden: is_private === true && is_hidden === true,
+      // A topic per game only means something where there are games
+      // to separate: a best-of-3 (migration 046).
+      topic_each_game: format === "bo3" && topic_each_game === true,
       host_plays: host_plays !== false,
     } as never)
     .select("*")

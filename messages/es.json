@@ -1201,7 +1201,10 @@
       "optionsHint": "elige una, o las dos",
       "hidden": "Realmente privada",
       "hiddenOffSub": "Apagado: el público mira y vota, solo el código juega.",
-      "hiddenOnSub": "Oculta para todos. Sin público ni votos de fuera."
+      "hiddenOnSub": "Oculta para todos. Sin público ni votos de fuera.",
+      "topicEachGame": "Un tema nuevo por partida",
+      "topicEachGameOffSub": "Apagado: un solo tema para todo el mejor de 3.",
+      "topicEachGameOnSub": "Pones un tema nuevo antes de cada partida del combate."
     },
     "gate": {
       "private": "SALA PRIVADA",
@@ -1373,7 +1376,8 @@
         "La mejor canción del año en que naciste",
         "La mejor canción de los 90",
         "La mejor canción en un idioma que no hablas"
-      ]
+      ],
+      "titleGame": "Tema de la partida {n}"
     },
     "leaderboard": {
       "title": "Top 10",

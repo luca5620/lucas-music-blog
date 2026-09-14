@@ -1201,7 +1201,10 @@
       "optionsHint": "marque uma, ou as duas",
       "hidden": "Mesmo privada",
       "hiddenOffSub": "Desligado: o público assiste e vota, só o código joga.",
-      "hiddenOnSub": "Escondida de toda a gente. Sem público, sem votos de fora."
+      "hiddenOnSub": "Escondida de toda a gente. Sem público, sem votos de fora.",
+      "topicEachGame": "Um tema novo por jogo",
+      "topicEachGameOffSub": "Desligado: um só tema para todo o à melhor de 3.",
+      "topicEachGameOnSub": "Dás um tema novo antes de cada jogo do combate."
     },
     "gate": {
       "private": "SALA PRIVADA",
@@ -1373,7 +1376,8 @@
         "Melhor música do ano em que você nasceu",
         "Melhor música dos anos 90",
         "Melhor música numa língua que você não fala"
-      ]
+      ],
+      "titleGame": "Tema do jogo {n}"
     },
     "leaderboard": {
       "title": "Top 10",

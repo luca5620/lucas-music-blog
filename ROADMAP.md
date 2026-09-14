@@ -90,6 +90,59 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-14 (Windows), round 4: per-game topics, the fold-in, the
+  vanishing-room bug, and a 1.2 compliance sweep.** Shipped to main.
+  🔴 **MIGRATIONS 045 AND 046 BOTH NEED RUNNING** (in order).
+  - **A topic per GAME inside a best-of-3** — his idea, now an opt-in
+    checkbox that only appears when the format is bo3, OFF by default
+    (one brief across the match is the fair version; per-game turns a
+    bo3 into its own mini-tournament). The topic gets a home on
+    `aux_games` next to the one on `aux_matches`, and the game's wins
+    when it's there — so nothing changes for ordinary rooms and the
+    bracket card still reads the match topic. One helper,
+    `aux_game_topic()`, and `aux_pick_song` now gates on
+    `coalesce(game.topic, match.topic)`.
+  - **"Picking private looks off / screen goes black."** Two separate
+    things, both fixed:
+    1. The sub-option was conditionally rendered, so the form SNAPPED
+       and the buttons below jumped. It now unfolds — `.aux-reveal`
+       animates `grid-template-rows: 0fr → 1fr`, the one way to
+       transition to a content-driven height without measuring in JS,
+       with `inert` while closed so it's not a stray tab stop.
+    2. Opening a room had no `loading.tsx`, so the CRT shell sat on an
+       empty black frame while a force-dynamic page did the room, the
+       bracket, the chat backlog, the seat check and the code. There's
+       a skeleton now — header, stage, chat column.
+  - **"I hosted a room and it's already gone"** — NOT the 24h rule.
+    The `is_hidden` filter shipped before migration 045 ran, so
+    PostgREST answered 42703 for every shelf and the whole arena came
+    back empty. Fixed twice over: run 045, and `listAuxRooms` now
+    falls back to `is_private` when the column isn't there yet.
+    `hasAuxSeat` does the same (missing table → true, the old
+    behaviour). **Lesson: any filter on a brand-new column needs a
+    fallback, because a push deploys instantly and migrations are run
+    by hand.**
+  - **COMPLIANCE SWEEP (App Store 1.2) — one real gap, now closed.**
+    Everything user-typed in an aux battle was already filtered on the
+    way in (room name, round topic, chat all run `checkContent`) and
+    reportable (`aux_room`, `aux_message` are both report targets, and
+    both buttons are wired). Blocked people are hidden from the room
+    chat and their rooms are filtered off the index. What was MISSING:
+    staff could not delete a reported ROOM — `aux_rooms` only had a
+    host delete policy, so "Delete content" in /admin/reports had
+    nothing to call. 046 adds the staff delete policy (and a staff
+    update on `aux_matches`, so one bad topic can be pulled without
+    taking the room with it), `aux_room` joins the DELETABLE map, and
+    the queue shows the button.
+    - Deliberate non-change: **song titles are not run through the
+      content filter.** They're third-party catalog metadata from
+      Spotify / YouTube / SoundCloud, same as every release title on
+      the site — and the filter is a slur list, which would reject
+      real rap titles. The room-level report + staff delete is the
+      right lever there.
+    - The host's own remove/block from round 3 also counts toward 1.2
+      ("a mechanism to eject abusive users").
+
 - **2026-09-14 (Windows), round 3: the stage grows, the door opens.**
   Shipped to main. 🔴 **MIGRATION 045 NOT RUN YET**
   (`045-aux-rooms-access.sql`). 044 IS run (probe-verified: fire_a,
@@ -144,8 +197,8 @@ don't wait to be asked:**
     shelf): `listAuxRooms` filters `finished_at >= now() - 24h`. The
     rooms aren't deleted — page, bracket, champion and leaderboard
     credit all stay, they just stop cluttering the arena.
-  - ⏳ **STILL OPEN:** per-game topics inside a best-of-3. Luca is
-    weighing it himself — nothing built, don't build it unprompted.
+  - ✅ Per-game topics inside a best-of-3: he said go — built in
+    round 4 above (migration 046).
   - Files: `components/aux-battles/{SeatGate,InviteFriends,ManagePeople}.tsx`
     (new), `app/api/aux-battles/[roomId]/{invite,bans}/route.ts` (new),
     `supabase/migrations/045-aux-rooms-access.sql`.

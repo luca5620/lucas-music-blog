@@ -56,14 +56,25 @@ export async function POST(
   const match = matchRow as unknown as AuxMatch | null;
   if (!match) return NextResponse.json({ error: "The match is gone." }, { status: 404 });
 
-  const { error } = await supabase
-    .from("aux_matches")
-    .update({ topic: topic.trim() } as never)
-    .eq("room_id", room.id)
-    .eq("round", match.round);
+  // Two shapes (migration 046). A topic_each_game room names one for
+  // THIS GAME — the host gets a fresh brief before every song swap.
+  // Everywhere else the topic belongs to the round and lands on every
+  // match in it, so the whole bracket plays the same brief.
+  const clean = topic.trim();
+  const perGame = room.topic_each_game === true;
+  const { error } = perGame
+    ? await supabase
+        .from("aux_games")
+        .update({ topic: clean } as never)
+        .eq("id", game.id)
+    : await supabase
+        .from("aux_matches")
+        .update({ topic: clean } as never)
+        .eq("room_id", room.id)
+        .eq("round", match.round);
   if (error) {
     console.error("aux topic failed:", error.message);
     return NextResponse.json({ error: "Couldn't set the topic. Try again." }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, topic: topic.trim(), round: match.round });
+  return NextResponse.json({ ok: true, topic: clean, round: match.round, perGame });
 }

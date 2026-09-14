@@ -152,18 +152,23 @@ don't wait to be asked:**
     **Spotify and Apple Music expose NO volume control on their
     embeds** — a page cannot reach into a cross-origin iframe, so
     nothing can be done there short of dropping their players.
-    **Site-wide, same night (Luca: "have it be site-wide, it'll only
-    show up on pages with a preview player").** `VolumeDock` is
-    mounted once in the root layout and renders NOTHING until a
-    controllable player registers itself (`registerPlayer` in
-    lib/volume.ts, called by useEmbedVolume while a frame is
-    mounted) — so it appears on a SoundCloud release page, on an aux
-    stage once songs play, and in the Your Taste pager, and is absent
-    everywhere else (verified: no `volume-dock` in the home-page
-    HTML). Collapsed it is a speaker button bottom-right; open it
-    holds the slider and the line about Spotify/Apple keeping their
-    own. In the app it stacks on the tab bar the approved way
-    (`52px + --tab-bar-pad`). The earlier inline sliders are gone.
+    **PERMANENT on the preview pages** (Luca's final call: "just a
+    volume mixer on the website permanently, like even if there
+    wasn't sound, but just for pages that have previews, which
+    include releases, aux battles, and your taste"). `VolumeDock` is
+    mounted once in the root layout and shows on the ROUTE, not on
+    whether anything is playing: `/releases`, `/aux-battles` and
+    `/your-taste` and everything under them. Verified rendering on
+    /releases + /aux-battles and absent on /, /reviews, /social,
+    /lists. Collapsed it is a speaker button bottom-right; open it
+    holds the slider plus the line about Spotify/Apple keeping their
+    own volume, and that open/closed choice is remembered across
+    pages. In the app it stacks on the tab bar the approved way
+    (`52px + --tab-bar-pad`). The earlier inline sliders are gone,
+    and so is the mount-time player registry the first cut used.
+    ⚠️ Consequence Luca accepted: on a Spotify/Apple preview the
+    mixer is present but those players ignore it — the note in the
+    panel is what tells the listener why.
   - NEXT: Luca runs 042 + 043, adds the keys he wants, and does the
     device pass — nothing has been eyeballed on a phone yet, and the
     volume commands in particular want a real ear on a real player.

@@ -1,60 +1,63 @@
 "use client";
 
 /**
- * VolumeDock — the site-wide volume control (Luca 2026-09-13: "have
- * it be site-wide, it'll only show up on pages with a preview
- * player").
+ * VolumeDock — the volume mixer, PERMANENT on the pages that carry
+ * previews (Luca 2026-09-13: "just a volume mixer on the website
+ * permanently, like even if there wasn't sound, but just for pages
+ * that have previews, which include releases, aux battles, and your
+ * taste").
  *
- * Mounted once in the root layout and USUALLY INVISIBLE: it renders
- * nothing until a player that can actually be turned down is on
- * screen. Every SoundCloud/YouTube frame registers itself while it is
- * mounted (lib/volume.ts), so the dock appears on a release page with
- * the SoundCloud player, on an aux battle stage once songs are
- * playing, and in the Your Taste pager — and stays out of the way
- * everywhere else.
+ * So it is the ROUTE that decides, not whether something happens to
+ * be playing: open a release page, an aux battle or Your Taste and
+ * the mixer is sitting there, ready, before anyone presses play. On
+ * every other page it isn't rendered at all.
  *
- * Collapsed it is one speaker button; tapping opens the slider. The
- * note inside is the honest part: Spotify and Apple Music give
- * embedders no volume control at all, so those players keep their own
- * (see lib/volume.ts for the full picture).
+ * Collapsed it is a speaker button bottom-right; open it holds the
+ * slider, and that open/closed choice is remembered, so it stays how
+ * you left it as you move between preview pages.
+ *
+ * What it can and cannot move is in lib/volume.ts: SoundCloud and
+ * YouTube take a volume command, Spotify and Apple Music expose none.
+ * The note inside the panel says exactly that rather than leaving
+ * anyone to wonder why one player ignores the slider.
  */
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { useTranslations } from "next-intl";
-import { getPlayerCount, subscribePlayers } from "@/lib/volume";
+import { getDockOpen, setDockOpen, subscribeDockOpen } from "@/lib/volume";
 import { hapticTap } from "@/lib/native";
 import VolumeSlider from "@/components/ui/VolumeSlider";
 
+/** The page trees that carry a preview player. */
+const PREVIEW_ROUTES = ["/releases", "/aux-battles", "/your-taste"];
+
+function isPreviewPage(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return PREVIEW_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
+
 export default function VolumeDock() {
   const t = useTranslations("volume");
-  // 0 on the server, so the dock is simply absent from the HTML and
-  // appears once a real player registers on the client.
-  const players = useSyncExternalStore(subscribePlayers, getPlayerCount, () => 0);
-  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  // Closed on the server (localStorage isn't there); the remembered
+  // choice lands on hydration.
+  const open = useSyncExternalStore(subscribeDockOpen, getDockOpen, () => false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Fold the panel shut when the last player leaves the screen (swiped
-  // past, navigated away, room finished) so it doesn't spring open
-  // again on the next page that happens to have a player. Adjusted
-  // during render, React's documented way — an effect that setStates
-  // would just cause a second render pass.
-  const [seenPlayers, setSeenPlayers] = useState(players);
-  if (players !== seenPlayers) {
-    setSeenPlayers(players);
-    if (players === 0 && open) setOpen(false);
-  }
-
-  // Tap outside / Esc closes the panel.
+  // Tap outside / Esc folds it away. Only bound while it is open.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        setDockOpen(false);
       }
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") setDockOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
@@ -64,7 +67,7 @@ export default function VolumeDock() {
     };
   }, [open]);
 
-  if (players === 0) return null;
+  if (!isPreviewPage(pathname)) return null;
 
   return (
     <div ref={panelRef} className="volume-dock">
@@ -78,7 +81,7 @@ export default function VolumeDock() {
               type="button"
               onClick={() => {
                 hapticTap();
-                setOpen(false);
+                setDockOpen(false);
               }}
               aria-label={t("close")}
               className="pixel-text text-xs text-text-muted hover:text-accent-primary transition-colors"
@@ -93,7 +96,7 @@ export default function VolumeDock() {
           type="button"
           onClick={() => {
             hapticTap();
-            setOpen(true);
+            setDockOpen(true);
           }}
           aria-label={t("open")}
           title={t("open")}

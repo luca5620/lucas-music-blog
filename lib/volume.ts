@@ -73,40 +73,43 @@ export function subscribeVolume(fn: (v: number) => void): () => void {
 }
 
 /* ------------------------------------------------------------------
-   Who is listening — so the site-wide dock knows when to exist
+   Is the dock's panel open — remembered like the level itself
    ------------------------------------------------------------------
-   Luca 2026-09-13: "have it be site-wide, it'll only show up on pages
-   with a preview player." Every controllable player that mounts
-   registers here and drops out when it unmounts, so VolumeDock can
-   render exactly when there is something on screen to turn down —
-   release pages, aux battle stages, the Your Taste pager — and
-   nothing anywhere else. A plain count: nothing needs to know WHICH
-   players are up, only whether any are. */
+   Luca 2026-09-13: the mixer is PERMANENT on the preview pages
+   ("releases, aux battles, and your taste"), there whether or not
+   anything is making a sound right now. Which pages those are is
+   VolumeDock's business; this just remembers whether the panel is
+   folded open, so it stays how the listener left it as they move
+   between those pages instead of collapsing on every navigation. */
 
-let playerCount = 0;
-const playerListeners = new Set<() => void>();
+const OPEN_KEY = "pmr-volume-open";
+let openState: boolean | null = null;
+const openListeners = new Set<() => void>();
 
-/** Called by useEmbedVolume on mount; the returned fn on unmount. */
-export function registerPlayer(): () => void {
-  playerCount += 1;
-  for (const fn of playerListeners) fn();
-  let released = false;
-  return () => {
-    if (released) return; // a double-unmount must not go negative
-    released = true;
-    playerCount = Math.max(0, playerCount - 1);
-    for (const fn of playerListeners) fn();
-  };
+export function getDockOpen(): boolean {
+  if (openState !== null) return openState;
+  if (typeof window === "undefined") return false;
+  try {
+    openState = window.localStorage.getItem(OPEN_KEY) === "1";
+  } catch {
+    openState = false;
+  }
+  return openState;
 }
 
-/** How many controllable players are on screen right now. */
-export function getPlayerCount(): number {
-  return playerCount;
+export function setDockOpen(open: boolean): void {
+  openState = open;
+  try {
+    window.localStorage.setItem(OPEN_KEY, open ? "1" : "0");
+  } catch {
+    // Not remembering it is fine; the panel still opens and closes.
+  }
+  for (const fn of openListeners) fn();
 }
 
-export function subscribePlayers(fn: () => void): () => void {
-  playerListeners.add(fn);
+export function subscribeDockOpen(fn: () => void): () => void {
+  openListeners.add(fn);
   return () => {
-    playerListeners.delete(fn);
+    openListeners.delete(fn);
   };
 }

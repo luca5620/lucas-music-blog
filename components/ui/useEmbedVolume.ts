@@ -20,12 +20,7 @@
  */
 
 import { useEffect, useRef } from "react";
-import {
-  getVolume,
-  isControllable,
-  registerPlayer,
-  subscribeVolume,
-} from "@/lib/volume";
+import { getVolume, isControllable, subscribeVolume } from "@/lib/volume";
 
 /* ---- SoundCloud's widget script, loaded once, on demand ---- */
 
@@ -64,13 +59,6 @@ export function useEmbedVolume(
 ) {
   // The widget handle, once SoundCloud hands us one.
   const widgetRef = useRef<SCWidget | null>(null);
-
-  // Tell the site-wide dock a controllable player is on screen, for
-  // exactly as long as this one is mounted.
-  useEffect(() => {
-    if (!isControllable(source)) return;
-    return registerPlayer();
-  }, [source]);
 
   useEffect(() => {
     const el = ref.current;

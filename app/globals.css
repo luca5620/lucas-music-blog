@@ -4347,6 +4347,69 @@ fieldset {
 }
 .aux-react-mine span { color: var(--text-primary); }
 
+/* THE PLAY CARD — the side that isn't playing (AuxRoom). Two
+   cross-origin iframes can't be paused from this page, so only ONE
+   player is ever mounted; the other side sits as this card until you
+   tap it, and tapping it unmounts the other (Luca 2026-09-14: on a
+   phone both songs could play over each other). It stands in for the
+   embed, so it matches the embed's heights exactly — otherwise the
+   stage jumps every time you switch sides. */
+.aux-play-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 152px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-elevated);
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.12s ease, border-color 0.2s ease;
+}
+@media (min-width: 1024px) {
+  .aux-play-card { height: 352px; }
+}
+.aux-play-card:active { transform: scale(0.985); }
+.aux-play-a:hover { border-color: rgba(var(--accent-rgb), 0.6); }
+.aux-play-b:hover { border-color: rgba(255, 45, 85, 0.6); }
+/* The artwork is a backdrop, not a picture — darken it so the button
+   and the label stay readable over any cover. */
+.aux-play-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.75));
+}
+.aux-play-badge {
+  position: relative;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  padding-left: 0.2rem;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.45);
+}
+.aux-play-label {
+  position: relative;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 0 0.75rem;
+  text-align: center;
+}
+
 /* Reactions float up over the stage from the side they were thrown at. */
 .aux-stage { position: relative; }
 .aux-floaters {
@@ -4487,3 +4550,7 @@ fieldset {
 .low-detail .aux-burst-card { animation: none; }
 .low-detail .aux-match-live { animation: none; box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.5); }
 .low-detail .aux-floater { animation-duration: 1s; filter: none; }
+/* The play card's cover backdrop is a full-bleed image behind a
+   scrim — on the thermal diet it becomes a flat panel. */
+.low-detail .aux-play-card { background-image: none !important; transition: none; }
+.low-detail .aux-react-mine { box-shadow: none; }

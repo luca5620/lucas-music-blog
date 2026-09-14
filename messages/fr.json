@@ -1165,7 +1165,8 @@
       "crowd": "Le public vote",
       "private": "Privée",
       "hostedBy": "organisée par",
-      "unknown": "inconnu"
+      "unknown": "inconnu",
+      "hidden": "Caché"
     },
     "new": {
       "back": "Retour",
@@ -1184,7 +1185,7 @@
       "hostPlays": "Je joue aussi",
       "hostPlaysSub": "Désactivé = tu ne fais qu'organiser et juger.",
       "private": "Salle privée",
-      "privateSub": "Cachée de l'index. Il faut ton code à six lettres pour entrer.",
+      "privateSub": "Seules les personnes avec ton code à six lettres peuvent prendre une place. Tout le monde peut regarder et voter.",
       "open": "Ouvrir la salle",
       "opening": "Ouverture…",
       "cancel": "Annuler",
@@ -1197,7 +1198,10 @@
       "namePlaceholder": "ex. \"Aux du vendredi soir\"",
       "nameHint": "Les thèmes viennent après : tu en fixes un nouveau au début de chaque manche.",
       "options": "Options",
-      "optionsHint": "coche l'une, l'autre ou les deux"
+      "optionsHint": "coche l'une, l'autre ou les deux",
+      "hidden": "Vraiment privé",
+      "hiddenOffSub": "Désactivé : la foule regarde et vote, seul le code joue.",
+      "hiddenOnSub": "Caché pour tout le monde. Pas de public, pas de votes extérieurs."
     },
     "gate": {
       "private": "SALLE PRIVÉE",
@@ -1229,7 +1233,7 @@
       "code": "Code",
       "copy": "Copier",
       "copied": "Copié",
-      "codeHint": "Envoie le lien de la salle et ce code à qui tu veux faire entrer.",
+      "codeHint": "Envoie-le à ceux que tu veux voir JOUER. Regarder et voter n'en a pas besoin.",
       "players": "Joueurs",
       "noPlayers": "Personne n'a encore pris de place.",
       "watching": "{n, plural, one {# personne regarde} other {# personnes regardent}}",
@@ -1285,7 +1289,12 @@
       "waitingTopic": "En attente du thème de cette manche, choisi par l'hôte…",
       "topicYours": "Nomme le thème de cette manche ci-dessous pour ouvrir les choix.",
       "lobbyFull": "Le salon est plein — {n} joueurs maximum. Tu peux quand même regarder.",
-      "lobbyFullShort": "Salon plein"
+      "lobbyFullShort": "Salon plein",
+      "hiddenRoom": "Caché",
+      "theDoor": "La porte",
+      "playThis": "Lancer celui-ci",
+      "playThisInstead": "Lancer celui-ci à la place",
+      "openIn": "Ouvrir dans {source}"
     },
     "chat": {
       "title": "La salle",
@@ -1373,6 +1382,39 @@
       "rounds": "{n, plural, one {# manche} other {# manches}}",
       "emptyWeek": "Personne n'a encore gagné de battle cette semaine.",
       "fairPlay": "Les victoires dans un salon où l'hôte jouait et jugeait à la fois ne comptent pas."
+    },
+    "seat": {
+      "watchOnly": "Ce salon est privé : regarde, vote et discute autant que tu veux. Une place dans le tableau demande le code de l'hôte.",
+      "haveCode": "J'ai le code",
+      "placeholder": "ABC123",
+      "enter": "Prendre une place",
+      "checking": "Vérification…",
+      "wrong": "Ce code n'ouvre pas ce salon."
+    },
+    "invite": {
+      "open": "Inviter des amis",
+      "close": "Terminé",
+      "hint": "Les gens que tu suis et qui te suivent. Une invitation vaut le code.",
+      "loading": "Chargement…",
+      "nobody": "Personne ne te suit en retour pour l'instant.",
+      "send": "Inviter",
+      "sent": "Envoyée",
+      "alreadyIn": "Présent",
+      "failed": "Invitation non envoyée.",
+      "loadFailed": "Impossible de charger tes amis."
+    },
+    "manage": {
+      "open": "Gérer les gens ({n})",
+      "close": "Terminé",
+      "player": "Joueur",
+      "viewer": "Spectateur",
+      "remove": "Retirer",
+      "block": "Bloquer",
+      "blocked": "Bloqués",
+      "unblock": "Débloquer",
+      "blockConfirm": "Bloquer {name} ? Impossible pour eux de revenir, d'écrire ou de voter ici.",
+      "hint": "Retirer est un avertissement. Bloquer les tient dehors pour de bon.",
+      "failed": "Ça n'a pas marché."
     }
   },
   "rooms": {
@@ -1507,7 +1549,8 @@
     "newList": "a fait une nouvelle liste{title}",
     "newDebate": "a lancé un débat{title}",
     "other": "a fait quelque chose",
-    "newAux": "organise une battle d'aux{title}"
+    "newAux": "organise une battle d'aux{title}",
+    "auxInvite": "t'a invité à son aux battle{title}"
   },
   "taste": {
     "page": {

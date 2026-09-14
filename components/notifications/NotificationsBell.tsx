@@ -82,6 +82,9 @@ function message(
       return t("newDebate", { title });
     case "new_aux":
       return t("newAux", { title });
+    // Aux battles (045): a direct invite, not follow-feed news.
+    case "aux_invite":
+      return t("auxInvite", { title });
     default:
       return t("other");
   }

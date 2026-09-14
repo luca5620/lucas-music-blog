@@ -43,6 +43,7 @@ import type {
   AuxSong,
 } from "@/lib/types/database";
 import type {
+  AuxBanWithProfile,
   AuxMemberWithProfile,
   AuxMessageWithProfile,
   AuxProfile,
@@ -56,6 +57,9 @@ import SongEmbed, { sourceTag } from "@/components/aux-battles/SongEmbed";
 import Bracket from "@/components/aux-battles/Bracket";
 import WinnerBurst from "@/components/aux-battles/WinnerBurst";
 import AuxChatDock from "@/components/aux-battles/AuxChatDock";
+import InviteFriends from "@/components/aux-battles/InviteFriends";
+import ManagePeople from "@/components/aux-battles/ManagePeople";
+import SeatGate from "@/components/aux-battles/SeatGate";
 
 interface Props {
   initial: AuxRoomState;
@@ -63,6 +67,12 @@ interface Props {
   initialVote: "a" | "b" | null;
   /** The viewer's ONE reaction on the current game (migration 044). */
   initialReaction: MyReaction;
+  /** Does the viewer hold a SEAT — the right to take a spot in a
+      private room's bracket (the code, or the host's invite)? Always
+      true in a public room; see migration 045. */
+  hasSeat: boolean;
+  /** Who the host has blocked (host only; empty for everyone else). */
+  initialBans: AuxBanWithProfile[];
   /** The private room's code — only ever passed to the host. */
   code: string | null;
 }
@@ -98,6 +108,8 @@ export default function AuxRoom({
   initialMessages,
   initialVote,
   initialReaction,
+  hasSeat,
+  initialBans,
   code,
 }: Props) {
   const { user } = useAuth();
@@ -118,6 +130,15 @@ export default function AuxRoom({
   // ride the same realtime UPDATE as the votes, so they survive a
   // reload, a late join, and the whole round (Luca 2026-09-14).
   const [myReaction, setMyReaction] = useState<MyReaction>(initialReaction);
+  const [bans, setBans] = useState<AuxBanWithProfile[]>(initialBans);
+  // Which side's player is MOUNTED. Only one ever is — see the play
+  // card on the stage for why (Luca 2026-09-14: both songs could play
+  // over each other on a phone).
+  const [playing, setPlaying] = useState<"a" | "b" | null>(null);
+  // A private room only lets people with a SEAT into the bracket —
+  // the six letters, or the host's invite (migration 045). Watching,
+  // voting and chatting need nothing.
+  const [seated, setSeated] = useState(hasSeat);
   const [burst, setBurst] = useState<Burst | null>(null);
   const [copied, setCopied] = useState(false);
   const floaterId = useRef(0);
@@ -134,6 +155,9 @@ export default function AuxRoom({
   // button out before anyone hits it. Viewers are never capped.
   const playerCap = auxPlayerCap(room.format);
   const lobbyFull = players.length >= playerCap;
+  // Can this person take a spot at all? Public rooms: anyone. Private:
+  // the host, or someone holding a seat.
+  const canTakeSpot = !room.is_private || isHost || seated;
   const currentGame = useMemo(
     () => games.find((g) => g.id === room.current_game_id) ?? null,
     [games, room.current_game_id]
@@ -328,6 +352,7 @@ export default function AuxRoom({
       setMyVote(null);
       setMyReaction(null);
       setNeedsHost(null);
+      setPlaying(null);
       const g = games.find((x) => x.id === gid);
       if (g?.is_ot) setBurst({ kind: "overtime", key: `ot-${g.id}` });
     }
@@ -451,10 +476,12 @@ export default function AuxRoom({
       <span className="osd-text text-xs opacity-70">{t("final")}</span>
     );
 
+  // Three settings, and the access one now has three states: public,
+  // private (the crowd still watches and votes), and hidden.
   const settingsLine = [
     room.format === "bo3" ? t("bo3") : t("bo1"),
     room.judge === "host" ? t("hostJudge") : t("crowdJudge"),
-    room.is_private ? t("privateRoom") : t("publicRoom"),
+    room.is_hidden ? t("hiddenRoom") : room.is_private ? t("privateRoom") : t("publicRoom"),
   ].join(" · ");
 
   const winsFor = (uid: string | null | undefined): AuxWins | undefined =>
@@ -462,9 +489,14 @@ export default function AuxRoom({
 
   /* ─── Render ─── */
   return (
+    // max-w-7xl: the stage is the point of the page, so it gets the
+    // width (Luca 2026-09-14 — "make the main module for the songs
+    // bigger on web, even if that means stretching the top module a
+    // bit"). The header stretches with it and the chat column, which
+    // matches the stage's height, gets longer for free.
     // pb below xl: AuxChatDock's fixed THE ROOM bar hugs the bottom
     // edge on phones — without this it covers the last rows.
-    <div className="max-w-6xl mx-auto space-y-5 relative pb-14 xl:pb-0">
+    <div className="max-w-7xl mx-auto space-y-5 relative pb-14 xl:pb-0">
       {burst && (
         <WinnerBurst
           key={burst.key}
@@ -589,7 +621,7 @@ export default function AuxRoom({
                 </p>
               ) : (
                 <div className="flex flex-wrap gap-2 items-center">
-                  {me?.role !== "player" && !(isHost && !room.host_plays) && (
+                  {me?.role !== "player" && !(isHost && !room.host_plays) && canTakeSpot && (
                     <button
                       type="button"
                       onClick={() => void join("player")}
@@ -600,7 +632,7 @@ export default function AuxRoom({
                       {lobbyFull ? t("lobbyFullShort") : t("grabSpot")}
                     </button>
                   )}
-                  {me?.role !== "player" && lobbyFull && (
+                  {me?.role !== "player" && canTakeSpot && lobbyFull && (
                     <span className="text-xs text-text-muted">{t("lobbyFull", { n: playerCap })}</span>
                   )}
                   {me?.role === "player" && !isHost && (
@@ -639,13 +671,44 @@ export default function AuxRoom({
                   )}
                 </div>
               )}
+
+              {/* A private room you don't hold a seat in: you're
+                  welcome to watch and vote, and the six letters are
+                  what buy you a spot in the bracket. */}
+              {user && !canTakeSpot && (
+                <SeatGate slug={room.slug} onSeated={() => setSeated(true)} />
+              )}
+
+              <div className="scan-bar" />
+            </section>
+          )}
+
+          {/* ══════════ HOST: THE DOOR ══════════
+              Invite the friends, remove the rest. Not lobby-only — a
+              spammer in the chat is a live-room problem too. */}
+          {isHost && room.status !== "finished" && (
+            <section className="panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden">
+              <div className="flex items-center gap-2">
+                <span className="glow-orb" style={{ animationDelay: "0.7s" }} />
+                <span className="label-xbox">{t("theDoor")}</span>
+              </div>
+              <div className="flex flex-wrap gap-3 items-start">
+                <InviteFriends roomId={room.id} />
+                <ManagePeople
+                  roomId={room.id}
+                  hostId={room.host_id}
+                  members={members}
+                  bans={bans}
+                  onBansChange={setBans}
+                />
+              </div>
               <div className="scan-bar" />
             </section>
           )}
 
           {/* ══════════ THE STAGE ══════════ */}
           {room.status === "live" && currentGame && currentMatch && (
-            <section className="panel-xbox-glow p-4 sm:p-6 space-y-4 relative overflow-hidden aux-stage">
+            <section className="panel-xbox-glow p-4 sm:p-6 lg:p-7 space-y-4 lg:space-y-5 relative overflow-hidden aux-stage">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="glow-orb" />
                 <span className="label-xbox">
@@ -693,7 +756,7 @@ export default function AuxRoom({
                 ))}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
                 {(["a", "b"] as const).map((side) => {
                   const player = side === "a" ? playerA : playerB;
                   const song = side === "a" ? currentGame.song_a : currentGame.song_b;
@@ -702,7 +765,7 @@ export default function AuxRoom({
                   const color = side === "a" ? "text-accent-primary" : "text-accent-rose";
                   const listening = currentGame.phase === "listening";
                   return (
-                    <div key={side} className={`rounded-lg border ${ring} bg-black/25 p-3 sm:p-4 space-y-3 min-w-0`}>
+                    <div key={side} className={`rounded-lg border ${ring} bg-black/25 p-3 sm:p-4 lg:p-5 space-y-3 lg:space-y-4 min-w-0`}>
                       <div className="flex items-center justify-between gap-2">
                         {player ? (
                           <PlayerChip profile={player.profile} wins={player.wins} tone={side} tag={player.user_id === user?.id ? t("youTag") : undefined} />
@@ -738,7 +801,7 @@ export default function AuxRoom({
                       {listening && song && (
                         <>
                           <div className="flex items-center gap-3">
-                            <span className="w-12 h-12 rounded overflow-hidden border border-border-subtle shrink-0 bg-bg-elevated flex items-center justify-center">
+                            <span className="w-12 h-12 lg:w-16 lg:h-16 rounded overflow-hidden border border-border-subtle shrink-0 bg-bg-elevated flex items-center justify-center">
                               {song.artwork ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={song.artwork} alt="" className="w-full h-full object-cover" />
@@ -748,19 +811,72 @@ export default function AuxRoom({
                             </span>
                             <span className="min-w-0 flex-1">
                               {song.release_slug ? (
-                                <Link href={`/releases/${song.release_slug}`} className="block text-sm font-bold truncate hover:text-accent-primary transition-colors">
+                                <Link href={`/releases/${song.release_slug}`} className="block text-sm lg:text-base font-bold truncate hover:text-accent-primary transition-colors">
                                   {song.title}
                                 </Link>
                               ) : (
-                                <span className="block text-sm font-bold truncate">{song.title}</span>
+                                <span className="block text-sm lg:text-base font-bold truncate">{song.title}</span>
                               )}
-                              {song.artist && <span className="block text-xs text-text-secondary truncate">{song.artist}</span>}
-                              <span className={`inline-block mt-0.5 pixel-text text-[9px] uppercase px-1 rounded border ${sourceTag(song.source).cls}`}>
-                                {sourceTag(song.source).text}
+                              {song.artist && <span className="block text-xs lg:text-sm text-text-secondary truncate">{song.artist}</span>}
+                              <span className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                <span className={`inline-block pixel-text text-[9px] uppercase px-1 rounded border ${sourceTag(song.source).cls}`}>
+                                  {sourceTag(song.source).text}
+                                </span>
+                                {/* On a phone nobody is signed in to
+                                    Spotify inside the app's webview, so
+                                    its embed only ever gives the 30s
+                                    preview. This link hands the track
+                                    to the real app, where it plays in
+                                    full and scrubs properly. */}
+                                <a
+                                  href={song.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] text-text-muted hover:text-accent-primary transition-colors underline underline-offset-2"
+                                >
+                                  {t("openIn", { source: sourceTag(song.source).text })}
+                                </a>
                               </span>
                             </span>
                           </div>
-                          <SongEmbed song={song} title={song.title} />
+
+                          {/* ONE player at a time. Two cross-origin
+                              iframes cannot be told to stop by this
+                              page, so the only reliable way to keep
+                              both songs from playing over each other
+                              (Luca 2026-09-14) is to have only one of
+                              them EXIST: tapping ▶ on this side
+                              unmounts the other side's iframe, which
+                              kills its audio dead. */}
+                          {playing === side ? (
+                            <SongEmbed
+                              key={`${currentGame.id}-${side}`}
+                              song={song}
+                              title={song.title}
+                            />
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                hapticTap();
+                                setPlaying(side);
+                              }}
+                              className={`aux-play-card ${side === "a" ? "aux-play-a" : "aux-play-b"}`}
+                              style={
+                                song.artwork
+                                  ? { backgroundImage: `url(${song.artwork})` }
+                                  : undefined
+                              }
+                            >
+                              <span className="aux-play-scrim" />
+                              <span className="aux-play-badge" aria-hidden>
+                                ▶
+                              </span>
+                              <span className="aux-play-label">
+                                {playing ? t("playThisInstead") : t("playThis")}
+                              </span>
+                            </button>
+                          )}
 
                           {/* 🔥 / 💩 + vote. One reaction per person
                               per game — the one you threw stays lit,

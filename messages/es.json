@@ -1165,7 +1165,8 @@
       "crowd": "Vota el público",
       "private": "Privada",
       "hostedBy": "organizada por",
-      "unknown": "desconocido"
+      "unknown": "desconocido",
+      "hidden": "Oculta"
     },
     "new": {
       "back": "Atrás",
@@ -1184,7 +1185,7 @@
       "hostPlays": "Yo también juego",
       "hostPlaysSub": "Apagado = solo organizas y decides.",
       "private": "Sala privada",
-      "privateSub": "Oculta del índice. La gente necesita tu código de seis letras para entrar.",
+      "privateSub": "Solo quien tenga tu código de seis letras puede coger un sitio. Cualquiera puede mirar y votar.",
       "open": "Abrir la sala",
       "opening": "Abriendo…",
       "cancel": "Cancelar",
@@ -1197,7 +1198,10 @@
       "namePlaceholder": "p. ej. \"Aux del viernes\"",
       "nameHint": "Los temas vienen después: pones uno nuevo al empezar cada ronda.",
       "options": "Opciones",
-      "optionsHint": "elige una, o las dos"
+      "optionsHint": "elige una, o las dos",
+      "hidden": "Realmente privada",
+      "hiddenOffSub": "Apagado: el público mira y vota, solo el código juega.",
+      "hiddenOnSub": "Oculta para todos. Sin público ni votos de fuera."
     },
     "gate": {
       "private": "SALA PRIVADA",
@@ -1229,7 +1233,7 @@
       "code": "Código",
       "copy": "Copiar",
       "copied": "Copiado",
-      "codeHint": "Manda el enlace de la sala y este código a quien quieras dentro.",
+      "codeHint": "Manda esto a quien quieras que JUEGUE. Mirar y votar no lo necesita.",
       "players": "Jugadores",
       "noPlayers": "Nadie ha tomado un lugar todavía.",
       "watching": "{n, plural, one {# persona mirando} other {# personas mirando}}",
@@ -1285,7 +1289,12 @@
       "waitingTopic": "Esperando a que el anfitrión ponga el tema de esta ronda…",
       "topicYours": "Pon el tema de esta ronda abajo para abrir las elecciones.",
       "lobbyFull": "El lobby está lleno: el máximo es {n} jugadores. Aún puedes mirar.",
-      "lobbyFullShort": "Lobby lleno"
+      "lobbyFullShort": "Lobby lleno",
+      "hiddenRoom": "Oculta",
+      "theDoor": "La puerta",
+      "playThis": "Poner esta",
+      "playThisInstead": "Poner esta en su lugar",
+      "openIn": "Abrir en {source}"
     },
     "chat": {
       "title": "La sala",
@@ -1373,6 +1382,39 @@
       "rounds": "{n, plural, one {# ronda} other {# rondas}}",
       "emptyWeek": "Todavía nadie ha ganado una batalla esta semana.",
       "fairPlay": "No cuentan las victorias en salas donde el anfitrión jugaba y además hacía de juez."
+    },
+    "seat": {
+      "watchOnly": "Esta sala es privada: mira, vota y chatea lo que quieras. Para un sitio en el cuadro hace falta el código del anfitrión.",
+      "haveCode": "Tengo el código",
+      "placeholder": "ABC123",
+      "enter": "Coger sitio",
+      "checking": "Comprobando…",
+      "wrong": "Ese código no abre esta sala."
+    },
+    "invite": {
+      "open": "Invitar amigos",
+      "close": "Listo",
+      "hint": "Gente a la que sigues y que te sigue. Una invitación vale como el código.",
+      "loading": "Cargando…",
+      "nobody": "Todavía nadie te sigue de vuelta.",
+      "send": "Invitar",
+      "sent": "Enviada",
+      "alreadyIn": "Dentro",
+      "failed": "No se pudo enviar la invitación.",
+      "loadFailed": "No se pudieron cargar tus amigos."
+    },
+    "manage": {
+      "open": "Gestionar gente ({n})",
+      "close": "Listo",
+      "player": "Jugador",
+      "viewer": "Espectador",
+      "remove": "Sacar",
+      "block": "Bloquear",
+      "blocked": "Bloqueados",
+      "unblock": "Desbloquear",
+      "blockConfirm": "¿Bloquear a {name}? No podrá volver a entrar, chatear ni votar en esta sala.",
+      "hint": "Sacar es un aviso. Bloquear los deja fuera para siempre.",
+      "failed": "Eso no salió."
     }
   },
   "rooms": {
@@ -1507,7 +1549,8 @@
     "newList": "hizo una lista nueva{title}",
     "newDebate": "abrió un debate{title}",
     "other": "hizo algo",
-    "newAux": "organiza una batalla de aux{title}"
+    "newAux": "organiza una batalla de aux{title}",
+    "auxInvite": "te invitó a su aux battle{title}"
   },
   "taste": {
     "page": {

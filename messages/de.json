@@ -1165,7 +1165,8 @@
       "crowd": "Publikum stimmt ab",
       "private": "Privat",
       "hostedBy": "gehostet von",
-      "unknown": "unbekannt"
+      "unknown": "unbekannt",
+      "hidden": "Versteckt"
     },
     "new": {
       "back": "Zurück",
@@ -1184,7 +1185,7 @@
       "hostPlays": "Ich spiele selbst mit",
       "hostPlaysSub": "Aus = du hostest nur und entscheidest.",
       "private": "Privater Raum",
-      "privateSub": "Versteckt vor der Übersicht. Andere brauchen deinen sechsstelligen Code, um reinzukommen.",
+      "privateSub": "Nur wer deinen sechsstelligen Code hat, bekommt einen Platz. Zuschauen und abstimmen darf jeder.",
       "open": "Raum öffnen",
       "opening": "Wird geöffnet…",
       "cancel": "Abbrechen",
@@ -1197,7 +1198,10 @@
       "namePlaceholder": "z. B. \"Freitagabend-Aux\"",
       "nameHint": "Die Themen kommen später: zu Beginn jeder Runde setzt du ein neues.",
       "options": "Optionen",
-      "optionsHint": "eins davon oder beides"
+      "optionsHint": "eins davon oder beides",
+      "hidden": "Wirklich privat",
+      "hiddenOffSub": "Aus: das Publikum schaut zu und stimmt ab, nur der Code spielt.",
+      "hiddenOnSub": "Vor allen versteckt. Kein Publikum, keine Stimmen von außen."
     },
     "gate": {
       "private": "PRIVATER RAUM",
@@ -1229,7 +1233,7 @@
       "code": "Code",
       "copy": "Kopieren",
       "copied": "Kopiert",
-      "codeHint": "Schick den Raumlink und diesen Code an alle, die rein sollen.",
+      "codeHint": "Schick das an alle, die SPIELEN sollen. Zuschauen und abstimmen geht ohne.",
       "players": "Spieler",
       "noPlayers": "Noch hat sich niemand einen Platz geschnappt.",
       "watching": "{n, plural, one {# Person schaut zu} other {# Personen schauen zu}}",
@@ -1285,7 +1289,12 @@
       "waitingTopic": "Warten, bis der Host das Thema dieser Runde setzt…",
       "topicYours": "Setz unten das Thema dieser Runde, um die Songwahl zu öffnen.",
       "lobbyFull": "Die Lobby ist voll — maximal {n} Spieler. Zuschauen geht noch.",
-      "lobbyFullShort": "Lobby voll"
+      "lobbyFullShort": "Lobby voll",
+      "hiddenRoom": "Versteckt",
+      "theDoor": "Die Tür",
+      "playThis": "Diesen abspielen",
+      "playThisInstead": "Stattdessen diesen",
+      "openIn": "In {source} öffnen"
     },
     "chat": {
       "title": "Der Raum",
@@ -1373,6 +1382,39 @@
       "rounds": "{n, plural, one {# Runde} other {# Runden}}",
       "emptyWeek": "Diese Woche hat noch niemand eine Battle gewonnen.",
       "fairPlay": "Siege aus einem Raum, in dem der Host mitgespielt und selbst entschieden hat, zählen nicht."
+    },
+    "seat": {
+      "watchOnly": "Dieser Raum ist privat: zuschauen, abstimmen und schreiben geht überall. Ein Platz im Baum braucht den Code des Hosts.",
+      "haveCode": "Ich habe den Code",
+      "placeholder": "ABC123",
+      "enter": "Platz nehmen",
+      "checking": "Prüfen…",
+      "wrong": "Dieser Code öffnet den Raum nicht."
+    },
+    "invite": {
+      "open": "Freunde einladen",
+      "close": "Fertig",
+      "hint": "Leute, denen du folgst und die dir zurückfolgen. Eine Einladung zählt wie der Code.",
+      "loading": "Lädt…",
+      "nobody": "Dir folgt noch niemand zurück.",
+      "send": "Einladen",
+      "sent": "Gesendet",
+      "alreadyIn": "Drin",
+      "failed": "Einladung ging nicht raus.",
+      "loadFailed": "Freunde konnten nicht geladen werden."
+    },
+    "manage": {
+      "open": "Leute verwalten ({n})",
+      "close": "Fertig",
+      "player": "Spieler",
+      "viewer": "Zuschauer",
+      "remove": "Entfernen",
+      "block": "Sperren",
+      "blocked": "Gesperrt",
+      "unblock": "Entsperren",
+      "blockConfirm": "{name} sperren? Kein Zurückkommen, kein Chat, keine Stimme in diesem Raum.",
+      "hint": "Entfernen ist ein Wink. Sperren hält sie endgültig draußen.",
+      "failed": "Das hat nicht geklappt."
     }
   },
   "rooms": {
@@ -1507,7 +1549,8 @@
     "newList": "hat eine neue Liste{title} gemacht",
     "newDebate": "hat eine Debatte{title} eröffnet",
     "other": "hat etwas gemacht",
-    "newAux": "hostet eine Aux-Battle{title}"
+    "newAux": "hostet eine Aux-Battle{title}",
+    "auxInvite": "hat dich zu seiner Aux Battle eingeladen{title}"
   },
   "taste": {
     "page": {

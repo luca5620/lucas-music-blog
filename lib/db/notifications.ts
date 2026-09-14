@@ -29,7 +29,9 @@ export type NotificationType =
   | "new_list"
   | "new_debate"
   // Aux battles (042): someone you follow is hosting a room.
-  | "new_aux";
+  | "new_aux"
+  // Aux battles (045): a friend pulled you into their room.
+  | "aux_invite";
 
 /** The four the CREATE tab makes — the only types that fan out. */
 export type FollowFeedType =

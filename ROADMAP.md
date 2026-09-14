@@ -90,6 +90,67 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-14 (Windows), round 3: the stage grows, the door opens.**
+  Shipped to main. 🔴 **MIGRATION 045 NOT RUN YET**
+  (`045-aux-rooms-access.sql`). 044 IS run (probe-verified: fire_a,
+  aux_leaderboard and aux_player_cap all answer).
+  - **A bigger stage on the web.** The room page went `max-w-6xl` →
+    `max-w-7xl` (so the top module stretches too, which Luca okayed),
+    the stage panel and both song cards gained padding at `lg`, and
+    the embeds are now sized by CLASS instead of the height attribute:
+    Spotify 152 → 352px and SoundCloud 166 → 300px above `lg`, where
+    both services switch to their artwork layout. Phones keep the
+    compact strips. The chat column matches the stage's height, so it
+    got longer with it. He'll say if he wants more.
+  - **Both songs could play at once on a phone.** A page cannot pause
+    a cross-origin iframe, so the only reliable fix is for only ONE to
+    exist: the side that isn't playing is an `.aux-play-card` (cover
+    art + ▶), and tapping it unmounts the other side's iframe, which
+    kills its audio dead. Every source, no APIs, no CSP change.
+    (The Spotify IFrame API could do this without unmounting AND give
+    a scrubber — but it needs `open.spotify.com` added to `script-src`,
+    which isn't worth widening the CSP for. Spotify's 30-second
+    preview is a not-logged-in limit we can't code around, so each
+    song now carries an "Open in Spotify/YouTube/SoundCloud" link
+    straight to the real app.)
+  - **PRIVATE and HIDDEN came apart** (his call). `is_private` now
+    means ONE thing: you need the code to take a SPOT. The new
+    `is_hidden` is the opt-in "truly private" box. So: public =
+    anyone watches and plays · private (the default private) = anyone
+    watches, votes, reacts and chats, only the code plays · private +
+    hidden = the code or nothing. Existing rooms backfill
+    `is_hidden = is_private`, so nothing changes under anyone.
+    - The right to play is now its own table, **`aux_seats`** — SELECT
+      policy and nothing else, like `aux_room_codes`, so only the
+      SECURITY DEFINER doors can grant one. A column on `aux_members`
+      would NOT have worked: the client owns its own member row and
+      could just write the flag true.
+    - `SeatGate` is the new in-room "I have the code" line; `CodeGate`
+      (the full wall) now only stands in front of HIDDEN rooms.
+    - Hidden rooms are also out of the leaderboard — a room nobody can
+      see is the one place a result can be cooked, same reasoning as
+      the self-judged exclusion in 044.
+  - **Invite a friend.** Host-only, mutual follows only (`aux_invitable`
+    lists them, `aux_invite` re-checks server-side). The invite hands
+    over a SEAT, so an invite into a private room IS the code. It
+    lands in the notification centre as `aux_invite` — and since the
+    push trigger fires on every notifications row, their phone buzzes
+    too. **No Mac rebuild was needed**, so nothing was held back.
+  - **The host's door.** `ManagePeople`: REMOVE takes the member row
+    (a nudge), BLOCK takes the row and leaves an `aux_bans` row that
+    shuts re-joining, chat, votes and reactions — the answer to
+    spam-joining. The host's delete reach now extends past the lobby.
+  - **Last results drop after 24h** (his call, same as the countdown
+    shelf): `listAuxRooms` filters `finished_at >= now() - 24h`. The
+    rooms aren't deleted — page, bracket, champion and leaderboard
+    credit all stay, they just stop cluttering the arena.
+  - ⏳ **STILL OPEN:** per-game topics inside a best-of-3. Luca is
+    weighing it himself — nothing built, don't build it unprompted.
+  - Files: `components/aux-battles/{SeatGate,InviteFriends,ManagePeople}.tsx`
+    (new), `app/api/aux-battles/[roomId]/{invite,bans}/route.ts` (new),
+    `supabase/migrations/045-aux-rooms-access.sql`.
+  - Nothing from any of today's rounds has been eyeballed on a device.
+
 - **2026-09-14 (Windows): AUX BATTLES, bug + UI round after Luca's
   first real test. Shipped to main.** His list, each item and what it
   turned out to be:
@@ -142,14 +203,14 @@ don't wait to be asked:**
   - **Leaderboard**: top 10 on /aux-battles, All time / This week
     tabs, `aux_leaderboard(period, limit)` in 044. Both lists are
     fetched server-side, so the filter is an instant swap.
-  - 🔴 **MIGRATION 044 NOT RUN YET** — `supabase/migrations/044-aux-battles-round-2.sql`,
-    run it in the Supabase SQL Editor. Until it does: reactions stay
-    unlimited, the caps don't bite, wins are unfiltered, and the
-    leaderboard section renders nothing (the RPC 404s soft).
-  - ⏳ **STILL OPEN — one question for Luca**: "allow the choice to
-    pick multiple rounds for best of 3". bo1/bo3 is already a choice
-    at room creation, so this needs clarifying before anything is
-    built. Nothing here has been eyeballed on a device.
+  - ✅ **MIGRATION 044 RUN** (Luca, 2026-09-14) — probe-verified
+    against prod: `aux_games.fire_a` answers, and so do
+    `aux_leaderboard` and `aux_player_cap`.
+  - ⏳ The "multiple rounds for best of 3" question turned out to be
+    about TOPICS: a bo3 match currently keeps one topic across its
+    games, and Luca is weighing an option to give each game its own.
+    He is undecided — see the round-3 entry above; don't build it
+    unprompted. Nothing here has been eyeballed on a device.
 
 - **2026-09-13 (Windows): DEBATES → AUX BATTLES, shipped to main.**
   Luca: "lets replace debates with aux battles." His spec, all built:

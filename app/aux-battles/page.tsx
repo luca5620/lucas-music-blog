@@ -61,7 +61,10 @@ export default async function AuxBattlesPage() {
   const live = keep(rooms.live);
   const lobby = keep(rooms.lobby);
   const finished = keep(rooms.finished);
-  const privateJoined = joined.filter((r) => r.is_private && r.status !== "finished");
+  // Only HIDDEN rooms need their own shelf — a plain private room now
+  // shows up in the lists above like any other (migration 045: the
+  // crowd can watch and vote, they just can't take a spot).
+  const privateJoined = joined.filter((r) => r.is_hidden && r.status !== "finished");
 
   return (
     <div className="space-y-6 circuit-bg">

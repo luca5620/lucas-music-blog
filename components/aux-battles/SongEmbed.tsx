@@ -58,16 +58,21 @@ export default function SongEmbed({ song, title }: { song: AuxSong; title: strin
       </div>
     );
   }
+  // The height is a CLASS, not the height attribute, so the stage can
+  // grow on a wide screen (Luca 2026-09-14: "make the main module for
+  // the songs bigger on web"). Phones keep the compact strip —
+  // Spotify's 152px and SoundCloud's 166px are their own minimums;
+  // above lg both services switch to their artwork layout, which is
+  // what makes the stage feel like a stage.
+  const tall = song.source === "spotify" ? "h-[152px] lg:h-[352px]" : "h-[166px] lg:h-[300px]";
   return (
     <iframe
       src={src(song)}
       title={title}
-      width="100%"
-      height={song.source === "spotify" ? 152 : 166}
       frameBorder="0"
       allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
       loading="lazy"
-      className="rounded-lg block"
+      className={`rounded-lg block w-full ${tall}`}
     />
   );
 }

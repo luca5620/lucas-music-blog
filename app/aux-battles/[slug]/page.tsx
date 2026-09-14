@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   auxRoomExists,
+  getAuxBans,
   getAuxMessages,
   getAuxRoomBySlug,
   getAuxRoomState,
   getViewerAuxReaction,
   getViewerAuxVote,
+  hasAuxSeat,
 } from "@/lib/db/aux-battles";
 import { getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -68,13 +70,28 @@ export default async function AuxBattlePage({ params }: PageProps) {
       : Promise.resolve(null),
   ]);
 
+  const isHost = !!user && room.host_id === user.id;
+
   // The host of a private room gets the code on first paint.
   let code: string | null = null;
-  if (user && room.is_private && room.host_id === user.id) {
+  if (isHost && room.is_private) {
     const supabase = await createClient();
     const { data } = await supabase.rpc("aux_room_code", { p_room_id: room.id } as never);
     code = typeof data === "string" ? data : null;
   }
+
+  // A SEAT is the right to take a spot in the bracket (migration
+  // 045). Public rooms hand one to everybody; a private room's comes
+  // from the code or the host's invite. The block list is the host's
+  // business and nobody else's, so it's only read for them.
+  const [hasSeat, bans] = await Promise.all([
+    !room.is_private || isHost
+      ? Promise.resolve(true)
+      : user
+        ? hasAuxSeat(room.id, user.id)
+        : Promise.resolve(false),
+    isHost ? getAuxBans(room.id) : Promise.resolve([]),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -84,6 +101,8 @@ export default async function AuxBattlePage({ params }: PageProps) {
         initialMessages={messages}
         initialVote={vote}
         initialReaction={reaction}
+        hasSeat={hasSeat}
+        initialBans={bans}
         code={code}
       />
     </div>

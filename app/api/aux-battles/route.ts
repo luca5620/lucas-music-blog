@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   const body = await readJson(request);
   if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
 
-  const { name, format, judge, is_private, host_plays } = body;
+  const { name, format, judge, is_private, is_hidden, host_plays } = body;
 
   if (!isText(name, 120) || name.trim().length < 3) {
     return NextResponse.json({ error: "Room name must be 3–120 characters." }, { status: 400 });
@@ -50,6 +50,9 @@ export async function POST(request: Request) {
   }
   if (is_private !== undefined && typeof is_private !== "boolean") {
     return NextResponse.json({ error: "Invalid private flag." }, { status: 400 });
+  }
+  if (is_hidden !== undefined && typeof is_hidden !== "boolean") {
+    return NextResponse.json({ error: "Invalid hidden flag." }, { status: 400 });
   }
   if (host_plays !== undefined && typeof host_plays !== "boolean") {
     return NextResponse.json({ error: "Invalid host flag." }, { status: 400 });
@@ -68,6 +71,10 @@ export async function POST(request: Request) {
       format,
       judge,
       is_private: is_private === true,
+      // Hidden only means something for a private room, and it's the
+      // opt-IN box (migration 045): private on its own still lets the
+      // crowd watch and vote.
+      is_hidden: is_private === true && is_hidden === true,
       host_plays: host_plays !== false,
     } as never)
     .select("*")
@@ -77,7 +84,14 @@ export async function POST(request: Request) {
     console.error("aux room create failed:", error?.message);
     return NextResponse.json({ error: "Couldn't open the room. Try again." }, { status: 500 });
   }
-  const room = data as { id: string; slug: string; is_private: boolean; host_plays: boolean; name: string };
+  const room = data as {
+    id: string;
+    slug: string;
+    is_private: boolean;
+    is_hidden: boolean;
+    host_plays: boolean;
+    name: string;
+  };
 
   // The playing host is a player from the start.
   if (room.host_plays) {
@@ -90,7 +104,11 @@ export async function POST(request: Request) {
   if (room.is_private) {
     const { data: minted } = await supabase.rpc("aux_room_code", { p_room_id: room.id } as never);
     code = typeof minted === "string" ? minted : null;
-  } else {
+  }
+  // Followers hear about anything they could actually open. A private
+  // room is one of those now — they can watch and vote, they just
+  // can't take a spot without the code. Only HIDDEN rooms stay quiet.
+  if (!room.is_hidden) {
     await notifyFollowers({
       actorId: user.id,
       type: "new_aux",

@@ -1165,7 +1165,8 @@
       "crowd": "Crowd votes",
       "private": "Private",
       "hostedBy": "hosted by",
-      "unknown": "unknown"
+      "unknown": "unknown",
+      "hidden": "Hidden"
     },
     "new": {
       "back": "Back",
@@ -1184,7 +1185,7 @@
       "hostPlays": "I'm playing too",
       "hostPlaysSub": "Off = you only host and judge.",
       "private": "Private room",
-      "privateSub": "Hidden from the index. People need your six-letter code to get in.",
+      "privateSub": "Only people with your six-letter code can take a spot. Anyone can still watch and vote.",
       "open": "Open the room",
       "opening": "Opening…",
       "cancel": "Cancel",
@@ -1197,7 +1198,10 @@
       "namePlaceholder": "e.g. \"Friday night aux\"",
       "nameHint": "Topics come later — you set a new one at the start of every round.",
       "options": "Options",
-      "optionsHint": "pick any, or both"
+      "optionsHint": "pick any, or both",
+      "hidden": "Truly private",
+      "hiddenOffSub": "Off: the crowd watches and votes, only the code plays.",
+      "hiddenOnSub": "Hidden from everyone. No crowd, no outside votes."
     },
     "gate": {
       "private": "PRIVATE ROOM",
@@ -1229,7 +1233,7 @@
       "code": "Code",
       "copy": "Copy",
       "copied": "Copied",
-      "codeHint": "Send the room link and this code to whoever you want in.",
+      "codeHint": "Send this to whoever you want PLAYING. Anyone can watch and vote without it.",
       "players": "Players",
       "noPlayers": "Nobody has grabbed a spot yet.",
       "watching": "{n, plural, one {# person watching} other {# people watching}}",
@@ -1285,7 +1289,12 @@
       "waitingTopic": "Waiting for the host to name this round's topic…",
       "topicYours": "Name this round's topic below to open the picks.",
       "lobbyFull": "The lobby is full — {n} players is the cap. You can still watch.",
-      "lobbyFullShort": "Lobby full"
+      "lobbyFullShort": "Lobby full",
+      "hiddenRoom": "Hidden",
+      "theDoor": "The door",
+      "playThis": "Play this one",
+      "playThisInstead": "Play this one instead",
+      "openIn": "Open in {source}"
     },
     "chat": {
       "title": "The room",
@@ -1373,6 +1382,39 @@
       "rounds": "{n, plural, one {# round} other {# rounds}}",
       "emptyWeek": "Nobody has won a battle this week yet.",
       "fairPlay": "Wins from a room where the host both played and judged don't count."
+    },
+    "seat": {
+      "watchOnly": "This room is private: watch, vote and chat all you like. A spot in the bracket needs the host's code.",
+      "haveCode": "I have the code",
+      "placeholder": "ABC123",
+      "enter": "Take a spot",
+      "checking": "Checking…",
+      "wrong": "That code doesn't open this room."
+    },
+    "invite": {
+      "open": "Invite friends",
+      "close": "Done",
+      "hint": "People you follow who follow you back. An invite counts as the code.",
+      "loading": "Loading…",
+      "nobody": "Nobody follows you back yet.",
+      "send": "Invite",
+      "sent": "Sent",
+      "alreadyIn": "In",
+      "failed": "Couldn't send that invite.",
+      "loadFailed": "Couldn't load your friends."
+    },
+    "manage": {
+      "open": "Manage people ({n})",
+      "close": "Done",
+      "player": "Player",
+      "viewer": "Viewer",
+      "remove": "Remove",
+      "block": "Block",
+      "blocked": "Blocked",
+      "unblock": "Unblock",
+      "blockConfirm": "Block {name}? They can't rejoin, chat or vote in this room.",
+      "hint": "Remove is a nudge. Block keeps them out for good.",
+      "failed": "That didn't land."
     }
   },
   "rooms": {
@@ -1507,7 +1549,8 @@
     "newList": "made a new list{title}",
     "newDebate": "started a debate{title}",
     "other": "did something",
-    "newAux": "is hosting an aux battle{title}"
+    "newAux": "is hosting an aux battle{title}",
+    "auxInvite": "invited you to their aux battle{title}"
   },
   "taste": {
     "page": {

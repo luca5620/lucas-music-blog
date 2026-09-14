@@ -48,9 +48,12 @@ export default function AuxCard({ room }: { room: AuxRoomWithMeta }) {
         <span className="pixel-text text-[10px] uppercase px-1.5 py-px rounded border border-border-medium text-text-secondary">
           {room.judge === "host" ? t("hostJudge") : t("crowd")}
         </span>
+        {/* A private room is on this page now (migration 045) — the
+            chip says "you can watch, you can't play", not "keep out".
+            Hidden rooms only ever appear on their member's own shelf. */}
         {room.is_private && (
           <span className="pixel-text text-[10px] uppercase px-1.5 py-px rounded border border-osd-amber/40 text-osd-amber">
-            {t("private")}
+            {room.is_hidden ? t("hidden") : t("private")}
           </span>
         )}
       </div>

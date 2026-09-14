@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
+  AuxBan,
   AuxGame,
   AuxMatch,
   AuxMember,
@@ -46,6 +47,16 @@ export interface AuxMessageWithProfile extends AuxMessage {
   profile: AuxProfile;
 }
 
+export interface AuxBanWithProfile extends AuxBan {
+  profile: AuxProfile;
+}
+
+/** A mutual follow the host can invite, and whether they're already in. */
+export interface AuxInvitable {
+  profile: AuxProfile;
+  alreadyIn: boolean;
+}
+
 /** Everything the room page needs in one bundle. */
 export interface AuxRoomState {
   room: AuxRoomWithMeta;
@@ -76,34 +87,46 @@ function shapeRoom(row: RoomRow): AuxRoomWithMeta {
 
 /* --- Rooms --- */
 
-/** The index: what's live, what's filling up, what just finished. */
+/**
+ * The index: what's live, what's filling up, what just finished.
+ *
+ * "Just finished" means the LAST 24 HOURS and nothing older (Luca
+ * 2026-09-14: "they should get the same dropping soon treatment,
+ * where they disappear after 24 hrs to not clutter it up"). The rooms
+ * aren't deleted — they keep their page, their bracket and their
+ * champion, and they still count on the leaderboard. They just stop
+ * sitting on the front of the arena. Same reasoning as the countdown
+ * shelf: a result is news for a day.
+ */
 export async function listAuxRooms(): Promise<{
   live: AuxRoomWithMeta[];
   lobby: AuxRoomWithMeta[];
   finished: AuxRoomWithMeta[];
 }> {
   const supabase = await createClient();
+  const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const [liveRes, lobbyRes, doneRes] = await Promise.all([
     supabase
       .from("aux_rooms")
       .select(ROOM_SELECT)
       .eq("status", "live")
-      .eq("is_private", false)
+      .eq("is_hidden", false)
       .order("started_at", { ascending: false })
       .limit(24),
     supabase
       .from("aux_rooms")
       .select(ROOM_SELECT)
       .eq("status", "lobby")
-      .eq("is_private", false)
+      .eq("is_hidden", false)
       .order("created_at", { ascending: false })
       .limit(24),
     supabase
       .from("aux_rooms")
       .select(ROOM_SELECT)
       .eq("status", "finished")
-      .eq("is_private", false)
+      .eq("is_hidden", false)
       .not("champion_id", "is", null)
+      .gte("finished_at", dayAgo)
       .order("finished_at", { ascending: false })
       .limit(12),
   ]);
@@ -191,6 +214,45 @@ export async function getAuxWins(userIds: string[]): Promise<Map<string, AuxWins
     map.set(row.user_id, { battles: row.battles, rounds: row.rounds });
   }
   return map;
+}
+
+/* --- Seats + bans (migration 045) --- */
+
+/**
+ * Does this viewer hold a SEAT in the room — the right to take a spot
+ * in the bracket? Public rooms don't need one; a private room's seat
+ * comes from typing the code or from the host's invite. Always false
+ * signed out.
+ */
+export async function hasAuxSeat(roomId: string, userId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("aux_seats")
+    .select("user_id")
+    .eq("room_id", roomId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return !!data;
+}
+
+/** Everyone the host has blocked from this room. */
+export async function getAuxBans(roomId: string): Promise<AuxBanWithProfile[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("aux_bans")
+    .select("*, profiles!aux_bans_user_id_fkey(id, username, display_name, avatar_url, role)")
+    .eq("room_id", roomId)
+    .order("created_at", { ascending: true });
+  type Row = AuxBan & { profiles: AuxProfile | AuxProfile[] | null };
+  return ((data ?? []) as unknown as Row[])
+    .map((row) => {
+      const profile = first(row.profiles);
+      if (!profile) return null;
+      const { profiles: _drop, ...ban } = row;
+      void _drop;
+      return { ...ban, profile } as AuxBanWithProfile;
+    })
+    .filter((b): b is AuxBanWithProfile => b !== null);
 }
 
 /* --- The room bundle --- */

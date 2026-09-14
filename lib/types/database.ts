@@ -444,7 +444,13 @@ export interface AuxRoom {
   format: "bo1" | "bo3";
   /** crowd = majority vote (OT on ties) · host = the host picks. */
   judge: "crowd" | "host";
+  /** Private = you need the CODE to take a spot in the bracket.
+      On its own it says nothing about who can watch (migration 045). */
   is_private: boolean;
+  /** The "truly private" box: hidden from the index and invisible to
+      anyone who hasn't used the code. Off by default, so a private
+      room is still watched and VOTED ON by the crowd. */
+  is_hidden: boolean;
   host_plays: boolean;
   status: "lobby" | "live" | "finished";
   champion_id: string | null;
@@ -528,6 +534,26 @@ export interface AuxMessage {
   room_id: string;
   user_id: string;
   content: string;
+  created_at: string;
+}
+
+/**
+ * The right to take a SPOT in a private room's bracket (migration
+ * 045) — bought by typing the code or handed over by the host's
+ * invite. Its own table because a member row no longer proves it:
+ * strangers hold viewer rows in visible private rooms.
+ */
+export interface AuxSeat {
+  room_id: string;
+  user_id: string;
+  source: "code" | "invite";
+  created_at: string;
+}
+
+/** Someone the host threw out for good (migration 045). */
+export interface AuxBan {
+  room_id: string;
+  user_id: string;
   created_at: string;
 }
 
@@ -1047,6 +1073,20 @@ export type Database = {
         Row: AuxReaction;
         Insert: Pick<AuxReaction, "game_id" | "room_id" | "user_id" | "side" | "kind"> & Partial<Omit<AuxReaction, "game_id" | "room_id" | "user_id" | "side" | "kind">>;
         Update: Partial<AuxReaction>;
+        Relationships: [];
+      };
+      aux_seats: {
+        Row: AuxSeat;
+        // Read-only from the app: the table has a SELECT policy and
+        // nothing else — only the SECURITY DEFINER doors write it.
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      aux_bans: {
+        Row: AuxBan;
+        Insert: Pick<AuxBan, "room_id" | "user_id"> & Partial<Omit<AuxBan, "room_id" | "user_id">>;
+        Update: Partial<AuxBan>;
         Relationships: [];
       };
       aux_messages: {

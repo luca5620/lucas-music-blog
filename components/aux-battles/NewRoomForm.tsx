@@ -77,6 +77,10 @@ export default function NewRoomForm() {
   const [judge, setJudge] = useState<Judge>("crowd");
   const [hostPlays, setHostPlays] = useState(true);
   const [isPrivate, setIsPrivate] = useState(false);
+  // The "truly private" box (Luca 2026-09-14). A private room is only
+  // about who can PLAY; by default the crowd still watches and votes.
+  // This is the one that shuts the doors and the windows.
+  const [isHidden, setIsHidden] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,6 +103,8 @@ export default function NewRoomForm() {
           judge,
           host_plays: hostPlays,
           is_private: isPrivate,
+          // Hiding only means anything for a private room.
+          is_hidden: isPrivate && isHidden,
         }),
       });
       const data = (await res.json()) as { room?: { slug: string }; error?: string };
@@ -196,6 +202,36 @@ export default function NewRoomForm() {
             </button>
           ))}
         </div>
+
+        {/* The "truly private" box only appears once the room IS
+            private — on its own it would mean nothing. Indented under
+            the private option so it reads as a sub-choice. */}
+        {isPrivate && (
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={isHidden}
+            onClick={() => {
+              hapticTap();
+              setIsHidden(!isHidden);
+            }}
+            className={`mt-2 w-full text-left p-3 rounded-lg border transition-colors ${
+              isHidden ? "border-osd-amber bg-osd-amber/10" : "border-border-medium bg-black/25"
+            }`}
+          >
+            <span
+              className={`block text-sm font-bold font-[family-name:var(--font-heading)] ${
+                isHidden ? "text-osd-amber" : "text-text-primary"
+              }`}
+            >
+              {isHidden ? "☑ " : "☐ "}
+              {t("hidden")}
+            </span>
+            <span className="block text-xs text-text-muted mt-0.5">
+              {isHidden ? t("hiddenOnSub") : t("hiddenOffSub")}
+            </span>
+          </button>
+        )}
       </div>
 
       {error && <p className="text-sm text-accent-rose">{error}</p>}

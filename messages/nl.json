@@ -1165,7 +1165,8 @@
       "crowd": "Publiek stemt",
       "private": "Privé",
       "hostedBy": "gehost door",
-      "unknown": "onbekend"
+      "unknown": "onbekend",
+      "hidden": "Verborgen"
     },
     "new": {
       "back": "Terug",
@@ -1184,7 +1185,7 @@
       "hostPlays": "Ik speel zelf mee",
       "hostPlaysSub": "Uit = je host en jureert alleen.",
       "private": "Privéroom",
-      "privateSub": "Verborgen voor de index. Mensen hebben je code van zes tekens nodig om binnen te komen.",
+      "privateSub": "Alleen mensen met jouw zesletterige code kunnen een plek pakken. Kijken en stemmen mag iedereen.",
       "open": "Room openen",
       "opening": "Openen…",
       "cancel": "Annuleren",
@@ -1197,7 +1198,10 @@
       "namePlaceholder": "bijv. \"Vrijdagavond-aux\"",
       "nameHint": "Thema's komen later: aan het begin van elke ronde zet je een nieuw thema.",
       "options": "Opties",
-      "optionsHint": "kies er een, of allebei"
+      "optionsHint": "kies er een, of allebei",
+      "hidden": "Echt privé",
+      "hiddenOffSub": "Uit: het publiek kijkt en stemt, alleen de code speelt.",
+      "hiddenOnSub": "Verborgen voor iedereen. Geen publiek, geen stemmen van buiten."
     },
     "gate": {
       "private": "PRIVÉROOM",
@@ -1229,7 +1233,7 @@
       "code": "Code",
       "copy": "Kopiëren",
       "copied": "Gekopieerd",
-      "codeHint": "Stuur de roomlink en deze code naar wie je binnen wilt hebben.",
+      "codeHint": "Stuur dit naar wie je wilt laten SPELEN. Kijken en stemmen kan zonder.",
       "players": "Spelers",
       "noPlayers": "Nog niemand heeft een plek gepakt.",
       "watching": "{n, plural, one {# kijker} other {# kijkers}}",
@@ -1285,7 +1289,12 @@
       "waitingTopic": "Wachten tot de host het thema van deze ronde kiest…",
       "topicYours": "Zet hieronder het thema van deze ronde om de keuzes te openen.",
       "lobbyFull": "De lobby zit vol — maximaal {n} spelers. Kijken kan nog wel.",
-      "lobbyFullShort": "Lobby vol"
+      "lobbyFullShort": "Lobby vol",
+      "hiddenRoom": "Verborgen",
+      "theDoor": "De deur",
+      "playThis": "Deze afspelen",
+      "playThisInstead": "Deze in plaats daarvan",
+      "openIn": "Openen in {source}"
     },
     "chat": {
       "title": "De room",
@@ -1373,6 +1382,39 @@
       "rounds": "{n, plural, one {# ronde} other {# rondes}}",
       "emptyWeek": "Deze week heeft nog niemand een battle gewonnen.",
       "fairPlay": "Overwinningen in een room waar de host zelf meespeelde én jureerde tellen niet mee."
+    },
+    "seat": {
+      "watchOnly": "Deze room is privé: kijken, stemmen en chatten mag gerust. Een plek in het schema vraagt de code van de host.",
+      "haveCode": "Ik heb de code",
+      "placeholder": "ABC123",
+      "enter": "Plek pakken",
+      "checking": "Controleren…",
+      "wrong": "Die code opent deze room niet."
+    },
+    "invite": {
+      "open": "Vrienden uitnodigen",
+      "close": "Klaar",
+      "hint": "Mensen die jij volgt en die jou terugvolgen. Een uitnodiging telt als de code.",
+      "loading": "Laden…",
+      "nobody": "Nog niemand volgt je terug.",
+      "send": "Uitnodigen",
+      "sent": "Verstuurd",
+      "alreadyIn": "Binnen",
+      "failed": "Uitnodiging niet verstuurd.",
+      "loadFailed": "Kon je vrienden niet laden."
+    },
+    "manage": {
+      "open": "Mensen beheren ({n})",
+      "close": "Klaar",
+      "player": "Speler",
+      "viewer": "Kijker",
+      "remove": "Verwijderen",
+      "block": "Blokkeren",
+      "blocked": "Geblokkeerd",
+      "unblock": "Deblokkeren",
+      "blockConfirm": "{name} blokkeren? Ze kunnen niet terugkomen, chatten of stemmen in deze room.",
+      "hint": "Verwijderen is een waarschuwing. Blokkeren houdt ze voorgoed buiten.",
+      "failed": "Dat lukte niet."
     }
   },
   "rooms": {
@@ -1507,7 +1549,8 @@
     "newList": "maakte een nieuwe lijst{title}",
     "newDebate": "startte een debat{title}",
     "other": "deed iets",
-    "newAux": "host een aux battle{title}"
+    "newAux": "host een aux battle{title}",
+    "auxInvite": "nodigde je uit voor hun aux battle{title}"
   },
   "taste": {
     "page": {

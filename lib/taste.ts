@@ -525,7 +525,7 @@ export async function getTunedToYou(
       .neq("user_id", viewerId)
       .order("created_at", { ascending: false })
       .limit(50),
-    // Debates left the site on 2026-09-13 (replaced by aux battles).
+    // Debates left the site on 2026-09-13 (replaced by Aux Wars).
     // The OnAir card + its scoring stay wired for now — Luca is
     // rethinking Your Taste's signals — but the pool is empty, so no
     // debate ever airs. Aux rooms get their own card in that rework.

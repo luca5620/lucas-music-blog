@@ -44,7 +44,7 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong className="text-text-primary">Content you post:</strong>{" "}
-            reviews, ratings, lists, comments, aux battle votes and messages,
+            reviews, ratings, lists, comments, Aux War votes and messages,
             live-room chat, and profile customization (bio, avatar, banner,
             links, theme).
           </li>
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
       <section className="space-y-3 text-sm leading-relaxed text-text-secondary">
         <h2 className="vhs-label text-base">What&apos;s public</h2>
         <p>
-          Reviews, ratings, lists, comments, aux battle activity, and your profile
+          Reviews, ratings, lists, comments, Aux War activity, and your profile
           (username, display name, avatar, banner, bio, showcases) are public
           — that&apos;s the point of the platform. Your email address is never
           shown to anyone.

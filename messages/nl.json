@@ -18,7 +18,7 @@
     "signOut": "Uitloggen",
     "signIn": "Inloggen",
     "user": "Gebruiker",
-    "auxBattles": "Aux battles"
+    "auxBattles": "Aux Wars"
   },
   "tabBar": {
     "ariaLabel": "App-navigatie",
@@ -37,7 +37,7 @@
     "postSub": "schrijf uitgebreid, met een YouTube- of TikTok-video",
     "list": "Lijst",
     "listSub": "verzamel en rangschik je favorieten",
-    "aux": "Aux battle",
+    "aux": "Aux War",
     "auxSub": "geef de aux door en laat de room beslissen"
   },
   "footer": {
@@ -223,7 +223,7 @@
     "deletion": {
       "title": "Account verwijderen",
       "hint": "Wist je profiel en alles wat je hebt gemaakt. Kan niet ongedaan worden gemaakt.",
-      "intro": "Je account verwijderen wist je profiel en <b>alles wat je hebt gemaakt</b>: recensies, lijsten, posts, stemmen in aux battles, chatberichten, afbeeldingen. Er is geen weg terug en niets is terug te halen.",
+      "intro": "Je account verwijderen wist je profiel en <b>alles wat je hebt gemaakt</b>: recensies, lijsten, posts, stemmen in Aux Wars, chatberichten, afbeeldingen. Er is geen weg terug en niets is terug te halen.",
       "delete": "Account verwijderen",
       "typeUsername": "Typ je gebruikersnaam <b>@name</b> om te bevestigen:",
       "deleting": "Verwijderen...",
@@ -260,7 +260,7 @@
       "tasteTitle": "Wil je een kanaal dat alleen voor jou draait?",
       "tasteBody": "Jouw smaak maakt een feed van wie je volgt en wat je beoordeelt.",
       "tuneIn": "Afstemmen →",
-      "startAux": "🎧 Aux battle hosten"
+      "startAux": "🎧 Aux War hosten"
     },
     "closing": {
       "eyebrow": "Je kanaal staat klaar",
@@ -279,7 +279,7 @@
       "step2Label": "Geef een cijfer",
       "step2Body": "Van nul tot tien, met één decimaal. Je cijfer staat op elke kaart die je plaatst, in de kleur van het oordeel.",
       "step3Label": "Praat live mee",
-      "step3Body": "Elke release heeft een live room, al open voordat het album om middernacht uitkomt. Zin in strijd? Host een aux battle en geef de aux door.",
+      "step3Body": "Elke release heeft een live room, al open voordat het album om middernacht uitkomt. Zin in strijd? Host een Aux War en geef de aux door.",
       "onAir": "On air",
       "step3Prop": "“track 4 is de beste, ga maar tegen de muur praten”",
       "stepFour": "stap vier is optioneel en heet <link>lijsten</link>. iedereen eindigt uiteindelijk met lijsten."
@@ -294,7 +294,7 @@
       "point2B": "Albums met een aftelklok krijgen hun room voordat ze uitkomen. Om 23:59 is de chat al live.",
       "point3H": "Meelezen zonder account",
       "point3B": "Rooms zijn openbaar. Maak een account om mee te praten en te beoordelen.",
-      "point4H": "Aux battles als het heet wordt",
+      "point4H": "Aux Wars als het heet wordt",
       "point4B": "Twee kanten, elk één plaat, en de room stemt.",
       "seeOnAir": "Bekijk wat on air is",
       "onAir": "On air",
@@ -669,7 +669,7 @@
       },
       "debate_champion": {
         "label": "Aux-kampioen",
-        "description": "Won een uitgelichte aux battle."
+        "description": "Won een uitgelichte Aux War."
       },
       "list_master": {
         "label": "Lijstenmeester",
@@ -865,8 +865,8 @@
       "takes": "{n, plural, one {# mening} other {# meningen}}",
       "onAir": "On air",
       "signedOff": "Afgesloten",
-      "auxCount": "Aux battles · {n}",
-      "myAux": "Mijn aux battles",
+      "auxCount": "Aux Wars · {n}",
+      "myAux": "Mijn Aux Wars",
       "auxTotal": "{n, plural, one {# battle} other {# battles}} in totaal",
       "hostAux": "+ Battle hosten",
       "noAux": "Nog geen battles. Kies een thema en geef de aux door."
@@ -1142,7 +1142,7 @@
   },
   "aux": {
     "index": {
-      "title": "AUX BATTLES",
+      "title": "AUX WARS",
       "sub": "Geef de aux door. Twee nummers tegenover elkaar, de room luistert, de room stemt. Brackets, best-of-3, live chat en aan het eind een kampioen.",
       "host": "Battle hosten",
       "joinPlaceholder": "Plak een roomlink…",
@@ -1170,7 +1170,7 @@
     },
     "new": {
       "back": "Terug",
-      "title": "Host een aux battle",
+      "title": "Host een Aux War",
       "sub": "Geef de room een naam, kies het format en wie beslist. Spelers komen binnen in de lobby; jij start als de room vol genoeg is, en elke ronde bedenk je een nieuw thema.",
       "format": "Format",
       "bo1": "Eén ronde",
@@ -1483,7 +1483,7 @@
       "albums": "{n, plural, one {# album} other {# albums}}",
       "ranked": ", gerangschikt",
       "likedReview": "likete een recensie van",
-      "hostedAux": "host een aux battle:"
+      "hostedAux": "host een Aux War:"
     }
   },
   "connections": {
@@ -1496,11 +1496,11 @@
   },
   "search": {
     "title": "ZOEKEN",
-    "sub": "Alle kanalen tegelijk: mensen, artiesten, releases, recensies, aux battles, lijsten, posts.",
+    "sub": "Alle kanalen tegelijk: mensen, artiesten, releases, recensies, Aux Wars, lijsten, posts.",
     "placeholder": "Zoek wat je wilt: mensen, artiesten, releases…",
     "aria": "Alles doorzoeken",
     "tuning": "AFSTEMMEN…",
-    "hint": "Typ minstens twee tekens: gebruikers, artiesten, releases, recensies, aux battles, lijsten en posts komen allemaal tegelijk terug.",
+    "hint": "Typ minstens twee tekens: gebruikers, artiesten, releases, recensies, Aux Wars, lijsten en posts komen allemaal tegelijk terug.",
     "noSignal": "GEEN SIGNAAL",
     "nothing": "Niets op welk kanaal dan ook voor “{query}”. Probeer een artiest, een album of een gebruikersnaam.",
     "sections": {
@@ -1510,7 +1510,7 @@
       "reviews": "Recensies",
       "lists": "Lijsten",
       "posts": "Posts",
-      "auxBattles": "Aux battles"
+      "auxBattles": "Aux Wars"
     },
     "communityAvg": "gemiddelde",
     "closed": "GESLOTEN",
@@ -1553,8 +1553,8 @@
     "newList": "maakte een nieuwe lijst{title}",
     "newDebate": "startte een debat{title}",
     "other": "deed iets",
-    "newAux": "host een aux battle{title}",
-    "auxInvite": "nodigde je uit voor hun aux battle{title}"
+    "newAux": "host een Aux War{title}",
+    "auxInvite": "nodigde je uit voor hun Aux War{title}"
   },
   "taste": {
     "page": {
@@ -1655,7 +1655,7 @@
     "title": "Over Peak Music Reviews",
     "sub": "Wat het is, waarom het bestaat en de vragen die mensen stellen.",
     "inOneBreath": "IN ÉÉN ADEM",
-    "intro": "<strong>Peak Music Reviews</strong> is een gratis muzieksociaalnetwerk en recensie-app: leden geven albums en nummers een cijfer van 0 tot 10,0, schrijven recensies, maken lijsten, zitten in live chatrooms op de avond dat een plaat uitkomt en gaan tegen elkaar in aux battles. Elke recensie hangt aan een echte release: de hele Spotify-catalogus plus de diepe bibliotheek van Genius, dus ook onuitgebrachte en gelekte nummers kunnen een cijfer krijgen (op basis van metadata, nooit bestanden). Het werkt in elke browser en als iOS-app, met één account voor beide. Denk Letterboxd, maar voor muziek.",
+    "intro": "<strong>Peak Music Reviews</strong> is een gratis muzieksociaalnetwerk en recensie-app: leden geven albums en nummers een cijfer van 0 tot 10,0, schrijven recensies, maken lijsten, zitten in live chatrooms op de avond dat een plaat uitkomt en gaan tegen elkaar in Aux Wars. Elke recensie hangt aan een echte release: de hele Spotify-catalogus plus de diepe bibliotheek van Genius, dus ook onuitgebrachte en gelekte nummers kunnen een cijfer krijgen (op basis van metadata, nooit bestanden). Het werkt in elke browser en als iOS-app, met één account voor beide. Denk Letterboxd, maar voor muziek.",
     "facts": {
       "what": "Wat",
       "whatV": "Muziekrecensie-app + sociaal netwerk",
@@ -1668,7 +1668,7 @@
       "catalog": "Catalogus",
       "catalogV": "Heel Spotify + de diepe bibliotheek van Genius, onuitgebracht inbegrepen",
       "live": "Live",
-      "liveV": "Chatrooms op releaseavond en aux battles"
+      "liveV": "Chatrooms op releaseavond en Aux Wars"
     },
     "joinFree": "Gratis meedoen",
     "iosApp": "iOS-app",
@@ -1683,24 +1683,24 @@
     "diff1B": "Leaks, losse tracks en nummers die nooit op streaming kwamen staan in de catalogus, duidelijk gemarkeerd, zodat de meest uitgesproken hoek van de muziekcultuur eindelijk een plek heeft om te beoordelen en te discussiëren.",
     "diff2H": "Releaseavonden.",
     "diff2B": "Elke grote release krijgt een live room op het moment dat hij landt: het wekelijkse ritueel, niet zomaar een functie.",
-    "diff3H": "Aux battles.",
+    "diff3H": "Aux Wars.",
     "diff3B": "Twee kanten, live stemmen, elke kant gekoppeld aan een plaat.",
     "diff4H": "Fysieke media.",
     "diff4B": "De hele site leeft in een beeldbuis: VHS-labels, consolemenu's, badges die gloeien als een perfecte 10.",
     "questions": "VRAGEN",
     "faq": {
       "q1": "Wat is Peak Music Reviews?",
-      "a1": "Peak Music Reviews is een muzieksociaalnetwerk: denk Letterboxd, maar voor albums. Leden beoordelen en recenseren releases, maken deelbare lijsten, zitten in live chatrooms als nieuwe albums uitkomen en gaan tegen elkaar in aux battles. Elke recensie hangt aan een echte release uit de Spotify-catalogus of de diepe bibliotheek van Genius, onuitgebrachte tracks inbegrepen.",
+      "a1": "Peak Music Reviews is een muzieksociaalnetwerk: denk Letterboxd, maar voor albums. Leden beoordelen en recenseren releases, maken deelbare lijsten, zitten in live chatrooms als nieuwe albums uitkomen en gaan tegen elkaar in Aux Wars. Elke recensie hangt aan een echte release uit de Spotify-catalogus of de diepe bibliotheek van Genius, onuitgebrachte tracks inbegrepen.",
       "q2": "Hoe worden albums beoordeeld op Peak Music Reviews?",
       "a2": "Leden geven releases een cijfer van 0 tot 10,0 met één decimaal. Cijfers weerspiegelen echt persoonlijk plezier, niet puur technische analyse: iets goed vinden om een stomme reden telt net zo hard als een technische ontleding. Releasepagina's tonen het communitygemiddelde over alle recensies.",
       "q3": "Kan ik onuitgebrachte of gelekte muziek recenseren op Peak Music Reviews?",
       "a3": "Ja. De catalogus van de site draait op Spotify (de officiële catalogus van uitgebrachte muziek) en Genius (de diepe bibliotheek: onuitgebrachte tracks, losse tracks en nummers die nooit op streaming kwamen). Onuitgebrachte releases zijn duidelijk gemarkeerd op hun pagina's.",
       "q4": "Heb ik een account nodig om Peak Music Reviews te gebruiken?",
-      "a4": "Rondkijken kan iedereen. Beoordelen, recenseren, lijsten maken, live releaserooms bezoeken en stemmen in aux battles vragen een gratis account met een unieke gebruikersnaam en een bevestigd e-mailadres.",
+      "a4": "Rondkijken kan iedereen. Beoordelen, recenseren, lijsten maken, live releaserooms bezoeken en stemmen in Aux Wars vragen een gratis account met een unieke gebruikersnaam en een bevestigd e-mailadres.",
       "q5": "Is Peak Music Reviews gratis, en op welke platforms is het?",
-      "a5": "Ja: beoordelen, recensies, lijsten, live releaserooms, aux battles, posts en profielaanpassing zijn allemaal gratis. Het werkt in elke browser op peakmusicreviews.com en als iOS-app in de App Store, met hetzelfde account en dezelfde inhoud op beide. Een Android-app is gepland.",
+      "a5": "Ja: beoordelen, recensies, lijsten, live releaserooms, Aux Wars, posts en profielaanpassing zijn allemaal gratis. Het werkt in elke browser op peakmusicreviews.com en als iOS-app in de App Store, met hetzelfde account en dezelfde inhoud op beide. Een Android-app is gepland.",
       "q6": "Is Peak Music Reviews een alternatief voor Musicboard?",
-      "a6": "Ja. Het dekt wat Musicboard deed (cijfers van 0 tot 10,0 met decimaal, geschreven recensies, lijsten en sociale profielen) en voegt live rooms op releaseavond, aux battles en een catalogus met onuitgebrachte muziek toe. Musicboard-gebruikers die willen overstappen lezen de gids op peakmusicreviews.com/musicboard-alternative (in het Engels)."
+      "a6": "Ja. Het dekt wat Musicboard deed (cijfers van 0 tot 10,0 met decimaal, geschreven recensies, lijsten en sociale profielen) en voegt live rooms op releaseavond, Aux Wars en een catalogus met onuitgebrachte muziek toe. Musicboard-gebruikers die willen overstappen lezen de gids op peakmusicreviews.com/musicboard-alternative (in het Engels)."
     },
     "getInTouch": "CONTACT",
     "contact": "Vragen, ideeën, problemen?"

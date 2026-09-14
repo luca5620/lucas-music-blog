@@ -18,7 +18,7 @@
     "signOut": "Se déconnecter",
     "signIn": "Se connecter",
     "user": "Utilisateur",
-    "auxBattles": "Battles d'aux"
+    "auxBattles": "Aux Wars"
   },
   "tabBar": {
     "ariaLabel": "Navigation de l'app",
@@ -37,7 +37,7 @@
     "postSub": "écris long, avec une vidéo YouTube ou TikTok",
     "list": "Liste",
     "listSub": "rassemble et classe tes préférés",
-    "aux": "Battle d'aux",
+    "aux": "Aux War",
     "auxSub": "passe l'aux, la salle tranche"
   },
   "footer": {
@@ -223,7 +223,7 @@
     "deletion": {
       "title": "Supprimer le compte",
       "hint": "Efface ton profil et tout ce que tu as créé. Irréversible.",
-      "intro": "Supprimer ton compte efface ton profil et <b>tout ce que tu as créé</b> : critiques, listes, posts, votes de battles d'aux, messages de chat, images. Aucun retour en arrière, aucune récupération possible.",
+      "intro": "Supprimer ton compte efface ton profil et <b>tout ce que tu as créé</b> : critiques, listes, posts, votes des Aux Wars, messages de chat, images. Aucun retour en arrière, aucune récupération possible.",
       "delete": "Supprimer le compte",
       "typeUsername": "Tape ton nom d'utilisateur <b>@name</b> pour confirmer :",
       "deleting": "Suppression...",
@@ -260,7 +260,7 @@
       "tasteTitle": "Envie d'une chaîne réglée sur toi ?",
       "tasteBody": "Tes goûts construit un flux à partir des gens que tu suis et de ce que tu notes.",
       "tuneIn": "Se brancher →",
-      "startAux": "🎧 Lancer une battle d'aux"
+      "startAux": "🎧 Lancer une Aux War"
     },
     "closing": {
       "eyebrow": "Ta chaîne t'attend",
@@ -279,7 +279,7 @@
       "step2Label": "Mets-lui une note",
       "step2Body": "De zéro à dix, avec une décimale. Ta note apparaît sur chaque carte que tu publies, colorée selon le score.",
       "step3Label": "Débats-en en direct",
-      "step3Body": "Chaque sortie a une salle en direct, ouverte avant même que l'album sorte à minuit. Envie de bagarre ? Lance une battle d'aux et passe l'aux.",
+      "step3Body": "Chaque sortie a une salle en direct, ouverte avant même que l'album sorte à minuit. Envie de bagarre ? Lance une Aux War et passe l'aux.",
       "onAir": "À l'antenne",
       "step3Prop": "« la 4 est la meilleure, va débattre avec un mur »",
       "stepFour": "l'étape quatre est facultative : ce sont les <link>listes</link>. tout le monde finit par faire des listes."
@@ -294,7 +294,7 @@
       "point2B": "Les albums en compte à rebours ont leur salle avant de sortir. Le chat est en direct dès 23 h 59.",
       "point3H": "Lisible sans compte",
       "point3B": "Les salles sont publiques. Inscris-toi pour parler et noter.",
-      "point4H": "Des battles d'aux quand ça chauffe",
+      "point4H": "Des Aux Wars quand ça chauffe",
       "point4B": "Deux camps, un disque chacun, et la salle vote.",
       "seeOnAir": "Voir ce qui est à l'antenne",
       "onAir": "À l'antenne",
@@ -669,7 +669,7 @@
       },
       "debate_champion": {
         "label": "Champion de l'aux",
-        "description": "A remporté une battle d'aux mise à la une."
+        "description": "A remporté une Aux War mise à la une."
       },
       "list_master": {
         "label": "Maître des listes",
@@ -865,8 +865,8 @@
       "takes": "{n, plural, one {# avis} other {# avis}}",
       "onAir": "À l'antenne",
       "signedOff": "Terminé",
-      "auxCount": "Battles d'aux · {n}",
-      "myAux": "Mes battles d'aux",
+      "auxCount": "Aux Wars · {n}",
+      "myAux": "Mes Aux Wars",
       "auxTotal": "{n, plural, one {# battle} other {# battles}} au total",
       "hostAux": "+ Lancer une battle",
       "noAux": "Pas encore de battle. Choisis un thème et passe l'aux."
@@ -1142,7 +1142,7 @@
   },
   "aux": {
     "index": {
-      "title": "BATTLES D'AUX",
+      "title": "AUX WARS",
       "sub": "Passe l'aux. Deux morceaux face à face, la salle écoute, la salle vote. Tableaux, best of 3, chat en direct et un champion à la fin.",
       "host": "Lancer une battle",
       "joinPlaceholder": "Colle le lien d'une salle…",
@@ -1170,7 +1170,7 @@
     },
     "new": {
       "back": "Retour",
-      "title": "Lancer une battle d'aux",
+      "title": "Lancer une Aux War",
       "sub": "Donne un nom à la salle, choisis le format et qui tranche. Les joueurs rejoignent le lobby ; tu lances quand il y a assez de monde, et tu nommes un nouveau thème à chaque manche.",
       "format": "Format",
       "bo1": "Une manche",
@@ -1483,7 +1483,7 @@
       "albums": "{n, plural, one {# album} other {# albums}}",
       "ranked": ", classée",
       "likedReview": "a aimé une critique de",
-      "hostedAux": "organise une battle d'aux :"
+      "hostedAux": "organise une Aux War :"
     }
   },
   "connections": {
@@ -1496,11 +1496,11 @@
   },
   "search": {
     "title": "RECHERCHE",
-    "sub": "Toutes les chaînes à la fois — gens, artistes, sorties, critiques, battles d'aux, listes, posts.",
+    "sub": "Toutes les chaînes à la fois — gens, artistes, sorties, critiques, Aux Wars, listes, posts.",
     "placeholder": "Cherche n'importe quoi — gens, artistes, sorties…",
     "aria": "Tout rechercher",
     "tuning": "RÉGLAGE…",
-    "hint": "Tape au moins deux caractères — utilisateurs, artistes, sorties, critiques, battles d'aux, listes et posts arrivent tous en même temps.",
+    "hint": "Tape au moins deux caractères — utilisateurs, artistes, sorties, critiques, Aux Wars, listes et posts arrivent tous en même temps.",
     "noSignal": "PAS DE SIGNAL",
     "nothing": "Rien sur aucune chaîne pour « {query} ». Essaie un artiste, un album ou un nom d'utilisateur.",
     "sections": {
@@ -1510,7 +1510,7 @@
       "reviews": "Critiques",
       "lists": "Listes",
       "posts": "Posts",
-      "auxBattles": "Battles d'aux"
+      "auxBattles": "Aux Wars"
     },
     "communityAvg": "moyenne",
     "closed": "TERMINÉ",
@@ -1553,8 +1553,8 @@
     "newList": "a fait une nouvelle liste{title}",
     "newDebate": "a lancé un débat{title}",
     "other": "a fait quelque chose",
-    "newAux": "organise une battle d'aux{title}",
-    "auxInvite": "t'a invité à son aux battle{title}"
+    "newAux": "organise une Aux War{title}",
+    "auxInvite": "t'a invité à son Aux War{title}"
   },
   "taste": {
     "page": {
@@ -1655,7 +1655,7 @@
     "title": "À propos de Peak Music Reviews",
     "sub": "Ce que c'est, pourquoi ça existe, et les questions que les gens posent.",
     "inOneBreath": "EN UN SOUFFLE",
-    "intro": "<strong>Peak Music Reviews</strong> est un réseau social musical et une appli de critiques gratuite : les membres notent albums et morceaux de 0 à 10.0, écrivent des critiques, montent des listes, rejoignent des salles de chat en direct le soir où un disque sort et s'affrontent dans des battles d'aux. Chaque critique est reliée à une vraie sortie — tout le catalogue Spotify plus la bibliothèque profonde de Genius, donc les morceaux inédits et leakés se notent aussi (par leurs métadonnées, jamais des fichiers). Ça tourne dans n'importe quel navigateur et en appli iOS, avec un seul compte pour les deux. Pense Letterboxd, pour la musique.",
+    "intro": "<strong>Peak Music Reviews</strong> est un réseau social musical et une appli de critiques gratuite : les membres notent albums et morceaux de 0 à 10.0, écrivent des critiques, montent des listes, rejoignent des salles de chat en direct le soir où un disque sort et s'affrontent dans des Aux Wars. Chaque critique est reliée à une vraie sortie — tout le catalogue Spotify plus la bibliothèque profonde de Genius, donc les morceaux inédits et leakés se notent aussi (par leurs métadonnées, jamais des fichiers). Ça tourne dans n'importe quel navigateur et en appli iOS, avec un seul compte pour les deux. Pense Letterboxd, pour la musique.",
     "facts": {
       "what": "Quoi",
       "whatV": "Appli de critiques musicales + réseau social",
@@ -1668,7 +1668,7 @@
       "catalog": "Catalogue",
       "catalogV": "Tout Spotify + la bibliothèque profonde de Genius, inédits inclus",
       "live": "Direct",
-      "liveV": "Salles de chat le soir des sorties et battles d'aux"
+      "liveV": "Salles de chat le soir des sorties et Aux Wars"
     },
     "joinFree": "Rejoindre gratuitement",
     "iosApp": "Appli iOS",
@@ -1683,24 +1683,24 @@
     "diff1B": "Leaks, loosies et morceaux jamais sortis en streaming sont dans le catalogue, clairement étiquetés : le coin le plus bavard de la culture musicale a enfin un endroit pour noter et débattre.",
     "diff2H": "Les soirs de sortie.",
     "diff2B": "Chaque grosse sortie a sa salle en direct à l'instant où elle arrive — le rituel de la semaine, pas juste une fonction.",
-    "diff3H": "Les battles d'aux.",
+    "diff3H": "Les Aux Wars.",
     "diff3B": "Deux camps, des votes en direct, chaque côté relié à un disque.",
     "diff4H": "Le support physique.",
     "diff4B": "Tout le site vit dans un écran cathodique — étiquettes VHS, menus de console, badges qui brillent comme un 10 parfait.",
     "questions": "QUESTIONS",
     "faq": {
       "q1": "Qu'est-ce que Peak Music Reviews ?",
-      "a1": "Peak Music Reviews est un réseau social musical — pense Letterboxd, mais pour les albums. Les membres notent et critiquent des sorties, montent des listes à partager, rejoignent des salles de chat en direct quand de nouveaux albums sortent et s'affrontent dans des battles d'aux. Chaque critique est reliée à une vraie sortie du catalogue Spotify ou de la bibliothèque profonde de Genius, morceaux inédits inclus.",
+      "a1": "Peak Music Reviews est un réseau social musical — pense Letterboxd, mais pour les albums. Les membres notent et critiquent des sorties, montent des listes à partager, rejoignent des salles de chat en direct quand de nouveaux albums sortent et s'affrontent dans des Aux Wars. Chaque critique est reliée à une vraie sortie du catalogue Spotify ou de la bibliothèque profonde de Genius, morceaux inédits inclus.",
       "q2": "Comment note-t-on les albums sur Peak Music Reviews ?",
       "a2": "Les membres notent les sorties de 0 à 10.0 avec une décimale. Les notes reflètent le plaisir personnel réel plutôt qu'une analyse purement technique — aimer quelque chose pour une raison bête vaut autant qu'un décorticage technique. Les pages de sortie affichent la moyenne de la communauté sur toutes les critiques.",
       "q3": "Puis-je critiquer de la musique inédite ou leakée sur Peak Music Reviews ?",
       "a3": "Oui. Le catalogue du site s'appuie sur Spotify (le catalogue officiel des sorties) et sur Genius (la bibliothèque profonde — morceaux inédits, loosies et titres jamais sortis en streaming). Les sorties inédites sont clairement étiquetées sur leurs pages.",
       "q4": "Faut-il un compte pour utiliser Peak Music Reviews ?",
-      "a4": "La consultation est ouverte à tous. Noter, critiquer, monter des listes, rejoindre les salles de sortie en direct et voter dans les battles d'aux demandent un compte gratuit avec un nom d'utilisateur unique et une adresse e-mail confirmée.",
+      "a4": "La consultation est ouverte à tous. Noter, critiquer, monter des listes, rejoindre les salles de sortie en direct et voter dans les Aux Wars demandent un compte gratuit avec un nom d'utilisateur unique et une adresse e-mail confirmée.",
       "q5": "Peak Music Reviews est-il gratuit, et sur quelles plateformes ?",
-      "a5": "Oui — notes, critiques, listes, salles de sortie en direct, battles d'aux, posts et personnalisation du profil sont gratuits. Ça tourne dans n'importe quel navigateur sur peakmusicreviews.com et en appli iOS sur l'App Store, avec le même compte et le même contenu des deux côtés. Une appli Android est prévue.",
+      "a5": "Oui — notes, critiques, listes, salles de sortie en direct, Aux Wars, posts et personnalisation du profil sont gratuits. Ça tourne dans n'importe quel navigateur sur peakmusicreviews.com et en appli iOS sur l'App Store, avec le même compte et le même contenu des deux côtés. Une appli Android est prévue.",
       "q6": "Peak Music Reviews est-il une alternative à Musicboard ?",
-      "a6": "Oui. Il couvre ce que faisait Musicboard — notes décimales de 0 à 10.0, critiques écrites, listes et profils sociaux — et ajoute les salles en direct le soir des sorties, les battles d'aux et un catalogue qui inclut la musique inédite. Les utilisateurs de Musicboard qui veulent changer peuvent lire le guide dédié sur peakmusicreviews.com/musicboard-alternative (en anglais)."
+      "a6": "Oui. Il couvre ce que faisait Musicboard — notes décimales de 0 à 10.0, critiques écrites, listes et profils sociaux — et ajoute les salles en direct le soir des sorties, les Aux Wars et un catalogue qui inclut la musique inédite. Les utilisateurs de Musicboard qui veulent changer peuvent lire le guide dédié sur peakmusicreviews.com/musicboard-alternative (en anglais)."
     },
     "getInTouch": "NOUS CONTACTER",
     "contact": "Des questions, des idées, des problèmes ?"

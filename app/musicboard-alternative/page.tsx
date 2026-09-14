@@ -41,7 +41,7 @@ import { APP_STORE_URL, isAppStoreLive } from "@/lib/app-store";
 export const metadata: Metadata = {
   title: "Musicboard Alternative — what to switch to in 2026",
   description:
-    "Looking for a Musicboard alternative? Peak Music Reviews is a free, actively-built option: 0–10 album ratings, reviews, lists, live release rooms and aux battles — on web and iOS. An honest comparison, including the options that aren't us.",
+    "Looking for a Musicboard alternative? Peak Music Reviews is a free, actively-built option: 0–10 album ratings, reviews, lists, live release rooms and Aux Wars — on web and iOS. An honest comparison, including the options that aren't us.",
   alternates: {
     canonical: "https://peakmusicreviews.com/musicboard-alternative",
   },
@@ -142,7 +142,7 @@ export default async function MusicboardAlternativePage() {
           like-for-like Musicboard replacement — album ratings on a 0–10.0
           scale, written reviews, lists, and social profiles — plus a few
           things Musicboard doesn&apos;t offer: live release-night chat rooms,
-          aux battles, a For You feed, and a catalog that includes
+          Aux Wars, a For You feed, and a catalog that includes
           unreleased tracks. It&apos;s free, works fully on the web
           {appLive ? (
             <>

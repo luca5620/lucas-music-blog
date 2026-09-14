@@ -54,7 +54,7 @@ export async function updateSession(request: NextRequest) {
     "/reviews/new",
     "/reviews/mine",
     "/lists/new",
-    "/aux-battles/new",
+    "/aux-wars/new",
     "/posts/new",
     "/connections",
     // Social-login handle picker — only ever reachable signed in.

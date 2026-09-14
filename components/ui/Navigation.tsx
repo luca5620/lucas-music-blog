@@ -22,7 +22,7 @@ const navLinks = [
   { href: "/releases", label: "releases" },
   { href: "/reviews", label: "reviews" },
   { href: "/lists", label: "lists" },
-  { href: "/aux-battles", label: "auxBattles" },
+  { href: "/aux-wars", label: "auxBattles" },
   { href: "/social", label: "social" },
   { href: "/your-taste", label: "yourTaste" },
 ] as const;
@@ -117,7 +117,16 @@ export default function Navigation() {
               strip overflows and evenly-ness naturally gives way to
               scrolling. app-hide: in the native shell the bottom
               TabBar is the primary nav, so this strip disappears. */}
-          <div className="app-hide flex flex-1 min-w-0 items-center justify-evenly gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
+          {/* nav-strip-fade: whatever doesn't fit is still THERE (the
+              strip scrolls), but a hard chop at the edge reads as a
+              bug. A short fade on the right says "there's more this
+              way" instead. Phone widths only — above sm everything
+              fits. The labels also drop a size and lose their letter
+              tracking below 420px: translated ones ran long (Luca
+              2026-09-14: "cuts off heavily when translated"), which
+              is the same pressure that turned Aux Battles into Aux
+              Wars. */}
+          <div className="app-hide nav-strip-fade flex flex-1 min-w-0 items-center justify-evenly gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -125,7 +134,7 @@ export default function Navigation() {
                   key={link.href}
                   href={link.href}
                   className={`
-                    px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase transition-all duration-200 whitespace-nowrap shrink-0
+                    px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] min-[420px]:text-xs sm:text-sm font-bold tracking-normal sm:tracking-wide uppercase transition-all duration-200 whitespace-nowrap shrink-0
                     font-[family-name:var(--font-heading)]
                     ${
                       isActive
@@ -243,7 +252,7 @@ export default function Navigation() {
                     </span>
                   </Link>
                   <Link
-                    href="/aux-battles/new"
+                    href="/aux-wars/new"
                     onClick={() => setCreateOpen(false)}
                     className="group flex items-center gap-3 rounded-lg border border-white/10 px-3 py-2.5 transition-all hover:border-accent-primary/60 hover:bg-accent-primary/10 focus-visible:border-accent-primary/60 focus-visible:bg-accent-primary/10 focus:outline-none"
                   >
@@ -357,7 +366,7 @@ export default function Navigation() {
                             [
                               { href: "/reviews", label: "reviews" },
                               { href: "/releases", label: "releases" },
-                              { href: "/aux-battles", label: "auxBattles" },
+                              { href: "/aux-wars", label: "auxBattles" },
                               { href: "/lists", label: "lists" },
                             ] as const
                           ).map((item) => (

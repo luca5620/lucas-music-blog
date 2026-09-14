@@ -2,7 +2,7 @@
 
 /**
  * BackToHome — app-only "← Home" link at the top of the four browse
- * pages (Reviews / Releases / Aux Battles / Lists).
+ * pages (Reviews / Releases / Aux Wars / Lists).
  *
  * In the native shell those pages are reached from the home page's
  * quick-access strip and live on NO bottom tab, so there was no way

@@ -51,7 +51,7 @@ export interface LikeActivityPayload {
   review_artist: string;
 }
 
-/** "luca is hosting an aux battle: Friday night aux" (links to /aux-battles/[slug]) */
+/** "luca is hosting an Aux War: Friday night aux" (links to /aux-wars/[slug]) */
 export interface AuxActivityPayload {
   slug: string;
   name: string;

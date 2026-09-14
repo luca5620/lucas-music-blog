@@ -90,6 +90,42 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-14 (Windows): AUX BATTLES → AUX WARS.** Shipped to main.
+  No migration; every DB table is still `aux_*` and stays that way.
+  - Luca raised it as a length problem ("aux battles is too long of a
+    name" on small phones) and asked what I thought. I said rename it,
+    but for the better reasons: "battle" is generic (rap battle,
+    battle royale, battle pass), "Aux Wars" is 8 characters instead of
+    11 forever, and the feature was one day old — no SEO equity, no
+    App Store text (1.1 shipped 2026-09-02, before it existed), nobody
+    with a saved link. Cheapest it would ever be.
+  - **The name stops being TRANSLATED.** That was the real cut-off:
+    "Batallas de aux" / "Batalhas de aux" / "Battles d'aux" are 13-15
+    characters and blew out the phone nav strip. It's a product name
+    now, the same in all six locales — Letterboxd isn't "Boîte aux
+    lettres" either. Surrounding sentences stay in their language.
+  - Renamed: `app/aux-battles` → `app/aux-wars`, `app/api/aux-battles`
+    → `app/api/aux-wars`, `components/aux-battles` →
+    `components/aux-wars`, `lib/aux-battles` → `lib/aux-wars`,
+    `lib/db/aux-battles.ts` → `lib/db/aux-wars.ts`, every path and
+    href, all six message files, CLAUDE.md.
+  - **NOT renamed, on purpose:** the tables (`aux_rooms`,
+    `aux_matches`, `aux_seats`, `aux_bans`…), the report target types
+    (`aux_room`, `aux_message`), the notification types (`new_aux`,
+    `aux_invite`), the realtime channel topics, the rate-limit keys and
+    the `.aux-*` CSS classes. They were already neutral `aux_*`, so
+    the rename never had to reach the database.
+  - Redirects: `/aux-battles` → `/aux-wars` and `/aux-battles/:path*`
+    → `/aux-wars/:path*` (permanent), alongside the older `/debates`
+    pair. JoinByCode also still reads a pasted `/aux-battles/` link.
+  - ⚠️ The folder is `aux-wars`, never bare `aux` — Windows reserves
+    that device name and git cannot open the folder.
+  - **The phone nav strip** (the other half of his message): the six
+    links drop to 10px with no letter tracking below 420px, and the
+    strip gets a short right-edge fade (`.nav-strip-fade`, phone
+    widths only) so whatever still overflows reads as "scroll this
+    way" instead of a hard chop.
+
 - **2026-09-14 (Windows), round 5: the BLACK FLASH, found at the
   source.** Shipped to main. No migration.
   - Luca, twice: opening a private room goes black for a second — and

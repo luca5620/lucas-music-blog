@@ -59,7 +59,7 @@ export function WebSiteSchema() {
     name: SITE_NAME,
     url: SITE_URL,
     description:
-      "The music social network: rate albums, build lists, join live release rooms and aux battles.",
+      "The music social network: rate albums, build lists, join live release rooms and Aux Wars.",
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -116,7 +116,7 @@ export function SoftwareApplicationSchema({
       priceCurrency: "USD",
     },
     description:
-      "Free music social network and review app: rate albums and songs 0–10, write reviews, build lists, join live release-night rooms and aux battles. Every release on Spotify plus Genius's deep library — unreleased music included.",
+      "Free music social network and review app: rate albums and songs 0–10, write reviews, build lists, join live release-night rooms and Aux Wars. Every release on Spotify plus Genius's deep library — unreleased music included.",
     featureList: [
       "Rate albums and songs from 0 to 10.0 with decimal precision",
       "Write and share reviews with a community average per release",

@@ -375,7 +375,7 @@ export default function UniversalSearch() {
       {results.aux.length > 0 && (
         <Section label={t("sections.auxBattles")}>
           {results.aux.map((r) => (
-            <Row key={r.slug} href={`/aux-battles/${r.slug}`}>
+            <Row key={r.slug} href={`/aux-wars/${r.slug}`}>
               <Thumb src={null} fallback="🎧" />
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold text-text-primary truncate">

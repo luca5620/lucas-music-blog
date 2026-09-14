@@ -435,7 +435,7 @@ function ActivitySentence({ item }: { item: ActivityItem }) {
         <>
           {t("hostedAux")}{" "}
           <Link
-            href={`/aux-battles/${p.slug}`}
+            href={`/aux-wars/${p.slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
           >
             {p.name}

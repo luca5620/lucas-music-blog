@@ -1,5 +1,5 @@
 /**
- * YouTube — SERVER ONLY. A song source for aux battles (Luca
+ * YouTube — SERVER ONLY. A song source for Aux Wars (Luca
  * 2026-09-13): players can put a YouTube video on, and everyone
  * listens through the embedded player.
  *

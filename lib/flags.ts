@@ -30,7 +30,7 @@
  * and flip this to true. That is the whole job — nothing else to
  * rebuild.
  *
- * NOTE: this flag does NOT touch aux battles. Putting a SoundCloud
+ * NOTE: this flag does NOT touch Aux Wars. Putting a SoundCloud
  * song on in a battle works today with no API key at all, because a
  * pasted link is read through SoundCloud's open oEmbed endpoint.
  */

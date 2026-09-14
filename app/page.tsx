@@ -298,7 +298,7 @@ async function Dashboard({ userId }: { userId: string }) {
             <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
               {firstRun ? t("rateFirst") : t("writeReview")}
             </Link>
-            <Link href="/aux-battles/new" className="btn-y2k btn-y2k-outline">
+            <Link href="/aux-wars/new" className="btn-y2k btn-y2k-outline">
               {t("startAux")}
             </Link>
             <AppStoreBadge />

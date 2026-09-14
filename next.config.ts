@@ -76,15 +76,23 @@ const nextConfig: NextConfig = {
    * which Vercel does on any env change. No key = no rewrite.
    */
   /**
-   * Debates became aux battles (Luca 2026-09-13). Old links — shared
-   * posts, the sitemap Bing crawled, the App Store screenshots —
-   * land on the new arena instead of a 404. Permanent, so search
-   * engines move the page.
+   * Two renames, one destination. Debates became aux battles
+   * (2026-09-13), and aux battles became AUX WARS (Luca 2026-09-14:
+   * shorter everywhere, and it survives translation — "Batallas de
+   * aux" was cutting the phone nav strip off). Old links — shared
+   * posts, the sitemap Bing crawled, a room someone sent a friend
+   * yesterday — land on the arena instead of a 404. Permanent, so
+   * search engines move the page.
+   *
+   * /aux-battles/:slug keeps its slug: the room is the same row, only
+   * the path changed.
    */
   async redirects() {
     return [
-      { source: "/debates", destination: "/aux-battles", permanent: true },
-      { source: "/debates/:path*", destination: "/aux-battles", permanent: true },
+      { source: "/debates", destination: "/aux-wars", permanent: true },
+      { source: "/debates/:path*", destination: "/aux-wars", permanent: true },
+      { source: "/aux-battles", destination: "/aux-wars", permanent: true },
+      { source: "/aux-battles/:path*", destination: "/aux-wars/:path*", permanent: true },
     ];
   },
   async rewrites() {

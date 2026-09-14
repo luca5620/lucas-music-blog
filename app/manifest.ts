@@ -16,7 +16,7 @@ export default function manifest(): MetadataRoute.Manifest {
     // (Luca 2026-08-31), same change as the native apps.
     short_name: "Peak Music",
     description:
-      "Rate albums, build lists, join live release rooms and aux battles. Every record on Spotify plus the deep Genius catalog — unreleased included.",
+      "Rate albums, build lists, join live release rooms and Aux Wars. Every record on Spotify plus the deep Genius catalog — unreleased included.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",
@@ -50,8 +50,8 @@ export default function manifest(): MetadataRoute.Manifest {
         description: "Rate something you just heard",
       },
       {
-        name: "Aux Battles",
-        url: "/aux-battles",
+        name: "Aux Wars",
+        url: "/aux-wars",
         description: "Pass the aux, let the room decide",
       },
     ],

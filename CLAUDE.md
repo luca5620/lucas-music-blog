@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Peak Music Reviews (peakmusicreviews.com) — a music social platform: Letterboxd-style reviews/lists/profiles + live release rooms and aux battles (song vs. song rooms, which replaced debates on 2026-09-13), skinned as physical media (the whole site renders inside a CRT TV shell). Deployed on Vercel from `main`; the iOS/Android apps are Capacitor shells that load the live site, so **pushing to `main` deploys to production and updates the mobile apps instantly** — treat every push accordingly.
+Peak Music Reviews (peakmusicreviews.com) — a music social platform: Letterboxd-style reviews/lists/profiles + live release rooms and AUX WARS (song vs. song rooms — they replaced debates on 2026-09-13 and were renamed from "aux battles" on 2026-09-14; the routes are /aux-wars and lib/components/api folders are aux-wars, but every DB table is still aux_* and stays that way), skinned as physical media (the whole site renders inside a CRT TV shell). Deployed on Vercel from `main`; the iOS/Android apps are Capacitor shells that load the live site, so **pushing to `main` deploys to production and updates the mobile apps instantly** — treat every push accordingly.
 
 ## Commands
 
@@ -18,7 +18,7 @@ npm run mobile:ios   # open Xcode workspace (Mac only)
 
 There is no test suite. Verification = `npm run build` + exercising the change in the dev server.
 
-Database changes are plain SQL files in `supabase/migrations/`, numbered (`021-*.sql` is next), and are **run by hand in the Supabase SQL Editor** — committing a migration does not apply it. When you add one, say so explicitly in your summary and in ROADMAP.md so it gets run on the dashboard.
+Database changes are plain SQL files in `supabase/migrations/`, numbered (`047-*.sql` is next), and are **run by hand in the Supabase SQL Editor** — committing a migration does not apply it. When you add one, say so explicitly in your summary and in ROADMAP.md so it gets run on the dashboard.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ Database changes are plain SQL files in `supabase/migrations/`, numbered (`021-*
 - **Supabase** is the entire backend: Postgres with RLS as the real security boundary (the app uses the anon key only — there is no service-role key anywhere in the app). Catalog writes go through an insert-only `security definer` SQL function. Auth (email confirmation required), storage (avatars/banners), realtime (live room + aux battle rooms).
 - **Catalog**: nothing is hand-typed. Releases enter the DB on demand the first time someone reviews them, via `components/catalog/CatalogSearch` → `/api/catalog/ensure`, which pulls from Spotify (client credentials) or Genius (covers unreleased/leaked, tagged UNRELEASED).
 - **API routes** (`app/api/*/route.ts`) all follow the same contract: derive `user_id` from the session (never from the request body), validate with `lib/validate` helpers, and call `rateLimit()` from `lib/rate-limit.ts` (Upstash Redis, in-memory fallback). Every mutation route, no exceptions.
-- **DB access layer** lives in `lib/db/*` (one file per domain: reviews, lists, aux-battles, moderation, …); Supabase clients in `lib/supabase/` (`client.ts` browser, `server.ts` RSC/route handlers, `middleware.ts` session refresh via root `middleware.ts`).
+- **DB access layer** lives in `lib/db/*` (one file per domain: reviews, lists, aux-wars, moderation, …); Supabase clients in `lib/supabase/` (`client.ts` browser, `server.ts` RSC/route handlers, `middleware.ts` session refresh via root `middleware.ts`).
 - **Design system**: everything renders inside `components/ui/CRTShell` (grain, scanlines, aperture grille). Profile accent palettes are `theme-crt-*` classes — six user-selectable themes. New UI should look like physical media (VHS labels, OSD text), not like a generic web app.
 - **Ratings** are 0–10 with one decimal, helpers in `lib/rating.ts`.
 - Code is heavily commented **on purpose** — the owner is learning; match that density when editing.

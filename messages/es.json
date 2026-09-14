@@ -18,7 +18,7 @@
     "signOut": "Cerrar sesión",
     "signIn": "Iniciar sesión",
     "user": "Usuario",
-    "auxBattles": "Batallas de aux"
+    "auxBattles": "Aux Wars"
   },
   "tabBar": {
     "ariaLabel": "Navegación de la app",
@@ -37,7 +37,7 @@
     "postSub": "escribe largo, con video de YouTube o TikTok",
     "list": "Lista",
     "listSub": "junta y ordena tus favoritos",
-    "aux": "Batalla de aux",
+    "aux": "Aux War",
     "auxSub": "pasa el aux y que decida la sala"
   },
   "footer": {
@@ -223,7 +223,7 @@
     "deletion": {
       "title": "Eliminar cuenta",
       "hint": "Borra tu perfil y todo lo que creaste. No se puede deshacer.",
-      "intro": "Al eliminar tu cuenta se borra tu perfil y <b>todo lo que creaste</b>: reseñas, listas, publicaciones, votos en batallas de aux, mensajes del chat, imágenes. No hay forma de deshacerlo ni de recuperarlo.",
+      "intro": "Al eliminar tu cuenta se borra tu perfil y <b>todo lo que creaste</b>: reseñas, listas, publicaciones, votos en Aux Wars, mensajes del chat, imágenes. No hay forma de deshacerlo ni de recuperarlo.",
       "delete": "Eliminar cuenta",
       "typeUsername": "Escribe tu nombre de usuario <b>@name</b> para confirmar:",
       "deleting": "Eliminando...",
@@ -260,7 +260,7 @@
       "tasteTitle": "¿Quieres un canal hecho solo para ti?",
       "tasteBody": "Tu gusto arma un feed con la gente que sigues y lo que calificas.",
       "tuneIn": "Sintonizar →",
-      "startAux": "🎧 Organizar una batalla de aux"
+      "startAux": "🎧 Organizar una Aux War"
     },
     "closing": {
       "eyebrow": "Tu canal te está esperando",
@@ -279,7 +279,7 @@
       "step2Label": "Ponle un número",
       "step2Body": "Del cero al diez, con un decimal. Tu nota aparece en cada tarjeta que publicas, con el color de la calificación.",
       "step3Label": "Discútelo en vivo",
-      "step3Body": "Cada lanzamiento tiene una sala en vivo, abierta desde antes de que el álbum salga a medianoche. ¿Quieres pelea? Organiza una batalla de aux y pasa el aux.",
+      "step3Body": "Cada lanzamiento tiene una sala en vivo, abierta desde antes de que el álbum salga a medianoche. ¿Quieres pelea? Organiza una Aux War y pasa el aux.",
       "onAir": "Al aire",
       "step3Prop": "“la 4 es la mejor, discútelo con la pared”",
       "stepFour": "el paso cuatro es opcional y son las <link>listas</link>. al final todo el mundo termina haciendo listas."
@@ -294,7 +294,7 @@
       "point2B": "Los álbumes con cuenta regresiva tienen sala desde antes de salir. El chat ya está en vivo a las 11:59.",
       "point3H": "Se puede leer sin cuenta",
       "point3B": "Las salas son públicas. Regístrate para hablar y calificar.",
-      "point4H": "Batallas de aux cuando se pone intenso",
+      "point4H": "Aux Wars cuando se pone intenso",
       "point4B": "Dos bandos, un disco cada uno, y la sala vota.",
       "seeOnAir": "Ver qué está al aire",
       "onAir": "Al aire",
@@ -669,7 +669,7 @@
       },
       "debate_champion": {
         "label": "Campeón del aux",
-        "description": "Ganó una batalla de aux destacada."
+        "description": "Ganó una Aux War destacada."
       },
       "list_master": {
         "label": "Maestro de listas",
@@ -865,8 +865,8 @@
       "takes": "{n, plural, one {# opinión} other {# opiniones}}",
       "onAir": "Al aire",
       "signedOff": "Cerrado",
-      "auxCount": "Batallas de aux · {n}",
-      "myAux": "Mis batallas de aux",
+      "auxCount": "Aux Wars · {n}",
+      "myAux": "Mis Aux Wars",
       "auxTotal": "{n, plural, one {# batalla} other {# batallas}} en total",
       "hostAux": "+ Organizar una batalla",
       "noAux": "Todavía no tienes batallas. Elige un tema y pasa el aux."
@@ -1142,7 +1142,7 @@
   },
   "aux": {
     "index": {
-      "title": "BATALLAS DE AUX",
+      "title": "AUX WARS",
       "sub": "Pasa el aux. Dos canciones frente a frente, la sala escucha, la sala vota. Llaves, mejor de 3, chat en vivo y un campeón al final.",
       "host": "Organizar una batalla",
       "joinPlaceholder": "Pega el enlace de una sala…",
@@ -1170,7 +1170,7 @@
     },
     "new": {
       "back": "Atrás",
-      "title": "Organiza una batalla de aux",
+      "title": "Organiza una Aux War",
       "sub": "Ponle nombre a la sala, elige el formato y quién decide. Los jugadores entran en la sala de espera; tú la arrancas cuando haya suficiente gente y pones un tema nuevo en cada ronda.",
       "format": "Formato",
       "bo1": "Una ronda",
@@ -1483,7 +1483,7 @@
       "albums": "{n, plural, one {# álbum} other {# álbumes}}",
       "ranked": ", con ranking",
       "likedReview": "le gustó una reseña de",
-      "hostedAux": "organiza una batalla de aux:"
+      "hostedAux": "organiza una Aux War:"
     }
   },
   "connections": {
@@ -1496,11 +1496,11 @@
   },
   "search": {
     "title": "BUSCAR",
-    "sub": "Todos los canales a la vez: gente, artistas, lanzamientos, reseñas, batallas de aux, listas, publicaciones.",
+    "sub": "Todos los canales a la vez: gente, artistas, lanzamientos, reseñas, Aux Wars, listas, publicaciones.",
     "placeholder": "Busca lo que sea: gente, artistas, lanzamientos…",
     "aria": "Buscar en todo",
     "tuning": "SINTONIZANDO…",
-    "hint": "Escribe al menos dos caracteres: usuarios, artistas, lanzamientos, reseñas, batallas de aux, listas y publicaciones aparecen a la vez.",
+    "hint": "Escribe al menos dos caracteres: usuarios, artistas, lanzamientos, reseñas, Aux Wars, listas y publicaciones aparecen a la vez.",
     "noSignal": "SIN SEÑAL",
     "nothing": "Nada en ningún canal para “{query}”. Prueba con un artista, un álbum o un nombre de usuario.",
     "sections": {
@@ -1510,7 +1510,7 @@
       "reviews": "Reseñas",
       "lists": "Listas",
       "posts": "Publicaciones",
-      "auxBattles": "Batallas de aux"
+      "auxBattles": "Aux Wars"
     },
     "communityAvg": "promedio",
     "closed": "CERRADO",
@@ -1553,8 +1553,8 @@
     "newList": "hizo una lista nueva{title}",
     "newDebate": "abrió un debate{title}",
     "other": "hizo algo",
-    "newAux": "organiza una batalla de aux{title}",
-    "auxInvite": "te invitó a su aux battle{title}"
+    "newAux": "organiza una Aux War{title}",
+    "auxInvite": "te invitó a su Aux War{title}"
   },
   "taste": {
     "page": {
@@ -1655,7 +1655,7 @@
     "title": "Sobre Peak Music Reviews",
     "sub": "Qué es, por qué existe y las preguntas que hace la gente.",
     "inOneBreath": "EN UNA FRASE",
-    "intro": "<strong>Peak Music Reviews</strong> es una red social musical y app de reseñas gratuita: los miembros califican álbumes y canciones de 0 a 10.0, escriben reseñas, arman listas, entran a salas de chat en vivo la noche en que sale un disco y se enfrentan en batallas de aux. Cada reseña está ligada a un lanzamiento real: todo el catálogo de Spotify más la biblioteca profunda de Genius, así que también se pueden calificar canciones inéditas y filtradas (por sus datos, nunca archivos). Funciona en cualquier navegador y como app de iOS, con una sola cuenta para ambos. Piensa en Letterboxd, pero para música.",
+    "intro": "<strong>Peak Music Reviews</strong> es una red social musical y app de reseñas gratuita: los miembros califican álbumes y canciones de 0 a 10.0, escriben reseñas, arman listas, entran a salas de chat en vivo la noche en que sale un disco y se enfrentan en Aux Wars. Cada reseña está ligada a un lanzamiento real: todo el catálogo de Spotify más la biblioteca profunda de Genius, así que también se pueden calificar canciones inéditas y filtradas (por sus datos, nunca archivos). Funciona en cualquier navegador y como app de iOS, con una sola cuenta para ambos. Piensa en Letterboxd, pero para música.",
     "facts": {
       "what": "Qué",
       "whatV": "App de reseñas musicales + red social",
@@ -1668,7 +1668,7 @@
       "catalog": "Catálogo",
       "catalogV": "Todo Spotify + la biblioteca profunda de Genius, inéditas incluidas",
       "live": "En vivo",
-      "liveV": "Salas de chat la noche del lanzamiento y batallas de aux"
+      "liveV": "Salas de chat la noche del lanzamiento y Aux Wars"
     },
     "joinFree": "Únete gratis",
     "iosApp": "App de iOS",
@@ -1683,24 +1683,24 @@
     "diff1B": "Filtraciones, canciones sueltas y temas que nunca llegaron al streaming están en el catálogo y claramente etiquetados, así que el rincón más opinador de la cultura musical por fin tiene dónde calificar y discutir.",
     "diff2H": "Noches de lanzamiento.",
     "diff2B": "Cada gran lanzamiento tiene una sala en vivo en el momento en que sale: el ritual semanal, no solo una función.",
-    "diff3H": "Batallas de aux.",
+    "diff3H": "Aux Wars.",
     "diff3B": "Dos bandos, votos en vivo, cada lado ligado a un disco.",
     "diff4H": "Medios físicos.",
     "diff4B": "Todo el sitio vive dentro de un televisor de tubo: etiquetas VHS, menús de consola, insignias que brillan como un 10 perfecto.",
     "questions": "PREGUNTAS",
     "faq": {
       "q1": "¿Qué es Peak Music Reviews?",
-      "a1": "Peak Music Reviews es una red social musical: piensa en Letterboxd, pero para álbumes. Los miembros califican y reseñan lanzamientos, arman listas para compartir, entran a salas de chat en vivo cuando salen álbumes nuevos y se enfrentan en batallas de aux. Cada reseña está ligada a un lanzamiento real del catálogo de Spotify o de la biblioteca profunda de Genius, canciones inéditas incluidas.",
+      "a1": "Peak Music Reviews es una red social musical: piensa en Letterboxd, pero para álbumes. Los miembros califican y reseñan lanzamientos, arman listas para compartir, entran a salas de chat en vivo cuando salen álbumes nuevos y se enfrentan en Aux Wars. Cada reseña está ligada a un lanzamiento real del catálogo de Spotify o de la biblioteca profunda de Genius, canciones inéditas incluidas.",
       "q2": "¿Cómo se califican los álbumes en Peak Music Reviews?",
       "a2": "Los miembros califican los lanzamientos de 0 a 10.0 con un decimal. Las notas reflejan el disfrute personal real, no solo un análisis técnico: que algo te guste por una razón tonta vale tanto como un desglose técnico. Las páginas de lanzamiento muestran el promedio de la comunidad entre todas las reseñas.",
       "q3": "¿Puedo reseñar música inédita o filtrada en Peak Music Reviews?",
       "a3": "Sí. El catálogo del sitio se nutre de Spotify (el catálogo oficial de lo publicado) y de Genius (la biblioteca profunda: canciones inéditas, sueltas y temas que nunca llegaron al streaming). Los lanzamientos inéditos están claramente etiquetados en sus páginas.",
       "q4": "¿Necesito una cuenta para usar Peak Music Reviews?",
-      "a4": "Navegar es libre para todos. Calificar, reseñar, armar listas, entrar a las salas de lanzamiento en vivo y votar en las batallas de aux requiere una cuenta gratuita con un nombre de usuario único y un correo confirmado.",
+      "a4": "Navegar es libre para todos. Calificar, reseñar, armar listas, entrar a las salas de lanzamiento en vivo y votar en las Aux Wars requiere una cuenta gratuita con un nombre de usuario único y un correo confirmado.",
       "q5": "¿Peak Music Reviews es gratis y en qué plataformas está?",
-      "a5": "Sí: calificar, reseñas, listas, salas de lanzamiento en vivo, batallas de aux, publicaciones y personalización del perfil son gratis. Funciona en cualquier navegador en peakmusicreviews.com y como app de iOS en la App Store, con la misma cuenta y el mismo contenido en ambos. Hay una app de Android en camino.",
+      "a5": "Sí: calificar, reseñas, listas, salas de lanzamiento en vivo, Aux Wars, publicaciones y personalización del perfil son gratis. Funciona en cualquier navegador en peakmusicreviews.com y como app de iOS en la App Store, con la misma cuenta y el mismo contenido en ambos. Hay una app de Android en camino.",
       "q6": "¿Peak Music Reviews es una alternativa a Musicboard?",
-      "a6": "Sí. Cubre lo que hacía Musicboard (notas de 0 a 10.0 con decimal, reseñas escritas, listas y perfiles sociales) y suma salas en vivo la noche del lanzamiento, batallas de aux y un catálogo con música inédita. Quien venga de Musicboard puede leer la guía en peakmusicreviews.com/musicboard-alternative (en inglés)."
+      "a6": "Sí. Cubre lo que hacía Musicboard (notas de 0 a 10.0 con decimal, reseñas escritas, listas y perfiles sociales) y suma salas en vivo la noche del lanzamiento, Aux Wars y un catálogo con música inédita. Quien venga de Musicboard puede leer la guía en peakmusicreviews.com/musicboard-alternative (en inglés)."
     },
     "getInTouch": "CONTACTO",
     "contact": "¿Preguntas, ideas, problemas?"

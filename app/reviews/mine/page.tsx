@@ -2,7 +2,7 @@
  * /reviews/mine — MY STUFF: the one place to manage everything you
  * made (Luca 2026-09-02: "created debates and lists should be in my
  * reviews section to edit and delete directly on there, a hub for
- * all edits in one area"). Reviews, posts, lists, aux battles (which
+ * all edits in one area"). Reviews, posts, lists, Aux Wars (which
  * replaced debates on 2026-09-13) — each with Edit + Delete in the
  * row, drafts included.
  */
@@ -12,9 +12,9 @@ import { getReviewsByUser } from "@/lib/db/reviews";
 import { getUserPosts } from "@/lib/db/posts";
 import { getProfileById } from "@/lib/db/profiles";
 import { getListsByUsername } from "@/lib/db/lists";
-import { listAuxRoomsByHost } from "@/lib/db/aux-battles";
+import { listAuxRoomsByHost } from "@/lib/db/aux-wars";
 import DeleteListButton from "@/components/lists/DeleteListButton";
-import DeleteRoomButton from "@/components/aux-battles/DeleteRoomButton";
+import DeleteRoomButton from "@/components/aux-wars/DeleteRoomButton";
 import { getRatingHex } from "@/lib/rating";
 import { formatDate } from "@/lib/dates";
 import Link from "next/link";
@@ -429,7 +429,7 @@ export default async function MyReviewsPage() {
         </div>
       )}
 
-      {/* ===== My Aux Battles (debates → aux battles, Luca 2026-09-13) ===== */}
+      {/* ===== My Aux Wars (debates → Aux Wars, Luca 2026-09-13) ===== */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
         <div className="space-y-1">
           <h2 id="aux" className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-extrabold text-[#e8e6e3] scroll-mt-24">
@@ -439,7 +439,7 @@ export default async function MyReviewsPage() {
             {t("auxTotal", { n: rooms.length })}
           </p>
         </div>
-        <Link href="/aux-battles/new" className="btn-y2k btn-y2k-outline shrink-0">
+        <Link href="/aux-wars/new" className="btn-y2k btn-y2k-outline shrink-0">
           {t("hostAux")}
         </Link>
       </div>
@@ -461,7 +461,7 @@ export default async function MyReviewsPage() {
 
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/aux-battles/${room.slug}`}
+                    href={`/aux-wars/${room.slug}`}
                     className="font-[family-name:var(--font-heading)] font-bold text-[#e8e6e3] hover:text-accent-primary transition-colors truncate block"
                   >
                     {room.name}

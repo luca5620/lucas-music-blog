@@ -171,7 +171,7 @@ function trackToSong(t: ScTrack): AuxSong {
 }
 
 /* ------------------------------------------------------------------
-   Search (aux battles)
+   Search (Aux Wars)
    ------------------------------------------------------------------ */
 
 export async function searchSoundCloudTracks(q: string, limit = 8): Promise<AuxSong[]> {

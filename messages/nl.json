@@ -1302,7 +1302,7 @@
     "chat": {
       "title": "De room",
       "messagesAria": "Roomchat",
-      "deadAir": "STILTE",
+      "noChats": "GEEN BERICHTEN",
       "nobody": "Nog niemand heeft iets gezegd. Hype je kant op.",
       "host": "HOST",
       "justNow": "nu",

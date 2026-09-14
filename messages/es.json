@@ -1302,7 +1302,7 @@
     "chat": {
       "title": "La sala",
       "messagesAria": "Chat de la sala",
-      "deadAir": "SILENCIO",
+      "noChats": "SIN MENSAJES",
       "nobody": "Nadie ha dicho nada todavía. Anima a tu lado.",
       "host": "ANFITRIÓN",
       "justNow": "ahora",

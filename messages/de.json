@@ -1302,7 +1302,7 @@
     "chat": {
       "title": "Der Raum",
       "messagesAria": "Raum-Chat",
-      "deadAir": "FUNKSTILLE",
+      "noChats": "KEINE NACHRICHTEN",
       "nobody": "Noch hat niemand etwas gesagt. Feuer deine Seite an.",
       "host": "HOST",
       "justNow": "gerade eben",

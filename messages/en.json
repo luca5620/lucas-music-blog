@@ -1302,7 +1302,7 @@
     "chat": {
       "title": "The room",
       "messagesAria": "Room chat",
-      "deadAir": "DEAD AIR",
+      "noChats": "NO CHATS",
       "nobody": "Nobody has said a word yet. Hype your side.",
       "host": "HOST",
       "justNow": "now",

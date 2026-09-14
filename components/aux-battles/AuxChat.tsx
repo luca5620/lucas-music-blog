@@ -300,7 +300,7 @@ export default function AuxChat({
       >
         {visible.length === 0 ? (
           <div className="h-full min-h-[180px] flex flex-col items-center justify-center text-center gap-3 py-8">
-            <span className="osd-text text-sm">{t("deadAir")}</span>
+            <span className="osd-text text-sm">{t("noChats")}</span>
             <p className="text-sm text-text-muted max-w-xs">{t("nobody")}</p>
           </div>
         ) : (

@@ -1302,7 +1302,7 @@
     "chat": {
       "title": "La salle",
       "messagesAria": "Chat de la salle",
-      "deadAir": "SILENCE RADIO",
+      "noChats": "AUCUN MESSAGE",
       "nobody": "Personne n'a encore dit un mot. Chauffe ton camp.",
       "host": "HÔTE",
       "justNow": "à l'instant",

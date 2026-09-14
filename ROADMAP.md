@@ -90,6 +90,43 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-14 (MacBook): AUX WARS — hidden rooms count on the
+  leaderboard. ⚠️ MIGRATION 047 TO RUN**
+  (`supabase/migrations/047-leaderboard-counts-hidden.sql`). Luca's
+  call, answering two questions he raised about private-room voting:
+  - **Confirmed, no change needed:** in a truly private (hidden) room
+    anyone holding the code CAN vote. The code writes the member row,
+    and that row is what the `aux_votes` policy checks. The only block
+    is being one of the two players in that match — a player waiting
+    for their next round votes on everyone else's. Bans, the listening
+    phase and room visibility are the other three conditions.
+  - **Confirmed, already built:** a code-holder chooses whether to
+    play. `aux_join_with_code` lands them as a VIEWER and the seat is
+    only the RIGHT to a spot; "Grab a spot" is opt-in, and a player
+    can drop back to viewer while the room is still in the lobby. An
+    invited friend gets the same seat without seeing the code.
+  - **Kept on purpose (Luca: "do not remove"):** host-judged rooms
+    still show the crowd vote buttons. The votes record and the
+    caption underneath says the host decides, so it reads as an
+    advisory straw poll the host can see. Do not "fix" this later.
+  - **Changed — 047:** the two `not r.is_hidden` filters come out of
+    `aux_leaderboard`. This also fixes an inconsistency nobody had
+    noticed: `aux_wins_for` (044, the WINS number on every PlayerChip
+    and profile) never had a hidden filter, so a hidden win already
+    counted on your chip while silently not counting on the
+    leaderboard — same win, two answers. The real anti-farming guard,
+    `aux_self_judged` (host both played and judged), is untouched and
+    still applies everywhere. No UI copy changed: the leaderboard
+    footnote only ever mentioned the self-judged rule, in all six
+    locales.
+  - **OPEN IDEA, not built — "players don't vote, spectators do".**
+    In a SMALL hidden room the voting crowd is mostly the other
+    players waiting their turn, so two friends can vote each other up
+    the bracket. Now that hidden rooms count, that lever matters more.
+    A host setting ("only non-players vote") is the fix if it ever
+    becomes a real problem; deliberately NOT built on a hypothetical.
+    Ask Luca before building.
+
 - **2026-09-14 (Windows): AUX BATTLES → AUX WARS.** Shipped to main.
   No migration; every DB table is still `aux_*` and stays that way.
   - Luca raised it as a length problem ("aux battles is too long of a

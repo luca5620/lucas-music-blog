@@ -108,12 +108,14 @@ don't wait to be asked:**
   button; visitors hit a code gate); live chat in every room; six
   languages; /debates → /aux-battles redirects; debates UI/API/lib
   DELETED (tables kept — drop in a later migration on Luca's word).
-  - ⚠️ **MIGRATIONS 042 + 043** — `042-aux-battles.sql` (Luca ran it
-    the same night after the `content_reports` name fix) and
-    `043-aux-round-topics.sql` (must still be run, after 042): the
+  - ✅ **MIGRATIONS 042 + 043 BOTH RUN** — verified against prod
+    2026-09-13 by anon-key REST probe: the aux tables answer,
+    `aux_rooms.name` exists, `aux_rooms.topic` is gone (42703), and
+    `aux_matches.topic` + `releases.soundcloud_url` are there. For the
+    record, what they did: the
     room's `topic` column becomes `name`, `aux_matches.topic` holds
     each ROUND's topic, and `aux_pick_song` refuses picks until it is
-    set. Until 043 runs, hosting a room fails (no `name` column).
+    set. (042 needed one fix first — the reports table is `content_reports`.)
   - **Round 2 of Luca's changes (same night):** the room gets a NAME
     at creation; the host names a NEW TOPIC at the start of every
     round (TopicPicker on the stage: free text, preset chips, 🎲;
@@ -169,9 +171,10 @@ don't wait to be asked:**
     ⚠️ Consequence Luca accepted: on a Spotify/Apple preview the
     mixer is present but those players ignore it — the note in the
     panel is what tells the listener why.
-  - NEXT: Luca runs 042 + 043, adds the keys he wants, and does the
-    device pass — nothing has been eyeballed on a phone yet, and the
-    volume commands in particular want a real ear on a real player.
+  - NEXT: the device pass — nothing has been eyeballed on a phone
+    yet, and the volume commands in particular want a real ear on a
+    real player. Optional whenever Luca wants them: YOUTUBE_API_KEY
+    (free) and the SoundCloud keys (need a paid Artist Pro).
   - Still wired to the old tables, harmless: `lib/taste.ts` keeps the
     debate OnAir card type with an EMPTY pool (Your Taste signals are
     Luca's rework); `taste.surf.types.debate` + `notifications.newDebate`

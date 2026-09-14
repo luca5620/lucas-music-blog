@@ -11,21 +11,20 @@
  *   youtube    → youtube-nocookie.com/embed/<id>
  * All three hosts are already in next.config.ts frame-src.
  *
- * The SoundCloud and YouTube frames follow the site-wide volume
- * (useEmbedVolume); YouTube's src carries enablejsapi=1 for it.
- * Spotify's embed has no volume control to offer — see lib/volume.ts.
+ * Volume is the browser's job, not ours: a page cannot turn down a
+ * cross-origin iframe, and the two services that DO expose a volume
+ * command (SoundCloud, YouTube) are the two we lean on least. Use the
+ * tab's own volume control.
  */
 
-import { useRef } from "react";
 import type { AuxSong } from "@/lib/types/database";
-import { useEmbedVolume } from "@/components/ui/useEmbedVolume";
 
 function src(song: AuxSong): string {
   switch (song.source) {
     case "spotify":
       return `https://open.spotify.com/embed/track/${song.embed_id}?theme=0`;
     case "youtube":
-      return `https://www.youtube-nocookie.com/embed/${song.embed_id}?rel=0&modestbranding=1&enablejsapi=1`;
+      return `https://www.youtube-nocookie.com/embed/${song.embed_id}?rel=0&modestbranding=1`;
     case "soundcloud": {
       const params = new URLSearchParams({
         url: song.embed_id,
@@ -44,15 +43,11 @@ function src(song: AuxSong): string {
 }
 
 export default function SongEmbed({ song, title }: { song: AuxSong; title: string }) {
-  const frameRef = useRef<HTMLIFrameElement | null>(null);
-  useEmbedVolume(frameRef, song.source);
-
   // YouTube wants a 16:9 box; the audio players are short strips.
   if (song.source === "youtube") {
     return (
       <div className="w-full aspect-video rounded-lg overflow-hidden border border-border-subtle bg-black">
         <iframe
-          ref={frameRef}
           src={src(song)}
           title={title}
           className="w-full h-full"
@@ -65,7 +60,6 @@ export default function SongEmbed({ song, title }: { song: AuxSong; title: strin
   }
   return (
     <iframe
-      ref={frameRef}
       src={src(song)}
       title={title}
       width="100%"

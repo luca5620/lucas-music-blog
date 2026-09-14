@@ -171,7 +171,8 @@
       "intro": "Elke releasepagina toont één speler. Kies de dienst die je echt gebruikt: ben je daar in je browser ingelogd, dan worden de previews volledige nummers.",
       "spotifyBlurb": "De standaard. Heeft al onze releases.",
       "appleBlurb": "Als Apple de plaat heeft; anders zie je Spotify.",
-      "soundcloudBlurb": "Als SoundCloud de plaat heeft; anders zie je Spotify."
+      "soundcloudBlurb": "Als SoundCloud de plaat heeft; anders zie je Spotify.",
+      "hintTwo": "Spotify of Apple Music op releasepagina's."
     },
     "song": {
       "title": "Profielnummer",
@@ -1643,13 +1644,5 @@
     },
     "getInTouch": "CONTACT",
     "contact": "Vragen, ideeën, problemen?"
-  },
-  "volume": {
-    "label": "Volume van previews",
-    "mute": "Dempen",
-    "unmute": "Dempen opheffen",
-    "note": "Werkt bij SoundCloud en YouTube. Spotify en Apple Music houden hun eigen volume.",
-    "open": "Volume",
-    "close": "Sluiten"
   }
 }

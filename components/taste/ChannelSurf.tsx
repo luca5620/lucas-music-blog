@@ -39,7 +39,6 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import type { TunedItem } from "@/lib/taste";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
-import { useEmbedVolume } from "@/components/ui/useEmbedVolume";
 import { useIsNativeApp } from "@/lib/useIsNativeApp";
 import { useLikeState } from "@/lib/likeStore";
 import CommentsSection from "@/components/reviews/CommentsSection";
@@ -176,12 +175,6 @@ function SurfCard({
   onOpenComments?: () => void;
 }) {
   const t = useTranslations("taste.surf");
-  // The pager's players follow the site-wide preview volume
-  // (lib/volume.ts). SoundCloud and YouTube can be told; Spotify and
-  // Apple Music expose no volume control. No slider on this page —
-  // /your-taste stays the pager only (Luca's design law).
-  const audioFrameRef = useRef<HTMLIFrameElement | null>(null);
-  const videoFrameRef = useRef<HTMLIFrameElement | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -260,8 +253,6 @@ function SurfCard({
     fullscreen &&
     (item.type === "review" || item.type === "release") &&
     (!!appleSrc || !!scSrc || (!!item.spotify_url && !!toSpotifyEmbed(item.spotify_url)));
-  useEmbedVolume(audioFrameRef, scSrc ? "soundcloud" : null);
-  useEmbedVolume(videoFrameRef, item.type === "post" && item.video_kind === "youtube" ? "youtube" : null);
   // Album embeds get real room (Luca 2026-08-31: the 152px compact
   // player is too small to actually use on albums): the web goes
   // wide + tall (352 = Spotify's full album player, tracklist
@@ -462,8 +453,7 @@ function SurfCard({
           item.video_kind === "youtube" ? (
             <span className="block w-full max-w-md aspect-video rounded-lg overflow-hidden border border-border-subtle bg-black shrink-0">
               <iframe
-                ref={videoFrameRef}
-                src={`https://www.youtube-nocookie.com/embed/${item.video_id}?autoplay=1&playsinline=1&enablejsapi=1`}
+                src={`https://www.youtube-nocookie.com/embed/${item.video_id}?autoplay=1&playsinline=1`}
                 title={item.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
@@ -667,7 +657,6 @@ function SurfCard({
                   />
                 ) : scSrc ? (
                   <iframe
-                    ref={audioFrameRef}
                     src={scSrc}
                     width="100%"
                     height={embedHeight}

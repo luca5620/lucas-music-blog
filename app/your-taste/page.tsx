@@ -20,6 +20,7 @@ import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou } from "@/lib/taste";
 import { resolveAppleEmbedsForReleases } from "@/lib/apple-music";
 import { resolveSoundCloudEmbedsForReleases } from "@/lib/soundcloud";
+import { SOUNDCLOUD_PLAYER_ENABLED } from "@/lib/flags";
 
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { getTranslations } from "next-intl/server";
@@ -68,7 +69,7 @@ export default async function YourTastePage() {
   // SoundCloud, the third pick (2026-09-13) — same carry-over, its own
   // resolver (needs the SoundCloud API keys on the server; without
   // them the map is empty and Spotify plays).
-  const wantsSoundCloud = preferred === "soundcloud";
+  const wantsSoundCloud = preferred === "soundcloud" && SOUNDCLOUD_PLAYER_ENABLED;
   let tunedItems = tunedRaw;
   if (wantsApple || wantsSoundCloud) {
     const releaseIds = tunedRaw.flatMap((it) =>

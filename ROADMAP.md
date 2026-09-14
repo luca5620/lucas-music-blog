@@ -136,14 +136,49 @@ don't wait to be asked:**
     `lib/soundcloud.ts`, `lib/youtube.ts`, `app/api/aux-battles/*`,
     `app/aux-battles/*`, `components/aux-battles/*`, CSS at the end
     of globals.css (`.aux-*`), messages `aux.*` in all six files.
-  - SoundCloud as the THIRD preview player — DONE same day: Settings →
+  - **⏸ SOUNDCLOUD PREVIEW PLAYER: ON HOLD, hidden not deleted**
+    (Luca 2026-09-13: "let's just put soundcloud on hold and I'll
+    revisit the API status — remove any buttons or mentions of the
+    previews for soundcloud but keep it available in the back… then
+    when it works you set it up immediately since it's all there").
+    One switch: `SOUNDCLOUD_PLAYER_ENABLED` in **`lib/flags.ts`**,
+    currently `false`. It hides the Settings card (the picker goes
+    back to a 2-up Spotify / Apple Music), skips the resolver on the
+    release page and in Your Taste, and makes an already-saved
+    `preferred_player = 'soundcloud'` show as Spotify without
+    touching the row. EVERYTHING else is untouched and ready:
+    lib/soundcloud.ts, SoundCloudEmbed, the `soundcloud_url` columns
+    and `catalog_set_soundcloud` (042), the widget host in frame-src,
+    and the copy in all six languages. **To turn it on: set
+    SOUNDCLOUD_CLIENT_ID/_SECRET and flip the flag to true. That is
+    the whole job.** Aux battles are deliberately NOT affected —
+    putting a SoundCloud song on in a battle works today with no key,
+    because a pasted link reads through their open oEmbed endpoint.
+  - (for the record) SoundCloud as the THIRD preview player — Settings →
     Preview Player is now Spotify / Apple Music / SoundCloud; the
     release page and the Your Taste pager show SoundCloud's widget
     for members who picked it, resolved lazily through the SoundCloud
     API (needs the keys above) and cached on the release row
     (`soundcloud_url`, 042 part B); Spotify fills in when SoundCloud
     doesn't carry the record or the keys aren't set.
-  - **Volume slider (Luca 2026-09-13), with a hard platform limit.**
+  - **⛔ VOLUME CONTROL: BUILT, THEN REMOVED THE SAME DAY. Do not
+    rebuild it.** Luca, after seeing it: "it serves no purpose as
+    youtube is by far the least used platform to upload material, and
+    soundcloud doesn't even work yet… I have a chrome extension that
+    allows me to lower the volume of the page in general." He is
+    right, and the reason is structural: **a web page cannot attenuate
+    a cross-origin iframe.** His extension works because extensions
+    act at the BROWSER TAB audio layer, outside every page's sandbox;
+    nothing we ship can reach that layer. The in-page route only ever
+    reached SoundCloud and YouTube (the two services that expose a
+    volume command), never Spotify, which is where nearly all the
+    audio actually comes from. So the whole feature is deleted —
+    lib/volume.ts, VolumeSlider, VolumeDock, useEmbedVolume, the
+    `volume` message namespace, the `.volume-*` CSS, the
+    `enablejsapi=1` params and the w.soundcloud.com CSP script-src
+    entry are all gone. Volume is the listener's tab/extension/system
+    control. The history below is kept only so nobody re-derives it.
+  - (for the record) **Volume slider, with a hard platform limit.**
     One level for the whole site (`lib/volume.ts`, remembered per
     device in localStorage), a speaker + slider
     (`components/ui/VolumeSlider`), applied to a player through

@@ -34,6 +34,7 @@ import {
   eventBadge,
   hiddenBadgeSet,
 } from "@/lib/badges";
+import { SOUNDCLOUD_PLAYER_ENABLED } from "@/lib/flags";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import SettingsSection from "@/components/settings/SettingsSection";
@@ -294,8 +295,12 @@ export default function ProfileSettingsPage() {
           p.featured_playlist_id ? playlistUrl(p.featured_playlist_id) : ""
         );
         setSupportsFeaturedPlaylist("featured_playlist_id" in p);
+        // A saved 'soundcloud' pick stays in the database but shows
+        // as Spotify while the flag is off, so the UI never highlights
+        // a card that isn't on screen.
         setPreferredPlayer(
-          p.preferred_player === "apple" || p.preferred_player === "soundcloud"
+          p.preferred_player === "apple" ||
+            (p.preferred_player === "soundcloud" && SOUNDCLOUD_PLAYER_ENABLED)
             ? p.preferred_player
             : "spotify"
         );
@@ -1081,15 +1086,24 @@ export default function ProfileSettingsPage() {
           <SettingsSection
             id="preview-player"
             title={tSettings("player.title")}
-            hint={tSettings("player.hint")}
+            hint={tSettings(SOUNDCLOUD_PLAYER_ENABLED ? "player.hint" : "player.hintTwo")}
           >
             <p className="text-xs text-text-muted">{tSettings("player.intro")}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div
+              className={`grid grid-cols-1 gap-3 ${
+                SOUNDCLOUD_PLAYER_ENABLED ? "sm:grid-cols-3" : "sm:grid-cols-2"
+              }`}
+            >
               {(
                 [
                   ["spotify", "Spotify", tSettings("player.spotifyBlurb")],
                   ["apple", "Apple Music", tSettings("player.appleBlurb")],
-                  ["soundcloud", "SoundCloud", tSettings("player.soundcloudBlurb")],
+                  // SoundCloud is on hold (lib/flags.ts) — the card is
+                  // hidden rather than deleted, so turning the flag on
+                  // brings the whole option straight back.
+                  ...(SOUNDCLOUD_PLAYER_ENABLED
+                    ? ([["soundcloud", "SoundCloud", tSettings("player.soundcloudBlurb")]] as const)
+                    : []),
                 ] as const
               ).map(([id, label, blurb]) => {
                 const active = preferredPlayer === id;

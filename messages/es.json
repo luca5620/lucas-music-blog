@@ -171,7 +171,8 @@
       "intro": "Cada página de lanzamiento muestra un solo reproductor. Elige el servicio que usas de verdad: si tienes sesión iniciada en el navegador, los adelantos se convierten en canciones completas.",
       "spotifyBlurb": "El de siempre. Tiene todos nuestros lanzamientos.",
       "appleBlurb": "Cuando Apple tiene el disco; si no, aparece Spotify.",
-      "soundcloudBlurb": "Cuando SoundCloud tiene el disco; si no, aparece Spotify."
+      "soundcloudBlurb": "Cuando SoundCloud tiene el disco; si no, aparece Spotify.",
+      "hintTwo": "Spotify o Apple Music en las páginas de lanzamiento."
     },
     "song": {
       "title": "Canción de perfil",
@@ -1643,13 +1644,5 @@
     },
     "getInTouch": "CONTACTO",
     "contact": "¿Preguntas, ideas, problemas?"
-  },
-  "volume": {
-    "label": "Volumen de los adelantos",
-    "mute": "Silenciar",
-    "unmute": "Quitar silencio",
-    "note": "Funciona con SoundCloud y YouTube. Spotify y Apple Music manejan su propio volumen.",
-    "open": "Volumen",
-    "close": "Cerrar"
   }
 }

@@ -171,7 +171,8 @@
       "intro": "Jede Release-Seite zeigt einen Player. Wähl den Dienst, den du wirklich nutzt: bist du dort im Browser angemeldet, werden aus den Vorschauen ganze Songs.",
       "spotifyBlurb": "Der Standard. Hat alle unsere Releases.",
       "appleBlurb": "Wenn Apple die Platte hat; sonst siehst du Spotify.",
-      "soundcloudBlurb": "Wenn SoundCloud die Platte hat; sonst siehst du Spotify."
+      "soundcloudBlurb": "Wenn SoundCloud die Platte hat; sonst siehst du Spotify.",
+      "hintTwo": "Spotify oder Apple Music auf Release-Seiten."
     },
     "song": {
       "title": "Profilsong",
@@ -1643,13 +1644,5 @@
     },
     "getInTouch": "KONTAKT",
     "contact": "Fragen, Ideen, Probleme?"
-  },
-  "volume": {
-    "label": "Lautstärke der Vorschau",
-    "mute": "Stummschalten",
-    "unmute": "Ton an",
-    "note": "Funktioniert bei SoundCloud und YouTube. Spotify und Apple Music behalten ihre eigene Lautstärke.",
-    "open": "Lautstärke",
-    "close": "Schließen"
   }
 }

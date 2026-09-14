@@ -171,7 +171,8 @@
       "intro": "Release pages show one preview player. Pick the service you actually use — signed in to it in your browser, previews become full tracks.",
       "spotifyBlurb": "The default. Every release we have.",
       "appleBlurb": "Where Apple carries the record; otherwise Spotify fills in.",
-      "soundcloudBlurb": "Where SoundCloud carries the record; otherwise Spotify fills in."
+      "soundcloudBlurb": "Where SoundCloud carries the record; otherwise Spotify fills in.",
+      "hintTwo": "Spotify or Apple Music on release pages."
     },
     "song": {
       "title": "Profile Song",
@@ -1643,13 +1644,5 @@
     },
     "getInTouch": "GET IN TOUCH",
     "contact": "Questions, ideas, problems?"
-  },
-  "volume": {
-    "label": "Preview volume",
-    "mute": "Mute",
-    "unmute": "Unmute",
-    "note": "Works on SoundCloud and YouTube. Spotify and Apple Music keep their own volume.",
-    "open": "Volume",
-    "close": "Close"
   }
 }

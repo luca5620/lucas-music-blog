@@ -171,7 +171,8 @@
       "intro": "Chaque page de sortie affiche un seul lecteur. Choisis le service que tu utilises vraiment : connecté dans ton navigateur, les extraits deviennent des morceaux entiers.",
       "spotifyBlurb": "Celui par défaut. Toutes nos sorties y sont.",
       "appleBlurb": "Quand Apple a le disque ; sinon, Spotify prend le relais.",
-      "soundcloudBlurb": "Quand SoundCloud a le disque ; sinon, Spotify prend le relais."
+      "soundcloudBlurb": "Quand SoundCloud a le disque ; sinon, Spotify prend le relais.",
+      "hintTwo": "Spotify ou Apple Music sur les pages de sortie."
     },
     "song": {
       "title": "Morceau de profil",
@@ -1643,13 +1644,5 @@
     },
     "getInTouch": "NOUS CONTACTER",
     "contact": "Des questions, des idées, des problèmes ?"
-  },
-  "volume": {
-    "label": "Volume des extraits",
-    "mute": "Couper le son",
-    "unmute": "Remettre le son",
-    "note": "Marche avec SoundCloud et YouTube. Spotify et Apple Music gardent leur propre volume.",
-    "open": "Volume",
-    "close": "Fermer"
   }
 }

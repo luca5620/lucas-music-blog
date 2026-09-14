@@ -171,7 +171,8 @@
       "intro": "Cada página de lançamento mostra um único player. Escolha o serviço que você usa de verdade: logado nele no navegador, as prévias viram músicas completas.",
       "spotifyBlurb": "O padrão. Tem todos os nossos lançamentos.",
       "appleBlurb": "Quando a Apple tem o disco; senão, aparece o Spotify.",
-      "soundcloudBlurb": "Quando o SoundCloud tem o disco; senão, aparece o Spotify."
+      "soundcloudBlurb": "Quando o SoundCloud tem o disco; senão, aparece o Spotify.",
+      "hintTwo": "Spotify ou Apple Music nas páginas de lançamento."
     },
     "song": {
       "title": "Música do perfil",
@@ -1643,13 +1644,5 @@
     },
     "getInTouch": "FALE COM A GENTE",
     "contact": "Perguntas, ideias, problemas?"
-  },
-  "volume": {
-    "label": "Volume das prévias",
-    "mute": "Silenciar",
-    "unmute": "Tirar o silêncio",
-    "note": "Funciona no SoundCloud e no YouTube. Spotify e Apple Music têm o próprio volume.",
-    "open": "Volume",
-    "close": "Fechar"
   }
 }

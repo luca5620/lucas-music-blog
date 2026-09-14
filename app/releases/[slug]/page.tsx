@@ -38,6 +38,7 @@ import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
 import SoundCloudEmbed from "@/components/releases/SoundCloudEmbed";
 import { resolveSoundCloud } from "@/lib/soundcloud";
+import { SOUNDCLOUD_PLAYER_ENABLED } from "@/lib/flags";
 import TrackRatings from "@/components/releases/TrackRatings";
 import PlayerTabs from "@/components/releases/PlayerTabs";
 import {
@@ -250,7 +251,9 @@ export default async function ReleasePage({ params }: Props) {
     const preferred = (pref as { preferred_player?: string } | null)?.preferred_player;
     if (preferred === "apple") {
       apple = await resolveAppleMusic(release, artist?.name ?? "");
-    } else if (preferred === "soundcloud") {
+    } else if (preferred === "soundcloud" && SOUNDCLOUD_PLAYER_ENABLED) {
+      // On hold (lib/flags.ts) — anyone whose saved pick is SoundCloud
+      // simply gets the Spotify player until the flag comes back on.
       soundcloud = await resolveSoundCloud(release, artist?.name ?? "");
     }
   }

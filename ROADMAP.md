@@ -143,16 +143,36 @@ don't wait to be asked:**
         spectators there are no votes at all. And if that host also
         plays in a host-judged room, `aux_self_judged` voids their own
         win (044).
-  - **NEW: `docs/RATE-LIMITS.md`** — the full inventory Luca asked for
-    (every Aux Wars limit, both live chats, the rest of the site) plus
-    how the limiter behaves. **One action for Luca: confirm
-    `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are set in
-    Vercel Production.** Without them `rateLimit()` silently falls
-    back to a per-instance in-memory counter, so every published
-    number becomes roughly limit × warm instances. Redis errors also
-    fail OPEN by design. Also noted there: signed-out traffic is
-    barely limited (limits key on user id), and auth endpoints are
-    rate limited by SUPABASE's dashboard settings, not by our code.
+  - **NEW: `docs/RATE-LIMITS.md`** — the full security inventory Luca
+    asked for: every Aux Wars limit, both live chats, the rest of the
+    site, and how the limiter really behaves. Read that file rather
+    than re-deriving any of it. Headlines:
+      · **✅ UPSTASH CONFIRMED SET in Vercel Production (Luca,
+        2026-09-14).** So `rateLimit()` runs its shared-Redis path and
+        every documented number is a REAL ceiling across all
+        instances. This was the one open question and it's closed.
+        Re-check only if the Upstash project is ever rotated or
+        deleted — the fallback to per-instance in-memory counters is
+        SILENT, nothing in the app announces it.
+      · Both live chats: 20 messages/min each. Aux Wars caps a message
+        at 500 characters, release-room chat at 1000. Both cap length
+        in the route AND in a DB `check` constraint, and both run the
+        App Store 1.2 content filter before insert.
+      · Aux Wars: all 18 actions limited. Hosting 10/hour, joining
+        with a code 10 per 10 min (the brute-force guard on the
+        six-character codes — 36^6 ≈ 2.2bn, so 10 tries per 10 min is
+        nowhere), voting 40/min, song search 30/min (also protects the
+        Spotify quota). Votes and reactions look generous but can't
+        flood: one row per user per game, upserted, so spam only
+        rewrites your own row.
+      · **Accepted, not bugs:** a Redis error FAILS OPEN (availability
+        over enforcement, so an Upstash outage is an open window);
+        signed-out traffic is barely limited because limits key on
+        user id; and sign-up / sign-in / password-reset are rate
+        limited by SUPABASE's own dashboard settings (Auth → Rate
+        Limits), not by our code — worth a look there sometime.
+      · Standing reminder: rate limits are the SECOND wall. RLS is the
+        first, and the app only ever holds the anon key.
 
 - **2026-09-14 (Windows): AUX BATTLES → AUX WARS.** Shipped to main.
   No migration; every DB table is still `aux_*` and stays that way.

@@ -21,10 +21,13 @@ is the implementation.
   allowed and the error is logged. Deliberate: a hiccup at Upstash
   must not take the API down. It does mean limits are soft during an
   outage.
-- **⚠️ VERIFY IN VERCEL:** that the two `UPSTASH_*` env vars are
-  actually set in Production. If they aren't, every number below is
-  per-instance only. This is the single highest-value thing to check
-  and it can't be checked from the repo.
+- **✅ CONFIRMED SET IN PRODUCTION (Luca, 2026-09-14):**
+  `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are both
+  present in Vercel Production, so the shared-Redis path is the one
+  that actually runs and **every number below is a real ceiling across
+  all instances**, not a per-instance one. Re-check this if the
+  Upstash project is ever rotated, migrated or deleted — the fallback
+  is silent, and nothing in the app will tell you it happened.
 - **Rate limits are the second wall, not the first.** RLS is the real
   boundary: the app only ever holds the anon key, and every aux table
   has policies (migrations 042–047). A limit stops flooding; RLS stops
@@ -109,7 +112,11 @@ member row, which is the point against a re-joiner.
 
 ## Known soft spots
 
-1. **The fail-open + no-Redis case above.** Check Vercel.
+1. **Fail-open during an Upstash outage.** The env vars are set, so
+   the counters are shared and correct in normal operation. But a
+   Redis error still allows the request through. An Upstash outage is
+   therefore an open window, by design — availability was chosen over
+   enforcement. Nothing to fix; just know it's the behaviour.
 2. **Signed-out traffic is barely limited.** Almost every limit is
    keyed on a user id, so it only exists after sign-in. Public page
    reads are protected by Vercel/CDN rather than by us. The one

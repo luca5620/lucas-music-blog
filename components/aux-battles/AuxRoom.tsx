@@ -688,29 +688,6 @@ export default function AuxRoom({
             </section>
           )}
 
-          {/* ══════════ HOST: THE DOOR ══════════
-              Invite the friends, remove the rest. Not lobby-only — a
-              spammer in the chat is a live-room problem too. */}
-          {isHost && room.status !== "finished" && (
-            <section className="panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden">
-              <div className="flex items-center gap-2">
-                <span className="glow-orb" style={{ animationDelay: "0.7s" }} />
-                <span className="label-xbox">{t("theDoor")}</span>
-              </div>
-              <div className="flex flex-wrap gap-3 items-start">
-                <InviteFriends roomId={room.id} />
-                <ManagePeople
-                  roomId={room.id}
-                  hostId={room.host_id}
-                  members={members}
-                  bans={bans}
-                  onBansChange={setBans}
-                />
-              </div>
-              <div className="scan-bar" />
-            </section>
-          )}
-
           {/* ══════════ THE STAGE ══════════ */}
           {room.status === "live" && currentGame && currentMatch && (
             <section className="panel-xbox-glow p-4 sm:p-6 lg:p-7 space-y-4 lg:space-y-5 relative overflow-hidden aux-stage">
@@ -1061,6 +1038,39 @@ export default function AuxRoom({
                 <span className="label-xbox">{room.format === "bo3" && matches.length === 1 ? t("series") : t("bracket")}</span>
               </div>
               <Bracket matches={matches} members={members} format={room.format} currentMatchId={currentMatch?.id ?? null} />
+              <div className="scan-bar" />
+            </section>
+          )}
+
+          {/* ══════════ HOST: THE DOOR ══════════
+              Invite the friends, remove the rest. LAST in the column
+              (Luca 2026-09-14: below the game and the series) — it's
+              housekeeping, and it shouldn't sit between the host and
+              the match they're running. Not lobby-only, though: a
+              spammer in the chat is a live-room problem too.
+
+              The two controls STACK rather than sitting side by side.
+              As a flex row, opening "manage people" dropped its panel
+              into the second column, so the list started at the
+              Invite button's right edge and looked like it was
+              floating (his words). Full-width rows, everything hard
+              against the left. */}
+          {isHost && room.status !== "finished" && (
+            <section className="panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden">
+              <div className="flex items-center gap-2">
+                <span className="glow-orb" style={{ animationDelay: "0.7s" }} />
+                <span className="label-xbox">{t("theDoor")}</span>
+              </div>
+              <div className="space-y-3">
+                <InviteFriends roomId={room.id} />
+                <ManagePeople
+                  roomId={room.id}
+                  hostId={room.host_id}
+                  members={members}
+                  bans={bans}
+                  onBansChange={setBans}
+                />
+              </div>
               <div className="scan-bar" />
             </section>
           )}

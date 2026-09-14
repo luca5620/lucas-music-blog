@@ -92,7 +92,14 @@ don't wait to be asked:**
 
 - **2026-09-14 (Windows), round 4: per-game topics, the fold-in, the
   vanishing-room bug, and a 1.2 compliance sweep.** Shipped to main.
-  🔴 **MIGRATIONS 045 AND 046 BOTH NEED RUNNING** (in order).
+  ✅ **MIGRATIONS 044, 045 AND 046 ALL RUN** — probe-verified against
+  prod 2026-09-14: aux_games.fire_a + aux_player_cap + aux_leaderboard
+  (044), aux_rooms.is_hidden + aux_seats + aux_bans + aux_invitable
+  (045 — aux_invitable answers 42501 to anon, which is the GRANT doing
+  its job, not a missing function), aux_rooms.topic_each_game +
+  aux_games.topic + aux_game_topic (046). The arena lists rooms again
+  and the leaderboard correctly returns [] — the only finished room is
+  host-played AND host-judged, so the anti-farm rule strips it.
   - **A topic per GAME inside a best-of-3** — his idea, now an opt-in
     checkbox that only appears when the format is bo3, OFF by default
     (one brief across the match is the fair version; per-game turns a
@@ -144,9 +151,7 @@ don't wait to be asked:**
       ("a mechanism to eject abusive users").
 
 - **2026-09-14 (Windows), round 3: the stage grows, the door opens.**
-  Shipped to main. 🔴 **MIGRATION 045 NOT RUN YET**
-  (`045-aux-rooms-access.sql`). 044 IS run (probe-verified: fire_a,
-  aux_leaderboard and aux_player_cap all answer).
+  Shipped to main. ✅ Migration 045 RUN (see round 4 above).
   - **A bigger stage on the web.** The room page went `max-w-6xl` →
     `max-w-7xl` (so the top module stretches too, which Luca okayed),
     the stage panel and both song cards gained padding at `lg`, and

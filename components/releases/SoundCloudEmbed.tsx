@@ -15,7 +15,7 @@
  */
 
 import type { Release } from "@/lib/types/database";
-import { soundcloudEmbedSrc } from "@/lib/soundcloud";
+import SoundCloudFrame from "@/components/releases/SoundCloudFrame";
 import { getTranslations } from "next-intl/server";
 
 export default async function SoundCloudEmbed({
@@ -36,16 +36,14 @@ export default async function SoundCloudEmbed({
   const height = isSet ? 450 : 166;
   const t = await getTranslations("releases.embed");
 
+  // The frame + its volume slider (a client island — the Widget API
+  // needs a ref to the iframe, which a server component can't hold).
   const iframe = (
-    <iframe
-      src={soundcloudEmbedSrc(permalink)}
-      width="100%"
+    <SoundCloudFrame
+      permalink={permalink}
       height={height}
-      frameBorder="0"
-      allow="autoplay; clipboard-write; encrypted-media"
-      loading="lazy"
       title={t("soundcloudTitle", { title: release.title })}
-      className="rounded-lg xl:flex-1 xl:min-h-0"
+      className="xl:flex-1 xl:min-h-0"
     />
   );
   if (bare) return iframe;

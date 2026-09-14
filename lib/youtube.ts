@@ -25,7 +25,9 @@ export function youtubeConfigured(): boolean {
 
 /** The embed src for a video id. */
 export function youtubeEmbedSrc(videoId: string): string {
-  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`;
+  // enablejsapi=1 lets the site-wide volume reach the player
+  // (components/ui/useEmbedVolume.ts).
+  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1`;
 }
 
 /**

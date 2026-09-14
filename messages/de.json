@@ -1643,5 +1643,11 @@
     },
     "getInTouch": "KONTAKT",
     "contact": "Fragen, Ideen, Probleme?"
+  },
+  "volume": {
+    "label": "Lautstärke der Vorschau",
+    "mute": "Stummschalten",
+    "unmute": "Ton an",
+    "spotifyNote": "Spotify hat seine eigene Lautstärke — stell sie in dessen Player ein."
   }
 }

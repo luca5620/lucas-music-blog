@@ -1643,5 +1643,11 @@
     },
     "getInTouch": "CONTACT",
     "contact": "Vragen, ideeën, problemen?"
+  },
+  "volume": {
+    "label": "Volume van previews",
+    "mute": "Dempen",
+    "unmute": "Dempen opheffen",
+    "spotifyNote": "Spotify houdt zijn eigen volume — zet dat in die speler."
   }
 }

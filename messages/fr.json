@@ -1643,5 +1643,11 @@
     },
     "getInTouch": "NOUS CONTACTER",
     "contact": "Des questions, des idées, des problèmes ?"
+  },
+  "volume": {
+    "label": "Volume des extraits",
+    "mute": "Couper le son",
+    "unmute": "Remettre le son",
+    "spotifyNote": "Spotify garde son propre volume — règle-le dans son lecteur."
   }
 }

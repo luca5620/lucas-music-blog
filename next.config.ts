@@ -38,7 +38,11 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      // w.soundcloud.com: the Widget API script (player/api.js), the
+      // only way to set a SoundCloud player's volume from the page —
+      // loaded lazily, and only where a SoundCloud player is on screen
+      // (components/ui/useEmbedVolume.ts, 2026-09-13).
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://w.soundcloud.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "media-src 'self' https:",

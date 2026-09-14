@@ -51,6 +51,8 @@ import type {
 import PlayerChip, { AuxAvatar, WinsTag } from "@/components/aux-battles/PlayerChip";
 import SongPicker from "@/components/aux-battles/SongPicker";
 import TopicPicker from "@/components/aux-battles/TopicPicker";
+import VolumeSlider from "@/components/ui/VolumeSlider";
+import { isControllable } from "@/lib/volume";
 import SongEmbed, { sourceTag } from "@/components/aux-battles/SongEmbed";
 import Bracket from "@/components/aux-battles/Bracket";
 import WinnerBurst from "@/components/aux-battles/WinnerBurst";
@@ -90,6 +92,7 @@ async function post(url: string, body?: unknown): Promise<Record<string, unknown
 export default function AuxRoom({ initial, initialMessages, initialVote, code }: Props) {
   const { user } = useAuth();
   const t = useTranslations("aux.room");
+  const tv = useTranslations("volume");
   const supabaseRef = useRef(createClient());
 
   const [room, setRoom] = useState<AuxRoomState["room"]>(initial.room);
@@ -614,6 +617,23 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
               ) : (
                 <p className="text-sm text-osd-amber">{isHost ? t("topicYours") : t("waitingTopic")}</p>
               )}
+
+              {/* Volume — only while songs are actually playing, and
+                  only when a player on this stage can answer it
+                  (SoundCloud / YouTube; Spotify offers no control). */}
+              {currentGame.phase === "listening" &&
+                (isControllable(currentGame.song_a?.source) ||
+                  isControllable(currentGame.song_b?.source)) && (
+                  <VolumeSlider
+                    className="max-w-xs"
+                    note={
+                      currentGame.song_a?.source === "spotify" ||
+                      currentGame.song_b?.source === "spotify"
+                        ? tv("spotifyNote")
+                        : undefined
+                    }
+                  />
+                )}
 
               {/* Floating reactions layer */}
               <div className="aux-floaters" aria-hidden>

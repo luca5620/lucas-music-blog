@@ -1643,5 +1643,11 @@
     },
     "getInTouch": "FALE COM A GENTE",
     "contact": "Perguntas, ideias, problemas?"
+  },
+  "volume": {
+    "label": "Volume das prévias",
+    "mute": "Silenciar",
+    "unmute": "Tirar o silêncio",
+    "spotifyNote": "O Spotify tem o próprio volume — ajuste no player dele."
   }
 }

@@ -141,8 +141,26 @@ don't wait to be asked:**
     API (needs the keys above) and cached on the release row
     (`soundcloud_url`, 042 part B); Spotify fills in when SoundCloud
     doesn't carry the record or the keys aren't set.
-  - NEXT: Luca runs 042, adds the keys he wants, and does the device
-    pass — nothing has been eyeballed on a phone yet.
+  - **Volume slider (Luca 2026-09-13), with a hard platform limit.**
+    One level for the whole site (`lib/volume.ts`, remembered per
+    device in localStorage), a speaker + slider
+    (`components/ui/VolumeSlider`), applied to a player through
+    `components/ui/useEmbedVolume`. It reaches **SoundCloud** (their
+    Widget API, `w.soundcloud.com/player/api.js` — added to CSP
+    script-src, loaded lazily) and **YouTube** (postMessage command
+    protocol, needs `enablejsapi=1` on the src, no script loaded).
+    **Spotify and Apple Music expose NO volume control on their
+    embeds** — a page cannot reach into a cross-origin iframe, so
+    nothing can be done there short of dropping their players.
+    The slider therefore renders only where something can answer it:
+    the aux battle stage while songs play (with a line saying Spotify
+    keeps its own volume when a Spotify song is on the stage) and the
+    release page when the viewer's player is SoundCloud. Your Taste
+    OBEYS the level but shows no slider — that page stays the pager
+    only (design law, 2026-08-27).
+  - NEXT: Luca runs 042 + 043, adds the keys he wants, and does the
+    device pass — nothing has been eyeballed on a phone yet, and the
+    volume commands in particular want a real ear on a real player.
   - Still wired to the old tables, harmless: `lib/taste.ts` keeps the
     debate OnAir card type with an EMPTY pool (Your Taste signals are
     Luca's rework); `taste.surf.types.debate` + `notifications.newDebate`

@@ -4478,3 +4478,41 @@ fieldset {
 .low-detail .aux-burst-card { animation: none; }
 .low-detail .aux-match-live { animation: none; box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.5); }
 .low-detail .aux-floater { animation-duration: 1s; filter: none; }
+
+/* ============================================================
+   VOLUME SLIDER (2026-09-13) — one level for every preview player
+   ============================================================ */
+.volume-range {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--border-medium);
+  outline: none;
+  cursor: pointer;
+}
+.volume-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
+}
+.volume-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
+}
+.volume-range:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+/* Thermal diet: the glow goes, the control stays exactly as usable. */
+.low-detail .volume-range::-webkit-slider-thumb { box-shadow: none; }
+.low-detail .volume-range::-moz-range-thumb { box-shadow: none; }

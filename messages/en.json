@@ -1643,5 +1643,11 @@
     },
     "getInTouch": "GET IN TOUCH",
     "contact": "Questions, ideas, problems?"
+  },
+  "volume": {
+    "label": "Preview volume",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "spotifyNote": "Spotify keeps its own volume — set that one in its player."
   }
 }

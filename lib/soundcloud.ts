@@ -26,6 +26,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { AuxSong, Release } from "@/lib/types/database";
+import { soundcloudEmbedSrc } from "@/lib/soundcloud-embed";
 
 const API = "https://api.soundcloud.com";
 const TOKEN_URL = "https://secure.soundcloud.com/oauth/token";
@@ -37,21 +38,10 @@ export function soundcloudConfigured(): boolean {
   return !!process.env.SOUNDCLOUD_CLIENT_ID && !!process.env.SOUNDCLOUD_CLIENT_SECRET;
 }
 
-/** The public embed player src for a track or set permalink. */
-export function soundcloudEmbedSrc(permalink: string): string {
-  const params = new URLSearchParams({
-    url: permalink,
-    color: "#1e90ff",
-    auto_play: "false",
-    hide_related: "true",
-    show_comments: "false",
-    show_user: "true",
-    show_reposts: "false",
-    show_teaser: "false",
-    visual: "false",
-  });
-  return `https://w.soundcloud.com/player/?${params.toString()}`;
-}
+/* The widget URL builder lives in lib/soundcloud-embed.ts (no
+   imports, so client components can use it too) and is re-exported
+   here so server callers keep one import. */
+export { soundcloudEmbedSrc } from "@/lib/soundcloud-embed";
 
 /** A soundcloud.com permalink we accept (tracks and sets). */
 export function isSoundCloudUrl(url: string): boolean {

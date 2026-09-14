@@ -1648,6 +1648,8 @@
     "label": "Lautstärke der Vorschau",
     "mute": "Stummschalten",
     "unmute": "Ton an",
-    "spotifyNote": "Spotify hat seine eigene Lautstärke — stell sie in dessen Player ein."
+    "note": "Funktioniert bei SoundCloud und YouTube. Spotify und Apple Music behalten ihre eigene Lautstärke.",
+    "open": "Lautstärke",
+    "close": "Schließen"
   }
 }

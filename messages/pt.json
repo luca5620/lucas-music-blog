@@ -1648,6 +1648,8 @@
     "label": "Volume das prévias",
     "mute": "Silenciar",
     "unmute": "Tirar o silêncio",
-    "spotifyNote": "O Spotify tem o próprio volume — ajuste no player dele."
+    "note": "Funciona no SoundCloud e no YouTube. Spotify e Apple Music têm o próprio volume.",
+    "open": "Volume",
+    "close": "Fechar"
   }
 }

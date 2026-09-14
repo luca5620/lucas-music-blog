@@ -152,12 +152,18 @@ don't wait to be asked:**
     **Spotify and Apple Music expose NO volume control on their
     embeds** — a page cannot reach into a cross-origin iframe, so
     nothing can be done there short of dropping their players.
-    The slider therefore renders only where something can answer it:
-    the aux battle stage while songs play (with a line saying Spotify
-    keeps its own volume when a Spotify song is on the stage) and the
-    release page when the viewer's player is SoundCloud. Your Taste
-    OBEYS the level but shows no slider — that page stays the pager
-    only (design law, 2026-08-27).
+    **Site-wide, same night (Luca: "have it be site-wide, it'll only
+    show up on pages with a preview player").** `VolumeDock` is
+    mounted once in the root layout and renders NOTHING until a
+    controllable player registers itself (`registerPlayer` in
+    lib/volume.ts, called by useEmbedVolume while a frame is
+    mounted) — so it appears on a SoundCloud release page, on an aux
+    stage once songs play, and in the Your Taste pager, and is absent
+    everywhere else (verified: no `volume-dock` in the home-page
+    HTML). Collapsed it is a speaker button bottom-right; open it
+    holds the slider and the line about Spotify/Apple keeping their
+    own. In the app it stacks on the tab bar the approved way
+    (`52px + --tab-bar-pad`). The earlier inline sliders are gone.
   - NEXT: Luca runs 042 + 043, adds the keys he wants, and does the
     device pass — nothing has been eyeballed on a phone yet, and the
     volume commands in particular want a real ear on a real player.

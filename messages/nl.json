@@ -1648,6 +1648,8 @@
     "label": "Volume van previews",
     "mute": "Dempen",
     "unmute": "Dempen opheffen",
-    "spotifyNote": "Spotify houdt zijn eigen volume — zet dat in die speler."
+    "note": "Werkt bij SoundCloud en YouTube. Spotify en Apple Music houden hun eigen volume.",
+    "open": "Volume",
+    "close": "Sluiten"
   }
 }

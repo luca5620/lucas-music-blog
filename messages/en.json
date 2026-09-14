@@ -1648,6 +1648,8 @@
     "label": "Preview volume",
     "mute": "Mute",
     "unmute": "Unmute",
-    "spotifyNote": "Spotify keeps its own volume — set that one in its player."
+    "note": "Works on SoundCloud and YouTube. Spotify and Apple Music keep their own volume.",
+    "open": "Volume",
+    "close": "Close"
   }
 }

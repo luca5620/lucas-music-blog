@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * SoundCloudFrame — the SoundCloud widget iframe plus the volume
- * slider, as a client island inside the (server-rendered)
- * SoundCloudEmbed card. The iframe needs a ref for the Widget API to
- * take a volume command, which a server component can't hold.
+ * SoundCloudFrame — the SoundCloud widget iframe as a client island
+ * inside the (server-rendered) SoundCloudEmbed card. The Widget API
+ * needs a ref to the iframe to take a volume command, which a server
+ * component cannot hold. The control itself is the site-wide
+ * VolumeDock, which this frame switches on just by being mounted.
  */
 
 import { useRef } from "react";
 import { soundcloudEmbedSrc } from "@/lib/soundcloud-embed";
 import { useEmbedVolume } from "@/components/ui/useEmbedVolume";
-import VolumeSlider from "@/components/ui/VolumeSlider";
 
 export default function SoundCloudFrame({
   permalink,
@@ -39,7 +39,6 @@ export default function SoundCloudFrame({
         title={title}
         className="rounded-lg block"
       />
-      <VolumeSlider className="max-w-xs" />
     </div>
   );
 }

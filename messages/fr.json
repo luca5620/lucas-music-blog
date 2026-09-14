@@ -1648,6 +1648,8 @@
     "label": "Volume des extraits",
     "mute": "Couper le son",
     "unmute": "Remettre le son",
-    "spotifyNote": "Spotify garde son propre volume — règle-le dans son lecteur."
+    "note": "Marche avec SoundCloud et YouTube. Spotify et Apple Music gardent leur propre volume.",
+    "open": "Volume",
+    "close": "Fermer"
   }
 }

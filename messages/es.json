@@ -1648,6 +1648,8 @@
     "label": "Volumen de los adelantos",
     "mute": "Silenciar",
     "unmute": "Quitar silencio",
-    "spotifyNote": "Spotify maneja su propio volumen: ajústalo en su reproductor."
+    "note": "Funciona con SoundCloud y YouTube. Spotify y Apple Music manejan su propio volumen.",
+    "open": "Volumen",
+    "close": "Cerrar"
   }
 }

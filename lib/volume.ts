@@ -71,3 +71,42 @@ export function subscribeVolume(fn: (v: number) => void): () => void {
     listeners.delete(fn);
   };
 }
+
+/* ------------------------------------------------------------------
+   Who is listening — so the site-wide dock knows when to exist
+   ------------------------------------------------------------------
+   Luca 2026-09-13: "have it be site-wide, it'll only show up on pages
+   with a preview player." Every controllable player that mounts
+   registers here and drops out when it unmounts, so VolumeDock can
+   render exactly when there is something on screen to turn down —
+   release pages, aux battle stages, the Your Taste pager — and
+   nothing anywhere else. A plain count: nothing needs to know WHICH
+   players are up, only whether any are. */
+
+let playerCount = 0;
+const playerListeners = new Set<() => void>();
+
+/** Called by useEmbedVolume on mount; the returned fn on unmount. */
+export function registerPlayer(): () => void {
+  playerCount += 1;
+  for (const fn of playerListeners) fn();
+  let released = false;
+  return () => {
+    if (released) return; // a double-unmount must not go negative
+    released = true;
+    playerCount = Math.max(0, playerCount - 1);
+    for (const fn of playerListeners) fn();
+  };
+}
+
+/** How many controllable players are on screen right now. */
+export function getPlayerCount(): number {
+  return playerCount;
+}
+
+export function subscribePlayers(fn: () => void): () => void {
+  playerListeners.add(fn);
+  return () => {
+    playerListeners.delete(fn);
+  };
+}

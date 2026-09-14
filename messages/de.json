@@ -1173,9 +1173,9 @@
       "sub": "Gib dem Raum einen Namen, wähl das Format und wer entscheidet. Spieler kommen in die Lobby; du startest, wenn der Raum voll genug ist, und jede Runde bekommt von dir ein neues Thema.",
       "format": "Format",
       "bo1": "Eine Runde",
-      "bo1Sub": "Ein Song pro Person und Match. Das Bracket läuft, bis ein Spieler übrig ist.",
+      "bo1Sub": "Ein Song pro Person und Match. Das Bracket läuft, bis ein Spieler übrig ist. Bis zu 32 Spieler.",
       "bo3": "Best of 3",
-      "bo3Sub": "Wer zuerst zwei Games gewinnt, holt das Match. Länger, mehr Drama.",
+      "bo3Sub": "Wer zuerst zwei Games gewinnt, holt das Match. Länger, mehr Drama. Bis zu 10 Spieler.",
       "judge": "Wer entscheidet",
       "crowd": "Das Publikum stimmt ab",
       "crowdSub": "Die Mehrheit gewinnt. Ein Gleichstand geht in die Verlängerung (neue Songs), den zweiten entscheidest du.",
@@ -1243,8 +1243,8 @@
       "overtime": "VERLÄNGERUNG",
       "gameN": "Game {n} · {a}–{b}",
       "roundN": "Runde {n}",
-      "phasePicking": "Songs werden gewählt",
-      "phaseListening": "Anhören · jetzt abstimmen",
+      "phasePicking": "Auswahlphase",
+      "phaseListening": "Abstimmungsphase",
       "votes": "{n, plural, one {# Stimme} other {# Stimmen}}",
       "lockedInYou": "Fix: {song}. Warten auf die andere Seite.",
       "lockedIn": "Fix",
@@ -1283,7 +1283,9 @@
       "deleteFailed": "Konnte nicht gelöscht werden.",
       "topicLabel": "Thema",
       "waitingTopic": "Warten, bis der Host das Thema dieser Runde setzt…",
-      "topicYours": "Setz unten das Thema dieser Runde, um die Songwahl zu öffnen."
+      "topicYours": "Setz unten das Thema dieser Runde, um die Songwahl zu öffnen.",
+      "lobbyFull": "Die Lobby ist voll — maximal {n} Spieler. Zuschauen geht noch.",
+      "lobbyFullShort": "Lobby voll"
     },
     "chat": {
       "title": "Der Raum",
@@ -1300,7 +1302,10 @@
       "inputAria": "Chatnachricht",
       "send": "Senden",
       "signIn": "Melde dich an, um zu chatten",
-      "sendFailed": "Nachricht wurde nicht gesendet."
+      "sendFailed": "Nachricht wurde nicht gesendet.",
+      "collapse": "Chat ausblenden",
+      "openSheet": "Raum-Chat öffnen",
+      "sheetAria": "Raum-Chat"
     },
     "picker": {
       "hiccup": "Die Suche hat gehakt — versuch es noch mal.",
@@ -1360,6 +1365,14 @@
         "Bester Song der 90er",
         "Bester Song in einer Sprache, die du nicht sprichst"
       ]
+    },
+    "leaderboard": {
+      "title": "Top 10",
+      "allTime": "Allzeit",
+      "weekly": "Diese Woche",
+      "rounds": "{n, plural, one {# Runde} other {# Runden}}",
+      "emptyWeek": "Diese Woche hat noch niemand eine Battle gewonnen.",
+      "fairPlay": "Siege aus einem Raum, in dem der Host mitgespielt und selbst entschieden hat, zählen nicht."
     }
   },
   "rooms": {

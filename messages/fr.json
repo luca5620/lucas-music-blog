@@ -1173,9 +1173,9 @@
       "sub": "Donne un nom à la salle, choisis le format et qui tranche. Les joueurs rejoignent le lobby ; tu lances quand il y a assez de monde, et tu nommes un nouveau thème à chaque manche.",
       "format": "Format",
       "bo1": "Une manche",
-      "bo1Sub": "Un morceau chacun par match. Le tableau continue jusqu'au dernier joueur debout.",
+      "bo1Sub": "Un morceau chacun par match. Le tableau continue jusqu'au dernier joueur debout. Jusqu'à 32 joueurs.",
       "bo3": "Best of 3",
-      "bo3Sub": "Le premier à deux jeux gagne chaque match. Plus long, plus de drame.",
+      "bo3Sub": "Le premier à deux jeux gagne chaque match. Plus long, plus de drame. Jusqu'à 10 joueurs.",
       "judge": "Qui tranche",
       "crowd": "Le public vote",
       "crowdSub": "La majorité l'emporte. Une égalité part en prolongation (nouveaux morceaux), et tu tranches la seconde.",
@@ -1243,8 +1243,8 @@
       "overtime": "PROLONGATION",
       "gameN": "Jeu {n} · {a}–{b}",
       "roundN": "Manche {n}",
-      "phasePicking": "choix des morceaux",
-      "phaseListening": "écoute · vote maintenant",
+      "phasePicking": "Phase de choix",
+      "phaseListening": "Phase de vote",
       "votes": "{n, plural, one {# vote} other {# votes}}",
       "lockedInYou": "Verrouillé : {song}. On attend l'autre côté.",
       "lockedIn": "Verrouillé",
@@ -1283,7 +1283,9 @@
       "deleteFailed": "Impossible de supprimer.",
       "topicLabel": "Thème",
       "waitingTopic": "En attente du thème de cette manche, choisi par l'hôte…",
-      "topicYours": "Nomme le thème de cette manche ci-dessous pour ouvrir les choix."
+      "topicYours": "Nomme le thème de cette manche ci-dessous pour ouvrir les choix.",
+      "lobbyFull": "Le salon est plein — {n} joueurs maximum. Tu peux quand même regarder.",
+      "lobbyFullShort": "Salon plein"
     },
     "chat": {
       "title": "La salle",
@@ -1300,7 +1302,10 @@
       "inputAria": "Message du chat",
       "send": "Envoyer",
       "signIn": "Connecte-toi pour discuter",
-      "sendFailed": "Le message n'est pas parti."
+      "sendFailed": "Le message n'est pas parti.",
+      "collapse": "Masquer le chat",
+      "openSheet": "Ouvrir le chat du salon",
+      "sheetAria": "Chat du salon"
     },
     "picker": {
       "hiccup": "La recherche a buggé — réessaie.",
@@ -1360,6 +1365,14 @@
         "Le meilleur morceau des années 90",
         "Le meilleur morceau dans une langue que tu ne parles pas"
       ]
+    },
+    "leaderboard": {
+      "title": "Top 10",
+      "allTime": "Depuis toujours",
+      "weekly": "Cette semaine",
+      "rounds": "{n, plural, one {# manche} other {# manches}}",
+      "emptyWeek": "Personne n'a encore gagné de battle cette semaine.",
+      "fairPlay": "Les victoires dans un salon où l'hôte jouait et jugeait à la fois ne comptent pas."
     }
   },
   "rooms": {

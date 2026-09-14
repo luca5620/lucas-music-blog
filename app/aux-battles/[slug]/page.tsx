@@ -5,6 +5,7 @@ import {
   getAuxMessages,
   getAuxRoomBySlug,
   getAuxRoomState,
+  getViewerAuxReaction,
   getViewerAuxVote,
 } from "@/lib/db/aux-battles";
 import { getUser } from "@/lib/auth";
@@ -58,10 +59,13 @@ export default async function AuxBattlePage({ params }: PageProps) {
   }
 
   const user = await getUser();
-  const [state, messages, vote] = await Promise.all([
+  const [state, messages, vote, reaction] = await Promise.all([
     getAuxRoomState(room),
     getAuxMessages(room.id),
     user && room.current_game_id ? getViewerAuxVote(room.current_game_id, user.id) : Promise.resolve(null),
+    user && room.current_game_id
+      ? getViewerAuxReaction(room.current_game_id, user.id)
+      : Promise.resolve(null),
   ]);
 
   // The host of a private room gets the code on first paint.
@@ -75,7 +79,13 @@ export default async function AuxBattlePage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <BackToHome />
-      <AuxRoom initial={state} initialMessages={messages} initialVote={vote} code={code} />
+      <AuxRoom
+        initial={state}
+        initialMessages={messages}
+        initialVote={vote}
+        initialReaction={reaction}
+        code={code}
+      />
     </div>
   );
 }

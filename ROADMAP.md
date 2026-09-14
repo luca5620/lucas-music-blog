@@ -90,6 +90,67 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-14 (Windows): AUX BATTLES, bug + UI round after Luca's
+  first real test. Shipped to main.** His list, each item and what it
+  turned out to be:
+  - **The side room was short and off centre on the web.** The grid
+    had `items-start`, so the chat column only grew to its own
+    content while the stage next to it ran long. Dropped it: the
+    chat now stretches to the same height as the main column and the
+    message list absorbs the extra (`xl:max-h-none xl:flex-1`).
+  - **"TOPIC" was distorted by the topic.** The label was a 10px
+    `<span>` INSIDE the `.crt-title` `<p>`, so it inherited the
+    chromatic-aberration text-shadow and smeared. It sits on its own
+    line now, outside the title.
+  - **Song search wouldn't scroll on a phone.** The results list was
+    a ~290px inner scroller inside a page that also scrolls — a
+    thumb-trap on iOS. Phones get the results IN FLOW (the page
+    scrolls them); desktop keeps the capped window + overscroll-contain.
+  - **Reactions: one per person, saved for the round.** Migration 044
+    gives `aux_reactions` a unique `(game_id, user_id)` — throwing
+    another one MOVES yours, like a vote — and puts `fire_a/poop_a/
+    fire_b/poop_b` on the game row (trigger), so the tallies ride the
+    same realtime UPDATE as the votes and survive a reload, a late
+    join and the whole listening period. The one you threw stays lit
+    (`.aux-react-mine`). Rate limit 60/min → 20/min.
+  - **Chat on a phone = the release-page pattern.** New
+    `AuxChatDock.tsx` is deliberately the same machinery as
+    `ReleaseRoomChat`: a fixed THE ROOM bar on the bottom edge, press
+    to slide a half-screen sheet up, jumps to the top of the page
+    while typing (visualViewport). matchMedia fork, NOT CSS
+    show/hide — AuxChat's realtime topic must mount exactly once.
+  - **Phase line**: "songs going on" → **Picking phase**, "listening ·
+    vote now" → **Voting phase** (all six languages).
+  - **SoundCloud share links.** `isSoundCloudUrl` anchored on `$`, so
+    anything with `?si=…&utm_source=clipboard…` — i.e. every link
+    SoundCloud's own share button produces — failed the test and the
+    paste came back "couldn't read that link". New
+    `soundcloudPermalink()` strips query + hash + `www.`/`m.` +
+    trailing slash first.
+  - **Lobby caps (new rule).** bo1 = 32 players (round of 32 is the
+    biggest bracket), bo3 = 10 (5 matches × up to 6 songs = 30 songs
+    in round one). DB trigger in 044 is the wall; the lobby shows
+    `(n/32)` and greys the button out. Viewers are never capped.
+    Private vs public is unchanged and already matches Luca's
+    definition: private = hidden + you need the six-letter code;
+    public = anyone joins until the cap.
+  - **No self-judged wins.** A room where the host PLAYS and JUDGES
+    is one where they pick their own results, so their own wins in it
+    count nowhere (chip + leaderboard). Luca's test win disappears on
+    its own once 044 runs — no row to delete. Other players' wins in
+    such a room still count.
+  - **Leaderboard**: top 10 on /aux-battles, All time / This week
+    tabs, `aux_leaderboard(period, limit)` in 044. Both lists are
+    fetched server-side, so the filter is an instant swap.
+  - 🔴 **MIGRATION 044 NOT RUN YET** — `supabase/migrations/044-aux-battles-round-2.sql`,
+    run it in the Supabase SQL Editor. Until it does: reactions stay
+    unlimited, the caps don't bite, wins are unfiltered, and the
+    leaderboard section renders nothing (the RPC 404s soft).
+  - ⏳ **STILL OPEN — one question for Luca**: "allow the choice to
+    pick multiple rounds for best of 3". bo1/bo3 is already a choice
+    at room creation, so this needs clarifying before anything is
+    built. Nothing here has been eyeballed on a device.
+
 - **2026-09-13 (Windows): DEBATES → AUX BATTLES, shipped to main.**
   Luca: "lets replace debates with aux battles." His spec, all built:
   a host opens a room on a topic (free text, preset chips, 🎲 random),

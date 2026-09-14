@@ -494,6 +494,13 @@ export interface AuxGame {
   decided_by: "crowd" | "host" | "bye" | null;
   votes_a: number;
   votes_b: number;
+  /** The 🔥 / 💩 tallies, counted on the row by a trigger (migration
+      044) so they survive a reload and a late join — one reaction
+      per person per game now, switchable like a vote. */
+  fire_a: number;
+  poop_a: number;
+  fire_b: number;
+  poop_b: number;
   created_at: string;
   closed_at: string | null;
 }

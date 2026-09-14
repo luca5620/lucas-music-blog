@@ -4,6 +4,7 @@ import { getUser } from "@/lib/auth";
 import {
   getAuxRoomMetaById,
   getAuxRoomState,
+  getViewerAuxReaction,
   getViewerAuxVote,
 } from "@/lib/db/aux-battles";
 
@@ -28,7 +29,15 @@ export async function GET(
     return NextResponse.json({ error: "Room not found." }, { status: 404 });
   }
   const [state, user] = await Promise.all([getAuxRoomState(room), getUser()]);
-  const vote =
-    user && room.current_game_id ? await getViewerAuxVote(room.current_game_id, user.id) : null;
-  return NextResponse.json({ ...state, vote }, { headers: { "Cache-Control": "no-store" } });
+  const live = user && room.current_game_id ? room.current_game_id : null;
+  const [vote, reaction] = live && user
+    ? await Promise.all([
+        getViewerAuxVote(live, user.id),
+        getViewerAuxReaction(live, user.id),
+      ])
+    : [null, null];
+  return NextResponse.json(
+    { ...state, vote, reaction },
+    { headers: { "Cache-Control": "no-store" } }
+  );
 }

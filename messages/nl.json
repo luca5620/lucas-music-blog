@@ -1173,9 +1173,9 @@
       "sub": "Geef de room een naam, kies het format en wie beslist. Spelers komen binnen in de lobby; jij start als de room vol genoeg is, en elke ronde bedenk je een nieuw thema.",
       "format": "Format",
       "bo1": "Eén ronde",
-      "bo1Sub": "Eén nummer per persoon per match. De bracket loopt door tot er één speler over is.",
+      "bo1Sub": "Eén nummer per persoon per match. De bracket loopt door tot er één speler over is. Tot 32 spelers.",
       "bo3": "Best of 3",
-      "bo3Sub": "Wie het eerst twee games wint, pakt de match. Langer, meer drama.",
+      "bo3Sub": "Wie het eerst twee games wint, pakt de match. Langer, meer drama. Tot 10 spelers.",
       "judge": "Wie beslist",
       "crowd": "Het publiek stemt",
       "crowdSub": "De meerderheid wint. Gelijkspel gaat naar overtime (nieuwe nummers) en bij een tweede gelijkspel hak jij de knoop door.",
@@ -1243,8 +1243,8 @@
       "overtime": "OVERTIME",
       "gameN": "Game {n} · {a}–{b}",
       "roundN": "Ronde {n}",
-      "phasePicking": "nummers kiezen",
-      "phaseListening": "luisteren · stem nu",
+      "phasePicking": "Kiesfase",
+      "phaseListening": "Stemfase",
       "votes": "{n, plural, one {# stem} other {# stemmen}}",
       "lockedInYou": "Vast: {song}. Wachten op de andere kant.",
       "lockedIn": "Vast",
@@ -1283,7 +1283,9 @@
       "deleteFailed": "Verwijderen is niet gelukt.",
       "topicLabel": "Thema",
       "waitingTopic": "Wachten tot de host het thema van deze ronde kiest…",
-      "topicYours": "Zet hieronder het thema van deze ronde om de keuzes te openen."
+      "topicYours": "Zet hieronder het thema van deze ronde om de keuzes te openen.",
+      "lobbyFull": "De lobby zit vol — maximaal {n} spelers. Kijken kan nog wel.",
+      "lobbyFullShort": "Lobby vol"
     },
     "chat": {
       "title": "De room",
@@ -1300,7 +1302,10 @@
       "inputAria": "Chatbericht",
       "send": "Sturen",
       "signIn": "Log in om te chatten",
-      "sendFailed": "Bericht niet verstuurd."
+      "sendFailed": "Bericht niet verstuurd.",
+      "collapse": "Chat verbergen",
+      "openSheet": "Roomchat openen",
+      "sheetAria": "Roomchat"
     },
     "picker": {
       "hiccup": "Zoeken haperde — probeer opnieuw.",
@@ -1360,6 +1365,14 @@
         "Beste nummer uit de jaren 90",
         "Beste nummer in een taal die je niet spreekt"
       ]
+    },
+    "leaderboard": {
+      "title": "Top 10",
+      "allTime": "Aller tijden",
+      "weekly": "Deze week",
+      "rounds": "{n, plural, one {# ronde} other {# rondes}}",
+      "emptyWeek": "Deze week heeft nog niemand een battle gewonnen.",
+      "fairPlay": "Overwinningen in een room waar de host zelf meespeelde én jureerde tellen niet mee."
     }
   },
   "rooms": {

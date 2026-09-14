@@ -31,6 +31,7 @@ import { useTranslations } from "next-intl";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap, shareLink } from "@/lib/native";
+import { auxPlayerCap } from "@/lib/aux-battles/limits";
 import BackLink from "@/components/ui/BackLink";
 import ReportButton from "@/components/moderation/ReportButton";
 import type {
@@ -54,15 +55,20 @@ import TopicPicker from "@/components/aux-battles/TopicPicker";
 import SongEmbed, { sourceTag } from "@/components/aux-battles/SongEmbed";
 import Bracket from "@/components/aux-battles/Bracket";
 import WinnerBurst from "@/components/aux-battles/WinnerBurst";
-import AuxChat from "@/components/aux-battles/AuxChat";
+import AuxChatDock from "@/components/aux-battles/AuxChatDock";
 
 interface Props {
   initial: AuxRoomState;
   initialMessages: AuxMessageWithProfile[];
   initialVote: "a" | "b" | null;
+  /** The viewer's ONE reaction on the current game (migration 044). */
+  initialReaction: MyReaction;
   /** The private room's code — only ever passed to the host. */
   code: string | null;
 }
+
+/** One reaction per person per game, switchable — like a vote. */
+type MyReaction = { side: "a" | "b"; kind: "fire" | "poop" } | null;
 
 interface Floater {
   id: number;
@@ -87,7 +93,13 @@ async function post(url: string, body?: unknown): Promise<Record<string, unknown
   return data;
 }
 
-export default function AuxRoom({ initial, initialMessages, initialVote, code }: Props) {
+export default function AuxRoom({
+  initial,
+  initialMessages,
+  initialVote,
+  initialReaction,
+  code,
+}: Props) {
   const { user } = useAuth();
   const t = useTranslations("aux.room");
   const supabaseRef = useRef(createClient());
@@ -101,10 +113,11 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
   const [error, setError] = useState<string | null>(null);
   const [needsHost, setNeedsHost] = useState<"tie" | "no_votes" | null>(null);
   const [floaters, setFloaters] = useState<Floater[]>([]);
-  const [heat, setHeat] = useState<{ a: { fire: number; poop: number }; b: { fire: number; poop: number } }>({
-    a: { fire: 0, poop: 0 },
-    b: { fire: 0, poop: 0 },
-  });
+  // My one reaction on the game that's up. The TALLIES are not state
+  // any more — they're counted on the game row (migration 044) and
+  // ride the same realtime UPDATE as the votes, so they survive a
+  // reload, a late join, and the whole round (Luca 2026-09-14).
+  const [myReaction, setMyReaction] = useState<MyReaction>(initialReaction);
   const [burst, setBurst] = useState<Burst | null>(null);
   const [copied, setCopied] = useState(false);
   const floaterId = useRef(0);
@@ -116,6 +129,11 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
   const me = members.find((m) => m.user_id === user?.id) ?? null;
   const players = members.filter((m) => m.role === "player");
   const viewers = members.filter((m) => m.role === "viewer");
+  // The lobby cap (migration 044): 32 in a single-round room, 10 in a
+  // best-of-3. The DB trigger is the real wall — this greys the
+  // button out before anyone hits it. Viewers are never capped.
+  const playerCap = auxPlayerCap(room.format);
+  const lobbyFull = players.length >= playerCap;
   const currentGame = useMemo(
     () => games.find((g) => g.id === room.current_game_id) ?? null,
     [games, room.current_game_id]
@@ -136,19 +154,31 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
           : null
       : null;
   const canVote = !!user && !!currentGame && currentGame.phase === "listening" && !mySide;
+  // The 🔥 / 💩 tallies, read straight off the game row.
+  const heat = useMemo(
+    () => ({
+      a: { fire: currentGame?.fire_a ?? 0, poop: currentGame?.poop_a ?? 0 },
+      b: { fire: currentGame?.fire_b ?? 0, poop: currentGame?.poop_b ?? 0 },
+    }),
+    [currentGame]
+  );
 
   /* ─── Resync (reconnect / tab back) ─── */
   const resync = useCallback(async () => {
     try {
       const res = await fetch(`/api/aux-battles/${room.id}/state`, { cache: "no-store" });
       if (!res.ok) return;
-      const data = (await res.json()) as AuxRoomState & { vote?: "a" | "b" | null };
+      const data = (await res.json()) as AuxRoomState & {
+        vote?: "a" | "b" | null;
+        reaction?: MyReaction;
+      };
       setRoom(data.room);
       setMembers(data.members);
       for (const m of data.members) profileCache.current.set(m.user_id, m.profile);
       setMatches(data.matches);
       setGames(data.games);
       if (data.vote !== undefined) setMyVote(data.vote);
+      if (data.reaction !== undefined) setMyReaction(data.reaction ?? null);
     } catch {
       /* the next event will catch us up */
     }
@@ -259,8 +289,11 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
       )
       .on(
         "postgres_changes" as never,
-        { event: "INSERT", schema: "public", table: "aux_reactions", filter: `room_id=eq.${id}` },
-        (payload: { new: AuxReaction }) => {
+        // INSERT *and* UPDATE: one reaction per person now (044), so
+        // changing your mind rewrites the row instead of adding one —
+        // and that should still throw an emoji up the screen.
+        { event: "*", schema: "public", table: "aux_reactions", filter: `room_id=eq.${id}` },
+        (payload: { eventType: string; new: AuxReaction | null }) => {
           const row = payload.new;
           if (!row?.id) return;
           pushFloater(row.side, row.kind);
@@ -278,10 +311,12 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
   }, [room.id, hydrateMember, resync]);
 
   /* ─── Floating 🔥 / 💩 ─── */
+  // The emoji that flies up the screen. The NUMBER next to the button
+  // no longer moves from here — it comes off the game row, so it can't
+  // drift out of step with what everyone else sees.
   const pushFloater = useCallback((side: "a" | "b", kind: "fire" | "poop") => {
     const fid = ++floaterId.current;
     setFloaters((prev) => [...prev.slice(-30), { id: fid, side, kind, left: 10 + Math.random() * 80 }]);
-    setHeat((h) => ({ ...h, [side]: { ...h[side], [kind]: h[side][kind] + 1 } }));
     window.setTimeout(() => setFloaters((prev) => prev.filter((f) => f.id !== fid)), 1800);
   }, []);
 
@@ -291,8 +326,8 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
     if (gid !== lastGameSeen.current) {
       lastGameSeen.current = gid;
       setMyVote(null);
+      setMyReaction(null);
       setNeedsHost(null);
-      setHeat({ a: { fire: 0, poop: 0 }, b: { fire: 0, poop: 0 } });
       const g = games.find((x) => x.id === gid);
       if (g?.is_ot) setBurst({ kind: "overtime", key: `ot-${g.id}` });
     }
@@ -358,14 +393,25 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
       setMyVote(side);
       await post(`/api/aux-battles/${room.id}/vote`, { side });
     });
+  // ONE reaction per person per game (Luca 2026-09-14 — no more
+  // spam-tapping). Tapping the one you already threw does nothing;
+  // tapping another moves it, like changing your vote.
   const react = (side: "a" | "b", kind: "fire" | "poop") => {
+    if (!user) return;
+    if (myReaction && myReaction.side === side && myReaction.kind === kind) return;
     hapticTap();
-    pushFloater(side, kind); // instant on my screen; the echo is deduped by the 30-cap
+    const previous = myReaction;
+    setMyReaction({ side, kind });
+    pushFloater(side, kind); // instant on my screen; the echo is harmless
     void fetch(`/api/aux-battles/${room.id}/react`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ side, kind }),
-    });
+    })
+      .then((res) => {
+        if (!res.ok) setMyReaction(previous);
+      })
+      .catch(() => setMyReaction(previous));
   };
   const call = (side?: "a" | "b") =>
     act(`call-${side ?? "crowd"}`, async () => {
@@ -416,7 +462,9 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
 
   /* ─── Render ─── */
   return (
-    <div className="max-w-6xl mx-auto space-y-5 relative">
+    // pb below xl: AuxChatDock's fixed THE ROOM bar hugs the bottom
+    // edge on phones — without this it covers the last rows.
+    <div className="max-w-6xl mx-auto space-y-5 relative pb-14 xl:pb-0">
       {burst && (
         <WinnerBurst
           key={burst.key}
@@ -493,7 +541,11 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
 
       {error && <p className="text-sm text-accent-rose">{error}</p>}
 
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-5 items-start">
+      {/* No items-start: the chat column STRETCHES to the height of
+          the stage beside it (Luca 2026-09-14 — "the room on the side
+          on the website is small and off center, just make it the
+          same length as the regular"). */}
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-5">
         <div className="space-y-5 min-w-0">
           {/* ══════════ LOBBY ══════════ */}
           {room.status === "lobby" && (
@@ -501,7 +553,9 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
               <div className="flex items-center gap-2">
                 <span className="glow-orb" />
                 <span className="label-xbox">{t("players")}</span>
-                <span className="text-xs text-text-muted tabular-nums">({players.length})</span>
+                <span className="text-xs text-text-muted tabular-nums">
+                  ({players.length}/{playerCap})
+                </span>
               </div>
               {players.length === 0 ? (
                 <p className="text-sm text-text-muted">{t("noPlayers")}</p>
@@ -539,11 +593,15 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
                     <button
                       type="button"
                       onClick={() => void join("player")}
-                      disabled={!!busy}
+                      disabled={!!busy || lobbyFull}
                       className="btn-y2k btn-y2k-primary disabled:opacity-50"
+                      title={lobbyFull ? t("lobbyFull", { n: playerCap }) : undefined}
                     >
-                      {t("grabSpot")}
+                      {lobbyFull ? t("lobbyFullShort") : t("grabSpot")}
                     </button>
+                  )}
+                  {me?.role !== "player" && lobbyFull && (
+                    <span className="text-xs text-text-muted">{t("lobbyFull", { n: playerCap })}</span>
                   )}
                   {me?.role === "player" && !isHost && (
                     <button
@@ -605,12 +663,19 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
               {/* The round's topic (043) — the host names it as the round
                   opens; until then nobody can put a song on. */}
               {currentMatch.topic ? (
-                <p className="crt-title text-lg sm:text-2xl leading-snug">
-                  <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted mr-2 align-middle">
+                /* The label sits on its OWN line now. Inside the
+                   <p> it inherited .crt-title's chromatic-aberration
+                   text-shadow at 10px, which smeared it into the
+                   topic (Luca 2026-09-14: "the word topic is super
+                   distorted by the name of the topic"). */
+                <div className="space-y-1">
+                  <span className="block pixel-text text-[10px] uppercase tracking-widest text-text-muted">
                     {t("topicLabel")}
                   </span>
-                  {currentMatch.topic}
-                </p>
+                  <p className="crt-title text-lg sm:text-2xl leading-snug break-words">
+                    {currentMatch.topic}
+                  </p>
+                </div>
               ) : (
                 <p className="text-sm text-osd-amber">{isHost ? t("topicYours") : t("waitingTopic")}</p>
               )}
@@ -697,26 +762,28 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
                           </div>
                           <SongEmbed song={song} title={song.title} />
 
-                          {/* 🔥 / 💩 + vote */}
+                          {/* 🔥 / 💩 + vote. One reaction per person
+                              per game — the one you threw stays lit,
+                              tapping another moves it. */}
                           <div className="flex items-center gap-2 flex-wrap">
-                            <button
-                              type="button"
-                              onClick={() => react(side, "fire")}
-                              disabled={!user}
-                              className="aux-react disabled:opacity-40"
-                              aria-label={t("fire")}
-                            >
-                              🔥 <span className="tabular-nums">{heat[side].fire}</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => react(side, "poop")}
-                              disabled={!user}
-                              className="aux-react disabled:opacity-40"
-                              aria-label={t("poop")}
-                            >
-                              💩 <span className="tabular-nums">{heat[side].poop}</span>
-                            </button>
+                            {(["fire", "poop"] as const).map((kind) => {
+                              const mine =
+                                myReaction?.side === side && myReaction?.kind === kind;
+                              return (
+                                <button
+                                  key={kind}
+                                  type="button"
+                                  onClick={() => react(side, kind)}
+                                  disabled={!user}
+                                  aria-pressed={mine}
+                                  className={`aux-react disabled:opacity-40 ${mine ? "aux-react-mine" : ""}`}
+                                  aria-label={t(kind)}
+                                >
+                                  {kind === "fire" ? "🔥" : "💩"}{" "}
+                                  <span className="tabular-nums">{heat[side][kind]}</span>
+                                </button>
+                              );
+                            })}
                             {canVote && (
                               <button
                                 type="button"
@@ -874,13 +941,18 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
           )}
         </div>
 
-        {/* ══════════ CHAT ══════════ */}
-        <AuxChat
+        {/* ══════════ CHAT ══════════
+            Desktop: the full-height column beside the stage. Phones:
+            a bar on the bottom edge that slides a sheet up, exactly
+            like the live room on a release page. */}
+        <AuxChatDock
           roomId={room.id}
           hostId={room.host_id}
           initialMessages={initialMessages}
           closed={room.status === "finished"}
-          className="xl:sticky xl:top-20"
+          // Off the room row (a trigger keeps it), so the collapsed
+          // bar's count keeps ticking while the sheet is shut.
+          messageCount={room.message_count}
         />
       </div>
     </div>

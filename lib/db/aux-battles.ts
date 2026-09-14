@@ -269,6 +269,72 @@ export async function getViewerAuxVote(
   return (data as { side: "a" | "b" } | null)?.side ?? null;
 }
 
+/**
+ * The viewer's ONE reaction on a game (migration 044). Null when they
+ * haven't thrown one — the picker highlights whichever they chose so
+ * the tap reads as a choice, not a counter.
+ */
+export async function getViewerAuxReaction(
+  gameId: string,
+  userId: string
+): Promise<{ side: "a" | "b"; kind: "fire" | "poop" } | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("aux_reactions")
+    .select("side, kind")
+    .eq("game_id", gameId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return (data as { side: "a" | "b"; kind: "fire" | "poop" } | null) ?? null;
+}
+
+/* --- The leaderboard (Luca 2026-09-14) --- */
+
+export type AuxLeaderPeriod = "all" | "week";
+
+export interface AuxLeaderRow {
+  profile: AuxProfile;
+  battles: number;
+  rounds: number;
+}
+
+/**
+ * Top players on aux battles — all time or the last seven days.
+ * Wins a host handed themselves (playing AND judging their own room)
+ * are excluded inside aux_leaderboard, so nobody can farm the board
+ * by hosting a room alone with a friend.
+ */
+export async function getAuxLeaderboard(
+  period: AuxLeaderPeriod = "all",
+  limit = 10
+): Promise<AuxLeaderRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("aux_leaderboard", {
+    p_period: period,
+    p_limit: limit,
+  } as never);
+  type Row = {
+    user_id: string;
+    username: string;
+    display_name: string | null;
+    avatar_url: string | null;
+    role: AuxProfile["role"];
+    battles: number;
+    rounds: number;
+  };
+  return ((data ?? []) as Row[]).map((r) => ({
+    profile: {
+      id: r.user_id,
+      username: r.username,
+      display_name: r.display_name,
+      avatar_url: r.avatar_url,
+      role: r.role,
+    },
+    battles: r.battles,
+    rounds: r.rounds,
+  }));
+}
+
 /* --- Chat --- */
 
 /** Newest `limit` messages, returned oldest → newest like a chat log. */

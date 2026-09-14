@@ -28,6 +28,13 @@ interface Props {
   /** Finished rooms keep the log readable but close the composer. */
   closed: boolean;
   className?: string;
+  /** "panel" (default) = the bordered in-page card, which on xl fills
+      its whole grid column. "sheet" = the phone slide-up sheet
+      (AuxChatDock) brings its own chrome, so no panel border and the
+      message list flexes to the sheet's height. */
+  variant?: "panel" | "sheet";
+  /** Sheet only: the chevron that tucks it back down. */
+  onCollapse?: () => void;
 }
 
 function timeAgo(dateString: string, _tick: number, justNow: string, locale: string): string {
@@ -43,7 +50,16 @@ function timeAgo(dateString: string, _tick: number, justNow: string, locale: str
   return new Date(dateString).toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
-export default function AuxChat({ roomId, hostId, initialMessages, closed, className = "" }: Props) {
+export default function AuxChat({
+  roomId,
+  hostId,
+  initialMessages,
+  closed,
+  className = "",
+  variant = "panel",
+  onCollapse,
+}: Props) {
+  const isSheet = variant === "sheet";
   const { user, profile: myProfile } = useAuth();
   const t = useTranslations("aux.chat");
   const locale = useLocale();
@@ -232,11 +248,37 @@ export default function AuxChat({ roomId, hostId, initialMessages, closed, class
   const realCount = visible.filter((m) => !m.id.startsWith("temp-")).length;
 
   return (
-    <section className={`panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden flex flex-col ${className}`}>
+    <section
+      className={
+        isSheet
+          ? `h-full flex flex-col px-4 pt-3 pb-3 space-y-3 relative overflow-hidden ${className}`
+          : `panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden flex flex-col ${className}`
+      }
+    >
       <div className="flex items-center gap-2">
         <span className="glow-orb" style={{ animationDelay: "1s" }} />
         <span className="label-xbox">{t("title")}</span>
         <span className="text-xs text-text-muted">({realCount})</span>
+        {onCollapse && (
+          <button
+            type="button"
+            onClick={onCollapse}
+            aria-label={t("collapse")}
+            className="ml-auto w-8 h-8 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+        )}
       </div>
       <div className="divider-glow" />
 
@@ -245,8 +287,16 @@ export default function AuxChat({ roomId, hostId, initialMessages, closed, class
         role="log"
         aria-live="polite"
         aria-label={t("messagesAria")}
-        className="overflow-y-auto pr-1 space-y-3 flex-1"
-        style={{ maxHeight: "min(60vh, 520px)", minHeight: "220px" }}
+        // Panel on a phone: a capped window, the page scrolls past it.
+        // Panel on xl: the cap lifts and the list absorbs the column's
+        // full height (Luca 2026-09-14: the side room should be the
+        // same length as the main one, not a short floating card).
+        // Sheet: flex to whatever height the sheet has.
+        className={`overflow-y-auto pr-1 space-y-3 ${
+          isSheet
+            ? "flex-1 min-h-0"
+            : "max-h-[min(60vh,520px)] min-h-[220px] xl:max-h-none xl:flex-1 xl:min-h-0"
+        }`}
       >
         {visible.length === 0 ? (
           <div className="h-full min-h-[180px] flex flex-col items-center justify-center text-center gap-3 py-8">
@@ -340,7 +390,8 @@ export default function AuxChat({ roomId, hostId, initialMessages, closed, class
           </Link>
         </div>
       )}
-      <div className="scan-bar" />
+      {/* Scan bar — panel only; the sheet keeps its own bottom edge. */}
+      {!isSheet && <div className="scan-bar" />}
     </section>
   );
 }

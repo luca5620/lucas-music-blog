@@ -1173,9 +1173,9 @@
       "sub": "Name the room, pick the format, and say who calls it. Players join in the lobby; you start it when the room is full enough, and you name a fresh topic every round.",
       "format": "Format",
       "bo1": "Single round",
-      "bo1Sub": "One song each per match. The bracket runs until one player is left.",
+      "bo1Sub": "One song each per match. The bracket runs until one player is left. Up to 32 players.",
       "bo3": "Best of 3",
-      "bo3Sub": "First to two games wins every match. Longer, more drama.",
+      "bo3Sub": "First to two games wins every match. Longer, more drama. Up to 10 players.",
       "judge": "Who decides",
       "crowd": "The crowd votes",
       "crowdSub": "Majority wins. A tie goes to overtime — new songs — and you break a second tie.",
@@ -1243,8 +1243,8 @@
       "overtime": "OVERTIME",
       "gameN": "Game {n} · {a}–{b}",
       "roundN": "Round {n}",
-      "phasePicking": "songs going on",
-      "phaseListening": "listening · vote now",
+      "phasePicking": "Picking phase",
+      "phaseListening": "Voting phase",
       "votes": "{n, plural, one {# vote} other {# votes}}",
       "lockedInYou": "Locked in: {song}. Waiting on the other side.",
       "lockedIn": "Locked in",
@@ -1283,7 +1283,9 @@
       "deleteFailed": "Couldn't delete it.",
       "topicLabel": "Topic",
       "waitingTopic": "Waiting for the host to name this round's topic…",
-      "topicYours": "Name this round's topic below to open the picks."
+      "topicYours": "Name this round's topic below to open the picks.",
+      "lobbyFull": "The lobby is full — {n} players is the cap. You can still watch.",
+      "lobbyFullShort": "Lobby full"
     },
     "chat": {
       "title": "The room",
@@ -1300,7 +1302,10 @@
       "inputAria": "Chat message",
       "send": "Send",
       "signIn": "Sign in to chat",
-      "sendFailed": "Message didn't send."
+      "sendFailed": "Message didn't send.",
+      "collapse": "Hide the chat",
+      "openSheet": "Open the room chat",
+      "sheetAria": "Room chat"
     },
     "picker": {
       "hiccup": "Search hiccup — try again.",
@@ -1360,6 +1365,14 @@
         "Best 90s song",
         "Best song in a language you don't speak"
       ]
+    },
+    "leaderboard": {
+      "title": "Top 10",
+      "allTime": "All time",
+      "weekly": "This week",
+      "rounds": "{n, plural, one {# round} other {# rounds}}",
+      "emptyWeek": "Nobody has won a battle this week yet.",
+      "fairPlay": "Wins from a room where the host both played and judged don't count."
     }
   },
   "rooms": {

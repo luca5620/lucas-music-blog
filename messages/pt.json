@@ -1173,9 +1173,9 @@
       "sub": "Dê um nome à sala, escolha o formato e quem decide. Os jogadores entram no lobby; você começa quando a sala estiver cheia o bastante e escolhe um tema novo a cada rodada.",
       "format": "Formato",
       "bo1": "Rodada única",
-      "bo1Sub": "Uma música por pessoa em cada confronto. A chave segue até sobrar um jogador.",
+      "bo1Sub": "Uma música por pessoa em cada confronto. A chave segue até sobrar um jogador. Até 32 jogadores.",
       "bo3": "Melhor de 3",
-      "bo3Sub": "O primeiro a vencer dois jogos leva cada confronto. Mais longo, mais drama.",
+      "bo3Sub": "O primeiro a vencer dois jogos leva cada confronto. Mais longo, mais drama. Até 10 jogadores.",
       "judge": "Quem decide",
       "crowd": "A galera vota",
       "crowdSub": "A maioria vence. Empate vai para a prorrogação (músicas novas) e um segundo empate você desempata.",
@@ -1243,8 +1243,8 @@
       "overtime": "PRORROGAÇÃO",
       "gameN": "Jogo {n} · {a}–{b}",
       "roundN": "Rodada {n}",
-      "phasePicking": "escolhendo músicas",
-      "phaseListening": "ouvindo · vote agora",
+      "phasePicking": "Fase de escolha",
+      "phaseListening": "Fase de votação",
       "votes": "{n, plural, one {# voto} other {# votos}}",
       "lockedInYou": "Travada: {song}. Esperando o outro lado.",
       "lockedIn": "Travada",
@@ -1283,7 +1283,9 @@
       "deleteFailed": "Não deu para excluir.",
       "topicLabel": "Tema",
       "waitingTopic": "Esperando o host definir o tema desta rodada…",
-      "topicYours": "Defina o tema desta rodada abaixo para abrir as escolhas."
+      "topicYours": "Defina o tema desta rodada abaixo para abrir as escolhas.",
+      "lobbyFull": "O lobby está cheio — o máximo é {n} jogadores. Ainda podes assistir.",
+      "lobbyFullShort": "Lobby cheio"
     },
     "chat": {
       "title": "A sala",
@@ -1300,7 +1302,10 @@
       "inputAria": "Mensagem do chat",
       "send": "Enviar",
       "signIn": "Entre na conta para conversar",
-      "sendFailed": "A mensagem não foi enviada."
+      "sendFailed": "A mensagem não foi enviada.",
+      "collapse": "Esconder o chat",
+      "openSheet": "Abrir o chat da sala",
+      "sheetAria": "Chat da sala"
     },
     "picker": {
       "hiccup": "A busca falhou — tente de novo.",
@@ -1360,6 +1365,14 @@
         "Melhor música dos anos 90",
         "Melhor música numa língua que você não fala"
       ]
+    },
+    "leaderboard": {
+      "title": "Top 10",
+      "allTime": "De sempre",
+      "weekly": "Esta semana",
+      "rounds": "{n, plural, one {# ronda} other {# rondas}}",
+      "emptyWeek": "Ainda ninguém ganhou uma batalha esta semana.",
+      "fairPlay": "As vitórias em salas onde o anfitrião jogava e também julgava não contam."
     }
   },
   "rooms": {

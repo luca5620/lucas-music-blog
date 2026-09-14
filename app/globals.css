@@ -4337,6 +4337,15 @@ fieldset {
 }
 .aux-react:active { transform: scale(0.88); }
 .aux-react span { font-family: var(--font-vt323); font-size: 0.9rem; color: var(--text-secondary); }
+/* The one YOU threw. Since 2026-09-14 a reaction is one-per-person
+   per game (like a vote), so it needs a lit state — otherwise there
+   is no way to tell you already had your say. */
+.aux-react-mine {
+  border-color: rgba(var(--accent-rgb), 0.7);
+  background: rgba(var(--accent-rgb), 0.14);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.25);
+}
+.aux-react-mine span { color: var(--text-primary); }
 
 /* Reactions float up over the stage from the side they were thrown at. */
 .aux-stage { position: relative; }

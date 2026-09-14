@@ -45,6 +45,22 @@ export async function POST(
       onConflict: "room_id,user_id",
     });
   if (error) {
+    // The lobby cap is a DB trigger (migration 044): 32 players in a
+    // single-round room — the biggest bracket is a round of 32 — and
+    // 10 in a best-of-3, which is 30 songs in the first round. It
+    // lives in the database so no hand-rolled request can walk past
+    // it. Viewers are never capped.
+    if (/ROOM_FULL/.test(error.message)) {
+      return NextResponse.json(
+        {
+          error:
+            room.format === "bo3"
+              ? "This lobby is full — best-of-3 rooms take 10 players. You can still watch."
+              : "This lobby is full — 32 players is the biggest bracket. You can still watch.",
+        },
+        { status: 409 }
+      );
+    }
     console.error("aux join failed:", error.message);
     return NextResponse.json({ error: "Couldn't join. Try again." }, { status: 500 });
   }

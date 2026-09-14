@@ -234,7 +234,16 @@ export default function SongPicker({ onPick, tone }: Props) {
             <p className="mt-1 text-xs text-text-muted">{t("noResults")}</p>
           )}
           {results.length > 0 && (
-            <ul className="mt-2 panel-xbox divide-y divide-border-subtle max-h-72 overflow-y-auto">
+            /* PHONES: no inner scroller. The results sit in the page
+               flow and the PAGE scrolls them (Luca 2026-09-14: "on
+               mobile it is difficult to scroll through songs when
+               searching up a song"). A ~290px window inside a page
+               that also scrolls is a thumb-trap on iOS — the drag
+               fights over which box moves. Desktop keeps the capped
+               window, where a mouse wheel over a list is normal, and
+               overscroll-contain stops the wheel leaking to the page
+               at the ends. */
+            <ul className="mt-2 panel-xbox divide-y divide-border-subtle sm:max-h-72 sm:overflow-y-auto sm:overscroll-contain">
               {results.map((s) => {
                 const tag = sourceTag(s.source);
                 return (

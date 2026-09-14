@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { listAuxRooms, listAuxRoomsJoined, type AuxRoomWithMeta } from "@/lib/db/aux-battles";
+import {
+  getAuxLeaderboard,
+  listAuxRooms,
+  listAuxRoomsJoined,
+  type AuxRoomWithMeta,
+} from "@/lib/db/aux-battles";
 import { getUser } from "@/lib/auth";
 import { getViewerBlockedIdSet } from "@/lib/db/moderation";
 import AuxCard from "@/components/aux-battles/AuxCard";
+import Leaderboard from "@/components/aux-battles/Leaderboard";
 import JoinByCode from "@/components/aux-battles/JoinByCode";
 import PageHero from "@/components/ui/PageHero";
 import BackToHome from "@/components/ui/BackToHome";
@@ -40,10 +46,12 @@ function Section({ title, list }: { title: string; list: AuxRoomWithMeta[] }) {
  * Private rooms never show here; the code box is their door.
  */
 export default async function AuxBattlesPage() {
-  const [rooms, user, blocked] = await Promise.all([
+  const [rooms, user, blocked, allTime, weekly] = await Promise.all([
     listAuxRooms(),
     getUser(),
     getViewerBlockedIdSet(),
+    getAuxLeaderboard("all"),
+    getAuxLeaderboard("week"),
   ]);
   const joined = user ? await listAuxRoomsJoined(user.id) : [];
   const t = await getTranslations("aux.index");
@@ -80,6 +88,14 @@ export default async function AuxBattlesPage() {
           <p className="text-sm text-text-muted">{t("empty")}</p>
         </div>
       )}
+
+      {/* Top ten — all time or this week. Blocked hosts are filtered
+          out of the room lists above; the board is a site-wide stat,
+          so it stands as it is. */}
+      <Leaderboard
+        allTime={allTime.filter((r) => !blocked.has(r.profile.id))}
+        weekly={weekly.filter((r) => !blocked.has(r.profile.id))}
+      />
     </div>
   );
 }

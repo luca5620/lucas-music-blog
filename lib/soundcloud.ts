@@ -43,10 +43,31 @@ export function soundcloudConfigured(): boolean {
    here so server callers keep one import. */
 export { soundcloudEmbedSrc } from "@/lib/soundcloud-embed";
 
+/**
+ * A pasted SoundCloud link, stripped back to the bare permalink.
+ *
+ * SoundCloud's own SHARE button hands out
+ * ".../hold-it-down?si=...&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+ * (Luca 2026-09-14: the address-bar URL worked, the shared one didn't),
+ * so the query string and hash come off first, along with www./m. and
+ * any trailing slash. Null for anything that isn't a SoundCloud link.
+ */
+export function soundcloudPermalink(url: string): string | null {
+  const clean = url
+    .trim()
+    .split("#")[0]
+    .split("?")[0]
+    .replace(/^http:\/\//, "https://")
+    .replace(/^https:\/\/(www|m)\.soundcloud\.com/, "https://soundcloud.com")
+    .replace(/\/+$/, "");
+  if (/^https:\/\/on\.soundcloud\.com\/[A-Za-z0-9]+$/.test(clean)) return clean;
+  if (/^https:\/\/soundcloud\.com\/[A-Za-z0-9_.-]+(\/[A-Za-z0-9_.-]+)+$/.test(clean)) return clean;
+  return null;
+}
+
 /** A soundcloud.com permalink we accept (tracks and sets). */
 export function isSoundCloudUrl(url: string): boolean {
-  return /^https:\/\/(www\.)?soundcloud\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+$/.test(url) ||
-    /^https:\/\/on\.soundcloud\.com\/[A-Za-z0-9]+$/.test(url);
+  return soundcloudPermalink(url) !== null;
 }
 
 /* ------------------------------------------------------------------
@@ -194,8 +215,10 @@ async function expandShortLink(url: string): Promise<string> {
 }
 
 export async function soundcloudSongFromLink(url: string): Promise<AuxSong | null> {
-  const permalink = (await expandShortLink(url)).replace(/^https:\/\/www\./, "https://").split("?")[0];
-  if (!/^https:\/\/soundcloud\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+$/.test(permalink)) {
+  const pasted = soundcloudPermalink(url);
+  if (!pasted) return null;
+  const permalink = soundcloudPermalink(await expandShortLink(pasted));
+  if (!permalink || /^https:\/\/on\.soundcloud\.com\//.test(permalink)) {
     return null;
   }
   try {

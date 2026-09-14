@@ -1173,9 +1173,9 @@
       "sub": "Ponle nombre a la sala, elige el formato y quién decide. Los jugadores entran en la sala de espera; tú la arrancas cuando haya suficiente gente y pones un tema nuevo en cada ronda.",
       "format": "Formato",
       "bo1": "Una ronda",
-      "bo1Sub": "Una canción por persona en cada cruce. La llave sigue hasta que queda un jugador.",
+      "bo1Sub": "Una canción por persona en cada cruce. La llave sigue hasta que queda un jugador. Hasta 32 jugadores.",
       "bo3": "Mejor de 3",
-      "bo3Sub": "El primero en ganar dos juegos se lleva cada cruce. Más largo, más drama.",
+      "bo3Sub": "El primero en ganar dos juegos se lleva cada cruce. Más largo, más drama. Hasta 10 jugadores.",
       "judge": "Quién decide",
       "crowd": "Vota el público",
       "crowdSub": "Gana la mayoría. Un empate va a tiempo extra (canciones nuevas) y un segundo empate lo rompes tú.",
@@ -1243,8 +1243,8 @@
       "overtime": "TIEMPO EXTRA",
       "gameN": "Juego {n} · {a}–{b}",
       "roundN": "Ronda {n}",
-      "phasePicking": "eligiendo canciones",
-      "phaseListening": "escuchando · vota ahora",
+      "phasePicking": "Fase de elección",
+      "phaseListening": "Fase de votación",
       "votes": "{n, plural, one {# voto} other {# votos}}",
       "lockedInYou": "Lista: {song}. Esperando al otro lado.",
       "lockedIn": "Lista",
@@ -1283,7 +1283,9 @@
       "deleteFailed": "No se pudo eliminar.",
       "topicLabel": "Tema",
       "waitingTopic": "Esperando a que el anfitrión ponga el tema de esta ronda…",
-      "topicYours": "Pon el tema de esta ronda abajo para abrir las elecciones."
+      "topicYours": "Pon el tema de esta ronda abajo para abrir las elecciones.",
+      "lobbyFull": "El lobby está lleno: el máximo es {n} jugadores. Aún puedes mirar.",
+      "lobbyFullShort": "Lobby lleno"
     },
     "chat": {
       "title": "La sala",
@@ -1300,7 +1302,10 @@
       "inputAria": "Mensaje del chat",
       "send": "Enviar",
       "signIn": "Inicia sesión para chatear",
-      "sendFailed": "El mensaje no se envió."
+      "sendFailed": "El mensaje no se envió.",
+      "collapse": "Ocultar el chat",
+      "openSheet": "Abrir el chat de la sala",
+      "sheetAria": "Chat de la sala"
     },
     "picker": {
       "hiccup": "Falló la búsqueda; inténtalo de nuevo.",
@@ -1360,6 +1365,14 @@
         "La mejor canción de los 90",
         "La mejor canción en un idioma que no hablas"
       ]
+    },
+    "leaderboard": {
+      "title": "Top 10",
+      "allTime": "Histórico",
+      "weekly": "Esta semana",
+      "rounds": "{n, plural, one {# ronda} other {# rondas}}",
+      "emptyWeek": "Todavía nadie ha ganado una batalla esta semana.",
+      "fairPlay": "No cuentan las victorias en salas donde el anfitrión jugaba y además hacía de juez."
     }
   },
   "rooms": {

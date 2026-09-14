@@ -1169,11 +1169,7 @@
     "new": {
       "back": "Zurück",
       "title": "Host eine Aux-Battle",
-      "sub": "Wähl das Thema, das Format und wer entscheidet. Spieler kommen in die Lobby; du startest, wenn der Raum voll genug ist.",
-      "topic": "Das Thema",
-      "topicPlaceholder": "z. B. \"Bester Song, um eine Party zu eröffnen\"",
-      "random": "Zufälliges Thema",
-      "presetsLabel": "Oder nimm eins",
+      "sub": "Gib dem Raum einen Namen, wähl das Format und wer entscheidet. Spieler kommen in die Lobby; du startest, wenn der Raum voll genug ist, und jede Runde bekommt von dir ein neues Thema.",
       "format": "Format",
       "bo1": "Eine Runde",
       "bo1Sub": "Ein Song pro Person und Match. Das Bracket läuft, bis ein Spieler übrig ist.",
@@ -1192,28 +1188,15 @@
       "opening": "Wird geöffnet…",
       "cancel": "Abbrechen",
       "errors": {
-        "topic": "Das Thema braucht mindestens 3 Zeichen.",
         "open": "Der Raum konnte nicht geöffnet werden.",
-        "broke": "Etwas ist schiefgelaufen."
+        "broke": "Etwas ist schiefgelaufen.",
+        "name": "Gib dem Raum einen Namen mit mindestens 3 Zeichen."
       },
-      "presets": [
-        "Bester Song, um eine Party zu eröffnen",
-        "Beste Rap-Strophe aller Zeiten",
-        "Ein Song, der dich zum Weinen bringt",
-        "Bester Sommersong",
-        "Bester Album-Opener",
-        "Der überschätzteste Hit",
-        "Bester Song unter 2 Minuten",
-        "Bester Trennungssong",
-        "Bestes Gitarrenriff",
-        "Bester Song für Nachtfahrten",
-        "Der unterschätzteste Deep Cut",
-        "Bester Song eines One-Hit-Wonders",
-        "Bester Remix",
-        "Bester Song aus deinem Geburtsjahr",
-        "Bester Song in einer Sprache, die du nicht sprichst",
-        "Der Song, der auf deiner Beerdigung laufen soll"
-      ]
+      "name": "Name des Raums",
+      "namePlaceholder": "z. B. \"Freitagabend-Aux\"",
+      "nameHint": "Die Themen kommen später: zu Beginn jeder Runde setzt du ein neues.",
+      "options": "Optionen",
+      "optionsHint": "eins davon oder beides"
     },
     "gate": {
       "private": "PRIVATER RAUM",
@@ -1284,7 +1267,7 @@
       "callHint": "Schließt die Abstimmung und krönt dieses Game.",
       "standBy": "BITTE WARTEN",
       "champion": "CHAMPION",
-      "championSub": "Hat das Aux bei \"{topic}\" gewonnen.",
+      "championSub": "Hat das Aux in \"{name}\" gewonnen.",
       "ended": "BATTLE BEENDET",
       "endedSub": "Der Host hat den Stecker gezogen, bevor ein Champion gekrönt wurde.",
       "hostAnother": "Noch eine hosten",
@@ -1294,9 +1277,12 @@
       "round": "Runde {n}",
       "bye": "Freilos",
       "deleteRoom": "Löschen",
-      "deleteConfirm": "\"{topic}\" löschen? Bracket, Stimmen und Chat gehen mit.",
+      "deleteConfirm": "\"{name}\" löschen? Bracket, Stimmen und Chat gehen mit.",
       "deleting": "Wird gelöscht…",
-      "deleteFailed": "Konnte nicht gelöscht werden."
+      "deleteFailed": "Konnte nicht gelöscht werden.",
+      "topicLabel": "Thema",
+      "waitingTopic": "Warten, bis der Host das Thema dieser Runde setzt…",
+      "topicYours": "Setz unten das Thema dieser Runde, um die Songwahl zu öffnen."
     },
     "chat": {
       "title": "Der Raum",
@@ -1342,6 +1328,37 @@
     "wins": {
       "aria": "{battles} Battles gewonnen, {rounds} Runden gewonnen",
       "rounds": "{n}S"
+    },
+    "topic": {
+      "title": "Thema von Runde {n}",
+      "sub": "Gib der Runde ein Thema. Die Spieler wählen ihre Songs, sobald es steht.",
+      "placeholder": "z. B. \"Bester Popsong\"",
+      "random": "Zufälliges Thema",
+      "presetsLabel": "Oder nimm eins",
+      "set": "Thema setzen",
+      "setting": "Wird gesetzt…",
+      "errors": {
+        "topic": "Das Thema braucht mindestens 3 Zeichen.",
+        "broke": "Etwas ist schiefgelaufen."
+      },
+      "presets": [
+        "Bester Song, um eine Party zu eröffnen",
+        "Bester Rap-Song der 2010er",
+        "Bester Popsong",
+        "Beste Rap-Strophe aller Zeiten",
+        "Ein Song, der dich zum Weinen bringt",
+        "Bester Sommersong",
+        "Bester R&B-Song",
+        "Bester Rocksong",
+        "Der überschätzteste Hit",
+        "Bester Trennungssong",
+        "Bester Hit der 2000er",
+        "Bester Song für Nachtfahrten",
+        "Der unterschätzteste Deep Cut",
+        "Bester Song aus deinem Geburtsjahr",
+        "Bester Song der 90er",
+        "Bester Song in einer Sprache, die du nicht sprichst"
+      ]
     }
   },
   "rooms": {

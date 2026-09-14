@@ -108,10 +108,21 @@ don't wait to be asked:**
   button; visitors hit a code gate); live chat in every room; six
   languages; /debates → /aux-battles redirects; debates UI/API/lib
   DELETED (tables kept — drop in a later migration on Luca's word).
-  - ⚠️ **MIGRATION 042 NOT RUN** — `supabase/migrations/042-aux-battles.sql`
-    must be run in the SQL Editor (after 041) or every aux page is
-    empty and hosting a room errors. Part B of the same file adds the
-    SoundCloud preview-player columns.
+  - ⚠️ **MIGRATIONS 042 + 043** — `042-aux-battles.sql` (Luca ran it
+    the same night after the `content_reports` name fix) and
+    `043-aux-round-topics.sql` (must still be run, after 042): the
+    room's `topic` column becomes `name`, `aux_matches.topic` holds
+    each ROUND's topic, and `aux_pick_song` refuses picks until it is
+    set. Until 043 runs, hosting a room fails (no `name` column).
+  - **Round 2 of Luca's changes (same night):** the room gets a NAME
+    at creation; the host names a NEW TOPIC at the start of every
+    round (TopicPicker on the stage: free text, preset chips, 🎲;
+    players see "waiting for the host" until it's set; the bracket
+    shows each round's topic under its label). The Options block
+    now says "pick any, or both" for host-plays + private. Presets
+    kept ~80% and the too-specific ones swapped for genre/era ones
+    (best rap song from the 2010s, best pop song, best R&B, best
+    rock, best 2000s hit, best 90s song).
   - ⚠️ Paths say `aux-battles`, never `aux`: "aux" is a reserved
     device name on Windows and git could not even open the folder.
   - Optional keys (Luca's hands, `.env.example`): SOUNDCLOUD_CLIENT_ID

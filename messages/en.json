@@ -1169,11 +1169,7 @@
     "new": {
       "back": "Back",
       "title": "Host an aux battle",
-      "sub": "Pick the topic, the format, and who calls it. Players join in the lobby; you start it when the room is full enough.",
-      "topic": "The topic",
-      "topicPlaceholder": "e.g. \"Best song to open a party\"",
-      "random": "Random topic",
-      "presetsLabel": "Or grab one",
+      "sub": "Name the room, pick the format, and say who calls it. Players join in the lobby; you start it when the room is full enough, and you name a fresh topic every round.",
       "format": "Format",
       "bo1": "Single round",
       "bo1Sub": "One song each per match. The bracket runs until one player is left.",
@@ -1192,28 +1188,15 @@
       "opening": "Opening…",
       "cancel": "Cancel",
       "errors": {
-        "topic": "Give the topic at least 3 characters.",
         "open": "Couldn't open the room.",
-        "broke": "Something broke."
+        "broke": "Something broke.",
+        "name": "Give the room a name of at least 3 characters."
       },
-      "presets": [
-        "Best song to open a party",
-        "Best rap verse of all time",
-        "Song that makes you cry",
-        "Best summer song",
-        "Best album opener",
-        "Most overrated hit",
-        "Best song under 2 minutes",
-        "Best breakup song",
-        "Best guitar riff",
-        "Best song to drive at night to",
-        "Most underrated deep cut",
-        "Best song by a one-hit wonder",
-        "Best remix",
-        "Best song from the year you were born",
-        "Best song in a language you don't speak",
-        "Song you'd play at your funeral"
-      ]
+      "name": "Room name",
+      "namePlaceholder": "e.g. \"Friday night aux\"",
+      "nameHint": "Topics come later — you set a new one at the start of every round.",
+      "options": "Options",
+      "optionsHint": "pick any, or both"
     },
     "gate": {
       "private": "PRIVATE ROOM",
@@ -1284,7 +1267,7 @@
       "callHint": "Closes the vote and crowns this game.",
       "standBy": "STAND BY",
       "champion": "CHAMPION",
-      "championSub": "Won the aux on \"{topic}\".",
+      "championSub": "Won the aux in \"{name}\".",
       "ended": "BATTLE ENDED",
       "endedSub": "The host pulled the plug before a champion was crowned.",
       "hostAnother": "Host another",
@@ -1294,9 +1277,12 @@
       "round": "Round {n}",
       "bye": "Free win",
       "deleteRoom": "Delete",
-      "deleteConfirm": "Delete \"{topic}\"? The bracket, votes and chat go with it.",
+      "deleteConfirm": "Delete \"{name}\"? The bracket, votes and chat go with it.",
       "deleting": "Deleting…",
-      "deleteFailed": "Couldn't delete it."
+      "deleteFailed": "Couldn't delete it.",
+      "topicLabel": "Topic",
+      "waitingTopic": "Waiting for the host to name this round's topic…",
+      "topicYours": "Name this round's topic below to open the picks."
     },
     "chat": {
       "title": "The room",
@@ -1342,6 +1328,37 @@
     "wins": {
       "aria": "{battles} battles won, {rounds} rounds won",
       "rounds": "{n}W"
+    },
+    "topic": {
+      "title": "Round {n} topic",
+      "sub": "Name the round's theme. The players pick their songs once it's set.",
+      "placeholder": "e.g. \"Best pop song\"",
+      "random": "Random topic",
+      "presetsLabel": "Or grab one",
+      "set": "Set the topic",
+      "setting": "Setting…",
+      "errors": {
+        "topic": "Give the topic at least 3 characters.",
+        "broke": "Something broke."
+      },
+      "presets": [
+        "Best song to open a party",
+        "Best rap song from the 2010s",
+        "Best pop song",
+        "Best rap verse of all time",
+        "Song that makes you cry",
+        "Best summer song",
+        "Best R&B song",
+        "Best rock song",
+        "Most overrated hit",
+        "Best breakup song",
+        "Best 2000s hit",
+        "Best song to drive at night to",
+        "Most underrated deep cut",
+        "Best song from the year you were born",
+        "Best 90s song",
+        "Best song in a language you don't speak"
+      ]
     }
   },
   "rooms": {

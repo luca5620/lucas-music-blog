@@ -51,7 +51,7 @@ interface ReviewHit {
 }
 interface AuxHit {
   slug: string;
-  topic: string;
+  name: string;
   status: "lobby" | "live" | "finished";
   player_count: number;
 }
@@ -187,12 +187,12 @@ export default function UniversalSearch() {
             .or(`title.ilike.${pattern},artist.ilike.${pattern}`)
             .limit(PER_SECTION)
             .then(({ data }) => (data as ReviewHit[]) ?? []),
-          // Aux battle rooms by topic — public ones (RLS also lets a
+          // Aux battle rooms by name — public ones (RLS also lets a
           // member's own private rooms through, which is right).
           supabase
             .from("aux_rooms")
-            .select("slug, topic, status, player_count")
-            .ilike("topic", pattern)
+            .select("slug, name, status, player_count")
+            .ilike("name", pattern)
             .order("created_at", { ascending: false })
             .limit(PER_SECTION)
             .then(({ data }) => (data as AuxHit[]) ?? []),
@@ -379,7 +379,7 @@ export default function UniversalSearch() {
               <Thumb src={null} fallback="🎧" />
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold text-text-primary truncate">
-                  {r.topic}
+                  {r.name}
                 </span>
                 <span className="block text-xs text-text-secondary truncate">
                   {t("auxPlayers", { n: r.player_count })}

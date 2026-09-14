@@ -1,19 +1,19 @@
 "use client";
 
 /**
- * NewRoomForm — host an aux battle (Luca 2026-09-13: "free range on
- * whatever topic, but with presets and a choice to pick random
- * topics as well, the host can participate if they choose").
+ * NewRoomForm — host an aux battle (Luca 2026-09-13). The room gets a
+ * NAME here; the TOPICS come later, one per round, named by the host
+ * as each round opens (TopicPicker on the stage) — "don't just choose
+ * a topic at the beginning".
  *
- * Fields: the topic (type anything, tap a preset chip, or 🎲 for a
- * random one — the presets live in messages/<locale>.json so they
- * read right in every language), the format (single round or best
- * of 3), who judges (the crowd's vote or the host), whether the host
- * plays, and private (a six-letter code shown once the room opens).
- * POSTs /api/aux-battles and lands in the new room's lobby.
+ * Fields: the room name, the format (single round or best of 3), who
+ * judges (the crowd's vote or the host), and two OPTIONS that combine
+ * any way you like — the host playing too, and private (a six-letter
+ * code shown once the room opens). POSTs /api/aux-battles and lands
+ * in the new room's lobby.
  */
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { useTranslations } from "next-intl";
@@ -71,12 +71,8 @@ function Choice<T extends string>({
 export default function NewRoomForm() {
   const router = useRouter();
   const t = useTranslations("aux.new");
-  const presets = useMemo(() => {
-    const raw = t.raw("presets");
-    return Array.isArray(raw) ? (raw as string[]) : [];
-  }, [t]);
 
-  const [topic, setTopic] = useState("");
+  const [name, setName] = useState("");
   const [format, setFormat] = useState<Format>("bo1");
   const [judge, setJudge] = useState<Judge>("crowd");
   const [hostPlays, setHostPlays] = useState(true);
@@ -84,22 +80,12 @@ export default function NewRoomForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function randomTopic() {
-    if (presets.length === 0) return;
-    hapticTap();
-    let next = presets[Math.floor(Math.random() * presets.length)];
-    if (next === topic && presets.length > 1) {
-      next = presets[(presets.indexOf(next) + 1) % presets.length];
-    }
-    setTopic(next);
-  }
-
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
     setError(null);
-    if (topic.trim().length < 3) {
-      setError(t("errors.topic"));
+    if (name.trim().length < 3) {
+      setError(t("errors.name"));
       return;
     }
     setSubmitting(true);
@@ -108,7 +94,7 @@ export default function NewRoomForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          topic: topic.trim(),
+          name: name.trim(),
           format,
           judge,
           host_plays: hostPlays,
@@ -124,60 +110,26 @@ export default function NewRoomForm() {
     }
   }
 
-  const label ="block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]";
+  const label = "block text-xs uppercase tracking-widest text-text-muted mb-1.5 font-[family-name:var(--font-heading)]";
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      {/* Topic */}
+      {/* Room name */}
       <div>
-        <label className={label}>{t("topic")}</label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            maxLength={120}
-            placeholder={t("topicPlaceholder")}
-            className="form-input flex-1 min-w-0"
-            autoFocus
-          />
-          <button
-            type="button"
-            onClick={randomTopic}
-            title={t("random")}
-            aria-label={t("random")}
-            className="btn-y2k btn-y2k-outline !px-3 shrink-0"
-          >
-            🎲
-          </button>
+        <label className={label}>{t("name")}</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={120}
+          placeholder={t("namePlaceholder")}
+          className="form-input"
+          autoFocus
+        />
+        <div className="flex items-baseline justify-between gap-3 mt-1">
+          <p className="text-xs text-text-muted">{t("nameHint")}</p>
+          <p className="text-[10px] text-text-muted tabular-nums shrink-0">{name.length}/120</p>
         </div>
-        <p className="mt-1 text-[10px] text-text-muted tabular-nums text-right">{topic.length}/120</p>
-        {presets.length > 0 && (
-          <div className="mt-2">
-            <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">
-              {t("presetsLabel")}
-            </span>
-            <div className="flex flex-wrap gap-1.5 mt-1.5">
-              {presets.map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => {
-                    hapticTap();
-                    setTopic(p);
-                  }}
-                  className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                    topic === p
-                      ? "border-accent-primary text-accent-primary bg-accent-primary/10"
-                      : "border-border-medium text-text-secondary hover:text-text-primary hover:border-border-strong"
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Format */}
@@ -206,38 +158,44 @@ export default function NewRoomForm() {
         />
       </div>
 
-      {/* Toggles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {(
-          [
-            { id: "plays", on: hostPlays, set: setHostPlays, label: t("hostPlays"), sub: t("hostPlaysSub") },
-            { id: "private", on: isPrivate, set: setIsPrivate, label: t("private"), sub: t("privateSub") },
-          ] as const
-        ).map((row) => (
-          <button
-            key={row.id}
-            type="button"
-            role="switch"
-            aria-checked={row.on}
-            onClick={() => {
-              hapticTap();
-              row.set(!row.on);
-            }}
-            className={`text-left p-3 rounded-lg border transition-colors ${
-              row.on ? "border-accent-primary bg-accent-primary/10" : "border-border-medium bg-black/25"
-            }`}
-          >
-            <span
-              className={`block text-sm font-bold font-[family-name:var(--font-heading)] ${
-                row.on ? "text-accent-primary" : "text-text-primary"
+      {/* Options — any combination (Luca: say so explicitly) */}
+      <div>
+        <label className={label}>
+          {t("options")}
+          <span className="normal-case tracking-normal text-text-muted"> · {t("optionsHint")}</span>
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {(
+            [
+              { id: "plays", on: hostPlays, set: setHostPlays, label: t("hostPlays"), sub: t("hostPlaysSub") },
+              { id: "private", on: isPrivate, set: setIsPrivate, label: t("private"), sub: t("privateSub") },
+            ] as const
+          ).map((row) => (
+            <button
+              key={row.id}
+              type="button"
+              role="checkbox"
+              aria-checked={row.on}
+              onClick={() => {
+                hapticTap();
+                row.set(!row.on);
+              }}
+              className={`text-left p-3 rounded-lg border transition-colors ${
+                row.on ? "border-accent-primary bg-accent-primary/10" : "border-border-medium bg-black/25"
               }`}
             >
-              {row.on ? "■ " : "□ "}
-              {row.label}
-            </span>
-            <span className="block text-xs text-text-muted mt-0.5">{row.sub}</span>
-          </button>
-        ))}
+              <span
+                className={`block text-sm font-bold font-[family-name:var(--font-heading)] ${
+                  row.on ? "text-accent-primary" : "text-text-primary"
+                }`}
+              >
+                {row.on ? "☑ " : "☐ "}
+                {row.label}
+              </span>
+              <span className="block text-xs text-text-muted mt-0.5">{row.sub}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && <p className="text-sm text-accent-rose">{error}</p>}

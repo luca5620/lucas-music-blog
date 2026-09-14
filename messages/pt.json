@@ -1169,11 +1169,7 @@
     "new": {
       "back": "Voltar",
       "title": "Crie uma batalha de aux",
-      "sub": "Escolha o tema, o formato e quem decide. Os jogadores entram no lobby; você começa quando a sala estiver cheia o bastante.",
-      "topic": "O tema",
-      "topicPlaceholder": "ex.: \"Melhor música para abrir uma festa\"",
-      "random": "Tema aleatório",
-      "presetsLabel": "Ou pegue um",
+      "sub": "Dê um nome à sala, escolha o formato e quem decide. Os jogadores entram no lobby; você começa quando a sala estiver cheia o bastante e escolhe um tema novo a cada rodada.",
       "format": "Formato",
       "bo1": "Rodada única",
       "bo1Sub": "Uma música por pessoa em cada confronto. A chave segue até sobrar um jogador.",
@@ -1192,28 +1188,15 @@
       "opening": "Abrindo…",
       "cancel": "Cancelar",
       "errors": {
-        "topic": "O tema precisa ter pelo menos 3 caracteres.",
         "open": "Não deu para abrir a sala.",
-        "broke": "Algo quebrou."
+        "broke": "Algo quebrou.",
+        "name": "Dê à sala um nome com pelo menos 3 caracteres."
       },
-      "presets": [
-        "Melhor música para abrir uma festa",
-        "Melhor verso de rap de todos os tempos",
-        "Música que faz você chorar",
-        "Melhor música de verão",
-        "Melhor abertura de álbum",
-        "Hit mais superestimado",
-        "Melhor música com menos de 2 minutos",
-        "Melhor música de término",
-        "Melhor riff de guitarra",
-        "Melhor música para dirigir à noite",
-        "Faixa escondida mais subestimada",
-        "Melhor música de um one-hit wonder",
-        "Melhor remix",
-        "Melhor música do ano em que você nasceu",
-        "Melhor música numa língua que você não fala",
-        "A música que tocaria no seu funeral"
-      ]
+      "name": "Nome da sala",
+      "namePlaceholder": "ex.: \"Aux de sexta à noite\"",
+      "nameHint": "Os temas vêm depois: você define um novo no começo de cada rodada.",
+      "options": "Opções",
+      "optionsHint": "marque uma, ou as duas"
     },
     "gate": {
       "private": "SALA PRIVADA",
@@ -1284,7 +1267,7 @@
       "callHint": "Fecha a votação e coroa este jogo.",
       "standBy": "AGUARDE",
       "champion": "CAMPEÃO",
-      "championSub": "Levou o aux em \"{topic}\".",
+      "championSub": "Levou o aux em \"{name}\".",
       "ended": "BATALHA ENCERRADA",
       "endedSub": "O host puxou o cabo antes de coroar um campeão.",
       "hostAnother": "Criar outra",
@@ -1294,9 +1277,12 @@
       "round": "Rodada {n}",
       "bye": "Passe direto",
       "deleteRoom": "Excluir",
-      "deleteConfirm": "Excluir \"{topic}\"? A chave, os votos e o chat vão junto.",
+      "deleteConfirm": "Excluir \"{name}\"? A chave, os votos e o chat vão junto.",
       "deleting": "Excluindo…",
-      "deleteFailed": "Não deu para excluir."
+      "deleteFailed": "Não deu para excluir.",
+      "topicLabel": "Tema",
+      "waitingTopic": "Esperando o host definir o tema desta rodada…",
+      "topicYours": "Defina o tema desta rodada abaixo para abrir as escolhas."
     },
     "chat": {
       "title": "A sala",
@@ -1342,6 +1328,37 @@
     "wins": {
       "aria": "{battles} batalhas vencidas, {rounds} rodadas vencidas",
       "rounds": "{n}V"
+    },
+    "topic": {
+      "title": "Tema da rodada {n}",
+      "sub": "Dê um tema à rodada. Os jogadores escolhem as músicas assim que ele estiver definido.",
+      "placeholder": "ex.: \"Melhor música pop\"",
+      "random": "Tema aleatório",
+      "presetsLabel": "Ou pegue um",
+      "set": "Definir o tema",
+      "setting": "Definindo…",
+      "errors": {
+        "topic": "O tema precisa ter pelo menos 3 caracteres.",
+        "broke": "Algo quebrou."
+      },
+      "presets": [
+        "Melhor música para abrir uma festa",
+        "Melhor música de rap dos anos 2010",
+        "Melhor música pop",
+        "Melhor verso de rap de todos os tempos",
+        "Música que faz você chorar",
+        "Melhor música de verão",
+        "Melhor música de R&B",
+        "Melhor música de rock",
+        "Hit mais superestimado",
+        "Melhor música de término",
+        "Melhor hit dos anos 2000",
+        "Melhor música para dirigir à noite",
+        "Faixa escondida mais subestimada",
+        "Melhor música do ano em que você nasceu",
+        "Melhor música dos anos 90",
+        "Melhor música numa língua que você não fala"
+      ]
     }
   },
   "rooms": {

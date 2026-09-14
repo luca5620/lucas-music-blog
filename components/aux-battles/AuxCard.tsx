@@ -1,5 +1,5 @@
 /**
- * AuxCard — one aux battle room on the index. Topic, the status
+ * AuxCard — one aux battle room on the index. Name, the status
  * light (LOBBY / ON AIR / FINAL), format + judge chips, player count,
  * host, and the champion once there is one.
  */
@@ -38,7 +38,7 @@ export default function AuxCard({ room }: { room: AuxRoomWithMeta }) {
       </div>
 
       <h3 className="crt-title text-lg leading-snug group-hover:text-accent-glow transition-colors">
-        {room.topic}
+        {room.name}
       </h3>
 
       <div className="flex flex-wrap gap-1.5">

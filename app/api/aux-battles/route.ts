@@ -9,7 +9,7 @@ import { readJson } from "@/lib/aux-battles/guard";
 
 /**
  * POST /api/aux-battles — host a new aux battle.
- * Body: { topic, format: "bo1"|"bo3", judge: "crowd"|"host",
+ * Body: { name, format: "bo1"|"bo3", judge: "crowd"|"host",
  *         is_private?, host_plays? }
  *
  * The room opens in the LOBBY; players join there and the host taps
@@ -35,12 +35,12 @@ export async function POST(request: Request) {
   const body = await readJson(request);
   if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
 
-  const { topic, format, judge, is_private, host_plays } = body;
+  const { name, format, judge, is_private, host_plays } = body;
 
-  if (!isText(topic, 120) || topic.trim().length < 3) {
-    return NextResponse.json({ error: "Topic must be 3–120 characters." }, { status: 400 });
+  if (!isText(name, 120) || name.trim().length < 3) {
+    return NextResponse.json({ error: "Room name must be 3–120 characters." }, { status: 400 });
   }
-  const dirty = checkContent(topic);
+  const dirty = checkContent(name);
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
   if (format !== "bo1" && format !== "bo3") {
     return NextResponse.json({ error: "Format must be bo1 or bo3." }, { status: 400 });
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid host flag." }, { status: 400 });
   }
 
-  const base = slugify(topic.trim()).slice(0, 60) || "aux-battle";
+  const base = slugify(name.trim()).slice(0, 60) || "aux-battle";
   const suffix = Math.random().toString(36).slice(2, 7);
   const slug = `${base}-${suffix}`;
 
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     .insert({
       slug,
       host_id: user.id,
-      topic: topic.trim(),
+      name: name.trim(),
       format,
       judge,
       is_private: is_private === true,
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     console.error("aux room create failed:", error?.message);
     return NextResponse.json({ error: "Couldn't open the room. Try again." }, { status: 500 });
   }
-  const room = data as { id: string; slug: string; is_private: boolean; host_plays: boolean; topic: string };
+  const room = data as { id: string; slug: string; is_private: boolean; host_plays: boolean; name: string };
 
   // The playing host is a player from the start.
   if (room.host_plays) {
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
       actorId: user.id,
       type: "new_aux",
       href: `/aux-battles/${room.slug}`,
-      title: room.topic,
+      title: room.name,
     });
   }
 

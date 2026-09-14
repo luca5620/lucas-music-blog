@@ -50,6 +50,7 @@ import type {
 } from "@/lib/db/aux-battles";
 import PlayerChip, { AuxAvatar, WinsTag } from "@/components/aux-battles/PlayerChip";
 import SongPicker from "@/components/aux-battles/SongPicker";
+import TopicPicker from "@/components/aux-battles/TopicPicker";
 import SongEmbed, { sourceTag } from "@/components/aux-battles/SongEmbed";
 import Bracket from "@/components/aux-battles/Bracket";
 import WinnerBurst from "@/components/aux-battles/WinnerBurst";
@@ -378,7 +379,7 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
   };
   const share = () => {
     hapticTap();
-    void shareLink(room.topic, `${window.location.origin}/aux-battles/${room.slug}`);
+    void shareLink(room.name, `${window.location.origin}/aux-battles/${room.slug}`);
   };
   const copyCode = () => {
     if (!code) return;
@@ -467,7 +468,7 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
             {statusPill}
             <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">{settingsLine}</span>
           </div>
-          <h1 className="crt-title text-2xl sm:text-4xl leading-tight">{room.topic}</h1>
+          <h1 className="crt-title text-2xl sm:text-4xl leading-tight">{room.name}</h1>
           <div className="flex items-center gap-2 flex-wrap text-xs text-text-muted">
             <span>{t("hostedBy")}</span>
             {room.host && <PlayerChip profile={room.host} wins={winsFor(room.host.id)} size="sm" tag={t("hostTag")} />}
@@ -601,6 +602,19 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
                 </span>
               </div>
 
+              {/* The round's topic (043) — the host names it as the round
+                  opens; until then nobody can put a song on. */}
+              {currentMatch.topic ? (
+                <p className="crt-title text-lg sm:text-2xl leading-snug">
+                  <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted mr-2 align-middle">
+                    {t("topicLabel")}
+                  </span>
+                  {currentMatch.topic}
+                </p>
+              ) : (
+                <p className="text-sm text-osd-amber">{isHost ? t("topicYours") : t("waitingTopic")}</p>
+              )}
+
               {/* Floating reactions layer */}
               <div className="aux-floaters" aria-hidden>
                 {floaters.map((f) => (
@@ -638,7 +652,11 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
                       </div>
 
                       {/* Picking */}
+                      {currentGame.phase === "picking" && !currentMatch.topic && (
+                        <p className="text-sm text-text-muted">{t("waitingTopic")}</p>
+                      )}
                       {currentGame.phase === "picking" &&
+                        !!currentMatch.topic &&
                         (mySide === side ? (
                           song ? (
                             <p className="text-sm text-text-secondary">✓ {t("lockedInYou", { song: song.title })}</p>
@@ -766,7 +784,9 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
               {isHost && (
                 <div className="rounded-lg border border-osd-amber/30 bg-osd-amber/5 p-3 space-y-2">
                   <span className="pixel-text text-[10px] uppercase tracking-widest text-osd-amber">{t("hostControls")}</span>
-                  {currentGame.phase === "picking" ? (
+                  {currentGame.phase === "picking" && !currentMatch.topic ? (
+                    <TopicPicker roomId={room.id} round={currentMatch.round} />
+                  ) : currentGame.phase === "picking" ? (
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs text-text-muted">{t("forfeitHint")}</span>
                       <button type="button" onClick={() => void call("a")} disabled={!!busy} className="btn-y2k btn-y2k-outline !py-1 !px-3 !text-xs text-accent-primary disabled:opacity-50">
@@ -824,7 +844,7 @@ export default function AuxRoom({ initial, initialMessages, initialVote, code }:
                     </span>
                     {winsFor(room.champion.id) && <WinsTag wins={winsFor(room.champion.id)!} />}
                   </div>
-                  <p className="text-sm text-text-secondary">{t("championSub", { topic: room.topic })}</p>
+                  <p className="text-sm text-text-secondary">{t("championSub", { name: room.name })}</p>
                 </>
               ) : (
                 <>

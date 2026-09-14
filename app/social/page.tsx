@@ -438,7 +438,7 @@ function ActivitySentence({ item }: { item: ActivityItem }) {
             href={`/aux-battles/${p.slug}`}
             className="text-[#e8e6e3] font-medium hover:text-accent-primary transition-colors"
           >
-            {p.topic}
+            {p.name}
           </Link>
         </>
       );

@@ -6,7 +6,7 @@ import { checkContent } from "@/lib/content-filter";
 
 /**
  * PATCH  /api/aux-battles/[roomId] — the host reworks the LOBBY settings
- *        (topic, format, judge, host_plays). Locked once live.
+ *        (name, format, judge, host_plays). Locked once live.
  * DELETE /api/aux-battles/[roomId] — the host tears the room down. Matches,
  *        games, votes, chat go with it (cascades). RLS re-checks host.
  */
@@ -29,13 +29,13 @@ export async function PATCH(
   if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
 
   const patch: Record<string, unknown> = {};
-  if (body.topic !== undefined) {
-    if (!isText(body.topic, 120) || body.topic.trim().length < 3) {
-      return NextResponse.json({ error: "Topic must be 3–120 characters." }, { status: 400 });
+  if (body.name !== undefined) {
+    if (!isText(body.name, 120) || body.name.trim().length < 3) {
+      return NextResponse.json({ error: "Room name must be 3–120 characters." }, { status: 400 });
     }
-    const dirty = checkContent(body.topic);
+    const dirty = checkContent(body.name);
     if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
-    patch.topic = body.topic.trim();
+    patch.name = body.name.trim();
   }
   if (body.format !== undefined) {
     if (body.format !== "bo1" && body.format !== "bo3") {

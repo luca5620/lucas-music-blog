@@ -45,6 +45,12 @@ export default function Bracket({ matches, members, format, currentMatchId }: Pr
             <div key={round} className="flex flex-col gap-3 justify-around min-w-[11.5rem]">
               <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted">
                 {isFinal && rounds.length > 1 ? t("final") : t("round", { n: round })}
+                {/* The round's topic (043) rides on every match of the round. */}
+                {list[0]?.topic && (
+                  <span className="block normal-case tracking-normal text-text-secondary font-[family-name:var(--font-heading)] text-xs mt-0.5 max-w-[11.5rem] truncate">
+                    {list[0].topic}
+                  </span>
+                )}
               </span>
               {list.map((m) => {
                 const live = m.id === currentMatchId || m.status === "live";

@@ -1169,11 +1169,7 @@
     "new": {
       "back": "Terug",
       "title": "Host een aux battle",
-      "sub": "Kies het thema, het format en wie beslist. Spelers komen binnen in de lobby; jij start als de room vol genoeg is.",
-      "topic": "Het thema",
-      "topicPlaceholder": "bijv. \"Beste nummer om een feest mee te openen\"",
-      "random": "Willekeurig thema",
-      "presetsLabel": "Of pak er een",
+      "sub": "Geef de room een naam, kies het format en wie beslist. Spelers komen binnen in de lobby; jij start als de room vol genoeg is, en elke ronde bedenk je een nieuw thema.",
       "format": "Format",
       "bo1": "Eén ronde",
       "bo1Sub": "Eén nummer per persoon per match. De bracket loopt door tot er één speler over is.",
@@ -1192,28 +1188,15 @@
       "opening": "Openen…",
       "cancel": "Annuleren",
       "errors": {
-        "topic": "Het thema moet minstens 3 tekens hebben.",
         "open": "De room kon niet worden geopend.",
-        "broke": "Er ging iets mis."
+        "broke": "Er ging iets mis.",
+        "name": "Geef de room een naam van minstens 3 tekens."
       },
-      "presets": [
-        "Beste nummer om een feest mee te openen",
-        "Beste rapvers aller tijden",
-        "Nummer waar je van moet huilen",
-        "Beste zomernummer",
-        "Beste albumopener",
-        "Meest overschatte hit",
-        "Beste nummer onder de 2 minuten",
-        "Beste breakupnummer",
-        "Beste gitaarriff",
-        "Beste nummer om 's nachts mee te rijden",
-        "Meest onderschatte deep cut",
-        "Beste nummer van een one-hit wonder",
-        "Beste remix",
-        "Beste nummer uit je geboortejaar",
-        "Beste nummer in een taal die je niet spreekt",
-        "Het nummer dat je op je begrafenis zou draaien"
-      ]
+      "name": "Naam van de room",
+      "namePlaceholder": "bijv. \"Vrijdagavond-aux\"",
+      "nameHint": "Thema's komen later: aan het begin van elke ronde zet je een nieuw thema.",
+      "options": "Opties",
+      "optionsHint": "kies er een, of allebei"
     },
     "gate": {
       "private": "PRIVÉROOM",
@@ -1284,7 +1267,7 @@
       "callHint": "Sluit de stemming en kroont deze game.",
       "standBy": "EVEN GEDULD",
       "champion": "KAMPIOEN",
-      "championSub": "Won de aux op \"{topic}\".",
+      "championSub": "Won de aux in \"{name}\".",
       "ended": "BATTLE BEËINDIGD",
       "endedSub": "De host trok de stekker eruit voordat er een kampioen was.",
       "hostAnother": "Nog een hosten",
@@ -1294,9 +1277,12 @@
       "round": "Ronde {n}",
       "bye": "Vrije doorgang",
       "deleteRoom": "Verwijderen",
-      "deleteConfirm": "\"{topic}\" verwijderen? De bracket, de stemmen en de chat gaan mee.",
+      "deleteConfirm": "\"{name}\" verwijderen? De bracket, de stemmen en de chat gaan mee.",
       "deleting": "Verwijderen…",
-      "deleteFailed": "Verwijderen is niet gelukt."
+      "deleteFailed": "Verwijderen is niet gelukt.",
+      "topicLabel": "Thema",
+      "waitingTopic": "Wachten tot de host het thema van deze ronde kiest…",
+      "topicYours": "Zet hieronder het thema van deze ronde om de keuzes te openen."
     },
     "chat": {
       "title": "De room",
@@ -1342,6 +1328,37 @@
     "wins": {
       "aria": "{battles} battles gewonnen, {rounds} rondes gewonnen",
       "rounds": "{n}W"
+    },
+    "topic": {
+      "title": "Thema van ronde {n}",
+      "sub": "Geef de ronde een thema. De spelers kiezen hun nummers zodra het vaststaat.",
+      "placeholder": "bijv. \"Beste popnummer\"",
+      "random": "Willekeurig thema",
+      "presetsLabel": "Of pak er een",
+      "set": "Thema instellen",
+      "setting": "Instellen…",
+      "errors": {
+        "topic": "Het thema moet minstens 3 tekens hebben.",
+        "broke": "Er ging iets mis."
+      },
+      "presets": [
+        "Beste nummer om een feest mee te openen",
+        "Beste rapnummer uit de jaren 2010",
+        "Beste popnummer",
+        "Beste rapvers aller tijden",
+        "Nummer waar je van moet huilen",
+        "Beste zomernummer",
+        "Beste R&B-nummer",
+        "Beste rocknummer",
+        "Meest overschatte hit",
+        "Beste breakupnummer",
+        "Beste hit uit de jaren 2000",
+        "Beste nummer om 's nachts mee te rijden",
+        "Meest onderschatte deep cut",
+        "Beste nummer uit je geboortejaar",
+        "Beste nummer uit de jaren 90",
+        "Beste nummer in een taal die je niet spreekt"
+      ]
     }
   },
   "rooms": {

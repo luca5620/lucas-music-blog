@@ -1169,11 +1169,7 @@
     "new": {
       "back": "Retour",
       "title": "Lancer une battle d'aux",
-      "sub": "Choisis le thème, le format et qui tranche. Les joueurs rejoignent le lobby ; tu lances quand il y a assez de monde.",
-      "topic": "Le thème",
-      "topicPlaceholder": "ex. \"Le meilleur morceau pour ouvrir une soirée\"",
-      "random": "Thème au hasard",
-      "presetsLabel": "Ou prends-en un",
+      "sub": "Donne un nom à la salle, choisis le format et qui tranche. Les joueurs rejoignent le lobby ; tu lances quand il y a assez de monde, et tu nommes un nouveau thème à chaque manche.",
       "format": "Format",
       "bo1": "Une manche",
       "bo1Sub": "Un morceau chacun par match. Le tableau continue jusqu'au dernier joueur debout.",
@@ -1192,28 +1188,15 @@
       "opening": "Ouverture…",
       "cancel": "Annuler",
       "errors": {
-        "topic": "Le thème doit faire au moins 3 caractères.",
         "open": "Impossible d'ouvrir la salle.",
-        "broke": "Quelque chose a cassé."
+        "broke": "Quelque chose a cassé.",
+        "name": "Donne à la salle un nom d'au moins 3 caractères."
       },
-      "presets": [
-        "Le meilleur morceau pour ouvrir une soirée",
-        "Le meilleur couplet de rap de tous les temps",
-        "Un morceau qui te fait pleurer",
-        "Le meilleur morceau d'été",
-        "La meilleure ouverture d'album",
-        "Le tube le plus surcoté",
-        "Le meilleur morceau de moins de 2 minutes",
-        "Le meilleur morceau de rupture",
-        "Le meilleur riff de guitare",
-        "Le meilleur morceau pour rouler de nuit",
-        "La pépite cachée la plus sous-cotée",
-        "Le meilleur morceau d'un one-hit wonder",
-        "Le meilleur remix",
-        "Le meilleur morceau de ton année de naissance",
-        "Le meilleur morceau dans une langue que tu ne parles pas",
-        "Le morceau que tu passerais à ton enterrement"
-      ]
+      "name": "Nom de la salle",
+      "namePlaceholder": "ex. \"Aux du vendredi soir\"",
+      "nameHint": "Les thèmes viennent après : tu en fixes un nouveau au début de chaque manche.",
+      "options": "Options",
+      "optionsHint": "coche l'une, l'autre ou les deux"
     },
     "gate": {
       "private": "SALLE PRIVÉE",
@@ -1284,7 +1267,7 @@
       "callHint": "Ferme le vote et couronne ce jeu.",
       "standBy": "PATIENTE",
       "champion": "CHAMPION",
-      "championSub": "A gagné l'aux sur « {topic} ».",
+      "championSub": "A gagné l'aux dans « {name} ».",
       "ended": "BATTLE TERMINÉE",
       "endedSub": "L'hôte a coupé avant qu'un champion soit couronné.",
       "hostAnother": "En lancer une autre",
@@ -1294,9 +1277,12 @@
       "round": "Manche {n}",
       "bye": "Qualifié d'office",
       "deleteRoom": "Supprimer",
-      "deleteConfirm": "Supprimer « {topic} » ? Le tableau, les votes et le chat partent avec.",
+      "deleteConfirm": "Supprimer « {name} » ? Le tableau, les votes et le chat partent avec.",
       "deleting": "Suppression…",
-      "deleteFailed": "Impossible de supprimer."
+      "deleteFailed": "Impossible de supprimer.",
+      "topicLabel": "Thème",
+      "waitingTopic": "En attente du thème de cette manche, choisi par l'hôte…",
+      "topicYours": "Nomme le thème de cette manche ci-dessous pour ouvrir les choix."
     },
     "chat": {
       "title": "La salle",
@@ -1342,6 +1328,37 @@
     "wins": {
       "aria": "{battles} battles gagnées, {rounds} manches gagnées",
       "rounds": "{n}V"
+    },
+    "topic": {
+      "title": "Thème de la manche {n}",
+      "sub": "Donne un thème à la manche. Les joueurs choisissent leurs morceaux dès qu'il est fixé.",
+      "placeholder": "ex. \"Le meilleur morceau pop\"",
+      "random": "Thème au hasard",
+      "presetsLabel": "Ou prends-en un",
+      "set": "Fixer le thème",
+      "setting": "Un instant…",
+      "errors": {
+        "topic": "Le thème doit faire au moins 3 caractères.",
+        "broke": "Quelque chose a cassé."
+      },
+      "presets": [
+        "Le meilleur morceau pour ouvrir une soirée",
+        "Le meilleur morceau de rap des années 2010",
+        "Le meilleur morceau pop",
+        "Le meilleur couplet de rap de tous les temps",
+        "Un morceau qui te fait pleurer",
+        "Le meilleur morceau d'été",
+        "Le meilleur morceau de R&B",
+        "Le meilleur morceau de rock",
+        "Le tube le plus surcoté",
+        "Le meilleur morceau de rupture",
+        "Le meilleur tube des années 2000",
+        "Le meilleur morceau pour rouler de nuit",
+        "La pépite cachée la plus sous-cotée",
+        "Le meilleur morceau de ton année de naissance",
+        "Le meilleur morceau des années 90",
+        "Le meilleur morceau dans une langue que tu ne parles pas"
+      ]
     }
   },
   "rooms": {

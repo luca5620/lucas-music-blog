@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const room = isSafeSlug(slug) ? await getAuxRoomBySlug(slug) : null;
   if (!room) return { title: "Aux Battle" };
   return {
-    title: `${room.topic} — Aux Battle`,
+    title: `${room.name} — Aux Battle`,
     description: "Two songs go head to head, the room listens, the room votes.",
   };
 }

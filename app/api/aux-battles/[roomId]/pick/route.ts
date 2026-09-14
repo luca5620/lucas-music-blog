@@ -69,6 +69,9 @@ export async function POST(
     if (/NOT_A_PLAYER/.test(msg)) {
       return NextResponse.json({ error: "You're not in this match." }, { status: 403 });
     }
+    if (/NO_TOPIC/.test(msg)) {
+      return NextResponse.json({ error: "The host hasn't named this round's topic yet." }, { status: 409 });
+    }
     if (/NOT_PICKING/.test(msg)) {
       return NextResponse.json({ error: "Picks are closed for this game." }, { status: 409 });
     }

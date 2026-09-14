@@ -51,10 +51,10 @@ export interface LikeActivityPayload {
   review_artist: string;
 }
 
-/** "luca is hosting an aux battle: Best summer song" (links to /aux-battles/[slug]) */
+/** "luca is hosting an aux battle: Friday night aux" (links to /aux-battles/[slug]) */
 export interface AuxActivityPayload {
   slug: string;
-  topic: string;
+  name: string;
   status: "lobby" | "live" | "finished";
 }
 
@@ -146,7 +146,7 @@ interface RawLikeRow {
 
 interface RawAuxRow {
   slug: string;
-  topic: string;
+  name: string;
   status: "lobby" | "live" | "finished";
   created_at: string;
   profiles: JoinedProfile;
@@ -217,7 +217,7 @@ export async function getFriendActivity(
     //    unless the viewer was let in, so they only show to members.
     supabase
       .from("aux_rooms")
-      .select(`slug, topic, status, created_at, ${ACTOR}`)
+      .select(`slug, name, status, created_at, ${ACTOR}`)
       .in("host_id", followedIds)
       .order("created_at", { ascending: false })
       .limit(limit),
@@ -282,7 +282,7 @@ export async function getFriendActivity(
       actor: unwrapActor(row.profiles),
       payload: {
         slug: row.slug,
-        topic: row.topic,
+        name: row.name,
         status: row.status,
       },
     });

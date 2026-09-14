@@ -1169,11 +1169,7 @@
     "new": {
       "back": "Atrás",
       "title": "Organiza una batalla de aux",
-      "sub": "Elige el tema, el formato y quién decide. Los jugadores entran en la sala de espera; tú la arrancas cuando haya suficiente gente.",
-      "topic": "El tema",
-      "topicPlaceholder": "p. ej. \"La mejor canción para abrir una fiesta\"",
-      "random": "Tema al azar",
-      "presetsLabel": "O elige uno",
+      "sub": "Ponle nombre a la sala, elige el formato y quién decide. Los jugadores entran en la sala de espera; tú la arrancas cuando haya suficiente gente y pones un tema nuevo en cada ronda.",
       "format": "Formato",
       "bo1": "Una ronda",
       "bo1Sub": "Una canción por persona en cada cruce. La llave sigue hasta que queda un jugador.",
@@ -1192,28 +1188,15 @@
       "opening": "Abriendo…",
       "cancel": "Cancelar",
       "errors": {
-        "topic": "El tema necesita al menos 3 caracteres.",
         "open": "No se pudo abrir la sala.",
-        "broke": "Algo falló."
+        "broke": "Algo falló.",
+        "name": "Ponle a la sala un nombre de al menos 3 caracteres."
       },
-      "presets": [
-        "La mejor canción para abrir una fiesta",
-        "El mejor verso de rap de todos los tiempos",
-        "Una canción que te hace llorar",
-        "La mejor canción de verano",
-        "La mejor apertura de álbum",
-        "El éxito más sobrevalorado",
-        "La mejor canción de menos de 2 minutos",
-        "La mejor canción de ruptura",
-        "El mejor riff de guitarra",
-        "La mejor canción para manejar de noche",
-        "La joya escondida más infravalorada",
-        "La mejor canción de un artista de un solo éxito",
-        "El mejor remix",
-        "La mejor canción del año en que naciste",
-        "La mejor canción en un idioma que no hablas",
-        "La canción que pondrías en tu funeral"
-      ]
+      "name": "Nombre de la sala",
+      "namePlaceholder": "p. ej. \"Aux del viernes\"",
+      "nameHint": "Los temas vienen después: pones uno nuevo al empezar cada ronda.",
+      "options": "Opciones",
+      "optionsHint": "elige una, o las dos"
     },
     "gate": {
       "private": "SALA PRIVADA",
@@ -1284,7 +1267,7 @@
       "callHint": "Cierra la votación y corona este juego.",
       "standBy": "ESPERA",
       "champion": "CAMPEÓN",
-      "championSub": "Se llevó el aux en \"{topic}\".",
+      "championSub": "Se llevó el aux en \"{name}\".",
       "ended": "BATALLA TERMINADA",
       "endedSub": "El anfitrión la cortó antes de coronar a un campeón.",
       "hostAnother": "Organizar otra",
@@ -1294,9 +1277,12 @@
       "round": "Ronda {n}",
       "bye": "Pase directo",
       "deleteRoom": "Eliminar",
-      "deleteConfirm": "¿Eliminar \"{topic}\"? La llave, los votos y el chat se van con ella.",
+      "deleteConfirm": "¿Eliminar \"{name}\"? La llave, los votos y el chat se van con ella.",
       "deleting": "Eliminando…",
-      "deleteFailed": "No se pudo eliminar."
+      "deleteFailed": "No se pudo eliminar.",
+      "topicLabel": "Tema",
+      "waitingTopic": "Esperando a que el anfitrión ponga el tema de esta ronda…",
+      "topicYours": "Pon el tema de esta ronda abajo para abrir las elecciones."
     },
     "chat": {
       "title": "La sala",
@@ -1342,6 +1328,37 @@
     "wins": {
       "aria": "{battles} batallas ganadas, {rounds} rondas ganadas",
       "rounds": "{n}V"
+    },
+    "topic": {
+      "title": "Tema de la ronda {n}",
+      "sub": "Ponle tema a la ronda. Los jugadores eligen sus canciones en cuanto esté puesto.",
+      "placeholder": "p. ej. \"La mejor canción pop\"",
+      "random": "Tema al azar",
+      "presetsLabel": "O elige uno",
+      "set": "Poner el tema",
+      "setting": "Poniendo…",
+      "errors": {
+        "topic": "El tema necesita al menos 3 caracteres.",
+        "broke": "Algo falló."
+      },
+      "presets": [
+        "La mejor canción para abrir una fiesta",
+        "La mejor canción de rap de los 2010",
+        "La mejor canción pop",
+        "El mejor verso de rap de todos los tiempos",
+        "Una canción que te hace llorar",
+        "La mejor canción de verano",
+        "La mejor canción de R&B",
+        "La mejor canción de rock",
+        "El éxito más sobrevalorado",
+        "La mejor canción de ruptura",
+        "El mejor éxito de los 2000",
+        "La mejor canción para manejar de noche",
+        "La joya escondida más infravalorada",
+        "La mejor canción del año en que naciste",
+        "La mejor canción de los 90",
+        "La mejor canción en un idioma que no hablas"
+      ]
     }
   },
   "rooms": {

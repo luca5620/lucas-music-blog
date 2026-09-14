@@ -464,7 +464,7 @@ export default async function MyReviewsPage() {
                     href={`/aux-battles/${room.slug}`}
                     className="font-[family-name:var(--font-heading)] font-bold text-[#e8e6e3] hover:text-accent-primary transition-colors truncate block"
                   >
-                    {room.topic}
+                    {room.name}
                   </Link>
                   <p className="font-[family-name:var(--font-vt323)] text-[#9a9a9e] text-sm truncate">
                     {room.format === "bo3" ? ta("bo3") : ta("bo1")}
@@ -498,7 +498,7 @@ export default async function MyReviewsPage() {
                     </span>
 
                     <div className="ml-auto flex items-center gap-2 shrink-0">
-                      <DeleteRoomButton roomId={room.id} topic={room.topic} />
+                      <DeleteRoomButton roomId={room.id} name={room.name} />
                     </div>
                   </div>
                 </div>

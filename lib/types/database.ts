@@ -437,7 +437,9 @@ export interface AuxRoom {
   id: string;
   slug: string;
   host_id: string;
-  topic: string;
+  /** What the host called the room (migration 043 renamed topic → name;
+      the per-ROUND topic lives on aux_matches.topic). */
+  name: string;
   /** bo1 = one song each per match · bo3 = first to two games. */
   format: "bo1" | "bo3";
   /** crowd = majority vote (OT on ties) · host = the host picks. */
@@ -469,6 +471,9 @@ export interface AuxMatch {
   player_a_id: string;
   player_b_id: string | null;
   is_bye: boolean;
+  /** The round's topic (043): the host sets it when the round opens;
+      the same value sits on every match of the round. Null = not yet. */
+  topic: string | null;
   wins_a: number;
   wins_b: number;
   winner_id: string | null;
@@ -980,7 +985,7 @@ export type Database = {
       };
       aux_rooms: {
         Row: AuxRoom;
-        Insert: Pick<AuxRoom, "slug" | "host_id" | "topic"> & Partial<Omit<AuxRoom, "slug" | "host_id" | "topic">>;
+        Insert: Pick<AuxRoom, "slug" | "host_id" | "name"> & Partial<Omit<AuxRoom, "slug" | "host_id" | "name">>;
         Update: Partial<AuxRoom>;
         Relationships: [
           {

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { useTranslations } from "next-intl";
 
-export default function DeleteRoomButton({ roomId, topic }: { roomId: string; topic: string }) {
+export default function DeleteRoomButton({ roomId, name }: { roomId: string; name: string }) {
   const t = useTranslations("aux.room");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function DeleteRoomButton({ roomId, topic }: { roomId: string; to
   if (confirming) {
     return (
       <span className="inline-flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-text-secondary">{t("deleteConfirm", { topic })}</span>
+        <span className="text-xs text-text-secondary">{t("deleteConfirm", { name })}</span>
         <button
           type="button"
           onClick={() => void remove()}

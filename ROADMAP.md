@@ -90,6 +90,37 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+- **2026-09-14 (Windows), round 5: the BLACK FLASH, found at the
+  source.** Shipped to main. No migration.
+  - Luca, twice: opening a private room goes black for a second — and
+    after round 4, picking "best of 3" did it too. The fold-in
+    animation and the room's loading skeleton were NOT the cause; they
+    just made an existing bug easy to hit. My round-4 explanation was
+    wrong.
+  - **The cause is LiquidField.** Assigning `canvas.width/height` WIPES
+    a WebGL drawing buffer, and the old `resize()` then waited for the
+    next animation frame to redraw — so every resize showed at least
+    one cleared, black frame. The `tall` canvases (`.crt-liquid` and
+    `.crt-bezel-liquid`, the site-wide wash behind everything) are
+    PAGE-TALL, so ANY growth of the page resizes them: a sub-option
+    unfolding in a form, a bracket arriving, a skeleton swapping for
+    the real page. An ANIMATED height change resized the canvas on
+    every frame of the animation — black for as long as it ran, which
+    is why adding the fold made it worse instead of better.
+  - **The fix, two parts.** (1) The tall canvas's backing height is
+    quantized to 128px steps, so ordinary layout growth doesn't touch
+    the drawing buffer at all — the shader maps fragments to CSS pixels
+    through `u_res`/`u_size`, so ANY backing resolution is correct; it
+    only changes how finely it renders, never the picture. (2) When the
+    buffer does have to be reallocated, it redraws in the SAME TASK
+    (`paint()`) instead of scheduling a frame, so a cleared canvas
+    never reaches the screen. The clock isn't advanced, so a still
+    redraws the same pose and a moving field doesn't jump.
+  - ⚠️ **This was never an aux-battles bug.** It was site-wide, on any
+    page whose height changed after load — a feed appending, a section
+    expanding, a skeleton swapping out. Worth a look on other pages.
+  - File: `components/ui/LiquidField.tsx`.
+
 - **2026-09-14 (Windows), round 4: per-game topics, the fold-in, the
   vanishing-room bug, and a 1.2 compliance sweep.** Shipped to main.
   ✅ **MIGRATIONS 044, 045 AND 046 ALL RUN** — probe-verified against

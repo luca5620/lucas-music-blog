@@ -199,7 +199,28 @@ export default function LiquidField({
       return !mqPhone.matches;
     };
 
-    /* --- sizing --- */
+    /* --- sizing ---
+       THE BLACK FLASH (Luca 2026-09-14: "screen goes black when
+       opening a private room, and now for best of 3 as well").
+       Assigning canvas.width/height WIPES the WebGL drawing buffer,
+       and the old code then waited for the next animation frame to
+       redraw — so every resize showed at least one cleared, black
+       frame. The `tall` canvas is page-tall, so ANY growth of the
+       page resizes it: a sub-option unfolding in a form, a room's
+       bracket arriving. Worse, an animated height change resized it
+       on every frame of the animation, which is a black screen for
+       as long as the animation runs.
+
+       Two things stop it:
+       1. QUANTIZE the backing height in 128px steps, so ordinary
+          layout growth doesn't touch the drawing buffer at all. The
+          shader maps fragments to CSS pixels through u_res/u_size, so
+          any backing resolution is correct — this only changes how
+          finely it's rendered, never the picture.
+       2. When the buffer DOES have to be reallocated, redraw in the
+          same task instead of scheduling one. A cleared canvas then
+          never reaches the screen. */
+    const BACKING_STEP = 128;
     let needsFrame = true;
     const resize = () => {
       const w = canvas.clientWidth;
@@ -209,8 +230,12 @@ export default function LiquidField({
       const cap = Math.sqrt(MAX_PIXELS / (w * h));
       if (cap < scale) scale = cap;
       const bw = Math.max(1, Math.round(w * scale));
-      const bh = Math.max(1, Math.round(h * scale));
-      if (canvas.width !== bw || canvas.height !== bh) {
+      const exact = Math.max(1, Math.round(h * scale));
+      // Only the page-tall canvases grow and shrink with the page;
+      // the rest are viewport- or panel-sized and rarely move.
+      const bh = tall ? Math.ceil(exact / BACKING_STEP) * BACKING_STEP : exact;
+      const reallocated = canvas.width !== bw || canvas.height !== bh;
+      if (reallocated) {
         canvas.width = bw;
         canvas.height = bh;
       }
@@ -221,7 +246,11 @@ export default function LiquidField({
       // a page-tall canvas shows the hero crop up top and continues.
       gl!.uniform1f(uUnit, tall ? Math.max(1, window.innerHeight) : h);
       needsFrame = true;
-      schedule();
+      if (reallocated) {
+        paint();
+      } else {
+        schedule();
+      }
     };
 
     /* --- the loop --- */
@@ -261,6 +290,19 @@ export default function LiquidField({
       if (raf || document.hidden || !visible) return;
       prevNow = performance.now();
       raf = requestAnimationFrame(frame);
+    }
+
+    /* One draw, RIGHT NOW, in the caller's task — the repair for a
+       drawing buffer that was just wiped by a resize (see above).
+       The clock isn't advanced, so a still redraws the same pose and
+       a moving field doesn't jump; the running loop, if there is one,
+       carries on untouched. */
+    function paint() {
+      if (document.hidden || !visible) return;
+      needsFrame = false;
+      gl!.uniform1f(uTime, clock);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+      if (transStart >= 0) schedule();
     }
 
     const ro = new ResizeObserver(resize);

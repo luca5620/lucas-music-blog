@@ -90,6 +90,38 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 👉 PICK UP HERE (MacBook → desktop handoff, 2026-09-14 night)
+
+Everything below is COMMITTED AND PUSHED to `main` — `git pull` first.
+Nothing is half-finished and no branch is open. Migrations **047 is
+RUN**; there is nothing to run on the dashboard.
+
+**Settled this session, do NOT re-open or "tighten":**
+- Players vote everywhere except a game they picked a song for. This
+  is already what ships; the "only spectators vote" idea is rejected.
+- Crowd vote buttons STAY in host-judged rooms (advisory straw poll).
+- Hidden rooms COUNT on the leaderboard (migration 047, run).
+- Upstash is set in Vercel Production, so every app rate limit is a
+  real shared ceiling. Full inventory: `docs/RATE-LIMITS.md`.
+- Supabase auth limits recorded: emails **200/hour** (raised),
+  sign-ins / verifications 30 per 5min/IP, refreshes 150 per 5min/IP.
+
+**Open, in priority order:**
+1. **Resend is on the FREE tier → ~100 auth emails/DAY is the real
+   cap** (Supabase's 200/hour is no longer binding). Nothing to do
+   today, but it governs launch timing: **stagger the marketing posts,
+   one community at a time**, and check the Resend dashboard the day
+   after any post. Details + the paid-tier option in
+   `docs/RATE-LIMITS.md`.
+2. **OFFERED, NOT BUILT — friendly signup error copy.** If the email
+   cap is hit, `app/signup/page.tsx` prints the raw server message
+   ("Error sending confirmation email"). It only has friendly copy for
+   "already registered". Fix is one branch next to that one, but it's
+   **six locales** of copy. Ask Luca before building.
+3. The three conversations still owed from the Strategy section above
+   (SEO plan, EU availability / DSA, marketing plan) — unchanged,
+   still owed.
+
 - **2026-09-14 (MacBook): AUX WARS — hidden rooms count on the
   leaderboard. ✅ MIGRATION 047 RUN** (Luca, same day;
   `supabase/migrations/047-leaderboard-counts-hidden.sql`). Luca's

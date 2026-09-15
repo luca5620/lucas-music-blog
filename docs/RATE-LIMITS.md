@@ -162,33 +162,52 @@ so this section is the only record.
 
 | Limit | Value | Scope | Verdict |
 |---|---|---|---|
-| Emails sent | 30 / hour | whole project | ⚠️ raise before any marketing push — see below |
+| Emails sent | **200 / hour** (raised from 30, 2026-09-14) | whole project | no longer the binding limit — Resend is, see below |
 | Sign-ups + sign-ins | 30 / 5 min | per IP | fine |
 | Token verifications | 30 / 5 min | per IP | fine |
 | Token refreshes | 150 / 5 min | per IP | fine, generous |
 | MFA challenges | not present | — | MFA isn't enabled on the project, so the field doesn't render. Nothing to set. |
 
-**⚠️ Emails: 30/hour is the one real ceiling we have.** It is not per
-IP — it is the whole project. One signup consumes one email, and
-password resets come out of the same budget. So the app tops out at
-roughly **30 new accounts per hour**, and past that a new user
-completes the form, never gets a confirmation link, and their account
-simply never activates. They don't email support. They leave.
+**Emails: raised to 200/hour, which means Supabase is no longer the
+constraint. Resend is.** There are two ceilings on auth email and only
+the lower one matters:
 
-That is harmless at today's traffic and dangerous at exactly one
-moment: the marketing push in ROADMAP's strategy section (Musicboard
-refugees on Reddit, the leak Discords, Android tester recruitment). A
-post that lands well delivers its signups in a burst, in one hour, not
-spread across a day. **Raise this field before posting anywhere, not
-after.** It's a dashboard number, free to change, and there is no
-downside to a higher ceiling when Resend is doing the sending.
+| Ceiling | Allows | Effective per day |
+|---|---|---|
+| Supabase, 200/hour | project-wide | ~4,800 |
+| **Resend FREE plan** | 100/day, 3,000/month | **100** |
 
-**Check the Resend plan at the same time.** There are TWO ceilings on
-auth email and this doc only covers one. Supabase's 30/hour is the
-first; the Resend account's own plan cap is the second, and Resend's
-free tier is 100 emails/day. At 30/hour the Supabase limit alone would
-allow 720/day, so on a free Resend plan the daily cap bites first.
-Whichever is lower is the real limit.
+So the real cap is **~100 auth emails a day**, and Supabase's number
+could be raised to a million without changing that. One signup spends
+one email. Password resets spend from the same pool, and so does the
+"resend confirmation" button on the signup screen (60-second cooldown,
+so a confused person can burn several by themselves).
+
+**What happens at the cap:** Resend refuses, Supabase's send fails,
+and `supabase.auth.signUp` comes back with an error. `app/signup/page.tsx`
+has friendly copy for "already registered" and falls through to
+printing `authError.message` raw for everything else — so the person
+would see something like *"Error sending confirmation email"*. Not a
+crash, but not language a normal user can act on either. Worth a
+friendly branch next to the existing one if we ever expect to get
+near the cap. (Six locales, so it's a small task, not a one-liner.)
+
+**Recommendation, in order:**
+
+1. **Do nothing yet.** 100/day is comfortably above current signup
+   volume. Paying now would be a bill for a problem we don't have,
+   and ROADMAP's line on monetization is "dormant until real bills."
+2. **Stagger the marketing posts.** One community at a time rather
+   than Reddit + the leak Discords + Android testers in one evening.
+   That keeps the daily total under 100 for free, and it's better
+   marketing regardless: the first post teaches you what to change in
+   the second.
+3. **Only if a push is expected to be big:** Resend's paid tier lifts
+   the daily cap for about $20/month, and can be dropped again after.
+   Check their current pricing rather than trusting this number.
+4. **Look at the Resend dashboard the day after any post.** It shows
+   sends against quota. That's the early warning, and nothing in our
+   app will surface it.
 
 The other three are fine and need no action:
 

@@ -186,21 +186,34 @@ don't wait to be asked:**
         per 5min/IP**, token refreshes **150 per 5min/IP**; the MFA
         field doesn't render because MFA isn't enabled, nothing to
         set. Three are fine and documented as leave-alone.
-      · **⚠️ ACTION BEFORE THE MARKETING PUSH — raise the auth email
-        limit.** 30/hour is PROJECT-WIDE, not per IP, and one signup
-        eats one email (password resets share the budget). So the app
-        caps at ~30 new accounts an hour: past that a new user fills
-        the form, never gets a confirmation link, and the account
-        never activates. They don't complain, they leave. Harmless
-        today, and dangerous at exactly one moment — the Reddit /
-        Musicboard-refugee / leak-Discord / Android-tester posts in
-        the Strategy section deliver signups in a BURST. Raise the
-        dashboard field BEFORE posting, not after; it's free and a
-        higher ceiling costs nothing with Resend sending.
-        **Check the Resend plan the same day:** two ceilings exist and
-        we only measured one. Resend's free tier is 100 emails/DAY,
-        while 30/hour would permit 720/day — so on a free plan Resend
-        bites first. Whichever is lower is the real limit.
+      · **✅ AUTH EMAIL LIMIT RAISED to 200/hour** (Luca, 2026-09-14,
+        up from 30). That closes the Supabase side — and moves the
+        ceiling entirely onto **Resend, which is on the FREE tier:
+        100 emails/DAY, 3,000/month.** Supabase's 200/hour would
+        permit ~4,800/day, so Resend is ~48x tighter and is now the
+        ONLY number that matters. Raising the Supabase field again
+        would change nothing.
+      · **The real cap is therefore ~100 auth emails a day.** One
+        signup = one email; password resets and the signup screen's
+        "resend confirmation" button (60s cooldown) draw on the same
+        pool. At the cap `supabase.auth.signUp` errors, and
+        `app/signup/page.tsx` only has friendly copy for "already
+        registered" — everything else prints `authError.message` raw,
+        so a user would see *"Error sending confirmation email"*.
+        **Offered, not built:** a friendly branch for send failures.
+        It's six locales of copy, so it's a small task rather than a
+        one-liner — ask Luca before doing it.
+      · **Plan (agreed shape, nothing to do today):** 100/day is well
+        above current signup volume, so DON'T pay yet — ROADMAP's own
+        rule is "dormant until real bills." Instead **stagger the
+        marketing posts**, one community at a time rather than Reddit
+        + leak Discords + Android testers in one evening; that keeps
+        the day under 100 for free and is better marketing anyway
+        (post one teaches you what to fix for post two). Resend's paid
+        tier (~$20/mo, check current pricing) lifts the daily cap and
+        can be dropped again after a big push. **Check the Resend
+        dashboard the day after any post** — it shows sends against
+        quota, and nothing in our app will warn us.
       · Standing reminder: rate limits are the SECOND wall. RLS is the
         first, and the app only ever holds the anon key.
 

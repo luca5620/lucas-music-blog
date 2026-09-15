@@ -39,9 +39,12 @@ export function getRatingHex(rating: number) {
   if (rating >= 4) return "#facc15";
   if (rating >= 3) return "#fb923c";
   if (rating >= 2) return "#ef4444";
-  // Bottom of the barrel (0–1.9): light gray, NOT dark gray — this
-  // color lands on near-black surfaces, so it must stay readable.
-  return "#a1a1aa";
+  // Bottom of the barrel (0–1.9): BROWN (Luca 2026-09-15 — a 0 or a 1
+  // should look like what it is). Muddy mid-brown, not dark brown:
+  // this color lands on near-black surfaces, so it must stay
+  // readable, and it has to read as brown next to the 3-4 band's
+  // orange rather than as a dim version of it.
+  return "#a3764a";
 }
 
 export function getRatingColor(rating: number) {
@@ -55,7 +58,9 @@ export function getRatingColor(rating: number) {
   if (rating >= 4) return "text-yellow-400 border-yellow-400";
   if (rating >= 3) return "text-orange-400 border-orange-400";
   if (rating >= 2) return "text-red-500 border-red-500";
-  // Was text-neutral-900 — black-on-black, the 0 was literally
-  // invisible on dark panels. Light gray reads everywhere.
-  return "text-neutral-300 border-neutral-500";
+  // Brown, plus the STINKY badge treatment (globals.css
+  // .rating-badge.rating-stinky): a slow queasy wobble and two faint
+  // wisps drifting off the top. Was light gray — readable, but it
+  // said nothing. Text stays light enough to read on near-black.
+  return "rating-stinky text-[#a3764a] border-[#7a5735]";
 }

@@ -296,3 +296,48 @@ export async function resolveAppleEmbedsForReleases(
 
   return out;
 }
+
+/* ------------------------------------------------------------------
+   Per-SONG ids inside an album (Personal Favorites on a review page)
+   ------------------------------------------------------------------ */
+
+/**
+ * Apple song ids for named tracks of one album — what the review
+ * page's Personal Favorites card needs to open Apple's player ON the
+ * picked song (`?i=<trackId>`) instead of on the record.
+ *
+ * ONE iTunes lookup for the whole card (`/lookup?id=<albumId>
+ * &entity=song` returns the album plus all of its songs), and only
+ * for members who chose Apple Music in Settings — the Spotify
+ * majority never touches this. Titles are matched with the same
+ * loose comparison the album/track lookups use.
+ *
+ * Nothing is cached: there is no per-track column, and the miss cost
+ * is one public request on a page that already does several. Never
+ * throws — an empty map means "fall back to the Spotify player",
+ * exactly like the album-level lookup does.
+ */
+export async function resolveAppleSongIds(
+  albumId: string,
+  titles: string[]
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  if (!albumId || titles.length === 0) return out;
+
+  let songs: ItunesResult[] = [];
+  try {
+    const results = await itunes(
+      `/lookup?id=${encodeURIComponent(albumId)}&entity=song&limit=200&country=us`
+    );
+    songs = results.filter((r) => r.wrapperType === "track" && r.trackId && r.trackName);
+  } catch (err) {
+    console.warn("apple-music: song list failed —", err instanceof Error ? err.message : err);
+    return out;
+  }
+
+  for (const title of titles) {
+    const hit = songs.find((s) => titleMatches(s.trackName, title));
+    if (hit?.trackId) out.set(title, String(hit.trackId));
+  }
+  return out;
+}

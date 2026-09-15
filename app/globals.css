@@ -2876,6 +2876,89 @@ fieldset {
   }
 }
 
+/* Bottom of the barrel (0–1.9) — the STINKY badge (Luca 2026-09-15).
+   Brown, and it should LOOK like it smells: a murky brown-green
+   wash, a slow queasy wobble, and two faint wisps curling off the
+   top of the badge. Deliberately slight — it's punctuation on a bad
+   score, not a cartoon. Wisps are pseudo-elements on the badge, so
+   nothing else in the layout moves.
+   Motion rules: the wobble stops under .low-detail, reduced motion
+   and the app's sleep state (see the blocks at the end of this file);
+   the wisps fade out with it so a still badge is just brown. */
+.rating-badge.rating-stinky {
+  position: relative;
+  overflow: visible;
+  border-color: #7a5735 !important;
+  background: rgba(88, 62, 36, 0.22) !important;
+  color: #c08d5a !important;
+  text-shadow: 0 0 8px rgba(122, 87, 53, 0.65) !important;
+  box-shadow:
+    0 0 10px rgba(112, 86, 44, 0.35),
+    inset 0 0 14px rgba(70, 60, 26, 0.45) !important;
+  animation: stink-wobble 4.2s ease-in-out infinite !important;
+}
+
+/* The two wisps. Same shape, different delay/offset, so they read as
+   one lazy curl of smell rather than a pair of matching blobs. */
+.rating-badge.rating-stinky::before,
+.rating-badge.rating-stinky::after {
+  content: "";
+  position: absolute;
+  bottom: 72%;
+  width: 0.55rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 50% 70%,
+    rgba(150, 168, 86, 0.5),
+    rgba(120, 110, 60, 0.18) 55%,
+    transparent 75%
+  );
+  filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  animation: stink-wisp 4.2s ease-in-out infinite;
+}
+.rating-badge.rating-stinky::before {
+  left: 22%;
+}
+.rating-badge.rating-stinky::after {
+  right: 20%;
+  animation-delay: 2.1s;
+}
+
+@keyframes stink-wobble {
+  0%, 100% {
+    transform: rotate(-0.6deg) translateY(0);
+    box-shadow:
+      0 0 10px rgba(112, 86, 44, 0.35),
+      inset 0 0 14px rgba(70, 60, 26, 0.45);
+  }
+  50% {
+    transform: rotate(0.6deg) translateY(0.5px);
+    box-shadow:
+      0 0 16px rgba(126, 104, 50, 0.45),
+      inset 0 0 20px rgba(80, 72, 30, 0.55);
+  }
+}
+
+@keyframes stink-wisp {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0) scale(0.7);
+  }
+  25% {
+    opacity: 0.55;
+  }
+  60% {
+    transform: translateY(-0.7rem) translateX(0.18rem) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-1.3rem) translateX(-0.12rem) scale(1.15);
+  }
+}
+
 .rating-badge.rating-perfect {
   width: 3.75rem !important;
   height: 3.75rem !important;
@@ -3280,6 +3363,11 @@ fieldset {
 
 @media (prefers-reduced-motion: reduce) {
   .cd-disc { animation: none; }
+  /* Stinky badge: the wisps keep their base opacity:0, so a still
+     bad score is simply brown. */
+  .rating-badge.rating-stinky,
+  .rating-badge.rating-stinky::before,
+  .rating-badge.rating-stinky::after { animation: none; }
   /* the liquid field reads this query itself and renders one still */
 }
 
@@ -3432,6 +3520,9 @@ fieldset {
 .native-app:not(.motion-on) .streak-flicker,
 .native-app:not(.motion-on) .rating-badge.rating-elite,
 .native-app:not(.motion-on) .rating-badge.rating-perfect,
+.native-app:not(.motion-on) .rating-badge.rating-stinky,
+.native-app:not(.motion-on) .rating-badge.rating-stinky::before,
+.native-app:not(.motion-on) .rating-badge.rating-stinky::after,
 .native-app:not(.motion-on) .rating-slider-elite::-webkit-slider-thumb,
 .native-app:not(.motion-on) .rating-slider-perfect::-webkit-slider-thumb,
 .native-app:not(.motion-on) .animate-pulse,
@@ -4253,6 +4344,9 @@ fieldset {
 .low-detail .streak-flicker,
 .low-detail .rating-badge.rating-elite,
 .low-detail .rating-badge.rating-perfect,
+.low-detail .rating-badge.rating-stinky,
+.low-detail .rating-badge.rating-stinky::before,
+.low-detail .rating-badge.rating-stinky::after,
 .low-detail .rating-slider-elite::-webkit-slider-thumb,
 .low-detail .rating-slider-perfect::-webkit-slider-thumb,
 .low-detail .profile-badge.glow-elite,

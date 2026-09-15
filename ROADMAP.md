@@ -122,6 +122,47 @@ RUN**; there is nothing to run on the dashboard.
    (SEO plan, EU availability / DSA, marketing plan) — unchanged,
    still owed.
 
+- **2026-09-15 (Windows): three changes Luca asked for in one pass —
+  players on Personal Favorites, brown + stinky bottom ratings, and
+  the 3-D penguin brief for Astra.** All on `main`, no migration.
+  1. **Personal Favorites now plays.** On a review page each picked
+     song opens THE VIEWER'S OWN preview player inline — the same
+     `preferred_player` rule the release page follows (apple → Apple's
+     song player, everyone else → Spotify's track player; SoundCloud
+     is still on hold behind `lib/flags.ts` and falls back to
+     Spotify). `components/reviews/FavoritePlayers.tsx` is the card's
+     new list: ONE open at a time, and closing UNMOUNTS the iframe —
+     the opposite of PlayerTabs on purpose, because a hidden player
+     here would be audio with no visible stop, and ten picks would
+     otherwise load ten iframes. A pick with no playable id stays the
+     plain line it was.
+     - Apple needed per-SONG ids, which the cached album ref doesn't
+       carry: `resolveAppleSongIds()` in `lib/apple-music.ts` matches
+       the picked titles against the album's song list in ONE public
+       iTunes lookup, and only for members who chose Apple Music.
+       Any miss falls back to that row's Spotify player.
+     - New copy `reviews.page.previewHint` ("play any pick right
+       here") in all six locales.
+  2. **0–1.9 ratings are BROWN and slightly stinky** (`lib/rating.ts`
+     + the RATINGS block in `globals.css`). The bottom band was light
+     gray — readable but silent. Now `#a3764a`, and a `.rating-badge`
+     at that score gets `.rating-stinky`: a murky brown-green wash, a
+     slow queasy wobble, and two faint wisps curling off the top.
+     Wired into `.low-detail`, `prefers-reduced-motion` and the app's
+     `.motion-on` sleep like every other effect — a still badge is
+     simply brown.
+  3. **`docs/PENGUIN-3D-BRIEF.md`** — the handoff for GPT-6-Astra to
+     rebuild the mascot as a real 3-D render: character rules (it is
+     the App Store icon, do not redesign it), the console-era art
+     direction, the three animations (hover on web, tap in the app,
+     and a separate ~1.5s splash performance), and the hard
+     constraints — no three.js in the bundle, pre-rendered frames,
+     low-detail is ON by default so the STILL is the mark most people
+     see, asset budgets, and the Capacitor/Xcode split. Also has one
+     open question for Luca: the animated web splash plays AFTER the
+     1200ms native splash, so either shorten the native one to ~600ms
+     or let the animation be the whole curtain.
+
 - **2026-09-14 (MacBook): AUX WARS — hidden rooms count on the
   leaderboard. ✅ MIGRATION 047 RUN** (Luca, same day;
   `supabase/migrations/047-leaderboard-counts-hidden.sql`). Luca's

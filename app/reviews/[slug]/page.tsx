@@ -12,6 +12,13 @@ import UserLink from "@/components/ui/UserLink";
 import { getReviewWithContextBySlug } from "@/lib/db/reviews";
 import { getReleaseBySlug } from "@/lib/db/releases";
 import { getMemberTrackRatings } from "@/lib/db/track-ratings";
+import {
+  resolveAppleMusic,
+  resolveAppleSongIds,
+  appleMusicEmbedSrc,
+  appleMusicUrl,
+} from "@/lib/apple-music";
+import FavoritePlayers, { type FavoriteTrack } from "@/components/reviews/FavoritePlayers";
 import { getRatingColor, getGenreColor, formatRating } from "@/lib/rating";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -118,6 +125,76 @@ export default async function ReviewPage({
   const ratedTracks = release
     ? (release.tracks ?? []).filter((tr) => authorTrackRatings[tr.position] !== undefined)
     : [];
+  /* ── Personal Favorites, with a player on every pick (Luca
+     2026-09-15). The card used to be a list of titles linking out to
+     Spotify; now each pick opens THE VIEWER'S OWN preview player
+     inline, the same service rule the release page follows:
+     preferred_player = apple → Apple's song player, everyone else →
+     Spotify's track player. (SoundCloud is on hold behind
+     lib/flags.ts, so a SoundCloud pick falls back to Spotify like it
+     does everywhere else.)
+
+     Apple costs ONE extra public iTunes lookup per page, and only
+     for members who picked Apple Music: the cached album id has no
+     per-song ids on it, so resolveAppleSongIds matches the picked
+     titles against the album's song list. Anything that misses —
+     Apple doesn't carry the record, a title doesn't match, the
+     lookup fails — falls back to the Spotify player for that one
+     row, and a pick with no id at all stays the plain line it was. ── */
+  const favoritePicks = review.standout_tracks ?? [];
+  let favoriteTracks: FavoriteTrack[] = [];
+  if (favoritePicks.length > 0) {
+    let preferred: string | undefined;
+    if (user) {
+      const { data: pref } = await supabase
+        .from("profiles")
+        .select("preferred_player")
+        .eq("id", user.id)
+        .maybeSingle();
+      preferred = (pref as { preferred_player?: string } | null)?.preferred_player;
+    }
+
+    let appleAlbumId: string | null = null;
+    let appleSongIds = new Map<string, string>();
+    if (preferred === "apple" && release) {
+      const apple = await resolveAppleMusic(release, review.artist ?? "");
+      if (apple) {
+        appleAlbumId = apple.albumId;
+        appleSongIds = apple.trackId
+          ? // A single: the cached ref already points at the song.
+            new Map([[favoritePicks[0].title, apple.trackId]])
+          : await resolveAppleSongIds(
+              apple.albumId,
+              favoritePicks.map((p) => p.title)
+            );
+      }
+    }
+
+    favoriteTracks = favoritePicks.map((pick) => {
+      const appleTrackId = appleSongIds.get(pick.title);
+      if (appleAlbumId && appleTrackId) {
+        const ref = { albumId: appleAlbumId, trackId: appleTrackId };
+        return {
+          title: pick.title,
+          src: appleMusicEmbedSrc(ref),
+          source: "apple" as const,
+          openUrl: appleMusicUrl(ref),
+        };
+      }
+      // The id is re-derived from the stored link and shape-checked
+      // before it goes anywhere near an iframe src — we wrote that
+      // link ourselves from the catalog, but the rule is the rule.
+      const link = pick.spotifyUrl ?? "";
+      const id = link.match(/\/track\/([A-Za-z0-9]{22})/)?.[1];
+      return {
+        title: pick.title,
+        src: id ? `https://open.spotify.com/embed/track/${id}?theme=0` : null,
+        source: "spotify" as const,
+        openUrl: link,
+      };
+    });
+  }
+
   const t = await getTranslations("reviews.page");
   const tc = await getTranslations("common");
   const locale = await getLocale();
@@ -355,44 +432,20 @@ export default async function ReviewPage({
             <div className="divider-glow" />
 
             <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
-              <div className="flex items-center gap-2">
-                <span className="glow-orb" />
-                <span className="label-xbox">{t("favorites")}</span>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="glow-orb" />
+                  <span className="label-xbox">{t("favorites")}</span>
+                </div>
+                {/* Only promise a player when there is one to play. */}
+                {favoriteTracks.some((f) => f.src) && (
+                  <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
+                    {t("previewHint")}
+                  </span>
+                )}
               </div>
 
-              <div className="space-y-2">
-                {review.standout_tracks.map((track, i) => {
-                  const inner = (
-                    <div className="flex items-center justify-between gap-2 py-2 border-b border-border-subtle last:border-0 hover:bg-bg-elevated/50 rounded-lg px-2 -mx-2 transition-colors">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="pixel-text text-sm text-text-muted shrink-0">
-                          {i + 1}
-                        </span>
-                        <span className="text-sm font-medium text-text-primary truncate">
-                          {track.title}
-                        </span>
-                      </div>
-                      {track.spotifyUrl && (
-                        <span className="text-xs text-accent-primary shrink-0 whitespace-nowrap">
-                          {t("spotify")}
-                        </span>
-                      )}
-                    </div>
-                  );
-                  return track.spotifyUrl ? (
-                    <a
-                      key={`${track.title}-${i}`}
-                      href={track.spotifyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {inner}
-                    </a>
-                  ) : (
-                    <div key={`${track.title}-${i}`}>{inner}</div>
-                  );
-                })}
-              </div>
+              <FavoritePlayers tracks={favoriteTracks} />
             </div>
           </>
         )}

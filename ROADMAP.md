@@ -180,13 +180,27 @@ don't wait to be asked:**
         signups silently stop). Also confirmed from the public
         `/auth/v1/settings`: confirmation REQUIRED, only Google +
         Apple social, and phone/SMS, anonymous, passkeys and SAML all
-        OFF — so no SMS abuse surface. **⬜ Still needed: five numbers
-        off that dashboard page** (emails/hour, sign-ups+sign-ins per
-        5min/IP, token verifications, token refreshes, MFA
-        challenges). The doc lists them with why each one matters.
-        Tried to read them via Claude-in-Chrome on 2026-09-14; neither
-        connected Windows Chrome held a signed-in Supabase session, so
-        Luca is reading them off himself.
+        OFF — so no SMS abuse surface. ✅ **Numbers now recorded**
+        (Luca read them off 2026-09-14): emails **30/hour**,
+        sign-ups+sign-ins **30 per 5min/IP**, token verifications **30
+        per 5min/IP**, token refreshes **150 per 5min/IP**; the MFA
+        field doesn't render because MFA isn't enabled, nothing to
+        set. Three are fine and documented as leave-alone.
+      · **⚠️ ACTION BEFORE THE MARKETING PUSH — raise the auth email
+        limit.** 30/hour is PROJECT-WIDE, not per IP, and one signup
+        eats one email (password resets share the budget). So the app
+        caps at ~30 new accounts an hour: past that a new user fills
+        the form, never gets a confirmation link, and the account
+        never activates. They don't complain, they leave. Harmless
+        today, and dangerous at exactly one moment — the Reddit /
+        Musicboard-refugee / leak-Discord / Android-tester posts in
+        the Strategy section deliver signups in a BURST. Raise the
+        dashboard field BEFORE posting, not after; it's free and a
+        higher ceiling costs nothing with Resend sending.
+        **Check the Resend plan the same day:** two ceilings exist and
+        we only measured one. Resend's free tier is 100 emails/DAY,
+        while 30/hour would permit 720/day — so on a free plan Resend
+        bites first. Whichever is lower is the real limit.
       · Standing reminder: rate limits are the SECOND wall. RLS is the
         first, and the app only ever holds the anon key.
 

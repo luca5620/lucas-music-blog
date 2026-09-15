@@ -158,21 +158,49 @@ so this section is the only record.
   Phone auth being off is worth noting on its own: SMS is the auth
   surface that costs real money per abuse, and we don't expose it.
 
-### ⬜ Still to record — the five numbers
+### Recorded 2026-09-14 (Luca, off the dashboard)
 
-Read off Authentication → Rate Limits and paste them in here. The ones
-that matter for us, in order:
+| Limit | Value | Scope | Verdict |
+|---|---|---|---|
+| Emails sent | 30 / hour | whole project | ⚠️ raise before any marketing push — see below |
+| Sign-ups + sign-ins | 30 / 5 min | per IP | fine |
+| Token verifications | 30 / 5 min | per IP | fine |
+| Token refreshes | 150 / 5 min | per IP | fine, generous |
+| MFA challenges | not present | — | MFA isn't enabled on the project, so the field doesn't render. Nothing to set. |
 
-1. **Emails sent per hour.** Gates every signup confirmation and
-   password reset. The one to watch on a launch day or a marketing
-   push, since a burst of new users all need an email at once.
-2. **Sign-ups and sign-ins, per 5 min per IP.** Shared IPs (a school,
-   an office, mobile carrier NAT) hit this before an attacker does.
-3. **Token verifications, per 5 min per IP.** Confirmation-link clicks
-   and OTP checks.
-4. **Token refreshes, per 5 min per IP.** Every open app session
-   refreshes; too low and real users get logged out.
-5. **MFA challenges, per 5 min per IP.** Low priority, we don't use MFA.
+**⚠️ Emails: 30/hour is the one real ceiling we have.** It is not per
+IP — it is the whole project. One signup consumes one email, and
+password resets come out of the same budget. So the app tops out at
+roughly **30 new accounts per hour**, and past that a new user
+completes the form, never gets a confirmation link, and their account
+simply never activates. They don't email support. They leave.
 
-SMS and anonymous sign-in limits can be skipped — both providers are
-off (see the table above).
+That is harmless at today's traffic and dangerous at exactly one
+moment: the marketing push in ROADMAP's strategy section (Musicboard
+refugees on Reddit, the leak Discords, Android tester recruitment). A
+post that lands well delivers its signups in a burst, in one hour, not
+spread across a day. **Raise this field before posting anywhere, not
+after.** It's a dashboard number, free to change, and there is no
+downside to a higher ceiling when Resend is doing the sending.
+
+**Check the Resend plan at the same time.** There are TWO ceilings on
+auth email and this doc only covers one. Supabase's 30/hour is the
+first; the Resend account's own plan cap is the second, and Resend's
+free tier is 100 emails/day. At 30/hour the Supabase limit alone would
+allow 720/day, so on a free Resend plan the daily cap bites first.
+Whichever is lower is the real limit.
+
+The other three are fine and need no action:
+
+- **Sign-ins, 30 per 5 min per IP** is also the password brute-force
+  guard. Permissive-ish (360/hour from one IP) but acceptable next to
+  Supabase's password rules, and lowering it would start punishing
+  shared networks.
+- **Verifications, 30 per 5 min per IP** only gates clicking a
+  confirmation link or entering an OTP. Nobody legitimate does that
+  thirty times.
+- **Refreshes, 150 per 5 min per IP** is generous, which is what you
+  want. A session refreshes about once an hour, so this only becomes
+  visible behind heavy carrier NAT — far beyond our size. Too LOW here
+  is what logs real users out, so leave it alone.
+

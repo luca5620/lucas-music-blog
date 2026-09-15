@@ -83,13 +83,12 @@ Ship it transparent, never on a plate.
 | iOS app icon | `ios/App/App/Assets.xcassets/AppIcon.appiconset` | static, Mac step |
 | iOS native splash | `ios/App/App/Assets.xcassets/Splash.imageset` | static, Mac step |
 
-The header mark is the primary target. In the current build it sits
-at the **left** end of the header row on both web and in the app (the
-top-right corner holds the CREATE button and the account avatar); the
-owner refers to it as the little picture in the corner of the header.
-Put the new mark wherever `penguin-logo.png` is used today — one
-component, used everywhere — and do not move, resize or restyle the
-header row. The header chrome and the app tab bar are frozen by the
+**The header mark, top-left, is the first thing to build** — the
+owner confirmed that is the one he means, on both web and in the app.
+Do it first and completely; the auth screens, OG image and icons can
+follow once the render is approved. Put the new mark wherever
+`penguin-logo.png` is used today — one component, used everywhere —
+and do not move, resize or restyle the header row. The header chrome and the app tab bar are frozen by the
 owner: their positions were approved and are not to be touched.
 
 ---

@@ -166,11 +166,27 @@ don't wait to be asked:**
         flood: one row per user per game, upserted, so spam only
         rewrites your own row.
       · **Accepted, not bugs:** a Redis error FAILS OPEN (availability
-        over enforcement, so an Upstash outage is an open window);
+        over enforcement, so an Upstash outage is an open window); and
         signed-out traffic is barely limited because limits key on
-        user id; and sign-up / sign-in / password-reset are rate
-        limited by SUPABASE's own dashboard settings (Auth → Rate
-        Limits), not by our code — worth a look there sometime.
+        user id.
+      · **SUPABASE AUTH LIMITS — partly open.** Sign-up, sign-in,
+        password reset and confirmation links never touch our
+        limiter; they're governed by Dashboard → Authentication →
+        Rate Limits, which is NOT in version control, so
+        `docs/RATE-LIMITS.md` is the only record of them. Confirmed
+        2026-09-14: **custom SMTP is Resend**, which is the thing that
+        actually matters (the built-in sender caps a whole project at
+        ~2 auth emails/hour, and with "confirm email" ON that means
+        signups silently stop). Also confirmed from the public
+        `/auth/v1/settings`: confirmation REQUIRED, only Google +
+        Apple social, and phone/SMS, anonymous, passkeys and SAML all
+        OFF — so no SMS abuse surface. **⬜ Still needed: five numbers
+        off that dashboard page** (emails/hour, sign-ups+sign-ins per
+        5min/IP, token verifications, token refreshes, MFA
+        challenges). The doc lists them with why each one matters.
+        Tried to read them via Claude-in-Chrome on 2026-09-14; neither
+        connected Windows Chrome held a signed-in Supabase session, so
+        Luca is reading them off himself.
       · Standing reminder: rate limits are the SECOND wall. RLS is the
         first, and the app only ever holds the anon key.
 

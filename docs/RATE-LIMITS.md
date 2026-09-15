@@ -121,10 +121,58 @@ member row, which is the point against a re-joiner.
    keyed on a user id, so it only exists after sign-in. Public page
    reads are protected by Vercel/CDN rather than by us. The one
    ip-keyed limit is `profile-summary` (120/min).
-3. **Auth endpoints are Supabase's, not ours** — sign-up, sign-in and
-   password reset are rate limited by Supabase's own settings in the
-   dashboard, not by `lib/rate-limit.ts`. Worth a look at the Auth →
-   Rate Limits page there.
+3. **Auth endpoints are Supabase's, not ours.** See the section below.
 4. **No global per-user ceiling.** A determined account can sit near
    the limit on many different endpoints at once. Fine at our size;
    revisit if abuse ever shows up.
+
+## Supabase auth limits (dashboard-owned, not in this repo)
+
+Sign-up, sign-in, password reset and email-confirmation links never
+touch `lib/rate-limit.ts`. They are Supabase's endpoints, governed by
+**Dashboard → Authentication → Rate Limits** on the project. Nothing
+in the repo can read or set them, and they are not in version control,
+so this section is the only record.
+
+### Confirmed 2026-09-14
+
+- **Custom SMTP is live: Resend** (`docs/LAUNCH-CHECKLIST.md`). This
+  matters more than any number here. On Supabase's built-in sender an
+  entire project is capped at roughly **2 auth emails per hour**,
+  which on a live app with "confirm email" ON means signups silently
+  stop working. Resend lifts that, and the dashboard's own email limit
+  becomes the real ceiling.
+- **Auth posture**, read from the public `/auth/v1/settings` endpoint
+  with the anon key (anyone can read this — it exposes no secrets):
+
+  | Setting | Value |
+  |---|---|
+  | Signups | enabled |
+  | Email confirmation | REQUIRED (`mailer_autoconfirm: false`) |
+  | Social providers on | Google, Apple only |
+  | Phone / SMS auth | off |
+  | Anonymous users | off |
+  | Passkeys | off |
+  | SAML | off |
+
+  Phone auth being off is worth noting on its own: SMS is the auth
+  surface that costs real money per abuse, and we don't expose it.
+
+### ⬜ Still to record — the five numbers
+
+Read off Authentication → Rate Limits and paste them in here. The ones
+that matter for us, in order:
+
+1. **Emails sent per hour.** Gates every signup confirmation and
+   password reset. The one to watch on a launch day or a marketing
+   push, since a burst of new users all need an email at once.
+2. **Sign-ups and sign-ins, per 5 min per IP.** Shared IPs (a school,
+   an office, mobile carrier NAT) hit this before an attacker does.
+3. **Token verifications, per 5 min per IP.** Confirmation-link clicks
+   and OTP checks.
+4. **Token refreshes, per 5 min per IP.** Every open app session
+   refreshes; too low and real users get logged out.
+5. **MFA challenges, per 5 min per IP.** Low priority, we don't use MFA.
+
+SMS and anonymous sign-in limits can be skipped — both providers are
+off (see the table above).

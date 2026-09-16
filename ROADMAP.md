@@ -93,7 +93,26 @@ don't wait to be asked:**
 ### 👉 PICK UP HERE (MacBook, 2026-09-16)
 
 ✅ **MIGRATION 048 IS RUN** (Luca, 2026-09-16). Debate posts are live.
-Everything below is pushed to `main`. Nothing is half-finished.
+Everything below is pushed to `main`. Nothing is half-finished, no
+branch is open, and there is NOTHING waiting on the Supabase
+dashboard. Session ended here — `git pull` and carry on.
+
+**THE ONLY THING OPEN FROM THIS SESSION** is the native rebuild that
+brings the splash back (item 1 below). Everything else shipped and is
+verified. Still carried over from 2026-09-14, unchanged: Resend's
+free tier caps auth email at ~100/day so marketing posts want
+staggering, the friendly signup-error copy is offered but not built
+(six locales, ask first), and the three conversations from the
+Strategy section are still owed.
+
+⚠️ **MACHINE NOTE for the MacBook:** `/usr/bin/python3` is blocked by
+the Xcode licence and fails SILENTLY inside a shell chain — a heredoc
+edit prints its error, the chain continues, the next build still says
+"Compiled successfully", and the file was never touched. It cost a
+bogus "fixed" report this session. Edit files with the Edit/Write
+tools here, and check `git diff --stat` before believing a scripted
+edit worked. Unblocking it needs `sudo xcodebuild -license` (Luca's
+password). The Windows desktop is unaffected.
 
 **1. SPLASH — turned OFF, and redesigned while it's parked.**
 `APP_SPLASH_CURTAIN_ENABLED` in `lib/flags.ts` is `false`, so the app

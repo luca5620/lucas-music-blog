@@ -92,11 +92,8 @@ don't wait to be asked:**
 
 ### 👉 PICK UP HERE (MacBook, 2026-09-16)
 
-⚠️ **MIGRATION 048 TO RUN** (`supabase/migrations/048-debate-posts.sql`).
+✅ **MIGRATION 048 IS RUN** (Luca, 2026-09-16). Debate posts are live.
 Everything below is pushed to `main`. Nothing is half-finished.
-Until 048 is run, debate posts simply don't appear — every read falls
-back to the old select shape and /posts keeps working (verified
-against the live DB with 048 NOT applied).
 
 **1. SPLASH — turned OFF, and redesigned while it's parked.**
 `APP_SPLASH_CURTAIN_ENABLED` in `lib/flags.ts` is `false`, so the app

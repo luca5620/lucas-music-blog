@@ -188,7 +188,37 @@ export default async function RootLayout({
     // suppressHydrationWarning: the low-detail boot script below may
     // add a class to <html> before React hydrates; React must not
     // treat that as a mismatch (the same trick every theme switcher uses).
-    <html lang={locale} suppressHydrationWarning>
+    /* The next/font variables live on <html>, NOT on <body>.
+
+       They used to sit on <body>, and that quietly broke the site's
+       type. globals.css declares --font-heading and --font-body at
+       :root (which IS <html>) as `var(--font-inter), …` — but at that
+       level --font-inter did not exist yet, so both declarations were
+       invalid and inherited down as EMPTY. Every
+       `font-family: var(--font-heading)` on the site, .crt-title
+       included, silently fell back to Tailwind's default sans, which
+       means headings rendered in whatever face the device happened to
+       ship (SF Pro, Segoe UI, Roboto) instead of Inter. Declaring the
+       variables one level up is the entire fix.
+
+       Profile themes were never affected — they redefine
+       --font-heading on .theme-* inside <body>, where the font vars
+       already resolved — so those pages look the same as before.
+       `antialiased` stays on <body>: it is a paint hint for the
+       content, not a design token.
+
+       Safe against the boot scripts that also stamp <html>
+       (low-detail, native mode): every one of them uses
+       classList.add/toggle, so they extend this list rather than
+       replacing it. */
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`
+        ${inter.variable} ${chakraPetch.variable} ${jost.variable}
+        ${michroma.variable} ${quicksand.variable} ${vt323.variable}
+      `}
+    >
       <head>
         {/* LOW DETAIL MODE boot — stamps html.low-detail BEFORE first
             paint unless localStorage holds an explicit opt-out, so the
@@ -210,13 +240,7 @@ export default async function RootLayout({
         <WebSiteSchema />
         <SoftwareApplicationSchema appStoreUrl={APP_STORE_URL} />
       </head>
-      <body
-        className={`
-          ${inter.variable} ${chakraPetch.variable} ${jost.variable}
-          ${michroma.variable} ${quicksand.variable} ${vt323.variable}
-          antialiased
-        `}
-      >
+      <body className="antialiased">
         {/* The room: liquid light filling the black space around the
             bezel — the side bars glow on wide screens. Painted first
             so the TV sits on top of it. */}

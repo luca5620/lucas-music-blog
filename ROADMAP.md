@@ -117,7 +117,7 @@ shows only the native still again.
   watch a bar fill would be strictly worse.
 - **Preview either one with `?splash=1`** on any URL, app or browser.
 
-**2. ⚠️ FOUND, NOT FIXED — the heading font is broken SITE-WIDE.**
+**2. ✅ FIXED — the heading font was broken SITE-WIDE.**
 `--font-heading` is declared at `:root` as `var(--font-inter), …`,
 but next/font puts `--font-inter` on `<body>`. At `:root` it is
 undefined, so the declaration is invalid and `--font-heading`
@@ -126,11 +126,17 @@ inherits down as EMPTY. Every `font-family: var(--font-heading)` —
 sans. Confirmed in the browser: `--font-heading` computes to `""`.
 Profile THEMES are unaffected (they redeclare it on `.theme-*`,
 inside body, where the font vars do exist).
-**The fix is one line** — move the next/font `.variable` classes from
-`<body>` to `<html>` in `app/layout.tsx`. NOT done here because it
-would change heading type across the whole site in one deploy, and
-that is Luca's call to look at. The splash wordmark works around it
-by naming its own stack.
+**Fixed 2026-09-16, on Luca's word after seeing a side-by-side:** the
+next/font `.variable` classes moved from `<body>` to `<html>` in
+`app/layout.tsx` (`antialiased` stayed on body — it's a paint hint,
+not a token). Headings and body text are Inter everywhere now
+instead of whatever face the device shipped. Verified in a PRODUCTION
+build: `--font-heading` and `--font-body` resolve, an `h1` computes
+to Inter, `.pixel-text` / `.osd-text` are untouched monospace, and a
+themed profile still resolves its own face (theme-ps2 → Jost). Safe
+against the boot scripts that also stamp `<html>` (low-detail, native
+mode) — every one uses `classList.add`, so they extend the list.
+The splash wordmark keeps its own explicit stack either way.
 
 **3. RATINGS.** The 0–1.9 stink reads as fumes rather than a stain:
 green off the badge face except as a haze where the plumes leave,

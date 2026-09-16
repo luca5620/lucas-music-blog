@@ -90,6 +90,81 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 👉 PICK UP HERE (MacBook, 2026-09-16)
+
+⚠️ **MIGRATION 048 TO RUN** (`supabase/migrations/048-debate-posts.sql`).
+Everything below is pushed to `main`. Nothing is half-finished.
+Until 048 is run, debate posts simply don't appear — every read falls
+back to the old select shape and /posts keeps working (verified
+against the live DB with 048 NOT applied).
+
+**1. SPLASH — turned OFF, and redesigned while it's parked.**
+`APP_SPLASH_CURTAIN_ENABLED` in `lib/flags.ts` is `false`, so the app
+shows only the native still again.
+- *Why there were two:* Capacitor's native splash runs on a 1200ms
+  auto-hide timer while the WebView is still fetching the live site,
+  so it comes and goes BEFORE React can call `hideNativeSplash()`.
+- **The Mac rebuild fix:** set `launchAutoHide: false` in
+  `capacitor.config.ts`, then `npx cap sync` + Xcode + a new build.
+  The native still then waits for the web layer and hands over
+  seamlessly. **Flip the flag in that same commit, never before.**
+- Redesigned per Luca: wordmark is the ORIGINAL launch-image one
+  (PlayStation font, large, `#c4c4c8` sampled out of
+  splash-2732x2732.png) instead of the small blue one; the penguin
+  keeps the cut-out and gained the nav mascot's bottom fade mask.
+- **Both of Luca's frost ideas are built**, switched by `FROST_STYLE`
+  in `SplashCurtain.tsx`: `"perimeter"` (default) traces the phone's
+  edge to 100% as the curtain lifts; `"text"` wipes frost across the
+  wordmark. Neither is tied to real loading — by the time React runs
+  the app underneath is already rendered, and holding it back to
+  watch a bar fill would be strictly worse.
+- **Preview either one with `?splash=1`** on any URL, app or browser.
+
+**2. ⚠️ FOUND, NOT FIXED — the heading font is broken SITE-WIDE.**
+`--font-heading` is declared at `:root` as `var(--font-inter), …`,
+but next/font puts `--font-inter` on `<body>`. At `:root` it is
+undefined, so the declaration is invalid and `--font-heading`
+inherits down as EMPTY. Every `font-family: var(--font-heading)` —
+`.crt-title` included — silently falls back to Tailwind's default
+sans. Confirmed in the browser: `--font-heading` computes to `""`.
+Profile THEMES are unaffected (they redeclare it on `.theme-*`,
+inside body, where the font vars do exist).
+**The fix is one line** — move the next/font `.variable` classes from
+`<body>` to `<html>` in `app/layout.tsx`. NOT done here because it
+would change heading type across the whole site in one deploy, and
+that is Luca's call to look at. The splash wordmark works around it
+by naming its own stack.
+
+**3. RATINGS.** The 0–1.9 stink reads as fumes rather than a stain:
+green off the badge face except as a haze where the plumes leave,
+plumes taller, narrower, blurrier, cleaner chartreuse. And 9.5+ has
+its own signature at last — two four-point sparks lift off and
+twinkle out, purple on the elite band, white-blue on a perfect 10,
+following the same motion-off and reduced-motion switches.
+*Gotcha logged:* `radial-gradient(circle 22% …)` is INVALID (an
+explicitly sized circle takes a length, never a percentage) and
+silently kills the whole `background` shorthand — that's why the
+sparks were invisible at first.
+
+**4. DEBATE POSTS (048).** A post can carry two sides and a vote.
+No rooms, no chat, no brackets — Aux Wars keeps all that, and the old
+`debates` tables are still neither revived nor dropped. A post IS a
+debate when `side_a_label` is set; `chk_posts_debate_pair` forces the
+pair on or off together. Each side can point at a release. Tallies
+live on the post row via a trigger, so the feed needs no extra query.
+The AUTHOR may vote (on a post they're the one asking, not a side).
+The feed card only gets a DEBATE badge — that card is one `<Link>`,
+so a button inside it could never be tapped without following it.
+`VoteBar` is recovered from `b411c43`; its `.debate-bar` CSS never
+left globals.css. Copy in all six locales, keys verified at parity.
+
+**5. Dev-server note.** `npm run dev` splits `globals.css` per route,
+so CSS changes often can't be verified there at all. A `pmr-prod`
+entry was added to `.claude/launch.json` (`npm start` on :3100) —
+build first, then preview THAT for anything visual.
+
+---
+
 ### 👉 PICK UP HERE (MacBook → desktop handoff, 2026-09-14 night)
 
 Everything below is COMMITTED AND PUSHED to `main` — `git pull` first.

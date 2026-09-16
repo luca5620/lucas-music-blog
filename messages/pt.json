@@ -1122,14 +1122,24 @@
         "video": "Corrija o link do vídeo (ou apague) antes de publicar.",
         "playlist": "Corrija o link da playlist (ou apague) antes de publicar.",
         "wentWrong": "Algo deu errado.",
-        "network": "Erro de conexão. Tente de novo."
+        "network": "Erro de conexão. Tente de novo.",
+        "debateBothSides": "Um debate precisa dos dois lados: preencha o segundo ou desligue o debate.",
+        "debateSameSides": "Os dois lados têm de discordar mesmo: dê-lhes rótulos diferentes."
       },
       "saving": "Salvando…",
       "posting": "Publicando…",
       "updatePublish": "Atualizar e publicar",
       "saveChanges": "Salvar alterações",
       "publish": "Publicar",
-      "saveDraft": "Salvar como rascunho"
+      "saveDraft": "Salvar como rascunho",
+      "debate": "Debate",
+      "debateToggle": "Transformar em debate",
+      "debateHint": "Dê dois lados à sua publicação e deixe as pessoas votarem. Deixe desligado para uma publicação normal.",
+      "sideA": "Lado A",
+      "sideB": "Lado B",
+      "sideAPlaceholder": "ex.: \"Clássico\"",
+      "sideBPlaceholder": "ex.: \"Superestimado\"",
+      "sideReleasePlaceholder": "Anexar um disco a este lado (opcional)…"
     },
     "deleteButton": {
       "confirm": "Excluir “{title}”?"
@@ -1138,7 +1148,19 @@
       "title": "Posts",
       "posted": "<b>name</b> publicou",
       "aMember": "um membro",
-      "playlistBadge": "♫ PLAYLIST"
+      "playlistBadge": "♫ PLAYLIST",
+      "debateBadge": "⚔ DEBATE"
+    },
+    "debate": {
+      "legend": "Escolhe um lado",
+      "picked": "✓ {side}",
+      "signInToVote": "Inicia sessão para votar",
+      "tapAgain": "Toca no teu lado outra vez para retirar o voto",
+      "voteFailed": "O voto não foi registado. Tenta outra vez.",
+      "voteBar": {
+        "aria": "{a} {pctA}%, {b} {pctB}%",
+        "votes": "{n, plural, one {# voto} other {# votos}}"
+      }
     }
   },
   "aux": {

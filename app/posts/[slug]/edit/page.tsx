@@ -30,6 +30,11 @@ export default async function EditPostPage({
 
   // PostForm's release chip wants the full catalog row (year, type),
   // not the slim joined slice — fetch it when the post is tied.
+  // The debate sides want the same full rows (migration 048).
+  const [sideARelease, sideBRelease] = await Promise.all([
+    post.side_a_release_id ? getReleaseById(post.side_a_release_id) : Promise.resolve(null),
+    post.side_b_release_id ? getReleaseById(post.side_b_release_id) : Promise.resolve(null),
+  ]);
   const release = post.release_id
     ? await getReleaseById(post.release_id)
     : null;
@@ -47,6 +52,8 @@ export default async function EditPostPage({
       <PostForm
         post={post}
         initialRelease={release}
+        initialSideARelease={sideARelease}
+        initialSideBRelease={sideBRelease}
         initialArtist={artistName}
       />
     </div>

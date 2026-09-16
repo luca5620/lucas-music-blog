@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
+import { parsePostDebate } from "@/lib/posts-debate";
 import { createClient } from "@/lib/supabase/server";
 import { getPostById, deletePost, updatePost } from "@/lib/db/posts";
 import { notifyFollowers } from "@/lib/db/notifications";
@@ -166,6 +167,17 @@ export async function PATCH(
       typeof existing.is_published === "boolean" &&
       existing.is_published !== wantsPublished;
 
+    // The two sides (migration 048). Same conditional-column rule as
+    // the playlist: only touch the columns when this post either IS a
+    // debate now or WAS one — otherwise a plain post editing on a
+    // pre-048 database would name columns that don't exist.
+    const parsedDebate = await parsePostDebate(payload);
+    if (!parsedDebate.ok) {
+      return NextResponse.json({ error: parsedDebate.error }, { status: 400 });
+    }
+    const wasDebate = (existing.side_a_label ?? null) !== null;
+    const touchDebate = parsedDebate.debate !== null || wasDebate;
+
     const post = await updatePost(postId, {
       title: title.trim(),
       body,
@@ -173,6 +185,7 @@ export async function PATCH(
       releaseId,
       ...(touchPlaylist ? { playlistId } : {}),
       ...(flip ? { isPublished: wantsPublished } : {}),
+      ...(touchDebate ? { debate: parsedDebate.debate } : {}),
     });
 
     if (!post) {

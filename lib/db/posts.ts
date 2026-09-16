@@ -37,6 +37,14 @@ export type PostRelease = Pick<
 export interface PostWithContext extends Post {
   author: PostAuthor | null;
   release: PostRelease | null;
+  /** Per-side records on a debate post (migration 048). */
+  side_a_release: PostRelease | null;
+  side_b_release: PostRelease | null;
+}
+
+/** Is this post a debate? The label pair is the switch. */
+export function isDebatePost(post: Post): boolean {
+  return typeof post.side_a_label === "string" && post.side_a_label.length > 0;
 }
 
 /* --- Internal: normalize Supabase's joined-row shape ---
@@ -57,21 +65,46 @@ export function postReleaseArtistName(release: PostRelease | null): string | nul
 // and artists are ALSO linked through release_artists, so an unqualified
 // artists(name) embed would be ambiguous (PGRST201) — same trap as the
 // reviews↔profiles double relationship.
-const POST_SELECT = `*,
+const POST_SELECT_LEGACY = `*,
   profiles!posts_user_id_fkey(username, display_name, avatar_url, role),
-  releases(id, slug, title, cover_image, artists!releases_primary_artist_id_fkey(name))`;
+  releases!posts_release_id_fkey(id, slug, title, cover_image, artists!releases_primary_artist_id_fkey(name))`;
+
+/* Migration 048 adds TWO more foreign keys from posts to releases, so
+   from then on every releases embed has to name its constraint or
+   PostgREST refuses the whole query as ambiguous. And until 048 runs,
+   the two side embeds don't exist and THEY fail — so reads try the
+   full select first and fall back, keeping /posts alive on either
+   side of the migration. Same trick as lib/db/aux-wars.ts. */
+const POST_SELECT = `${POST_SELECT_LEGACY},
+  side_a_release:releases!posts_side_a_release_id_fkey(id, slug, title, cover_image),
+  side_b_release:releases!posts_side_b_release_id_fkey(id, slug, title, cover_image)`;
 
 type PostRow = Post & {
   profiles: PostAuthor | PostAuthor[] | null;
   releases: PostRelease | PostRelease[] | null;
+  side_a_release?: PostRelease | PostRelease[] | null;
+  side_b_release?: PostRelease | PostRelease[] | null;
 };
 
+/** Run a posts query with the full select, legacy select on failure. */
+async function selectPosts(
+  apply: (select: string) => PromiseLike<{ data: unknown; error: unknown }>
+): Promise<PostRow[]> {
+  const full = await apply(POST_SELECT);
+  if (!full.error && full.data) return full.data as PostRow[];
+  const legacy = await apply(POST_SELECT_LEGACY);
+  if (!legacy.error && legacy.data) return legacy.data as PostRow[];
+  return [];
+}
+
 function withContext(row: PostRow): PostWithContext {
-  const { profiles, releases, ...post } = row;
+  const { profiles, releases, side_a_release, side_b_release, ...post } = row;
   return {
     ...post,
     author: first(profiles),
     release: first(releases),
+    side_a_release: first(side_a_release),
+    side_b_release: first(side_b_release),
   };
 }
 
@@ -126,6 +159,9 @@ export async function createPost(input: {
   playlistId?: string | null;
   /** false = save as draft (migration 024). Defaults to published. */
   isPublished?: boolean;
+  /** The two sides (migration 048). Both or neither — the caller has
+      already checked that; the DB constraint is the backstop. */
+  debate?: PostDebateInput | null;
 }): Promise<Post | null> {
   // Belt-and-braces: even a pre-parsed video must be a coherent pair
   // with a sane id (the DB constraint would also reject it, but a
@@ -156,6 +192,9 @@ export async function createPost(input: {
       // column default, and omitting it keeps publishing working even
       // before migration 024 has been run in the SQL Editor.
       ...(input.isPublished === false ? { is_published: false } : {}),
+      // Debate columns only travel when there IS a debate, so a plain
+      // post still inserts cleanly on a database where 048 hasn't run.
+      ...(input.debate ? debateColumns(input.debate) : {}),
     } as never)
     .select()
     .single();
@@ -183,6 +222,9 @@ export async function updatePost(
         passes this when it would actually flip the row (so pre-024
         databases never see the column in an UPDATE). */
     isPublished?: boolean;
+    /** undefined = leave the sides alone (pre-048 safe); null = this
+        post stops being a debate; an object = set/replace the sides. */
+    debate?: PostDebateInput | null;
   }
 ): Promise<Post | null> {
   // Same belt-and-braces as createPost: a video must be a coherent pair.
@@ -208,6 +250,9 @@ export async function updatePost(
       ...(fields.isPublished !== undefined
         ? { is_published: fields.isPublished }
         : {}),
+      ...(fields.debate !== undefined
+        ? debateColumns(fields.debate)
+        : {}),
     } as never)
     .eq("id", id)
     .select()
@@ -225,15 +270,12 @@ export async function getPostBySlug(
   slug: string
 ): Promise<PostWithContext | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("posts")
-    .select(POST_SELECT)
-    .eq("slug", slug)
-    .limit(1)
-    .maybeSingle();
-
-  if (error || !data) return null;
-  return withContext(data as unknown as PostRow);
+  const rows = await selectPosts((select) =>
+    supabase.from("posts").select(select).eq("slug", slug).limit(1)
+  );
+  const row = rows[0];
+  if (!row) return null;
+  return withContext(row);
 }
 
 export async function getPostById(id: string): Promise<Post | null> {
@@ -258,26 +300,21 @@ export async function listPosts(
   before?: string
 ): Promise<PostWithContext[]> {
   const supabase = await createClient();
-  let query = supabase
-    .from("posts")
-    .select(POST_SELECT)
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
-  if (before) {
-    query = query.lt("created_at", before);
-  }
-
-  const { data, error } = await query;
-  if (error || !data) return [];
+  const rows = await selectPosts((select) => {
+    let query = supabase
+      .from("posts")
+      .select(select)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (before) query = query.lt("created_at", before);
+    return query;
+  });
   // Drop drafts in JS, not with .eq(): RLS already hides OTHER
   // people's drafts, so the only rows this can catch are the viewer's
   // own — and a JS check keeps the feed alive on a database where
   // migration 024 hasn't been run yet (the column simply isn't there,
   // is_published is undefined, and everything passes).
-  return (data as unknown as PostRow[])
-    .filter((row) => row.is_published !== false)
-    .map(withContext);
+  return rows.filter((row) => row.is_published !== false).map(withContext);
 }
 
 export async function getUserPosts(
@@ -414,4 +451,56 @@ export async function getPostLikeCounts(
     counts.set(id, (counts.get(id) ?? 0) + 1);
   }
   return counts;
+}
+
+/* ------------------------------------------------------------------ */
+/*  DEBATE POSTS (migration 048)                                       */
+/* ------------------------------------------------------------------ */
+
+/** What the API hands the DB layer when a post carries two sides. */
+export interface PostDebateInput {
+  sideALabel: string;
+  sideBLabel: string;
+  sideAReleaseId: string | null;
+  sideBReleaseId: string | null;
+}
+
+/** The column bag for a debate, or the bag that clears one. */
+function debateColumns(debate: PostDebateInput | null) {
+  if (!debate) {
+    return {
+      side_a_label: null,
+      side_b_label: null,
+      side_a_release_id: null,
+      side_b_release_id: null,
+    };
+  }
+  return {
+    side_a_label: debate.sideALabel,
+    side_b_label: debate.sideBLabel,
+    side_a_release_id: debate.sideAReleaseId,
+    side_b_release_id: debate.sideBReleaseId,
+  };
+}
+
+/**
+ * Which side this viewer picked on a debate post, if any. Returns
+ * null for signed-out readers and for a database where 048 hasn't
+ * run (the table simply isn't there).
+ */
+export async function getViewerDebateVote(
+  postId: string,
+  viewerId?: string
+): Promise<"a" | "b" | null> {
+  if (!viewerId) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("post_debate_votes")
+    .select("side")
+    .eq("post_id", postId)
+    .eq("user_id", viewerId)
+    .maybeSingle();
+  if (error || !data) return null;
+  const side = (data as { side: string }).side;
+  return side === "a" || side === "b" ? side : null;
 }

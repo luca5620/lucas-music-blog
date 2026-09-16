@@ -141,6 +141,15 @@ export default async function PostsFeed() {
                     {t("playlistBadge")}
                   </span>
                 )}
+                {/* A debate post says so here. The vote itself lives on
+                    the detail page: this whole card is ONE <Link>, so
+                    a button inside it could never be tapped without
+                    also following the link. */}
+                {post.side_a_label && (
+                  <span className="pixel-text text-[10px] border rounded px-1 py-0.5 shrink-0 text-accent-primary border-accent-primary/40">
+                    {t("debateBadge")}
+                  </span>
+                )}
               </span>
 
               {/* Title + tied release */}

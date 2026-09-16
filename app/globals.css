@@ -3282,7 +3282,11 @@ fieldset {
   background:
     radial-gradient(ellipse 52% 13% at 50% 50%, var(--spark), transparent 70%),
     radial-gradient(ellipse 13% 52% at 50% 50%, var(--spark), transparent 70%),
-    radial-gradient(circle 22% at 50% 50%, var(--spark-core), transparent 70%);
+    /* NOT `circle 22%`: an explicitly-sized circle takes a LENGTH,
+       never a percentage, so that spelling is invalid and silently
+       kills the whole background shorthand. A colour stop does the
+       same job and is valid. */
+    radial-gradient(circle at 50% 50%, var(--spark-core), transparent 26%);
   filter: drop-shadow(0 0 4px var(--spark));
   animation: rating-spark 2.6s ease-in-out infinite;
 }

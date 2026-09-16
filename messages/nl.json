@@ -1122,14 +1122,24 @@
         "video": "Herstel de videolink (of maak hem leeg) voordat je publiceert.",
         "playlist": "Herstel de playlistlink (of maak hem leeg) voordat je publiceert.",
         "wentWrong": "Er ging iets mis.",
-        "network": "Netwerkfout. Probeer het opnieuw."
+        "network": "Netwerkfout. Probeer het opnieuw.",
+        "debateBothSides": "Een debat heeft beide kanten nodig — vul de tweede in of zet het debat uit.",
+        "debateSameSides": "De twee kanten moeten het echt oneens zijn — geef ze verschillende labels."
       },
       "saving": "Opslaan…",
       "posting": "Plaatsen…",
       "updatePublish": "Bijwerken en publiceren",
       "saveChanges": "Wijzigingen opslaan",
       "publish": "Publiceren",
-      "saveDraft": "Opslaan als concept"
+      "saveDraft": "Opslaan als concept",
+      "debate": "Debat",
+      "debateToggle": "Maak er een debat van",
+      "debateHint": "Geef je post twee kanten en laat lezers stemmen. Laat uit voor een gewone post.",
+      "sideA": "Kant A",
+      "sideB": "Kant B",
+      "sideAPlaceholder": "bijv. \"Klassieker\"",
+      "sideBPlaceholder": "bijv. \"Overschat\"",
+      "sideReleasePlaceholder": "Koppel een plaat aan deze kant (optioneel)…"
     },
     "deleteButton": {
       "confirm": "“{title}” verwijderen?"
@@ -1138,7 +1148,19 @@
       "title": "Posts",
       "posted": "<b>name</b> plaatste",
       "aMember": "een lid",
-      "playlistBadge": "♫ PLAYLIST"
+      "playlistBadge": "♫ PLAYLIST",
+      "debateBadge": "⚔ DEBAT"
+    },
+    "debate": {
+      "legend": "Kies een kant",
+      "picked": "✓ {side}",
+      "signInToVote": "Log in om te stemmen",
+      "tapAgain": "Tik nogmaals op je kant om je stem terug te nemen",
+      "voteFailed": "Stem is niet doorgekomen. Probeer opnieuw.",
+      "voteBar": {
+        "aria": "{a} {pctA}%, {b} {pctB}%",
+        "votes": "{n, plural, one {# stem} other {# stemmen}}"
+      }
     }
   },
   "aux": {

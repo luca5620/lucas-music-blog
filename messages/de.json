@@ -1122,14 +1122,24 @@
         "video": "Korrigier den Video-Link (oder lösch ihn), bevor du veröffentlichst.",
         "playlist": "Korrigier den Playlist-Link (oder lösch ihn), bevor du veröffentlichst.",
         "wentWrong": "Etwas ist schiefgelaufen.",
-        "network": "Netzwerkfehler. Versuch es noch mal."
+        "network": "Netzwerkfehler. Versuch es noch mal.",
+        "debateBothSides": "Eine Debatte braucht beide Seiten — füll die zweite aus oder schalte die Debatte ab.",
+        "debateSameSides": "Die beiden Seiten müssen sich wirklich widersprechen — gib ihnen verschiedene Bezeichnungen."
       },
       "saving": "Wird gespeichert…",
       "posting": "Wird gepostet…",
       "updatePublish": "Aktualisieren und veröffentlichen",
       "saveChanges": "Änderungen speichern",
       "publish": "Veröffentlichen",
-      "saveDraft": "Als Entwurf speichern"
+      "saveDraft": "Als Entwurf speichern",
+      "debate": "Debatte",
+      "debateToggle": "Daraus eine Debatte machen",
+      "debateHint": "Gib deinem Beitrag zwei Seiten und lass andere abstimmen. Aus lassen für einen normalen Beitrag.",
+      "sideA": "Seite A",
+      "sideB": "Seite B",
+      "sideAPlaceholder": "z. B. „Klassiker“",
+      "sideBPlaceholder": "z. B. „Überbewertet“",
+      "sideReleasePlaceholder": "Dieser Seite einen Tonträger zuordnen (optional)…"
     },
     "deleteButton": {
       "confirm": "„{title}“ löschen?"
@@ -1138,7 +1148,19 @@
       "title": "Posts",
       "posted": "<b>name</b> hat gepostet",
       "aMember": "ein Mitglied",
-      "playlistBadge": "♫ PLAYLIST"
+      "playlistBadge": "♫ PLAYLIST",
+      "debateBadge": "⚔ DEBATTE"
+    },
+    "debate": {
+      "legend": "Wähle eine Seite",
+      "picked": "✓ {side}",
+      "signInToVote": "Zum Abstimmen anmelden",
+      "tapAgain": "Tippe deine Seite erneut an, um die Stimme zurückzunehmen",
+      "voteFailed": "Die Stimme kam nicht an. Versuch es noch mal.",
+      "voteBar": {
+        "aria": "{a} {pctA} %, {b} {pctB} %",
+        "votes": "{n, plural, one {# Stimme} other {# Stimmen}}"
+      }
     }
   },
   "aux": {

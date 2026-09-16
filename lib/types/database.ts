@@ -397,6 +397,19 @@ export interface Post {
       Optional because rows predate the column until 024 runs —
       treat undefined as published. */
   is_published?: boolean;
+  /** DEBATE POSTS (migration 048). A post IS a debate when
+      side_a_label is set; the pair is on or off together (DB
+      constraint chk_posts_debate_pair), so there is never half a
+      debate. Each side may point at a release. The tallies are kept
+      on this row by a trigger, so a feed card can draw the split
+      without a second query. All optional — rows and databases
+      predate the columns until 048 runs. */
+  side_a_label?: string | null;
+  side_b_label?: string | null;
+  side_a_release_id?: string | null;
+  side_b_release_id?: string | null;
+  debate_votes_a?: number;
+  debate_votes_b?: number;
   created_at: string;
   updated_at: string;
 }

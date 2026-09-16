@@ -17,6 +17,7 @@ import BackLink from "@/components/ui/BackLink";
 import {
   getPostBySlug,
   getPostLikeState,
+  getViewerDebateVote,
   postReleaseArtistName,
 } from "@/lib/db/posts";
 import { createClient } from "@/lib/supabase/server";
@@ -24,6 +25,7 @@ import ReportButton from "@/components/moderation/ReportButton";
 import DeletePostButton from "@/components/posts/DeletePostButton";
 import PostLikeButton from "@/components/posts/PostLikeButton";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
+import DebateVote from "@/components/posts/DebateVote";
 import PlaylistEmbed from "@/components/playlists/PlaylistEmbed";
 // LANGUAGES: messages → posts.page (+ common). Metadata stays English.
 import { getLocale, getTranslations } from "next-intl/server";
@@ -67,11 +69,18 @@ export default async function PostPage({
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
-  // Like count + viewer heart state (zeros before migration 016).
-  const likes = await getPostLikeState(post.id, user?.id).catch(() => ({
-    count: 0,
-    viewerHasLiked: false,
-  }));
+  // Like count + viewer heart state (zeros before migration 016), and
+  // which side this reader picked if the post is a debate (null before
+  // migration 048, or when signed out).
+  const [likes, viewerVote] = await Promise.all([
+    getPostLikeState(post.id, user?.id).catch(() => ({
+      count: 0,
+      viewerHasLiked: false,
+    })),
+    post.side_a_label
+      ? getViewerDebateVote(post.id, user?.id).catch(() => null)
+      : Promise.resolve(null),
+  ]);
 
   const author = post.author;
   const release = post.release;
@@ -217,6 +226,27 @@ export default async function PostPage({
         <p className="text-text-secondary leading-relaxed text-sm md:text-base whitespace-pre-wrap break-words">
           {post.body}
         </p>
+
+        {/* THE DEBATE (migration 048) — two sides and a live vote,
+            between the body and the tied release so the argument sits
+            right under what was argued. */}
+        {post.side_a_label && post.side_b_label && (
+          <>
+            <div className="divider-glow" />
+            <DebateVote
+              postId={post.id}
+              sideALabel={post.side_a_label}
+              sideBLabel={post.side_b_label}
+              sideARelease={post.side_a_release}
+              sideBRelease={post.side_b_release}
+              initialA={post.debate_votes_a ?? 0}
+              initialB={post.debate_votes_b ?? 0}
+              initialVote={viewerVote}
+              signedIn={!!user}
+              next={`/posts/${post.slug}`}
+            />
+          </>
+        )}
 
         {/* TIED TO — jump from the post to the release page */}
         {release && (

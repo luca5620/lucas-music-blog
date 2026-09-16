@@ -1122,14 +1122,24 @@
         "video": "Fix the video URL (or clear it) before posting.",
         "playlist": "Fix the playlist link (or clear it) before posting.",
         "wentWrong": "Something went wrong.",
-        "network": "Network error. Please try again."
+        "network": "Network error. Please try again.",
+        "debateBothSides": "A debate needs both sides — fill in the second one or switch the debate off.",
+        "debateSameSides": "The two sides have to actually disagree — give them different labels."
       },
       "saving": "Saving…",
       "posting": "Posting…",
       "updatePublish": "Update & Publish",
       "saveChanges": "Save Changes",
       "publish": "Publish Post",
-      "saveDraft": "Save as Draft"
+      "saveDraft": "Save as Draft",
+      "debate": "Debate",
+      "debateToggle": "Make this a debate",
+      "debateHint": "Give your post two sides and readers vote on it. Leave it off for a normal post.",
+      "sideA": "Side A",
+      "sideB": "Side B",
+      "sideAPlaceholder": "e.g. \"Classic\"",
+      "sideBPlaceholder": "e.g. \"Overrated\"",
+      "sideReleasePlaceholder": "Attach a record to this side (optional)…"
     },
     "deleteButton": {
       "confirm": "Delete “{title}”?"
@@ -1138,7 +1148,19 @@
       "title": "Posts",
       "posted": "<b>name</b> posted",
       "aMember": "a member",
-      "playlistBadge": "♫ PLAYLIST"
+      "playlistBadge": "♫ PLAYLIST",
+      "debateBadge": "⚔ DEBATE"
+    },
+    "debate": {
+      "legend": "Pick a side",
+      "picked": "✓ {side}",
+      "signInToVote": "Sign in to vote",
+      "tapAgain": "Tap your side again to take it back",
+      "voteFailed": "Vote didn't land. Try again.",
+      "voteBar": {
+        "aria": "{a} {pctA}%, {b} {pctB}%",
+        "votes": "{n, plural, one {# vote} other {# votes}}"
+      }
     }
   },
   "aux": {

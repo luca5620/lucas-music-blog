@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
+import { parsePostDebate } from "@/lib/posts-debate";
 import { createClient } from "@/lib/supabase/server";
 import { createPost } from "@/lib/db/posts";
 import { getReleaseById } from "@/lib/db/releases";
@@ -133,6 +134,12 @@ export async function POST(request: Request) {
       releaseId = release.id;
     }
 
+    // The two sides, if this post is a debate (migration 048).
+    const parsedDebate = await parsePostDebate(payload);
+    if (!parsedDebate.ok) {
+      return NextResponse.json({ error: parsedDebate.error }, { status: 400 });
+    }
+
     // Username for the slug.
     const supabase = await createClient();
     const { data: profileRow } = await supabase
@@ -154,6 +161,7 @@ export async function POST(request: Request) {
       releaseId,
       playlistId,
       isPublished: is_published !== false,
+      debate: parsedDebate.debate,
     });
 
     if (!post) {

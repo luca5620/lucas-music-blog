@@ -39,9 +39,14 @@ export default function PostForm({
   post,
   initialRelease = null,
   initialArtist = "",
+  initialSideARelease = null,
+  initialSideBRelease = null,
 }: {
   /** Present = edit mode: PATCH this post instead of creating one. */
   post?: Post;
+  /** Edit mode: the records already attached to each debate side. */
+  initialSideARelease?: Release | null;
+  initialSideBRelease?: Release | null;
   initialRelease?: Release | null;
   initialArtist?: string;
 }) {
@@ -60,6 +65,19 @@ export default function PostForm({
   // The optionally tied release (full local row via /api/catalog/ensure).
   const [release, setRelease] = useState<Release | null>(initialRelease);
   const [pickedArtist, setPickedArtist] = useState(initialArtist);
+
+  // DEBATE POSTS (migration 048). A post becomes a debate the moment
+  // both side labels are filled in; clearing them turns it back into a
+  // plain post. Each side can carry a record of its own.
+  const [sideA, setSideA] = useState(post?.side_a_label ?? "");
+  const [sideB, setSideB] = useState(post?.side_b_label ?? "");
+  const [sideARelease, setSideARelease] = useState<Release | null>(
+    initialSideARelease ?? null
+  );
+  const [sideBRelease, setSideBRelease] = useState<Release | null>(
+    initialSideBRelease ?? null
+  );
+  const [debateOpen, setDebateOpen] = useState(!!post?.side_a_label);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +124,20 @@ export default function PostForm({
       return;
     }
 
+    // A debate is both sides or neither — same rule the server runs.
+    if (debateOpen) {
+      const a = sideA.trim();
+      const b = sideB.trim();
+      if (!a || !b) {
+        setError(t("errors.debateBothSides"));
+        return;
+      }
+      if (a.toLowerCase() === b.toLowerCase()) {
+        setError(t("errors.debateSameSides"));
+        return;
+      }
+    }
+
     setSaving(true);
     setError(null);
 
@@ -119,6 +151,11 @@ export default function PostForm({
           video_url: trimmedUrl || null,
           playlist_url: trimmedPlaylist || null,
           release_id: release?.id ?? null,
+    // Both labels or neither — the server enforces the same rule.
+    side_a_label: debateOpen ? sideA.trim() || null : null,
+    side_b_label: debateOpen ? sideB.trim() || null : null,
+    side_a_release_id: debateOpen ? sideARelease?.id ?? null : null,
+    side_b_release_id: debateOpen ? sideBRelease?.id ?? null : null,
           is_published: isPublished,
         }),
       });
@@ -241,6 +278,110 @@ export default function PostForm({
           <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
             {t("playlistHint")}
           </p>
+        )}
+      </fieldset>
+
+      {/* ========== STEP 2c: MAKE IT A DEBATE (optional) ==========
+          Luca 2026-09-16: debates come back as a KIND OF POST rather
+          than their own section — "I don't feel like we should fully
+          kill it, and may entice people to make more posts". Two
+          sides, an optional record each, and readers vote on the post
+          itself. overflow-visible for the same reason as STEP 3: the
+          catalog dropdowns render in flow underneath. */}
+      <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
+        <legend className="label-xbox">{t("debate")}</legend>
+
+        <label className="flex items-start gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={debateOpen}
+            onChange={(e) => setDebateOpen(e.target.checked)}
+            className="w-4 h-4 mt-0.5 shrink-0 accent-current cursor-pointer text-accent-primary"
+          />
+          <span className="min-w-0">
+            <span className="block text-sm font-bold font-[family-name:var(--font-heading)] text-text-primary">
+              {t("debateToggle")}
+            </span>
+            <span className="block text-xs text-text-muted">
+              {t("debateHint")}
+            </span>
+          </span>
+        </label>
+
+        {debateOpen && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {(
+              [
+                {
+                  key: "a" as const,
+                  value: sideA,
+                  set: setSideA,
+                  rel: sideARelease,
+                  setRel: setSideARelease,
+                  label: t("sideA"),
+                  placeholder: t("sideAPlaceholder"),
+                  tone: "text-accent-primary",
+                },
+                {
+                  key: "b" as const,
+                  value: sideB,
+                  set: setSideB,
+                  rel: sideBRelease,
+                  setRel: setSideBRelease,
+                  label: t("sideB"),
+                  placeholder: t("sideBPlaceholder"),
+                  tone: "text-accent-rose",
+                },
+              ]
+            ).map((side) => (
+              <div key={side.key} className="space-y-2">
+                <label
+                  className={`block text-xs uppercase tracking-widest ${side.tone} font-[family-name:var(--font-heading)]`}
+                >
+                  {side.label}
+                </label>
+                <input
+                  type="text"
+                  value={side.value}
+                  onChange={(e) => side.set(e.target.value)}
+                  maxLength={40}
+                  placeholder={side.placeholder}
+                  className="form-input"
+                />
+                {side.rel ? (
+                  <div className="flex items-center gap-2 p-2 rounded-lg border border-white/10 bg-black/20">
+                    <span className="w-10 h-10 rounded overflow-hidden bg-bg-elevated shrink-0 flex items-center justify-center">
+                      {side.rel.cover_image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={side.rel.cover_image}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span>💿</span>
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1 text-xs text-text-secondary truncate">
+                      {side.rel.title}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => side.setRel(null)}
+                      className="label-xbox hover:text-accent-primary transition-colors text-[0.6rem] shrink-0"
+                    >
+                      {t("remove")}
+                    </button>
+                  </div>
+                ) : (
+                  <CatalogSearch
+                    onPick={(pick) => side.setRel(pick.release)}
+                    placeholder={t("sideReleasePlaceholder")}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </fieldset>
 

@@ -1122,14 +1122,24 @@
         "video": "Corrige le lien de la vidéo (ou efface-le) avant de publier.",
         "playlist": "Corrige le lien de la playlist (ou efface-le) avant de publier.",
         "wentWrong": "Quelque chose a mal tourné.",
-        "network": "Erreur de connexion. Réessaie."
+        "network": "Erreur de connexion. Réessaie.",
+        "debateBothSides": "Un débat a besoin des deux camps : remplissez le second ou désactivez le débat.",
+        "debateSameSides": "Les deux camps doivent vraiment s'opposer : donnez-leur des libellés différents."
       },
       "saving": "Enregistrement…",
       "posting": "Publication…",
       "updatePublish": "Mettre à jour et publier",
       "saveChanges": "Enregistrer",
       "publish": "Publier",
-      "saveDraft": "Enregistrer en brouillon"
+      "saveDraft": "Enregistrer en brouillon",
+      "debate": "Débat",
+      "debateToggle": "En faire un débat",
+      "debateHint": "Donnez deux camps à votre publication et laissez les autres voter. Laissez désactivé pour une publication normale.",
+      "sideA": "Camp A",
+      "sideB": "Camp B",
+      "sideAPlaceholder": "ex. « Classique »",
+      "sideBPlaceholder": "ex. « Surcoté »",
+      "sideReleasePlaceholder": "Associer un disque à ce camp (facultatif)…"
     },
     "deleteButton": {
       "confirm": "Supprimer « {title} » ?"
@@ -1138,7 +1148,19 @@
       "title": "Posts",
       "posted": "<b>name</b> a posté",
       "aMember": "un membre",
-      "playlistBadge": "♫ PLAYLIST"
+      "playlistBadge": "♫ PLAYLIST",
+      "debateBadge": "⚔ DÉBAT"
+    },
+    "debate": {
+      "legend": "Choisissez un camp",
+      "picked": "✓ {side}",
+      "signInToVote": "Connectez-vous pour voter",
+      "tapAgain": "Touchez à nouveau votre camp pour retirer votre vote",
+      "voteFailed": "Le vote n'est pas passé. Réessayez.",
+      "voteBar": {
+        "aria": "{a} {pctA} %, {b} {pctB} %",
+        "votes": "{n, plural, one {# vote} other {# votes}}"
+      }
     }
   },
   "aux": {

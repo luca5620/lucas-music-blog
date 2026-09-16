@@ -55,6 +55,7 @@ interface CapacitorBridge {
         callback: () => void
       ) => Promise<PluginListener>;
     };
+    SplashScreen?: { hide: (opts?: { fadeOutDuration?: number }) => Promise<void> };
     App?: {
       addListener: (
         event: string,
@@ -72,6 +73,24 @@ function bridge(): CapacitorBridge | null {
 /** True when running inside the iOS/Android app shell. */
 export function isNativeApp(): boolean {
   return bridge()?.isNativePlatform?.() ?? false;
+}
+
+/**
+ * Drop Capacitor's static launch image early.
+ *
+ * capacitor.config.ts gives it 1200ms with launchAutoHide, which is
+ * the right curtain when nothing else follows it. SplashCurtain calls
+ * this the instant its own animated curtain is on screen, so the two
+ * never stack into a three-second wait — and because this is a
+ * plugin call from the web layer, it ships on a normal deploy with no
+ * Xcode rebuild.
+ */
+export async function hideNativeSplash(): Promise<void> {
+  try {
+    await bridge()?.Plugins?.SplashScreen?.hide({ fadeOutDuration: 120 });
+  } catch {
+    /* no plugin, or already hidden — either way the app is up */
+  }
 }
 
 /** "ios" | "android" | "web" */

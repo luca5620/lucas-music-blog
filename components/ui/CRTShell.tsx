@@ -1,4 +1,4 @@
-import LiquidField from "@/components/ui/LiquidField";
+import ShellLiquid from "@/components/ui/ShellLiquid";
 
 /**
  * CRTShell — the frame every page renders inside.
@@ -20,7 +20,7 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
           is page-tall, composed at viewport scale, and moves only
           while html.motion-on (thermal mode). */}
       <div className="crt-bezel-liquid" aria-hidden="true">
-        <LiquidField context="site" tall />
+        <ShellLiquid where="app" />
       </div>
       {/* NO status-bar scrim (Luca 2026-08-28: the solid band read as
           a flat black strip over the liquid). The status-bar zone is
@@ -46,7 +46,7 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
               shift anything (the old blob string once scored a 0.65
               layout shift for that). */}
           <div className="crt-liquid" aria-hidden="true">
-            <LiquidField context="site" tall />
+            <ShellLiquid where="web" />
           </div>
           {children}
         </div>

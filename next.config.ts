@@ -120,4 +120,18 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   tunnelRoute: "/monitoring",
   disableLogger: true, // strips Sentry's debug logger from the bundle
   telemetry: false,
+  // PERFORMANCE (2026-09-15): Sentry was the single biggest chunk the
+  // app downloaded — 424KB uncompressed, bigger than Supabase. We run
+  // errors ONLY (instrumentation-client.ts: tracesSampleRate 0, no
+  // replay), so every one of these subsystems was dead weight being
+  // parsed on every first load. Excluding them changes no behaviour
+  // we use; if tracing or replay is ever wanted, flip the matching
+  // flag back off here first or it will silently do nothing.
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+    excludeTracing: true,
+    excludeReplayShadowDom: true,
+    excludeReplayIframe: true,
+    excludeReplayWorker: true,
+  },
 });

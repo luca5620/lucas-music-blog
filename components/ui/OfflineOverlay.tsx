@@ -23,7 +23,10 @@ async function probeConnection(): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 5000);
   try {
-    const res = await fetch("/manifest.webmanifest", {
+    // Cache-busted: after a Wi-Fi → cellular handover iOS can answer
+    // from a dead route's cached failure, which made the probe say
+    // "still offline" long after the phone was back (Luca 2026-09-15).
+    const res = await fetch(`/manifest.webmanifest?ping=${Date.now()}`, {
       method: "HEAD",
       cache: "no-store",
       signal: controller.signal,
@@ -81,7 +84,23 @@ export default function OfflineOverlay() {
   const [retuning, setRetuning] = useState<"idle" | "checking" | "dead">(
     "idle",
   );
-  const probing = useRef(false);
+  /* THE RETRY BUG (Luca 2026-09-15: "the retry button still does
+     nothing"). The button and the background poller used to share a
+     boolean, and the button returned early whenever the poller's probe
+     was in flight — with a 4s poll and a 5s timeout that is most of
+     the time, so the tap did nothing at all: no reload, no label
+     change, no message. Now they share the PROMISE. A tap either
+     starts a probe or joins the running one, and it always gets an
+     answer to show. */
+  const inFlight = useRef<Promise<boolean> | null>(null);
+  const check = useCallback(() => {
+    if (!inFlight.current) {
+      inFlight.current = probeConnection().finally(() => {
+        inFlight.current = null;
+      });
+    }
+    return inFlight.current;
+  }, []);
 
   // Safety net for WKWebView's missing `online` event: while the
   // overlay is up, quietly re-probe every few seconds and reload the
@@ -90,27 +109,34 @@ export default function OfflineOverlay() {
   useEffect(() => {
     if (!native || !offline) return;
     const interval = setInterval(async () => {
-      if (probing.current) return;
-      probing.current = true;
-      const alive = await probeConnection();
-      probing.current = false;
-      if (alive) window.location.reload();
+      if (await check()) window.location.reload();
     }, 4000);
-    return () => clearInterval(interval);
-  }, [native, offline]);
+    // The other moment the network changes under us: a handover
+    // happens with the phone in hand, in another app, or locked. Probe
+    // on the way back instead of waiting out the next tick.
+    const onWake = async () => {
+      if (document.visibilityState === "visible" && (await check())) {
+        window.location.reload();
+      }
+    };
+    document.addEventListener("visibilitychange", onWake);
+    window.addEventListener("focus", onWake);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onWake);
+      window.removeEventListener("focus", onWake);
+    };
+  }, [native, offline, check]);
 
   const handleRetune = useCallback(async () => {
-    if (probing.current) return;
-    probing.current = true;
     setRetuning("checking");
-    const alive = await probeConnection();
-    probing.current = false;
+    const alive = await check();
     if (alive) {
       window.location.reload();
     } else {
       setRetuning("dead");
     }
-  }, []);
+  }, [check]);
 
   if (!native || !offline) return null;
 

@@ -2869,6 +2869,70 @@ fieldset {
   .penguin-mark.penguin-tapped { animation: none; }
 }
 
+/* ------------------------------------------------------------
+   THE APP'S OPENING — components/ui/SplashCurtain.tsx
+   The penguin drops in, lands with weight, settles; the wordmark
+   resolves under it; the whole thing lifts. ~1.6s, app only, cold
+   boot only, and any touch skips it. True black so it continues the
+   native launch image rather than flashing a different background. */
+.splash-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  opacity: 1;
+  transition: opacity 340ms ease-in;
+}
+.splash-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-penguin {
+  display: block;
+  width: auto;
+  height: 40vh;
+  max-height: 260px;
+  transform-origin: 50% 92%;
+  animation: splash-land 1150ms cubic-bezier(.22, 1.2, .36, 1) both;
+}
+
+/* The wordmark waits for the landing, then resolves. PlayStation
+   font, like the native launch image and the disc spine. */
+.splash-wordmark {
+  font-family: 'PlayStation', var(--font-heading);
+  font-size: clamp(1.1rem, 5.5vw, 1.6rem);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #1e90ff;
+  text-shadow: 0 0 10px rgba(30, 144, 255, .55), 0 0 30px rgba(30, 144, 255, .25);
+  opacity: 0;
+  animation: splash-wordmark 620ms ease-out 620ms both;
+}
+
+@keyframes splash-land {
+  0% { transform: translateY(-38%) scale(.86, 1.1); opacity: 0; }
+  28% { opacity: 1; }
+  46% { transform: translateY(0) scale(1.1, .88); }   /* the landing squash */
+  64% { transform: translateY(-7%) scale(.97, 1.04); }
+  82% { transform: translateY(0) scale(1.02, .99); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
+@keyframes splash-wordmark {
+  0% { opacity: 0; transform: translateY(6px); letter-spacing: .34em; }
+  100% { opacity: 1; transform: translateY(0); letter-spacing: .14em; }
+}
+
+/* The curtain is one cold-boot moment, so .low-detail leaves it alone
+   for the same reason the mascot's greeting survives it. Reduced
+   motion never gets here at all — SplashCurtain returns null. */
+
 /* ============================================================
    RATINGS
    ============================================================ */

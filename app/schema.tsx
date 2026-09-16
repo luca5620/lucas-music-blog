@@ -473,12 +473,17 @@ export function ItemListSchema({
   reviews: ItemListReview[];
   listName: string;
 }) {
+  // Only the first page of items is described in detail. A hundred
+  // fully-expanded Review objects added 36KB of JSON-LD to /reviews —
+  // weight every phone downloads and parses — and crawlers take the
+  // head of a list anyway; numberOfItems still reports the real total.
+  const listed = reviews.slice(0, 30);
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: listName,
     numberOfItems: reviews.length,
-    itemListElement: reviews.map((review, index) => ({
+    itemListElement: listed.map((review, index) => ({
       "@type": "ListItem",
       position: index + 1,
       url: `${SITE_URL}/reviews/${review.slug}`,

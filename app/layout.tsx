@@ -13,13 +13,25 @@ import GrainOverlay from "@/components/ui/GrainOverlay";
 import NativeMode from "@/components/ui/NativeMode";
 import PressMode from "@/components/ui/PressMode";
 import OfflineOverlay from "@/components/ui/OfflineOverlay";
+import SplashCurtain from "@/components/ui/SplashCurtain";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import ImageReveal from "@/components/ui/ImageReveal";
 import TabBar from "@/components/ui/TabBar";
 import PushRegistration from "@/components/ui/PushRegistration";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
-import LiquidField from "@/components/ui/LiquidField";
+import ShellLiquid from "@/components/ui/ShellLiquid";
+
+/* The database origin, for the preconnect below. Wrapped because a
+   malformed or missing env var must never take the whole layout
+   down — a missing hint just costs a handshake later. */
+const SUPABASE_ORIGIN = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").origin;
+  } catch {
+    return "";
+  }
+})();
 import NavigationPending from "@/components/ui/NavigationPending";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
@@ -182,6 +194,18 @@ export default async function RootLayout({
             paint unless localStorage holds an explicit opt-out, so the
             default visitor never sees a frame of the full-effects
             version (lib/lowDetail.ts). */}
+        {/* Warm the two connections every page needs before it can
+            show anything: our database and the cover CDN. Without
+            these the DNS + TLS handshake only starts when the first
+            query or the first <img> is discovered. */}
+        {SUPABASE_ORIGIN && (
+          <>
+            <link rel="preconnect" href={SUPABASE_ORIGIN} crossOrigin="" />
+            <link rel="dns-prefetch" href={SUPABASE_ORIGIN} />
+          </>
+        )}
+        <link rel="preconnect" href="https://i.scdn.co" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://i.scdn.co" />
         <script dangerouslySetInnerHTML={{ __html: LOW_DETAIL_BOOT_SCRIPT }} />
         <WebSiteSchema />
         <SoftwareApplicationSchema appStoreUrl={APP_STORE_URL} />
@@ -200,7 +224,7 @@ export default async function RootLayout({
           {/* The room is web-only (hidden ≤640px and in the app): one
               quieter field of the same material behind the TV, so the
               side bars on wide screens glow with the same light. */}
-          <LiquidField context="room" />
+          <ShellLiquid where="room" />
         </div>
 
         {/* CRT atmosphere: grain, scanlines, grille */}
@@ -234,6 +258,8 @@ export default async function RootLayout({
           <PushRegistration />
           {/* App-only NO SIGNAL screen for mid-session connection loss */}
           <OfflineOverlay />
+          {/* App only, cold boot only, dismissed by any touch. */}
+          <SplashCurtain />
           {/* App-only pull-down-to-refresh gesture */}
           <PullToRefresh />
           {/* Site-wide cover-art blur-up on image load */}

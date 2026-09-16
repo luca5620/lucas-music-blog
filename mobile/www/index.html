@@ -82,13 +82,82 @@
       box-shadow: 0 3px 0 #1570c8, 0 0 24px rgba(30,144,255,0.35);
     }
     button:active { transform: translateY(2px); box-shadow: 0 1px 0 #1570c8; }
+    button[disabled] { opacity: .6; }
+    .status { margin-top: 14px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+    [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <div class="screen">
     <h1>NO SIGNAL</h1>
     <p>Peak Music Reviews can't find a connection. Check your service and smack the side of the TV.</p>
-    <button onclick="window.location.href='https://peakmusicreviews.com'">Retune</button>
+    <button id="retune">Retune</button>
+    <p id="status" class="status" hidden>Still no signal.</p>
   </div>
+  <script>
+    /* The retry used to be `location.href = site` and nothing else
+       (Luca 2026-09-15: "when i switched from wifi to cellular when
+       signal is lost the retry button still does nothing"). On a
+       handover the phone is briefly routeless, so that navigation
+       failed, the WebView landed straight back on this page, and the
+       button looked broken because nothing on screen ever changed.
+
+       Now: the button PROBES first and says what it found, and the
+       page keeps probing by itself so it lets you back in the moment
+       the network returns, without anyone tapping anything.
+
+       no-cors because this page is served from the app bundle and the
+       site is another origin: the response is opaque and unreadable,
+       but a fetch that RESOLVES means the network carried it, which is
+       the entire question being asked. */
+    (function () {
+      var SITE = 'https://peakmusicreviews.com/';
+      var button = document.getElementById('retune');
+      var status = document.getElementById('status');
+      var busy = null;
+
+      function probe() {
+        if (busy) return busy;
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, 5000);
+        busy = fetch(SITE + 'manifest.webmanifest?ping=' + Date.now(), {
+          method: 'GET',
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: controller.signal
+        }).then(function () { return true; })
+          .catch(function () { return false; })
+          .then(function (ok) { clearTimeout(timer); busy = null; return ok; });
+        return busy;
+      }
+
+      function enter() { window.location.replace(SITE); }
+
+      function retune() {
+        button.disabled = true;
+        button.textContent = 'Tuning…';
+        status.hidden = true;
+        probe().then(function (ok) {
+          if (ok) { enter(); return; }
+          button.disabled = false;
+          button.textContent = 'Retune';
+          status.hidden = false;
+        });
+      }
+
+      button.addEventListener('click', retune);
+      // Quietly keep trying: a handover resolves on its own within a
+      // few seconds and the app should simply come back.
+      setInterval(function () {
+        probe().then(function (ok) { if (ok) enter(); });
+      }, 4000);
+      window.addEventListener('online', retune);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+          probe().then(function (ok) { if (ok) enter(); });
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

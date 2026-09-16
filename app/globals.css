@@ -2871,20 +2871,22 @@ fieldset {
 
 /* ------------------------------------------------------------
    THE APP'S OPENING — components/ui/SplashCurtain.tsx
+   ⚠️ Currently OFF (lib/flags.ts APP_SPLASH_CURTAIN_ENABLED) because
+   the native still and this stacked into two splashes. Preview it
+   with ?splash=1.
+
    The penguin drops in, lands with weight, settles; the wordmark
-   resolves under it; the whole thing lifts. ~1.6s, app only, cold
-   boot only, and any touch skips it. True black so it continues the
-   native launch image rather than flashing a different background. */
+   resolves under it; a frost line runs to 100%. True black so it
+   continues the native launch image rather than flashing a different
+   background. ------------------------------------------------- */
 .splash-curtain {
   position: fixed;
   inset: 0;
   z-index: 200;
   background: #000;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
   opacity: 1;
   transition: opacity 340ms ease-in;
 }
@@ -2893,24 +2895,56 @@ fieldset {
   pointer-events: none;
 }
 
+/* The mascot + wordmark ride together; the rim frost is a separate
+   layer behind them, pinned to the screen edge. */
+.splash-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+/* Same treatment as the nav mascot (.penguin-mark): no circle, no
+   plate, and the last few percent fade out instead of ending on a
+   straight cut — the bird stands in the dark rather than sitting on
+   a trimmed edge. Luca 2026-09-16 asked for exactly this fade here. */
 .splash-penguin {
   display: block;
   width: auto;
   height: 40vh;
   max-height: 260px;
   transform-origin: 50% 92%;
+  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
   animation: splash-land 1150ms cubic-bezier(.22, 1.2, .36, 1) both;
 }
 
-/* The wordmark waits for the landing, then resolves. PlayStation
-   font, like the native launch image and the disc spine. */
+/* The wordmark waits for the landing, then resolves.
+   COLOUR + SIZE (Luca 2026-09-16): this is the wordmark off the
+   original native launch image — PlayStation font, big, and the
+   silver #c4c4c8 sampled straight out of splash-2732x2732.png. It
+   was a smaller blue one; blue put it in the site's accent language
+   when it belongs to the launch image's. Flat, with only enough
+   shadow to sit on black — the original carries no glow. */
 .splash-wordmark {
-  font-family: 'PlayStation', var(--font-heading);
-  font-size: clamp(1.1rem, 5.5vw, 1.6rem);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: #1e90ff;
-  text-shadow: 0 0 10px rgba(30, 144, 255, .55), 0 0 30px rgba(30, 144, 255, .25);
+  position: relative;
+  /* NOT var(--font-heading): that variable is declared on :root using
+     var(--font-inter), but next/font puts --font-inter on <body>, so
+     at :root it is undefined and --font-heading computes to EMPTY and
+     inherits down as nothing. Any font-family reading it silently
+     falls back to Tailwind's default sans — which is why this wordmark
+     was never actually in the PlayStation font. Naming the fallback
+     stack directly sidesteps the whole thing. (The site-wide version
+     of this bug is written up in ROADMAP.) */
+  font-family: 'PlayStation', var(--font-jost), system-ui, sans-serif;
+  font-size: clamp(1.45rem, 7.2vw, 2.15rem);
+  letter-spacing: .12em;
+  text-transform: none;
+  white-space: nowrap;
+  color: #c4c4c8;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, .9);
   opacity: 0;
   animation: splash-wordmark 620ms ease-out 620ms both;
 }
@@ -2925,8 +2959,83 @@ fieldset {
 }
 
 @keyframes splash-wordmark {
-  0% { opacity: 0; transform: translateY(6px); letter-spacing: .34em; }
-  100% { opacity: 1; transform: translateY(0); letter-spacing: .14em; }
+  0% { opacity: 0; transform: translateY(6px); letter-spacing: .3em; }
+  100% { opacity: 1; transform: translateY(0); letter-spacing: .12em; }
+}
+
+/* ---- FROST, variant 1: the perimeter (default) ----
+   A frost line traces the edge of the phone, one full loop, closing
+   the rectangle exactly as the curtain lifts (1200ms starting at
+   250ms = the 1450ms hold in SplashCurtain.tsx — keep them in step).
+
+   preserveAspectRatio="none" stretches the 100x100 viewBox to the
+   screen, which would also stretch the stroke into a thick-on-top,
+   thin-on-the-sides outline — `vector-effect: non-scaling-stroke`
+   is what keeps it one even hairline all the way round.
+   pathLength="100" makes the dash maths plain percentages. */
+.splash-rim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.splash-rim-track,
+.splash-rim-line {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+/* The unfrosted edge: barely there, just enough to imply the loop. */
+.splash-rim-track {
+  stroke: rgba(219, 233, 247, 0.07);
+  stroke-width: 2;
+}
+/* The frost itself — pale ice, lightly bloomed. */
+.splash-rim-line {
+  stroke: #dbe9f7;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  filter:
+    drop-shadow(0 0 3px rgba(219, 233, 247, .95))
+    drop-shadow(0 0 10px rgba(150, 200, 245, .55));
+  animation: splash-rim-draw 1200ms cubic-bezier(.4, 0, .25, 1) 250ms both;
+}
+@keyframes splash-rim-draw {
+  0% { stroke-dashoffset: 100; opacity: .5; }
+  12% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+/* ---- FROST, variant 2: across the wordmark ----
+   Only active when SplashCurtain sets FROST_STYLE = "text". The base
+   word sits dim and the frosted copy (::after, cloned from
+   data-text) is wiped across it left to right, hitting 100% as the
+   curtain lifts. */
+.splash-frost-text .splash-wordmark {
+  color: #55555c;
+  text-shadow: none;
+}
+.splash-frost-text .splash-wordmark::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  color: #dbe9f7;
+  text-shadow:
+    0 0 6px rgba(219, 233, 247, .8),
+    0 0 18px rgba(150, 200, 245, .45);
+  -webkit-clip-path: inset(0 100% 0 0);
+  clip-path: inset(0 100% 0 0);
+  animation: splash-frost-wipe 780ms cubic-bezier(.4, 0, .25, 1) 670ms both;
+}
+@keyframes splash-frost-wipe {
+  0% { -webkit-clip-path: inset(0 100% 0 0); clip-path: inset(0 100% 0 0); }
+  100% { -webkit-clip-path: inset(0 0 0 0); clip-path: inset(0 0 0 0); }
 }
 
 /* The curtain is one cold-boot moment, so .low-detail leaves it alone
@@ -3020,17 +3129,22 @@ fieldset {
   border-color: #6d4a2a !important;
   /* A stain, not a flat fill: two off-centre pools of rot over the
      brown so the face of the badge looks spoiled. */
+  /* (2026-09-16) The green was smeared across the whole face and read
+     as a dirty badge rather than a smelly one. Now the brown is the
+     badge and the green is only a haze at the top-left, where the
+     plumes leave from — so the colour says "fumes coming off it"
+     instead of "somebody spilled on it". */
   background:
-    radial-gradient(circle at 30% 25%, rgba(120, 130, 52, 0.38), transparent 60%),
-    radial-gradient(circle at 72% 78%, rgba(86, 60, 30, 0.55), transparent 65%),
-    rgba(74, 52, 30, 0.85) !important;
+    radial-gradient(ellipse 70% 55% at 26% 18%, rgba(146, 186, 66, 0.3), transparent 68%),
+    radial-gradient(circle at 74% 82%, rgba(78, 54, 28, 0.5), transparent 70%),
+    rgba(74, 52, 30, 0.88) !important;
   color: #cf9a5e !important;
   text-shadow:
-    0 0 10px rgba(140, 150, 60, 0.55),
-    0 1px 0 rgba(0, 0, 0, 0.6) !important;
+    0 0 9px rgba(150, 190, 70, 0.4),
+    0 1px 0 rgba(0, 0, 0, 0.65) !important;
   box-shadow:
-    0 0 14px rgba(120, 130, 52, 0.3),
-    inset 0 0 18px rgba(60, 66, 22, 0.6) !important;
+    0 0 12px rgba(132, 168, 58, 0.26),
+    inset 0 0 16px rgba(58, 64, 22, 0.5) !important;
   animation: stink-wobble 2.8s ease-in-out infinite !important;
 }
 
@@ -3041,21 +3155,25 @@ fieldset {
   content: "";
   position: absolute;
   bottom: 68%;
-  width: 1.15rem;
-  height: 1.6rem;
+  /* Taller and narrower than before, with a smooth falloff to nothing
+     at the edges — a plume of vapour rather than a green blob. The
+     colour moved off olive onto a cleaner chartreuse so it reads as
+     fumes against the brown instead of more brown. */
+  width: 0.95rem;
+  height: 2rem;
   background:
     radial-gradient(
-      ellipse at 50% 75%,
-      rgba(164, 190, 78, 0.85),
-      rgba(126, 140, 54, 0.35) 45%,
-      transparent 70%
+      ellipse 62% 48% at 50% 82%,
+      rgba(168, 214, 86, 0.7),
+      rgba(140, 180, 64, 0.26) 52%,
+      transparent 76%
     ),
     radial-gradient(
-      ellipse at 42% 28%,
-      rgba(190, 205, 110, 0.55),
-      transparent 65%
+      ellipse 44% 34% at 46% 34%,
+      rgba(198, 228, 130, 0.42),
+      transparent 72%
     );
-  filter: blur(2.5px);
+  filter: blur(3.6px);
   opacity: 0;
   pointer-events: none;
   z-index: 1;
@@ -3126,6 +3244,84 @@ fieldset {
     opacity: 0;
     transform: translate(-0.15rem, -2.2rem) scale(1.55) rotate(12deg);
   }
+}
+
+/* ============================================================
+   THE GLOWING BANDS GET A SIGNATURE TOO (Luca 2026-09-16:
+   "add a little animation for 9.5-10s now that 0s have one")
+   ============================================================
+   A 0 has plumes coming off it, so a 9.5+ should have something of
+   its own rather than only a pulse. Two sparks lift off each badge
+   and twinkle out — purple over the 9.5–9.9 elite band, white-blue
+   over a perfect 10 — using the same two-pseudo-element trick as the
+   stink, mirrored and offset so they cross instead of tracking each
+   other up the same line.
+
+   The star shape is two crossing gradients: one wide-and-flat, one
+   tall-and-thin. No image, no extra request. */
+.rating-badge.rating-elite,
+.rating-badge.rating-perfect {
+  position: relative;
+  overflow: visible;
+}
+
+.rating-badge.rating-elite::before,
+.rating-badge.rating-elite::after,
+.rating-badge.rating-perfect::before,
+.rating-badge.rating-perfect::after {
+  content: "";
+  position: absolute;
+  width: 1.05rem;
+  height: 1.05rem;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  /* Four-point star: a wide-flat gradient crossed with a tall-thin
+     one, over a small bright core. Arms are kept just thick enough to
+     read as a star rather than a dot at badge size. */
+  background:
+    radial-gradient(ellipse 52% 13% at 50% 50%, var(--spark), transparent 70%),
+    radial-gradient(ellipse 13% 52% at 50% 50%, var(--spark), transparent 70%),
+    radial-gradient(circle 22% at 50% 50%, var(--spark-core), transparent 70%);
+  filter: drop-shadow(0 0 4px var(--spark));
+  animation: rating-spark 2.6s ease-in-out infinite;
+}
+
+.rating-badge.rating-elite {
+  --spark: rgba(216, 168, 255, 0.95);
+  --spark-core: rgba(245, 232, 255, 0.8);
+}
+.rating-badge.rating-perfect {
+  --spark: rgba(150, 205, 255, 0.95);
+  --spark-core: rgba(255, 255, 255, 0.92);
+}
+
+/* Left spark leaves from the shoulder, right one from the far side a
+   beat later and on the opposite lean. */
+.rating-badge.rating-elite::before,
+.rating-badge.rating-perfect::before {
+  left: -6%;
+  bottom: 62%;
+}
+.rating-badge.rating-elite::after,
+.rating-badge.rating-perfect::after {
+  right: -8%;
+  bottom: 70%;
+  animation-delay: 1.3s;
+  animation-name: rating-spark-alt;
+}
+
+@keyframes rating-spark {
+  0% { opacity: 0; transform: translate(0, 0.5rem) scale(0.3) rotate(0deg); }
+  18% { opacity: 1; transform: translate(-0.1rem, -0.1rem) scale(1.15) rotate(35deg); }
+  46% { opacity: 0.75; transform: translate(-0.3rem, -0.85rem) scale(0.72) rotate(90deg); }
+  100% { opacity: 0; transform: translate(-0.5rem, -1.8rem) scale(0.2) rotate(150deg); }
+}
+@keyframes rating-spark-alt {
+  0% { opacity: 0; transform: translate(0, 0.5rem) scale(0.25) rotate(20deg); }
+  20% { opacity: 1; transform: translate(0.12rem, -0.15rem) scale(1.05) rotate(-30deg); }
+  50% { opacity: 0.7; transform: translate(0.34rem, -0.95rem) scale(0.66) rotate(-85deg); }
+  100% { opacity: 0; transform: translate(0.55rem, -1.9rem) scale(0.18) rotate(-145deg); }
 }
 
 .rating-badge.rating-perfect {
@@ -3688,7 +3884,11 @@ fieldset {
 .native-app:not(.motion-on) .streak-spin,
 .native-app:not(.motion-on) .streak-flicker,
 .native-app:not(.motion-on) .rating-badge.rating-elite,
+.native-app:not(.motion-on) .rating-badge.rating-elite::before,
+.native-app:not(.motion-on) .rating-badge.rating-elite::after,
 .native-app:not(.motion-on) .rating-badge.rating-perfect,
+.native-app:not(.motion-on) .rating-badge.rating-perfect::before,
+.native-app:not(.motion-on) .rating-badge.rating-perfect::after,
 .native-app:not(.motion-on) .rating-badge.rating-stinky,
 .native-app:not(.motion-on) .rating-badge.rating-stinky::before,
 .native-app:not(.motion-on) .rating-badge.rating-stinky::after,

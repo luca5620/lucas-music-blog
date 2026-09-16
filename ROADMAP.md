@@ -122,6 +122,32 @@ RUN**; there is nothing to run on the dashboard.
    (SEO plan, EU availability / DSA, marketing plan) — unchanged,
    still owed.
 
+- **2026-09-15 (Windows): the app splash, the dead Retune button, and
+  a measured performance pass (b1cfa33).**
+  - **Splash** — `components/ui/SplashCurtain.tsx`: penguin drops in,
+    lands, wordmark resolves. App only, cold boot only, any touch
+    skips it. It calls `SplashScreen.hide()` as it appears, so the
+    native 1200ms still and this animation never stack — **no
+    capacitor.config change and no Xcode rebuild needed**.
+  - **Retune** — TWO bugs, one per offline screen. In
+    `OfflineOverlay.tsx` the button and the poller shared a boolean
+    and the button returned early while a probe was in flight (most
+    of the time), so the tap did literally nothing; they share the
+    promise now. In `mobile/www/index.html` the button was a bare
+    `location.href` that silently failed mid-handover; it probes,
+    reports, and retries itself now. ⚠️ **That page is baked into the
+    binary — it only reaches users on the next NATIVE BUILD.**
+  - **Performance**, measured on a production build: first-load JS
+    1155KB → 963KB (Sentry now loads on idle after first paint, with
+    a buffer so boot errors are still reported); WebGL contexts at
+    load 4 → 1-2 (hidden liquid canvases were still creating
+    contexts + polling — `ShellLiquid`; hero panels now wake on
+    scroll); preconnect to Supabase + i.scdn.co; ItemList JSON-LD
+    capped at 30 items (was 36KB on /reviews).
+  - **NOT done, Luca's call:** /reviews server-renders 100 cards
+    (~410KB of HTML). Cutting it needs pagination or a load-more,
+    which changes what people see.
+
 - **2026-09-15 (Windows): three changes Luca asked for in one pass —
   players on Personal Favorites, brown + stinky bottom ratings, and
   the 3-D penguin brief for Astra.** All on `main`, no migration.

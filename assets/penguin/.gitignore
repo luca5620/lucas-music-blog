@@ -1,0 +1,6 @@
+frames/
+*.blend1
+# The .blend and .glb are BUILD OUTPUT: render.py rebuilds both in about
+# half a minute, and a 7MB binary per re-render does not belong in git.
+penguin.blend
+penguin.glb

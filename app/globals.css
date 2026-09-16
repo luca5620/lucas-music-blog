@@ -4733,19 +4733,3 @@ fieldset {
    scrim — on the thermal diet it becomes a flat panel. */
 .low-detail .aux-play-card { background-image: none !important; transition: none; }
 .low-detail .aux-react-mine { box-shadow: none; }
-
-/* Offline mascot frames. The box never changes; only the rendered pose
-   advances. Terminal overrides also prevent motion before hydration. */
-.penguin-poster { display: block; width: 100%; height: 100%; object-fit: contain; }
-.penguin-sequence { position: absolute; inset: 0; overflow: hidden; transition: opacity 100ms ease-out; }
-.penguin-leaving { opacity: 0; }
-.penguin-frames { display: block; width: 2200%; max-width: none; height: 100%; animation: penguin-greeting 700ms steps(21, end) forwards; }
-@keyframes penguin-greeting { to { transform: translateX(-95.45454545%); } }
-.native-app:not(.motion-on) .penguin-sequence { display: none; transition: none; }
-.native-app:not(.motion-on) .penguin-frames { animation: none; }
-@media (prefers-reduced-motion: reduce) {
-  .penguin-sequence { display: none; transition: none; }
-  .penguin-frames { animation: none; }
-}
-.low-detail .penguin-sequence { display: none; transition: none; }
-.low-detail .penguin-frames { animation: none; }

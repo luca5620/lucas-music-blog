@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import PenguinMark from "@/components/ui/PenguinMark";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -94,7 +93,7 @@ export default function Navigation() {
             title scales/ellipsizes so the bell can never paint over
             it (globals.css anti-collision block). Web unchanged. */}
         <Link href="/" className="nav-logo flex items-center gap-2 sm:gap-3 group shrink-0">
-          <PenguinMark />
+          <img src="/penguin-logo.png" alt="Peak Music Reviews" className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shrink-0" />
           {/* Full name at every size — Luca's preference over "PMR" */}
           <span className="nav-app-title pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover whitespace-nowrap">
             Peak Music Reviews

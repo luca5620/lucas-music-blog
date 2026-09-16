@@ -99,7 +99,11 @@ export default function Navigation() {
               itself carries the accessible name. */}
           <PenguinMark />
           {/* Full name at every size — Luca's preference over "PMR" */}
-          <span className="nav-app-title pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors glitch-hover whitespace-nowrap">
+          {/* nav-title-lift, NOT the old glitch-hover shake (Luca
+              2026-09-16): now that the mascot greets you on hover, two
+              animations competing in one small row read as noise. The
+              bird performs; the word just rises a little. */}
+          <span className="nav-app-title nav-title-lift pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors whitespace-nowrap">
             Peak Music Reviews
           </span>
         </Link>

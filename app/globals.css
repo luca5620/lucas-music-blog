@@ -2108,6 +2108,11 @@ body {
   80% { transform: translateX(1px); filter: none; }
 }
 
+/* NOTHING USES THESE TWO as of 2026-09-16 — the nav wordmark was the
+   last caller and now lifts instead (.nav-title-lift, in the mascot
+   block below). Kept, not deleted: it is a one-keyframe VHS primitive
+   that fits the site's language, and the next thing that wants a
+   shear on hover shouldn't have to rewrite it. */
 .glitch-hover:hover,
 .tracking-glitch:hover {
   animation: tracking-warp 0.28s ease;
@@ -2852,6 +2857,32 @@ fieldset {
 }
 .penguin-mark.penguin-tapped {
   animation: penguin-greet 700ms ease-out;
+}
+
+/* The wordmark beside the mascot (Luca 2026-09-16: "remove the shake
+   animation for the title, just a subtle lift"). It used to run the
+   tracking-warp shear; with the bird now greeting you on the same
+   hover, two things jittering in one small row read as noise. So the
+   penguin performs and the word simply rises 2px and settles.
+
+   Hover-capable pointers only, exactly like the greeting above: on a
+   touch screen :hover sticks after a tap, which would leave the title
+   floating until you touched something else. It is a transition, not
+   an animation, so nothing runs while idle and .low-detail has
+   nothing to switch off. */
+.nav-title-lift {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-logo:hover .nav-title-lift {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-title-lift { transition: none; }
+  .nav-logo:hover .nav-title-lift { transform: none; }
 }
 
 @keyframes penguin-greet {

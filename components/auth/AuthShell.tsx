@@ -20,6 +20,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import PenguinMark from "@/components/ui/PenguinMark";
 import { useTranslations } from "next-intl";
 
 interface AuthShellProps {
@@ -99,15 +100,8 @@ export default function AuthShell({
 
           {/* Logo + progress dots */}
           <div className="flex flex-col items-center gap-3 mb-7">
-            <Link href="/" aria-label={t("homeAria")} className="block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/penguin-logo.png"
-                alt=""
-                width={56}
-                height={56}
-                className="w-14 h-14 rounded-2xl border border-white/15 shadow-[0_0_24px_rgba(var(--accent-rgb),0.35)]"
-              />
+            <Link href="/" aria-label={t("homeAria")} className="penguin-link block">
+              <PenguinMark className="h-16" width={58} height={64} />
             </Link>
             {typeof steps === "number" && steps > 0 && (
               <div className="flex items-center gap-1.5" aria-hidden="true">

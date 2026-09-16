@@ -2810,6 +2810,66 @@ fieldset {
 }
 
 /* ============================================================
+   THE MASCOT — a free-standing penguin (Luca 2026-09-15)
+   ============================================================
+   "i dont want a circle like a profile picture, i want it to be a
+   whole penguin... no boxing in the penguin have it be free, and with
+   animations." So there is no round mask, no border and no plate: the
+   image is the mascot cut out of its photo backdrop with real alpha
+   (scripts/penguin-mark.py), standing on the page.
+
+   The source photo is a bust, so the last few percent fade out rather
+   than ending on a straight horizontal cut — against the near-black
+   the site actually uses, that reads as the bird standing in the dark
+   instead of a sticker somebody trimmed. */
+.penguin-mark {
+  display: block;
+  width: auto;
+  object-fit: contain;
+  /* It dips and tilts around its chest, not its centre — rotating a
+     standing animal about the middle looks like a spinning logo. */
+  transform-origin: 50% 88%;
+  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+}
+
+/* The greeting: a dip, a tilt, one small overshoot, and back to
+   exactly where it started. 700ms, one shot, never idle — nothing
+   here runs unless somebody points at it.
+
+   NOTE, deliberately: this one is NOT switched off by .low-detail.
+   That switch exists for continuous decorative motion that warms a
+   phone; this is a 700ms transform on one 3KB image, only ever on a
+   hover or a tap, and low-detail is on by default — killing it there
+   would mean almost nobody ever sees the feature. Reduced motion
+   still turns it off, because that is an accessibility preference
+   rather than a thermal one. */
+@media (hover: hover) and (pointer: fine) {
+  .nav-logo:hover .penguin-mark,
+  .penguin-link:hover .penguin-mark {
+    animation: penguin-greet 700ms ease-out;
+  }
+}
+.penguin-mark.penguin-tapped {
+  animation: penguin-greet 700ms ease-out;
+}
+
+@keyframes penguin-greet {
+  0% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+  18% { transform: translateY(7%) rotate(-3.5deg) scale(1.05, .95); }
+  44% { transform: translateY(-10%) rotate(4.5deg) scale(.96, 1.06); }
+  70% { transform: translateY(2%) rotate(-2deg) scale(1.02, .99); }
+  100% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .penguin-mark,
+  .nav-logo:hover .penguin-mark,
+  .penguin-link:hover .penguin-mark,
+  .penguin-mark.penguin-tapped { animation: none; }
+}
+
+/* ============================================================
    RATINGS
    ============================================================ */
 .rating-badge {

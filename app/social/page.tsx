@@ -193,7 +193,7 @@ export default async function SocialPage() {
       {/* ===== Top Rooms — presence-ranked live rooms ===== */}
       <TopRooms rooms={activeRooms} />
 
-      {/* ===== Your people, this week — three small podiums (Aux Wars
+      {/* ===== Your friends this week — three small podiums (Aux Wars
              won, reviews written, likes received) across the viewer's
              own circle. Sits directly above the global Top Reviews
              chart on purpose: your friends first, the whole site

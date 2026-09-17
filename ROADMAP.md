@@ -92,9 +92,10 @@ don't wait to be asked:**
 
 ### 👉 PICK UP HERE (MacBook, 2026-09-16 — VERIFIED)
 
-⚠️ **MIGRATION 049 TO RUN** (`049-social-week-leaders.sql`). Until it
-does, the new weekly podium just hides itself. Everything else is live
-on the next deploy.
+✅ **MIGRATION 049 IS RUN** (Luca, 2026-09-16). Verified against the
+live database: `social_week_leaders` exists and correctly refuses the
+anon key (`permission denied`, not "function not found" — it is
+`authenticated`-only by design). Everything in this block is deployed.
 
 **Three of the four are verified on a production build** (dev splits
 `globals.css` per route and cannot be trusted for CSS — use the
@@ -124,9 +125,11 @@ on the next deploy.
      `requestAnimationFrame`, which never fires in a backgrounded tab,
      so the card sometimes could not be dismissed at all.
 4. ⬜ **`/social` is the one thing NOT eyeballed** — it needs a signed-in
-   session, which I can't create. Activity is capped at 8 (was 40,
-   rendered in one column) and the new "Your People This Week" block
-   sits under Top Rooms. **Worth a look on the phone after 049 runs.**
+   session, which I can't create, and Luca said he'd look himself.
+   Activity is capped at 8 (was 40, rendered in one column) and the
+   new **"Your Friends This Week"** block sits under Top Rooms.
+   (Renamed from "Your People This Week" on Luca's word, 2026-09-16,
+   in all six locales.)
 
 **Still worth knowing about the social work:** the podium is scoped to
 the viewer plus everyone they follow, and it takes its week boundary

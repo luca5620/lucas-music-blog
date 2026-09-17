@@ -138,7 +138,7 @@ export async function getTopReviewsThisWeek(
 }
 
 /* ------------------------------------------------------------------ */
-/*  YOUR PEOPLE, THIS WEEK (migration 049)                             */
+/*  YOUR FRIENDS THIS WEEK (migration 049)                             */
 /* ------------------------------------------------------------------ */
 
 /** The three little charts on /social. */

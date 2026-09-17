@@ -1,5 +1,5 @@
 -- ============================================================
--- Migration 049 — YOUR PEOPLE, THIS WEEK (2026-09-16)
+-- Migration 049 — YOUR FRIENDS THIS WEEK (2026-09-16)
 -- Run in the Supabase SQL Editor after 048.
 --
 -- Luca: "an area with top 3 of your friends for the week of aux war

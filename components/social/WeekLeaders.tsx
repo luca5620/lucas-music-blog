@@ -1,5 +1,5 @@
 /**
- * WeekLeaders — "your people, this week" on /social (Luca 2026-09-16:
+ * WeekLeaders — "your friends this week" on /social (Luca 2026-09-16:
  * "an area with top 3 of your friends for the week of aux war wins,
  * reviews, and likes").
  *

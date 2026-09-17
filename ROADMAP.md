@@ -90,40 +90,52 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-### 👉 PICK UP HERE (MacBook, 2026-09-16 — SESSION PAUSED MID-CHECK)
-
-**Luca had to log off before the visual pass. Everything is committed
-and pushed (`e760030`); nothing is half-written and no branch is open.
-But NOTHING BELOW IN THIS BLOCK HAS BEEN EYEBALLED.** It builds,
-typechecks and lints clean, and each piece degrades to its previous
-behaviour, but treat it as unverified until someone looks.
+### 👉 PICK UP HERE (MacBook, 2026-09-16 — VERIFIED)
 
 ⚠️ **MIGRATION 049 TO RUN** (`049-social-week-leaders.sql`). Until it
-does, the new weekly podium section just hides itself.
+does, the new weekly podium just hides itself. Everything else is live
+on the next deploy.
 
-**What to check first, in order (all phone-width):**
-1. `/your-taste` fullscreen card — the verdict line should clear the
-   status bar now. This is the one Luca reported; it was fixed by
-   `[justify-content:safe_center]` + a top inset, and `safe center`
-   is the part worth confirming actually behaves on iOS Safari.
-2. Home feed heading — should read "Community Feed" in full, with the
-   view toggle and View All on a second line beneath it.
-3. **Press and hold a username in the app** — the mini profile card
-   should open, the tap should NOT navigate, and the next touch
-   elsewhere should dismiss it. Check iOS doesn't also raise its own
-   copy/share callout (suppressed with `-webkit-touch-callout`, but
-   that is exactly the kind of thing that needs a real device).
-4. `/social` — activity is 8 rows instead of 40, and the new "Your
-   People This Week" block sits under Top Rooms.
+**Three of the four are verified on a production build** (dev splits
+`globals.css` per route and cannot be trusted for CSS — use the
+`pmr-prod` entry in `.claude/launch.json`, `npm start` on :3100):
 
-**What was built (detail):** the four items above plus the block that
-follows. The social podium is scoped to the viewer + everyone they
-follow, and it takes its week boundary as an argument so the page has
-ONE meaning of "this week" (the Friday-00:00-ET reset the Top Reviews
-chart already used — `aux_leaderboard('week')` is a rolling 7 days and
-is deliberately not used here). Also fixed in passing: blocked users
-were filtered out of the weekly chart but never out of the activity
-feed; `ActivityActor` gained `user_id` so both can drop them.
+1. ✅ **Fullscreen taste card no longer sits under the status bar.**
+   The cause was not missing padding: `justify-content: center` spills
+   a too-tall column equally off BOTH ends, so the top went off-screen
+   and was unreachable. Measured both ways at 375px — the old classes
+   put the first line **352px above** the card's top edge, the new
+   ones put it at the **44px inset**. `safe center` confirmed
+   supported.
+2. ✅ **"Community Feed" renders in full** at 375px, controls on a
+   second line. Was truncating because the heading shared one row with
+   two fixed-width controls.
+3. ✅ **Press-and-hold mini profile**, verified with real
+   `PointerEvent`s at `pointerType: "touch"`: a 700ms hold opens the
+   card; the click that follows neither navigates nor raises the
+   loading panel; the card stays up; a touch elsewhere dismisses it; a
+   120ms tap opens nothing; a 40px drag cancels the press.
+   **Two real bugs were found and fixed doing this** (`bb452db`):
+   - `NavigationPending` ignores `defaultPrevented` ON PURPOSE, so the
+     swallowed click still blanked the page for the 8-second failsafe.
+     `lib/click-intent.ts` is now the one explicit channel for "I
+     consumed this click, it is not a navigation".
+   - The outside-tap listener was attached inside
+     `requestAnimationFrame`, which never fires in a backgrounded tab,
+     so the card sometimes could not be dismissed at all.
+4. ⬜ **`/social` is the one thing NOT eyeballed** — it needs a signed-in
+   session, which I can't create. Activity is capped at 8 (was 40,
+   rendered in one column) and the new "Your People This Week" block
+   sits under Top Rooms. **Worth a look on the phone after 049 runs.**
+
+**Still worth knowing about the social work:** the podium is scoped to
+the viewer plus everyone they follow, and it takes its week boundary
+as an ARGUMENT so the page has one meaning of "this week" — the
+Friday-00:00-ET reset the Top Reviews chart already used.
+`aux_leaderboard('week')` is a rolling 7 days and is deliberately not
+used here. Also fixed in passing: blocked users were filtered out of
+the weekly chart but never out of the activity feed, so
+`ActivityActor` gained `user_id` and both drop them now.
 
 ---
 

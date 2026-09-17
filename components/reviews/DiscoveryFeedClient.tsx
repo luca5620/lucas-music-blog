@@ -95,21 +95,32 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
           old sizes the row ran wider than a phone screen and clipped
           View All. Desktop keeps the original scale. */}
       {/* TWO ROWS ON A PHONE (Luca 2026-09-16: the title read
-          "Community Fe…"). Everything used to share one line, and the
-          toggle plus View All are both fixed-width, so the only thing
-          that could give was the heading — which then truncated on
-          every phone. Now the title owns the first line and the
-          controls sit right-aligned under it; from sm up it is the
-          original single row, divider and all. */}
+          "Community Fe…"). Measured: the heading wants 149px, the view
+          toggle 116px and View All 111px — 400px with gaps, against
+          roughly 343px of usable width on a 375px phone and 398px on
+          the widest one. One line was never going to fit, which is why
+          the heading was the thing that truncated.
+
+          So: two rows, each one BALANCED rather than left floating.
+          Row one runs the divider out to the right edge so the line
+          reads finished instead of stopping mid-air, and row two puts
+          the toggle hard left against View All hard right, using the
+          full width. A first pass right-aligned both controls under a
+          short title and left a hole in the middle of the block, which
+          is what Luca called "still off".
+
+          From sm up nothing changed: one row, divider between. */}
       <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center sm:gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <span className="glow-orb shrink-0" style={{ animationDelay: "3s" }} />
           <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary min-w-0 truncate">
             {t("feed.title")}
           </h2>
+          {/* Phone only — on sm+ the shared divider below does this. */}
+          <div className="flex-1 divider-glow sm:hidden" />
         </div>
         <div className="hidden sm:block flex-1 divider-glow" />
-        <div className="flex items-center justify-end gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center justify-between gap-2 sm:justify-end sm:gap-3 sm:shrink-0">
           <ViewToggle view={view} onChange={setView} />
           <Link
             href="/reviews"

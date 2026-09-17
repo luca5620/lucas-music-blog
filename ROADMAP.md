@@ -90,7 +90,44 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-### 👉 PICK UP HERE (MacBook, 2026-09-16)
+### 👉 PICK UP HERE (MacBook, 2026-09-16 — SESSION PAUSED MID-CHECK)
+
+**Luca had to log off before the visual pass. Everything is committed
+and pushed (`e760030`); nothing is half-written and no branch is open.
+But NOTHING BELOW IN THIS BLOCK HAS BEEN EYEBALLED.** It builds,
+typechecks and lints clean, and each piece degrades to its previous
+behaviour, but treat it as unverified until someone looks.
+
+⚠️ **MIGRATION 049 TO RUN** (`049-social-week-leaders.sql`). Until it
+does, the new weekly podium section just hides itself.
+
+**What to check first, in order (all phone-width):**
+1. `/your-taste` fullscreen card — the verdict line should clear the
+   status bar now. This is the one Luca reported; it was fixed by
+   `[justify-content:safe_center]` + a top inset, and `safe center`
+   is the part worth confirming actually behaves on iOS Safari.
+2. Home feed heading — should read "Community Feed" in full, with the
+   view toggle and View All on a second line beneath it.
+3. **Press and hold a username in the app** — the mini profile card
+   should open, the tap should NOT navigate, and the next touch
+   elsewhere should dismiss it. Check iOS doesn't also raise its own
+   copy/share callout (suppressed with `-webkit-touch-callout`, but
+   that is exactly the kind of thing that needs a real device).
+4. `/social` — activity is 8 rows instead of 40, and the new "Your
+   People This Week" block sits under Top Rooms.
+
+**What was built (detail):** the four items above plus the block that
+follows. The social podium is scoped to the viewer + everyone they
+follow, and it takes its week boundary as an argument so the page has
+ONE meaning of "this week" (the Friday-00:00-ET reset the Top Reviews
+chart already used — `aux_leaderboard('week')` is a rolling 7 days and
+is deliberately not used here). Also fixed in passing: blocked users
+were filtered out of the weekly chart but never out of the activity
+feed; `ActivityActor` gained `user_id` so both can drop them.
+
+---
+
+### 👉 PREVIOUS (MacBook, 2026-09-16)
 
 ✅ **MIGRATION 048 IS RUN** (Luca, 2026-09-16). Debate posts are live.
 Everything below is pushed to `main`. Nothing is half-finished, no

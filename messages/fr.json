@@ -1507,6 +1507,16 @@
       "ranked": ", classée",
       "likedReview": "a aimé une critique de",
       "hostedAux": "organise une Aux War :"
+    },
+    "week": {
+      "title": "Vos gens cette semaine",
+      "resetsFriday": "remise à zéro vendredi",
+      "aux": "Aux Wars gagnées",
+      "auxEmpty": "Aucune gagnée cette semaine.",
+      "reviews": "Critiques écrites",
+      "reviewsEmpty": "Aucune critique cette semaine.",
+      "likes": "J’aime reçus",
+      "likesEmpty": "Aucun j’aime cette semaine."
     }
   },
   "connections": {

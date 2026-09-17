@@ -1507,6 +1507,16 @@
       "ranked": ", ranked",
       "likedReview": "liked a review of",
       "hostedAux": "is hosting an Aux War:"
+    },
+    "week": {
+      "title": "Your People This Week",
+      "resetsFriday": "resets Friday",
+      "aux": "Aux Wars Won",
+      "auxEmpty": "No wars won yet this week.",
+      "reviews": "Reviews Written",
+      "reviewsEmpty": "No reviews yet this week.",
+      "likes": "Likes Received",
+      "likesEmpty": "No likes yet this week."
     }
   },
   "connections": {

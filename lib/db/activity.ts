@@ -20,8 +20,12 @@ import { getBlockedIds } from "@/lib/db/moderation";
 
 /* --- Shapes returned to the UI --- */
 
-/** Who did the thing — enough to render an avatar + profile link. */
+/** Who did the thing — enough to render an avatar + profile link.
+    `user_id` is here so callers can drop blocked people: /social was
+    filtering blocks out of its charts but not out of this feed
+    (2026-09-16), and a username is not what the block set holds. */
 export interface ActivityActor {
+  user_id: string;
   username: string;
   display_name: string | null;
   avatar_url: string | null;
@@ -96,6 +100,7 @@ type JoinedProfile = ActivityActor | ActivityActor[] | null;
 function unwrapActor(profiles: JoinedProfile): ActivityActor {
   const p = Array.isArray(profiles) ? profiles[0] : profiles;
   return {
+    user_id: p?.user_id ?? "",
     username: p?.username ?? "",
     display_name: p?.display_name ?? null,
     avatar_url: p?.avatar_url ?? null,
@@ -178,7 +183,8 @@ export async function getFriendActivity(
 
   // The actor join is identical for all four queries. Debates name
   // their author column created_by, so that one spells the join out.
-  const ACTOR = "profiles!inner(username, display_name, avatar_url)";
+  const ACTOR =
+    "profiles!inner(user_id:id, username, display_name, avatar_url)";
 
   const [reviewsRes, listsRes, likesRes, auxRes] = await Promise.all([
     // 1. Published reviews by friends. The actor join here must name
@@ -187,7 +193,7 @@ export async function getFriendActivity(
     supabase
       .from("reviews")
       .select(
-        `slug, title, artist, rating, cover_image, created_at, profiles!reviews_user_id_fkey!inner(username, display_name, avatar_url)`
+        `slug, title, artist, rating, cover_image, created_at, profiles!reviews_user_id_fkey!inner(user_id:id, username, display_name, avatar_url)`
       )
       .in("user_id", followedIds)
       .eq("is_published", true)

@@ -1507,6 +1507,16 @@
       "ranked": ", als Rangliste",
       "likedReview": "hat eine Rezension geliked:",
       "hostedAux": "hostet eine Aux War:"
+    },
+    "week": {
+      "title": "Deine Leute diese Woche",
+      "resetsFriday": "Reset am Freitag",
+      "aux": "Aux Wars gewonnen",
+      "auxEmpty": "Diese Woche noch keine gewonnen.",
+      "reviews": "Reviews geschrieben",
+      "reviewsEmpty": "Diese Woche noch keine Reviews.",
+      "likes": "Likes erhalten",
+      "likesEmpty": "Diese Woche noch keine Likes."
     }
   },
   "connections": {

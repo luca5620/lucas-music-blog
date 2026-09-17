@@ -32,8 +32,14 @@ import PageHero from "@/components/ui/PageHero";
 import TopRooms from "@/components/social/TopRooms";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import { getViewerBlockedIdSet } from "@/lib/db/moderation";
-import { getActiveRooms, getTopReviewsThisWeek } from "@/lib/db/social";
+import {
+  getActiveRooms,
+  getTopReviewsThisWeek,
+  getWeekLeaders,
+} from "@/lib/db/social";
 import type { TopWeekReview } from "@/lib/db/social";
+import { lastFridayEasternUtcMs } from "@/lib/upcoming";
+import WeekLeaders from "@/components/social/WeekLeaders";
 import { smallCover } from "@/lib/images";
 import {
   getFriendActivity,
@@ -51,6 +57,11 @@ export const metadata = {
 
 // The feed is per-viewer and time-sensitive — always render fresh.
 export const dynamic = "force-dynamic";
+
+/** How many friend-activity rows the page shows (Luca 2026-09-16:
+    "limit the amount of friend activity by like 5-10"). It rendered
+    40 before, which on a phone was most of the page. */
+const ACTIVITY_SHOWN = 8;
 
 /* ============================================
    Small server-side helpers
@@ -132,22 +143,41 @@ export default async function SocialPage() {
 
   // --- Logged in: fetch everything in parallel ---
   const [
-    activity,
+    allActivity,
     popular,
     suggestions,
     blocked,
     activeRooms,
     allTopWeek,
+    weekLeaders,
   ] = await Promise.all([
-    getFriendActivity(user.id, { limit: 40 }),
+    // ACTIVITY IS CAPPED AT 8 (Luca 2026-09-16: "limit the amount of
+    // friend activity by like 5-10, the page scrolls down a bit too
+    // far"). It used to pull 40 and render every one, which on a phone
+    // was most of the page's height — and the tail of it was days old,
+    // which is what the profile feeds are for. Fetch a couple extra so
+    // dropping blocked authors below rarely leaves a short list.
+    getFriendActivity(user.id, { limit: ACTIVITY_SHOWN + 4 }),
     getPopularWithFriends(user.id, { limit: 6 }),
     getSuggestedProfiles(user.id, { limit: 6 }),
     getViewerBlockedIdSet(),
     getActiveRooms(12),
     getTopReviewsThisWeek(10),
+    // Empty (and the section hides itself) until migration 049 runs.
+    getWeekLeaders(lastFridayEasternUtcMs(), 3),
   ]);
   // Blocked users stay off the viewer's charts (App Store 1.2).
   const topWeek = allTopWeek.filter((r) => !blocked.has(r.user_id));
+  // …and out of the activity feed and the weekly podiums, which were
+  // both missing that filter entirely before today.
+  const activity = allActivity
+    .filter((item) => !blocked.has(item.actor.user_id))
+    .slice(0, ACTIVITY_SHOWN);
+  const leaders = {
+    aux: weekLeaders.aux.filter((r) => !blocked.has(r.user_id)),
+    reviews: weekLeaders.reviews.filter((r) => !blocked.has(r.user_id)),
+    likes: weekLeaders.likes.filter((r) => !blocked.has(r.user_id)),
+  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
@@ -162,6 +192,14 @@ export default async function SocialPage() {
 
       {/* ===== Top Rooms — presence-ranked live rooms ===== */}
       <TopRooms rooms={activeRooms} />
+
+      {/* ===== Your people, this week — three small podiums (Aux Wars
+             won, reviews written, likes received) across the viewer's
+             own circle. Sits directly above the global Top Reviews
+             chart on purpose: your friends first, the whole site
+             after. Hides itself when nobody did anything, and when
+             migration 049 hasn't been run. ===== */}
+      <WeekLeaders leaders={leaders} />
 
       {/* ===== Top Reviews This Week — likes received since the
              Friday-midnight-ET reset, any-age reviews ===== */}

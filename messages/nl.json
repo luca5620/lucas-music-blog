@@ -1507,6 +1507,16 @@
       "ranked": ", gerangschikt",
       "likedReview": "likete een recensie van",
       "hostedAux": "host een Aux War:"
+    },
+    "week": {
+      "title": "Jouw mensen deze week",
+      "resetsFriday": "reset op vrijdag",
+      "aux": "Aux Wars gewonnen",
+      "auxEmpty": "Deze week nog niets gewonnen.",
+      "reviews": "Reviews geschreven",
+      "reviewsEmpty": "Deze week nog geen reviews.",
+      "likes": "Likes ontvangen",
+      "likesEmpty": "Deze week nog geen likes."
     }
   },
   "connections": {

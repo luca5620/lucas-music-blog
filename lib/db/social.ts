@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { lastFridayEasternUtcMs } from "@/lib/upcoming";
+import type { Profile } from "@/lib/types/database";
 
 /**
  * Social page data (Luca 2026-08-31 — the Friends tab became
@@ -134,4 +135,68 @@ export async function getTopReviewsThisWeek(
   return (reviews as unknown as Omit<TopWeekReview, "week_likes">[])
     .map((r) => ({ ...r, week_likes: counts.get(r.id) ?? 0 }))
     .sort((a, b) => b.week_likes - a.week_likes);
+}
+
+/* ------------------------------------------------------------------ */
+/*  YOUR PEOPLE, THIS WEEK (migration 049)                             */
+/* ------------------------------------------------------------------ */
+
+/** The three little charts on /social. */
+export type WeekMetric = "aux" | "reviews" | "likes";
+
+export interface WeekLeader {
+  user_id: string;
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  role: Profile["role"];
+  score: number;
+}
+
+/** One entry per metric, each already ordered and capped. */
+export type WeekLeaders = Record<WeekMetric, WeekLeader[]>;
+
+const EMPTY_WEEK_LEADERS: WeekLeaders = { aux: [], reviews: [], likes: [] };
+
+/**
+ * Top few people in the viewer's circle (themselves + everyone they
+ * follow) this week, on three counts: Aux Wars won, reviews written,
+ * likes received.
+ *
+ * `since` is passed in rather than decided in SQL so the whole page
+ * agrees on one "this week" — the same Friday-00:00-Eastern reset the
+ * Top Reviews chart above it already uses. See migration 049.
+ *
+ * Returns empty lists when 049 hasn't been run, when the viewer
+ * follows nobody, or on any error: this is a garnish on the page, and
+ * it must never be the reason /social fails to render.
+ */
+export async function getWeekLeaders(
+  since: number,
+  perMetric = 3
+): Promise<WeekLeaders> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("social_week_leaders", {
+    p_since: new Date(since).toISOString(),
+    p_limit: perMetric,
+  } as never);
+
+  if (error || !Array.isArray(data)) return EMPTY_WEEK_LEADERS;
+
+  const out: WeekLeaders = { aux: [], reviews: [], likes: [] };
+  for (const raw of data as (WeekLeader & { metric: string })[]) {
+    const bucket = out[raw.metric as WeekMetric];
+    // An unknown metric means the DB is ahead of this build — skip it
+    // rather than throwing on a page that is mostly other things.
+    if (!bucket) continue;
+    bucket.push({
+      user_id: raw.user_id,
+      username: raw.username,
+      display_name: raw.display_name,
+      avatar_url: raw.avatar_url,
+      role: raw.role,
+      score: raw.score,
+    });
+  }
+  return out;
 }

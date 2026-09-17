@@ -30,6 +30,7 @@ import { HeartGlyph, TrophyGlyph } from "@/components/profile/BadgeGlyphs";
 import { hiddenBadgeSet, trophyTier } from "@/lib/badges";
 import { THEME_SPECS, resolveTheme, themeGradient } from "@/lib/profile-theme";
 import { compactCount } from "@/lib/format-count";
+import { hapticTap } from "@/lib/native";
 import type { Profile, ProfileStats } from "@/lib/types/database";
 
 interface Summary {
@@ -65,6 +66,15 @@ function loadSummary(username: string): Promise<Summary | null> {
 const OPEN_DELAY = 320;
 const CLOSE_DELAY = 180;
 const CARD_W = 324;
+/* Touch has no hover, so the card opens on a PRESS AND HOLD instead
+   (Luca 2026-09-16: "if someone is doing like some sort of
+   passthrough touch on the app, the little mini profile should pop up
+   since it only does it on the web"). 450ms is the usual long-press
+   feel — long enough that a normal tap-to-navigate never trips it,
+   short enough not to feel like waiting. SLOP is how far the finger
+   may drift before we treat it as a scroll and give up. */
+const LONG_PRESS = 450;
+const SLOP = 10;
 
 type LinkProps = Omit<ComponentProps<typeof Link>, "href">;
 
@@ -84,6 +94,12 @@ export default function UserLink({
   // answer from the endpoint (cold start on Vercel) must never pop the
   // card open after the mouse has already moved on.
   const hovering = useRef(false);
+  /* Press-and-hold state (touch). pressStart doubles as "a press is
+     in flight": null means there is nothing to open. */
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const pressStart = useRef<{ x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
+  const openedByTouch = useRef(false);
 
   const clearTimers = () => {
     if (openTimer.current) clearTimeout(openTimer.current);
@@ -94,6 +110,7 @@ export default function UserLink({
 
   const close = useCallback(() => {
     clearTimers();
+    openedByTouch.current = false;
     setPos(null);
   }, []);
 
@@ -135,6 +152,51 @@ export default function UserLink({
     closeTimer.current = setTimeout(close, CLOSE_DELAY);
   };
 
+  /* ---- Press and hold, the touch equivalent of hovering ----
+     Deliberately NOT gated on the native shell: mobile web has the
+     same no-hover problem, so the gesture works in both and there is
+     one behaviour to remember. */
+  const cancelPress = () => {
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    pressTimer.current = undefined;
+    pressStart.current = null;
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLAnchorElement>) => {
+    if (e.pointerType !== "touch" || !username) return;
+    pressStart.current = { x: e.clientX, y: e.clientY };
+    // Warm the request immediately; only the SHOWING waits, exactly
+    // like the hover path.
+    const pending = loadSummary(username);
+    pressTimer.current = setTimeout(async () => {
+      const s = await pending;
+      if (!s || !anchor.current || !pressStart.current) return;
+      // The finger is still down and still on the name: open, and
+      // swallow the click that this press is about to produce so the
+      // card appears INSTEAD of navigating.
+      suppressClick.current = true;
+      openedByTouch.current = true;
+      void hapticTap();
+      setSummary(s);
+      place();
+    }, LONG_PRESS);
+  };
+
+  /* A finger that travels is scrolling, not pressing. */
+  const handlePointerMove = (e: React.PointerEvent<HTMLAnchorElement>) => {
+    if (e.pointerType !== "touch" || !pressStart.current) return;
+    const dx = e.clientX - pressStart.current.x;
+    const dy = e.clientY - pressStart.current.y;
+    if (Math.hypot(dx, dy) > SLOP) cancelPress();
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (suppressClick.current) {
+      e.preventDefault();
+      suppressClick.current = false;
+    }
+  };
+
   // Scroll, Escape or navigating away all dismiss the card.
   useEffect(() => {
     if (!pos) return;
@@ -147,7 +209,33 @@ export default function UserLink({
     };
   }, [pos, close]);
 
-  useEffect(() => () => clearTimers(), []);
+  /* A card opened by holding has no "pointer left the name" to close
+     it, so the next touch anywhere else dismisses it. Registered only
+     while such a card is open. */
+  useEffect(() => {
+    if (!pos || !openedByTouch.current) return;
+    const onDown = (e: PointerEvent) => {
+      const card = document.getElementById("userlink-card");
+      if (card?.contains(e.target as Node)) return;
+      if (anchor.current?.contains(e.target as Node)) return;
+      close();
+    };
+    // Capture, and on the next frame: the very pointerdown that
+    // opened this card must not immediately close it again.
+    const id = requestAnimationFrame(() =>
+      document.addEventListener("pointerdown", onDown, true)
+    );
+    return () => {
+      cancelAnimationFrame(id);
+      document.removeEventListener("pointerdown", onDown, true);
+    };
+  }, [pos, close]);
+
+  useEffect(() => () => {
+    clearTimers();
+    cancelPress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -156,6 +244,16 @@ export default function UserLink({
         href={`/profile/${username}`}
         onPointerEnter={handleEnter}
         onPointerLeave={handleLeave}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={cancelPress}
+        onPointerCancel={cancelPress}
+        onClick={handleClick}
+        // iOS pops its own copy/share callout on a long press, which
+        // would land on top of the card. This is the only way to stop
+        // it, and it costs nothing: a username is not text anyone
+        // needs to select.
+        style={{ WebkitTouchCallout: "none", ...(rest.style ?? {}) }}
         {...rest}
       >
         {children}
@@ -232,6 +330,9 @@ function HoverCard({
 
   return (
     <div
+      // The outside-tap dismissal for press-and-hold looks this up by
+      // id — only ever one card is on screen at a time.
+      id="userlink-card"
       role="dialog"
       aria-label={name}
       className="user-card"

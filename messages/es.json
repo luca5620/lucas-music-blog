@@ -1507,6 +1507,16 @@
       "ranked": ", con ranking",
       "likedReview": "le gustó una reseña de",
       "hostedAux": "organiza una Aux War:"
+    },
+    "week": {
+      "title": "Tu gente esta semana",
+      "resetsFriday": "se reinicia el viernes",
+      "aux": "Aux Wars ganadas",
+      "auxEmpty": "Ninguna ganada esta semana.",
+      "reviews": "Reseñas escritas",
+      "reviewsEmpty": "Ninguna reseña esta semana.",
+      "likes": "Me gusta recibidos",
+      "likesEmpty": "Ningún me gusta esta semana."
     }
   },
   "connections": {

@@ -340,8 +340,24 @@ function SurfCard({
           hangs over the right padding) so content stays visually
           centered; pr-only shoved everything left (Luca 2026-08-22). */}
       <div
-        className={`relative h-full flex flex-col items-center justify-center gap-3 text-center ${
-          fullscreen ? "px-14 py-5" : "p-5"
+        /* SAFE AREA + SAFE CENTERING (Luca 2026-09-16: the verdict
+           line "{name} rated this release" was sitting on top of the
+           iPhone status bar).
+
+           Two things were wrong. There was no top inset at all, and
+           `justify-content: center` spills a too-tall column EQUALLY
+           off both ends — so padding alone could never have fixed it,
+           and the overflowing top slid under the clock with no way to
+           scroll to it. `safe center` is the one-word answer: it
+           centres while the content fits and falls back to start-
+           aligned the moment it doesn't, which with the inset below
+           means the first line always clears the status bar. The
+           top inset also clears the pinned type chip (REVIEW / POST),
+           which lives at safe-area-top itself. */
+        className={`relative h-full flex flex-col items-center gap-3 text-center ${
+          fullscreen
+            ? "px-14 pt-[max(1.25rem,calc(env(safe-area-inset-top,0px)+2.75rem))] pb-[max(1.25rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))] overflow-y-auto [justify-content:safe_center]"
+            : "p-5 justify-center"
         }`}
       >
         {/* Pager keeps the inline type chip (fullscreen pins it at

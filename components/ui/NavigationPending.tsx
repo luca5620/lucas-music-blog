@@ -26,6 +26,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { wasClickHandled } from "@/lib/click-intent";
 
 /** Blank content can't outlive a navigation that silently died. */
 const FAILSAFE_MS = 8000;
@@ -61,6 +62,11 @@ export default function NavigationPending({
       // the pathname guard below already skips — and the rare miss is
       // cleaned up by the pathname-commit clear + the 8s failsafe.
       // Left button, unmodified — anything else opens a new tab.
+      // A component that hijacked this click for something other
+      // than navigating (UserLink opening its mini profile on a press
+      // and hold) says so explicitly — see lib/click-intent.ts for why
+      // defaultPrevented cannot be used for this.
+      if (wasClickHandled(event)) return;
       if (event.button !== 0) return;
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
         return;

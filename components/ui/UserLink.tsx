@@ -31,6 +31,7 @@ import { hiddenBadgeSet, trophyTier } from "@/lib/badges";
 import { THEME_SPECS, resolveTheme, themeGradient } from "@/lib/profile-theme";
 import { compactCount } from "@/lib/format-count";
 import { hapticTap } from "@/lib/native";
+import { markClickHandled } from "@/lib/click-intent";
 import type { Profile, ProfileStats } from "@/lib/types/database";
 
 interface Summary {
@@ -193,6 +194,11 @@ export default function UserLink({
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (suppressClick.current) {
       e.preventDefault();
+      // preventDefault alone is not enough: NavigationPending watches
+      // document clicks and ignores that flag on purpose, so without
+      // this marker the long press swapped the page for the TUNING
+      // panel — which then sat there, because the path never changed.
+      markClickHandled(e.nativeEvent);
       suppressClick.current = false;
     }
   };
@@ -220,15 +226,14 @@ export default function UserLink({
       if (anchor.current?.contains(e.target as Node)) return;
       close();
     };
-    // Capture, and on the next frame: the very pointerdown that
-    // opened this card must not immediately close it again.
-    const id = requestAnimationFrame(() =>
-      document.addEventListener("pointerdown", onDown, true)
-    );
-    return () => {
-      cancelAnimationFrame(id);
-      document.removeEventListener("pointerdown", onDown, true);
-    };
+    // Attached straight away, no deferral. There is no re-entrancy to
+    // guard against: the card opens on a TIMER partway through the
+    // press, so the pointerdown that started it fired and finished
+    // long before this runs. (It was behind a requestAnimationFrame
+    // at first, which in a backgrounded tab never fires — the card
+    // then had no way to be dismissed at all.)
+    document.addEventListener("pointerdown", onDown, true);
+    return () => document.removeEventListener("pointerdown", onDown, true);
   }, [pos, close]);
 
   useEffect(() => () => {

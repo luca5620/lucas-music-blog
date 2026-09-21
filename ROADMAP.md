@@ -120,15 +120,19 @@ relaunch: still at 1.0s, curtain 1.5–2.0s, app from 2.5s). The
 SplashScreen and StatusBar plugins are scene-aware already (checked
 their Swift), and behaved.
 
-**⬜ ONE CHECK LEFT — needs a finger on the simulator.** The deep-link
-delivery through the scene delegate is verified up to iOS's
-"Open in Peak Music?" confirmation sheet, which nothing headless can
-tap (Xcode 27 has no separate Simulator.app; the Claude simulator tool
-falsely reports Xcode as unselected). So: **social sign-in in the app
-(Google/Apple → back into the WebView) must be exercised once on the
-TestFlight build** — it is the only behaviour the scene change could
-have touched. If the code exchange never comes back, the suspect is
-`SceneDelegate.forward(_:)`, nothing else.
+**✅ DEEP-LINK PATH VERIFIED TOO (13:27, same afternoon).** An echo page
+loaded inside the build-3 scene shell registered `appUrlOpen`, then
+navigated itself to `com.peakmusicreviews.app://auth/callback?code=…`;
+the event came back into the page 20ms later with the URL intact and
+`iosSourceApplication` set — i.e. scene delegate → Capacitor proxy →
+App plugin → JS, the exact chain social sign-in uses. (An earlier run
+was blocked by iOS's "Open in Peak Music?" sheet, which nothing
+headless can tap; Luca tapped it, but by then his Xcode run had
+replaced the test build. The rerun delivered without a sheet.) The
+cold-launch-from-link branch in `SceneDelegate` follows Apple's
+documented pattern and is not exercised by the app today; it stays
+untested. Still exercise social sign-in once on the TestFlight build —
+that's the real-device proof.
 
 ### 👉 PICK UP HERE (MacBook, 2026-09-16 — VERIFIED)
 

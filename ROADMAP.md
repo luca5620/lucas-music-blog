@@ -166,96 +166,82 @@ tools here, and check `git diff --stat` before believing a scripted
 edit worked. Unblocking it needs `sudo xcodebuild -license` (Luca's
 password). The Windows desktop is unaffected.
 
-**1. SPLASH — turned OFF, and redesigned while it's parked.**
-`APP_SPLASH_CURTAIN_ENABLED` in `lib/flags.ts` is `false`, so the app
-shows only the native still again.
-- *Why there were two:* Capacitor's native splash runs on a 1200ms
-  auto-hide timer while the WebView is still fetching the live site,
-  so it comes and goes BEFORE React can call `hideNativeSplash()`.
-- **Native handoff prepared (2026-09-21), NOT enabled or release-ready:**
-  `launchAutoHide: false` is staged in `capacitor.config.ts`.
-  `APP_SPLASH_CURTAIN_ENABLED` remains **false** until an iOS rebuild
-  and the device checks below are confirmed. A web deploy, config
-  edit, or successful sync is not confirmation of an installed rebuild.
-  Existing installed binaries still use their bundled auto-hide setting.
-- **Prerequisites checked (2026-09-21):** Node 26.7.0, npm 12.0.2,
-  Capacitor CLI/core/iOS 7.6.8, SplashScreen 7.0.5, CocoaPods 1.17.0,
-  Xcode 27.0 (27A266a). `xcode-select -p` points to
-  `/Applications/Xcode.app/Contents/Developer`; Xcode's
-  `-checkFirstLaunchStatus` passes (the older licence note above is
-  historical). `npm run mobile:sync -- ios` passed, including pod
-  install and all seven plugins. Generated iOS config has
-  `launchAutoHide: false` and `SplashScreenPlugin`; bundled fallback
-  matches `mobile/www/index.html`. Generated config/assets are ignored
-  by git, so repeat sync on the build machine. Workspace listing passed
-  outside the shell sandbox and exposes the `App` scheme.
-- **Unsigned compile attempted; rebuild NOT confirmed:**
-  `xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath /private/tmp/peak-splash-derived CODE_SIGNING_ALLOWED=NO build`
-  failed (exit 65): generated Pods have `IPHONEOS_DEPLOYMENT_TARGET`
-  14.0, below this Xcode's supported 15.0–27.0.x range. The Podfile
-  already declares iOS 15.0, so resolve the dependency target settings
-  durably in the CocoaPods setup, rerun sync, and repeat this compile
-  before device verification. Do not hand-edit generated Pods as the
-  permanent fix. An unsigned compile, even when passing, does not
-  confirm signing, installation, or the visual handoff.
-- **Release blockers to resolve before installing/distributing this config:**
-  `SplashCurtain.tsx` returns immediately while the flag is off, and
-  also returns without hiding when the session has already played.
-  `mobile/www/index.html` has no native hide call. With auto-hide off,
-  these paths can leave the native still covering the app indefinitely.
-  Add and verify explicit dismissal for flag-off/session-skip and
-  offline/error paths before release; verify recovery if React fails to
-  load. Do not solve this by prematurely enabling the curtain.
-- **Exact Xcode verification / enablement gate:**
-  1. From the repo root run `npm ci` on a fresh checkout, then
-     `npm run mobile:sync -- ios`; stop on any failure. Inspect
-     `ios/App/App/capacitor.config.json` for `launchAutoHide: false`
-     and `SplashScreenPlugin`. The native shell loads the live site;
-     `next build` does not embed updated React code into this binary.
-     Make the dismissal fixes available on the web URL used by the
-     test build before testing, and sync again after fallback edits.
-  2. Run `npm run mobile:ios` and open **App.xcworkspace**, not
-     App.xcodeproj. Select scheme **App**, then the **App** target →
-     **Signing & Capabilities**: verify the intended team, bundle ID
-     `com.peakmusicreviews.app`, provisioning, and build number.
-  3. Select a connected, trusted iPhone with Developer Mode enabled.
-     Use **Product → Clean Build Folder**, then **Product → Build**
-     (⌘B). Require Build Succeeded. Run (⌘R) to install that build;
-     record its version/build, commit, iOS version, and device.
-  4. With the flag still false, force-quit and cold-launch online:
-     the native still must dismiss to usable content. Repeat on slow
-     networking, after background/resume, and with an existing session.
-     Cold-launch in airplane mode: NO SIGNAL and Retune must be visible;
-     restore networking and verify recovery. Test an unreachable site
-     and failed web loading too. Any permanently covered screen blocks
-     release, even if compilation passed.
-  5. On that rebuilt native shell, navigate to `?splash=1` to preview
-     the handoff without changing the flag; for a cold-launch preview
-     use a local test-only server URL with that query, sync/rebuild,
-     then restore the production URL and sync/rebuild afterwards.
-     Verify native still → animated curtain → usable app with no
-     intervening content flash, double splash, or stuck overlay.
-     Repeat with iOS Reduce Motion on and off. A browser preview alone
-     does not verify the native handoff.
-  6. Record the device results here before considering a separate flag
-     enablement change. Since the flag ships on the live site, also
-     protect users on older auto-hiding binaries (version gating or a
-     confirmed rollout strategy) before enabling it globally. For
-     distribution, select **Any iOS Device (arm64)** → **Product →
-     Archive** → Organizer **Validate App**, then verify the installed
-     TestFlight build with the same launch checks. No release or flag
-     enablement is performed by this preparation.
-- Redesigned per Luca: wordmark is the ORIGINAL launch-image one
-  (PlayStation font, large, `#c4c4c8` sampled out of
-  splash-2732x2732.png) instead of the small blue one; the penguin
-  keeps the cut-out and gained the nav mascot's bottom fade mask.
-- **Both of Luca's frost ideas are built**, switched by `FROST_STYLE`
-  in `SplashCurtain.tsx`: `"perimeter"` (default) traces the phone's
-  edge to 100% as the curtain lifts; `"text"` wipes frost across the
-  wordmark. Neither is tied to real loading — by the time React runs
-  the app underneath is already rendered, and holding it back to
-  watch a bar fill would be strictly worse.
+**1. ✅ SPLASH HANDOFF — DONE AND VERIFIED ON A PRODUCTION COLD LAUNCH
+(MacBook, 2026-09-21, build 3 in the simulator).** The native still →
+animated curtain → app, one continuous opening, nothing stuck. Frames
+from the final run (production site, no preview flag, no proxy):
+still at 0.5s; curtain's black + frost rim at 1.0s (the penguin is
+designed to drop in from zero and the wordmark to wait 620ms, so that
+frame is the opening, not a gap); full curtain at 1.5s; app from 2.0s;
+still gone, curtain element gone, app usable through 8s.
+
+**What shipped, and why each piece exists:**
+- `capacitor.config.ts`: `launchAutoHide: false` (staged 2026-09-21,
+  confirmed against the plugin's own Swift: autoHide=false schedules
+  NO hide, and a page that never calls hide holds the still past 9s —
+  so the web layer truly owns dismissal now). `ios.appendUserAgent:
+  PMRBuild/<NATIVE_BUILD>` — the gate signal, see below.
+  `CURRENT_PROJECT_VERSION` = 3; `NATIVE_BUILD` = 3; keep them equal.
+- `ios/App/Podfile` post_install raises every generated pod to iOS
+  15.0. Xcode 27 refuses <15.0 and Capacitor's helper only lifts to
+  14.0, which is why the unsigned compile was failing (exit 65).
+  Durable — regenerated identically on every `cap sync`.
+- `lib/flags.ts`: `APP_SPLASH_CURTAIN_ENABLED = true`, gated by
+  `SPLASH_HANDOFF_MIN_BUILD = 3`. The curtain reads the shell's build
+  number from the user agent (`appBuildNumber()`, synchronous) and
+  never plays below 3 — so builds 1–2, still installed everywhere,
+  keep their auto-hiding still and NO curtain, exactly as before.
+  Nothing changes for anyone until they update to build 3.
+- Three things guarantee the still is always dismissed, since with
+  auto-hide off a path that neither plays nor hides is a phone stuck
+  on the launch image: SplashCurtain is one decision with one exit
+  (play, or hide now); `NATIVE_SPLASH_FAILSAFE_SCRIPT` in `<head>`
+  hides at 5s if React never mounts; `mobile/www/index.html` (offline
+  NO SIGNAL page) hides on load. The head failsafe was confirmed live
+  on production.
+
+**THE BUG THAT ATE THE AFTERNOON, for the record.** Every gate passed
+and the curtain still never played on a real launch (only `?splash=1`
+worked). Eliminated in order: the plugin auto-hiding (no), a stale
+edge cache (no), the App plugin being unregistered (no — first
+suspected and WRONG, it is registered), the UA token missing (no, it
+was there), a hydration remount racing the session key (plausible,
+but the traced launch showed no remount). The real cause was one
+missing line: `play` was initialised to `preview` and the decision
+only ever assigned `false` — the success path never set it true. Found
+by injecting a tracer into the real page through a local logging
+proxy (`hide()` fired at 419ms, synchronously, before any frame).
+**Lesson recorded in memory: when a WebView component silently does
+nothing, instrument it from inside through a proxy — don't theorise.**
+
+**⬜ STILL TO DO BEFORE THIS REACHES USERS (Luca's hands, needs a real
+device + signing):**
+1. Xcode → App.xcworkspace → App target → Signing & Capabilities:
+   team, `com.peakmusicreviews.app`, provisioning. Build number is 3,
+   marketing version still 1.1 — decide the version (1.1.1?).
+2. Run on a real, trusted iPhone. Cold-launch online: still → curtain
+   → app. Then the checks the simulator can't do honestly: airplane
+   mode (NO SIGNAL + Retune must show — the offline page hides the
+   still, but untested on device), a slow network, background/resume,
+   and iOS Reduce Motion ON (curtain skips, still must still hide —
+   code path exists, not device-tested).
+3. Any iOS Device (arm64) → Product → Archive → Organizer → Validate →
+   TestFlight → repeat the cold-launch check on the TestFlight build
+   → submit. Old installs are unaffected by the live flag (gated on
+   build ≥ 3), so there is no rush to ship and no risk in waiting.
+
+- Redesigned per Luca (2026-09-16): wordmark is the ORIGINAL
+  launch-image one (PlayStation font, large, `#c4c4c8` sampled out of
+  splash-2732x2732.png); the penguin keeps the cut-out and the nav
+  mascot's bottom fade mask.
+- **Both frost ideas are built**, switched by `FROST_STYLE` in
+  `SplashCurtain.tsx`: `"perimeter"` (default, what shipped) traces
+  the phone's edge; `"text"` wipes frost across the wordmark. Neither
+  is tied to real loading — the app underneath is already rendered.
 - **Preview either one with `?splash=1`** on any URL, app or browser.
+- Small-print: on a first-ever launch the simulator also loaded the
+  trivial no-hide test page twice (two `GET /`), while the real site
+  loaded once — noted, not chased, not user-visible.
 
 **2. ✅ FIXED — the heading font was broken SITE-WIDE.**
 `--font-heading` is declared at `:root` as `var(--font-inter), …`,

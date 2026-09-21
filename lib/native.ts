@@ -98,20 +98,24 @@ export async function hideNativeSplash(): Promise<void> {
 }
 
 /**
- * The installed binary's build number (CURRENT_PROJECT_VERSION), or
- * null on the web and on any shell too old to answer. SplashCurtain
- * gates the handoff on this, because whether the native still
- * auto-hides is baked into the binary and the web can't ask for it
- * any other way.
+ * The installed binary's build number, or null on the web and on any
+ * shell too old to carry the token. SplashCurtain gates the handoff on
+ * this, because whether the native still auto-hides is baked into the
+ * binary and the web has no other way to know.
+ *
+ * Read from the USER AGENT — capacitor.config.ts appends
+ * `PMRBuild/<n>` on iOS from build 3 — and not from the App plugin's
+ * getInfo(), which was the first attempt and failed on a real build-3
+ * binary: this site never imports @capacitor/app, so
+ * window.Capacitor.Plugins.App is never registered and getInfo()
+ * quietly resolves to nothing. The UA is set by the shell before any
+ * page script runs, needs no plugin, and is synchronous — a gate that
+ * cannot answer "I don't know" on a build that carries the token.
  */
-export async function appBuildNumber(): Promise<number | null> {
-  try {
-    const info = await bridge()?.Plugins?.App?.getInfo?.();
-    const n = Number(info?.build);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
+export function appBuildNumber(): number | null {
+  if (typeof navigator === "undefined") return null;
+  const m = /\bPMRBuild\/(\d+)\b/.exec(navigator.userAgent);
+  return m ? Number(m[1]) : null;
 }
 
 /**

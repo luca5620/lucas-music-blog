@@ -12,6 +12,10 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * Native seasoning (haptics, share sheet, status bar) comes from the
  * injected Capacitor bridge - see lib/native.ts.
  */
+/** The build number of the binary this config ships in. Keep equal to
+    CURRENT_PROJECT_VERSION in ios/App/App.xcodeproj/project.pbxproj. */
+const NATIVE_BUILD = 3;
+
 const config: CapacitorConfig = {
   appId: "com.peakmusicreviews.app",
   // Home-screen label. "Peak Music" (Luca 2026-08-31): the full name
@@ -35,6 +39,20 @@ const config: CapacitorConfig = {
     errorPath: "index.html",
   },
   ios: {
+    // BUILD TOKEN (2026-09-21). The web layer needs to know which
+    // binary it is running inside, because whether the native splash
+    // auto-hides is baked into the binary (see SplashScreen below).
+    // Asking the App plugin for its build number FAILED on the real
+    // device path — this site's web bundle never imports @capacitor/app,
+    // so window.Capacitor.Plugins.App is not registered and getInfo()
+    // silently answers nothing; the curtain then treated build 3 as an
+    // old install and never played. The user agent is the fix: it is
+    // set by the shell before any page JS runs, it is synchronous, and
+    // it cannot be missing on a build that carries it. Read by
+    // appBuildNumber() in lib/native.ts. MUST equal
+    // CURRENT_PROJECT_VERSION in ios/App/App.xcodeproj — bump both
+    // together, in the same commit.
+    appendUserAgent: `PMRBuild/${NATIVE_BUILD}`,
     // "never", NOT "automatic": automatic made UIScrollView add
     // safe-area insets at BOTH scroll ends — the black bars above/
     // below every scrollable page (Luca 2026-08-19). The page handles

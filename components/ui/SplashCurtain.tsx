@@ -98,8 +98,10 @@ export default function SplashCurtain() {
         } else {
           // Older binaries auto-hide their still on a timer; playing
           // the curtain on top of that is the double splash Luca saw.
-          // null = the shell can't say = treat as old.
-          const build = await appBuildNumber();
+          // null = no PMRBuild token in the user agent = old binary.
+          // (Synchronous on purpose: the first version awaited a plugin
+          // call that never resolved to a number — see lib/native.ts.)
+          const build = appBuildNumber();
           if (build === null || build < SPLASH_HANDOFF_MIN_BUILD) {
             play = false;
           } else {

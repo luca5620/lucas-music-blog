@@ -39,6 +39,8 @@ import { APP_SPLASH_CURTAIN_ENABLED, SPLASH_HANDOFF_MIN_BUILD } from "@/lib/flag
 /** Long enough to read as a performance, short enough not to be a wait. */
 const HOLD_MS = 1450;
 const FADE_MS = 340;
+/** sessionStorage flag: "the curtain has been ON SCREEN this session". */
+const PLAYED_KEY = "pmr-splash-played";
 
 /**
  * Which loading effect runs under the wordmark (Luca 2026-09-16 gave
@@ -99,20 +101,31 @@ export default function SplashCurtain() {
           // Older binaries auto-hide their still on a timer; playing
           // the curtain on top of that is the double splash Luca saw.
           // null = no PMRBuild token in the user agent = old binary.
-          // (Synchronous on purpose: the first version awaited a plugin
-          // call that never resolved to a number — see lib/native.ts.)
+          // Synchronous on purpose: nothing to await means nothing for
+          // a hydration remount to interrupt — see lib/native.ts.
           const build = appBuildNumber();
           if (build === null || build < SPLASH_HANDOFF_MIN_BUILD) {
             play = false;
           } else {
             // COLD BOOT only: a fresh WebView has empty sessionStorage,
             // so route changes and back-navigations never replay it.
+            // READ here; the WRITE happens once the curtain is actually
+            // on screen, in the frame callback below.
+            let seen = false;
             try {
-              if (sessionStorage.getItem("pmr-splash-played")) play = false;
-              else sessionStorage.setItem("pmr-splash-played", "1");
+              seen = !!sessionStorage.getItem(PLAYED_KEY);
             } catch {
               /* private mode / storage blocked: play it, it's once per launch anyway */
             }
+            // THE LINE THAT WAS MISSING (2026-09-21). `play` starts as
+            // `preview`, and the first version of this decision only
+            // ever assigned `false` — every gate could pass and the
+            // value simply never became true, so a real cold launch
+            // always took the hide-now exit while ?splash=1 (preview
+            // = true from the start) always played. Found with an
+            // in-page tracer: all inputs said play, hide() fired at
+            // 419ms synchronously from this chunk, before any frame.
+            play = !seen;
           }
         }
       }
@@ -129,6 +142,24 @@ export default function SplashCurtain() {
       // waits behind. The still is dropped in that same frame, so the
       // hand-off is one continuous opening.
       raise = requestAnimationFrame(() => {
+        /* THE SESSION KEY IS WRITTEN HERE, AT PAINT TIME, and nowhere
+           else. It means "the curtain has actually been on screen this
+           session", which is the only thing the key is for: no replay
+           on route changes or back-navigation. Writing it at decision
+           time instead would let a mount that is torn down before this
+           frame (React does remount subtrees when hydration fails, and
+           this site has had hydration errors on the home page) leave a
+           key behind for the mount that survives — so the survivor
+           would wrongly skip. Cheap insurance. For the record: this was
+           first suspected as the reason the curtain never played, and
+           it was NOT — the launch that finally got traced showed no
+           remount at all. The real cause was the missing `play = !seen`
+           above. */
+        try {
+          if (!preview) sessionStorage.setItem(PLAYED_KEY, "1");
+        } catch {
+          /* storage blocked: fine, see above */
+        }
         setPhase("playing");
         void hideNativeSplash();
       });

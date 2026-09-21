@@ -104,13 +104,15 @@ export async function hideNativeSplash(): Promise<void> {
  * binary and the web has no other way to know.
  *
  * Read from the USER AGENT — capacitor.config.ts appends
- * `PMRBuild/<n>` on iOS from build 3 — and not from the App plugin's
- * getInfo(), which was the first attempt and failed on a real build-3
- * binary: this site never imports @capacitor/app, so
- * window.Capacitor.Plugins.App is never registered and getInfo()
- * quietly resolves to nothing. The UA is set by the shell before any
- * page script runs, needs no plugin, and is synchronous — a gate that
- * cannot answer "I don't know" on a build that carries the token.
+ * `PMRBuild/<n>` on iOS from build 3. The first version asked the App
+ * plugin's getInfo() instead, and that was replaced for a reason that
+ * turned out to be different from the one first suspected: the plugin
+ * IS registered and does answer (verified on a build-3 simulator with
+ * a page that printed the bridge state). What actually broke the
+ * curtain was a hydration remount racing an awaited call — see
+ * SplashCurtain. The UA is still the better source: set by the shell
+ * before any page script runs, no plugin, no promise, nothing for a
+ * remount to interrupt, and visible in server logs too.
  */
 export function appBuildNumber(): number | null {
   if (typeof navigator === "undefined") return null;

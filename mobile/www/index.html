@@ -111,6 +111,18 @@
        but a fetch that RESOLVES means the network carried it, which is
        the entire question being asked. */
     (function () {
+      /* With launchAutoHide off (2026-09-21) the native launch image
+         waits for the WEB layer to dismiss it. This page IS the web
+         layer when the site can't be reached, so it must do that job
+         too — otherwise a phone with no signal would sit on the
+         penguin still forever and never see NO SIGNAL or Retune. */
+      try {
+        var cap = window.Capacitor;
+        if (cap && cap.Plugins && cap.Plugins.SplashScreen) {
+          cap.Plugins.SplashScreen.hide({ fadeOutDuration: 120 });
+        }
+      } catch (e) { /* not in the shell, or already hidden */ }
+
       var SITE = 'https://peakmusicreviews.com/';
       var button = document.getElementById('retune');
       var status = document.getElementById('status');

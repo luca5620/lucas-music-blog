@@ -57,6 +57,8 @@ interface CapacitorBridge {
     };
     SplashScreen?: { hide: (opts?: { fadeOutDuration?: number }) => Promise<void> };
     App?: {
+      /** Bundle version + build number from the installed binary. */
+      getInfo?: () => Promise<{ version: string; build: string }>;
       addListener: (
         event: string,
         callback: (data: { url: string }) => void
@@ -76,14 +78,16 @@ export function isNativeApp(): boolean {
 }
 
 /**
- * Drop Capacitor's static launch image early.
+ * Drop Capacitor's static launch image.
  *
- * capacitor.config.ts gives it 1200ms with launchAutoHide, which is
- * the right curtain when nothing else follows it. SplashCurtain calls
- * this the instant its own animated curtain is on screen, so the two
- * never stack into a three-second wait — and because this is a
- * plugin call from the web layer, it ships on a normal deploy with no
- * Xcode rebuild.
+ * From build 3 (2026-09-21) capacitor.config.ts has launchAutoHide
+ * OFF: the native still stays up until the web layer says so, which
+ * is what lets SplashCurtain hand off from it with no gap and no
+ * double. The price is that the web layer now OWNS dismissal — every
+ * path that decides not to play the curtain must call this instead,
+ * and NATIVE_SPLASH_FAILSAFE_SCRIPT below backs all of them up. On
+ * older builds (auto-hide on) this is a harmless no-op: the still is
+ * already gone by the time anything here runs.
  */
 export async function hideNativeSplash(): Promise<void> {
   try {
@@ -92,6 +96,35 @@ export async function hideNativeSplash(): Promise<void> {
     /* no plugin, or already hidden — either way the app is up */
   }
 }
+
+/**
+ * The installed binary's build number (CURRENT_PROJECT_VERSION), or
+ * null on the web and on any shell too old to answer. SplashCurtain
+ * gates the handoff on this, because whether the native still
+ * auto-hides is baked into the binary and the web can't ask for it
+ * any other way.
+ */
+export async function appBuildNumber(): Promise<number | null> {
+  try {
+    const info = await bridge()?.Plugins?.App?.getInfo?.();
+    const n = Number(info?.build);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Inline <head> failsafe, rendered by app/layout.tsx before anything
+ * else loads. If React never mounts — a crash in a chunk, a script
+ * that hangs, anything — nothing would ever call hideNativeSplash()
+ * and a phone would sit on the launch image forever. This drops it
+ * after 5s regardless, which is long enough that a normal boot has
+ * long since handed off cleanly and never sees it fire. Only acts in
+ * the shell; on the web `window.Capacitor` doesn't exist.
+ */
+export const NATIVE_SPLASH_FAILSAFE_SCRIPT =
+  "setTimeout(function(){try{var c=window.Capacitor;if(c&&c.isNativePlatform&&c.isNativePlatform()&&c.Plugins&&c.Plugins.SplashScreen){c.Plugins.SplashScreen.hide()}}catch(e){}},5000)";
 
 /** "ios" | "android" | "web" */
 export function nativePlatform(): string {

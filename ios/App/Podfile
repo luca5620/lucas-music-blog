@@ -27,4 +27,21 @@ end
 
 post_install do |installer|
   assertDeploymentTarget(installer)
+
+  # Xcode 27 refuses to build anything below iOS 15.0, but Capacitor's
+  # helper above only lifts pods to 14.0 and several plugin podspecs
+  # still declare 14.0 — so a fresh `pod install` produced a Pods
+  # project this Xcode won't compile (exit 65, found 2026-09-21 while
+  # preparing the splash handoff). The app target and this Podfile
+  # both already say 15.0; this makes the generated pods agree. It
+  # lives HERE, not in a hand edit of Pods/, so every future sync
+  # regenerates it the same way.
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f
+      if current != 0.0 && current < 15.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
+    end
+  end
 end

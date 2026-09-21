@@ -172,10 +172,79 @@ shows only the native still again.
 - *Why there were two:* Capacitor's native splash runs on a 1200ms
   auto-hide timer while the WebView is still fetching the live site,
   so it comes and goes BEFORE React can call `hideNativeSplash()`.
-- **The Mac rebuild fix:** set `launchAutoHide: false` in
-  `capacitor.config.ts`, then `npx cap sync` + Xcode + a new build.
-  The native still then waits for the web layer and hands over
-  seamlessly. **Flip the flag in that same commit, never before.**
+- **Native handoff prepared (2026-09-21), NOT enabled or release-ready:**
+  `launchAutoHide: false` is staged in `capacitor.config.ts`.
+  `APP_SPLASH_CURTAIN_ENABLED` remains **false** until an iOS rebuild
+  and the device checks below are confirmed. A web deploy, config
+  edit, or successful sync is not confirmation of an installed rebuild.
+  Existing installed binaries still use their bundled auto-hide setting.
+- **Prerequisites checked (2026-09-21):** Node 26.7.0, npm 12.0.2,
+  Capacitor CLI/core/iOS 7.6.8, SplashScreen 7.0.5, CocoaPods 1.17.0,
+  Xcode 27.0 (27A266a). `xcode-select -p` points to
+  `/Applications/Xcode.app/Contents/Developer`; Xcode's
+  `-checkFirstLaunchStatus` passes (the older licence note above is
+  historical). `npm run mobile:sync -- ios` passed, including pod
+  install and all seven plugins. Generated iOS config has
+  `launchAutoHide: false` and `SplashScreenPlugin`; bundled fallback
+  matches `mobile/www/index.html`. Generated config/assets are ignored
+  by git, so repeat sync on the build machine. Workspace listing passed
+  outside the shell sandbox and exposes the `App` scheme.
+- **Unsigned compile attempted; rebuild NOT confirmed:**
+  `xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath /private/tmp/peak-splash-derived CODE_SIGNING_ALLOWED=NO build`
+  failed (exit 65): generated Pods have `IPHONEOS_DEPLOYMENT_TARGET`
+  14.0, below this Xcode's supported 15.0–27.0.x range. The Podfile
+  already declares iOS 15.0, so resolve the dependency target settings
+  durably in the CocoaPods setup, rerun sync, and repeat this compile
+  before device verification. Do not hand-edit generated Pods as the
+  permanent fix. An unsigned compile, even when passing, does not
+  confirm signing, installation, or the visual handoff.
+- **Release blockers to resolve before installing/distributing this config:**
+  `SplashCurtain.tsx` returns immediately while the flag is off, and
+  also returns without hiding when the session has already played.
+  `mobile/www/index.html` has no native hide call. With auto-hide off,
+  these paths can leave the native still covering the app indefinitely.
+  Add and verify explicit dismissal for flag-off/session-skip and
+  offline/error paths before release; verify recovery if React fails to
+  load. Do not solve this by prematurely enabling the curtain.
+- **Exact Xcode verification / enablement gate:**
+  1. From the repo root run `npm ci` on a fresh checkout, then
+     `npm run mobile:sync -- ios`; stop on any failure. Inspect
+     `ios/App/App/capacitor.config.json` for `launchAutoHide: false`
+     and `SplashScreenPlugin`. The native shell loads the live site;
+     `next build` does not embed updated React code into this binary.
+     Make the dismissal fixes available on the web URL used by the
+     test build before testing, and sync again after fallback edits.
+  2. Run `npm run mobile:ios` and open **App.xcworkspace**, not
+     App.xcodeproj. Select scheme **App**, then the **App** target →
+     **Signing & Capabilities**: verify the intended team, bundle ID
+     `com.peakmusicreviews.app`, provisioning, and build number.
+  3. Select a connected, trusted iPhone with Developer Mode enabled.
+     Use **Product → Clean Build Folder**, then **Product → Build**
+     (⌘B). Require Build Succeeded. Run (⌘R) to install that build;
+     record its version/build, commit, iOS version, and device.
+  4. With the flag still false, force-quit and cold-launch online:
+     the native still must dismiss to usable content. Repeat on slow
+     networking, after background/resume, and with an existing session.
+     Cold-launch in airplane mode: NO SIGNAL and Retune must be visible;
+     restore networking and verify recovery. Test an unreachable site
+     and failed web loading too. Any permanently covered screen blocks
+     release, even if compilation passed.
+  5. On that rebuilt native shell, navigate to `?splash=1` to preview
+     the handoff without changing the flag; for a cold-launch preview
+     use a local test-only server URL with that query, sync/rebuild,
+     then restore the production URL and sync/rebuild afterwards.
+     Verify native still → animated curtain → usable app with no
+     intervening content flash, double splash, or stuck overlay.
+     Repeat with iOS Reduce Motion on and off. A browser preview alone
+     does not verify the native handoff.
+  6. Record the device results here before considering a separate flag
+     enablement change. Since the flag ships on the live site, also
+     protect users on older auto-hiding binaries (version gating or a
+     confirmed rollout strategy) before enabling it globally. For
+     distribution, select **Any iOS Device (arm64)** → **Product →
+     Archive** → Organizer **Validate App**, then verify the installed
+     TestFlight build with the same launch checks. No release or flag
+     enablement is performed by this preparation.
 - Redesigned per Luca: wordmark is the ORIGINAL launch-image one
   (PlayStation font, large, `#c4c4c8` sampled out of
   splash-2732x2732.png) instead of the small blue one; the penguin

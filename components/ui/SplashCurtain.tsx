@@ -3,15 +3,19 @@
 /**
  * SplashCurtain — the app's own opening, in the web layer.
  *
- * ⚠️ CURRENTLY OFF. See APP_SPLASH_CURTAIN_ENABLED in lib/flags.ts for
- * why (two splashes stacked) and what the native rebuild has to change
- * before it can come back. Preview it any time with `?splash=1`.
+ * ON from build 3 (2026-09-21), gated on the shell's build number —
+ * see APP_SPLASH_CURTAIN_ENABLED / SPLASH_HANDOFF_MIN_BUILD in
+ * lib/flags.ts for the double-splash history and why the gate exists.
+ * Preview it any time with `?splash=1`.
  *
  * The native splash (Capacitor SplashScreen, capacitor.config.ts) is a
  * static black image baked into the binary: it can only ever be a
- * still, and changing it needs Xcode. This is the animated one — the
- * penguin drops in, lands with a little weight, settles; the wordmark
- * resolves under it; and a frost line runs to 100% underneath.
+ * still, and changing it needs Xcode. From build 3 that still WAITS
+ * for this component to dismiss it (launchAutoHide off), which is what
+ * makes the hand-off seamless — and what makes the effect below
+ * responsible for ALWAYS dismissing it, one way or the other. This is
+ * the animated half: the penguin drops in, lands with a little weight,
+ * settles; the wordmark resolves under it; a frost line runs to 100%.
  *
  * The rules it obeys, all of them deliberate:
  *  - App only (or an explicit `?splash=1` preview). On the website you
@@ -22,13 +26,15 @@
  *    curtain is purely on top, any tap dismisses it, and a failed
  *    image drops it instantly rather than leaving a black screen —
  *    the one failure mode worse than no splash at all.
- *  - It hides Capacitor's static splash the moment it is on screen.
+ *  - It hides Capacitor's static splash the moment it is on screen —
+ *    and hides it IMMEDIATELY on every path where it decides not to
+ *    play, because from build 3 nothing else will.
  *  - Reduced motion skips it entirely.
  */
 
 import { useEffect, useState } from "react";
-import { isNativeApp, hideNativeSplash } from "@/lib/native";
-import { APP_SPLASH_CURTAIN_ENABLED } from "@/lib/flags";
+import { isNativeApp, hideNativeSplash, appBuildNumber } from "@/lib/native";
+import { APP_SPLASH_CURTAIN_ENABLED, SPLASH_HANDOFF_MIN_BUILD } from "@/lib/flags";
 
 /** Long enough to read as a performance, short enough not to be a wait. */
 const HOLD_MS = 1450;
@@ -63,38 +69,76 @@ export default function SplashCurtain() {
     const preview =
       typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("splash") === "1";
+    const native = isNativeApp();
 
-    if (!preview) {
-      if (!APP_SPLASH_CURTAIN_ENABLED) return;
-      if (!isNativeApp()) return;
-    }
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      void hideNativeSplash();
-      return;
-    }
-    if (!preview) {
-      try {
-        if (sessionStorage.getItem("pmr-splash-played")) return;
-        sessionStorage.setItem("pmr-splash-played", "1");
-      } catch {
-        /* private mode / storage blocked: play it, it's once per launch anyway */
+    // On the plain web only the explicit preview ever plays.
+    if (!native && !preview) return;
+
+    let cancelled = false;
+    let raise: number | undefined;
+    let leave: ReturnType<typeof setTimeout> | undefined;
+    let done: ReturnType<typeof setTimeout> | undefined;
+
+    (async () => {
+      /* THE ONE RULE (build 3+, launchAutoHide off): inside the shell,
+         every branch below ends in exactly one of two things — play
+         the curtain, which hides the native still the frame it
+         appears, or hide the still RIGHT NOW. A branch that does
+         neither is a phone stuck on the launch image. That is why
+         this is one decision with one exit, not a stack of early
+         returns; the old shape (return on flag-off, return on
+         session-played) would have been exactly that bug. */
+      let play = preview;
+
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        play = false; // accessibility wins, preview or not
+      } else if (!play && native) {
+        if (!APP_SPLASH_CURTAIN_ENABLED) {
+          play = false;
+        } else {
+          // Older binaries auto-hide their still on a timer; playing
+          // the curtain on top of that is the double splash Luca saw.
+          // null = the shell can't say = treat as old.
+          const build = await appBuildNumber();
+          if (build === null || build < SPLASH_HANDOFF_MIN_BUILD) {
+            play = false;
+          } else {
+            // COLD BOOT only: a fresh WebView has empty sessionStorage,
+            // so route changes and back-navigations never replay it.
+            try {
+              if (sessionStorage.getItem("pmr-splash-played")) play = false;
+              else sessionStorage.setItem("pmr-splash-played", "1");
+            } catch {
+              /* private mode / storage blocked: play it, it's once per launch anyway */
+            }
+          }
+        }
       }
-    }
 
-    // Raised on the next frame, not synchronously inside the effect:
-    // the app's own first paint goes up first, which is the order we
-    // want anyway — the curtain is a layer over a running app, never
-    // something it waits behind.
-    const raise = requestAnimationFrame(() => {
-      setPhase("playing");
-      void hideNativeSplash();
-    });
-    const leave = setTimeout(() => setPhase("leaving"), HOLD_MS);
-    const done = setTimeout(() => setPhase("off"), HOLD_MS + FADE_MS);
+      if (cancelled) return;
+      if (!play) {
+        if (native) void hideNativeSplash();
+        return;
+      }
+
+      // Raised on the next frame, not synchronously: the app's own
+      // first paint goes up first, which is the order we want anyway —
+      // the curtain is a layer over a running app, never something it
+      // waits behind. The still is dropped in that same frame, so the
+      // hand-off is one continuous opening.
+      raise = requestAnimationFrame(() => {
+        setPhase("playing");
+        void hideNativeSplash();
+      });
+      leave = setTimeout(() => setPhase("leaving"), HOLD_MS);
+      done = setTimeout(() => setPhase("off"), HOLD_MS + FADE_MS);
+    })();
+
     return () => {
-      cancelAnimationFrame(raise);
-      clearTimeout(leave);
-      clearTimeout(done);
+      cancelled = true;
+      if (raise !== undefined) cancelAnimationFrame(raise);
+      if (leave) clearTimeout(leave);
+      if (done) clearTimeout(done);
     };
   }, []);
 

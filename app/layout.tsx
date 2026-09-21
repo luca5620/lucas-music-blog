@@ -38,6 +38,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SoftwareApplicationSchema, WebSiteSchema } from "@/app/schema";
 import { APP_STORE_URL } from "@/lib/app-store";
 import { LOW_DETAIL_BOOT_SCRIPT } from "@/lib/lowDetail";
+import { NATIVE_SPLASH_FAILSAFE_SCRIPT } from "@/lib/native";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { createClient as createServerSupabase } from "@/lib/supabase/server";
@@ -237,6 +238,11 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://i.scdn.co" crossOrigin="" />
         <link rel="dns-prefetch" href="https://i.scdn.co" />
         <script dangerouslySetInnerHTML={{ __html: LOW_DETAIL_BOOT_SCRIPT }} />
+        {/* NATIVE SPLASH FAILSAFE — from build 3 the launch image waits
+            for the web layer to dismiss it, so if React never mounts
+            this is the only thing between the user and a phone stuck
+            on the penguin still. See lib/native.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: NATIVE_SPLASH_FAILSAFE_SCRIPT }} />
         <WebSiteSchema />
         <SoftwareApplicationSchema appStoreUrl={APP_STORE_URL} />
       </head>

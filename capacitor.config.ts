@@ -51,10 +51,16 @@ const config: CapacitorConfig = {
   },
   plugins: {
     // Branded splash: the black penguin image in Splash.imageset.
-    // Short + no spinner — it's a curtain, not a loading screen.
+    // BUILD 3+ (2026-09-21): the still HOLDS until the web layer hides
+    // it, which is what lets SplashCurtain hand off from it with no
+    // gap and no double splash. The web layer therefore owns
+    // dismissal — see lib/flags.ts for the three things that guarantee
+    // it (curtain / <head> failsafe / offline page) and the build-
+    // number gate that keeps builds 1–2 behaving as they always did.
+    // launchShowDuration is now only the MINIMUM the still is shown.
     SplashScreen: {
       launchShowDuration: 1200,
-      launchAutoHide: true,
+      launchAutoHide: false,
       backgroundColor: "#000000",
       showSpinner: false,
     },

@@ -90,6 +90,46 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 👉 PICK UP HERE (MacBook, 2026-09-21 afternoon — iOS 27 needs UIScene)
+
+**The shell crashed at launch on the iOS 27 simulator (Xcode 27):**
+`SIGTRAP`, "launch failed", and in the process log: *"Application
+failed to launch: UIScene life cycle is required for apps built with
+this SDK."* Apple made the UIScene life cycle MANDATORY for anything
+built with the SDK after iOS 26; Xcode 27 builds against the iOS 27
+SDK, and the Capacitor 7 iOS template still runs the old
+AppDelegate-owns-the-window model. The splash hand-off verified that
+morning was on the **iOS 26.5** simulator, which doesn't enforce it —
+a real phone on iOS 27 would have hit this on the TestFlight build.
+
+**Fixed, in the shell only (no web change, nothing deploys):**
+- `ios/App/App/SceneDelegate.swift` (new) — `UIWindowSceneDelegate`;
+  forwards URL opens / Universal Links (warm AND cold-launch-from-link)
+  to Capacitor's `ApplicationDelegateProxy`, the same thing the
+  AppDelegate used to call, so the App plugin's `appUrlOpen` still
+  fires for the OAuth return (`components/auth/OAuthButtons.tsx`).
+- `ios/App/App/Info.plist` — `UIApplicationSceneManifest` pointing the
+  one scene at `SceneDelegate` + `Main` storyboard (replaces
+  `UIMainStoryboardFile`).
+- `ios/App/App.xcodeproj/project.pbxproj` — the new file registered.
+- `AppDelegate.swift` — comment only: its URL handlers no longer run.
+
+**Verified (xcodebuild, headless simctl):** launches and stays alive on
+iOS 27 AND iOS 26.5; still → curtain → app on both (iOS 27 warm
+relaunch: still at 1.0s, curtain 1.5–2.0s, app from 2.5s). The
+SplashScreen and StatusBar plugins are scene-aware already (checked
+their Swift), and behaved.
+
+**⬜ ONE CHECK LEFT — needs a finger on the simulator.** The deep-link
+delivery through the scene delegate is verified up to iOS's
+"Open in Peak Music?" confirmation sheet, which nothing headless can
+tap (Xcode 27 has no separate Simulator.app; the Claude simulator tool
+falsely reports Xcode as unselected). So: **social sign-in in the app
+(Google/Apple → back into the WebView) must be exercised once on the
+TestFlight build** — it is the only behaviour the scene change could
+have touched. If the code exchange never comes back, the suspect is
+`SceneDelegate.forward(_:)`, nothing else.
+
 ### 👉 PICK UP HERE (MacBook, 2026-09-16 — VERIFIED)
 
 ✅ **MIGRATION 049 IS RUN** (Luca, 2026-09-16). Verified against the

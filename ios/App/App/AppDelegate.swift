@@ -55,9 +55,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    // MARK: - URL opens
+    // SINCE 2026-09-21 THESE TWO ARE NOT WHAT RUNS. The shell adopted
+    // the UIScene life cycle (required by the iOS 27 SDK — see
+    // SceneDelegate.swift for the whole story), and under scenes UIKit
+    // delivers URL opens and Universal Links to the scene delegate,
+    // never here. SceneDelegate forwards them to the same
+    // ApplicationDelegateProxy these call. They stay because Capacitor's
+    // docs say to keep them and they cost nothing.
+
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        // Called when the app was launched with a url. Feel free to add additional processing here,
-        // but if you want the App API to support tracking app url opens, make sure to keep this call
         return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
     }
 

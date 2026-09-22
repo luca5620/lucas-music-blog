@@ -59,6 +59,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard scene is UIWindowScene else { return }
+        // HAND THE WINDOW BACK TO THE APP DELEGATE. Capacitor's
+        // plugins predate scenes and still ask
+        // `UIApplication.shared.delegate?.window` for the app's window
+        // — SplashScreen.updateSplashImageBounds() opens with exactly
+        // that line, and StatusBar reaches for a key window the same
+        // way. Under the scene life cycle UIKit hands the window to
+        // THIS object and never sets the app delegate's, so that
+        // lookup returns nil and each plugin falls through to a
+        // fallback that hunts through connectedScenes. The fallback
+        // does currently find the right window, so this line is
+        // insurance rather than a fix — it costs nothing and it keeps
+        // the older, more direct lookup honest.
+        (UIApplication.shared.delegate as? AppDelegate)?.window = window
 
         // A cold launch from a deep link or a Universal Link: the URL
         // rides in with the connection instead of arriving later. See

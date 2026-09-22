@@ -2900,173 +2900,188 @@ fieldset {
   .penguin-mark.penguin-tapped { animation: none; }
 }
 
+:root {
+/* ---- BEGIN GENERATED FROST (scripts/build-frost.py) ---- */
+--splash-frost-h: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='100' viewBox='0 0 300 100'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='1'/%3E%3Cstop offset='.45' stop-color='%23fff' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect width='100%' height='100%' fill='url(%23f)'/%3E%3C/mask%3E%3Cfilter id='patch' x='0' y='0' width='100%' height='100%' primitiveUnits='userSpaceOnUse'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .80  0 0 0 0 .89  0 0 0 0 1  1.6 0 0 0 -.62'/%3E%3C/filter%3E%3Cfilter id='grain' x='0' y='0' width='100%' height='100%' primitiveUnits='userSpaceOnUse'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .88  0 0 0 0 .94  0 0 0 0 1  1.9 0 0 0 -1.15'/%3E%3C/filter%3E%3Cpath id='s' d='M26.9 -2.3L27.7 0.0L28.5 2.3L29.3 4.6L30.1 6.8L30.9 9.1L31.7 11.3L32.6 13.6L33.4 15.8L34.3 18.1L35.3 20.3L36.2 22.5L37.2 24.7L38.2 26.9L39.2 29.1L40.2 31.2L41.3 33.4L42.4 35.5L43.5 37.7L44.6 39.8L45.7 41.9L46.9 44.0L48.1 46.1L49.3 48.2L50.5 50.3L51.7 52.4L52.9 54.5L54.1 56.5L55.2 58.6M0.1 -1.6L1.3 0.6L2.5 2.9L3.7 5.1L4.9 7.4L6.0 9.7L7.1 12.0L8.1 14.4L9.2 16.7L10.2 19.0L11.2 21.4L12.1 23.8L13.0 26.1M9.5 -2.4L11.0 -0.5L12.5 1.5L14.0 3.4L15.5 5.3L17.2 7.1L18.8 9.0L20.5 10.7L22.2 12.5L23.9 14.2L25.8 15.8L27.7 17.4L29.6 18.9L31.6 20.3M14.2 -1.1L13.9 1.5L13.6 4.1L13.4 6.7L13.2 9.4L13.1 12.0L13.1 14.6M18.6 -0.7L19.3 1.6L20.1 3.9L20.8 6.3L21.6 8.6L22.3 10.9L23.0 13.3L23.7 15.6L24.5 17.9L25.3 20.3M105.8 -2.3L105.9 0.1L106.0 2.6L106.1 5.0L106.2 7.5L106.3 9.9L106.4 12.4L106.4 14.8L106.5 17.2L106.5 19.7L106.6 22.1L106.7 24.6L106.8 27.0L106.8 29.5L106.8 31.9L106.9 34.3L106.9 36.8L107.0 39.2L107.0 41.7L107.0 44.1L107.1 46.6L107.1 49.0L107.2 51.5L107.3 53.9L107.4 56.3L107.5 58.8L107.5 61.2L107.6 63.7L107.6 66.1L107.6 68.6M92.8 -2.2L92.6 0.4L92.3 3.0L92.0 5.6L91.6 8.2L91.2 10.8L90.6 13.3L90.1 15.9L89.5 18.4L88.8 21.0M129.7 -1.3L128.5 1.0L127.5 3.3L126.5 5.7L125.5 8.1L124.6 10.5L123.8 12.9L123.1 15.4M186.5 0.1L186.3 2.5L186.0 4.9L185.6 7.3L185.1 9.7L184.6 12.1L184.1 14.4L183.6 16.8L183.0 19.1L182.3 21.5L181.6 23.8L180.8 26.1L179.9 28.4L179.0 30.6L178.1 32.9L177.2 35.1L176.2 37.3L175.2 39.5L174.1 41.7L173.0 43.8L171.7 45.9L170.5 48.0L169.1 50.0L167.7 52.0L166.3 54.0L164.9 55.9L163.4 57.8L161.9 59.7L160.3 61.6L158.7 63.4L157.0 65.2M211.5 -1.9L210.1 0.3L208.8 2.4L207.3 4.5L205.9 6.7L204.5 8.8L203.1 10.9L201.7 13.0L200.3 15.1M180.4 -0.3L181.1 2.0L181.8 4.3L182.5 6.7L183.1 9.0L183.7 11.4L184.3 13.8L184.9 16.1L185.5 18.5L186.1 20.8M179.2 -0.6L178.6 1.7L178.0 4.1L177.3 6.5L176.6 8.9L175.9 11.2L175.1 13.6L174.3 15.9L173.5 18.2L172.6 20.5L171.6 22.8M261.6 -2.2L262.1 0.2L262.6 2.6L263.2 5.0L263.8 7.3L264.4 9.7L265.0 12.1L265.7 14.5L266.3 16.8L266.8 19.2L267.4 21.6L268.0 24.0L268.6 26.4L269.2 28.7L269.7 31.1L270.3 33.5L270.8 35.9L271.3 38.3L271.8 40.7L272.3 43.1L272.8 45.5L273.4 47.9L273.9 50.3L274.4 52.7L274.9 55.1L275.4 57.5L275.8 59.9L276.3 62.3L276.8 64.7L277.2 67.2M268.1 -1.0L269.6 1.1L271.0 3.2L272.5 5.2L274.1 7.2L275.6 9.3L277.2 11.3L278.8 13.2L280.4 15.2L282.1 17.1L283.8 18.9L285.6 20.8L287.4 22.6L289.1 24.4M285.4 -0.1L285.9 2.5L286.5 5.1L287.1 7.7L287.8 10.3L288.5 12.8L289.4 15.4M283.9 0.2L285.3 2.5L286.7 4.8L288.1 7.1L289.5 9.4L290.8 11.7L292.2 14.0M234.7 -0.8L233.2 1.1L231.8 3.1L230.5 5.1L229.2 7.1L228.0 9.2L226.8 11.3L225.7 13.5L224.7 15.6M226.1 -2.4L226.9 -0.6L227.8 1.3L228.5 3.2L229.3 5.1L230.1 7.1M19.2 -0.5L20.6 1.6L21.9 3.7L23.3 5.9L24.6 8.0L25.9 10.2L27.1 12.4L28.3 14.6L29.4 16.8L30.5 19.1M117.3 -2.4L118.4 -0.2L119.4 2.0L120.3 4.2L121.3 6.5L122.1 8.8L123.0 11.1L123.8 13.4L124.6 15.7M283.9 0.4L283.6 2.7L283.4 5.0L283.0 7.3L282.6 9.6L282.2 11.9'/%3E%3Cpath id='t' d='M28 2L42 5M29 5L40 6M35 6L38 2M35 6L36 10M29 5L22 13M30 7L38 9M31 9L42 11M36 10L39 7M36 10L38 15M31 9L23 17M32 11L42 13M37 12L39 9M37 12L38 16M32 11L25 19M28 15L29 19M28 15L24 14M33 14L44 16M38 15L42 11M38 15L40 19M33 14L26 23M29 19L32 23M29 19L24 18M33 16L39 17M33 16L29 20M34 18L46 18M40 18L43 14M40 18L42 23M34 18L28 28M31 23L33 27M31 23L26 23M35 20L42 20M35 20L31 25M36 22L45 24M36 22L31 29M37 25L45 26M37 25L32 30M38 27L45 28M38 27L33 32M39 29L36 33M40 31L46 31M40 31L36 36M41 33L46 34M42 36L48 36M42 36L38 40M43 38L47 38M43 38L42 41M45 40L49 40M46 42L48 42M46 42L44 44M47 44L51 44M47 44L45 47M48 46L51 46M48 46L47 49M49 48L53 49M49 48L48 51M50 50L53 50M50 50L49 53M52 52L54 52M52 52L51 54M3 3L9 4M3 3L0 9M4 5L9 6M4 5L1 10M5 7L10 7M5 7L2 11M6 10L9 10M7 12L5 14M8 14L12 15M9 17L11 17M9 17L8 18M10 19L13 19M10 19L9 21M12 1L10 5M14 3L20 2M14 3L11 9M16 5L18 4M16 5L14 8M17 7L22 5M17 7L16 12M19 9L23 8M19 9L16 13M20 11L24 9M20 11L18 14M22 13L25 11M22 13L21 16M24 14L26 14M24 14L23 16M26 16L27 15M26 16L25 17M14 4L15 5M14 4L12 5M13 7L15 8M13 7L12 8M20 4L23 4M20 4L17 6M21 6L23 7M21 6L19 8M22 9L25 9M22 9L19 11M22 11L24 11M22 11L21 12M23 13L25 14M23 13L22 14M106 3L121 7M106 5L114 7M106 5L99 9M106 7L117 13M106 7L97 14M106 10L115 15M110 12L114 10M110 12L110 16M106 10L97 13M102 12L101 16M102 12L99 9M106 12L114 16M106 12L99 16M106 15L99 20M103 18L103 21M103 18L99 16M107 17L116 21M107 20L114 25M110 22L114 20M110 22L110 26M107 20L99 25M103 22L103 26M103 22L99 20M107 22L115 26M111 24L114 22M111 24L111 28M107 22L99 28M107 25L113 29M107 25L100 28M107 27L112 30M107 27L101 30M107 29L113 33M107 29L100 34M107 32L116 35M111 34L114 31M111 34L112 38M107 32L98 37M103 34L103 38M103 34L99 32M107 34L111 36M107 34L102 36M107 39L112 41M107 39L102 41M107 42L110 44M107 42L104 44M107 44L111 45M107 44L103 46M107 47L111 49M107 49L112 51M107 49L103 51M107 51L111 53M107 51L104 54M107 54L110 55M107 54L104 55M107 56L109 57M107 56L106 57M107 59L109 59M107 59L106 59M108 61L106 62M108 64L109 64M108 64L106 64M92 3L96 5M92 6L94 7M92 6L90 6M92 8L94 10M92 8L89 9M91 11L93 12M91 11L89 11M91 13L92 14M91 13L89 13M127 3L129 6M127 3L124 3M126 6L124 6M125 8L127 9M125 8L124 8M125 10L126 12M125 10L123 11M186 5L200 13M186 5L172 12M186 7L198 17M186 7L170 10M185 10L193 15M189 13L193 11M189 13L188 17M185 10L176 13M181 12L180 16M181 12L178 9M185 12L192 18M185 12L176 15M180 13L180 17M180 13L178 11M184 14L190 21M184 14L175 17M180 16L179 19M180 16L177 13M184 17L190 22M183 19L192 27M187 23L192 21M187 23L186 28M183 19L171 20M177 20L175 24M177 20L174 16M182 21L192 29M182 21L171 25M177 23L175 28M177 23L173 19M182 24L187 28M182 24L175 25M181 26L189 33M181 26L170 26M175 26L173 30M175 26L173 22M180 28L184 32M180 28L174 29M179 31L182 35M179 31L173 30M178 33L185 39M178 33L169 33M173 33L172 36M173 33L172 29M177 35L184 41M177 35L168 36M173 36L171 39M173 36L170 32M175 40L180 45M175 40L168 41M174 42L178 48M174 42L167 42M173 44L175 48M173 44L168 44M172 46L174 51M172 46L166 46M170 48L172 52M170 48L167 48M169 50L171 52M169 50L167 49M168 52L169 54M166 54L167 56M166 54L164 54M165 56L166 59M165 56L162 56M163 58L161 58M162 60L163 62M162 60L160 59M209 2L210 4M209 2L207 2M207 5L209 6M206 7L208 9M206 7L203 6M205 9L206 11M205 9L202 8M203 11L204 13M203 11L201 11M182 4L185 5M182 4L179 7M182 7L186 8M182 7L180 9M183 9L186 10M183 9L181 11M184 11L186 12M184 11L182 13M184 14L186 15M184 14L183 16M185 16L186 17M185 16L184 17M178 4L181 6M178 4L175 5M177 7L181 9M177 7L173 8M177 9L178 11M176 11L178 13M176 11L173 11M175 14L177 15M175 14L173 14M174 16L175 17M174 16L173 16M263 3L275 7M269 5L273 1M269 5L269 10M263 3L253 12M258 7L260 12M258 7L253 5M263 5L273 7M263 5L256 12M260 8L261 12M260 8L256 7M264 7L278 8M271 8L274 2M271 8L274 13M264 7L251 15M264 10L271 12M264 10L259 14M265 12L279 15M272 14L275 9M272 14L273 19M265 12L255 22M260 17L262 22M260 17L254 15M266 14L276 18M266 14L256 20M266 17L275 19M266 17L259 21M267 19L260 26M267 22L275 24M267 22L261 26M268 24L264 28M269 26L260 32M269 29L277 31M269 29L262 33M270 31L278 33M270 31L262 36M270 34L277 34M270 34L265 37M271 36L276 37M271 36L267 39M271 38L279 39M272 41L279 42M272 41L266 45M272 43L276 44M272 43L269 45M273 46L277 47M273 46L269 48M273 48L271 51M274 50L277 51M274 50L272 52M274 53L277 53M274 53L272 55M275 55L277 55M275 55L273 56M275 58L278 58M275 58L273 59M276 60L278 60M276 60L274 61M276 62L278 62M276 62L275 63M271 3L276 3M271 3L269 7M273 5L277 5M273 5L270 9M274 7L279 7M274 7L272 12M276 9L279 8M276 9L274 13M277 11L276 16M279 13L282 12M279 13L277 16M280 15L284 15M280 15L280 18M282 17L284 17M282 17L282 19M284 19L286 18M286 5L288 6M286 5L285 6M287 8L289 8M287 8L286 9M288 10L289 11M288 10L287 11M287 5L290 5M288 7L290 7M288 7L287 9M232 3L234 6M232 3L228 3M230 5L231 7M230 5L229 5M229 7L230 8M229 7L228 7M228 9L229 11M228 9L226 9M227 11L228 13M228 1L229 2M228 1L227 2M23 6L26 6M25 8L24 10M26 10L28 10M26 10L25 12M27 12L29 13M27 12L26 14M28 15L30 15M28 15L28 16M119 2L123 2M119 2L117 5M120 4L123 4M120 4L118 6M121 7L123 7M121 7L120 8M122 9L124 9M122 9L120 10M123 11L122 12M283 5L285 6M283 5L282 5'/%3E%3Cpath id='c' d='M236 27L239 27M236 27L238 29M236 27L235 29M236 27L234 27M236 27L235 25M236 27L237 25M150 7L152 7M151 7L152 6M151 7L152 8M150 7L151 9M151 8L152 8M151 8L150 9M150 7L148 9M149 8L149 9M149 8L148 8M150 7L147 7M148 7L148 8M148 7L148 6M150 7L148 5M149 6L148 6M149 6L149 5M150 7L151 5M151 6L150 5M151 6L152 6M151 6L152 6M151 6L151 7M151 6L150 8M151 6L149 6M151 6L150 5M151 6L151 5M272 14L275 14M272 14L273 16M272 14L271 16M272 14L270 14M272 14L271 12M272 14L274 12M287 29L289 29M287 29L288 31M287 29L286 31M287 29L285 29M287 29L286 27M287 29L288 27M229 13L232 12M231 12L231 11M231 12L231 13M229 13L231 15M230 14L231 14M230 14L229 15M229 13L227 16M228 14L228 15M228 14L227 14M229 13L225 12M227 12L226 13M227 12L226 11M229 13L227 10M228 11L227 11M228 11L228 10M229 13L230 9M230 11L229 10M230 11L231 11M22 44L23 44M22 44L23 45M22 44L21 45M22 44L20 44M22 44L21 42M22 44L23 42M137 23L139 23M137 23L138 25M137 23L136 25M137 23L135 23M137 23L136 22M137 23L138 22M211 2L213 2M211 2L212 4M211 2L210 4M211 2L208 2M211 2L210 0M211 2L212 0M98 16L100 16M98 16L99 18M98 16L97 18M98 16L95 16M98 16L96 14M98 16L99 14M110 27L112 27M110 27L111 28M110 27L109 29M110 27L108 27M110 27L109 25M110 27L111 25'/%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Crect width='100%' height='100%' filter='url(%23patch)' opacity='.3'/%3E%3Crect width='100%' height='100%' filter='url(%23grain)' opacity='.32'/%3E%3Cg fill='none' stroke='%2368aee8' stroke-linecap='round' opacity='.34'%3E%3Cuse href='%23s' stroke-width='3'/%3E%3Cuse href='%23t' stroke-width='1.9'/%3E%3C/g%3E%3Cg fill='none' stroke='%23dbeeff' stroke-linecap='round'%3E%3Cuse href='%23s' stroke-width='.72' opacity='.9'/%3E%3Cuse href='%23t' stroke-width='.44' opacity='.7'/%3E%3Cuse href='%23c' stroke-width='.42' opacity='.55'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+--splash-frost-v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='300' viewBox='0 0 100 300'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='1'/%3E%3Cstop offset='.45' stop-color='%23fff' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect width='100%' height='100%' fill='url(%23f)'/%3E%3C/mask%3E%3Cfilter id='patch' x='0' y='0' width='100%' height='100%' primitiveUnits='userSpaceOnUse'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .80  0 0 0 0 .89  0 0 0 0 1  1.6 0 0 0 -.62'/%3E%3C/filter%3E%3Cfilter id='grain' x='0' y='0' width='100%' height='100%' primitiveUnits='userSpaceOnUse'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .88  0 0 0 0 .94  0 0 0 0 1  1.9 0 0 0 -1.15'/%3E%3C/filter%3E%3Cpath id='s' d='M-2.3 26.9L0.0 27.7L2.3 28.5L4.6 29.3L6.8 30.1L9.1 30.9L11.3 31.7L13.6 32.6L15.8 33.4L18.1 34.3L20.3 35.3L22.5 36.2L24.7 37.2L26.9 38.2L29.1 39.2L31.2 40.2L33.4 41.3L35.5 42.4L37.7 43.5L39.8 44.6L41.9 45.7L44.0 46.9L46.1 48.1L48.2 49.3L50.3 50.5L52.4 51.7L54.5 52.9L56.5 54.1L58.6 55.2M-1.6 0.1L0.6 1.3L2.9 2.5L5.1 3.7L7.4 4.9L9.7 6.0L12.0 7.1L14.4 8.1L16.7 9.2L19.0 10.2L21.4 11.2L23.8 12.1L26.1 13.0M-2.4 9.5L-0.5 11.0L1.5 12.5L3.4 14.0L5.3 15.5L7.1 17.2L9.0 18.8L10.7 20.5L12.5 22.2L14.2 23.9L15.8 25.8L17.4 27.7L18.9 29.6L20.3 31.6M-1.1 14.2L1.5 13.9L4.1 13.6L6.7 13.4L9.4 13.2L12.0 13.1L14.6 13.1M-0.7 18.6L1.6 19.3L3.9 20.1L6.3 20.8L8.6 21.6L10.9 22.3L13.3 23.0L15.6 23.7L17.9 24.5L20.3 25.3M-2.3 105.8L0.1 105.9L2.6 106.0L5.0 106.1L7.5 106.2L9.9 106.3L12.4 106.4L14.8 106.4L17.2 106.5L19.7 106.5L22.1 106.6L24.6 106.7L27.0 106.8L29.5 106.8L31.9 106.8L34.3 106.9L36.8 106.9L39.2 107.0L41.7 107.0L44.1 107.0L46.6 107.1L49.0 107.1L51.5 107.2L53.9 107.3L56.3 107.4L58.8 107.5L61.2 107.5L63.7 107.6L66.1 107.6L68.6 107.6M-2.2 92.8L0.4 92.6L3.0 92.3L5.6 92.0L8.2 91.6L10.8 91.2L13.3 90.6L15.9 90.1L18.4 89.5L21.0 88.8M-1.3 129.7L1.0 128.5L3.3 127.5L5.7 126.5L8.1 125.5L10.5 124.6L12.9 123.8L15.4 123.1M0.1 186.5L2.5 186.3L4.9 186.0L7.3 185.6L9.7 185.1L12.1 184.6L14.4 184.1L16.8 183.6L19.1 183.0L21.5 182.3L23.8 181.6L26.1 180.8L28.4 179.9L30.6 179.0L32.9 178.1L35.1 177.2L37.3 176.2L39.5 175.2L41.7 174.1L43.8 173.0L45.9 171.7L48.0 170.5L50.0 169.1L52.0 167.7L54.0 166.3L55.9 164.9L57.8 163.4L59.7 161.9L61.6 160.3L63.4 158.7L65.2 157.0M-1.9 211.5L0.3 210.1L2.4 208.8L4.5 207.3L6.7 205.9L8.8 204.5L10.9 203.1L13.0 201.7L15.1 200.3M-0.3 180.4L2.0 181.1L4.3 181.8L6.7 182.5L9.0 183.1L11.4 183.7L13.8 184.3L16.1 184.9L18.5 185.5L20.8 186.1M-0.6 179.2L1.7 178.6L4.1 178.0L6.5 177.3L8.9 176.6L11.2 175.9L13.6 175.1L15.9 174.3L18.2 173.5L20.5 172.6L22.8 171.6M-2.2 261.6L0.2 262.1L2.6 262.6L5.0 263.2L7.3 263.8L9.7 264.4L12.1 265.0L14.5 265.7L16.8 266.3L19.2 266.8L21.6 267.4L24.0 268.0L26.4 268.6L28.7 269.2L31.1 269.7L33.5 270.3L35.9 270.8L38.3 271.3L40.7 271.8L43.1 272.3L45.5 272.8L47.9 273.4L50.3 273.9L52.7 274.4L55.1 274.9L57.5 275.4L59.9 275.8L62.3 276.3L64.7 276.8L67.2 277.2M-1.0 268.1L1.1 269.6L3.2 271.0L5.2 272.5L7.2 274.1L9.3 275.6L11.3 277.2L13.2 278.8L15.2 280.4L17.1 282.1L18.9 283.8L20.8 285.6L22.6 287.4L24.4 289.1M-0.1 285.4L2.5 285.9L5.1 286.5L7.7 287.1L10.3 287.8L12.8 288.5L15.4 289.4M0.2 283.9L2.5 285.3L4.8 286.7L7.1 288.1L9.4 289.5L11.7 290.8L14.0 292.2M-0.8 234.7L1.1 233.2L3.1 231.8L5.1 230.5L7.1 229.2L9.2 228.0L11.3 226.8L13.5 225.7L15.6 224.7M-2.4 226.1L-0.6 226.9L1.3 227.8L3.2 228.5L5.1 229.3L7.1 230.1M-0.5 19.2L1.6 20.6L3.7 21.9L5.9 23.3L8.0 24.6L10.2 25.9L12.4 27.1L14.6 28.3L16.8 29.4L19.1 30.5M-2.4 117.3L-0.2 118.4L2.0 119.4L4.2 120.3L6.5 121.3L8.8 122.1L11.1 123.0L13.4 123.8L15.7 124.6M0.4 283.9L2.7 283.6L5.0 283.4L7.3 283.0L9.6 282.6L11.9 282.2'/%3E%3Cpath id='t' d='M2 28L5 42M5 29L6 40M6 35L2 38M6 35L10 36M5 29L13 22M7 30L9 38M9 31L11 42M10 36L7 39M10 36L15 38M9 31L17 23M11 32L13 42M12 37L9 39M12 37L16 38M11 32L19 25M15 28L19 29M15 28L14 24M14 33L16 44M15 38L11 42M15 38L19 40M14 33L23 26M19 29L23 32M19 29L18 24M16 33L17 39M16 33L20 29M18 34L18 46M18 40L14 43M18 40L23 42M18 34L28 28M23 31L27 33M23 31L23 26M20 35L20 42M20 35L25 31M22 36L24 45M22 36L29 31M25 37L26 45M25 37L30 32M27 38L28 45M27 38L32 33M29 39L33 36M31 40L31 46M31 40L36 36M33 41L34 46M36 42L36 48M36 42L40 38M38 43L38 47M38 43L41 42M40 45L40 49M42 46L42 48M42 46L44 44M44 47L44 51M44 47L47 45M46 48L46 51M46 48L49 47M48 49L49 53M48 49L51 48M50 50L50 53M50 50L53 49M52 52L52 54M52 52L54 51M3 3L4 9M3 3L9 0M5 4L6 9M5 4L10 1M7 5L7 10M7 5L11 2M10 6L10 9M12 7L14 5M14 8L15 12M17 9L17 11M17 9L18 8M19 10L19 13M19 10L21 9M1 12L5 10M3 14L2 20M3 14L9 11M5 16L4 18M5 16L8 14M7 17L5 22M7 17L12 16M9 19L8 23M9 19L13 16M11 20L9 24M11 20L14 18M13 22L11 25M13 22L16 21M14 24L14 26M14 24L16 23M16 26L15 27M16 26L17 25M4 14L5 15M4 14L5 12M7 13L8 15M7 13L8 12M4 20L4 23M4 20L6 17M6 21L7 23M6 21L8 19M9 22L9 25M9 22L11 19M11 22L11 24M11 22L12 21M13 23L14 25M13 23L14 22M3 106L7 121M5 106L7 114M5 106L9 99M7 106L13 117M7 106L14 97M10 106L15 115M12 110L10 114M12 110L16 110M10 106L13 97M12 102L16 101M12 102L9 99M12 106L16 114M12 106L16 99M15 106L20 99M18 103L21 103M18 103L16 99M17 107L21 116M20 107L25 114M22 110L20 114M22 110L26 110M20 107L25 99M22 103L26 103M22 103L20 99M22 107L26 115M24 111L22 114M24 111L28 111M22 107L28 99M25 107L29 113M25 107L28 100M27 107L30 112M27 107L30 101M29 107L33 113M29 107L34 100M32 107L35 116M34 111L31 114M34 111L38 112M32 107L37 98M34 103L38 103M34 103L32 99M34 107L36 111M34 107L36 102M39 107L41 112M39 107L41 102M42 107L44 110M42 107L44 104M44 107L45 111M44 107L46 103M47 107L49 111M49 107L51 112M49 107L51 103M51 107L53 111M51 107L54 104M54 107L55 110M54 107L55 104M56 107L57 109M56 107L57 106M59 107L59 109M59 107L59 106M61 108L62 106M64 108L64 109M64 108L64 106M3 92L5 96M6 92L7 94M6 92L6 90M8 92L10 94M8 92L9 89M11 91L12 93M11 91L11 89M13 91L14 92M13 91L13 89M3 127L6 129M3 127L3 124M6 126L6 124M8 125L9 127M8 125L8 124M10 125L12 126M10 125L11 123M5 186L13 200M5 186L12 172M7 186L17 198M7 186L10 170M10 185L15 193M13 189L11 193M13 189L17 188M10 185L13 176M12 181L16 180M12 181L9 178M12 185L18 192M12 185L15 176M13 180L17 180M13 180L11 178M14 184L21 190M14 184L17 175M16 180L19 179M16 180L13 177M17 184L22 190M19 183L27 192M23 187L21 192M23 187L28 186M19 183L20 171M20 177L24 175M20 177L16 174M21 182L29 192M21 182L25 171M23 177L28 175M23 177L19 173M24 182L28 187M24 182L25 175M26 181L33 189M26 181L26 170M26 175L30 173M26 175L22 173M28 180L32 184M28 180L29 174M31 179L35 182M31 179L30 173M33 178L39 185M33 178L33 169M33 173L36 172M33 173L29 172M35 177L41 184M35 177L36 168M36 173L39 171M36 173L32 170M40 175L45 180M40 175L41 168M42 174L48 178M42 174L42 167M44 173L48 175M44 173L44 168M46 172L51 174M46 172L46 166M48 170L52 172M48 170L48 167M50 169L52 171M50 169L49 167M52 168L54 169M54 166L56 167M54 166L54 164M56 165L59 166M56 165L56 162M58 163L58 161M60 162L62 163M60 162L59 160M2 209L4 210M2 209L2 207M5 207L6 209M7 206L9 208M7 206L6 203M9 205L11 206M9 205L8 202M11 203L13 204M11 203L11 201M4 182L5 185M4 182L7 179M7 182L8 186M7 182L9 180M9 183L10 186M9 183L11 181M11 184L12 186M11 184L13 182M14 184L15 186M14 184L16 183M16 185L17 186M16 185L17 184M4 178L6 181M4 178L5 175M7 177L9 181M7 177L8 173M9 177L11 178M11 176L13 178M11 176L11 173M14 175L15 177M14 175L14 173M16 174L17 175M16 174L16 173M3 263L7 275M5 269L1 273M5 269L10 269M3 263L12 253M7 258L12 260M7 258L5 253M5 263L7 273M5 263L12 256M8 260L12 261M8 260L7 256M7 264L8 278M8 271L2 274M8 271L13 274M7 264L15 251M10 264L12 271M10 264L14 259M12 265L15 279M14 272L9 275M14 272L19 273M12 265L22 255M17 260L22 262M17 260L15 254M14 266L18 276M14 266L20 256M17 266L19 275M17 266L21 259M19 267L26 260M22 267L24 275M22 267L26 261M24 268L28 264M26 269L32 260M29 269L31 277M29 269L33 262M31 270L33 278M31 270L36 262M34 270L34 277M34 270L37 265M36 271L37 276M36 271L39 267M38 271L39 279M41 272L42 279M41 272L45 266M43 272L44 276M43 272L45 269M46 273L47 277M46 273L48 269M48 273L51 271M50 274L51 277M50 274L52 272M53 274L53 277M53 274L55 272M55 275L55 277M55 275L56 273M58 275L58 278M58 275L59 273M60 276L60 278M60 276L61 274M62 276L62 278M62 276L63 275M3 271L3 276M3 271L7 269M5 273L5 277M5 273L9 270M7 274L7 279M7 274L12 272M9 276L8 279M9 276L13 274M11 277L16 276M13 279L12 282M13 279L16 277M15 280L15 284M15 280L18 280M17 282L17 284M17 282L19 282M19 284L18 286M5 286L6 288M5 286L6 285M8 287L8 289M8 287L9 286M10 288L11 289M10 288L11 287M5 287L5 290M7 288L7 290M7 288L9 287M3 232L6 234M3 232L3 228M5 230L7 231M5 230L5 229M7 229L8 230M7 229L7 228M9 228L11 229M9 228L9 226M11 227L13 228M1 228L2 229M1 228L2 227M6 23L6 26M8 25L10 24M10 26L10 28M10 26L12 25M12 27L13 29M12 27L14 26M15 28L15 30M15 28L16 28M2 119L2 123M2 119L5 117M4 120L4 123M4 120L6 118M7 121L7 123M7 121L8 120M9 122L9 124M9 122L10 120M11 123L12 122M5 283L6 285M5 283L5 282'/%3E%3Cpath id='c' d='M27 236L27 239M27 236L29 238M27 236L29 235M27 236L27 234M27 236L25 235M27 236L25 237M7 150L7 152M7 151L6 152M7 151L8 152M7 150L9 151M8 151L8 152M8 151L9 150M7 150L9 148M8 149L9 149M8 149L8 148M7 150L7 147M7 148L8 148M7 148L6 148M7 150L5 148M6 149L6 148M6 149L5 149M7 150L5 151M6 151L5 150M6 151L6 152M6 151L6 152M6 151L7 151M6 151L8 150M6 151L6 149M6 151L5 150M6 151L5 151M14 272L14 275M14 272L16 273M14 272L16 271M14 272L14 270M14 272L12 271M14 272L12 274M29 287L29 289M29 287L31 288M29 287L31 286M29 287L29 285M29 287L27 286M29 287L27 288M13 229L12 232M12 231L11 231M12 231L13 231M13 229L15 231M14 230L14 231M14 230L15 229M13 229L16 227M14 228L15 228M14 228L14 227M13 229L12 225M12 227L13 226M12 227L11 226M13 229L10 227M11 228L11 227M11 228L10 228M13 229L9 230M11 230L10 229M11 230L11 231M44 22L44 23M44 22L45 23M44 22L45 21M44 22L44 20M44 22L42 21M44 22L42 23M23 137L23 139M23 137L25 138M23 137L25 136M23 137L23 135M23 137L22 136M23 137L22 138M2 211L2 213M2 211L4 212M2 211L4 210M2 211L2 208M2 211L0 210M2 211L0 212M16 98L16 100M16 98L18 99M16 98L18 97M16 98L16 95M16 98L14 96M16 98L14 99M27 110L27 112M27 110L28 111M27 110L29 109M27 110L27 108M27 110L25 109M27 110L25 111'/%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Crect width='100%' height='100%' filter='url(%23patch)' opacity='.3'/%3E%3Crect width='100%' height='100%' filter='url(%23grain)' opacity='.32'/%3E%3Cg fill='none' stroke='%2368aee8' stroke-linecap='round' opacity='.34'%3E%3Cuse href='%23s' stroke-width='3'/%3E%3Cuse href='%23t' stroke-width='1.9'/%3E%3C/g%3E%3Cg fill='none' stroke='%23dbeeff' stroke-linecap='round'%3E%3Cuse href='%23s' stroke-width='.72' opacity='.9'/%3E%3Cuse href='%23t' stroke-width='.44' opacity='.7'/%3E%3Cuse href='%23c' stroke-width='.42' opacity='.55'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+/* ---- END GENERATED FROST ---- */
+}
+
 /* ------------------------------------------------------------
    THE APP'S OPENING — components/ui/SplashCurtain.tsx
-   ⚠️ Currently OFF (lib/flags.ts APP_SPLASH_CURTAIN_ENABLED) because
-   the native still and this stacked into two splashes. Preview it
-   with ?splash=1.
 
-   The penguin drops in, lands with weight, settles; the wordmark
-   resolves under it; a frost line runs to 100%. True black so it
-   continues the native launch image rather than flashing a different
-   background. ------------------------------------------------- */
+   This is a LIVE COPY OF THE NATIVE LAUNCH IMAGE, not a second
+   screen. Luca, 2026-09-21, on the version that animated: "the
+   original splash still plays, and then the second one you just made
+   plays after... I want the splash to look exactly the same as the
+   old one." He was right, and the cause was not timing: the still had
+   the bird sitting still and centred, and the curtain then dropped a
+   differently-sized bird in from the top under a differently-tracked
+   wordmark. Two pictures in a row read as two splashes however
+   cleanly they hand off.
+
+   So the bird and the wordmark below are pinned to the launch image's
+   own geometry and DO NOT MOVE. The handoff is meant to be invisible:
+   the still is replaced by pixels in the same places, and the only
+   thing that then happens is the frost closing in and the lift.
+
+   EVERY NUMBER HERE IS MEASURED, not chosen. The launch image is a
+   2732px square shown scaleAspectFill, so on a portrait phone it is
+   scaled by HEIGHT and 1px of it is exactly (100/2732)vh — which is
+   why this block is in vh and not rem or vw. scripts/build-splash.py
+   prints these same numbers when it rebuilds the image; if you change
+   one there, change it here. Verified in a browser at 402x874: the
+   wordmark's ink landed within 0.03px of the still's.
+   ------------------------------------------------------------- */
 .splash-curtain {
   position: fixed;
   inset: 0;
   z-index: 200;
   background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   opacity: 1;
-  transition: opacity 340ms ease-in;
+  transition: opacity 340ms ease-in;   /* FADE_MS in SplashCurtain.tsx */
 }
 .splash-leaving {
   opacity: 0;
   pointer-events: none;
 }
 
-/* The mascot + wordmark ride together; the rim frost is a separate
-   layer behind them, pinned to the screen edge. */
-.splash-stack {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.1rem;
-}
+/* ONE LAUNCH-IMAGE PIXEL, in CSS pixels.
+   The launch image is a 2732px square shown scaleAspectFill, i.e.
+   scaled by whichever of the screen's two dimensions is LARGER and
+   then centred. That is why this is max(1vw, 1vh) and not plain vh:
+   on a portrait phone the two are the same thing, but hold the phone
+   sideways at launch and a vh-only version would draw a bird a third
+   of the right size against a still that had scaled by width. Every
+   measurement below is in launch-image pixels multiplied by this, and
+   vertical positions are measured from the image's centre (1366) out,
+   because aspect-fill centres what it crops. */
+:root { --splash-u: calc(max(1vw, 1vh) / 27.32); }
 
-/* Same treatment as the nav mascot (.penguin-mark): no circle, no
-   plate, and the last few percent fade out instead of ending on a
-   straight cut — the bird stands in the dark rather than sitting on
-   a trimmed edge. Luca 2026-09-16 asked for exactly this fade here. */
+/* The mascot, free-standing: no circle, no plate, and the last 16%
+   fading out rather than ending on a straight cut — the same
+   treatment as the nav mark (.penguin-mark), and baked into the
+   launch image itself by scripts/build-splash.py so the two match.
+   652px tall of 2732, its top at 948px (418px above the centre). */
 .splash-penguin {
-  display: block;
+  position: absolute;
+  left: 50%;
+  top: calc(50vh - 418 * var(--splash-u));
+  height: calc(652 * var(--splash-u));
   width: auto;
-  height: 40vh;
-  max-height: 260px;
-  transform-origin: 50% 92%;
+  transform: translateX(-50%);
   -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
-  animation: splash-land 1150ms cubic-bezier(.22, 1.2, .36, 1) both;
+          mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
 }
 
-/* The wordmark waits for the landing, then resolves.
-   COLOUR + SIZE (Luca 2026-09-16): this is the wordmark off the
-   original native launch image — PlayStation font, big, and the
-   silver #c4c4c8 sampled straight out of splash-2732x2732.png. It
-   was a smaller blue one; blue put it in the site's accent language
-   when it belongs to the launch image's. Flat, with only enough
-   shadow to sit on black — the original carries no glow. */
+/* The wordmark off the 1.0 launch image, to the pixel: the
+   PlayStation face at 105 image px with .015em of tracking, ink 903px
+   wide, cap top at 1684px. The element sits at 1672.2px rather than
+   1684 because `top` positions the BOX, and at line-height 1 this
+   font puts the cap 11.8px (0.1124em) below the box's top edge —
+   measured from the font's own metrics in a browser, then checked
+   against the launch image: the ink landed within 0.03px.
+
+   NOT var(--font-heading): that is declared on :root as
+   var(--font-inter), which next/font defines further down the tree,
+   so at :root it computes to EMPTY and anything reading it silently
+   falls back to Tailwind's sans. Name the stack directly.
+   No text-shadow: the launch image carries no glow. */
 .splash-wordmark {
-  position: relative;
-  /* NOT var(--font-heading): that variable is declared on :root using
-     var(--font-inter), but next/font puts --font-inter on <body>, so
-     at :root it is undefined and --font-heading computes to EMPTY and
-     inherits down as nothing. Any font-family reading it silently
-     falls back to Tailwind's default sans — which is why this wordmark
-     was never actually in the PlayStation font. Naming the fallback
-     stack directly sidesteps the whole thing. (The site-wide version
-     of this bug is written up in ROADMAP.) */
+  position: absolute;
+  top: calc(50vh + 306.2 * var(--splash-u));
+  left: 0;
+  right: 0;
+  text-align: center;
+  line-height: 1;
   font-family: 'PlayStation', var(--font-jost), system-ui, sans-serif;
-  font-size: clamp(1.45rem, 7.2vw, 2.15rem);
-  letter-spacing: .12em;
+  font-size: calc(105 * var(--splash-u));
+  letter-spacing: .015em;
   text-transform: none;
   white-space: nowrap;
   color: #c4c4c8;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, .9);
-  opacity: 0;
-  animation: splash-wordmark 620ms ease-out 620ms both;
 }
 
-@keyframes splash-land {
-  0% { transform: translateY(-38%) scale(.86, 1.1); opacity: 0; }
-  28% { opacity: 1; }
-  46% { transform: translateY(0) scale(1.1, .88); }   /* the landing squash */
-  64% { transform: translateY(-7%) scale(.97, 1.04); }
-  82% { transform: translateY(0) scale(1.02, .99); }
-  100% { transform: translateY(0) scale(1, 1); }
-}
+/* ---- THE FROST ----------------------------------------------
+   Luca, 2026-09-21, on the stroked rectangle this replaces: "the
+   freezing effect does not look good at all, its just a white line
+   doing a circle, make an actual frosting effect around the borders,
+   where it looks detailed and have it actually look cold."
 
-@keyframes splash-wordmark {
-  0% { opacity: 0; transform: translateY(6px); letter-spacing: .3em; }
-  100% { opacity: 1; transform: translateY(0); letter-spacing: .12em; }
-}
+   So it is grown rather than stroked. Each edge carries four
+   background layers, outermost first: dendrites (the SVG tiles below,
+   generated by scripts/build-frost.py), then two soft blotches, then
+   a film. Frost blooms in patches on cold glass; an even wash reads
+   as a gradient, which is what it is.
 
-/* ---- FROST, variant 1: the perimeter (default) ----
-   A frost line traces the edge of the phone, one full loop, closing
-   the rectangle exactly as the curtain lifts (1200ms starting at
-   250ms = the 1450ms hold in SplashCurtain.tsx — keep them in step).
+   TILES, not one stretched drawing: a tile repeats along the edge at
+   its own aspect ratio, so the ice is the same size on any phone.
+   Stretching one drawing to the width of the screen is what makes
+   frost look like smeared toothpaste, and it was half of what was
+   wrong with the old rim.
 
-   preserveAspectRatio="none" stretches the 100x100 viewBox to the
-   screen, which would also stretch the stroke into a thick-on-top,
-   thin-on-the-sides outline — `vector-effect: non-scaling-stroke`
-   is what keeps it one even hairline all the way round.
-   pathLength="100" makes the dash maths plain percentages. */
-.splash-rim {
+   The creep is mask-size, from a sliver at the edge to the full band
+   depth. The mask's own fade keeps the leading edge soft, so the
+   frost advances instead of being wiped in behind a hard line. It
+   closes at 1050ms, just before the curtain lifts at 1150ms. */
+.splash-frost {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
   pointer-events: none;
+  z-index: 0;
 }
-.splash-rim-track,
-.splash-rim-line {
-  fill: none;
-  vector-effect: non-scaling-stroke;
-  stroke-linejoin: round;
-}
-/* The unfrosted edge: barely there, just enough to imply the loop. */
-.splash-rim-track {
-  stroke: rgba(219, 233, 247, 0.07);
-  stroke-width: 2;
-}
-/* The frost itself — pale ice, lightly bloomed. */
-.splash-rim-line {
-  stroke: #dbe9f7;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  filter:
-    drop-shadow(0 0 3px rgba(219, 233, 247, .95))
-    drop-shadow(0 0 10px rgba(150, 200, 245, .55));
-  animation: splash-rim-draw 1200ms cubic-bezier(.4, 0, .25, 1) 250ms both;
-}
-@keyframes splash-rim-draw {
-  0% { stroke-dashoffset: 100; opacity: .5; }
-  12% { opacity: 1; }
-  100% { stroke-dashoffset: 0; opacity: 1; }
-}
-
-/* ---- FROST, variant 2: across the wordmark ----
-   Only active when SplashCurtain sets FROST_STYLE = "text". The base
-   word sits dim and the frosted copy (::after, cloned from
-   data-text) is wiped across it left to right, hitting 100% as the
-   curtain lifts. */
-.splash-frost-text .splash-wordmark {
-  color: #55555c;
-  text-shadow: none;
-}
-.splash-frost-text .splash-wordmark::after {
-  content: attr(data-text);
+.splash-frost i {
   position: absolute;
-  left: 0;
-  top: 0;
-  white-space: nowrap;
-  color: #dbe9f7;
-  text-shadow:
-    0 0 6px rgba(219, 233, 247, .8),
-    0 0 18px rgba(150, 200, 245, .45);
-  -webkit-clip-path: inset(0 100% 0 0);
-  clip-path: inset(0 100% 0 0);
-  animation: splash-frost-wipe 780ms cubic-bezier(.4, 0, .25, 1) 670ms both;
+  display: block;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
 }
-@keyframes splash-frost-wipe {
-  0% { -webkit-clip-path: inset(0 100% 0 0); clip-path: inset(0 100% 0 0); }
-  100% { -webkit-clip-path: inset(0 0 0 0); clip-path: inset(0 0 0 0); }
+.splash-frost-t,
+.splash-frost-b {
+  left: 0;
+  right: 0;
+  height: 5.8vh;
+  background-image: var(--splash-frost-h),
+    radial-gradient(60% 78% at 22% 0%, rgba(203, 230, 253, .085), transparent 72%),
+    radial-gradient(48% 96% at 74% 0%, rgba(203, 230, 253, .065), transparent 70%),
+    linear-gradient(to bottom, rgba(200, 227, 252, .10), rgba(200, 227, 252, .03) 38%, transparent 82%);
+  background-repeat: repeat-x, repeat-x, repeat-x, no-repeat;
+  background-size: auto 100%, 168px 100%, 121px 100%, 100% 100%;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.94), rgba(0,0,0,.55) 40%, transparent 100%);
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,.94), rgba(0,0,0,.55) 40%, transparent 100%);
+  animation: splash-frost-y 950ms cubic-bezier(.32, 0, .22, 1) 100ms both;
+}
+.splash-frost-l,
+.splash-frost-r {
+  top: 0;
+  bottom: 0;
+  width: 5.8vh;
+  background-image: var(--splash-frost-v),
+    radial-gradient(78% 60% at 0% 22%, rgba(203, 230, 253, .085), transparent 72%),
+    radial-gradient(96% 48% at 0% 74%, rgba(203, 230, 253, .065), transparent 70%),
+    linear-gradient(to right, rgba(200, 227, 252, .10), rgba(200, 227, 252, .03) 38%, transparent 82%);
+  background-repeat: repeat-y, repeat-y, repeat-y, no-repeat;
+  background-size: 100% auto, 100% 168px, 100% 121px, 100% 100%;
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,.94), rgba(0,0,0,.55) 40%, transparent 100%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,.94), rgba(0,0,0,.55) 40%, transparent 100%);
+  animation: splash-frost-x 950ms cubic-bezier(.32, 0, .22, 1) 100ms both;
+}
+/* Flipped rather than given their own tiles, so all four edges are
+   visibly the same ice. */
+.splash-frost-t { top: 0; }
+.splash-frost-b { bottom: 0; transform: scaleY(-1); }
+.splash-frost-l { left: 0; }
+.splash-frost-r { right: 0; transform: scaleX(-1); }
+
+@keyframes splash-frost-y {
+  0%   { -webkit-mask-size: 100% 4%;   mask-size: 100% 4%;   opacity: 0; }
+  14%  { opacity: 1; }
+  100% { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; opacity: 1; }
+}
+@keyframes splash-frost-x {
+  0%   { -webkit-mask-size: 4% 100%;   mask-size: 4% 100%;   opacity: 0; }
+  14%  { opacity: 1; }
+  100% { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; opacity: 1; }
 }
 
 /* The curtain is one cold-boot moment, so .low-detail leaves it alone

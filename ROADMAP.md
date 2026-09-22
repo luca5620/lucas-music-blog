@@ -9,6 +9,22 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ✅ 2026-09-21 — Personal reviewer outreach and founder memory
+
+Reworked `docs/marketing/reviewer-outreach.md` into personal bullet
+outlines for Turning the Tables, Bridging the Gap, Bob the Poppop, and
+Jon Denton. Lead with Luca's recollection of discovering their Weeknd
+videos, his solo developer / business management student story, and a
+gentle invitation to try the app and share honest thoughts. Optional:
+embed an existing YouTube review in a post linked to its release.
+No coverage or promotion request; no emails sent.
+
+Shared memory: `docs/founder-story-and-voice.md`, linked from `CLAUDE.md`.
+**Later:** rewrite the About page around Luca's actual background and
+motives using those notes. Public About copy is unchanged. The old
+2026-09-09 outreach language is superseded by this revision; the other
+three candidate reviewers remain unselected.
+
 ## 🎯 Strategy — decided 2026-09-02 (Luca + Claude, post-1.1)
 
 **The situation.** Musicboard collapsed (Feb 2026) and left a displaced
@@ -89,6 +105,78 @@ don't wait to be asked:**
 ---
 
 ## ⏳ In progress
+
+### 👉 PICK UP HERE (MacBook, 2026-09-21 evening — the splash, redone)
+
+Luca on the first attempt: *"the original splash still plays, and then
+the second one you just made plays after, it should only be one
+splash... I want the splash to look exactly the same as the old one,
+the only difference should be that you remove the circle and just make
+it the penguin with the bottom fading out. dont change any of the text
+color, size or placement... the freezing effect does not look good at
+all either, its just a white line doing a circle, make an actual
+frosting effect around the borders."* All three are done and verified
+on the iPhone 17 / iOS 27 simulator.
+
+**1. ONE SPLASH.** The curtain is now a live copy of the launch image
+rather than a second screen. Nothing animates in or resolves: the bird
+and the wordmark are pinned to the launch image's own geometry, so
+when the native still is dropped the pixels underneath are in the same
+places. Measured on a real cold launch: the wordmark's ink box is
+IDENTICAL in both frames (180,1616 → 1024,1686), the bird agrees
+within 5px at its faded edge, and the mean difference across the
+middle of the screen is 2.45/255.
+
+**2. THE LAUNCH IMAGE, minus the circle.** `scripts/build-splash.py`
+rebuilds it: the 1.0 disc is gone, the bird is the free-standing
+cut-out with its bottom faded (the nav mascot's treatment), 10% bigger
+than the 1.0 bird (which correlation put at 593px; now 652). THE
+WORDMARK IS NOT REDRAWN — its pixels are lifted verbatim from the 1.0
+image (`scripts/splash-wordmark.png`) and pasted back at the same
+coordinates, so colour, size and placement cannot drift. The curtain
+renders live text at the metrics measured off those same pixels:
+PlayStation at 105 image px, .015em tracking. The bird is rebuilt at
+full photographic resolution (the 1024px photo's pixels wearing the
+512px cut-out's alpha) and `public/penguin/mark-768.webp` is the web
+half of it, so neither side is the softer one at handoff.
+
+**3. THE FROST IS GROWN, NOT STROKED.** `scripts/build-frost.py`
+generates two SVG tiles of dendrites — a stem that feathers as it goes
+— over two feTurbulence layers: low frequency for the blotches frost
+actually makes on cold glass, high frequency for the crystal grain.
+Tiles, so the ice is the same size on any phone instead of being
+stretched. It creeps inward via mask-size and closes just before the
+curtain lifts. Re-run either script and paste the frost output between
+the GENERATED markers in `app/globals.css`.
+
+**⚠️ THE LAUNCH IMAGE WAS SILENTLY BROKEN, AND IS NOW FIXED.** iOS
+pre-renders the launch storyboard at install time and REFUSES any
+launch image whose raw bitmap is over ~25,000,000 bytes. The 1.0 asset
+was 2732×2732 = 29,855,296, so splashboardd logged *"Estimated size
+(29900800) is over limit (25000000)"* and *"has a bad launch image"*
+and showed BLACK. That is not new — it was latent under a cached
+snapshot from an older install, and today's Info.plist edit
+invalidated the cache and exposed it. **Any fresh install of 1.0/1.1
+would have opened on a black screen.** The asset now ships once, at
+2400×2400 (23.0MB), sRGB-tagged, single-scale. Verified: the error is
+gone and the brand is on screen from ~0.2s.
+
+**Also:** the curtain now drops the native still two animation frames
+AFTER it renders, not in the same frame. Dropping it immediately left
+~1s of black because WebKit had not composited yet.
+
+**THE FINAL SEQUENCE** (cold launch, iPhone 17 / iOS 27, local
+production build): launch image from ~0.2s → Capacitor's still →
+curtain, all three the same picture → frost closes in ~2s → app at
+~3.4s. No black at any point, one continuous opening.
+
+**⬜ STILL TO DO:** the device checks already listed below (signing,
+airplane mode, slow network, background/resume, Reduce Motion), plus
+one that is new — **confirm the launch image renders on a real device
+after a fresh install**, since the 25MB limit was only ever observed
+in the simulator log. Android's splash drawables still carry the 1.0
+circle; they are a different set of aspect ratios and Android is not
+the build in flight.
 
 ### 👉 PICK UP HERE (MacBook, 2026-09-21 afternoon — iOS 27 needs UIScene)
 

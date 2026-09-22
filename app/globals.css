@@ -2961,7 +2961,11 @@ fieldset {
 /* The mascot, free-standing: no circle, no plate, and the last 16%
    fading out rather than ending on a straight cut — the same
    treatment as the nav mark (.penguin-mark), and baked into the
-   launch image itself by scripts/build-splash.py so the two match.
+   launch image itself by scripts/build-splash.py so the two match —
+   FADE_FROM there is this 78%, and a CSS gradient from #000 to
+   `transparent` ramps alpha linearly, which is what that script
+   bakes. Move one, move the other, or the bird's belly changes
+   shape at the handoff.
    652px tall of 2732, its top at 948px (418px above the centre). */
 .splash-penguin {
   position: absolute;
@@ -2970,8 +2974,8 @@ fieldset {
   height: calc(652 * var(--splash-u));
   width: auto;
   transform: translateX(-50%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
-          mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
 }
 
 /* The wordmark off the 1.0 launch image, to the pixel: the

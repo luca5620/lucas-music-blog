@@ -67,7 +67,7 @@ SHIP = 2400
 # a portrait phone is scaled by height, so 1px here == (100/2732)vh.
 BIRD_H = 652                    # 1.0 had the bird at 593; +10%
 BIRD_BOTTOM = 1600              # where the fade reaches nothing
-FADE_FROM = 0.84                # alpha 1 -> 0 across the last 16%
+FADE_FROM = 0.78                # alpha 1 -> 0 across the last 22%
 WORDMARK_AT = (908, 1678)       # top-left of the lifted strip
 
 # The bird inside penguin-logo.png (left, top, width, height).
@@ -90,15 +90,29 @@ def cutout() -> Image.Image:
 def faded(bird: Image.Image, height: int) -> Image.Image:
     """Scaled to `height`, with the bottom faded out instead of ending
     on a straight cut. Matches the CSS mask on .splash-penguin:
-    linear-gradient(to bottom, #000 FADE_FROM, transparent 100%)."""
+    linear-gradient(to bottom, #000 FADE_FROM, transparent 100%).
+
+    The ramp is LINEAR in alpha in both places on purpose: a CSS
+    gradient from #000 to `transparent` interpolates alpha linearly
+    with the colour held at black, so the baked fade and the live one
+    are the same fade. Change one, change the other.
+
+    (Written the long way round rather than with split()/putalpha in
+    one breath, because `Image.split()` hands back COPIES of the
+    channels: the first version of this function faded a throwaway
+    band and returned the bird untouched, and the launch image shipped
+    with a hard cut across the belly — which is exactly what Luca saw.
+    The band is edited and then explicitly put back.)"""
     w = round(bird.width * height / bird.height)
     b = bird.resize((w, height), Image.Resampling.LANCZOS)
-    a = b.split()[-1].load()
+    alpha = b.split()[-1]
+    px = alpha.load()
     start = int(height * FADE_FROM)
     for row in range(start, height):
         k = 1.0 - (row - start) / max(1, height - start)
         for col in range(w):
-            a[col, row] = int(a[col, row] * k)
+            px[col, row] = int(px[col, row] * k)
+    b.putalpha(alpha)
     return b
 
 

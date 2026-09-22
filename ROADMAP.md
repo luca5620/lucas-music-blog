@@ -237,11 +237,12 @@ method already worked out for Instagram (see the marketing section:
 real screenshot captured on device, AI-generated background plate,
 device frame). What App Store Connect requires:
 - **iPhone 6.9"** — 1320 × 2868 (1290 × 2796 also accepted).
-- **iPad 13"** — 2064 × 2752. **Not optional:** the target still
-  builds for iPad (`TARGETED_DEVICE_FAMILY = "1,2"`), and Connect
-  blocks submission on iPhone-only screenshots. If we would rather not
-  make iPad art, the alternative is to drop iPad from the target — a
-  real product decision, not a build setting to flip quietly.
+- **iPad 13"** — 2064 × 2752. **DECIDED 2026-09-21: iPad support
+  STAYS** (`TARGETED_DEVICE_FAMILY = "1,2"` is correct, leave it
+  alone), and Luca makes one iPad shot. One is enough — App Store
+  Connect requires *at least* one screenshot per required display
+  size, not a full set, and it will block the submission on zero.
+  More can go in later; they are only editable when a version is.
 - PNG or JPEG, **no alpha channel**, no transparency.
 - Apple scales down for smaller devices, so only those two sets are
   needed.

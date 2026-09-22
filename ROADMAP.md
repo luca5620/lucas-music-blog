@@ -106,6 +106,131 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 📣 MARKETING — two prompts written, and a gap in the public copy (2026-09-21)
+
+Both are in `docs/marketing/instagram-batch-1.md`, in the file's own
+format, ready to paste into ChatGPT with the mockup attached.
+
+1. **Post 5 (profile themes) — the prompt is REWRITTEN, not reused.**
+   The attempt that failed put the penguin in frame seen from behind.
+   `penguin-logo.png` is a front-on portrait, so that pose asks the
+   generator to invent the back of a head it has never seen and it
+   invents it wrong every time — the same failure as invented
+   lettering, for the same reason. The redo drops the mascot (it is
+   already in posts 1 and 7, and the rule here is that it stays rare)
+   and makes the themes the subject: the room is unlit except for the
+   phones, each spilling its own colour onto the floor — violet,
+   green, white. That says "each one recolors the whole page" in
+   light instead of in a caption. A plainer fallback is written
+   underneath in case three colours on reflective metal come out
+   muddy.
+
+2. **Post 10 (AUX WARS) — new.** Two aux cables reaching in from
+   opposite edges of the table, jacks meeting nose to nose in front
+   of the phone. The name is the image: somebody always fights for
+   the aux. Caption and a first comment are written, plus a block of
+   accuracy notes so the copy keeps matching the build (seats,
+   bracket, embeds, 🔥/💩, majority, overtime, host-decides, the
+   six-letter private code). **Post 4 stays what it is** — a debate
+   POST is now a different, smaller thing than an Aux Wars room, and
+   the two must not blur.
+
+**Order is unchanged** (Luca, 2026-09-12): finish Instagram, THEN the
+reviewer emails in one sitting. That gate is now posts 5 and 10.
+
+**⚠️ THE GAP: nothing we show the outside world mentions AUX WARS.**
+It shipped 2026-09-13 and was renamed on the 14th; every piece of
+outward copy predates it and still says "debates" — including
+`docs/APP-STORE-LISTING.md` (the live Store description) and
+`docs/AI-SEARCH.md`. **Fix the Store description in the same pass as
+the 1.2 submission**, while it is open anyway. The app's biggest
+feature is invisible to anyone who hasn't installed it.
+
+### 🚀 SHIPPING 1.2 — the native release (prepared 2026-09-21, MacBook)
+
+**The version is already bumped in the project: `MARKETING_VERSION` is
+1.2, `CURRENT_PROJECT_VERSION` stays 3** (1.1 went out as build 2, so
+build 3 is free). `NATIVE_BUILD` in `capacitor.config.ts` is 3 and must
+stay equal to it — the splash gate reads it out of the user agent.
+
+**WHY A NATIVE RELEASE AT ALL.** Everything in the web layer has been
+reaching phones all along, because the shell loads the live site. What
+needs a new binary is only what is baked in:
+- the UIScene life cycle, without which the app **crashes at launch on
+  iOS 27** (Apple made it mandatory for anything built with that SDK);
+- the launch image, which iOS had been refusing to render at all
+  because it was over the ~25MB bitmap limit — a fresh install of 1.0
+  or 1.1 opens on a **black screen**, today, in the Store;
+- the new splash artwork and the still-holds-for-the-curtain handoff;
+- pods raised to iOS 15 for Xcode 27.
+
+The first two are the reason not to sit on this.
+
+**WHAT'S NEW TEXT, for App Store Connect** (covers everything users can
+see since 1.1 went out on 2026-09-02 — most of it arrived through the
+web layer already, but the notes are the only place it is ever
+announced):
+
+```
+AUX WARS
+Song vs song, in a live room. Start one, send the code, and let the
+room vote — or judge it yourself as host. Winners count toward the
+leaderboard, including private rooms.
+
+DEBATES
+Post a debate as its own post type, pick a side, and tie each side to
+a real release from the catalogue.
+
+YOUR PROFILE
+New badges: trophies that tier as your reviews and likes climb, a
+years-of-service badge that counts from the day you joined, and links
+to your Instagram, X, Discord, Amazon Music and YouTube Music — you
+choose which ones show and in what order.
+
+SOCIAL
+Your Friends This Week: the top three around you for aux wins,
+reviews and likes. Press and hold any name to peek at a profile
+without leaving the page.
+
+POLISH
+A new opening: the penguin, no circle, with frost closing in around
+the edge. Sparkles on 9.5 and above. A cleaner look for the harsh
+ones. Faster, tidier layouts on small screens, and a pile of fixes to
+lists, duplicate releases and the review hub.
+```
+
+**THE STEPS, in order:**
+1. `git pull` on the machine doing the build (this is Mac-only).
+2. Xcode → `ios/App/App.xcworkspace` → App target → **Signing &
+   Capabilities**: team, `com.peakmusicreviews.app`, provisioning.
+3. **TestFlight first.** Any iOS Device (arm64) → Product → Archive →
+   Organizer → Validate → Distribute → App Store Connect → Upload.
+   Install from TestFlight on the real phone and walk the list under
+   "STILL TO DO" in the splash block above: cold launch online,
+   airplane mode (NO SIGNAL + Retune), slow network, background and
+   resume, Reduce Motion ON, social sign-in once (the only behaviour
+   the scene change could have touched), and — new — that the
+   **launch image appears after a fresh install**, since the 25MB
+   limit was only ever observed in the simulator's log.
+4. App Store Connect → new version **1.2** → paste the What's New
+   text → attach build 3 → new screenshots (below) → submit.
+   1.1 was set to release automatically on approval; keep that.
+
+**SCREENSHOTS — the designer is scrapped (Luca, 2026-09-21).** He is
+generating them himself with ChatGPT, using the plate + real-screenshot
+method already worked out for Instagram (see the marketing section:
+real screenshot captured on device, AI-generated background plate,
+device frame). What App Store Connect requires:
+- **iPhone 6.9"** — 1320 × 2868 (1290 × 2796 also accepted).
+- **iPad 13"** — 2064 × 2752. **Not optional:** the target still
+  builds for iPad (`TARGETED_DEVICE_FAMILY = "1,2"`), and Connect
+  blocks submission on iPhone-only screenshots. If we would rather not
+  make iPad art, the alternative is to drop iPad from the target — a
+  real product decision, not a build setting to flip quietly.
+- PNG or JPEG, **no alpha channel**, no transparency.
+- Apple scales down for smaller devices, so only those two sets are
+  needed.
+
 ### 👉 PICK UP HERE (MacBook, 2026-09-21 evening — the splash, redone)
 
 Luca on the first attempt: *"the original splash still plays, and then

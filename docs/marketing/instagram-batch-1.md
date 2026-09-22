@@ -676,7 +676,19 @@ independently and the row stops reading as one object. Build the
    row ends bright.
 3. Export that one PNG and attach only that.
 
-**Prompt:**
+**Prompt — REWRITTEN 2026-09-21, after the first attempt failed.**
+The version that went wrong put the penguin in the frame seen from
+behind, looking at the phones. Don't. `penguin-logo.png` is a
+front-on portrait, so a from-behind pose asks the generator to invent
+the back of a head it has never seen, and it invents it wrong every
+time — the same failure as invented lettering on a record sleeve,
+for the same reason. The penguin is also in posts 1 and 7 already;
+the rule in this file is that it stays rare.
+
+So the redo drops the mascot and makes the THEMES the subject, which
+is what the post is actually about. The colour each phone is throwing
+onto the floor beneath it is the whole idea — "each one recolors the
+whole page", said in light instead of in a caption:
 
 > The attached image is a finished arrangement of three iPhone
 > mockups. Do not change the phones, their angles, their spacing, or
@@ -684,18 +696,34 @@ independently and the row stops reading as one object. Build the
 > provided, pixel for pixel. Build only the scene around them.
 >
 > Stand them on a black brushed-metal floor that recedes into
-> darkness, shot from slightly above at close to floor level. One hard
-> electric-blue light from the upper left, dust hanging in the air,
-> faint reflections of the phones in the metal beneath them. Every
-> phone gets its rim light down its left edge and its shadow
-> stretching down and to the right — three shadows, all parallel.
-> Nothing else is standing on the floor. Deep falloff into true black
-> behind.
+> darkness, shot from slightly above at close to floor level. The
+> room is unlit except for the phones themselves: each screen spills
+> its own colour down onto the metal in a soft pool beneath it and a
+> faint reflection under its feet — deep violet under the left phone,
+> green under the middle one, clean white under the right. The three
+> pools bleed into each other where they meet. Fine dust hanging in
+> the air, catching the glow. Nothing else is standing on the floor.
+> Everything beyond the pools falls into true black.
 >
-> Photographic product still life — 50mm lens, shallow depth of field,
-> real dust and imperfection, heavy film grain. Not a 3D render, not
-> an illustration, no glossy stock-photo cleanliness. No text of any
-> kind, no watermarks, no logos. 4:5 portrait, 1080x1350.
+> Photographic product still life — 50mm lens, shallow depth of
+> field, real dust and imperfection, heavy film grain. Not a 3D
+> render, not an illustration, no glossy stock-photo cleanliness. No
+> text of any kind, no watermarks, no logos, no animals or people in
+> frame. 4:5 portrait, 1080x1350.
+
+Two lines are load-bearing. "The room is unlit except for the phones
+themselves" is what stops it adding the usual hard blue key from the
+upper left and flattening all three screens into the same colour —
+this is the one post in the batch where the phones are the light
+source, not the subject of one. And "no animals or people in frame"
+is there because the failed attempt proves it will reach for the
+mascot if it is left any room to.
+
+**If the pools come out muddy** — three colours bleeding on reflective
+metal is a lot to ask — run the fallback: the same row on a plain
+matte black floor, no reflections, each phone throwing only a short
+soft pool of its own colour. Less to go wrong, and the themes still
+read. Generate both and pick, the way post 2 was picked.
 
 **Caption:**
 Your profile is a channel, not a form.
@@ -871,6 +899,90 @@ threads.
 
 Next one's already on the calendar. Follow a release and you'll get
 pulled in. Link in bio.
+
+---
+
+## Post 10 — aux wars (NEW, written 2026-09-21)
+
+**Why this post exists.** AUX WARS shipped on 2026-09-13 and was
+renamed on the 14th; this file was last rewritten on the 4th, so
+nothing in the batch mentions it. Post 4 still sells "debates", and
+that is now a *different, smaller* thing — a post that carries two
+sides and a vote, with no room, no chat and no bracket. Don't let the
+two blur: **post 4 is a debate post, this is the live room.**
+
+**Use:** a room mid-game in a **straight-on** phone frame, no tilt —
+the two songs head to head with the crowd reactions on screen. Slides
+2–4: the seat list before a round, the reactions flying mid-vote, and
+the CHAMPION burst at the end. That last one is the payoff shot;
+don't leave it out.
+**Attach to ChatGPT:** the finished mockup only.
+
+**Prep:** run the room screenshot through shots.so as a front-facing
+iPhone, no rotation, transparent background.
+
+**Prompt** — the name is the image. "Aux wars" is the fight over the
+aux cord at a party, so two cables reaching for one phone says the
+whole feature before anyone reads a word:
+
+> The attached image is a finished iPhone mockup. Do not change the
+> phone, its frame, or anything on its screen — keep the screenshot
+> exactly as provided, pixel for pixel. Build only the scene around
+> it.
+>
+> Stand it upright on a scuffed black table, dead centre, shot
+> straight on at eye level. Two black aux cables come in from the
+> left and right edges of the table, coiled and slightly tangled,
+> and their metal 3.5mm jacks meet nose to nose on the table in front
+> of the phone, almost touching. One hard electric-blue light from
+> the upper left, raking across the table so the cables throw long
+> parallel shadows to the right and the two jacks catch a bright
+> chrome highlight where they meet. Haze in the air catching the
+> beam. Everything behind falls into true black.
+>
+> Photographic still life — 50mm lens, shallow depth of field, high
+> contrast, dust and fingerprints, heavy film grain. Not a 3D render,
+> not an illustration, no glossy stock-photo cleanliness. No readable
+> text anywhere, no watermarks, no logos. 4:5 portrait, 1080x1350.
+
+"Their metal jacks meet nose to nose, almost touching" is the line
+doing the work — it gives the eye the same standoff the feature is,
+and a bare connector is one of the few objects a generator renders
+cleanly, because there is no lettering on it to garble.
+
+**If the cables read as clutter:** drop one. A single aux jack lying
+in the pool of light in front of the phone, coiled cable trailing off
+the edge of the table, is quieter and harder to get wrong.
+
+**Caption:**
+Somebody always fights for the aux. Now there's a scoreboard.
+
+Open a room, take a seat, and go song for song. Everyone listens,
+throws fire or trash, and votes — or you call it yourself as host.
+Winner moves on. Ties go to overtime.
+
+Private room, six-letter code, same leaderboard. Link in bio.
+
+**Optional first comment** — the feature is an argument you can
+settle, so start one:
+
+> Two songs, one room. Name the matchup you'd put up and I'll open it.
+
+**Hashtags for this post** (the party/competition slice of the set):
+#auxcord #musicapp #musiccommunity #hiphopheads #popheads #musictaste
+#songbattle #musicreviews #musicnerd #musicsocial #playlist
+#musicdiscovery
+
+**Accuracy notes, so the caption stays true to the build** (spec in
+`ROADMAP.md`, the AUX WARS block): the host opens a room on a topic,
+members take a seat or watch, players go head to head in a single
+bracket or best-of-3, each puts one song up from Spotify, SoundCloud
+or YouTube, everyone listens through that service's own embed, the
+crowd throws 🔥/💩 and votes, majority wins, a tie goes to overtime
+with new songs, and "host decides" rooms skip the crowd vote
+entirely. Private rooms take a six-letter code and still count on the
+leaderboard. **Never translate the name** — AUX WARS is the product
+name in all six locales.
 
 ---
 

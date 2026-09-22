@@ -21,9 +21,17 @@ Field limits are noted; all copy below fits.
 ## Promotional text (170 chars max — editable without re-review)
 
 > The music social network. Rate any album or song — even unreleased —
-> build lists, join live release rooms, and pick a side in debates.
+> build lists, join live release rooms, and settle it in AUX WARS:
+> song vs song, the room votes.
 
 ## Description (4000 chars max)
+
+*Updated 2026-09-21 for the 1.2 submission: AUX WARS shipped on
+2026-09-13 and nothing we showed the outside world mentioned it — this
+file, the promotional text and `docs/AI-SEARCH.md` all still described
+only debates. Aux Wars now leads that section, and debates keep a
+shorter one of their own, because a debate POST (two sides and a vote
+on a post) is a different, smaller thing than an Aux Wars room.*
 
 > **Every album. Every leak. Every argument.**
 >
@@ -45,10 +53,18 @@ Field limits are noted; all copy below fits.
 > Release rooms put you in a live chat the moment a record lands —
 > react track by track with everyone hearing it at the same time.
 >
+> **AUX WARS**
+> Song vs song, in a live room. Open one on any topic — best pop song
+> of the 2010s, best closing track, anything — take a seat, and go
+> head to head. Everyone hears both songs, throws fire or trash while
+> they play, and votes. Winner moves on, a tie goes to overtime, and
+> you can call it yourself as host. Private rooms take a six-letter
+> code and still count on the leaderboard.
+>
 > **PICK A SIDE**
-> Debates are two-sided arguments with a vote and a live chat where
-> every message is stamped with the side you chose. Overrated or a
-> classic? Prove it.
+> Post a debate with two sides, tie each side to a real release, and
+> let the votes land where they fall. Overrated or a classic? Prove
+> it.
 >
 > **A PROFILE THAT'S ACTUALLY YOURS**
 > Choose from vintage-console theme presets, arrange your showcases —

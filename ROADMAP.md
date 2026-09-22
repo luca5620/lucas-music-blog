@@ -125,26 +125,41 @@ format, ready to paste into ChatGPT with the mockup attached.
    underneath in case three colours on reflective metal come out
    muddy.
 
-2. **Post 10 (AUX WARS) — new.** Two aux cables reaching in from
-   opposite edges of the table, jacks meeting nose to nose in front
-   of the phone. The name is the image: somebody always fights for
-   the aux. Caption and a first comment are written, plus a block of
-   accuracy notes so the copy keeps matching the build (seats,
-   bracket, embeds, 🔥/💩, majority, overtime, host-decides, the
-   six-letter private code). **Post 4 stays what it is** — a debate
-   POST is now a different, smaller thing than an Aux Wars room, and
-   the two must not blur.
+2. **Post 10 (AUX WARS) — new, and it is a named matchup** (Luca,
+   2026-09-21): the room topic is **"best pop song of the 2010s"**,
+   **Bruno Mars vs The Weeknd** — 24K Magic against Beauty Behind the
+   Madness. **The round has to be played first**: open the room, put
+   24K Magic against Can't Feel My Face, get it to the voting state
+   with reactions on screen, and screenshot that. The two eras go
+   into the scene as LIGHT ONLY — hard gold on the left, hard crimson
+   on the right, meeting at the phone, with the two aux cables
+   reaching in and their jacks touching nose to nose. The prompt
+   explicitly forbids people, faces and album covers: the artists and
+   their artwork are not ours to put in an advert, and "the 24K Magic
+   era" will otherwise come back as a gold-suited man who is nearly
+   Bruno Mars. **Post 4 stays what it is** — a debate POST is now a
+   different, smaller thing than an Aux Wars room, and the two must
+   not blur.
 
 **Order is unchanged** (Luca, 2026-09-12): finish Instagram, THEN the
 reviewer emails in one sitting. That gate is now posts 5 and 10.
 
-**⚠️ THE GAP: nothing we show the outside world mentions AUX WARS.**
-It shipped 2026-09-13 and was renamed on the 14th; every piece of
-outward copy predates it and still says "debates" — including
-`docs/APP-STORE-LISTING.md` (the live Store description) and
-`docs/AI-SEARCH.md`. **Fix the Store description in the same pass as
-the 1.2 submission**, while it is open anyway. The app's biggest
-feature is invisible to anyone who hasn't installed it.
+**✅ THE PUBLIC COPY IS FIXED (2026-09-21).** Aux Wars shipped on
+2026-09-13 and nothing we showed the outside world mentioned it. Now
+corrected:
+- `docs/APP-STORE-LISTING.md` — AUX WARS leads that section of the
+  description and is in the promotional text; debates keep a shorter
+  paragraph of their own. **Both fields must be pasted into App Store
+  Connect with the 1.2 submission** — editing the file changes
+  nothing on its own. Promotional text is 163/170, description
+  1781/4000, keywords untouched at 95/100.
+- `public/llms.txt` — the file AI crawlers actually read. It
+  described only debates AND linked to `https://peakmusicreviews.com/
+  debates`, a route that no longer exists, so every model reading us
+  was being handed a dead page. Now describes Aux Wars properly
+  (topic, seats, embeds, crowd vote, bracket, private code) and links
+  to `/aux-wars`.
+- `app/about/page.tsx` and `app/schema.tsx` already mentioned it.
 
 ### 🚀 SHIPPING 1.2 — the native release (prepared 2026-09-21, MacBook)
 

@@ -911,19 +911,32 @@ that is now a *different, smaller* thing — a post that carries two
 sides and a vote, with no room, no chat and no bracket. Don't let the
 two blur: **post 4 is a debate post, this is the live room.**
 
-**Use:** a room mid-game in a **straight-on** phone frame, no tilt —
-the two songs head to head with the crowd reactions on screen. Slides
-2–4: the seat list before a round, the reactions flying mid-vote, and
-the CHAMPION burst at the end. That last one is the payoff shot;
-don't leave it out.
+**Use:** a real Aux Wars room, mid-vote, in a **straight-on** phone
+frame — no tilt. The matchup is chosen, not generic (Luca,
+2026-09-21): the room topic is **"best pop song of the 2010s"** and it
+is **Bruno Mars vs The Weeknd** — the 24K Magic era against the Beauty
+Behind the Madness era. A named face-off is the post; "two songs" is a
+feature list. Slides 2–4: the seat list before the round, the
+reactions flying mid-vote, and the CHAMPION burst at the end. That
+last one is the payoff shot; don't leave it out.
 **Attach to ChatGPT:** the finished mockup only.
 
-**Prep:** run the room screenshot through shots.so as a front-facing
-iPhone, no rotation, transparent background.
+**Prep — you have to play the round first.** This screenshot cannot be
+faked in Figma and shouldn't be:
 
-**Prompt** — the name is the image. "Aux wars" is the fight over the
-aux cord at a party, so two cables reaching for one phone says the
-whole feature before anyone reads a word:
+1. Open an Aux Wars room, topic typed out in full: `best pop song of
+   the 2010s`.
+2. Two seats, one song each — 24K Magic on one side, Can't Feel My
+   Face on the other (any pairing from those two eras works; those two
+   are both 2010s pop and both instantly readable).
+3. Get it to the voting state with reactions on screen, then
+   screenshot.
+4. shots.so, front-facing iPhone, no rotation, transparent background.
+
+**Prompt** — the two eras ARE the lighting. 24K Magic is gold, silk
+and champagne; Beauty Behind the Madness is red, smoke and cold. Put
+one on each side of the frame and the face-off reads before anyone
+gets to the screen:
 
 > The attached image is a finished iPhone mockup. Do not change the
 > phone, its frame, or anything on its screen — keep the screenshot
@@ -931,47 +944,58 @@ whole feature before anyone reads a word:
 > it.
 >
 > Stand it upright on a scuffed black table, dead centre, shot
-> straight on at eye level. Two black aux cables come in from the
-> left and right edges of the table, coiled and slightly tangled,
-> and their metal 3.5mm jacks meet nose to nose on the table in front
-> of the phone, almost touching. One hard electric-blue light from
-> the upper left, raking across the table so the cables throw long
-> parallel shadows to the right and the two jacks catch a bright
-> chrome highlight where they meet. Haze in the air catching the
-> beam. Everything behind falls into true black.
+> straight on at eye level. Two black aux cables come in from the left
+> and right edges of the table, coiled and slightly tangled, and their
+> metal 3.5mm jacks meet nose to nose on the table just in front of
+> the phone, almost touching. The left half of the scene is lit by one
+> hard warm gold light, the right half by one hard deep crimson light,
+> the two colours meeting in a seam right at the phone — the left
+> cable gold, the right cable red, each throwing its own long shadow
+> away from its light. Haze in the air catching both beams, and a
+> bright chrome highlight where the two jacks meet. Everything behind
+> falls into true black.
 >
 > Photographic still life — 50mm lens, shallow depth of field, high
-> contrast, dust and fingerprints, heavy film grain. Not a 3D render,
-> not an illustration, no glossy stock-photo cleanliness. No readable
-> text anywhere, no watermarks, no logos. 4:5 portrait, 1080x1350.
+> contrast, theatrical, dust and fingerprints, heavy film grain. Not a
+> 3D render, not an illustration, no glossy stock-photo cleanliness.
+> No people, no faces, no album covers, no readable text anywhere, no
+> watermarks, no logos. 4:5 portrait, 1080x1350.
 
-"Their metal jacks meet nose to nose, almost touching" is the line
-doing the work — it gives the eye the same standoff the feature is,
-and a bare connector is one of the few objects a generator renders
-cleanly, because there is no lettering on it to garble.
+Three things are load-bearing. **"No people, no faces, no album
+covers"** is not a style note — the artists and their artwork are not
+ours to put in an advert, and a generator asked for "the 24K Magic
+era" will happily produce a gold-suited man who is nearly Bruno Mars,
+which is worse than useless. The eras go in as **light only**. "Their
+metal jacks meet nose to nose" gives the eye the same standoff the
+feature is, and a bare connector is one of the few objects a generator
+renders cleanly because there is no lettering on it to garble. And the
+gold/crimson seam is deliberately NOT post 4's blue/red — same idea,
+different pair, so the two posts don't read as one template.
 
 **If the cables read as clutter:** drop one. A single aux jack lying
-in the pool of light in front of the phone, coiled cable trailing off
+in the gold-to-crimson seam in front of the phone, cable trailing off
 the edge of the table, is quieter and harder to get wrong.
 
 **Caption:**
-Somebody always fights for the aux. Now there's a scoreboard.
+Best pop song of the 2010s. 24K Magic or Can't Feel My Face.
 
-Open a room, take a seat, and go song for song. Everyone listens,
-throws fire or trash, and votes — or you call it yourself as host.
-Winner moves on. Ties go to overtime.
+Two songs, one room. Everyone hears both, throws fire or trash while
+they play, and votes. Winner moves on — or you call it yourself as
+host.
 
-Private room, six-letter code, same leaderboard. Link in bio.
+Open one on anything. Link in bio.
 
-**Optional first comment** — the feature is an argument you can
-settle, so start one:
+**Optional first comment** — the post is a matchup, so hand them the
+next one:
 
-> Two songs, one room. Name the matchup you'd put up and I'll open it.
+> Wrong answers only. Then give me the matchup you'd actually put up
+> and I'll open the room.
 
-**Hashtags for this post** (the party/competition slice of the set):
-#auxcord #musicapp #musiccommunity #hiphopheads #popheads #musictaste
-#songbattle #musicreviews #musicnerd #musicsocial #playlist
-#musicdiscovery
+**Hashtags for this post** (the party/competition slice, plus the two
+names — a matchup post is how the artist tags earn their place):
+#brunomars #theweeknd #auxcord #musicapp #musiccommunity #popheads
+#songbattle #musictaste #musicreviews #musicnerd #musicsocial
+#bestof2010s
 
 **Accuracy notes, so the caption stays true to the build** (spec in
 `ROADMAP.md`, the AUX WARS block): the host opens a room on a topic,

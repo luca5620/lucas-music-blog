@@ -143,6 +143,10 @@ format, ready to paste into ChatGPT with the mockup attached.
 
 **Order is unchanged** (Luca, 2026-09-12): finish Instagram, THEN the
 reviewer emails in one sitting. That gate is now posts 5 and 10.
+**And 1.2 must be LIVE before the emails go out (2026-09-23):** a
+reviewer installs fresh, and a fresh install of 1.1 opens on black.
+Images are now generated in Astra, not ChatGPT — same prompts, same
+shots.so framing.
 
 **✅ THE PUBLIC COPY IS FIXED (2026-09-21).** Aux Wars shipped on
 2026-09-13 and nothing we showed the outside world mentioned it. Now

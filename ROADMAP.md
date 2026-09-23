@@ -218,6 +218,17 @@ ones. Faster, tidier layouts on small screens, and a pile of fixes to
 lists, duplicate releases and the review hub.
 ```
 
+**👉 WHERE LUCA STOPPED (2026-09-23, MacBook):** Xcode opened with
+`npm run mobile:ios`. He confirmed App target → General shows
+**Version 1.2, Build 3**, and Signing & Capabilities is set with no
+errors. **NOT archived yet.** Next: device picker → Any iOS Device
+(arm64) → Product → Archive → Organizer → Distribute App → App Store
+Connect → Upload. Then, while it processes: Instagram posts 5 + 10,
+and the App Store screenshots (iPhone 1320×2868, iPad 2064×2752,
+export as JPEG so there is no alpha). Claude offered to write Store
+screenshot prompts for Astra and to capture the iPad shot from the
+simulator — neither done yet.
+
 **THE STEPS, in order:**
 1. `git pull` on the machine doing the build (this is Mac-only).
 2. Xcode → `ios/App/App.xcworkspace` → App target → **Signing &

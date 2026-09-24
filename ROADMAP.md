@@ -9,6 +9,17 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ✅ 2026-09-23 — Reviewer cold emails SENT
+
+Luca sent the cold outreach to all four YouTube music reviewers
+(Turning the Tables, Bridging the Gap, Bob the Poppop, Jon Denton),
+from the personal outlines in `docs/marketing/reviewer-outreach.md`.
+They went out while 1.1 is still the Store version — so a reviewer who
+installs fresh sees about a second and a half of black before the splash.
+Not fatal, but it makes getting 1.2 through review the next priority.
+**Next:** watch for replies; a reply means answer fast and personally,
+and never follow up more than once (about a week later) on silence.
+
 ## ✅ 2026-09-21 — Personal reviewer outreach and founder memory
 
 Reworked `docs/marketing/reviewer-outreach.md` into personal bullet
@@ -143,7 +154,7 @@ format, ready to paste into ChatGPT with the mockup attached.
 
 **Order is unchanged** (Luca, 2026-09-12): finish Instagram, THEN the
 reviewer emails in one sitting. That gate is now posts 5 and 10.
-**And 1.2 must be LIVE before the emails go out (2026-09-23):** a
+**(Superseded — the emails went out 2026-09-23, before 1.2; see the ✅ block at the top.) Originally: 1.2 was to be LIVE before the emails went out:** a
 reviewer installs fresh, and a fresh install of 1.1 opens on black.
 Images are now generated in Astra, not ChatGPT — same prompts, same
 shots.so framing.

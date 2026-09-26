@@ -236,6 +236,18 @@ ones. Faster, tidier layouts on small screens, and a pile of fixes to
 lists, duplicate releases and the review hub.
 ```
 
+**👉 PICK UP HERE (2026-09-25, Windows) — the plan for the next session,
+in Luca's order:** (1) the **App Store screenshots** — kit written and
+pushed: `docs/marketing/app-store-screenshots.md` (simulator capture
+list with the 9:41 status-bar command, shots.so settings, one Astra
+scene per shot + a shared style block, Canva headlines at 1320×2868 /
+iPad 2064×2752, export JPG). NOTHING CAPTURED YET. Shot 1 needs the
+Bruno Mars vs The Weeknd Aux Wars round played to the voting state
+first — the same moment is Instagram post 10's screenshot. (2) Archive
++ upload build 3 (steps below; can run while the screenshots are being
+made — they're only needed at submit), then submit 1.2 with them.
+(3) Instagram posts 5 + 10 while Apple reviews.
+
 **👉 WHERE LUCA STOPPED (2026-09-23, MacBook):** Xcode opened with
 `npm run mobile:ios`. He confirmed App target → General shows
 **Version 1.2, Build 3**, and Signing & Capabilities is set with no

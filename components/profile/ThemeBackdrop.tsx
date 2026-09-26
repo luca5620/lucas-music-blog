@@ -43,6 +43,10 @@ export default function ThemeBackdrop({ theme }: { theme: ProfileTheme }) {
   return (
     <div
       className="absolute inset-0 -z-10 overflow-hidden pointer-events-none"
+      // margin 0 inline: the profile root is space-y-6, which (Tailwind
+      // v4) gives this box a margin-bottom that pulled its bottom edge
+      // up and left a flat strip under "Member since" (Luca 2026-09-25).
+      style={{ margin: 0 }}
       aria-hidden="true"
     >
       {/* No liquid layer of its own: ThemeLiquidSync pushes the

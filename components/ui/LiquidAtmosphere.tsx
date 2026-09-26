@@ -67,6 +67,12 @@ export default function LiquidAtmosphere({
       className={`absolute inset-0 -z-10 overflow-hidden pointer-events-none ${
         variant === "page" ? "liquid-veil" : ""
       }`}
+      // margin 0, inline so nothing can outrank it (Luca 2026-09-25: a
+      // flat strip along the bottom of the review panel). Hosts use
+      // space-y-*, which in Tailwind v4 gives every child but the last
+      // a margin-bottom — and on an absolute inset-0 box that margin
+      // pulls the bottom edge UP, so the liquid stopped 24px short.
+      style={{ margin: 0 }}
       aria-hidden="true"
     >
       {live && <LiquidField context={variant} />}

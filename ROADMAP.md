@@ -12,6 +12,7 @@ remnants: every piece of content is community-made and catalog-backed.
 ## ✅ 2026-09-25 — Two web fixes (2bb4f3e)
 
 - **Latest Drops showed "be the first to review" on rated releases.** The feed is cached, but it looked up stats with the logged-in (cookie) client, which throws inside a cache; the error was swallowed and every card fell back to zero. It now uses one batched public lookup (`getReleaseListStats(ids, publicClient())`). Rule: nothing inside `unstable_cache` may touch `lib/supabase/server.ts`.
+- **Profile edges on 1440px+ screens + Follow/Block over The Log** (434dfc7 + next): full-bleed wrappers (profile, artist) now cancel the wide-screen 3.25rem padding; the pinned header button reserves room per variant via `--head-action-room` (owner 12rem, logged-out 17rem, Follow+Block 20rem).
 - **Flat strip at the bottom of review panels + profiles** (follow-up commit): backdrop layers are `absolute inset-0` children of `space-y-*` wrappers, and Tailwind v4 space-y adds margin-bottom that pulls an inset-0 box short. Fixed with inline `margin: 0` on LiquidAtmosphere + ThemeBackdrop. Watch for this on any new absolute layer inside a space-y parent.
 - **Web nav tabs cut off on narrow windows** (Social / Your Taste unreachable). The strip scrolled sideways with a hidden scrollbar, which a mouse can't do. Now it wraps to a second line; the phone fade mask is gone.
 

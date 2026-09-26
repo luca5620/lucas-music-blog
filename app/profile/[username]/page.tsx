@@ -418,7 +418,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 {t("customize")}
               </Link>
             ) : currentUser ? (
-              <span className="inline-flex items-center gap-2">
+              <span className="profile-head-pair inline-flex items-center gap-2">
                 <FollowButton
                   profileId={profile.id}
                   initialFollowing={userFollows}
@@ -431,7 +431,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 />
               </span>
             ) : (
-              <Link href="/login" className="btn-y2k btn-y2k-outline">
+              <Link href="/login" className="profile-head-login btn-y2k btn-y2k-outline">
                 {t("loginToFollow")}
               </Link>
             )}

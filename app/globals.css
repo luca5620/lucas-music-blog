@@ -4444,6 +4444,20 @@ fieldset {
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 2.5rem;
+    /* How much of the right edge the pinned button needs (it sits
+       absolute at right: 2rem, so this = its width + that 2rem +
+       breathing room). ONE width for every case was the bug (Luca
+       2026-09-25): 12rem fits the owner's Customize, but a visitor
+       gets Follow + Block side by side, which is far wider, and the
+       pair landed on top of The Log. Translations run longer still,
+       hence the slack. */
+    --head-action-room: 12rem;
+  }
+  .profile-header-wrap:has(.profile-head-login) {
+    --head-action-room: 17rem;
+  }
+  .profile-header-wrap:has(.profile-head-pair) {
+    --head-action-room: 20rem;
   }
   /* The left column hugs its content (name block, bio, links) so The
      Log sits right after it instead of at the page edge (Luca
@@ -4452,14 +4466,14 @@ fieldset {
   .profile-header-main {
     flex: 0 1 auto;
     min-width: 0;
-    max-width: calc(100% - 12rem);
+    max-width: calc(100% - var(--head-action-room));
   }
   .profile-header-log {
     flex: 0 0 auto;
     padding-top: 5.5rem;
     /* room for the button pinned at the far right; if there is no
        room the log wraps under the left column instead of crossing it */
-    margin-right: 12rem;
+    margin-right: var(--head-action-room);
   }
   /* The Customize / Follow button stays pinned at the page's far
      right on web, out of the flex flow, so the two columns can hug

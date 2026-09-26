@@ -110,31 +110,28 @@ export default function Navigation() {
 
         {/* Nav Links + Auth.
             min-w-0 + flex-1 on the links strip makes IT the only thing
-            that gives way when space runs out (it scrolls sideways) —
+            that gives way when space runs out (it wraps to a second line) —
             the Review button and account button can never be pushed
             past the screen edge and clipped again. */}
         {/* justify-end is a no-op on web (the flex-1 strip eats all free
             space) but right-aligns CREATE + avatar in the app, where the
             strip is hidden. */}
         <div className="nav-actions flex items-center justify-end gap-1 sm:gap-2 min-w-0 w-full lg:flex-1">
-          {/* Nav Links — can still scroll sideways on tiny screens,
-              but the scrollbar itself is hidden (no-scrollbar).
-              justify-evenly: the tabs spread UNIFORMLY across the gap
-              between the site title and the CREATE button instead of
-              packing left (Luca 2026-08-22). Once space runs out the
-              strip overflows and evenly-ness naturally gives way to
-              scrolling. app-hide: in the native shell the bottom
-              TabBar is the primary nav, so this strip disappears. */}
-          {/* nav-strip-fade: whatever doesn't fit is still THERE (the
-              strip scrolls), but a hard chop at the edge reads as a
-              bug. A short fade on the right says "there's more this
-              way" instead. Phone widths only — above sm everything
-              fits. The labels also drop a size and lose their letter
-              tracking below 420px: translated ones ran long (Luca
-              2026-09-14: "cuts off heavily when translated"), which
-              is the same pressure that turned Aux Battles into Aux
-              Wars. */}
-          <div className="app-hide nav-strip-fade flex flex-1 min-w-0 items-center justify-evenly gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
+          {/* Nav Links. justify-evenly: the tabs spread UNIFORMLY
+              across the gap between the site title and the CREATE
+              button instead of packing left (Luca 2026-08-22).
+              app-hide: in the native shell the bottom TabBar is the
+              primary nav, so this strip disappears. */}
+          {/* WRAPS, never scrolls (Luca 2026-09-25: on a narrow
+              browser window Social and Your Taste were cut off with
+              "no way to see them"). The strip used to scroll sideways
+              behind a hidden scrollbar — fine for a thumb, impossible
+              with a mouse. Now tabs that don't fit drop to a second
+              line, so every tab is always on screen. The labels still
+              drop a size and lose their letter tracking below 420px:
+              translated ones run long (2026-09-14), which is the same
+              pressure that turned Aux Battles into Aux Wars. */}
+          <div className="app-hide flex flex-1 min-w-0 flex-wrap items-center justify-evenly gap-x-1 gap-y-1.5">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (

@@ -4864,19 +4864,6 @@ fieldset {
 }
 .aux-react-mine span { color: var(--text-primary); }
 
-/* THE PHONE NAV STRIP (Navigation.tsx). Six links across a phone is
-   more than fits, so the strip scrolls sideways — but a hard chop at
-   the right edge reads as a bug, not as "there's more this way"
-   (Luca 2026-09-14: it "cuts off heavily when translated"). A short
-   mask fades the last few pixels instead. Phone widths only: above
-   sm the whole strip fits and a fade would just dim a link. */
-@media (max-width: 639px) {
-  .nav-strip-fade {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent 100%);
-    mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent 100%);
-  }
-}
-
 /* A SUB-OPTION THAT UNFOLDS (NewRoomForm). Ticking "private" or
    picking "best of 3" reveals one more box; rendering it in and out
    made the form snap and the buttons below jump (Luca 2026-09-14:

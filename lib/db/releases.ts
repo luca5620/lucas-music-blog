@@ -301,22 +301,24 @@ async function getReleaseDiscoveryFeedUncached(
 
   const rows = data as unknown as Row[];
 
-  // Resolve stats in parallel.
-  const stats = await Promise.all(
-    rows.map((r) => getReleaseStats(r.id).catch(() => ({
-      follower_count: 0,
-      review_count: 0,
-      avg_rating: null,
-    } as ReleaseStats)))
+  // One batched stats read through the SAME cookie-less client. This
+  // used to call getReleaseStats per row, which builds the cookie
+  // client — and cookies() throws inside unstable_cache, so every card
+  // silently fell back to zero and Latest Drops said "be the first to
+  // review" on releases that already had ratings (Luca 2026-09-25).
+  const stats = await getReleaseListStats(
+    rows.map((r) => r.id),
+    supabase
   );
 
-  return rows.map((row, i) => {
+  return rows.map((row) => {
     const joined = row.artists;
     const artist = Array.isArray(joined) ? joined[0] : joined;
     const room = Array.isArray(row.release_rooms)
       ? row.release_rooms[0]
       : row.release_rooms;
-    const s = stats[i];
+    // Seeded for every id, so this is always present.
+    const s = stats.get(row.id)!;
     return {
       id: row.id,
       slug: row.slug,
@@ -431,7 +433,10 @@ export interface ReleaseListStats {
 }
 
 export async function getReleaseListStats(
-  releaseIds: string[]
+  releaseIds: string[],
+  // Pass publicClient() when calling from inside unstable_cache —
+  // cookies() throws there. Everything read here is public anyway.
+  client?: ReturnType<typeof publicClient>
 ): Promise<Map<string, ReleaseListStats>> {
   const out = new Map<string, ReleaseListStats>();
   if (releaseIds.length === 0) return out;
@@ -446,7 +451,7 @@ export async function getReleaseListStats(
     });
   }
 
-  const supabase = await createClient();
+  const supabase = client ?? (await createClient());
   const [reviews, follows, rooms] = await Promise.all([
     supabase
       .from("reviews")

@@ -544,7 +544,7 @@ body {
     max-width: min(1840px, calc(100vw - 3rem));
   }
   .crt-screen {
-    padding: 2rem 3.25rem 3.5rem;
+    padding: 2rem 3.25rem 3.5rem; /* the profile + artist full-bleed wrappers cancel this with min-[1440px] margins: change both together */
   }
 }
 

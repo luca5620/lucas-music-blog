@@ -112,8 +112,9 @@ export default async function ArtistPage({ params }: PageProps) {
   return (
     <div
       // Must exactly cancel .crt-screen's padding (1rem phones,
-      // 2rem/1.75rem sm+) — same overflow fix as the profile page.
-      className="space-y-6 -mx-4 -mt-4 -mb-8 sm:-mx-8 sm:-mt-7"
+      // 2rem/1.75rem sm+, 3.25rem/2rem at 1440px+) — same overflow fix
+      // as the profile page.
+      className="space-y-6 -mx-4 -mt-4 -mb-8 sm:-mx-8 sm:-mt-7 min-[1440px]:-mx-[3.25rem] min-[1440px]:-mt-8"
       style={
         {
           "--profile-accent": accentColor,

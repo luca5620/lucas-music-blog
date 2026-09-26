@@ -310,11 +310,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       // INSIDE this wrapper's own stacking context, above the page
       // background but below every piece of content.
       // Full-bleed: the negative margins must EXACTLY cancel
-      // .crt-screen's padding (1rem on phones, 2rem/1.75rem on sm+).
+      // .crt-screen's padding (1rem on phones, 2rem/1.75rem on sm+,
+      // 3.25rem/2rem at 1440px+ — missing that step left a 20px
+      // unthemed strip down both sides on big monitors, Luca 2026-09-25).
       // -m-8 everywhere overshot by 1rem per side on phones — the page
       // went wider than the screen, so the app wobbled sideways and
       // the banner hung past the borders.
-      className={`theme-${theme} relative isolate space-y-6 -mx-4 -mt-4 -mb-8 sm:-mx-8 sm:-mt-7`}
+      className={`theme-${theme} relative isolate space-y-6 -mx-4 -mt-4 -mb-8 sm:-mx-8 sm:-mt-7 min-[1440px]:-mx-[3.25rem] min-[1440px]:-mt-8`}
       style={pageBg ? { background: pageBg } : undefined}
     >
       {/* Animated console-dashboard atmosphere for this theme */}

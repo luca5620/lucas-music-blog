@@ -122,16 +122,18 @@ export default function Navigation() {
               button instead of packing left (Luca 2026-08-22).
               app-hide: in the native shell the bottom TabBar is the
               primary nav, so this strip disappears. */}
-          {/* WRAPS, never scrolls (Luca 2026-09-25: on a narrow
+          {/* Never scrolls, never clips (Luca 2026-09-25: on a narrow
               browser window Social and Your Taste were cut off with
-              "no way to see them"). The strip used to scroll sideways
-              behind a hidden scrollbar — fine for a thumb, impossible
-              with a mouse. Now tabs that don't fit drop to a second
-              line, so every tab is always on screen. The labels still
-              drop a size and lose their letter tracking below 420px:
-              translated ones run long (2026-09-14), which is the same
-              pressure that turned Aux Battles into Aux Wars. */}
-          <div className="app-hide flex flex-1 min-w-0 flex-wrap items-center justify-evenly gap-x-1 gap-y-1.5">
+              "no way to see them" — the strip scrolled behind a hidden
+              scrollbar, impossible with a mouse). Letting it wrap
+              freely fixed that but read "super messy" (tabs orphaned
+              on a second line mid-header), so below 1440px .nav-tabs
+              takes a FIXED layout instead: its own full-width row
+              under the logo, all six evenly spaced (3 × 2 on phone
+              widths) — see globals.css. The labels still drop a size
+              and lose their tracking below 420px: translated ones run
+              long (2026-09-14). */}
+          <div className="nav-tabs app-hide flex flex-1 min-w-0 flex-wrap items-center justify-evenly gap-x-1 gap-y-1.5">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (

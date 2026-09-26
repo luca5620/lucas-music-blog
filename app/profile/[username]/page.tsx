@@ -313,10 +313,14 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       // .crt-screen's padding (1rem on phones, 2rem/1.75rem on sm+,
       // 3.25rem/2rem at 1440px+ — missing that step left a 20px
       // unthemed strip down both sides on big monitors, Luca 2026-09-25).
+      // Written as 90rem, NOT 1440px: Tailwind v4 cannot order a px
+      // breakpoint against its rem ones, emitted it BEFORE sm:, and
+      // sm:-mx-8 silently won. The matching 1.25rem padding keeps the
+      // CONTENT where it always sat; only the background reaches out.
       // -m-8 everywhere overshot by 1rem per side on phones — the page
       // went wider than the screen, so the app wobbled sideways and
       // the banner hung past the borders.
-      className={`theme-${theme} relative isolate space-y-6 -mx-4 -mt-4 -mb-8 sm:-mx-8 sm:-mt-7 min-[1440px]:-mx-[3.25rem] min-[1440px]:-mt-8`}
+      className={`theme-${theme} relative isolate space-y-6 -mx-4 -mt-4 -mb-8 sm:-mx-8 sm:-mt-7 min-[90rem]:-mx-[3.25rem] min-[90rem]:px-[1.25rem] min-[90rem]:-mt-8`}
       style={pageBg ? { background: pageBg } : undefined}
     >
       {/* Animated console-dashboard atmosphere for this theme */}

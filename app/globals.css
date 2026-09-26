@@ -544,7 +544,7 @@ body {
     max-width: min(1840px, calc(100vw - 3rem));
   }
   .crt-screen {
-    padding: 2rem 3.25rem 3.5rem; /* the profile + artist full-bleed wrappers cancel this with min-[1440px] margins: change both together */
+    padding: 2rem 3.25rem 3.5rem; /* the profile + artist full-bleed wrappers cancel this with min-[90rem] margins (rem, not px: Tailwind misorders px breakpoints): change both together */
   }
 }
 
@@ -1369,6 +1369,66 @@ body {
 }
 .native-app .app-only {
   display: block;
+}
+
+/* WEB HEADER BELOW 1440px (Luca 2026-09-25: the wrapped tab strip was
+   "super messy"). Only at 1440px+ does the TV grow wide enough for
+   logo · six tabs · buttons on one line. Below that the header takes a
+   fixed two-row layout instead of wrapping wherever it runs out:
+     row 1  logo ............................ bell · search · create · you
+     row 2  RELEASES  REVIEWS  LISTS  AUX WARS  SOCIAL  YOUR TASTE
+   .nav-actions dissolves (display: contents) so its buttons and the
+   tab strip become direct items of the header row; `order` then puts
+   the tabs last on a line of their own. WEB ONLY — the app header is
+   locked (html.native-app hides the strip and keeps its own rules). */
+@media (max-width: 1439px) {
+  html:not(.native-app) .app-nav-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 0.75rem;
+  }
+  html:not(.native-app) .nav-actions {
+    display: contents;
+  }
+  /* Pushes every button to the right edge of row 1 */
+  html:not(.native-app) .nav-logo {
+    margin-right: auto;
+  }
+  html:not(.native-app) .nav-tabs {
+    order: 10;
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+  }
+  /* The grid spaces the tabs now, so their own side padding can
+     shrink — it's the difference between fitting and clipping. */
+  html:not(.native-app) .nav-tabs > a {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+/* Below 768px six across doesn't fit (translated labels even less),
+   so two even rows of three. The title also scales down a touch on
+   the narrowest phones so logo + Search + Sign in share row 1 —
+   still the full name (Luca's standing preference over "PMR"). */
+@media (max-width: 767px) {
+  html:not(.native-app) .nav-tabs {
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    row-gap: 0.25rem;
+  }
+}
+@media (max-width: 639px) {
+  html:not(.native-app) .nav-app-title {
+    font-size: clamp(0.8rem, 3.3vw, 1rem);
+  }
+  html:not(.native-app) .nav-auth {
+    margin-left: 0;
+  }
 }
 
 /* FLUSH APP SURFACE (Luca 2026-08-24): on a phone it shouldn't be a

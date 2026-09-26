@@ -9,6 +9,11 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ✅ 2026-09-25 — Two web fixes (2bb4f3e)
+
+- **Latest Drops showed "be the first to review" on rated releases.** The feed is cached, but it looked up stats with the logged-in (cookie) client, which throws inside a cache; the error was swallowed and every card fell back to zero. It now uses one batched public lookup (`getReleaseListStats(ids, publicClient())`). Rule: nothing inside `unstable_cache` may touch `lib/supabase/server.ts`.
+- **Web nav tabs cut off on narrow windows** (Social / Your Taste unreachable). The strip scrolled sideways with a hidden scrollbar, which a mouse can't do. Now it wraps to a second line; the phone fade mask is gone.
+
 ## ✅ 2026-09-23 — Reviewer cold emails SENT
 
 Luca sent the cold outreach to all four YouTube music reviewers

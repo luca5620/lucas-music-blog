@@ -29,7 +29,7 @@
  * Purely presentational: cards come pre-ranked from lib/taste.ts.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
@@ -60,6 +60,24 @@ function toSpotifyEmbed(url: string): string | null {
 }
 
 const EXIT_ANIM_MS = 170;
+
+/* Desktop-width check for the docked comments panel. 64rem = Tailwind's
+   lg — written in rem on purpose (px arbitrary breakpoints lose to sm:
+   in Tailwind v4, see the header fix). Server render says "not wide",
+   so the first paint is always the phone layout and hydration matches. */
+const WIDE_QUERY = "(min-width: 64rem)";
+function subscribeWide(cb: () => void) {
+  const mq = window.matchMedia(WIDE_QUERY);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+function useWideScreen() {
+  return useSyncExternalStore(
+    subscribeWide,
+    () => window.matchMedia(WIDE_QUERY).matches,
+    () => false,
+  );
+}
 
 /* ─── Fullscreen action rail ─── */
 
@@ -861,6 +879,19 @@ export default function ChannelSurf({
   const native = useIsNativeApp();
   const commentsForRef = useRef<string | null>(null);
   commentsForRef.current = commentsFor;
+
+  // DOCKED COMMENTS (Luca 2026-09-27, "like TikTok on the web"): on a
+  // desktop-width browser the comment bubble opens a panel pinned to
+  // the RIGHT of the channel instead of the bottom sheet. It stays open
+  // while you surf and always shows the comments of the card that's
+  // currently on screen. Phones + the app keep the bottom sheet (that's
+  // what TikTok's own app does too).
+  const wide = useWideScreen();
+  const canDock = wide && !native;
+  const [dockOpen, setDockOpen] = useState(false);
+  const docked = fullscreen && canDock && dockOpen;
+  const dockOpenRef = useRef(false);
+  dockOpenRef.current = docked;
   // Swipe-down-to-exit bookkeeping
   const touchStartY = useRef(0);
   const touchAtTop = useRef(false);
@@ -868,6 +899,7 @@ export default function ChannelSurf({
   // Exit plays the fade-out first, then unmounts the portal.
   const close = useCallback(() => {
     setCommentsFor(null);
+    setDockOpen(false);
     setClosing((already) => {
       if (already) return already;
       window.setTimeout(() => {
@@ -900,8 +932,9 @@ export default function ChannelSurf({
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      // Esc peels one layer at a time: sheet first, then fullscreen.
+      // Esc peels one layer at a time: sheet/panel first, then fullscreen.
       if (commentsForRef.current) closeComments();
+      else if (dockOpenRef.current) setDockOpen(false);
       else close();
     };
     window.addEventListener("keydown", onKey);
@@ -953,6 +986,9 @@ export default function ChannelSurf({
 
   if (items.length === 0) return null;
 
+  // The card on screen right now — the docked panel follows it.
+  const current = items[index];
+
   const content = (
     <div
       className={
@@ -963,6 +999,14 @@ export default function ChannelSurf({
             "panel-xbox relative overflow-hidden"
       }
     >
+      {/* Fullscreen is a row: the channel (the "stage") on the left and,
+          when docked, the comments panel on the right. The stage is the
+          positioning box for everything that floats over the channel
+          (✕, surf arrows, the phone sheet), so they move with it when
+          the panel takes its share of the width. In the page pager both
+          wrappers are plain blocks and nothing changes. */}
+      <div className={fullscreen ? "flex h-full" : undefined}>
+      <div className={fullscreen ? "relative flex-1 min-w-0 h-full" : undefined}>
       {/* Snap frame */}
       <div
         ref={frameRef}
@@ -991,7 +1035,12 @@ export default function ChannelSurf({
             native={native}
             onOpenComments={
               item.type === "review"
-                ? () => setCommentsFor(item.id)
+                ? () =>
+                    // Desktop: the bubble toggles the docked panel.
+                    // Phone/app: it opens the bottom sheet as before.
+                    canDock
+                      ? setDockOpen((open) => !open)
+                      : setCommentsFor(item.id)
                 : undefined
             }
           />
@@ -1099,6 +1148,53 @@ export default function ChannelSurf({
       )}
 
       {!fullscreen && <div className="scan-bar" />}
+      </div>
+
+      {/* The docked panel. key={review id} remounts CommentsSection per
+          card, so it fetches that review's thread and never flashes the
+          previous card's comments. Cards without comments (posts,
+          releases) say so instead of closing the panel — it stays put
+          while you surf, like TikTok's. */}
+      {docked && (
+        <aside className="dock-anim-in w-[400px] xl:w-[440px] shrink-0 h-full bg-[#0c0c0f] border-l border-border-medium flex flex-col">
+          {/* One header row: whose thread this is + ✕. The COMMENTS
+              title and count come from CommentsSection's own panel
+              below, so they aren't repeated up here. The channel on
+              the left moves, so naming the card keeps you oriented. */}
+          <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/5 shrink-0">
+            <span className="min-w-0 text-xs text-text-muted truncate">
+              {current.type === "review"
+                ? t("dockContext", {
+                    name: current.display_name || current.username,
+                    title: current.title,
+                  })
+                : t("commentsTitle")}
+            </span>
+            <button
+              type="button"
+              onClick={() => setDockOpen(false)}
+              aria-label={t("closeComments")}
+              className="w-8 h-8 shrink-0 rounded-full border border-border-medium text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-colors flex items-center justify-center"
+            >
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+          </div>
+          {current.type === "review" ? (
+            <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 [scrollbar-width:thin]">
+              <CommentsSection key={current.id} reviewId={current.id} />
+            </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center px-8 text-center">
+              <p className="pixel-text text-[11px] uppercase tracking-widest text-text-muted leading-relaxed">
+                {t("dockNoComments")}
+              </p>
+            </div>
+          )}
+        </aside>
+      )}
+      </div>
     </div>
   );
 

@@ -1624,6 +1624,8 @@
       "carouselAria": "Auf dich eingestellt: scrolle zur nächsten Auswahl",
       "commentsTitle": "Kommentare",
       "closeComments": "Kommentare schließen",
+      "dockContext": "Zur Rezension von {name} zu {title}",
+      "dockNoComments": "Kommentare gibt es bei Rezensionen. Wechsle zu einer, um die Unterhaltung zu sehen.",
       "exitFullscreen": "Vollbild verlassen",
       "fullscreen": "Vollbild",
       "prev": "Vorherige Auswahl",

@@ -9,6 +9,13 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ✅ 2026-09-27 — Handles from real names + docked Your Taste comments
+
+- **Invented handles fixed (migration 050, RUN + verified).** Luca's report was "usernames with spaces that aren't searchable". Reality: no username can hold a space (the DB check forbids it) and display-name search already worked. The real bug was that Google/Apple sign-ins who skipped /welcome kept a handle made from the email local-part (Apple relay junk like `jfp225w4kb`). `handle_new_user` now builds it from the provider's name (`public.handle_from_name`, spaces → `_`), and the 7 affected accounts were renamed (`martijn_schilders`, …). Review slugs are frozen at creation, so old review links still work. Search also keeps accented letters now (Doğan).
+- **Migration 051 (orphan-login repair) was RUN and was a no-op.** "ana lottielee" and "Hourney KL" looked missing, but those were their GOOGLE names in Supabase Auth → Users; on the site they're `choerrymotionz` and `suspirium`. Lesson: Auth-page names ≠ profile names, so join `auth.users.id = profiles.id` before assuming a profile is missing. **Next migration is 052.**
+- **Your Taste comments dock on the right on desktop** (Luca: "like TikTok on the web"). At ≥64rem, outside the app, the comment bubble toggles a 400px panel beside the channel (`ChannelSurf.tsx`, `useWideScreen`). It stays open while you surf and always shows the current card's thread (CommentsSection keyed by review id); posts/releases say comments live on reviews. Esc closes the panel first. Phones and the app keep the bottom sheet. New i18n keys `taste.surf.dockContext` / `dockNoComments` in all six locales; `.dock-anim-in` has its `.low-detail` line.
+- **Ad video:** v2 of the self-edited 22–25s ad is in `C:\Users\lucap\claudework\ad-video\` (outside the repo); v1 deleted. Luca wants the next one to focus on REVIEWS only, with far less text on screen, and AI-made non-app scenes are now OK for ads.
+
 ## ✅ 2026-09-25 — Two web fixes (2bb4f3e)
 
 - **Latest Drops showed "be the first to review" on rated releases.** The feed is cached, but it looked up stats with the logged-in (cookie) client, which throws inside a cache; the error was swallowed and every card fell back to zero. It now uses one batched public lookup (`getReleaseListStats(ids, publicClient())`). Rule: nothing inside `unstable_cache` may touch `lib/supabase/server.ts`.

@@ -1682,6 +1682,14 @@ body {
 .sheet-dim-in { animation: sheet-dim 0.28s ease; }
 .sheet-dim-out { animation: sheet-dim 0.2s ease-in reverse forwards; }
 
+/* DOCKED COMMENTS (desktop Your Taste, 2026-09-27) — the panel slides
+   in from the right edge like TikTok's web comments. */
+@keyframes dock-in {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.dock-anim-in { animation: dock-in 0.24s cubic-bezier(0.32, 0.72, 0.33, 1); }
+
 /* ============================================================
    LIVE ROOM SHEET — phone release pages (ReleaseRoomChat.tsx).
    The chat leaves the page flow: a slim fixed bar hugging the
@@ -5172,3 +5180,5 @@ fieldset {
    scrim — on the thermal diet it becomes a flat panel. */
 .low-detail .aux-play-card { background-image: none !important; transition: none; }
 .low-detail .aux-react-mine { box-shadow: none; }
+/* Docked comments panel: appears in place, no slide. */
+.low-detail .dock-anim-in { animation: none; }

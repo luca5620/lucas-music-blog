@@ -1624,6 +1624,8 @@
       "carouselAria": "Sintonizado em você: role para a próxima escolha",
       "commentsTitle": "Comentários",
       "closeComments": "Fechar comentários",
+      "dockContext": "Na crítica de {name} a {title}",
+      "dockNoComments": "Os comentários ficam nas críticas. Avança até uma para ver a conversa.",
       "exitFullscreen": "Sair da tela cheia",
       "fullscreen": "Tela cheia",
       "prev": "Escolha anterior",

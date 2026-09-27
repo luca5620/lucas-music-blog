@@ -1624,6 +1624,8 @@
       "carouselAria": "Tuned to you — scroll for the next pick",
       "commentsTitle": "Comments",
       "closeComments": "Close comments",
+      "dockContext": "On {name}'s review of {title}",
+      "dockNoComments": "Comments live on reviews. Surf to one to see its thread.",
       "exitFullscreen": "Exit fullscreen",
       "fullscreen": "Fullscreen",
       "prev": "Previous pick",

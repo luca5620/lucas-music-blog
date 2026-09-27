@@ -1624,6 +1624,8 @@
       "carouselAria": "Afgestemd op jou: scrol voor de volgende keuze",
       "commentsTitle": "Reacties",
       "closeComments": "Reacties sluiten",
+      "dockContext": "Bij de review van {name} over {title}",
+      "dockNoComments": "Reacties staan bij reviews. Ga naar een review om het gesprek te zien.",
       "exitFullscreen": "Volledig scherm sluiten",
       "fullscreen": "Volledig scherm",
       "prev": "Vorige keuze",

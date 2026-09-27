@@ -1624,6 +1624,8 @@
       "carouselAria": "Réglé sur toi — fais défiler pour la sélection suivante",
       "commentsTitle": "Commentaires",
       "closeComments": "Fermer les commentaires",
+      "dockContext": "Sur la critique de {title} par {name}",
+      "dockNoComments": "Les commentaires sont sur les critiques. Passe à une critique pour voir sa discussion.",
       "exitFullscreen": "Quitter le plein écran",
       "fullscreen": "Plein écran",
       "prev": "Sélection précédente",

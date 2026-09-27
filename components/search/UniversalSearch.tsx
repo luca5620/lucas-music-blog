@@ -114,7 +114,7 @@ export default function UniversalSearch() {
 
     // Same hygiene as UserSearch: strip anything that could confuse
     // the LIKE pattern or the .or() filter syntax.
-    const cleaned = value.trim().replace(/[^a-zA-Z0-9_ .-]/g, "");
+    const cleaned = value.trim().replace(/[^\p{L}\p{N}_ .-]/gu, "");
     if (cleaned.length < 2) {
       setResults(EMPTY);
       setSearching(false);

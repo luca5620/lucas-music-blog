@@ -51,7 +51,7 @@ export default function UserSearch() {
     // Strip anything that could confuse the LIKE pattern or the
     // .or() filter syntax — usernames are a-z 0-9 _ anyway, and
     // display names are matched loosely.
-    const cleaned = value.trim().replace(/[^a-zA-Z0-9_ .-]/g, "");
+    const cleaned = value.trim().replace(/[^\p{L}\p{N}_ .-]/gu, "");
     if (cleaned.length < 2) {
       setResults([]);
       setSearching(false);

@@ -5,6 +5,8 @@ import {
   getOrCreateRoom,
   getRoom,
   getRoomMessages,
+  getMessageReactionCounts,
+  getViewerReactions,
   postRoomMessage,
 } from "@/lib/db/rooms";
 import { rateLimit } from "@/lib/rate-limit";
@@ -160,6 +162,30 @@ export async function GET(
     if (!room) {
       return NextResponse.json({ room: null, messages: [] });
     }
+
+    // ?bootstrap=1 — everything ChatPanel needs to mount, in one trip:
+    // the same 30-message backlog + emoji counts + the viewer's own
+    // reactions the release page loads server-side. Used by the Your
+    // Taste docked panel (2026-09-27), which opens a release's live
+    // room without leaving the channel.
+    if (request.nextUrl.searchParams.get("bootstrap") === "1") {
+      const messages = await getRoomMessages(room.id, { limit: 30 });
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const [reactionCounts, viewerRaw] = await Promise.all([
+        getMessageReactionCounts(messages.map((m) => m.id)),
+        user ? getViewerReactions(user.id, room.id) : Promise.resolve([]),
+      ]);
+      // Same filter as the release page: only message-targeted rows
+      // (leftover track reactions from before 2026-08-19 are skipped).
+      const viewerReactions = viewerRaw
+        .filter((r): r is typeof r & { message_id: string } => !!r.message_id)
+        .map((r) => ({ message_id: r.message_id, emoji: r.emoji }));
+      return NextResponse.json({ room, messages, reactionCounts, viewerReactions });
+    }
+
     const messages = await getRoomMessages(room.id, { limit: 50, before });
     return NextResponse.json({ room, messages });
   } catch (err) {

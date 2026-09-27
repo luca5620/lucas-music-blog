@@ -42,6 +42,7 @@ import { hapticTap } from "@/lib/native";
 import { useIsNativeApp } from "@/lib/useIsNativeApp";
 import { useLikeState } from "@/lib/likeStore";
 import CommentsSection from "@/components/reviews/CommentsSection";
+import DockedRoomChat from "@/components/rooms/DockedRoomChat";
 
 /** Only https:// or local /path images (stored-XSS defense). */
 function safeImage(url: string | null): string | null {
@@ -746,7 +747,11 @@ function SurfCard({
               duplicated the open button (Luca 2026-08-22). Reviews
               only; posts have no comment system. Count below the
               bubble, same treatment as the heart (Luca 2026-08-28). */}
-          {item.type === "review" && onOpenComments && (
+          {/* Release cards get the same bubble on desktop — it opens
+              the docked panel on the release's LIVE ROOM (2026-09-27).
+              The parent only passes onOpenComments for releases when
+              the panel can dock, so phones never see a dead button. */}
+          {(item.type === "review" || item.type === "release") && onOpenComments && (
             <span className="flex flex-col items-center gap-1">
               <button
                 type="button"
@@ -754,7 +759,11 @@ function SurfCard({
                   hapticTap();
                   onOpenComments();
                 }}
-                aria-label={t("comments", { n: item.comment_count })}
+                aria-label={
+                  item.type === "review"
+                    ? t("comments", { n: item.comment_count })
+                    : t("dockLiveTitle")
+                }
                 className={railBtnClass}
               >
                 <svg
@@ -769,9 +778,15 @@ function SurfCard({
                   <path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" />
                 </svg>
               </button>
-              <span className="pixel-text text-[10px] text-text-secondary tabular-nums">
-                {item.comment_count}
-              </span>
+              {item.type === "review" ? (
+                <span className="pixel-text text-[10px] text-text-secondary tabular-nums">
+                  {item.comment_count}
+                </span>
+              ) : (
+                <span className="pixel-text text-[9px] uppercase tracking-widest text-text-secondary">
+                  {t("live")}
+                </span>
+              )}
             </span>
           )}
           {/* "VIEW" under the arrow (Luca 2026-08-28: a word saying
@@ -1041,7 +1056,10 @@ export default function ChannelSurf({
                     canDock
                       ? setDockOpen((open) => !open)
                       : setCommentsFor(item.id)
-                : undefined
+                : item.type === "release" && canDock
+                  ? // Releases: desktop only — the panel shows the live room.
+                    () => setDockOpen((open) => !open)
+                  : undefined
             }
           />
         ))}
@@ -1168,7 +1186,9 @@ export default function ChannelSurf({
                     name: current.display_name || current.username,
                     title: current.title,
                   })
-                : t("commentsTitle")}
+                : current.type === "release"
+                  ? t("dockLiveContext", { title: current.title })
+                  : t("commentsTitle")}
             </span>
             <button
               type="button"
@@ -1184,6 +1204,19 @@ export default function ChannelSurf({
           {current.type === "review" ? (
             <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 [scrollbar-width:thin]">
               <CommentsSection key={current.id} reviewId={current.id} />
+            </div>
+          ) : current.type === "release" ? (
+            // The release's live room. Keyed per release so the old
+            // room's realtime channel closes before the next opens.
+            <div className="flex-1 min-h-0 flex flex-col">
+              <DockedRoomChat
+                key={current.id}
+                releaseId={current.id}
+                releaseSlug={current.slug}
+                accentColor={
+                  current.avg_rating !== null ? getRatingHex(current.avg_rating) : "#1e90ff"
+                }
+              />
             </div>
           ) : (
             <div className="flex-1 flex items-center justify-center px-8 text-center">

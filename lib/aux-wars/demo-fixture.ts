@@ -16,9 +16,11 @@
  * of the preview quietly drifting away from the real thing.
  *
  * RULES for editing this file:
- *  - Every person is FICTIONAL. Never put a real user's handle in
- *    here, and never a real person's name as a handle. Null avatars
- *    are deliberate: the default initial-in-a-circle renders.
+ *  - Every person is FICTIONAL except the two on the stage (Luca and
+ *    chimp — both agreed, see below). Never add another real user
+ *    without their say-so, and never a real person's name as a
+ *    handle. The fictional ones' null avatars are deliberate: the
+ *    default initial-in-a-circle renders.
  *  - The ids are fake, fixed UUIDs (nothing in the database has
  *    them). Demo mode never sends them anywhere — see the `demo`
  *    prop in AuxRoom / AuxChat.
@@ -67,9 +69,31 @@ function person(n: number, username: string, display_name: string | null = null)
   return { id: id(100 + n), username, display_name, avatar_url: null, role: "user" };
 }
 
-// The six players. KAI and NORA are the live match.
-const kai = person(1, "kaidreams", "kai");
-const nora = person(2, "nightshift_nora", "nora");
+// The six players. The LIVE MATCH is the one exception to "all
+// fictional": two REAL profiles, Luca and chimp, with chimp's consent
+// (Luca, 2026-09-28: "use mine and chimp to make it look better" —
+// chimp said yes the same day). Real faces on the stage read as a
+// real room; ten blank default avatars read as a mock-up. Their real
+// ids, handles, roles and public avatar URLs, so tapping a name opens
+// the real profile. Luca plays 24K Magic (side A), chimp plays Can't
+// Feel My Face (side B). Everyone else stays fictional. If chimp ever
+// asks to be taken out, swap `nora` back to a person(2, …) line.
+const kai: AuxProfile = {
+  id: "8587299c-dbb8-49a9-b984-e25c089a65fc",
+  username: "luca",
+  display_name: "Luca",
+  avatar_url:
+    "https://qhbtfhyzbiwqwaxtetgd.supabase.co/storage/v1/object/public/avatars/8587299c-dbb8-49a9-b984-e25c089a65fc/avatar-1787128014158.jpeg",
+  role: "owner",
+};
+const nora: AuxProfile = {
+  id: "0efbc106-0d20-4ba9-b6be-6547c772613e",
+  username: "chimp",
+  display_name: "chimp",
+  avatar_url:
+    "https://qhbtfhyzbiwqwaxtetgd.supabase.co/storage/v1/object/public/avatars/0efbc106-0d20-4ba9-b6be-6547c772613e/avatar-1787128548394.jpeg",
+  role: "tester",
+};
 const theo = person(3, "tapedeck_theo", "theo"); // the host
 const jules = person(4, "jules_on_aux");
 const remy = person(5, "remy_rewinds", "remy");

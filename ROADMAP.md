@@ -246,7 +246,7 @@ lists, duplicate releases and the review hub.
 
 **👉 PICK UP HERE (2026-09-25, Windows) — the plan for the next session,
 in Luca's order:** (1) the **App Store screenshots** — kit written and
-pushed: `docs/marketing/app-store-screenshots.md` (simulator capture
+pushed: `docs/marketing/app-store-screenshots/` (simulator capture
 list with the 9:41 status-bar command, shots.so settings, one Astra
 scene per shot + a shared style block, Canva headlines at 1320×2868 /
 iPad 2064×2752, export JPG). NOTHING CAPTURED YET. Shot 1 needs the
@@ -255,6 +255,18 @@ first — the same moment is Instagram post 10's screenshot. (2) Archive
 + upload build 3 (steps below; can run while the screenshots are being
 made — they're only needed at submit), then submit 1.2 with them.
 (3) Instagram posts 5 + 10 while Apple reviews.
+
+**2026-09-28 (MacBook): the kit is now a FOLDER Astra reads and
+executes.** `README.md` is Luca's part only (play the round, capture
+with `xcrun simctl io booted screenshot` straight into `input/` under
+fixed names, shots.so → `-mockup.png`, zip, one paste-in message to
+Astra, check, upload). `ASTRA-BRIEF.md` is Astra's: never alter the
+screen, no generated lettering, headlines set IN CODE with the fonts
+in `fonts/` (Chakra Petch Bold + Inter SemiBold, OFL), exact sizes,
+JPEG no alpha, shot 1 shown before the rest, and a pixel-exact
+fallback (plate + code composite) when the screen drifts. One
+self-contained prompt per shot in `prompts/`. Screenshots are
+gitignored — they stay on the Mac. STILL NOTHING CAPTURED.
 
 **👉 WHERE LUCA STOPPED (2026-09-23, MacBook):** Xcode opened with
 `npm run mobile:ios`. He confirmed App target → General shows

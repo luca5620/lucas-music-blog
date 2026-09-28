@@ -1,0 +1,6 @@
+# Screenshots and finished images stay on the Mac that made them —
+# large, and not needed by the other machine. Only the kit travels.
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep

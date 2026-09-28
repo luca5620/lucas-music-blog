@@ -636,6 +636,92 @@ body {
   transform: scale(1.15);
 }
 
+/* --- PRESS MODE: the embedded PLAYERS (2026-09-28) ---
+   The rule above only reaches our own <img> tags. The Spotify /
+   SoundCloud / Apple Music / YouTube / TikTok players are cross-origin
+   iframes that draw their OWN sharp covers, which the page can't
+   restyle — so they slipped through, and a listing screenshot of an
+   Aux War or a Your Taste card would show real album art again.
+
+   What CAN touch an iframe: a CSS filter on the iframe element itself,
+   and a backdrop-filter on something laid over it. Both blur the
+   iframe's pixels in WebKit — checked in the iOS 27 simulator's
+   Safari (same engine as the app's WKWebView) and in Chrome.
+
+   1. SAFETY NET — every player iframe, anywhere on the site, is
+      blurred WHOLE. Crude (its text goes too) but it can't miss a
+      layout we didn't plan for. clip-path keeps the blur inside the
+      player's own rounded box instead of smearing over its
+      neighbours (clip runs after filter). */
+.press-mode iframe[src*="open.spotify.com/embed"],
+.press-mode iframe[src*="w.soundcloud.com"],
+.press-mode iframe[src*="embed.music.apple.com"],
+.press-mode iframe[src*="youtube-nocookie.com"],
+.press-mode iframe[src*="youtube.com/embed"],
+.press-mode iframe[src*="tiktok.com/embed"] {
+  filter: blur(14px) saturate(1.2);
+  clip-path: inset(0 round 0.5rem);
+}
+
+/* 2. PRECISE — Spotify's COMPACT player (152px tall) always puts
+      the cover in the same spot: a ~95px square 12px in from the
+      top-left, with the title starting ~120px in. A player wrapped
+      in .press-art-host keeps its iframe sharp and gets a small
+      .press-art-mask over just that square instead — so the title,
+      artist, Spotify logo and ▶ stay readable and only the cover is
+      frosted. Used by SongEmbed (Aux Wars) and the Your Taste card's
+      single-track player (ChannelSurf). The mask is display:none
+      outside press mode, so normal pages never see it. */
+.press-art-mask {
+  display: none;
+}
+.press-mode .press-art-host iframe {
+  filter: none;
+  clip-path: none;
+}
+.press-mode .press-art-mask {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 116px;
+  border-radius: 0.5rem 0 0 0.5rem;
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  /* Taps still reach the player underneath. */
+  pointer-events: none;
+}
+/* The Aux Wars player grows to 352px at lg (64rem), where Spotify
+   switches to its big-artwork layout and the square above is wrong —
+   so up there that host falls back to the whole-player blur. */
+@media (min-width: 64rem) {
+  .press-mode .press-art-host.press-art-lg-whole iframe {
+    filter: blur(14px) saturate(1.2);
+    clip-path: inset(0 round 0.5rem);
+  }
+  .press-mode .press-art-lg-whole .press-art-mask {
+    display: none;
+  }
+}
+
+/* 3. The Aux Wars ▶ PLAY CARD paints the cover as a CSS background
+      (not an <img>), so rule one misses it too. In press mode a
+      blurred copy of that same background (`inherit` hands the
+      pseudo-element the card's own inline url) sits over the sharp
+      one; it overhangs the edges so the blur has no crisp border,
+      and the card's overflow:hidden trims it. Under low detail the
+      card has no background at all, so this draws nothing. */
+.press-mode .aux-play-card::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  filter: blur(18px) saturate(1.3);
+}
+
 .scanlines {
   position: fixed;
   inset: 0;

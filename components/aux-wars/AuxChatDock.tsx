@@ -37,6 +37,7 @@ import { hapticTap } from "@/lib/native";
 import { useHydrated } from "@/lib/useHydrated";
 import { useVisualViewport } from "@/lib/useVisualViewport";
 import type { AuxMessageWithProfile } from "@/lib/db/aux-wars";
+import type { AuxDemo } from "@/lib/aux-wars/demo-fixture";
 
 interface Props {
   roomId: string;
@@ -45,6 +46,9 @@ interface Props {
   closed: boolean;
   /** How many messages the bar shows before you open it. */
   messageCount: number;
+  /** Staged room (app/aux-wars/preview) — handed straight to AuxChat,
+      which then never touches the network. Absent in real rooms. */
+  demo?: AuxDemo;
 }
 
 export default function AuxChatDock(props: Props) {
@@ -69,6 +73,7 @@ export default function AuxChatDock(props: Props) {
         initialMessages={props.initialMessages}
         closed={props.closed}
         className="xl:h-full"
+        demo={props.demo}
       />
     );
   }
@@ -84,7 +89,7 @@ export default function AuxChatDock(props: Props) {
 
 /* ─── The phone bar + sheet ─── */
 
-function AuxSheet({ roomId, hostId, initialMessages, closed, messageCount }: Props) {
+function AuxSheet({ roomId, hostId, initialMessages, closed, messageCount, demo }: Props) {
   // The bar/sheet portal to document.body: the room's CRT chrome
   // makes transform/filter stacking contexts that would turn
   // position:fixed into position:absolute-inside-the-panel.
@@ -202,6 +207,7 @@ function AuxSheet({ roomId, hostId, initialMessages, closed, messageCount }: Pro
             closed={closed}
             variant="sheet"
             onCollapse={closeSheet}
+            demo={demo}
           />
         </div>
       </div>

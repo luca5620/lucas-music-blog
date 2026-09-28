@@ -12,6 +12,13 @@ import { useEffect } from "react";
  * screenshots can be taken straight from the real app with nothing
  * identifiable.
  *
+ * That includes the EMBEDDED PLAYERS (2026-09-28): Spotify, SoundCloud,
+ * Apple Music, YouTube and TikTok iframes draw their own covers, so
+ * press mode blurs each player whole — except Spotify's compact strip
+ * in Aux Wars and on Your Taste cards, where only the cover square is
+ * frosted and the title stays readable — and the Aux Wars ▶ cards'
+ * cover backdrop too. All of it is CSS keyed off the class this sets.
+ *
  * Usage — visit any page with:
  *   ?press=1  → blur on (persists across navigation via localStorage)
  *   ?press=0  → back to normal

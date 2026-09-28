@@ -53,7 +53,7 @@ live site, so everything on screen is real.
    Max** (it's under iOS 26.5 — fine, the app supports it) → **Run**.
 2. Clean status bar, in Terminal:
    ```bash
-   xcrun simctl status_override booted --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
+   xcrun simctl status_bar booted override --time 9:41 --batteryState charged --batteryLevel 100 --cellularMode active --cellularBars 4 --wifiMode active --wifiBars 3 --dataNetwork wifi
    ```
 3. Log in as **luca**. **Settings → Performance → Low detail mode OFF**
    (low detail strips the glow and scanlines that make it look like

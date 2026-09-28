@@ -22,6 +22,16 @@
  * /api/aux-wars/[id]/state runs on reconnect and when the tab
  * comes back — belt and braces, so a missed event can't strand a
  * screen on the wrong phase.
+ *
+ * DEMO MODE (2026-09-28): pass `demo` and the same component renders
+ * a STAGED room from fixture data (lib/aux-wars/demo-fixture.ts) for
+ * App Store / Instagram screenshots — see app/aux-wars/preview. In
+ * demo mode nothing touches the network: no realtime channel, no
+ * resync, no profile lookups, no POSTs. Votes and 🔥/💩 taps only
+ * change what's on this one screen, and a fake crowd keeps emojis
+ * floating up so a screenshot at any moment catches some. Every
+ * `if (demo)` below is an early exit or a side branch; with `demo`
+ * left off, the live room runs exactly as it always has.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -60,6 +70,7 @@ import AuxChatDock from "@/components/aux-wars/AuxChatDock";
 import InviteFriends from "@/components/aux-wars/InviteFriends";
 import ManagePeople from "@/components/aux-wars/ManagePeople";
 import SeatGate from "@/components/aux-wars/SeatGate";
+import type { AuxDemo } from "@/lib/aux-wars/demo-fixture";
 
 interface Props {
   initial: AuxRoomState;
@@ -75,6 +86,10 @@ interface Props {
   initialBans: AuxBanWithProfile[];
   /** The private room's code — only ever passed to the host. */
   code: string | null;
+  /** STAGED room for screenshots (app/aux-wars/preview only). Present
+      = demo mode: zero network, and the screen pretends `demo.viewer`
+      is the signed-in person. Absent (every real room) = unchanged. */
+  demo?: AuxDemo;
 }
 
 /** One reaction per person per game, switchable — like a vote. */
@@ -86,6 +101,10 @@ interface Floater {
   kind: "fire" | "poop";
   left: number;
 }
+
+/** Demo mode only: the six counters on a game row that a vote or a
+    reaction moves (see demoMove). */
+type DemoTally = "votes_a" | "votes_b" | "fire_a" | "poop_a" | "fire_b" | "poop_b";
 
 type Burst =
   | { kind: "game"; side: "a" | "b"; song: AuxSong | null; player: AuxProfile | null; key: string }
@@ -111,8 +130,15 @@ export default function AuxRoom({
   hasSeat,
   initialBans,
   code,
+  demo,
 }: Props) {
-  const { user } = useAuth();
+  const auth = useAuth();
+  // Who's watching. Normally the real signed-in user; in demo mode
+  // the fixture's pretend viewer, so the staged room looks the same
+  // whoever opens it (signed out, or Luca's staff account — which
+  // would otherwise light up staff-only controls in the chat). Only
+  // `.id` and "is anyone there?" are ever asked of it below.
+  const user: { id: string } | null = demo ? demo.viewer : auth.user;
   const t = useTranslations("aux.room");
   const supabaseRef = useRef(createClient());
 
@@ -214,12 +240,14 @@ export default function AuxRoom({
   }, [room.id]);
 
   useEffect(() => {
+    // Demo: there's no server truth to resync to.
+    if (demo) return;
     const onVisible = () => {
       if (document.visibilityState === "visible") void resync();
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
-  }, [resync]);
+  }, [resync, demo]);
 
   /* ─── Profiles + wins for members who arrive live ─── */
   const hydrateMember = useCallback(async (row: AuxMember): Promise<AuxMemberWithProfile | null> => {
@@ -243,6 +271,9 @@ export default function AuxRoom({
 
   /* ─── Realtime ─── */
   useEffect(() => {
+    // Demo: no channel at all. The fixture room doesn't exist in the
+    // database, and a staged screen must never listen to a real one.
+    if (demo) return;
     if (!isSupabaseConfigured()) return;
     const supabase = supabaseRef.current;
     const id = room.id;
@@ -337,7 +368,7 @@ export default function AuxRoom({
       supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room.id, hydrateMember, resync]);
+  }, [room.id, hydrateMember, resync, demo]);
 
   /* ─── Floating 🔥 / 💩 ─── */
   // The emoji that flies up the screen. The NUMBER next to the button
@@ -348,6 +379,51 @@ export default function AuxRoom({
     setFloaters((prev) => [...prev.slice(-30), { id: fid, side, kind, left: 10 + Math.random() * 80 }]);
     window.setTimeout(() => setFloaters((prev) => prev.filter((f) => f.id !== fid)), 1800);
   }, []);
+
+  /* ─── Demo: the fake crowd ───
+     In a real room the floaters come from OTHER people's reactions
+     arriving over realtime. The staged room has no other people, so
+     this stands in for them: one emoji every ~0.2–0.5s while the vote
+     is open. Each is visible for 1.8s — or just 1s under low detail,
+     which is ON by default (lib/lowDetail.ts) and shortens the
+     animation — so there are always two or more on screen and a
+     screenshot taken at ANY moment catches some. Leaning towards
+     side A and towards 🔥, matching the tally
+     (the crowd is winning it for A). The numbers on the buttons do
+     NOT move: in the real room those are one-per-person, so a crowd
+     throwing emojis is mostly people switching, not new counts. */
+  const demoPhase = currentGame?.phase;
+  useEffect(() => {
+    if (!demo || demoPhase !== "listening") return;
+    let timer = 0;
+    const tick = () => {
+      const side = Math.random() < 0.62 ? "a" : "b";
+      const kind = Math.random() < (side === "a" ? 0.85 : 0.7) ? "fire" : "poop";
+      pushFloater(side, kind);
+      timer = window.setTimeout(tick, 200 + Math.random() * 300);
+    };
+    timer = window.setTimeout(tick, 400);
+    return () => window.clearTimeout(timer);
+  }, [demo, demoPhase, pushFloater]);
+
+  /* Demo: move this screen's own tallies when the pretend viewer
+     votes or reacts, the way the database trigger would for real —
+     take one off the old choice (if any), put one on the new. Only
+     ever called from the demo branches in vote() and react(). */
+  const demoMove = useCallback(
+    (from: DemoTally | null, to: DemoTally) => {
+      setGames((prev) =>
+        prev.map((g) => {
+          if (g.id !== room.current_game_id) return g;
+          const next = { ...g };
+          if (from) next[from] = Math.max(0, next[from] - 1);
+          next[to] = next[to] + 1;
+          return next;
+        })
+      );
+    },
+    [room.current_game_id]
+  );
 
   /* ─── Game transitions → bursts, reset per-game state ─── */
   useEffect(() => {
@@ -420,7 +496,11 @@ export default function AuxRoom({
   };
   const vote = (side: "a" | "b") =>
     act(`vote-${side}`, async () => {
+      // Demo: move the local tally instead of POSTing. (Read before
+      // setMyVote — `myVote` is still the old pick here.)
+      if (demo) demoMove(myVote ? `votes_${myVote}` : null, `votes_${side}`);
       setMyVote(side);
+      if (demo) return;
       await post(`/api/aux-wars/${room.id}/vote`, { side });
     });
   // ONE reaction per person per game (Luca 2026-09-14 — no more
@@ -433,6 +513,11 @@ export default function AuxRoom({
     const previous = myReaction;
     setMyReaction({ side, kind });
     pushFloater(side, kind); // instant on my screen; the echo is harmless
+    // Demo: the counters move on this screen only, nothing is sent.
+    if (demo) {
+      demoMove(previous ? `${previous.kind}_${previous.side}` : null, `${kind}_${side}`);
+      return;
+    }
     void fetch(`/api/aux-wars/${room.id}/react`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -544,7 +629,15 @@ export default function AuxRoom({
                 {t("end")}
               </button>
             )}
-            {!isHost && user && <ReportButton targetType="aux_room" targetId={room.id} small />}
+            {!isHost && user && !demo && <ReportButton targetType="aux_room" targetId={room.id} small />}
+            {/* Demo: the same 🚩 a viewer sees, but `inert` — it can't
+                be tapped, so it can never file a report about a room
+                that doesn't exist. */}
+            {!isHost && user && demo && (
+              <span inert className="inline-flex">
+                <ReportButton targetType="aux_room" targetId={room.id} small />
+              </span>
+            )}
           </span>
         </div>
 
@@ -1095,6 +1188,9 @@ export default function AuxRoom({
           // Off the room row (a trigger keeps it), so the collapsed
           // bar's count keeps ticking while the sheet is shut.
           messageCount={room.message_count}
+          // Demo: AuxChat skips its channel, its block-list fetch and
+          // its POSTs, and pretends the same viewer is signed in.
+          demo={demo}
         />
       </div>
     </div>

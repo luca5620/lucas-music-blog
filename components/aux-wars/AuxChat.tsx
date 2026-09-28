@@ -6,6 +6,12 @@
  * sends deduped against the echo, blocked authors hidden, ✕ delete
  * for your own rows (host and staff can pull anyone's), 🚩 report on
  * everyone else's. Same bones as the debate floor it replaces.
+ *
+ * DEMO MODE (2026-09-28, app/aux-wars/preview): with `demo` passed,
+ * the chat shows the fixture backlog and touches NOTHING on the
+ * network — no channel, no /api/blocks, no profile lookups, no POST
+ * or DELETE. Typing a message still works, but it only lands on this
+ * screen. The signed-in person is the fixture's pretend viewer.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -20,6 +26,7 @@ import ReportButton from "@/components/moderation/ReportButton";
 import type { AuxMessage } from "@/lib/types/database";
 import type { AuxMessageWithProfile, AuxProfile } from "@/lib/db/aux-wars";
 import { AuxAvatar } from "@/components/aux-wars/PlayerChip";
+import type { AuxDemo } from "@/lib/aux-wars/demo-fixture";
 
 interface Props {
   roomId: string;
@@ -35,6 +42,9 @@ interface Props {
   variant?: "panel" | "sheet";
   /** Sheet only: the chevron that tucks it back down. */
   onCollapse?: () => void;
+  /** Staged room for screenshots — see the DEMO MODE note above.
+      Absent in every real room. */
+  demo?: AuxDemo;
 }
 
 function timeAgo(dateString: string, _tick: number, justNow: string, locale: string): string {
@@ -58,9 +68,17 @@ export default function AuxChat({
   className = "",
   variant = "panel",
   onCollapse,
+  demo,
 }: Props) {
   const isSheet = variant === "sheet";
-  const { user, profile: myProfile } = useAuth();
+  const auth = useAuth();
+  // Normally the real signed-in person. In demo mode, the fixture's
+  // plain (non-staff) viewer — otherwise Luca's owner account would
+  // put a moderator ✕ on every line of the staged chat. Both shapes
+  // carry everything used below (id, username, display name, avatar,
+  // role).
+  const user: { id: string } | null = demo ? demo.viewer : auth.user;
+  const myProfile: AuxProfile | null = demo ? demo.viewer : auth.profile;
   const t = useTranslations("aux.chat");
   const locale = useLocale();
   const supabaseRef = useRef(createClient());
@@ -88,6 +106,9 @@ export default function AuxChat({
   }, []);
 
   useEffect(() => {
+    // Demo: nobody in the fixture is blocked, and there's no real
+    // session to ask /api/blocks about anyway.
+    if (demo) return;
     if (!user) {
       setBlockedIds(new Set());
       return;
@@ -102,7 +123,7 @@ export default function AuxChat({
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, demo]);
 
   useEffect(() => {
     const el = listRef.current;
@@ -134,6 +155,8 @@ export default function AuxChat({
 
   /* Realtime */
   useEffect(() => {
+    // Demo: no channel — the staged room has no rows to listen to.
+    if (demo) return;
     if (!isSupabaseConfigured()) return;
     const supabase = supabaseRef.current;
     const channel = supabase
@@ -171,7 +194,7 @@ export default function AuxChat({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [roomId, fetchProfile, scrollIfNearBottom]);
+  }, [roomId, fetchProfile, scrollIfNearBottom, demo]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -201,6 +224,13 @@ export default function AuxChat({
       scrollIfNearBottom();
 
       try {
+        // Demo: the message just stays on this screen. It swaps its
+        // temp- id for a demo- one so it stops reading as "sending…"
+        // (the `finally` below still runs after this return).
+        if (demo) {
+          setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, id: `demo-${tempId}` } : m)));
+          return;
+        }
         const res = await fetch(`/api/aux-wars/${roomId}/messages`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -228,7 +258,7 @@ export default function AuxChat({
         setSubmitting(false);
       }
     },
-    [content, submitting, user, closed, roomId, myProfile, scrollIfNearBottom, t]
+    [content, submitting, user, closed, roomId, myProfile, scrollIfNearBottom, t, demo]
   );
 
   const handleDelete = useCallback(
@@ -238,10 +268,15 @@ export default function AuxChat({
         const name = m.profile.display_name || m.profile.username;
         if (!window.confirm(t("confirmDelete", { name }))) return;
       }
+      // Demo: only ever your own staged line — take it off the screen.
+      if (demo) {
+        setMessages((prev) => prev.filter((x) => x.id !== m.id));
+        return;
+      }
       const res = await fetch(`/api/aux-wars/${roomId}/messages/${m.id}`, { method: "DELETE" });
       if (res.ok) setMessages((prev) => prev.filter((x) => x.id !== m.id));
     },
-    [user?.id, roomId, t]
+    [user?.id, roomId, t, demo]
   );
 
   const visible = messages.filter((m) => !blockedIds.has(m.user_id));
@@ -337,8 +372,16 @@ export default function AuxChat({
                       ✕
                     </button>
                   )}
-                  {m.user_id !== (user?.id ?? "") && !m.id.startsWith("temp-") && (
+                  {m.user_id !== (user?.id ?? "") && !m.id.startsWith("temp-") && !demo && (
                     <ReportButton targetType="aux_message" targetId={m.id} small />
+                  )}
+                  {/* Demo: the same 🚩 every viewer sees, made
+                      untappable (inert) so the staged chat can never
+                      file a real report about a fake message. */}
+                  {m.user_id !== (user?.id ?? "") && !m.id.startsWith("temp-") && demo && (
+                    <span inert className="inline-flex">
+                      <ReportButton targetType="aux_message" targetId={m.id} small />
+                    </span>
                   )}
                 </div>
                 <p className="text-sm text-text-secondary leading-snug whitespace-pre-wrap break-words mt-0.5">

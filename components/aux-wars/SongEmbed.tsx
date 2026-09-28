@@ -65,7 +65,7 @@ export default function SongEmbed({ song, title }: { song: AuxSong; title: strin
   // above lg both services switch to their artwork layout, which is
   // what makes the stage feel like a stage.
   const tall = song.source === "spotify" ? "h-[152px] lg:h-[352px]" : "h-[166px] lg:h-[300px]";
-  return (
+  const iframe = (
     <iframe
       src={src(song)}
       title={title}
@@ -74,6 +74,20 @@ export default function SongEmbed({ song, title }: { song: AuxSong; title: strin
       loading="lazy"
       className={`rounded-lg block w-full ${tall}`}
     />
+  );
+  if (song.source !== "spotify") return iframe;
+  // PRESS MODE (App Store screenshots, globals.css "PRESS MODE"):
+  // Spotify's compact player keeps its cover in a fixed square, so
+  // this wrapper lets press mode frost JUST that square and leave the
+  // title/artist readable. Outside press mode the mask is
+  // display:none and the plain block wrapper changes nothing. At lg
+  // the player's layout changes, so press mode blurs it whole there
+  // (press-art-lg-whole).
+  return (
+    <div className="press-art-host press-art-lg-whole relative">
+      {iframe}
+      <span className="press-art-mask" aria-hidden />
+    </div>
   );
 }
 

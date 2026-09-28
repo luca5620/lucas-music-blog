@@ -421,6 +421,32 @@ export default function Navigation() {
                                 {t("badgeTool")}
                               </Link>
                             )}
+                            {/* The STAGED Aux War (app/aux-wars/preview)
+                                — fixture data for screenshots, 2026-09-28.
+                                Linked from here because inside the app
+                                there's no address bar to type a URL into.
+                                Two entries: the App Store one turns
+                                PRESS MODE on (album art blurred —
+                                Guideline 5.2.1), the Instagram one turns
+                                it off. Plain <a>, NOT <Link>, on purpose:
+                                PressMode only reads ?press= when the
+                                layout mounts, and a client-side Link
+                                navigation keeps the layout mounted, so
+                                the switch would silently do nothing. */}
+                            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- full load is the point, see above */}
+                            <a
+                              href="/aux-wars/preview?press=1"
+                              className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
+                            >
+                              {t("stagedAuxWarStore")}
+                            </a>
+                            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- full load is the point, see above */}
+                            <a
+                              href="/aux-wars/preview?press=0"
+                              className="block px-4 py-2 text-sm text-accent-primary hover:text-accent-glow hover:bg-bg-elevated transition-colors"
+                            >
+                              {t("stagedAuxWarSocial")}
+                            </a>
                             <div className="my-1 border-t border-white/5" />
                           </>
                         )}

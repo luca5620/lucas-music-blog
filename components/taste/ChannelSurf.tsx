@@ -303,6 +303,10 @@ function SurfCard({
         : 152;
   const embedWidthClass =
     spotifyKind === "album" && !native ? "max-w-2xl" : "max-w-md";
+  // The one player here with a predictable cover position: Spotify's
+  // 152px single-track strip (no Apple / SoundCloud source, not an
+  // album). PRESS MODE frosts just its cover square — see below.
+  const compactSpotify = !appleSrc && !scSrc && spotifyKind === "track";
   // Web-fullscreen body budget: the card has no inner scroll any
   // more, so when the tall album player shares the frame the words
   // clamp earlier (and get the read-the-rest button sooner).
@@ -674,7 +678,15 @@ function SurfCard({
           (item.type === "review" || item.type === "release") &&
           (wantsEmbed ? (
             <div
-              className={`w-full ${embedWidthClass} shrink-0`}
+              // press-art-host (+ relative for the mask below): only
+              // for Spotify's compact single-track player, whose
+              // cover sits in a fixed square that PRESS MODE can frost
+              // on its own (globals.css). Every other player here is
+              // blurred whole by press mode's safety net instead.
+              // Outside press mode neither class changes anything.
+              className={`w-full ${embedWidthClass} shrink-0${
+                compactSpotify ? " relative press-art-host" : ""
+              }`}
               style={{ height: embedHeight }}
             >
               {embedLive &&
@@ -711,6 +723,7 @@ function SurfCard({
                     className="w-full rounded-lg"
                   />
                 ))}
+              {embedLive && compactSpotify && <span className="press-art-mask" aria-hidden />}
             </div>
           ) : item.spotify_url ? (
             <a

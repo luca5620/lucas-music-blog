@@ -1,6 +1,6 @@
 # Shot 2 — Review
 
-**On the screen:** a review of a big, recognisable record: cover, rating badge, the first lines of the review.
+**On the screen:** a review of a big, recognisable record: the whole cover, rating badge, reviewer and date, and one line of the review (all that fits without cutting the cover).
 
 **Attach:** `input/02-review-mockup.png` (the object to place) and
 `input/02-review-raw.png`, plus one or two other `-raw.png` files for

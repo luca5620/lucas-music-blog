@@ -69,7 +69,7 @@ live site, so everything on screen is real.
 | # | File name | Screen | Exactly what must be on screen |
 |---|-----------|--------|--------------------------------|
 | 1 | `01-aux-wars-raw.png` | **Aux Wars room** | The Bruno Mars vs The Weeknd room at VOTING: both songs, split not 50/50, reactions visible. |
-| 2 | `02-review-raw.png` | **Review page** | A review of a big, recognisable record: cover, rating badge, first 3–4 lines of text, nothing cut mid-line. |
+| 2 | `02-review-raw.png` | **Review page** | A review of a big, recognisable record, **the whole cover in frame** (never cut it), rating badge, reviewer + date, and whatever review text fits below — realistically one line, so pick a review whose FIRST line is a strong sentence on its own. |
 | 3 | `03-countdown-raw.png` | **Countdown release page** | An upcoming album, countdown running, cover large. |
 | 4 | `04-profile-raw.png` | **Profile, PS2 theme** | The nebula: banner, avatar, numbers, The Log, top of the review grid. |
 | 5 | `05-your-taste-raw.png` | **Your Taste** | One fullscreen card: cover, rating badge, review readable. |

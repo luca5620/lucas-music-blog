@@ -149,7 +149,16 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-### 📣 INSTAGRAM — where it stands (2026-09-28)
+### 📣 INSTAGRAM — ✅ BATCH 1 FULLY POSTED (2026-09-28)
+
+**All posts are up** (Luca, 2026-09-28: "posts are all up now") —
+including 5 and 10. **Next in marketing:** Luca keeps making
+edit-videos for Reels and TikTok himself, on the Windows desktop.
+**No YouTuber reply yet** (emails sent 2026-09-23): one short
+follow-up around 2026-09-30 to anyone silent, then leave it.
+
+The notes below are the history of how it got there.
+
 
 - **Post 5 (profile themes):** prompt ready (Astra-trimmed version
   given in chat 2026-09-28, same as the file). Needs three profile

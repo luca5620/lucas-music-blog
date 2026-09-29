@@ -161,12 +161,10 @@ kept in `ad-video/`.
   `kpop-aux-wars-v4`, plus the reviews ad v13 and Temper City v5.
 - **Small tweaks owed (Luca brings the list next session):** `kpop-supershy-v6`
   and `kpop-catchcatch-v3`. "Nothing major".
-- **Weeknd (`weeknd-v7`) tweaks:** the code-drawn spotlight beams don't suit
-  the stage in the ending line-up; the era close-ups must zoom straight down the
-  middle (a small, centred zoom showing left and right equally), not to one side.
-- **Astra next:** a clean spotlight asset (beam + floor pool) to replace the
-  code-drawn spotlights in every edit that has one (Weeknd line-up, Gee solos,
-  Dynamite rink/stage beams). Brief written in `astra/README.md` → MAKE NOW.
+- **Spotlights DONE (same day):** Astra's beam + pool are in a shared `Spotlight`
+  (ad-video/project/src/era.tsx). `weeknd-v8` (line-up spotlights per era colour,
+  era close-ups now centred) and `kpop-gee-v5` (solo spotlight + dimmed store,
+  tinted sweeping beams). Gee was approved before this: Luca to re-check the solos.
 - Magnetic was scrapped on purpose. Don't rebuild it.
 
 ### 📣 MARKETING — two prompts written, and a gap in the public copy (2026-09-21)

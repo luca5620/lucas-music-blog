@@ -156,8 +156,12 @@ kept in `ad-video/`.
 
 - **Done / approved:** `kpop-super-v7` (final), `kpop-gee-v4`, `kpop-dynamite-v4`,
   `kpop-aux-wars-v4`, plus the reviews ad v13 and Temper City v5.
-- **Small tweaks owed (Luca brings the list next session):** `kpop-supershy-v6`
-  and `kpop-catchcatch-v3`. "Nothing major".
+- **Tweaks built 2026-09-29, awaiting Luca:** `kpop-supershy-v7` (the five no
+  longer pop in on screen before the banner tow: out right, back from the right,
+  off left, land from the left) and `kpop-catchcatch-v4` (no heart close-up cut:
+  the heart flies round the bedroom, Cupid chases it, it ends in front of the
+  album and the arrow pops it into the cover; Cupid bounces on the bed; the
+  cover now fills the dance card, warped by `ad-video/project/cc-card.py`).
 - **Spotlights DONE (same day):** Astra's beam + pool are in a shared `Spotlight`
   (ad-video/project/src/era.tsx). `weeknd-v8` (line-up spotlights per era colour,
   era close-ups now centred) and `kpop-gee-v5` (solo spotlight + dimmed store,

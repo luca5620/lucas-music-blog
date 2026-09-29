@@ -13,33 +13,15 @@ remnants: every piece of content is community-made and catalog-backed.
 
 Luca, 2026-09-29: "1.2 got published". Pushing to `main` is normal
 again (the Dropping Soon cache fix, 096e896, went straight there).
-**Still owed:** merge `hold/1.2-review` (4 ROADMAP / Instagram-doc
-commits, no code) into `main` and delete the branch — Claude's merge
-was blocked by a permission prompt, so it waits on Luca's OK. Then
-delete this freeze block and the one below.
+`hold/1.2-review` (4 ROADMAP / Instagram-doc commits, no code) was
+merged into `main` the same day on Luca's OK, and the branch deleted.
+The review-freeze block that sat here is gone — the freeze is over.
 
 Lessons from 1.0 → 1.2 are now a Claude skill:
 `C:\Users\lucap\claudework\.claude\skills\app-building\` (outside this
 repo — rejection log, unwritten Apple requirements, iOS WebView
 quirks, pre-submit checklist, `scripts/preflight-ios.mjs`). Add every
 future Apple verdict to its playbook's "Rejection log".
-
-## 🧊 (DONE — see above) FROZEN — 1.2 (build 3) IN APP REVIEW since 2026-09-28
-
-Luca submitted 1.2 on 2026-09-28 ("waiting for review"), release set
-to automatic. **Do NOT push to `main` until Apple approves** — every
-push deploys the live site the reviewer is testing (and has broken a
-review before). All work goes on this branch, `hold/1.2-review`, and
-is merged to `main` the moment approval lands. Screenshots were
-uploaded the same day (see the SHIPPING 1.2 block). Migrations that
-change behaviour wait too.
-
-**Exception, on Luca's call (2026-09-28): "just push it, its so
-minimal".** The low-detail play-card cover fix (CSS only) went to
-`main` mid-review. Everything else still waits for approval.
-
-**On approval:** merge this branch into `main`, push, delete the
-branch, and move this block to ✅.
 
 ## ✅ 2026-09-27 — Handles from real names + docked Your Taste comments
 
@@ -181,6 +163,34 @@ kept in `ad-video/`.
   era close-ups now centred) and `kpop-gee-v5` (solo spotlight + dimmed store,
   tinted sweeping beams). Gee was approved before this: Luca to re-check the solos.
 - Magnetic was scrapped on purpose. Don't rebuild it.
+
+### 📣 INSTAGRAM — ✅ BATCH 1 FULLY POSTED (2026-09-28)
+
+**All posts are up** (Luca, 2026-09-28: "posts are all up now") —
+including 5 and 10. **Next in marketing:** Luca keeps making
+edit-videos for Reels and TikTok himself, on the Windows desktop.
+**No YouTuber reply yet** (emails sent 2026-09-23): one short
+follow-up around 2026-09-30 to anyone silent, then leave it.
+
+The notes below are the history of how it got there.
+
+
+- **Post 5 (profile themes):** prompt ready (Astra-trimmed version
+  given in chat 2026-09-28, same as the file). Needs three profile
+  screenshots (PS2, Xbox OG, Wii), one Canva row PNG, one Astra chat.
+- **Post 10 (AUX WARS):** screenshot comes from the staged room —
+  staff menu → **Staged Aux War · Instagram** (covers sharp; covers
+  now also stay in low detail). Two image versions: A (no people,
+  gold/crimson + aux jacks) and B (illustrated Bruno Mars vs The
+  Weeknd face-off — Luca's call, AI label on). **Caption rewritten
+  2026-09-28** to sell Aux Wars itself, not the one matchup (Luca:
+  "bring up aux wars more not the specific battle"); artist hashtags
+  dropped.
+- **Post 6 (Your Taste): ALREADY POSTED.** Luca, 2026-09-28: "we
+  already have a your taste post actually, i think it wasnt accounted
+  for before". It went up earlier and was never marked done here.
+  Nothing to make.
+- Reviewer cold emails: SENT 2026-09-23 — waiting on replies.
 
 ### 📣 MARKETING — two prompts written, and a gap in the public copy (2026-09-21)
 

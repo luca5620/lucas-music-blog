@@ -740,7 +740,11 @@ Pin a review. Put a song on the door. Link in bio.
 
 ---
 
-## Post 6 — Your Taste (held for week 3)
+## Post 6 — Your Taste ✅ ALREADY POSTED
+
+*Luca, 2026-09-28: a Your Taste post already went up — it just was
+never marked done in this file. Nothing below needs making; kept for
+the record.*
 
 **Use:** the Your Taste card filling most of the frame. Slides 2–3:
 the card raw, then a second card to show the swipe.
@@ -976,26 +980,34 @@ different pair, so the two posts don't read as one template.
 in the gold-to-crimson seam in front of the phone, cable trailing off
 the edge of the table, is quieter and harder to get wrong.
 
-**Caption:**
-Best pop song of the 2010s. 24K Magic or Can't Feel My Face.
+**Caption — REWRITTEN 2026-09-28 (Luca: "bring up aux wars more not
+the specific battle"). The feature is the subject; the matchup is
+just what's on the screen:**
+AUX WARS is live on Peak Music Reviews.
 
-Two songs, one room. Everyone hears both, throws fire or trash while
-they play, and votes. Winner moves on — or you call it yourself as
-host.
+Open a room, pick a topic, and put your song up against someone
+else's. The whole room listens to both, throws 🔥 or 💩 while they
+play, and votes. Winner moves on through the bracket. Tie? Overtime,
+new songs.
 
-Open one on anything. Link in bio.
+Play it one-off or best-of-3. Let the crowd decide or judge it
+yourself as host. Make it private with a code and it still counts on
+the leaderboard.
+
+Tonight's topic in the screenshot: best pop song of the 2010s.
+What's yours?
+
+Link in bio.
 
 **Optional first comment** — the post is a matchup, so hand them the
 next one:
 
-> Wrong answers only. Then give me the matchup you'd actually put up
-> and I'll open the room.
+> Drop a topic below and I'll open the room for it 👇
 
 **Hashtags for this post** (the party/competition slice, plus the two
 names — a matchup post is how the artist tags earn their place):
-#brunomars #theweeknd #auxcord #musicapp #musiccommunity #popheads
-#songbattle #musictaste #musicreviews #musicnerd #musicsocial
-#bestof2010s
+#auxwars #auxcord #musicapp #songbattle #musicgame #musiccommunity
+#musictaste #musicreviews #musicnerd #musicsocial #playlist #newmusic
 
 **Accuracy notes, so the caption stays true to the build** (spec in
 `ROADMAP.md`, the AUX WARS block): the host opens a room on a topic,

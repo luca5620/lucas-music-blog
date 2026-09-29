@@ -19,6 +19,9 @@ is merged to `main` the moment approval lands. Screenshots were
 uploaded the same day (see the SHIPPING 1.2 block). Migrations that
 change behaviour wait too.
 
+**Waiting on this branch:** the Aux Wars ▶ play card keeps its album
+cover in low detail mode (2026-09-28, app/globals.css).
+
 **On approval:** merge this branch into `main`, push, delete the
 branch, and move this block to ✅.
 

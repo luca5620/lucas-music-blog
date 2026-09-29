@@ -266,7 +266,7 @@ in `fonts/` (Chakra Petch Bold + Inter SemiBold, OFL), exact sizes,
 JPEG no alpha, shot 1 shown before the rest, and a pixel-exact
 fallback (plate + code composite) when the screen drifts. One
 self-contained prompt per shot in `prompts/`. Screenshots are
-gitignored — they stay on the Mac. STILL NOTHING CAPTURED.
+gitignored — they stay on the Mac. **2026-09-28: ALL 7 CAPTURED + MOCKED, zipped to ~/Desktop/app-store-screenshots.zip for Astra.** Aux Wars shot comes from the STAGED room (/aux-wars/preview, staff menu → "Staged Aux War · App Store"; Luca + chimp on stage, chimp agreed). Press mode now blurs embedded players too (5.2.1). shots.so free tier exports only 1x (1920×1440, phone ~1100px), so the mockups were rebuilt at 2x on the Mac: frame upscaled, screen re-pasted from the full-res raw, Dynamic Island kept. Next: Astra → check → upload with 1.2.
 
 **👉 WHERE LUCA STOPPED (2026-09-23, MacBook):** Xcode opened with
 `npm run mobile:ios`. He confirmed App target → General shows

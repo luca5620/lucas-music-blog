@@ -146,26 +146,22 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
-### 🎬 AD EDITS: K-pop era series + Weeknd, nearly ready to post (2026-09-29, Windows)
+### 🎬 AD EDITS — ✅ ALL APPROVED, READY TO POST (2026-09-29, Windows)
 
-The ads live OUTSIDE this repo, in `claudework/ad-video/` (Remotion project in
-`ad-video/project/`, Astra's image brief in `ad-video/astra/README.md`,
-captions + hashtags per post in `ad-video/POST-CAPTIONS.md`, Luca's real
-lyrics in `ad-video/project/lyrics/`). Only the newest render of each ad is
-kept in `ad-video/`.
+Luca: "all of the edits are good to go now". The ads live OUTSIDE this
+repo, in `claudework/ad-video/` (Remotion project in `ad-video/project/`),
+newest render of each only. **Post from `ad-video/POST-CAPTIONS.md`** — one
+caption + 5 hashtags per file, checked against every file on 2026-09-29.
+Music + SFX are baked in (don't add a TikTok sound), except the two
+SILENT files, whose notes say which sound to add.
 
-- **Done / approved:** `kpop-super-v7` (final), `kpop-gee-v4`, `kpop-dynamite-v4`,
-  `kpop-aux-wars-v4`, plus the reviews ad v13 and Temper City v5.
-- **Tweaks built 2026-09-29, awaiting Luca:** `kpop-supershy-v7` (the five no
-  longer pop in on screen before the banner tow: out right, back from the right,
-  off left, land from the left) and `kpop-catchcatch-v4` (no heart close-up cut:
-  the heart flies round the bedroom, Cupid chases it, it ends in front of the
-  album and the arrow pops it into the cover; Cupid bounces on the bed; the
-  cover now fills the dance card, warped by `ad-video/project/cc-card.py`).
-- **Spotlights DONE (same day):** Astra's beam + pool are in a shared `Spotlight`
-  (ad-video/project/src/era.tsx). `weeknd-v8` (line-up spotlights per era colour,
-  era close-ups now centred) and `kpop-gee-v5` (solo spotlight + dimmed store,
-  tinted sweeping beams). Gee was approved before this: Luca to re-check the solos.
+- The nine: `weeknd-v8`, `kpop-super-v7`, `kpop-gee-v5`, `kpop-supershy-v7`,
+  `kpop-dynamite-v4`, `kpop-catchcatch-v5`, `kpop-aux-wars-v4`, the reviews ad
+  v13, Temper City v5.
+- Last round: Super Shy's five no longer pop in on screen before the banner
+  tow; Catch Catch = the heart is chased round the bedroom and popped into
+  the album, Cupid bounces on the bed, and the dance-card cover is warped onto
+  MEASURED card corners (`ad-video/project/cc-card.py`).
 - Magnetic was scrapped on purpose. Don't rebuild it.
 
 ### 📣 INSTAGRAM — ✅ BATCH 1 FULLY POSTED (2026-09-28)

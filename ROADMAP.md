@@ -149,6 +149,25 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 📣 INSTAGRAM — where it stands (2026-09-28)
+
+- **Post 5 (profile themes):** prompt ready (Astra-trimmed version
+  given in chat 2026-09-28, same as the file). Needs three profile
+  screenshots (PS2, Xbox OG, Wii), one Canva row PNG, one Astra chat.
+- **Post 10 (AUX WARS):** screenshot comes from the staged room —
+  staff menu → **Staged Aux War · Instagram** (covers sharp; covers
+  now also stay in low detail). Two image versions: A (no people,
+  gold/crimson + aux jacks) and B (illustrated Bruno Mars vs The
+  Weeknd face-off — Luca's call, AI label on). **Caption rewritten
+  2026-09-28** to sell Aux Wars itself, not the one matchup (Luca:
+  "bring up aux wars more not the specific battle"); artist hashtags
+  dropped.
+- **Post 6 (Your Taste): ON HOLD** (Luca, 2026-09-28: "lets just
+  leave that on hold"). When it comes back: take a fresh Your Taste
+  card (not chimp's "masterpeice" one); Claude can composite the
+  screen into the Astra hand plate in code.
+- Reviewer cold emails: SENT 2026-09-23 — waiting on replies.
+
 ### 📣 MARKETING — two prompts written, and a gap in the public copy (2026-09-21)
 
 Both are in `docs/marketing/instagram-batch-1.md`, in the file's own

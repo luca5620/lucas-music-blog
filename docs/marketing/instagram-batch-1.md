@@ -1008,6 +1008,64 @@ entirely. Private rooms take a six-letter code and still count on the
 leaderboard. **Never translate the name** — AUX WARS is the product
 name in all six locales.
 
+### Version B — the artists face off (Luca's call, 2026-09-28)
+
+Everything above is Version A, which keeps people out. Luca decided
+to ALSO make a version with the two artists in it, for an organic
+Instagram post (not a paid ad, and not the App Store — the Store
+version stays shot 1 of `app-store-screenshots/`). Claude flagged the
+likeness risk once (commercial use of a real person's face; worst
+realistic case a takedown); Luca accepted it: *"i could care less if
+i SOMEHOW got a takedown, then i would stop then."* So this is his
+decision on record, and the prompt is written to give it the best
+chance:
+
+- **Illustrated, not photoreal.** Poster art reads as fan art; a
+  photoreal face reads as a deepfake, and generators are likelier to
+  refuse or water down photoreal public figures.
+- **They square up; they never hold, use or point at the phone.** A
+  face-off across your app is the joke. Holding it reads as an
+  endorsement they never gave.
+- **Turn on Instagram's "AI info" label** when posting.
+
+Use the **Staged Aux War · Instagram** link for this one's screenshot
+(covers sharp — real covers inside your own app are fine on
+Instagram), then shots.so as before.
+
+> The attached image is a finished iPhone mockup. Do not change the
+> phone, its frame, or anything on its screen — keep the screenshot
+> exactly as provided, pixel for pixel. Build only the scene around
+> it, and keep the phone upright and dead centre.
+>
+> A fight-poster face-off, drawn as bold illustrated poster art —
+> graphic, painterly, high contrast, clearly an illustration and not
+> a photograph. On the LEFT, bathed in hard warm gold light: Bruno
+> Mars in his 24K Magic era — gold chains, dark sunglasses, a
+> patterned silk shirt, a cool half-smile, shown from the chest up,
+> turned three-quarters toward the centre. On the RIGHT, bathed in
+> hard deep crimson light: The Weeknd in his Beauty Behind the Madness
+> era — his tall spiky dreadlocks, a black leather jacket, a cold,
+> unreadable stare, chest up, turned three-quarters toward the centre.
+> They face each other across the phone like two fighters before a
+> bout, each slightly behind and to the side of it. Neither of them
+> touches, holds or points at the phone. The gold and crimson light
+> meet in a seam exactly on the phone. Haze and drifting sparks in
+> both beams, true black behind.
+>
+> No text of any kind — no names, no titles, no logos, no album
+> covers, no watermarks. Do not invent any app interface. 4:5
+> portrait, 1080x1350.
+
+**If Astra refuses or the faces come out wrong:** don't fight it with
+rewording. Fall back to Version A, or to the "era props" middle
+ground — the same poster, but the figures replaced by the eras' props
+(a gold chain and sunglasses on the left, a red-lit leather jacket
+collar and a neon glow on the right) with no faces at all.
+
+**Caption:** Version A's caption works unchanged — it names the two
+songs and never claims either artist is involved with the app. Keep it
+that way.
+
 ---
 
 ## Cadence for the first two weeks

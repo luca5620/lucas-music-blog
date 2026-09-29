@@ -710,8 +710,8 @@ body {
       blurred copy of that same background (`inherit` hands the
       pseudo-element the card's own inline url) sits over the sharp
       one; it overhangs the edges so the blur has no crisp border,
-      and the card's overflow:hidden trims it. Under low detail the
-      card has no background at all, so this draws nothing. */
+      and the card's overflow:hidden trims it. Low detail keeps the
+      cover too (since 2026-09-28), so this applies there as well. */
 .press-mode .aux-play-card::before {
   content: "";
   position: absolute;
@@ -5262,9 +5262,13 @@ fieldset {
 .low-detail .aux-burst-card { animation: none; }
 .low-detail .aux-match-live { animation: none; box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.5); }
 .low-detail .aux-floater { animation-duration: 1s; filter: none; }
-/* The play card's cover backdrop is a full-bleed image behind a
-   scrim — on the thermal diet it becomes a flat panel. */
-.low-detail .aux-play-card { background-image: none !important; transition: none; }
+/* The play card KEEPS its cover backdrop on the thermal diet (Luca,
+   2026-09-28: "in low detail mode it should still look like this with
+   the album cover staying there too"). It used to become a flat black
+   panel, which made a room read as empty. A still background image is
+   one decode and costs nothing per frame — it's the press animation
+   (transition) that's worth dropping, so only that goes. */
+.low-detail .aux-play-card { transition: none; }
 .low-detail .aux-react-mine { box-shadow: none; }
 /* Docked comments panel: appears in place, no slide. */
 .low-detail .dock-anim-in { animation: none; }

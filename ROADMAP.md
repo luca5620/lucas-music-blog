@@ -156,7 +156,7 @@ Music + SFX are baked in (don't add a TikTok sound), except the two
 SILENT files, whose notes say which sound to add.
 
 - The nine: `weeknd-v8`, `kpop-super-v7`, `kpop-gee-v5`, `kpop-supershy-v7`,
-  `kpop-dynamite-v4`, `kpop-catchcatch-v5`, `kpop-aux-wars-v4`, the reviews ad
+  `kpop-dynamite-v4`, `kpop-catchcatch-v6`, `kpop-aux-wars-v4`, the reviews ad
   v13, Temper City v5.
 - Last round: Super Shy's five no longer pop in on screen before the banner
   tow; Catch Catch = the heart is chased round the bedroom and popped into

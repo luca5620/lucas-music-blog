@@ -149,6 +149,26 @@ don't wait to be asked:**
 
 ## ⏳ In progress
 
+### 🎬 AD EDITS: K-pop era series + Weeknd, nearly ready to post (2026-09-29, Windows)
+
+The ads live OUTSIDE this repo, in `claudework/ad-video/` (Remotion project in
+`ad-video/project/`, Astra's image brief in `ad-video/astra/README.md`,
+captions + hashtags per post in `ad-video/POST-CAPTIONS.md`, Luca's real
+lyrics in `ad-video/project/lyrics/`). Only the newest render of each ad is
+kept in `ad-video/`.
+
+- **Done / approved:** `kpop-super-v7` (final), `kpop-gee-v4`, `kpop-dynamite-v4`,
+  `kpop-aux-wars-v4`, plus the reviews ad v13 and Temper City v5.
+- **Small tweaks owed (Luca brings the list next session):** `kpop-supershy-v6`
+  and `kpop-catchcatch-v3`. "Nothing major".
+- **Weeknd (`weeknd-v7`) tweaks:** the code-drawn spotlight beams don't suit
+  the stage in the ending line-up; the era close-ups must zoom straight down the
+  middle (a small, centred zoom showing left and right equally), not to one side.
+- **Astra next:** a clean spotlight asset (beam + floor pool) to replace the
+  code-drawn spotlights in every edit that has one (Weeknd line-up, Gee solos,
+  Dynamite rink/stage beams). Brief written in `astra/README.md` → MAKE NOW.
+- Magnetic was scrapped on purpose. Don't rebuild it.
+
 ### 📣 MARKETING — two prompts written, and a gap in the public copy (2026-09-21)
 
 Both are in `docs/marketing/instagram-batch-1.md`, in the file's own

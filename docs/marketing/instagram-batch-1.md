@@ -740,7 +740,11 @@ Pin a review. Put a song on the door. Link in bio.
 
 ---
 
-## Post 6 — Your Taste (held for week 3)
+## Post 6 — Your Taste ✅ ALREADY POSTED
+
+*Luca, 2026-09-28: a Your Taste post already went up — it just was
+never marked done in this file. Nothing below needs making; kept for
+the record.*
 
 **Use:** the Your Taste card filling most of the frame. Slides 2–3:
 the card raw, then a second card to show the swipe.

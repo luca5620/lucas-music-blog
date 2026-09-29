@@ -162,10 +162,10 @@ don't wait to be asked:**
   2026-09-28** to sell Aux Wars itself, not the one matchup (Luca:
   "bring up aux wars more not the specific battle"); artist hashtags
   dropped.
-- **Post 6 (Your Taste): ON HOLD** (Luca, 2026-09-28: "lets just
-  leave that on hold"). When it comes back: take a fresh Your Taste
-  card (not chimp's "masterpeice" one); Claude can composite the
-  screen into the Astra hand plate in code.
+- **Post 6 (Your Taste): ALREADY POSTED.** Luca, 2026-09-28: "we
+  already have a your taste post actually, i think it wasnt accounted
+  for before". It went up earlier and was never marked done here.
+  Nothing to make.
 - Reviewer cold emails: SENT 2026-09-23 — waiting on replies.
 
 ### 📣 MARKETING — two prompts written, and a gap in the public copy (2026-09-21)

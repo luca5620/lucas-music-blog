@@ -9,7 +9,22 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
-## 🧊 FROZEN — 1.2 (build 3) IN APP REVIEW since 2026-09-28
+## ✅ 2026-09-29 — 1.2 (build 3) APPROVED + PUBLISHED — main is unfrozen
+
+Luca, 2026-09-29: "1.2 got published". Pushing to `main` is normal
+again (the Dropping Soon cache fix, 096e896, went straight there).
+**Still owed:** merge `hold/1.2-review` (4 ROADMAP / Instagram-doc
+commits, no code) into `main` and delete the branch — Claude's merge
+was blocked by a permission prompt, so it waits on Luca's OK. Then
+delete this freeze block and the one below.
+
+Lessons from 1.0 → 1.2 are now a Claude skill:
+`C:\Users\lucap\claudework\.claude\skills\app-building\` (outside this
+repo — rejection log, unwritten Apple requirements, iOS WebView
+quirks, pre-submit checklist, `scripts/preflight-ios.mjs`). Add every
+future Apple verdict to its playbook's "Rejection log".
+
+## 🧊 (DONE — see above) FROZEN — 1.2 (build 3) IN APP REVIEW since 2026-09-28
 
 Luca submitted 1.2 on 2026-09-28 ("waiting for review"), release set
 to automatic. **Do NOT push to `main` until Apple approves** — every

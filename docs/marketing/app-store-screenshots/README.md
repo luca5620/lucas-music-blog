@@ -3,6 +3,17 @@
 *Written 2026-09-25 (Windows), turned into this folder 2026-09-28
 (MacBook) so Astra can read it and do the making.*
 
+> **✅ DONE 2026-09-28 — all seven made and UPLOADED to App Store
+> Connect (1.2).** Steps 1–3 below worked as written. **Step 4 did
+> not:** Astra hung "thinking" on the zip + brief. What worked instead
+> is in [`tools/README.md`](tools/README.md): Astra makes the scene
+> only (one chat, one mockup, one short prompt per shot), and Claude
+> finishes each one in code — real screenshot pasted back over the
+> phone's screen, headline set with the bundled fonts, exact size,
+> JPEG. Also: shots.so's free tier exports 1× only, so the mockups
+> were rebuilt at 2× (`tools/rebuild-mockup-2x.py`). Start from
+> tools/README.md next time, not ASTRA-BRIEF.md.
+
 **This file is for Luca.** It is the part only a person can do: getting
 the real screens. Everything after that is in
 [`ASTRA-BRIEF.md`](ASTRA-BRIEF.md), which Astra reads and follows.

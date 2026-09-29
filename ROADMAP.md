@@ -9,6 +9,19 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## 🧊 FROZEN — 1.2 (build 3) IN APP REVIEW since 2026-09-28
+
+Luca submitted 1.2 on 2026-09-28 ("waiting for review"), release set
+to automatic. **Do NOT push to `main` until Apple approves** — every
+push deploys the live site the reviewer is testing (and has broken a
+review before). All work goes on this branch, `hold/1.2-review`, and
+is merged to `main` the moment approval lands. Screenshots were
+uploaded the same day (see the SHIPPING 1.2 block). Migrations that
+change behaviour wait too.
+
+**On approval:** merge this branch into `main`, push, delete the
+branch, and move this block to ✅.
+
 ## ✅ 2026-09-27 — Handles from real names + docked Your Taste comments
 
 - **Invented handles fixed (migration 050, RUN + verified).** Luca's report was "usernames with spaces that aren't searchable". Reality: no username can hold a space (the DB check forbids it) and display-name search already worked. The real bug was that Google/Apple sign-ins who skipped /welcome kept a handle made from the email local-part (Apple relay junk like `jfp225w4kb`). `handle_new_user` now builds it from the provider's name (`public.handle_from_name`, spaces → `_`), and the 7 affected accounts were renamed (`martijn_schilders`, …). Review slugs are frozen at creation, so old review links still work. Search also keeps accented letters now (Doğan).

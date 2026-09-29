@@ -400,11 +400,19 @@ async function listUpcomingReleasesUncached(limit = 12): Promise<
   );
 }
 
+/** Cache tag for the Dropping Soon shelf (home + /releases). */
+export const UPCOMING_RELEASES_TAG = "upcoming-releases";
+
 /** Upcoming drops — the countdown shelf. */
 export const listUpcomingReleases = unstable_cache(
   listUpcomingReleasesUncached,
   ["upcoming-releases"],
-  { revalidate: 300 }
+  // Tagged so /api/catalog/ensure can expire it the moment someone
+  // pastes a link. Home (8) and /releases (12) ask for different
+  // lengths, so they are two cache entries that used to go stale on
+  // their own clocks — a fresh add showed on one and not the other
+  // (Luca 2026-09-29).
+  { revalidate: 300, tags: [UPCOMING_RELEASES_TAG] }
 );
 
 /**

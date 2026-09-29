@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { ensureRelease } from "@/lib/catalog";
 import { pingIndexNow } from "@/lib/indexnow";
+import { UPCOMING_RELEASES_TAG } from "@/lib/db/releases";
+import { hasDropped } from "@/lib/upcoming";
 
 /**
  * POST /api/catalog/ensure  { source: "local"|"spotify"|"genius", id: string }
@@ -58,6 +61,12 @@ export async function POST(request: NextRequest) {
     // Fire and forget; "local" means it already existed, so no ping.
     if (source !== "local" && release?.slug) {
       void pingIndexNow([`/releases/${release.slug}`]);
+    }
+    // A pasted link for an album that hasn't dropped yet belongs on
+    // the Dropping Soon shelf NOW, on home and /releases alike — not
+    // whenever each page's five-minute cache happens to roll over.
+    if (source !== "local" && release?.release_date && !hasDropped(release.release_date)) {
+      revalidateTag(UPCOMING_RELEASES_TAG, { expire: 0 });
     }
     return NextResponse.json({ release });
   } catch (err) {

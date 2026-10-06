@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { LOCALES, LOCALE_NAMES, type Locale } from "@/i18n/config";
 import { writeLanguageCookie } from "@/i18n/client";
+import { isNativeApp } from "@/lib/native";
 
 /**
  * The language switch (design in i18n/config.ts). Two skins:
@@ -37,6 +38,20 @@ export default function LanguagePicker({
   function choose(next: Locale) {
     if (next === locale) return;
     writeLanguageCookie(next);
+    // In the app, also tell the push-token table (migration 052) so
+    // the next notification arrives in the new language right away
+    // instead of after the next launch re-registers the device.
+    // Fire-and-forget: signed-out (401) or a pre-052 database are both
+    // fine to ignore — the language switch itself is the cookie.
+    if (isNativeApp()) {
+      void fetch("/api/push/register", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale: next }),
+      }).catch(() => {
+        /* best-effort */
+      });
+    }
     startTransition(() => router.refresh());
   }
 

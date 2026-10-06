@@ -27,6 +27,7 @@ import LiveRooms from "@/components/home/LiveRooms";
 import Unreleased from "@/components/home/Unreleased";
 import MakeItYours from "@/components/home/MakeItYours";
 import ClosingCta from "@/components/home/ClosingCta";
+import DiscordBadge from "@/components/home/DiscordBadge";
 import ListsRail from "@/components/feed/ListsRail";
 import DiscoveryFeed from "@/components/reviews/DiscoveryFeed";
 import PostsFeed from "@/components/posts/PostsFeed";
@@ -175,6 +176,8 @@ async function Splash() {
             {t("browseReviews")}
           </Link>
           <AppStoreBadge />
+          {/* Discord community, beside the App Store badge (2026-10-06) */}
+          <DiscordBadge />
         </div>
 
         <div className="scan-bar" />
@@ -220,7 +223,14 @@ async function Splash() {
       {/* The close — same glow + liquid as the hero, so the page ends
           the way it opened. */}
       <Reveal>
-        <ClosingCta badge={<AppStoreBadge />} />
+        <ClosingCta
+          badge={
+            <>
+              <AppStoreBadge />
+              <DiscordBadge />
+            </>
+          }
+        />
       </Reveal>
 
       <WebsitePlug />
@@ -306,6 +316,7 @@ async function Dashboard({ userId }: { userId: string }) {
               {t("startAux")}
             </Link>
             <AppStoreBadge />
+            <DiscordBadge />
           </div>
           {/* Empty shelf → the one line that gets a backfill started.
               Disappears the moment the first review is published. */}

@@ -9,6 +9,36 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ✅ 2026-10-06 — Discord community server + home-page badge
+
+The **Peak Music Reviews** Discord is built and live. Permanent invite
+(never expires, no use limit, verification level = None, no membership
+screening, so joining is one tap): **https://discord.gg/nrjrURpQPF** —
+the single source of truth in the repo is `lib/discord.ts`.
+
+Structure (emoji + ・ naming, same style as the Murder Disaster server):
+- 📌 INFO (read-only): welcome, rules, announcements, updates-and-bug-fixes,
+  faq-and-links, sneak-peeks, events-and-tournaments
+- ⚔️ AUX WARS: aux-war-codes, find-a-room, aux-war-chat, aux-war-highlights
+  + voice Aux War Room 1-3
+- 💬 COMMUNITY: general-chat, introductions, share-your-reviews, album-talk,
+  hot-takes, recommendations, unreleased-and-leaks, memes, off-topic
+- 🐞 SUPPORT & FEEDBACK: report-a-bug, feature-requests, music-requests,
+  help-and-support (each has a post-a-template message)
+- 🔊 VOICE LOUNGES: Lounge, Listening Party, Chill Out, AFK
+
+Site: `components/home/DiscordBadge.tsx` (sibling of the App Store badge,
+NOT web-only) sits beside the App Store badge in the signed-out hero, the
+closing CTA and the signed-in dashboard hero; copy is `home.discord` in all
+six message files.
+
+**Not done yet (Luca's call):** ping roles + onboarding "Channels & Roles"
+picker (Updates / Events / Aux War pings), a moderator role, an AFK-channel
+timeout, a bot (Bloxlink-style verify is NOT wanted here), and a Discord
+link in /about, the footer and the app's Settings.
+
+---
+
 ## ✅ 2026-10-05 (MacBook): the review batch — LIVE
 
 **DONE 2026-10-05:** Luca ran migrations 052–056, deployed push-fanout

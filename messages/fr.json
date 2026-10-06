@@ -242,6 +242,10 @@
       "downloadOn": "Télécharger dans l'",
       "appStore": "App Store"
     },
+    "discord": {
+      "joinUs": "Rejoins-nous sur",
+      "discord": "Discord"
+    },
     "plug": {
       "title": "Pour l'expérience complète, passe sur notre site",
       "body": "depuis un ordinateur : le grand écran, c'est là que s'écrivent les vraies critiques posées."

@@ -19,7 +19,7 @@ import { guardRoom, isGuardError, readJson } from "@/lib/aux-wars/guard";
  *
  * RLS does the real work: aux_bans only takes the host's writes, and
  * the member/message/vote/reaction policies all check aux_is_banned.
- * The host can never remove themselves — they end the battle instead.
+ * The host can never remove themselves — they end the war instead.
  */
 export async function POST(
   request: Request,
@@ -41,7 +41,7 @@ export async function POST(
   }
   if (userId === user.id) {
     return NextResponse.json(
-      { error: "You can't remove yourself — end the battle instead." },
+      { error: "You can't remove yourself — end the war instead." },
       { status: 409 }
     );
   }

@@ -9,9 +9,20 @@
  * an instant swap with no spinner and no second round trip — there are
  * only ever twenty rows.
  *
- * Wins a host handed themselves (playing AND judging their own room)
- * are already excluded by the aux_leaderboard function in migration
- * 044, so the board can't be farmed by hosting a room alone.
+ * "This week" = since Friday 00:00 US Eastern, the same week /social
+ * uses (the page passes that boundary in; migration 053).
+ *
+ * Wins a host handed themselves are already excluded by the
+ * aux_leaderboard function — a room they both played and judged (044),
+ * or a match they called for themselves in a crowd room (053) — so the
+ * board can't be farmed by hosting a room alone.
+ *
+ * WHILE IT'S SPARSE (code review 2026-10-05). A "Top 10" with one row
+ * in it, rank "1" in gold, shouted how empty the place was. Below
+ * BOARD_OPENS_AT people the board turns into "First on the board": the
+ * names in a row, no ranks, no week tab, and a line saying the Top 10
+ * opens once a few more people have won — which reads as an
+ * invitation instead of an apology.
  */
 
 import { useState } from "react";
@@ -22,6 +33,9 @@ import PlayerChip from "@/components/aux-wars/PlayerChip";
 import type { AuxLeaderRow } from "@/lib/db/aux-wars";
 
 type Period = "all" | "week";
+
+/** Fewer people than this on the all-time board → "First on the board". */
+const BOARD_OPENS_AT = 3;
 
 export default function Leaderboard({
   allTime,
@@ -36,6 +50,29 @@ export default function Leaderboard({
 
   // Nothing won anywhere yet — no point showing an empty podium.
   if (allTime.length === 0 && weekly.length === 0) return null;
+
+  /* ─── Sparse: the first few names, framed as pioneers ─── */
+  if (allTime.length < BOARD_OPENS_AT) {
+    return (
+      <section className="panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="glow-orb" style={{ animationDelay: "0.3s" }} />
+          <h2 className="label-xbox">{t("firstTitle")}</h2>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {allTime.map((row) => (
+            <PlayerChip
+              key={row.profile.id}
+              profile={row.profile}
+              wins={{ battles: row.battles, rounds: row.rounds }}
+            />
+          ))}
+        </div>
+        <p className="text-xs text-text-muted">{t("firstSub", { n: BOARD_OPENS_AT })}</p>
+        <div className="scan-bar" />
+      </section>
+    );
+  }
 
   return (
     <section className="panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden">
@@ -113,6 +150,8 @@ export default function Leaderboard({
         </ol>
       )}
 
+      {/* When the week starts over, so "This week" is never a guess. */}
+      {period === "week" && <p className="text-[11px] text-text-muted">{t("weekResets")}</p>}
       <p className="text-[11px] text-text-muted">{t("fairPlay")}</p>
       <div className="scan-bar" />
     </section>

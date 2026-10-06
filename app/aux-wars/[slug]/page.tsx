@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   auxRoomExists,
+  closeAuxRoomIfIdle,
   getAuxBans,
   getAuxMessages,
   getAuxRoomBySlug,
@@ -47,7 +48,11 @@ export default async function AuxBattlePage({ params }: PageProps) {
   const { slug } = await params;
   if (!isSafeSlug(slug)) notFound();
 
-  const room = await getAuxRoomBySlug(slug);
+  // A room that's been quiet past the idle window gets finished on the
+  // way in (migration 053) — a dead link shows "went quiet", not a
+  // lobby that will never start. A no-op for every active room.
+  const found = await getAuxRoomBySlug(slug);
+  const room = found ? await closeAuxRoomIfIdle(found) : null;
   if (!room) {
     if (await auxRoomExists(slug)) {
       return (

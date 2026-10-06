@@ -5,7 +5,9 @@ import { AuxError, endRoom } from "@/lib/aux-wars/engine";
 
 /**
  * POST /api/aux-wars/[roomId]/end — the host pulls the plug. The room is
- * finished with no champion; the chat stays readable.
+ * finished with no champion; the chat stays readable. aux_end_room
+ * (migration 053) also closes the game that was open, so the vote
+ * closes with the room.
  */
 export async function POST(
   _request: Request,
@@ -20,12 +22,12 @@ export async function POST(
   if (limited) return limited;
 
   try {
-    await endRoom(supabase, room);
+    await endRoom(supabase, room.id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof AuxError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }
-    return NextResponse.json({ error: "Couldn't end the battle." }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't end the Aux War." }, { status: 500 });
   }
 }

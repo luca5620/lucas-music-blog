@@ -107,7 +107,7 @@ export async function POST(
       return NextResponse.json({ error: "You blocked them from this room." }, { status: 409 });
     }
     if (/FINISHED/.test(msg)) {
-      return NextResponse.json({ error: "This battle is over." }, { status: 409 });
+      return NextResponse.json({ error: "This Aux War is over." }, { status: 409 });
     }
     if (/NOT_HOST/.test(msg)) {
       return NextResponse.json({ error: "Only the host can invite." }, { status: 403 });

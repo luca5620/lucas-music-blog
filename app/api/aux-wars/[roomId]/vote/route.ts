@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
+import { isUuid } from "@/lib/validate";
 import { guardRoom, isGuardError, readJson } from "@/lib/aux-wars/guard";
 
 /**
- * POST /api/aux-wars/[roomId]/vote  { side: "a" | "b" }
+ * POST /api/aux-wars/[roomId]/vote  { side: "a" | "b", game_id? }
  *
  * One vote per person per game, switchable while the songs are still
  * playing — aux_votes has PRIMARY KEY (game_id, user_id), so an upsert
  * is "latest choice wins". RLS is the wall: it only lets the row in
  * while the game is in the listening phase and the voter is NOT one
- * of the two players (no voting for yourself). The tallies live on
+ * of the two players (no voting for yourself). Since migration 053
+ * casting AND switching run the same check (aux_can_vote), so a
+ * crafted PATCH can't move a vote onto your own match or let a banned
+ * user keep voting, and a room that's over takes no votes. The tallies live on
  * the game row (trigger), so every screen gets them in one realtime
  * UPDATE.
  */
@@ -33,6 +37,18 @@ export async function POST(
   const { side } = body;
   if (side !== "a" && side !== "b") {
     return NextResponse.json({ error: 'side must be "a" or "b".' }, { status: 400 });
+  }
+  // The game the voter's SCREEN was showing (2026-10-05). Same idea as
+  // the host's call: a tap meant for the last game must never land on
+  // the next one. Optional so an old cached page still votes.
+  if (body.game_id !== undefined && body.game_id !== room.current_game_id) {
+    if (!isUuid(body.game_id)) {
+      return NextResponse.json({ error: "Invalid game." }, { status: 400 });
+    }
+    return NextResponse.json(
+      { error: "That game already closed — the next one is up.", stale: true },
+      { status: 409 }
+    );
   }
 
   const { error } = await supabase.from("aux_votes").upsert(

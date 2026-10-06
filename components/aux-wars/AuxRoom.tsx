@@ -111,6 +111,19 @@ type Burst =
   | { kind: "overtime"; key: string }
   | { kind: "champion"; player: AuxProfile | null; key: string };
 
+/**
+ * An API refusal. `stale` = the server says this screen was looking at
+ * a game (or phase) the room has already left (migration 053) — the
+ * fix is to pull the truth, not to show a scary error and stop.
+ */
+class PostError extends Error {
+  stale: boolean;
+  constructor(message: string, stale: boolean) {
+    super(message);
+    this.stale = stale;
+  }
+}
+
 async function post(url: string, body?: unknown): Promise<Record<string, unknown>> {
   const res = await fetch(url, {
     method: "POST",
@@ -118,7 +131,7 @@ async function post(url: string, body?: unknown): Promise<Record<string, unknown
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
-  if (!res.ok) throw new Error((data.error as string) ?? "Something broke.");
+  if (!res.ok) throw new PostError((data.error as string) ?? "Something broke.", data.stale === true);
   return data;
 }
 
@@ -475,11 +488,16 @@ export default function AuxRoom({
         await fn();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something broke.");
+        // The room moved on under this screen (another device called
+        // it, the songs landed, the game closed) — catch up right away
+        // so the next tap is on what's really there. Never in demo:
+        // the staged room has no server to ask.
+        if (err instanceof PostError && err.stale && !demo) void resync();
       } finally {
         setBusy(null);
       }
     },
-    [busy]
+    [busy, demo, resync]
   );
 
   const join = (role: "player" | "viewer") =>
@@ -501,7 +519,9 @@ export default function AuxRoom({
       if (demo) demoMove(myVote ? `votes_${myVote}` : null, `votes_${side}`);
       setMyVote(side);
       if (demo) return;
-      await post(`/api/aux-wars/${room.id}/vote`, { side });
+      // game_id: the game on THIS screen, so a late tap can't land on
+      // the next game (the route answers 409 and we resync instead).
+      await post(`/api/aux-wars/${room.id}/vote`, { side, game_id: room.current_game_id });
     });
   // ONE reaction per person per game (Luca 2026-09-14 — no more
   // spam-tapping). Tapping the one you already threw does nothing;
@@ -528,9 +548,20 @@ export default function AuxRoom({
       })
       .catch(() => setMyReaction(previous));
   };
+  // The host's CALL. It names the game AND the phase this screen is
+  // showing (migration 053): if a second device already called it, or
+  // both songs landed while the host was reaching for "moves on", the
+  // server refuses instead of closing a game nobody meant to — that
+  // used to hand a whole match to side A. A refusal resyncs (see act).
   const call = (side?: "a" | "b") =>
     act(`call-${side ?? "crowd"}`, async () => {
-      const data = (await post(`/api/aux-wars/${room.id}/call`, side ? { side } : {})) as {
+      // Demo: the staged room never calls anything.
+      if (demo || !currentGame || currentGame.phase === "done") return;
+      const data = (await post(`/api/aux-wars/${room.id}/call`, {
+        game_id: currentGame.id,
+        phase: currentGame.phase,
+        ...(side ? { side } : {}),
+      })) as {
         needsHost?: "tie" | "no_votes";
       };
       setNeedsHost(data.needsHost ?? null);
@@ -1047,6 +1078,7 @@ export default function AuxRoom({
                       roomId={room.id}
                       round={currentMatch.round}
                       game={room.topic_each_game ? currentGame.game_no : null}
+                      gameId={currentGame.id}
                     />
                   ) : currentGame.phase === "picking" ? (
                     <div className="flex flex-wrap items-center gap-2">
@@ -1114,6 +1146,14 @@ export default function AuxRoom({
                     {winsFor(room.champion.id) && <WinsTag wins={winsFor(room.champion.id)!} />}
                   </div>
                   <p className="text-sm text-text-secondary">{t("championSub", { name: room.name })}</p>
+                </>
+              ) : room.end_reason === "idle" ? (
+                // Shut by the idle close (migration 053): nobody did
+                // anything for two hours, so the room signed off on
+                // its own instead of sitting "live" forever.
+                <>
+                  <span className="osd-text text-xs opacity-70">{t("wentQuiet")}</span>
+                  <p className="text-sm text-text-muted">{t("wentQuietSub")}</p>
                 </>
               ) : (
                 <>

@@ -1,9 +1,24 @@
 /**
- * The Aux War engine — SERVER ONLY, runs inside the HOST's own
- * request (their Supabase client under RLS: only the host can write
- * matches and games for their room, migration 042).
+ * The Aux War engine — SERVER ONLY. Since migration 053 this file is
+ * a thin wrapper: every bracket move is ONE Postgres function that
+ * runs as a single transaction with the room row locked, and this
+ * file just calls it and turns its error codes into HTTP answers.
  *
- * The bracket, in plain words (Luca 2026-09-13):
+ * WHY IT MOVED INTO THE DATABASE (code review, 2026-10-05). The old
+ * engine lived here as a string of small writes — mark the game done,
+ * bump the match, open the next game, point the room at it — each its
+ * own request, most of them ignoring errors. Two things went wrong:
+ *   1. If step 3 failed, step 1 had already happened, so every retry
+ *      said "already called" and the room was stuck for good.
+ *   2. "Call it" acted on whatever game was current. A stale tab or
+ *      the host's second phone could call the NEXT game while it was
+ *      still picking — which counts as a forfeit — and hand a match
+ *      to side A.
+ * In Postgres the whole move is all-or-nothing, and the screen now
+ * says WHICH game and WHICH phase it was looking at; if either moved
+ * on, the function refuses and the API answers 409.
+ *
+ * The bracket, in plain words (Luca 2026-09-13), unchanged:
  *   - START: the players are shuffled and paired into round 1. An odd
  *     player out gets a BYE — a free win into the next round. The first
  *     real match goes live with game 1 in the "picking" phase.
@@ -19,163 +34,85 @@
  *     next round, odd one out gets the bye again, until one is left:
  *     the CHAMPION.
  *
- * Every step is a few small writes, not a transaction — the host is
- * the only writer, so the worst case of a dropped request is a room
- * one tap behind, which the next tap fixes.
+ * Fair play (053): when the host PLAYS and has to make a call in their
+ * own match (forfeit, nobody voted, a second tie) they still can — a
+ * room must never get stuck — but if they hand the game to
+ * themselves, that match is marked self_decided and their win from it
+ * counts nowhere. See supabase/migrations/053-aux-wars-engine.sql.
  */
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AuxGame, AuxMatch, AuxRoom, Database } from "@/lib/types/database";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/types/database";
 
 type Client = SupabaseClient<Database>;
 
 export class AuxError extends Error {
   status: number;
-  constructor(message: string, status = 400) {
+  /** True when the screen was out of date — the client should resync. */
+  stale: boolean;
+  constructor(message: string, status = 400, stale = false) {
     super(message);
     this.status = status;
+    this.stale = stale;
   }
-}
-
-function shuffle<T>(list: T[]): T[] {
-  const out = [...list];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
-function winsNeeded(room: AuxRoom): number {
-  return room.format === "bo3" ? 2 : 1;
-}
-
-/* ------------------------------------------------------------------
-   Small writes
-   ------------------------------------------------------------------ */
-
-async function insertGame(
-  supabase: Client,
-  room: AuxRoom,
-  match: AuxMatch,
-  gameNo: number,
-  isOt: boolean
-): Promise<AuxGame> {
-  const { data, error } = await supabase
-    .from("aux_games")
-    .insert({ match_id: match.id, room_id: room.id, game_no: gameNo, is_ot: isOt } as never)
-    .select("*")
-    .single();
-  if (error || !data) throw new AuxError(`Couldn't open the next game: ${error?.message}`, 500);
-  return data as unknown as AuxGame;
-}
-
-async function setCurrentGame(supabase: Client, room: AuxRoom, gameId: string | null) {
-  const { error } = await supabase
-    .from("aux_rooms")
-    .update({ current_game_id: gameId } as never)
-    .eq("id", room.id);
-  if (error) throw new AuxError(`Couldn't move the room on: ${error.message}`, 500);
-}
-
-/** Put a pending match on air with its first game. */
-async function goLive(supabase: Client, room: AuxRoom, match: AuxMatch): Promise<AuxGame> {
-  const { error } = await supabase
-    .from("aux_matches")
-    .update({ status: "live" } as never)
-    .eq("id", match.id);
-  if (error) throw new AuxError(`Couldn't start the match: ${error.message}`, 500);
-  const game = await insertGame(supabase, room, match, 1, false);
-  await setCurrentGame(supabase, room, game.id);
-  return game;
 }
 
 /**
- * Write one round of matches for these players. The odd one out (if
- * any) gets a bye — already "done" with themselves as the winner.
+ * The codes the 053 functions raise, and what the person sees. The
+ * functions say WHAT went wrong in one word; the words a human reads
+ * live here, next to the HTTP status that goes with them.
  */
-async function createRound(
-  supabase: Client,
-  room: AuxRoom,
-  round: number,
-  playerIds: string[]
-): Promise<AuxMatch[]> {
-  const order = shuffle(playerIds);
-  const rows: Record<string, unknown>[] = [];
-  let position = 0;
-  for (let i = 0; i + 1 < order.length; i += 2) {
-    rows.push({
-      room_id: room.id,
-      round,
-      position: position++,
-      player_a_id: order[i],
-      player_b_id: order[i + 1],
-    });
+const CODES: Record<string, { message: string; status: number; stale?: boolean }> = {
+  AUTH_REQUIRED: { message: "Sign in first.", status: 401 },
+  NO_ROOM: { message: "Room not found.", status: 404 },
+  NOT_HOST: { message: "Only the host can do that.", status: 403 },
+  NOT_LIVE: { message: "Nothing is playing right now.", status: 409, stale: true },
+  STALE_GAME: {
+    message: "The room moved on since your screen last updated. It's caught up now — check it and tap again.",
+    status: 409,
+    stale: true,
+  },
+  STALE_PHASE: {
+    message: "That game changed phase while you were looking. It's caught up now — check it and tap again.",
+    status: 409,
+    stale: true,
+  },
+  NO_GAME: { message: "The game is gone.", status: 404, stale: true },
+  NO_MATCH: { message: "Couldn't find a match to play.", status: 500 },
+  NEED_SIDE: { message: "Pick who wins.", status: 400 },
+  BAD_SIDE: { message: 'side must be "a" or "b".', status: 400 },
+  BAD_PHASE: { message: "Unknown phase.", status: 400 },
+  ALREADY_STARTED: { message: "This Aux War already started.", status: 409, stale: true },
+  NEED_PLAYERS: { message: "You need at least two players to start.", status: 400 },
+  ROOM_FULL: { message: "The lobby is full — make room for yourself or switch off playing.", status: 409 },
+  BAD_TOPIC: { message: "Topic must be 3–120 characters.", status: 400 },
+  SONGS_ON: { message: "Songs are already on for this topic.", status: 409, stale: true },
+};
+
+/** Turn a failed rpc into an AuxError the route can send back as-is. */
+function toAuxError(error: PostgrestError, fallback: string): AuxError {
+  // The function isn't there: this code is deployed but migration 053
+  // hasn't been run yet. Say so plainly instead of a raw 404.
+  if (error.code === "PGRST202" || /could not find the function/i.test(error.message)) {
+    return new AuxError("Aux Wars is being updated — try again in a minute.", 503);
   }
-  if (order.length % 2 === 1) {
-    const lucky = order[order.length - 1];
-    rows.push({
-      room_id: room.id,
-      round,
-      position: position++,
-      player_a_id: lucky,
-      player_b_id: null,
-      is_bye: true,
-      winner_id: lucky,
-      status: "done",
-    });
+  // `raise exception 'STALE_GAME'` arrives as message "STALE_GAME".
+  const code = Object.keys(CODES).find((c) => error.message?.includes(c));
+  if (code) {
+    const { message, status, stale } = CODES[code];
+    return new AuxError(message, status, !!stale);
   }
-  const { data, error } = await supabase
-    .from("aux_matches")
-    .insert(rows as never)
-    .select("*")
-    .order("position", { ascending: true });
-  if (error || !data) throw new AuxError(`Couldn't draw the bracket: ${error?.message}`, 500);
-  return data as unknown as AuxMatch[];
+  console.error(`aux engine: ${fallback}:`, error.message);
+  return new AuxError(fallback, 500);
 }
 
 /* ------------------------------------------------------------------
-   START
+   START — draw round 1, put the first match on air
    ------------------------------------------------------------------ */
 
-export async function startRoom(supabase: Client, room: AuxRoom): Promise<void> {
-  if (room.status !== "lobby") throw new AuxError("This battle already started.");
-
-  const { data: members } = await supabase
-    .from("aux_members")
-    .select("user_id, role")
-    .eq("room_id", room.id);
-  const players = new Set(
-    ((members ?? []) as { user_id: string; role: string }[])
-      .filter((m) => m.role === "player")
-      .map((m) => m.user_id)
-  );
-  // A playing host is always in, even if they never tapped "join".
-  if (room.host_plays) {
-    if (!players.has(room.host_id)) {
-      await supabase
-        .from("aux_members")
-        .upsert({ room_id: room.id, user_id: room.host_id, role: "player" } as never, {
-          onConflict: "room_id,user_id",
-        });
-      players.add(room.host_id);
-    }
-  } else {
-    players.delete(room.host_id);
-  }
-  if (players.size < 2) throw new AuxError("You need at least two players to start.");
-
-  const matches = await createRound(supabase, room, 1, [...players]);
-  const firstReal = matches.find((m) => !m.is_bye);
-  if (!firstReal) throw new AuxError("Couldn't find a match to start.", 500);
-
-  const { error } = await supabase
-    .from("aux_rooms")
-    .update({ status: "live", started_at: new Date().toISOString() } as never)
-    .eq("id", room.id);
-  if (error) throw new AuxError(`Couldn't start the battle: ${error.message}`, 500);
-
-  await goLive(supabase, { ...room, status: "live" }, firstReal);
+export async function startRoom(supabase: Client, roomId: string): Promise<void> {
+  const { error } = await supabase.rpc("aux_start_room", { p_room_id: roomId } as never);
+  if (error) throw toAuxError(error, "Couldn't start the Aux War.");
 }
 
 /* ------------------------------------------------------------------
@@ -193,174 +130,56 @@ export interface CallResult {
   finished?: boolean;
 }
 
+/**
+ * gameId + phase are what the HOST'S SCREEN showed when they tapped.
+ * If the room has moved past either, nothing happens and the route
+ * answers 409 (stale) so the screen resyncs.
+ *
+ * side: required while picking (the forfeit), in a host-judged room,
+ * and when the crowd needs the host (no votes / second tie). Ignored
+ * when the crowd has a clear majority — the host can't overrule it.
+ */
 export async function callGame(
   supabase: Client,
-  room: AuxRoom,
+  roomId: string,
+  gameId: string,
+  phase: "picking" | "listening",
   side: "a" | "b" | null
 ): Promise<CallResult> {
-  if (room.status !== "live" || !room.current_game_id) {
-    throw new AuxError("Nothing is playing right now.");
-  }
-  const { data: gameRow } = await supabase
-    .from("aux_games")
-    .select("*")
-    .eq("id", room.current_game_id)
-    .maybeSingle();
-  const game = gameRow as unknown as AuxGame | null;
-  if (!game) throw new AuxError("The game is gone.", 404);
-  const { data: matchRow } = await supabase
-    .from("aux_matches")
-    .select("*")
-    .eq("id", game.match_id)
-    .maybeSingle();
-  const match = matchRow as unknown as AuxMatch | null;
-  if (!match) throw new AuxError("The match is gone.", 404);
-
-  /* Forfeit: while still PICKING, the host can hand the whole match to
-     one side (a player walked off and never put a song on). */
-  if (game.phase === "picking") {
-    if (!side) throw new AuxError("Pick who moves on before anyone has played a song.");
-    await supabase
-      .from("aux_games")
-      .update({ phase: "done", winner_side: side, decided_by: "host", closed_at: new Date().toISOString() } as never)
-      .eq("id", game.id);
-    const winnerId = side === "a" ? match.player_a_id : match.player_b_id;
-    await supabase
-      .from("aux_matches")
-      .update({ winner_id: winnerId, status: "done" } as never)
-      .eq("id", match.id);
-    const after = await advance(supabase, room);
-    return { winnerSide: side, matchWon: true, ...after };
-  }
-
-  if (game.phase !== "listening") throw new AuxError("This game is already called.");
-
-  /* Who won this game? */
-  let winner: "a" | "b" | null = null;
-  let decidedBy: "crowd" | "host" = "crowd";
-  if (room.judge === "host") {
-    if (!side) throw new AuxError("Pick a winner.");
-    winner = side;
-    decidedBy = "host";
-  } else {
-    const total = game.votes_a + game.votes_b;
-    if (game.votes_a !== game.votes_b) {
-      // The host can't overrule a clear crowd — that's the whole point.
-      winner = game.votes_a > game.votes_b ? "a" : "b";
-    } else if (total === 0) {
-      if (!side) return { needsHost: "no_votes" };
-      winner = side;
-      decidedBy = "host";
-    } else if (!game.is_ot) {
-      // A tie → OVERTIME: new songs, vote again.
-      await supabase
-        .from("aux_games")
-        .update({ phase: "done", closed_at: new Date().toISOString() } as never)
-        .eq("id", game.id);
-      const ot = await insertGame(supabase, room, match, game.game_no + 1, true);
-      await setCurrentGame(supabase, room, ot.id);
-      return { overtime: true };
-    } else {
-      if (!side) return { needsHost: "tie" };
-      winner = side;
-      decidedBy = "host";
-    }
-  }
-
-  await supabase
-    .from("aux_games")
-    .update({ phase: "done", winner_side: winner, decided_by: decidedBy, closed_at: new Date().toISOString() } as never)
-    .eq("id", game.id);
-
-  const winsA = match.wins_a + (winner === "a" ? 1 : 0);
-  const winsB = match.wins_b + (winner === "b" ? 1 : 0);
-  const needed = winsNeeded(room);
-  const matchWon = winsA >= needed || winsB >= needed;
-
-  if (!matchWon) {
-    await supabase
-      .from("aux_matches")
-      .update({ wins_a: winsA, wins_b: winsB } as never)
-      .eq("id", match.id);
-    // Same match, next game — count OT games in game_no so ids stay unique.
-    const next = await insertGame(supabase, room, match, game.game_no + 1, false);
-    await setCurrentGame(supabase, room, next.id);
-    return { winnerSide: winner, matchWon: false };
-  }
-
-  const winnerId = winner === "a" ? match.player_a_id : match.player_b_id;
-  await supabase
-    .from("aux_matches")
-    .update({ wins_a: winsA, wins_b: winsB, winner_id: winnerId, status: "done" } as never)
-    .eq("id", match.id);
-
-  const after = await advance(supabase, room);
-  return { winnerSide: winner, matchWon: true, ...after };
+  const { data, error } = await supabase.rpc("aux_call_game", {
+    p_room_id: roomId,
+    p_game_id: gameId,
+    p_phase: phase,
+    p_side: side,
+  } as never);
+  if (error) throw toAuxError(error, "Couldn't call it. Try again.");
+  return (data ?? {}) as CallResult;
 }
 
 /* ------------------------------------------------------------------
-   ADVANCE — next match, next round, or the champion
+   TOPIC — the host names this round's (or this game's) topic
    ------------------------------------------------------------------ */
 
-async function advance(
+export async function setTopic(
   supabase: Client,
-  room: AuxRoom
-): Promise<Pick<CallResult, "champion" | "finished">> {
-  const { data } = await supabase
-    .from("aux_matches")
-    .select("*")
-    .eq("room_id", room.id)
-    .order("round", { ascending: true })
-    .order("position", { ascending: true });
-  const matches = (data ?? []) as unknown as AuxMatch[];
-  const lastRound = matches.reduce((n, m) => Math.max(n, m.round), 0);
-  const thisRound = matches.filter((m) => m.round === lastRound);
-
-  const pending = thisRound.find((m) => m.status === "pending");
-  if (pending) {
-    await goLive(supabase, room, pending);
-    return {};
-  }
-  if (thisRound.some((m) => m.status === "live")) return {};
-
-  const winners = thisRound
-    .map((m) => m.winner_id)
-    .filter((id): id is string => !!id);
-
-  if (winners.length <= 1) {
-    const champion = winners[0] ?? null;
-    const { error } = await supabase
-      .from("aux_rooms")
-      .update({
-        status: "finished",
-        champion_id: champion,
-        current_game_id: null,
-        finished_at: new Date().toISOString(),
-      } as never)
-      .eq("id", room.id);
-    if (error) throw new AuxError(`Couldn't crown the champion: ${error.message}`, 500);
-    return { champion, finished: true };
-  }
-
-  const nextRound = await createRound(supabase, room, lastRound + 1, winners);
-  const firstReal = nextRound.find((m) => !m.is_bye);
-  if (!firstReal) {
-    // Only possible with one winner, handled above — but never hang.
-    throw new AuxError("The next round has nobody to play.", 500);
-  }
-  await goLive(supabase, room, firstReal);
-  return {};
+  roomId: string,
+  gameId: string | null,
+  topic: string
+): Promise<{ topic: string; round: number; perGame: boolean }> {
+  const { data, error } = await supabase.rpc("aux_set_topic", {
+    p_room_id: roomId,
+    p_game_id: gameId,
+    p_topic: topic,
+  } as never);
+  if (error) throw toAuxError(error, "Couldn't set the topic. Try again.");
+  return data as { topic: string; round: number; perGame: boolean };
 }
 
 /* ------------------------------------------------------------------
    END — the host pulls the plug (no champion)
    ------------------------------------------------------------------ */
 
-export async function endRoom(supabase: Client, room: AuxRoom): Promise<void> {
-  if (room.status === "finished") return;
-  const { error } = await supabase
-    .from("aux_rooms")
-    .update({ status: "finished", current_game_id: null, finished_at: new Date().toISOString() } as never)
-    .eq("id", room.id);
-  if (error) throw new AuxError(`Couldn't end the battle: ${error.message}`, 500);
+export async function endRoom(supabase: Client, roomId: string): Promise<void> {
+  const { error } = await supabase.rpc("aux_end_room", { p_room_id: roomId } as never);
+  if (error) throw toAuxError(error, "Couldn't end the Aux War.");
 }

@@ -875,9 +875,9 @@
       "signedOff": "Encerrado",
       "auxCount": "Aux Wars · {n}",
       "myAux": "Minhas Aux Wars",
-      "auxTotal": "{n, plural, one {# batalha} other {# batalhas}} no total",
-      "hostAux": "+ Criar uma batalha",
-      "noAux": "Nenhuma batalha ainda. Escolha um tema e passe o aux."
+      "auxTotal": "{n, plural, one {# Aux War} other {# Aux Wars}} no total",
+      "hostAux": "+ Criar uma Aux War",
+      "noAux": "Nenhuma Aux War ainda. Escolha um tema e passe o aux."
     }
   },
   "releases": {
@@ -1174,15 +1174,32 @@
     "index": {
       "title": "AUX WARS",
       "sub": "Passa o aux. Duas músicas frente a frente, a sala escuta, a sala vota. Chaves, melhor de 3, chat ao vivo e um campeão no final.",
-      "host": "Criar uma batalha",
+      "host": "Criar uma Aux War",
       "joinPlaceholder": "Cole o link de uma sala…",
       "joinGo": "Ir",
       "yourPrivate": "Suas salas privadas",
       "liveNow": "Ao vivo agora",
       "fillingUp": "Enchendo",
       "lastResults": "Últimos resultados",
-      "noSignal": "SEM SINAL",
-      "empty": "Nenhuma batalha no ar ainda. Crie uma, escolha um tema e passe o aux."
+      "offAir": "FORA DO AR",
+      "offAirTitle": "Nada no ar agora",
+      "offAirSub": "Toda Aux War começa com um host. Abra uma sala, mande o link e passe o aux.",
+      "recentWars": "Aux Wars recentes"
+    },
+    "how": {
+      "title": "Como funciona uma Aux War",
+      "openLabel": "Abra uma sala",
+      "openBody": "Dê um nome, escolha uma rodada ou melhor de 3 e diga quem julga: a galera ou você.",
+      "topicLabel": "Escolha um tema",
+      "topicBody": "Cada rodada tem um tema. Melhor música de verão, melhor música de término, o que quiser.",
+      "songLabel": "Coloque uma música",
+      "songBody": "Cada jogador escolhe uma faixa do Spotify, SoundCloud ou YouTube.",
+      "voteLabel": "A sala decide",
+      "voteBody": "Todo mundo escuta, joga 🔥 ou 💩 e vota. Empate vai para a prorrogação.",
+      "champLabel": "Coroe um campeão",
+      "champBody": "Os vencedores sobem na chave até sobrar um só jogador com o aux na mão.",
+      "cta": "Criar uma Aux War",
+      "ctaHint": "Dois jogadores já bastam para começar. Qualquer um pode assistir e votar."
     },
     "card": {
       "live": "NO AR",
@@ -1234,7 +1251,7 @@
       "hiddenOnSub": "Escondida de toda a gente. Sem público, sem votos de fora.",
       "topicEachGame": "Um tema novo por jogo",
       "topicEachGameOffSub": "Desligado: um só tema para todo o à melhor de 3.",
-      "topicEachGameOnSub": "Dás um tema novo antes de cada jogo do combate."
+      "topicEachGameOnSub": "Você dá um tema novo antes de cada jogo de um confronto."
     },
     "gate": {
       "private": "SALA PRIVADA",
@@ -1249,8 +1266,8 @@
     "room": {
       "back": "Voltar",
       "share": "Compartilhar",
-      "end": "Encerrar batalha",
-      "endConfirm": "Encerrar a batalha agora? Nenhum campeão será coroado.",
+      "end": "Encerrar a Aux War",
+      "endConfirm": "Encerrar a Aux War agora? Nenhum campeão será coroado.",
       "onAir": "NO AR",
       "lobby": "LOBBY",
       "final": "FINAL",
@@ -1274,7 +1291,7 @@
       "grabSpot": "Pegar uma vaga",
       "watchOnly": "Só assistir",
       "leave": "Sair",
-      "start": "Começar a batalha",
+      "start": "Começar a Aux War",
       "starting": "Montando a chave…",
       "startNeed": "Precisa de pelo menos dois jogadores.",
       "overtime": "PRORROGAÇÃO",
@@ -1306,8 +1323,10 @@
       "standBy": "AGUARDE",
       "champion": "CAMPEÃO",
       "championSub": "Levou o aux em \"{name}\".",
-      "ended": "BATALHA ENCERRADA",
+      "ended": "AUX WAR ENCERRADA",
       "endedSub": "O host puxou o cabo antes de coroar um campeão.",
+      "wentQuiet": "FIM DA TRANSMISSÃO",
+      "wentQuietSub": "Nada aconteceu aqui por duas horas, então a sala saiu do ar sozinha.",
       "hostAnother": "Criar outra",
       "series": "A série",
       "bracket": "A chave",
@@ -1373,8 +1392,16 @@
       "overtime": "PRORROGAÇÃO",
       "takesIt": "leva com \"{song}\""
     },
+    "recent": {
+      "final": "FINAL",
+      "vs": "vs",
+      "pickedBy": "escolhida por {name}",
+      "noSong": "Nenhuma música tocou",
+      "won": "Venceu",
+      "champion": "levou o aux"
+    },
     "wins": {
-      "aria": "{battles} batalhas vencidas, {rounds} rodadas vencidas",
+      "aria": "{battles} Aux Wars vencidas, {rounds} rodadas vencidas",
       "rounds": "{n}V"
     },
     "topic": {
@@ -1414,8 +1441,11 @@
       "allTime": "De sempre",
       "weekly": "Esta semana",
       "rounds": "{n, plural, one {# ronda} other {# rondas}}",
-      "emptyWeek": "Ainda ninguém ganhou uma batalha esta semana.",
-      "fairPlay": "As vitórias em salas onde o anfitrião jogava e também julgava não contam."
+      "emptyWeek": "Ainda ninguém ganhou uma Aux War esta semana.",
+      "weekResets": "A semana recomeça toda sexta-feira à meia-noite (horário do leste dos EUA).",
+      "fairPlay": "Vitórias que um anfitrião dá a si mesmo não contam: numa sala em que ele julga, ou num confronto que ele decide a seu favor.",
+      "firstTitle": "Os primeiros no placar",
+      "firstSub": "O Top 10 abre quando {n} jogadores tiverem vencido. Crie uma Aux War e coloque seu nome aqui."
     },
     "seat": {
       "watchOnly": "Esta sala é privada: assiste, vota e conversa à vontade. Um lugar no quadro precisa do código do anfitrião.",
@@ -1723,7 +1753,7 @@
     "story1": "O Peak Music Reviews nasceu de uma frustração simples: quem ama cinema tem um lar. Registra o que assiste, dá nota, discute e monta um perfil de gosto que diz algo de verdade sobre a pessoa. A música, com a qual a maioria de nós passa mais horas do que com qualquer filme, nunca teve esse lugar.",
     "story2": "Então construímos. Não é mais um app de streaming nem mais um algoritmo te servindo o que acha que você já gosta: é um lugar onde a escuta em si é o que importa. Cada resenha aqui está ligada a um lançamento real, do maior álbum do ano a uma faixa avulsa que nunca chegou ao streaming.",
     "thePurpose": "O PROPÓSITO",
-    "purpose1": "Um só lugar para toda a sua vida de ouvinte: avalie discos de 0 a 10, monte listas, leve o aux numa batalha e esteja na sala, ao vivo, no momento em que um álbum sai. Seu perfil é seu para organizar e tematizar; seu feed é feito com quem você segue e o que você avalia, não com anúncios.",
+    "purpose1": "Um só lugar para toda a sua vida de ouvinte: avalie discos de 0 a 10, monte listas, leve o aux numa Aux War e esteja na sala, ao vivo, no momento em que um álbum sai. Seu perfil é seu para organizar e tematizar; seu feed é feito com quem você segue e o que você avalia, não com anúncios.",
     "purpose2": "A aposta é simples: o melhor motor de descoberta musical que já existiu são outras pessoas que se importam. Tudo neste site existe para aproximar você delas.",
     "whatsDifferent": "O QUE É DIFERENTE",
     "diff1H": "Música inédita.",

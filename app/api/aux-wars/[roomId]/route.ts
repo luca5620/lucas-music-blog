@@ -23,7 +23,7 @@ export async function PATCH(
   if (limited) return limited;
 
   if (room.status !== "lobby") {
-    return NextResponse.json({ error: "Settings lock once the battle starts." }, { status: 409 });
+    return NextResponse.json({ error: "Settings lock once the war starts." }, { status: 409 });
   }
   const body = await readJson(request);
   if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });

@@ -534,6 +534,8 @@
       "followers": "Volgers",
       "following": "Volgend",
       "viewConnections": "Bekijk je connecties",
+      "logs": "Logs",
+      "logsExplain": "Een log is een maand met elke dag een review, zonder uitzondering",
       "likes": "Likes",
       "toNext": "{n} tot {target}",
       "topTier": "Hoogste niveau",
@@ -639,7 +641,10 @@
       "title": "HET LOGBOEK",
       "aria": "Beoordeelde dagen in {month}",
       "logged": "{n, plural, one {# dag} other {# dagen}} gelogd deze maand",
-      "empty": "Nog niets gelogd deze maand — beoordeel vandaag iets."
+      "empty": "Nog niets gelogd deze maand — beoordeel vandaag iets.",
+      "toComplete": "nog {left, plural, one {# dag} other {# dagen}} om deze log te voltooien",
+      "complete": "🏆 Log voltooid — elke dag van deze maand een review",
+      "missed": "volgende maand begint een nieuwe log"
     },
     "histogram": {
       "ratingsCount": "{n, plural, one {# beoordeling} other {# beoordelingen}}",
@@ -1746,5 +1751,27 @@
     },
     "getInTouch": "CONTACT",
     "contact": "Vragen, ideeën, problemen?"
+  },
+  "apiErrors": {
+    "rateLimited": "Te veel verzoeken — doe het even wat rustiger aan.",
+    "blockedText": "Die tekst bevat taal die we niet toestaan. Peak Music Reviews tolereert geen scheldwoorden en intimidatie — zie de Gebruiksvoorwaarden.",
+    "reviews": {
+      "signIn": "Log in om dat te doen.",
+      "pickRelease": "Kies eerst een release uit de catalogus.",
+      "ratingRange": "Het cijfer moet tussen 0 en 10 liggen.",
+      "tooLong": "Een veld is langer dan toegestaan.",
+      "invalidTracks": "Die favoriete nummers kloppen niet.",
+      "releaseNotFound": "Die release is niet gevonden.",
+      "tracksFromRelease": "Favorieten moeten uit de tracklist van de release komen.",
+      "alreadyReviewed": "Je hebt deze release al beoordeeld — bewerk die review.",
+      "profileNotFound": "Je profiel is niet gevonden. Log opnieuw in.",
+      "slugFailed": "Review opslaan mislukt. Probeer het opnieuw.",
+      "createFailed": "Review opslaan mislukt. Probeer het opnieuw.",
+      "badRequest": "Er ging iets mis met dat verzoek. Probeer het opnieuw.",
+      "reviewNotFound": "Die review is niet gevonden.",
+      "notYours": "Die review is niet van jou.",
+      "updateFailed": "Wijzigingen opslaan mislukt. Probeer het opnieuw.",
+      "deleteFailed": "Review verwijderen mislukt. Probeer het opnieuw."
+    }
   }
 }

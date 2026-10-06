@@ -16,14 +16,24 @@
  */
 import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
+import { getTranslations } from "next-intl/server";
 
 const url = process.env.UPSTASH_REDIS_REST_URL;
 const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 const redis = url && token ? new Redis({ url, token }) : null;
 
-function tooMany(retryAfterSec: number): NextResponse {
+async function tooMany(retryAfterSec: number): Promise<NextResponse> {
+  // In the member's own language — screens show data.error as-is.
+  // Translation can't be allowed to break a 429, so English is the
+  // fallback if next-intl isn't available in this context.
+  let message = "Too many requests — slow down a little.";
+  try {
+    message = (await getTranslations("apiErrors"))("rateLimited");
+  } catch {
+    /* keep the English */
+  }
   return NextResponse.json(
-    { error: "Too many requests — slow down a little." },
+    { error: message },
     { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
   );
 }
@@ -50,7 +60,7 @@ async function redisLimit(
 
     if (count > max) {
       const msLeft = ttl > 0 ? ttl : windowMs;
-      return tooMany(Math.max(1, Math.ceil(msLeft / 1000)));
+      return await tooMany(Math.max(1, Math.ceil(msLeft / 1000)));
     }
     return null;
   } catch (err) {
@@ -77,11 +87,11 @@ function prune(now: number) {
   }
 }
 
-function memoryLimit(
+async function memoryLimit(
   key: string,
   max: number,
   windowMs: number
-): NextResponse | null {
+): Promise<NextResponse | null> {
   const now = Date.now();
   prune(now);
 
@@ -93,7 +103,7 @@ function memoryLimit(
 
   bucket.count += 1;
   if (bucket.count > max) {
-    return tooMany(Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)));
+    return await tooMany(Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)));
   }
   return null;
 }

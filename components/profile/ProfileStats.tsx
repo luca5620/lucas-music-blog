@@ -2,9 +2,15 @@
  * ProfileStats — the four numbers a profile leads with, Instagram
  * style, right under the name (Luca's idea, 2026-09-12):
  *
- *   FOLLOWERS · FOLLOWING · REVIEWS · LIKES
+ *   FOLLOWERS · FOLLOWING · REVIEWS · LOGS · LIKES
  *
- * REVIEWS and LIKES wear the trophy colours (lib/badges.ts: tier 9 =
+ * LOGS (2026-10-05) is the prestigious one, so it wears the TROPHY: a
+ * log is a calendar month on THE LOG with a review on every single
+ * day. Its ladder starts at gold (lib/badges.ts logTier) — Luca: it
+ * "should be prestigious even when completing 1 log". REVIEWS moved
+ * to a record icon the same day.
+ *
+ * REVIEWS, LOGS and LIKES wear the trophy colours (lib/badges.ts: tier 9 =
  * the purple ELITE, tier 10 = the glowing PERFECT blue — the same
  * ladder the rating badges climb). How close you are to the next
  * colour shows on hover only (Luca 2026-09-12: no progress lines
@@ -28,8 +34,8 @@
 
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { hiddenBadgeSet, trophyTier } from "@/lib/badges";
-import { HeartGlyph, TrophyGlyph } from "@/components/profile/BadgeGlyphs";
+import { hiddenBadgeSet, logTier, trophyTier } from "@/lib/badges";
+import { DiscGlyph, HeartGlyph, TrophyGlyph } from "@/components/profile/BadgeGlyphs";
 import { compactCount } from "@/lib/format-count";
 import type { ProfileStats as Stats } from "@/lib/types/database";
 
@@ -54,6 +60,7 @@ export default async function ProfileStats({
   const hiddenSet = hiddenBadgeSet(hidden);
   const reviews = trophyTier(stats.review_count);
   const likes = trophyTier(stats.total_likes_received);
+  const logs = logTier(stats.logs_completed ?? 0);
 
   const tiles = [
     {
@@ -80,8 +87,17 @@ export default async function ProfileStats({
       value: stats.review_count,
       color: hiddenSet.has("reviews") ? accentColor : reviews.color,
       link: false,
-      glyph: hiddenSet.has("reviews") ? null : <TrophyGlyph className="w-4 h-4" />,
+      glyph: hiddenSet.has("reviews") ? null : <DiscGlyph className="w-4 h-4" />,
       tier: hiddenSet.has("reviews") ? null : reviews,
+    },
+    {
+      key: "logs",
+      label: t("logs"),
+      value: stats.logs_completed ?? 0,
+      color: hiddenSet.has("logs") ? accentColor : logs.color,
+      link: false,
+      glyph: hiddenSet.has("logs") ? null : <TrophyGlyph className="w-4 h-4" />,
+      tier: hiddenSet.has("logs") ? null : logs,
     },
     {
       key: "likes",
@@ -112,6 +128,9 @@ export default async function ProfileStats({
             ? t("topTier")
             : t("nextHint", { n: tile.tier.toNext ?? 0, target: tile.tier.nextAt })
           : String(tile.value);
+        // LOGS needs saying what it IS before how far the next colour
+        // is — nobody can guess "a month with a review every day".
+        const title = tile.key === "logs" ? `${t("logsExplain")} · ${hint}` : hint;
         const inner = (
           <>
             <p className={`stat-number${glow}`} style={{ color: tile.color }}>
@@ -131,7 +150,7 @@ export default async function ProfileStats({
             {inner}
           </Link>
         ) : (
-          <div key={tile.key} className="stat-tile" title={hint}>
+          <div key={tile.key} className="stat-tile" title={title}>
             {inner}
           </div>
         );

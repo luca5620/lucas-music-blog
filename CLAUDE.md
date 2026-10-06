@@ -18,7 +18,7 @@ npm run mobile:ios   # open Xcode workspace (Mac only)
 
 There is no test suite. Verification = `npm run build` + exercising the change in the dev server.
 
-Database changes are plain SQL files in `supabase/migrations/`, numbered (`047-*.sql` is next), and are **run by hand in the Supabase SQL Editor** — committing a migration does not apply it. When you add one, say so explicitly in your summary and in ROADMAP.md so it gets run on the dashboard.
+Database changes are plain SQL files in `supabase/migrations/`, numbered — **look at the highest number in `supabase/migrations/` and use the next one** (a hard-coded "next is NNN" here went stale twice; as of 2026-10-05, 052–056 are taken), and are **run by hand in the Supabase SQL Editor** — committing a migration does not apply it. When you add one, say so explicitly in your summary and in ROADMAP.md so it gets run on the dashboard.
 
 ## Architecture
 

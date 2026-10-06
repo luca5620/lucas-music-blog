@@ -26,8 +26,8 @@ import { createPortal } from "react-dom";
 import { useCallback, useEffect, useRef, useState, type ComponentProps } from "react";
 import { useTranslations } from "next-intl";
 import RoleBadge from "@/components/ui/RoleBadge";
-import { HeartGlyph, TrophyGlyph } from "@/components/profile/BadgeGlyphs";
-import { hiddenBadgeSet, trophyTier } from "@/lib/badges";
+import { DiscGlyph, HeartGlyph, TrophyGlyph } from "@/components/profile/BadgeGlyphs";
+import { hiddenBadgeSet, logTier, trophyTier } from "@/lib/badges";
 import { THEME_SPECS, resolveTheme, themeGradient } from "@/lib/profile-theme";
 import { compactCount } from "@/lib/format-count";
 import { hapticTap } from "@/lib/native";
@@ -302,6 +302,8 @@ function HoverCard({
   const hidden = hiddenBadgeSet(summary.hidden_badges);
   const reviews = trophyTier(summary.stats.review_count);
   const likes = trophyTier(summary.stats.total_likes_received);
+  // Same five numbers as the profile (components/profile/ProfileStats).
+  const logs = logTier(summary.stats.logs_completed ?? 0);
   const name = summary.display_name || summary.username;
   const avatarOk =
     summary.avatar_url &&
@@ -321,8 +323,15 @@ function HoverCard({
       label: t("reviews"),
       value: summary.stats.review_count,
       color: hidden.has("reviews") ? accent : reviews.color,
-      glyph: hidden.has("reviews") ? null : <TrophyGlyph className="w-3.5 h-3.5" />,
+      glyph: hidden.has("reviews") ? null : <DiscGlyph className="w-3.5 h-3.5" />,
       tier: hidden.has("reviews") ? null : reviews,
+    },
+    {
+      label: t("logs"),
+      value: summary.stats.logs_completed ?? 0,
+      color: hidden.has("logs") ? accent : logs.color,
+      glyph: hidden.has("logs") ? null : <TrophyGlyph className="w-3.5 h-3.5" />,
+      tier: hidden.has("logs") ? null : logs,
     },
     {
       label: t("likes"),

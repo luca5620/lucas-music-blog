@@ -6,9 +6,11 @@ import { getReleaseById } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
 import { rateLimit } from "@/lib/rate-limit";
 import { isOptionalText, isUuid, parseRating } from "@/lib/validate";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { notifyFollowers } from "@/lib/db/notifications";
 import { pingIndexNow } from "@/lib/indexnow";
+import { getTranslations } from "next-intl/server";
+import { reviewDateFrom } from "@/lib/review-date";
 
 /**
  * POST /api/reviews
@@ -76,14 +78,26 @@ async function uniqueReviewSlug(
 export async function POST(request: Request) {
   const user = await getUser();
 
+  // Error messages come back in the member's own language (the
+  // locale cookie is read by i18n/request.ts, same as a page render).
+  // ReviewForm shows data.error as-is, so this is what they read.
+  const t = await getTranslations("apiErrors.reviews");
+
   if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: t("signIn") }, { status: 401 });
   }
 
   try {
     const body = await request.json();
-    const { release_id, rating, summary, snippet, standout_tracks, is_published } =
-      body;
+    const {
+      release_id,
+      rating,
+      summary,
+      snippet,
+      standout_tracks,
+      is_published,
+      local_date,
+    } = body;
 
     // Rate limits. A review WITH words is the slow, considered thing:
     // 5 per 5 minutes. A wordless rating (score only — how a new
@@ -101,7 +115,7 @@ export async function POST(request: Request) {
     // --- Validate. Nothing in the body is trusted. ---
     if (!isUuid(release_id)) {
       return NextResponse.json(
-        { error: "Pick a release from the catalog first." },
+        { error: t("pickRelease") },
         { status: 400 }
       );
     }
@@ -109,26 +123,26 @@ export async function POST(request: Request) {
     const parsedRating = parseRating(rating);
     if (parsedRating === null) {
       return NextResponse.json(
-        { error: "Rating must be between 0 and 10." },
+        { error: t("ratingRange") },
         { status: 400 }
       );
     }
 
     if (!isOptionalText(snippet, 500) || !isOptionalText(summary, 20000)) {
       return NextResponse.json(
-        { error: "A field exceeds its maximum length." },
+        { error: t("tooLong") },
         { status: 400 }
       );
     }
 
     // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
-    const dirty = checkContent(snippet, summary);
+    const dirty = await checkContentLocalized(snippet, summary);
     if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
     const parsedTracks = parseTrackPicks(standout_tracks);
     if (parsedTracks === null) {
       return NextResponse.json(
-        { error: "Invalid favorite tracks." },
+        { error: t("invalidTracks") },
         { status: 400 }
       );
     }
@@ -136,7 +150,7 @@ export async function POST(request: Request) {
     // --- Load the release; it is the single source of truth. ---
     const release = await getReleaseById(release_id);
     if (!release) {
-      return NextResponse.json({ error: "Release not found." }, { status: 400 });
+      return NextResponse.json({ error: t("releaseNotFound") }, { status: 400 });
     }
 
     // Every standout pick must actually be a track on this release —
@@ -146,7 +160,7 @@ export async function POST(request: Request) {
     );
     if (parsedTracks.some((t) => !releaseTrackTitles.has(t.title))) {
       return NextResponse.json(
-        { error: "Personal favorites must come from the release's track list." },
+        { error: t("tracksFromRelease") },
         { status: 400 }
       );
     }
@@ -166,7 +180,7 @@ export async function POST(request: Request) {
     if (dupe) {
       return NextResponse.json(
         {
-          error: "You already reviewed this release — edit that one instead.",
+          error: t("alreadyReviewed"),
           existing_slug: (dupe as { slug: string }).slug,
         },
         { status: 409 }
@@ -181,13 +195,13 @@ export async function POST(request: Request) {
       .single();
     const username = (profileRow as { username: string } | null)?.username;
     if (!username) {
-      return NextResponse.json({ error: "Profile not found." }, { status: 400 });
+      return NextResponse.json({ error: t("profileNotFound") }, { status: 400 });
     }
 
     const slug = await uniqueReviewSlug(release.slug, username);
     if (!slug) {
       return NextResponse.json(
-        { error: "Couldn't generate a review slug. Try again." },
+        { error: t("slugFailed") },
         { status: 500 }
       );
     }
@@ -208,15 +222,37 @@ export async function POST(request: Request) {
       summary: summary || null,
       standout_tracks: parsedTracks,
       is_published: is_published ?? false,
-      review_date: new Date().toISOString().split("T")[0],
+      // The reviewer's OWN calendar day, sent by their device. THE LOG
+      // and the "logs completed" stat both place a review on this
+      // date, and a UTC date put every US-evening review on tomorrow.
+      // Anything implausible falls back to UTC — see lib/review-date.
+      review_date: reviewDateFrom(local_date),
       release_id: release.id,
     });
 
     if (!review) {
-      return NextResponse.json(
-        { error: "Failed to create review." },
-        { status: 500 }
-      );
+      // The look-first check above can race (two taps on a slow
+      // connection, two devices): both pass, the database's unique
+      // index (migration 054) lets only one insert through, and the
+      // other lands here. Answer the loser exactly like the friendly
+      // path did, so the form jumps to the review that won.
+      const { data: winner } = await supabase
+        .from("reviews")
+        .select("slug")
+        .eq("user_id", user.id)
+        .eq("release_id", release.id)
+        .limit(1)
+        .maybeSingle();
+      if (winner) {
+        return NextResponse.json(
+          {
+            error: t("alreadyReviewed"),
+            existing_slug: (winner as { slug: string }).slug,
+          },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json({ error: t("createFailed") }, { status: 500 });
     }
 
     // Followers hear about it — but only once it's actually public.
@@ -251,6 +287,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(review, { status: 201 });
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json({ error: t("badRequest") }, { status: 400 });
   }
 }

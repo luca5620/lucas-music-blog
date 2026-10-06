@@ -121,6 +121,33 @@ export default async function TheLog({
 
   const logged = byDay.size;
 
+  /* Toward a COMPLETED LOG (2026-10-05) — the prestigious profile stat
+     is "months with a review on every single day", so the calendar
+     says how close this month is. Three states:
+       complete  → every day of the month is filled;
+       on track  → no day so far has been skipped, so it's still
+                   possible: say how many days are left to fill;
+       missed    → an earlier day this month is empty, so this month
+                   can't complete any more: say next month is a fresh
+                   one, rather than dangling an impossible target.
+     Same UTC calendar the grid itself uses. */
+  const today = now.getUTCDate();
+  let missedEarlier = false;
+  for (let d = 1; d < today; d++) {
+    if (!byDay.has(`${prefix}${String(d).padStart(2, "0")}`)) {
+      missedEarlier = true;
+      break;
+    }
+  }
+  const complete = logged >= daysInMonth;
+  const progress = complete
+    ? t("complete")
+    : logged === 0
+      ? t("empty")
+      : missedEarlier
+        ? `${t("logged", { n: logged })} · ${t("missed")}`
+        : `${t("logged", { n: logged })} · ${t("toComplete", { left: daysInMonth - logged })}`;
+
   return (
     <section className="the-log" aria-label={t("aria", { month: monthName })}>
       <div className="the-log-head">
@@ -133,9 +160,7 @@ export default async function TheLog({
         ))}
       </div>
       <div className="log-grid">{cells}</div>
-      <p className="the-log-foot">
-        {logged === 0 ? t("empty") : t("logged", { n: logged })}
-      </p>
+      <p className={`the-log-foot${complete ? " the-log-foot-complete" : ""}`}>{progress}</p>
     </section>
   );
 }

@@ -534,6 +534,8 @@
       "followers": "Followers",
       "following": "Following",
       "viewConnections": "View your connections",
+      "logs": "Logs",
+      "logsExplain": "A log is a month with a review on every single day",
       "likes": "Likes",
       "toNext": "{n} to {target}",
       "topTier": "Top tier",
@@ -639,7 +641,10 @@
       "title": "THE LOG",
       "aria": "Days rated in {month}",
       "logged": "{n, plural, one {# day} other {# days}} logged this month",
-      "empty": "Nothing logged yet this month — rate something today."
+      "empty": "Nothing logged yet this month — rate something today.",
+      "toComplete": "{left, plural, one {# more day} other {# more days}} to complete this log",
+      "complete": "🏆 Log complete — a review every single day this month",
+      "missed": "next month is a fresh log"
     },
     "histogram": {
       "ratingsCount": "{n, plural, one {# rating} other {# ratings}}",
@@ -1746,5 +1751,27 @@
     },
     "getInTouch": "GET IN TOUCH",
     "contact": "Questions, ideas, problems?"
+  },
+  "apiErrors": {
+    "rateLimited": "Too many requests — slow down a little.",
+    "blockedText": "That text contains language we don't allow. Peak Music Reviews has zero tolerance for slurs and harassment — see the Terms of Use.",
+    "reviews": {
+      "signIn": "Sign in to do that.",
+      "pickRelease": "Pick a release from the catalog first.",
+      "ratingRange": "Rating must be between 0 and 10.",
+      "tooLong": "A field is longer than allowed.",
+      "invalidTracks": "Those favorite tracks don't look right.",
+      "releaseNotFound": "That release couldn't be found.",
+      "tracksFromRelease": "Personal favorites must come from the release's track list.",
+      "alreadyReviewed": "You already reviewed this release — edit that one instead.",
+      "profileNotFound": "Your profile couldn't be found. Try signing in again.",
+      "slugFailed": "Couldn't save that review. Try again.",
+      "createFailed": "Couldn't save that review. Try again.",
+      "badRequest": "Something was wrong with that request. Try again.",
+      "reviewNotFound": "That review couldn't be found.",
+      "notYours": "That review isn't yours to change.",
+      "updateFailed": "Couldn't save your changes. Try again.",
+      "deleteFailed": "Couldn't delete that review. Try again."
+    }
   }
 }

@@ -418,6 +418,9 @@ export interface Post {
 
 export interface ProfileStats {
   review_count: number;
+  /** Calendar months completely filled on THE LOG (a published review
+      on every day) — migration 054's logs_completed(). 0 before 054. */
+  logs_completed: number;
   follower_count: number;
   following_count: number;
   total_likes_received: number;

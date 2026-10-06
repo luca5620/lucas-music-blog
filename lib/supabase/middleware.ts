@@ -39,9 +39,19 @@ export async function updateSession(request: NextRequest) {
 
   // Refresh the auth session — important for Server Components.
   // https://supabase.com/docs/guides/auth/server-side/nextjs
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  //
+  // getClaims(), not getUser() (2026-10-05, speed): getUser() is a
+  // network round-trip to Supabase Auth on EVERY request, before the
+  // page even starts — and the layout and the page then asked again.
+  // getClaims() still refreshes an expired session (it goes through
+  // getSession), but verifies the token locally when the project uses
+  // asymmetric signing keys, and only falls back to the network call
+  // when it can't. Supabase's own Next.js guide now recommends it here.
+  // Pages and API routes keep calling getUser() (lib/auth.ts, cached
+  // per request) — that stays the real authority.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const sub = claimsData?.claims?.sub;
+  const user = typeof sub === "string" ? { id: sub } : null;
 
   // --- Defense-in-depth route gating ---
   // Pages and API routes each check auth themselves; this is a second layer

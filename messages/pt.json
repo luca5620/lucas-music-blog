@@ -534,6 +534,8 @@
       "followers": "Seguidores",
       "following": "Seguindo",
       "viewConnections": "Ver suas conexões",
+      "logs": "Diários",
+      "logsExplain": "Um diário é um mês com uma avaliação em todos os dias, sem exceção",
       "likes": "Curtidas",
       "toNext": "{n} até {target}",
       "topTier": "Nível máximo",
@@ -639,7 +641,10 @@
       "title": "O REGISTRO",
       "aria": "Dias avaliados em {month}",
       "logged": "{n, plural, one {# dia} other {# dias}} registrados este mês",
-      "empty": "Nada registrado este mês ainda — avalie algo hoje."
+      "empty": "Nada registrado este mês ainda — avalie algo hoje.",
+      "toComplete": "{left, plural, one {falta # dia} other {faltam # dias}} para completar este diário",
+      "complete": "🏆 Diário completo — uma avaliação em todos os dias deste mês",
+      "missed": "no mês que vem começa um diário novo"
     },
     "histogram": {
       "ratingsCount": "{n, plural, one {# avaliação} other {# avaliações}}",
@@ -1746,5 +1751,27 @@
     },
     "getInTouch": "FALE COM A GENTE",
     "contact": "Perguntas, ideias, problemas?"
+  },
+  "apiErrors": {
+    "rateLimited": "Pedidos demais — vai com um pouco mais de calma.",
+    "blockedText": "Esse texto contém linguagem que não permitimos. O Peak Music Reviews tem tolerância zero com insultos e assédio — veja os Termos de Uso.",
+    "reviews": {
+      "signIn": "Entre na sua conta para fazer isso.",
+      "pickRelease": "Primeiro escolha um lançamento do catálogo.",
+      "ratingRange": "A nota deve estar entre 0 e 10.",
+      "tooLong": "Um campo é maior do que o permitido.",
+      "invalidTracks": "Essas faixas favoritas não são válidas.",
+      "releaseNotFound": "Esse lançamento não foi encontrado.",
+      "tracksFromRelease": "As favoritas precisam vir da lista de faixas do lançamento.",
+      "alreadyReviewed": "Você já avaliou este lançamento — edite aquela avaliação.",
+      "profileNotFound": "Seu perfil não foi encontrado. Entre novamente.",
+      "slugFailed": "Não foi possível salvar a avaliação. Tente de novo.",
+      "createFailed": "Não foi possível salvar a avaliação. Tente de novo.",
+      "badRequest": "Algo deu errado com esse pedido. Tente de novo.",
+      "reviewNotFound": "Essa avaliação não foi encontrada.",
+      "notYours": "Essa avaliação não é sua.",
+      "updateFailed": "Não foi possível salvar as alterações. Tente de novo.",
+      "deleteFailed": "Não foi possível apagar a avaliação. Tente de novo."
+    }
   }
 }

@@ -68,7 +68,7 @@ export async function getProfileStats(
 ): Promise<ProfileStats> {
   const supabase = await createClient();
 
-  const [reviewsRes, followersRes, followingRes, likesRes] = await Promise.all([
+  const [reviewsRes, followersRes, followingRes, likesRes, logsRes] = await Promise.all([
     supabase
       .from("reviews")
       .select("id", { count: "exact", head: true })
@@ -89,6 +89,11 @@ export async function getProfileStats(
       .from("review_likes")
       .select("id, reviews!inner(user_id)", { count: "exact", head: true })
       .eq("reviews.user_id", userId),
+    // Logs completed: months with a published review on EVERY day
+    // (SQL in migration 054). Before 054 runs the function doesn't
+    // exist, PostgREST answers with an error, and this reads as 0 —
+    // the profile never breaks on a lagging database.
+    supabase.rpc("logs_completed", { p_user: userId } as never),
   ]);
 
   return {
@@ -96,6 +101,10 @@ export async function getProfileStats(
     follower_count: followersRes.count ?? 0,
     following_count: followingRes.count ?? 0,
     total_likes_received: likesRes.count ?? 0,
+    logs_completed: (() => {
+      const n = (logsRes as { data: unknown }).data;
+      return typeof n === "number" ? n : 0;
+    })(),
   };
 }
 

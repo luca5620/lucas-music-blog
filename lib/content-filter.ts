@@ -97,3 +97,25 @@ export function checkContent(
   }
   return null;
 }
+
+/**
+ * checkContent, but the message is in the member's own language
+ * (next-intl reads the locale cookie, same as a page render). Prefer
+ * this in route handlers — screens show data.error as-is, so the
+ * English one above reaches a Spanish reader as English. Kept as a
+ * separate function rather than changing checkContent, because a
+ * sync→async change would make any forgotten `await` return a
+ * Promise, which is truthy, which would reject EVERY submission.
+ */
+export async function checkContentLocalized(
+  ...fields: (string | null | undefined)[]
+): Promise<string | null> {
+  const english = checkContent(...fields);
+  if (!english) return null;
+  try {
+    const { getTranslations } = await import("next-intl/server");
+    return (await getTranslations("apiErrors"))("blockedText");
+  } catch {
+    return english;
+  }
+}

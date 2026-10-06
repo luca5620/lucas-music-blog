@@ -4759,6 +4759,12 @@ fieldset {
   letter-spacing: 0.05em;
   color: var(--text-muted);
 }
+/* A completed month wears the LOGS trophy's first colour — gold
+   (lib/badges.ts logTier), the same prestige the profile stat shows. */
+.the-log-foot-complete {
+  color: #facc15;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.45);
+}
 
 /* --- RATING OVERVIEW: the average stated, the frequency graph of
    every rating in half-point bars wearing the rating ladder's colours

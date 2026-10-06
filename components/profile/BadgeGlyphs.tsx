@@ -26,3 +26,18 @@ export function ShieldGlyph({ className = "w-[18px] h-[18px]" }: { className?: s
     </svg>
   );
 }
+
+/** A vinyl record — the REVIEWS stat's mark since 2026-10-05, when the
+    trophy moved to "logs completed" (Luca: the trophy is for the
+    prestigious one). Physical media, like everything else here:
+    the disc, its grooves, and the label in the middle. */
+export function DiscGlyph({ className = "w-[18px] h-[18px]" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path
+        fillRule="evenodd"
+        d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3.2a6.8 6.8 0 0 0-6.8 6.8h1.6A5.2 5.2 0 0 1 12 6.8V5.2zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2.1a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zm5.2 1A5.2 5.2 0 0 1 12 17.2v1.6a6.8 6.8 0 0 0 6.8-6.8h-1.6z"
+      />
+    </svg>
+  );
+}

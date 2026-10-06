@@ -1394,9 +1394,10 @@ export default function ProfileSettingsPage() {
       </form>
 
       {/* Four Favorites editor removed 2026-08-26 (Luca) — the whole
-          module left customization; profile_favorites rows and the
-          /api/profile/favorites route sit untouched in case it ever
-          returns. */}
+          module left customization. The unused editor, display and
+          /api/profile/favorites route were deleted 2026-10-05 (dead code
+          from a review); the profile_favorites TABLE and its rows are
+          untouched, and git history has the code if it ever returns. */}
 
       {/* ========== SAVE ==========
           At the bottom, after everything editable (Luca 2026-08-22),

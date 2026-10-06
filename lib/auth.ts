@@ -29,9 +29,8 @@ export const getUser = cache(async () => {
  */
 export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // The cached getUser above — not a second round-trip.
+  const user = await getUser();
 
   if (!user) return null;
 

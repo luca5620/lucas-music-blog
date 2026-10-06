@@ -534,6 +534,8 @@
       "followers": "Abonnés",
       "following": "Abonnements",
       "viewConnections": "Voir tes connexions",
+      "logs": "Journaux",
+      "logsExplain": "Un journal, c'est un mois avec une critique chaque jour, sans exception",
       "likes": "J'aime",
       "toNext": "{n} avant {target}",
       "topTier": "Niveau max",
@@ -639,7 +641,10 @@
       "title": "LE REGISTRE",
       "aria": "Jours notés en {month}",
       "logged": "{n, plural, one {# jour} other {# jours}} au registre ce mois-ci",
-      "empty": "Rien au registre ce mois-ci — note quelque chose aujourd’hui."
+      "empty": "Rien au registre ce mois-ci — note quelque chose aujourd’hui.",
+      "toComplete": "encore {left, plural, one {# jour} other {# jours}} pour compléter ce journal",
+      "complete": "🏆 Journal complet — une critique chaque jour ce mois-ci",
+      "missed": "le mois prochain, nouveau journal"
     },
     "histogram": {
       "ratingsCount": "{n, plural, one {# note} other {# notes}}",
@@ -1746,5 +1751,27 @@
     },
     "getInTouch": "NOUS CONTACTER",
     "contact": "Des questions, des idées, des problèmes ?"
+  },
+  "apiErrors": {
+    "rateLimited": "Trop de requêtes — ralentis un peu.",
+    "blockedText": "Ce texte contient un langage que nous n'autorisons pas. Peak Music Reviews applique une tolérance zéro envers les insultes et le harcèlement — voir les Conditions d'utilisation.",
+    "reviews": {
+      "signIn": "Connecte-toi pour faire ça.",
+      "pickRelease": "Choisis d'abord une sortie dans le catalogue.",
+      "ratingRange": "La note doit être comprise entre 0 et 10.",
+      "tooLong": "Un champ dépasse la longueur autorisée.",
+      "invalidTracks": "Ces titres favoris ne sont pas valides.",
+      "releaseNotFound": "Cette sortie est introuvable.",
+      "tracksFromRelease": "Les favoris doivent venir de la liste des titres de la sortie.",
+      "alreadyReviewed": "Tu as déjà critiqué cette sortie — modifie plutôt celle-là.",
+      "profileNotFound": "Ton profil est introuvable. Reconnecte-toi.",
+      "slugFailed": "Impossible d'enregistrer la critique. Réessaie.",
+      "createFailed": "Impossible d'enregistrer la critique. Réessaie.",
+      "badRequest": "Un problème est survenu avec cette requête. Réessaie.",
+      "reviewNotFound": "Cette critique est introuvable.",
+      "notYours": "Cette critique ne t'appartient pas.",
+      "updateFailed": "Impossible d'enregistrer tes modifications. Réessaie.",
+      "deleteFailed": "Impossible de supprimer cette critique. Réessaie."
+    }
   }
 }

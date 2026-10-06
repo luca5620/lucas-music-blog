@@ -52,15 +52,22 @@ export interface TrophyTier {
   progress: number;
 }
 
+/** A count that hasn't earned any colour yet: readable on near-black,
+    deliberately neutral so the first real colour reads as a reward. */
+export const UNEARNED_GREY = "#a1a1aa";
+
 /** Map a count to its trophy tier + colour. */
 export function trophyTier(count: number): TrophyTier {
   const safe = Math.max(0, Math.floor(count));
   let tier = 0;
   while (tier < TROPHY_MAX_TIER && safe >= TROPHY_THRESHOLDS[tier]) tier += 1;
-  // The rating scale's bottom colour (0–1.9) is a readable light grey —
-  // exactly right for "hasn't hit 10 yet"; from tier 2 up the colours
-  // climb through the rating ladder.
-  const color = getRatingHex(tier);
+  // Tier 0 ("hasn't hit 10 yet") is a plain, unearned grey. It used to
+  // be getRatingHex(0) — but the rating scale's bottom band became
+  // BROWN on 2026-09-15, and tier 1 is brown too, so a member's tenth
+  // review changed nothing on screen (found in the 2026-10-05 review).
+  // Now the first colour is a visible step up. From tier 1 the colour
+  // climbs the rating ladder as before.
+  const color = tier === 0 ? UNEARNED_GREY : getRatingHex(tier);
   const top = tier >= TROPHY_MAX_TIER;
   const nextAt = top ? null : TROPHY_THRESHOLDS[tier];
   const floor = tier === 0 ? 0 : TROPHY_THRESHOLDS[tier - 1];
@@ -68,6 +75,44 @@ export function trophyTier(count: number): TrophyTier {
     tier,
     color,
     elite: tier === 9,
+    perfect: top,
+    toNext: nextAt === null ? null : nextAt - safe,
+    nextAt,
+    progress: nextAt === null ? 1 : Math.min(1, (safe - floor) / (nextAt - floor)),
+  };
+}
+
+/* ── LOGS COMPLETED ───────────────────────────────────────────
+   A "log" is one calendar month on THE LOG (the profile calendar);
+   it's COMPLETED when every day of that month has a published review
+   on it (SQL: logs_completed() in migration 054). Luca, 2026-10-05:
+   it's "very prestigious", so it wears the TROPHY (reviews moved to
+   a record icon), and it must look prestigious from the very first
+   one — "i wouldnt want it to have like a poop color at first".
+
+   So this ladder does NOT start at the bottom of the rating scale.
+   It starts at GOLD and only climbs into the top of the ladder:
+     1 log  → gold          (a full month is already a feat)
+     3      → cyan
+     6      → royal blue
+     12     → purple ELITE  (a year of complete months — pulses)
+     24     → PERFECT blue  (two years — the glowing top)
+   Same TrophyTier shape as trophyTier(), so the stats strip and the
+   hover card render both with the same code. */
+export const LOG_THRESHOLDS = [1, 3, 6, 12, 24];
+const LOG_COLORS = ["#facc15", "#06b6d4", "#2563eb", "#c084fc", "#1e90ff"];
+
+export function logTier(count: number): TrophyTier {
+  const safe = Math.max(0, Math.floor(count));
+  let tier = 0;
+  while (tier < LOG_THRESHOLDS.length && safe >= LOG_THRESHOLDS[tier]) tier += 1;
+  const top = tier >= LOG_THRESHOLDS.length;
+  const nextAt = top ? null : LOG_THRESHOLDS[tier];
+  const floor = tier === 0 ? 0 : LOG_THRESHOLDS[tier - 1];
+  return {
+    tier,
+    color: tier === 0 ? UNEARNED_GREY : LOG_COLORS[tier - 1],
+    elite: tier === 4,
     perfect: top,
     toNext: nextAt === null ? null : nextAt - safe,
     nextAt,
@@ -184,24 +229,28 @@ export function eventBadge(key: string): EventBadgeDef | undefined {
  * The three computed badges, by the key `hidden_badges` stores them
  * under. Event badges are stored under their own `badge_key` — the
  * profile_badges check constraint (`^[a-z0-9_-]{2,40}$`) means an
- * event key COULD collide with one of these three, so never register
- * an event badge named "reviews", "likes" or "tenure".
+ * event key COULD collide with one of these, so never register an
+ * event badge named "reviews", "logs", "likes" or "tenure".
  */
-export const COMPUTED_BADGE_KEYS = ["reviews", "likes", "tenure"] as const;
+export const COMPUTED_BADGE_KEYS = ["reviews", "logs", "likes", "tenure"] as const;
 export type ComputedBadgeKey = (typeof COMPUTED_BADGE_KEYS)[number];
 
-/** Settings-page copy for the three computed badges. */
+/** Settings-page copy for the computed badges. */
 export const COMPUTED_BADGE_INFO: Record<
   ComputedBadgeKey,
   { label: string; description: string }
 > = {
   reviews: {
-    label: "Reviews Trophy",
-    description: "How many reviews you've published, tiered per 100.",
+    label: "Reviews Record",
+    description: "How many reviews you've published — the colour climbs at 10, 25, 50, 100 and up.",
+  },
+  logs: {
+    label: "Logs Trophy",
+    description: "Months you've completely filled on The Log — a review on every single day. Gold from the first one.",
   },
   likes: {
     label: "Likes Trophy",
-    description: "Likes received on your reviews, tiered per 100.",
+    description: "Likes received on your reviews — the colour climbs at 10, 25, 50, 100 and up.",
   },
   tenure: {
     label: "Years of Service",

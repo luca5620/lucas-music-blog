@@ -7,7 +7,8 @@ import { rateLimit } from "@/lib/rate-limit";
 import type { Review } from "@/lib/types/database";
 import { isOptionalText, parseRating } from "@/lib/validate";
 import { notifyFollowers } from "@/lib/db/notifications";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
+import { getTranslations } from "next-intl/server";
 import { pingIndexNow } from "@/lib/indexnow";
 
 /**
@@ -56,10 +57,12 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ reviewId: string }> }
 ) {
+  // Errors in the member's own language (see app/api/reviews/route.ts).
+  const t = await getTranslations("apiErrors.reviews");
   const user = await getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: t("signIn") }, { status: 401 });
   }
 
   const limited = await rateLimit(`reviews-edit:${user.id}`, 20, 300_000);
@@ -70,10 +73,10 @@ export async function PUT(
   // Verify ownership before reading the body — cheapest check first.
   const existing = await getReviewById(reviewId);
   if (!existing) {
-    return NextResponse.json({ error: "Review not found." }, { status: 404 });
+    return NextResponse.json({ error: t("reviewNotFound") }, { status: 404 });
   }
   if (existing.user_id !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return NextResponse.json({ error: t("notYours") }, { status: 403 });
   }
 
   try {
@@ -83,26 +86,26 @@ export async function PUT(
     const parsedRating = parseRating(rating);
     if (parsedRating === null) {
       return NextResponse.json(
-        { error: "Rating must be between 0 and 10." },
+        { error: t("ratingRange") },
         { status: 400 }
       );
     }
 
     if (!isOptionalText(snippet, 500) || !isOptionalText(summary, 20000)) {
       return NextResponse.json(
-        { error: "A field exceeds its maximum length." },
+        { error: t("tooLong") },
         { status: 400 }
       );
     }
 
     // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
-    const dirty = checkContent(snippet, summary);
+    const dirty = await checkContentLocalized(snippet, summary);
     if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
     const parsedTracks = parseTrackPicks(standout_tracks);
     if (parsedTracks === null) {
       return NextResponse.json(
-        { error: "Invalid favorite tracks." },
+        { error: t("invalidTracks") },
         { status: 400 }
       );
     }
@@ -113,7 +116,7 @@ export async function PUT(
       const titles = new Set((release?.tracks ?? []).map((t) => t.title));
       if (parsedTracks.some((t) => !titles.has(t.title))) {
         return NextResponse.json(
-          { error: "Personal favorites must come from the release's track list." },
+          { error: t("tracksFromRelease") },
           { status: 400 }
         );
       }
@@ -129,7 +132,7 @@ export async function PUT(
 
     if (!review) {
       return NextResponse.json(
-        { error: "Failed to update review." },
+        { error: t("updateFailed") },
         { status: 500 }
       );
     }
@@ -150,7 +153,7 @@ export async function PUT(
 
     return NextResponse.json(review);
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json({ error: t("badRequest") }, { status: 400 });
   }
 }
 
@@ -158,10 +161,12 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ reviewId: string }> }
 ) {
+  // Errors in the member's own language (see app/api/reviews/route.ts).
+  const t = await getTranslations("apiErrors.reviews");
   const user = await getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: t("signIn") }, { status: 401 });
   }
 
   const { reviewId } = await params;
@@ -169,17 +174,17 @@ export async function DELETE(
   // Verify ownership
   const existing = await getReviewById(reviewId);
   if (!existing) {
-    return NextResponse.json({ error: "Review not found." }, { status: 404 });
+    return NextResponse.json({ error: t("reviewNotFound") }, { status: 404 });
   }
   if (existing.user_id !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return NextResponse.json({ error: t("notYours") }, { status: 403 });
   }
 
   const success = await deleteReview(reviewId);
 
   if (!success) {
     return NextResponse.json(
-      { error: "Failed to delete review." },
+      { error: t("deleteFailed") },
       { status: 500 }
     );
   }

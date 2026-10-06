@@ -24,6 +24,7 @@ import CatalogSearch, {
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
 import { useTranslations } from "next-intl";
+import { localDateString } from "@/lib/review-date";
 
 interface ReviewFormProps {
   mode: "create" | "edit";
@@ -209,6 +210,11 @@ export default function ReviewForm({
       snippet: snippet || null,
       standout_tracks,
       is_published: isPublished,
+      // This device's own calendar day — the review lands on THE LOG
+      // on the day the member actually wrote it, not on the UTC date
+      // (which is tomorrow for a US evening). The server sanity-checks
+      // it; the edit route ignores it (a review keeps its first date).
+      local_date: localDateString(),
     };
 
     try {

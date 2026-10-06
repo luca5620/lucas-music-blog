@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { getUser } from "@/lib/auth";
 import {
   Inter,
   Chakra_Petch,
@@ -164,10 +165,14 @@ export default async function RootLayout({
 }>) {
   // Fetch the current user + profile on the server so the nav avatar
   // renders on first paint with no loading flash and no client-side race.
+  //
+  // getUser() from lib/auth is cached for this request (React cache()),
+  // so the page below asking "who's watching?" again costs nothing.
+  // Calling supabase.auth.getUser() directly here (as it was until
+  // 2026-10-05) bypassed that cache — one extra round-trip to Supabase
+  // Auth on every signed-in page load.
   const supabase = await createServerSupabase();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   // LANGUAGES: which dictionary this response speaks (i18n/request.ts
   // resolved it from the pmr-lang cookie / Accept-Language). Only the

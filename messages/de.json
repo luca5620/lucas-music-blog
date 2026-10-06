@@ -534,6 +534,8 @@
       "followers": "Follower",
       "following": "Folge ich",
       "viewConnections": "Deine Verbindungen ansehen",
+      "logs": "Logs",
+      "logsExplain": "Ein Log ist ein Monat mit einer Review an jedem einzelnen Tag",
       "likes": "Likes",
       "toNext": "{n} bis {target}",
       "topTier": "Höchste Stufe",
@@ -639,7 +641,10 @@
       "title": "DAS LOGBUCH",
       "aria": "Bewertete Tage im {month}",
       "logged": "{n, plural, one {# Tag} other {# Tage}} eingetragen diesen Monat",
-      "empty": "Diesen Monat noch nichts eingetragen — bewerte heute etwas."
+      "empty": "Diesen Monat noch nichts eingetragen — bewerte heute etwas.",
+      "toComplete": "noch {left, plural, one {# Tag} other {# Tage}}, um diesen Log zu vervollständigen",
+      "complete": "🏆 Log komplett — jeden Tag dieses Monats eine Review",
+      "missed": "nächsten Monat beginnt ein neuer Log"
     },
     "histogram": {
       "ratingsCount": "{n, plural, one {# Bewertung} other {# Bewertungen}}",
@@ -1746,5 +1751,27 @@
     },
     "getInTouch": "KONTAKT",
     "contact": "Fragen, Ideen, Probleme?"
+  },
+  "apiErrors": {
+    "rateLimited": "Zu viele Anfragen — mach mal kurz langsamer.",
+    "blockedText": "Dieser Text enthält Sprache, die wir nicht erlauben. Peak Music Reviews toleriert keine Beleidigungen und Belästigung — siehe Nutzungsbedingungen.",
+    "reviews": {
+      "signIn": "Melde dich an, um das zu tun.",
+      "pickRelease": "Wähle zuerst eine Veröffentlichung aus dem Katalog.",
+      "ratingRange": "Die Bewertung muss zwischen 0 und 10 liegen.",
+      "tooLong": "Ein Feld ist länger als erlaubt.",
+      "invalidTracks": "Diese Lieblingstracks sind ungültig.",
+      "releaseNotFound": "Diese Veröffentlichung wurde nicht gefunden.",
+      "tracksFromRelease": "Favoriten müssen aus der Trackliste der Veröffentlichung stammen.",
+      "alreadyReviewed": "Du hast diese Veröffentlichung schon bewertet — bearbeite lieber diese Review.",
+      "profileNotFound": "Dein Profil wurde nicht gefunden. Melde dich erneut an.",
+      "slugFailed": "Review konnte nicht gespeichert werden. Versuch es noch mal.",
+      "createFailed": "Review konnte nicht gespeichert werden. Versuch es noch mal.",
+      "badRequest": "Mit dieser Anfrage stimmte etwas nicht. Versuch es noch mal.",
+      "reviewNotFound": "Diese Review wurde nicht gefunden.",
+      "notYours": "Diese Review gehört dir nicht.",
+      "updateFailed": "Änderungen konnten nicht gespeichert werden. Versuch es noch mal.",
+      "deleteFailed": "Review konnte nicht gelöscht werden. Versuch es noch mal."
+    }
   }
 }

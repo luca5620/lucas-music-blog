@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { guardRoom, isGuardError, readJson } from "@/lib/aux-wars/guard";
 import { isText } from "@/lib/validate";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 
 /**
  * PATCH  /api/aux-wars/[roomId] — the host reworks the LOBBY settings
@@ -33,7 +33,7 @@ export async function PATCH(
     if (!isText(body.name, 120) || body.name.trim().length < 3) {
       return NextResponse.json({ error: "Room name must be 3–120 characters." }, { status: 400 });
     }
-    const dirty = checkContent(body.name);
+    const dirty = await checkContentLocalized(body.name);
     if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
     patch.name = body.name.trim();
   }

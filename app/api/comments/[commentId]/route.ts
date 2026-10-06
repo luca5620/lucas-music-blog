@@ -3,7 +3,7 @@ import { getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { updateComment, deleteComment } from "@/lib/db/comments";
 import type { Profile } from "@/lib/types/database";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
 
@@ -61,7 +61,7 @@ export async function PUT(
   }
 
   // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
-  const dirty = checkContent(content);
+  const dirty = await checkContentLocalized(content);
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const comment = await updateComment(commentId, user.id, content.trim());

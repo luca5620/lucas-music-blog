@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText } from "@/lib/validate";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { slugify } from "@/lib/spotify-import";
 import { notifyFollowers } from "@/lib/db/notifications";
 import { readJson } from "@/lib/aux-wars/guard";
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   if (!isText(name, 120) || name.trim().length < 3) {
     return NextResponse.json({ error: "Room name must be 3–120 characters." }, { status: 400 });
   }
-  const dirty = checkContent(name);
+  const dirty = await checkContentLocalized(name);
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
   if (format !== "bo1" && format !== "bo3") {
     return NextResponse.json({ error: "Format must be bo1 or bo3." }, { status: 400 });

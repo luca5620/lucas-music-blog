@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText } from "@/lib/validate";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { guardRoom, isGuardError, readJson } from "@/lib/aux-wars/guard";
 
 /**
@@ -30,7 +30,7 @@ export async function POST(
   if (!isText(content, 500)) {
     return NextResponse.json({ error: "Message must be 1–500 characters." }, { status: 400 });
   }
-  const dirty = checkContent(content);
+  const dirty = await checkContentLocalized(content);
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const { data, error } = await supabase

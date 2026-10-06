@@ -13,7 +13,7 @@ import {
 } from "@/lib/spotify/playlist";
 import { PLAYLIST_ID_RE, playlistUrl } from "@/lib/playlist";
 import { rateLimit } from "@/lib/rate-limit";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 
 /**
  * POST /api/lists/from-playlist — build one of MY lists out of a
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     `From the Spotify playlist “${title}”` +
     (snapshot.owner ? ` by ${snapshot.owner}` : "") +
     ` — ${playlistUrl(playlistId)}`;
-  const dirty = checkContent(title, snapshot.description ?? "");
+  const dirty = await checkContentLocalized(title, snapshot.description ?? "");
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const slug = await generateUniqueListSlug(user.id, title);

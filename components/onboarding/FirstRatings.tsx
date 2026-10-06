@@ -40,21 +40,9 @@ import { hapticTap } from "@/lib/native";
 import { smallCover } from "@/lib/images";
 import { FIRST_RATINGS_GOAL } from "@/lib/onboarding";
 import type { StarterPick } from "@/lib/db/onboarding";
-
-/**
- * The device's own calendar day ("YYYY-MM-DD") — sent as local_date so
- * the rating lands on the right day of THE LOG (UTC dating put a US
- * evening rating on tomorrow).
- * TODO(merge): the lead's branch adds this exact helper as
- * `localDateString` in lib/review-date.ts — import it from there and
- * delete this copy once both branches are on main.
- */
-function localDateString(d: Date = new Date()): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
+// The device's own calendar day, sent as local_date so each rating
+// lands on the right day of THE LOG (see lib/review-date.ts).
+import { localDateString } from "@/lib/review-date";
 
 /** A tile on the grid: a starter pick, or a record found via search
     (which may have no cover — the tile shows a disc instead). */

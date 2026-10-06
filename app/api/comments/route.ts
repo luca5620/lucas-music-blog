@@ -3,7 +3,7 @@ import { getUser } from "@/lib/auth";
 import { createComment } from "@/lib/db/comments";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { createNotification } from "@/lib/db/notifications";
 import { BLOCKED_ACTION_ERROR, isBlockedBy } from "@/lib/db/moderation";
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
-  const dirty = checkContent(content);
+  const dirty = await checkContentLocalized(content);
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const supabase = await createClient();

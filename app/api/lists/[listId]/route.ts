@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { deleteList, getListById, updateList } from "@/lib/db/lists";
 import type { List } from "@/lib/types/database";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { rateLimit } from "@/lib/rate-limit";
 
 // Basic UUID shape check so obviously-bad ids fail fast with a 400
@@ -121,7 +121,7 @@ export async function PATCH(
     }
 
     // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
-    const dirty = checkContent(updates.title, updates.description);
+    const dirty = await checkContentLocalized(updates.title, updates.description);
     if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
     if (is_ranked !== undefined) {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isText, isUuid } from "@/lib/validate";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { guardRoom, isGuardError, readJson } from "@/lib/aux-wars/guard";
 import { AuxError, setTopic } from "@/lib/aux-wars/engine";
 
@@ -44,7 +44,7 @@ export async function POST(
   if (!isText(topic, 120) || topic.trim().length < 3) {
     return NextResponse.json({ error: "Topic must be 3–120 characters." }, { status: 400 });
   }
-  const dirty = checkContent(topic);
+  const dirty = await checkContentLocalized(topic);
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
   const gameId = isUuid(body.game_id) ? body.game_id : null;
 

@@ -6,7 +6,7 @@ import {
   getPublicLists,
 } from "@/lib/db/lists";
 import { rateLimit } from "@/lib/rate-limit";
-import { checkContent } from "@/lib/content-filter";
+import { checkContentLocalized } from "@/lib/content-filter";
 import { createClient } from "@/lib/supabase/server";
 import { notifyFollowers } from "@/lib/db/notifications";
 
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     }
 
     // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
-    const dirtyList = checkContent(trimmedTitle, trimmedDescription);
+    const dirtyList = await checkContentLocalized(trimmedTitle, trimmedDescription);
     if (dirtyList) {
       return NextResponse.json({ error: dirtyList }, { status: 400 });
     }

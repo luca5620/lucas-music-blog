@@ -39,16 +39,19 @@ export const dynamic = "force-dynamic";
 export default async function YourTastePage() {
   const user = await getUser();
   if (!user) return <TasteTeaser />;
-  const t = await getTranslations("taste.page");
   const supabase = await createClient();
 
   /* ---- Taste profile + the people the viewer follows (the pager
-     boosts followed authors and says so in its reason chips) ---- */
-  const profile = await buildTasteProfile(user.id);
-  const { data: peopleFollows } = await supabase
-    .from("follows")
-    .select("following_id")
-    .eq("follower_id", user.id);
+     boosts followed authors and says so in its reason chips), plus
+     the preferred player and the copy — none of these depend on each
+     other, so they run side by side instead of one after another
+     (2026-10-05: four round-trips in a row became one wait). ---- */
+  const [t, profile, { data: peopleFollows }, { data: pref }] = await Promise.all([
+    getTranslations("taste.page"),
+    buildTasteProfile(user.id),
+    supabase.from("follows").select("following_id").eq("follower_id", user.id),
+    supabase.from("profiles").select("preferred_player").eq("id", user.id).maybeSingle(),
+  ]);
   const peopleIds = ((peopleFollows ?? []) as { following_id: string }[]).map(
     (r) => r.following_id
   );
@@ -62,12 +65,7 @@ export default async function YourTastePage() {
      "did not carry over" here). Same rule as the release page: Apple's
      embed only for members who chose it, resolved lazily and cached
      on the release row; Spotify for everyone else, and for records
-     Apple doesn't carry. ---- */
-  const { data: pref } = await supabase
-    .from("profiles")
-    .select("preferred_player")
-    .eq("id", user.id)
-    .maybeSingle();
+     Apple doesn't carry. (`pref` is fetched in the Promise.all above.) ---- */
   const preferred = (pref as { preferred_player?: string } | null)?.preferred_player;
   const wantsApple = preferred === "apple";
   // SoundCloud, the third pick (2026-09-13) — same carry-over, its own

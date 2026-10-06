@@ -32,10 +32,21 @@ NOT web-only) sits beside the App Store badge in the signed-out hero, the
 closing CTA and the signed-in dashboard hero; copy is `home.discord` in all
 six message files.
 
-**Not done yet (Luca's call):** ping roles + onboarding "Channels & Roles"
-picker (Updates / Events / Aux War pings), a moderator role, an AFK-channel
-timeout, a bot (Bloxlink-style verify is NOT wanted here), and a Discord
-link in /about, the footer and the app's Settings.
+**Roles (2026-10-06, mirror the site's profiles.role + event badges):**
+👑 Founder (gold, Administrator, hoisted, assigned to Luca; the site's
+'owner' role is shown as Founder, never "Owner") · 🛡️ Admin (blue, hoisted;
+kick/ban/timeout/manage messages+threads/nicknames/mute/move/audit log) ·
+✅ Verified Reviewer (green, hoisted) · 🔮 Early Tester (purple, hoisted) ·
+🎧 Aux Champion (red, hoisted) · 🌙 Release Night · 📚 List Master ·
+🤖 Android Tester · 🧪 Beta Crew (cosmetic) · ping roles (mentionable):
+📢 Updates Ping · ⚔️ Aux War Ping · 🏆 Events Ping · 💿 Album Drop Ping.
+Hand a badge role out when you run `award_badge` on the site.
+
+**Not done yet (Luca's call):** a way for members to PICK the ping roles
+(Discord's onboarding needs Community enabled, which forces verification
+to Low — conflicts with "no extra verification", so undecided; a bot or
+manual assignment is the alternative), an AFK-channel timeout, and a
+Discord link in /about, the footer and the app's Settings.
 
 ---
 

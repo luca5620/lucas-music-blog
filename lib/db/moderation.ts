@@ -205,6 +205,43 @@ export async function unblockUser(blockerId: string, blockedId: string): Promise
     .eq("blocked_id", blockedId);
 }
 
+/**
+ * Has `targetId` blocked the SIGNED-IN caller? (migration 052)
+ *
+ * The other direction from isBlocked below, and the one that can't be
+ * answered with a plain query: RLS (007) only lets you read your OWN
+ * block list, so the caller can never see a row the target wrote. The
+ * SQL function is_blocked_by() is SECURITY DEFINER and always asks
+ * about auth.uid() — it can't be used to peek at third parties.
+ *
+ * Routes call this before follow / like / comment / reply / invite and
+ * refuse the action when it's true. Fails OPEN (false) on any error,
+ * including "function missing" before 052 runs: the restrictive RLS
+ * policies from 052 are the backstop, and failing closed would lock
+ * everyone out of liking anything if the function ever hiccupped.
+ */
+export async function isBlockedBy(targetId: string): Promise<boolean> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("is_blocked_by", {
+      p_target: targetId,
+    } as never);
+    if (error) return false;
+    return data === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The one refusal every blocked interaction returns. Deliberately
+ * vague — it says "not possible", not "they blocked you" — because
+ * blocking is private (the blocked person is never told). It can't
+ * be perfectly invisible (the action does fail), but it shouldn't
+ * announce itself either.
+ */
+export const BLOCKED_ACTION_ERROR = "You can't interact with this account.";
+
 export async function isBlocked(blockerId: string, blockedId: string): Promise<boolean> {
   const supabase = await createClient();
   const { data } = await supabase

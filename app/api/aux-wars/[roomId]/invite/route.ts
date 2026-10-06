@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
 import { createNotification } from "@/lib/db/notifications";
+import { isBlockedBy } from "@/lib/db/moderation";
 import { guardRoom, isGuardError, readJson } from "@/lib/aux-wars/guard";
 import type { AuxProfile } from "@/lib/db/aux-wars";
 
@@ -74,6 +75,19 @@ export async function POST(
   const { userId } = body;
   if (typeof userId !== "string" || !isUuid(userId)) {
     return NextResponse.json({ error: "Invalid person." }, { status: 400 });
+  }
+
+  // Blocks (migration 052): someone who blocked the host never gets a
+  // seat or an invite from them. Blocking already severs the
+  // blocker's follow, so aux_invite's mutual-follow rule usually
+  // catches this — this check covers a blocker who later re-followed.
+  // The answer reuses the NOT_MUTUAL copy on purpose: blocking is
+  // private, and "you can only invite mutuals" gives nothing away.
+  if (await isBlockedBy(userId)) {
+    return NextResponse.json(
+      { error: "You can only invite people you follow who follow you back." },
+      { status: 403 }
+    );
   }
 
   const { error } = await supabase.rpc("aux_invite", {

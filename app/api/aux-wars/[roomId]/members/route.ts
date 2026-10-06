@@ -76,6 +76,11 @@ export async function DELETE(
   if (isGuardError(g)) return g;
   const { supabase, user, room } = g;
 
+  // Leaving shares the join bucket — a join/leave loop is one stream
+  // of membership writes either way.
+  const limited = await rateLimit(`aux-member:${user.id}`, 30, 60_000);
+  if (limited) return limited;
+
   if (room.host_id === user.id) {
     return NextResponse.json({ error: "The host can't leave — end the battle instead." }, { status: 409 });
   }

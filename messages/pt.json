@@ -1594,7 +1594,7 @@
     "newDebate": "abriu um debate{title}",
     "other": "fez algo",
     "newAux": "está criando uma Aux War{title}",
-    "auxInvite": "convidou-te para a Aux War dele{title}"
+    "auxInvite": "convidou você para uma Aux War{title}"
   },
   "taste": {
     "page": {

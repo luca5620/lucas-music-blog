@@ -168,6 +168,11 @@ export async function PATCH(
   const guard = await requireOwnedList(listId);
   if ("errorResponse" in guard) return guard.errorResponse;
 
+  // A reorder is ONE request for the whole list (not one per item),
+  // so sharing the 60/min item bucket with adds is plenty.
+  const limited = await rateLimit(`list-items:${guard.list.user_id}`, 60, 60_000);
+  if (limited) return limited;
+
   try {
     const body = await request.json();
     const { orderedItemIds } = body;

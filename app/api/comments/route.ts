@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { checkContent } from "@/lib/content-filter";
 import { createNotification } from "@/lib/db/notifications";
+import { BLOCKED_ACTION_ERROR, isBlockedBy } from "@/lib/db/moderation";
 
 // UUIDs only — anything else is rejected before touching the database.
 const UUID_RE =
@@ -97,6 +98,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid parent comment" }, { status: 400 });
     }
     parentAuthorId = parent.user_id;
+  }
+
+  // Blocks (migration 052): no commenting on the review of someone who
+  // blocked you, and no replying to a comment by someone who blocked
+  // you — even when that comment sits on a third person's review.
+  // Two checks in parallel; the restrictive RLS policy on comments
+  // enforces the same thing if this route is ever bypassed.
+  const [blockedByAuthor, blockedByParent] = await Promise.all([
+    review.user_id !== user.id ? isBlockedBy(review.user_id) : false,
+    parentAuthorId && parentAuthorId !== user.id
+      ? isBlockedBy(parentAuthorId)
+      : false,
+  ]);
+  if (blockedByAuthor || blockedByParent) {
+    return NextResponse.json({ error: BLOCKED_ACTION_ERROR }, { status: 403 });
   }
 
   const comment = await createComment(

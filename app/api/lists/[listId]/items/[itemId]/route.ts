@@ -7,6 +7,7 @@ import {
   updateListItem,
 } from "@/lib/db/lists";
 import type { ListItem } from "@/lib/types/database";
+import { rateLimit } from "@/lib/rate-limit";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -30,6 +31,12 @@ async function requireOwnedItem(
       ),
     };
   }
+
+  // Editing a note or removing an item are writes too — same bucket
+  // (and same 60/min) as adding items in ../route.ts, keyed by the
+  // signed-in user, who must be the list owner to get any further.
+  const limited = await rateLimit(`list-items:${user.id}`, 60, 60_000);
+  if (limited) return { errorResponse: limited };
 
   if (!UUID_RE.test(listId) || !UUID_RE.test(itemId)) {
     return {

@@ -8,6 +8,7 @@ import {
   importReleaseFromTrack,
 } from "@/lib/spotify-import";
 import type { Profile } from "@/lib/types/database";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   importReleaseManually,
   type ManualImportInput,
@@ -43,6 +44,13 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // 1b. Rate limit — staff-only, but every import hits Spotify (whose
+  // own rate limit is shared by the whole site's catalog search) and
+  // writes catalog rows. 30 a minute is far beyond a human pasting
+  // links, and stops a stuck loop from burning the Spotify quota.
+  const limited = await rateLimit(`admin-import:${user.id}`, 30, 60_000);
+  if (limited) return limited;
 
   // 2. Role check
   const { data: profileData } = await supabase

@@ -96,9 +96,57 @@ the next binary, not a web deploy:
   tapping it opens the review.
 - Supabase: `select count(*) from push_tokens;` should be ≥ 1.
 
+## 2026-10-05 — dedup, blocks, six languages, Sunday recap
+
+What changed (code on the branch; DB + functions need the hand steps
+below):
+
+- **Dedup works now** (migration 052). The old "already notified?"
+  check ran as the actor and could never see the recipient's rows, so
+  like/unlike loops re-buzzed phones. A partial unique index + the
+  `notify_user()` / `notify_followers()` SQL functions (insert … on
+  conflict do nothing) fix it, and the 032 trigger only fires for rows
+  actually inserted — no duplicate row, no duplicate push.
+- **Blocks** suppress notifications both ways (in the SQL functions and
+  again in push-fanout), hide a blocked person's old rows from the bell,
+  and stop the blocked person from following / liking / commenting /
+  replying / being invited (API checks + restrictive RLS policies).
+- **Language per device**: `push_tokens.locale` (052), filled by
+  `/api/push/register` from the `pmr-lang` cookie on every launch and
+  by the language picker (PATCH) on a switch. Copy for every
+  notification type in all six languages lives in
+  `supabase/functions/_shared/push-copy.ts` (mirrors the bell's
+  `notifications.*` strings in messages/*.json — change both together).
+- **Sunday recap** (migration 055 + new function `push-recap`): 6pm US
+  Eastern every Sunday, pg_cron → `send_weekly_recaps()` → push-recap.
+  Details and test commands are in the header of
+  `supabase/migrations/055-weekly-recap-push.sql`.
+- APNs code is shared in `supabase/functions/_shared/apns.ts`.
+- **Android never registers for push** (PushRegistration gates to iOS):
+  without `google-services.json` the plugin crashes the app natively.
+
+Hand steps, in order:
+1. SQL Editor: run `052-notification-dedup-blocks-push-locale.sql`.
+2. Deploy both functions (Edge Functions do NOT ship with Vercel):
+   ```bash
+   supabase functions deploy push-fanout --no-verify-jwt
+   supabase functions deploy push-recap --no-verify-jwt
+   ```
+   No new secrets — Supabase secrets are project-wide.
+3. Make sure pg_cron is enabled (Database → Extensions → pg_cron), then
+   replace `__PUSH_WEBHOOK_SECRET__` in
+   `055-weekly-recap-push.sql` with the same value as in 032 and run it.
+4. `select * from public.weekly_recap_candidates();` to preview; test
+   on yourself with `select public.send_weekly_recaps(true, '<your
+   uuid>');` (see the 055 header for the cleanup line).
+
 ## Android / FCM — later
-The fan-out skips `platform = 'android'` tokens for now. When the
-Play launch happens: create a Firebase project, add `google-services.json`,
-and extend push-fanout with FCM HTTP v1 (service-account JWT, same
-pattern as the APNs half). Registration/storage already handles
-Android tokens — only the send half is missing.
+The fan-out skips `platform = 'android'` tokens for now, and since
+2026-10-05 the app doesn't even ask Android for a token (it would
+crash without Firebase config). When the Play launch happens: create a
+Firebase project, add `google-services.json`, extend push-fanout +
+push-recap with FCM HTTP v1 (service-account JWT, same pattern as the
+APNs half), and widen the platform gate in
+`components/ui/PushRegistration.tsx` — gated on a build number, so old
+Android binaries without the config never call register(). The comment
+at that gate has the details.

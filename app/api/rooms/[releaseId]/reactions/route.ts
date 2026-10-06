@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getReleaseById } from "@/lib/db/releases";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   addReaction,
   getOrCreateRoom,
@@ -82,6 +83,13 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Live-room reactions are tap-happy by nature (emoji spam on a
+  // drop is half the fun), so the bucket is roomy — 60 adds a minute
+  // — but it still stops a script from hammering the table. Same
+  // order of magnitude as the Aux Wars react bucket.
+  const limited = await rateLimit(`room-react:${user.id}`, 60, 60_000);
+  if (limited) return limited;
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -132,6 +140,11 @@ export async function DELETE(
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Removing shares the add bucket: an add/remove toggle loop is one
+  // stream of writes either way.
+  const limited = await rateLimit(`room-react:${user.id}`, 60, 60_000);
+  if (limited) return limited;
 
   let raw: unknown;
   try {

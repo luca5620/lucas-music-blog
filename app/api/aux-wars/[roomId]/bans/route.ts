@@ -80,7 +80,11 @@ export async function DELETE(
   const { roomId } = await params;
   const g = await guardRoom(roomId, { host: true });
   if (isGuardError(g)) return g;
-  const { supabase, room } = g;
+  const { supabase, user, room } = g;
+
+  // Lifting a ban shares the ban bucket — ban/unban is one toggle.
+  const limited = await rateLimit(`aux-ban:${user.id}`, 60, 60_000);
+  if (limited) return limited;
 
   const body = await readJson(request);
   if (!body) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });

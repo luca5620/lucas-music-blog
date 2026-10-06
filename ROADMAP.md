@@ -9,6 +9,36 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ✅ 2026-10-05 — Notifications fixed, blocks enforced, Sunday recap push
+
+Code-review fixes + one new feature (branch work, merged by the lead).
+**⚠️ Two migrations + two edge-function deploys to do by hand** — full
+steps in `docs/PUSH-NOTIFICATIONS.md` (2026-10-05 section):
+
+- **Migration 052 — NOT RUN YET** (`052-notification-dedup-blocks-push-locale.sql`).
+  Notification dedup never worked (the actor couldn't read the rows it
+  checked), so like/unlike loops re-buzzed phones; now a partial unique
+  index + `notify_user()` / `notify_followers()` (on conflict do
+  nothing). Blocking now blocks: `is_blocked_by()` + restrictive RLS on
+  follows/likes/comments; the API refuses follow/like/comment/reply/
+  invite from someone the target blocked; the bell hides blocked
+  actors; push-fanout skips blocked pairs. `push_tokens.locale` added.
+- **Migration 055 — NOT RUN YET** (`055-weekly-recap-push.sql`). Sunday
+  6pm US Eastern recap push via pg_cron (first scheduler in the
+  project). Needs pg_cron enabled + the `__PUSH_WEBHOOK_SECRET__`
+  placeholder replaced (same value as 032) before running.
+- **Deploy by hand:** `supabase functions deploy push-fanout --no-verify-jwt`
+  and `supabase functions deploy push-recap --no-verify-jwt` (APNs code
+  now shared in `supabase/functions/_shared/`). Push copy is in all six
+  languages per device.
+- Android no longer calls push `register()` (crashes without
+  google-services.json) — iOS only until FCM exists.
+- `rateLimit()` added to every mutation route that lacked it (list like,
+  room reactions, comment edit/delete, list edit/delete + items, artist/
+  release follow, admin import, aux bans/members DELETE, unfollow, post
+  delete). `/api/aux-wars/join` now answers a banned person with a
+  clear 403 instead of a "try again" 500 that burned code attempts.
+
 ## ✅ 2026-09-29 — 1.2 (build 3) APPROVED + PUBLISHED — main is unfrozen
 
 Luca, 2026-09-29: "1.2 got published". Pushing to `main` is normal

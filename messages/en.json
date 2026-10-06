@@ -870,9 +870,9 @@
       "signedOff": "Signed off",
       "auxCount": "Aux Wars · {n}",
       "myAux": "My Aux Wars",
-      "auxTotal": "{n, plural, one {# battle} other {# battles}} total",
-      "hostAux": "+ Host a battle",
-      "noAux": "No battles yet. Pick a topic and pass the aux."
+      "auxTotal": "{n, plural, one {# Aux War} other {# Aux Wars}} total",
+      "hostAux": "+ Host an Aux War",
+      "noAux": "No Aux Wars yet. Pick a topic and pass the aux."
     }
   },
   "releases": {
@@ -1169,15 +1169,32 @@
     "index": {
       "title": "AUX WARS",
       "sub": "Pass the aux. Two songs go head to head, the room listens, the room votes. Brackets, best-of-3s, a live chat, and a champion at the end.",
-      "host": "Host a battle",
+      "host": "Host an Aux War",
       "joinPlaceholder": "Paste a room link…",
       "joinGo": "Go",
       "yourPrivate": "Your private rooms",
       "liveNow": "Live now",
       "fillingUp": "Filling up",
       "lastResults": "Last results",
-      "noSignal": "NO SIGNAL",
-      "empty": "No battles on air yet. Host one, pick a topic, and pass the aux."
+      "offAir": "OFF AIR",
+      "offAirTitle": "Nothing on air right now",
+      "offAirSub": "Every war starts with one host. Open a room, send the link, and pass the aux.",
+      "recentWars": "Recent wars"
+    },
+    "how": {
+      "title": "How a war goes",
+      "openLabel": "Open a room",
+      "openBody": "Name it, pick single round or best of 3, and say who judges: the crowd or you.",
+      "topicLabel": "Pick a topic",
+      "topicBody": "Every round gets a brief. Best summer song, best breakup song, anything.",
+      "songLabel": "Put a song up",
+      "songBody": "Each player drops one track from Spotify, SoundCloud or YouTube.",
+      "voteLabel": "The room decides",
+      "voteBody": "Everyone listens, throws 🔥 or 💩 and votes. A tie goes to overtime.",
+      "champLabel": "Crown a champion",
+      "champBody": "Winners move up the bracket until one player is left holding the aux.",
+      "cta": "Host an Aux War",
+      "ctaHint": "Two players is enough to start. Anyone can watch and vote."
     },
     "card": {
       "live": "ON AIR",
@@ -1244,8 +1261,8 @@
     "room": {
       "back": "Back",
       "share": "Share",
-      "end": "End battle",
-      "endConfirm": "End the battle now? No champion gets crowned.",
+      "end": "End the war",
+      "endConfirm": "End the war now? No champion gets crowned.",
       "onAir": "ON AIR",
       "lobby": "LOBBY",
       "final": "FINAL",
@@ -1269,7 +1286,7 @@
       "grabSpot": "Grab a spot",
       "watchOnly": "Just watch",
       "leave": "Leave",
-      "start": "Start the battle",
+      "start": "Start the war",
       "starting": "Drawing the bracket…",
       "startNeed": "Needs at least two players.",
       "overtime": "OVERTIME",
@@ -1301,8 +1318,10 @@
       "standBy": "STAND BY",
       "champion": "CHAMPION",
       "championSub": "Won the aux in \"{name}\".",
-      "ended": "BATTLE ENDED",
+      "ended": "WAR ENDED",
       "endedSub": "The host pulled the plug before a champion was crowned.",
+      "wentQuiet": "WENT OFF AIR",
+      "wentQuietSub": "Nothing happened in here for two hours, so the room signed off on its own.",
       "hostAnother": "Host another",
       "series": "The series",
       "bracket": "The bracket",
@@ -1368,8 +1387,16 @@
       "overtime": "OVERTIME",
       "takesIt": "takes it with \"{song}\""
     },
+    "recent": {
+      "final": "FINAL",
+      "vs": "vs",
+      "pickedBy": "picked by {name}",
+      "noSong": "No song played",
+      "won": "Won",
+      "champion": "took the aux"
+    },
     "wins": {
-      "aria": "{battles} battles won, {rounds} rounds won",
+      "aria": "{battles} Aux Wars won, {rounds} rounds won",
       "rounds": "{n}W"
     },
     "topic": {
@@ -1409,8 +1436,11 @@
       "allTime": "All time",
       "weekly": "This week",
       "rounds": "{n, plural, one {# round} other {# rounds}}",
-      "emptyWeek": "Nobody has won a battle this week yet.",
-      "fairPlay": "Wins from a room where the host both played and judged don't count."
+      "emptyWeek": "Nobody has won an Aux War this week yet.",
+      "weekResets": "The week resets every Friday at midnight (US Eastern).",
+      "fairPlay": "Wins a host hands themselves don't count — in a room they judge, or a match they call for themselves.",
+      "firstTitle": "First on the board",
+      "firstSub": "The Top 10 opens once {n} players have won. Host a war and get your name up here."
     },
     "seat": {
       "watchOnly": "This room is private: watch, vote and chat all you like. A spot in the bracket needs the host's code.",
@@ -1718,7 +1748,7 @@
     "story1": "Peak Music Reviews started with a simple frustration: film lovers have a home. They log what they watch, rate it, argue about it, and build a taste profile that actually says something about them. Music — the thing most of us spend more hours with than any film — never got that place.",
     "story2": "So we built it. Not another streaming app, not another algorithm feeding you what it thinks you already like — a place where the listening itself is the point. Every review here is tied to a real release, from the biggest album of the year to a loosie that never touched streaming.",
     "thePurpose": "THE PURPOSE",
-    "purpose1": "One place for your whole listening life: rate records 0–10, build lists, win the aux in a battle, and be in the room — live — the moment an album drops. Your profile is yours to arrange and theme; your feed is built from who you follow and what you rate, not from ads.",
+    "purpose1": "One place for your whole listening life: rate records 0–10, build lists, win the aux in an Aux War, and be in the room — live — the moment an album drops. Your profile is yours to arrange and theme; your feed is built from who you follow and what you rate, not from ads.",
     "purpose2": "The bet is simple: the best music discovery engine ever made is other people who care. Everything on this site exists to put you closer to them.",
     "whatsDifferent": "WHAT'S DIFFERENT",
     "diff1H": "Unreleased music.",

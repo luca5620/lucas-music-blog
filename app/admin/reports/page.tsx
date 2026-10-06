@@ -48,8 +48,8 @@ function targetLabel(type: ReportTargetType): string {
     case "room_message": return "Room message";
     case "profile": return "Profile";
     case "post": return "Post";
-    case "aux_room": return "Aux battle";
-    case "aux_message": return "Aux battle message";
+    case "aux_room": return "Aux War room";
+    case "aux_message": return "Aux War message";
   }
 }
 

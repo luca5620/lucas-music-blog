@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid host flag." }, { status: 400 });
   }
 
-  const base = slugify(name.trim()).slice(0, 60) || "aux-battle";
+  const base = slugify(name.trim()).slice(0, 60) || "aux-war";
   const suffix = Math.random().toString(36).slice(2, 7);
   const slug = `${base}-${suffix}`;
 

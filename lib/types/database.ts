@@ -476,6 +476,14 @@ export interface AuxRoom {
   created_at: string;
   started_at: string | null;
   finished_at: string | null;
+  /** When anything last happened in the room (migration 053) — picks,
+      votes, reactions, chat, joins, the host's moves. A room quiet for
+      two hours drops off the arena and is auto-finished. Optional
+      only so the staged demo fixture doesn't have to invent one. */
+  last_activity_at?: string;
+  /** Why a room ended WITHOUT a champion (053): the host pulled the
+      plug, or it went quiet and the idle close shut it. */
+  end_reason?: "host" | "idle" | null;
 }
 
 export interface AuxMember {
@@ -500,6 +508,10 @@ export interface AuxMatch {
   wins_b: number;
   winner_id: string | null;
   status: "pending" | "live" | "done";
+  /** The HOST handed a game in this match to themselves (forfeit, "no
+      votes, you pick", or a second tie) — migration 053. Their win of
+      this match counts nowhere. Optional for the demo fixture. */
+  self_decided?: boolean;
   created_at: string;
 }
 

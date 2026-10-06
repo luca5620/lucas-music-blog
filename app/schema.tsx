@@ -122,7 +122,7 @@ export function SoftwareApplicationSchema({
       "Write and share reviews with a community average per release",
       "Build lists and import Spotify playlists",
       "Live release-night chat rooms",
-      "Aux battles — song vs. song with live voting",
+      "Aux Wars — song vs. song with live voting",
       "Rate unreleased and leaked songs (metadata only)",
       "Customizable profile themes, showcases and badges",
     ],

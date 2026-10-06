@@ -67,7 +67,7 @@ function buildComparison(appLive: boolean): { feature: string; peak: Cell; mb: C
     { feature: "Written reviews", peak: true, mb: true },
     { feature: "Lists", peak: true, mb: true },
     { feature: "Live release-night chat rooms", peak: true, mb: false },
-    { feature: "Aux battles — song vs. song, the room votes", peak: true, mb: false },
+    { feature: "Aux Wars — song vs. song, the room votes", peak: true, mb: false },
     { feature: "Posts + For You feed", peak: true, mb: false },
     { feature: "Unreleased / leaked tracks in catalog", peak: "Via Genius deep library", mb: false },
     { feature: "Profile customization", peak: "Themes, showcases, favorites", mb: "Basic" },

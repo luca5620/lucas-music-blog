@@ -18,9 +18,13 @@ export default function TopicPicker({
   roomId,
   round,
   game,
+  gameId,
 }: {
   roomId: string;
   round: number;
+  /** The game this screen is showing. Sent along so a topic typed on
+      a stale screen can't land on a game that has moved on (053). */
+  gameId?: string | null;
   /** The game number in a "topic each game" bo3 room (migration 046),
       null everywhere else. Only changes the heading — the route knows
       from the room row which one it's writing. */
@@ -59,7 +63,7 @@ export default function TopicPicker({
       const res = await fetch(`/api/aux-wars/${roomId}/topic`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: topic.trim() }),
+        body: JSON.stringify({ topic: topic.trim(), ...(gameId ? { game_id: gameId } : {}) }),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) throw new Error(data.error ?? t("errors.broke"));

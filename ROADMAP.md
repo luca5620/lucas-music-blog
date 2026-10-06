@@ -9,6 +9,54 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ⏳ 2026-10-05 — AUX WARS review fixes — ⚠️ MIGRATION 053 NOT RUN YET
+
+Seven code-review findings on Aux Wars, fixed together (branch
+`worktree-agent-a1274d74700c65061`). **Run
+`supabase/migrations/053-aux-wars-engine.sql` in the SQL Editor, THEN
+deploy** — ideally when no war is live. Between the two, the OLD engine
+can't start/call/end a room (votes, chat, picks keep working); the new
+code before the migration answers "Aux Wars is being updated" on those
+same three buttons. The verify queries are at the bottom of the file.
+
+1. **"Call it" hit the wrong game.** The host's tap now sends the game
+   id AND the phase its screen showed; the engine is one locked plpgsql
+   function (`aux_call_game`, plus `aux_start_room` / `aux_end_room` /
+   `aux_set_topic`) and answers 409 `stale` if the room moved on — the
+   screen then resyncs by itself. `lib/aux-wars/engine.ts` is now a thin
+   wrapper. Votes and topics send the game id too.
+2. **Vote switch policy** now runs the same check as casting
+   (`aux_can_vote`): not your own match, not banned, only the game
+   that's live right now. Players still vote on every OTHER match.
+3. **Farming via forfeit.** The host can still make the call in their
+   own match (forfeit / "nobody voted" / second tie) so a room never
+   sticks, but a game they hand to THEMSELVES marks the match
+   `self_decided` and that win — and a title won through it — counts
+   nowhere (chip, leaderboard, Your Friends This Week). Also closed: a
+   guard trigger stops anyone writing status/champion/current game on
+   `aux_rooms` by hand, and the host's direct write policies on
+   matches/games are gone (the functions are the only door).
+4. **Stuck rooms.** `aux_rooms.last_activity_at` (bumped by picks,
+   votes, reactions, chat, joins, host moves — max once a minute). A
+   room quiet for **2 hours** drops off the arena and is finished
+   (`end_reason = 'idle'`, the room shows WENT OFF AIR) — lazily, by
+   `aux_close_idle_rooms()` on the arena and room pages; no cron.
+   Ending a room also closes its open game. Window lives in two places:
+   `aux_idle_window()` and `AUX_IDLE_MS` (lib/aux-wars/limits.ts).
+5. **"This week"** on the Aux leaderboard = since Friday 00:00 ET, same
+   as /social (`aux_leaderboard` gained `p_since`; called without it,
+   'week' is still rolling 7 days).
+6. **Quiet arena.** No more NO SIGNAL: when nothing is live the arena
+   shows OFF AIR + a five-step "how a war goes" strip with the Host
+   button, and **Recent wars** (last finished public wars: final's
+   topic, both songs, winner, champion). Under 3 people the leaderboard
+   becomes "First on the board" instead of a one-row Top 10.
+7. **"battle" copy** → Aux Wars wording in all six locales (keys
+   unchanged), the about blurb, schema.org, the Musicboard page, admin
+   report labels and the API error strings. DB names untouched.
+
+**Next migration is 054.**
+
 ## ✅ 2026-09-29 — 1.2 (build 3) APPROVED + PUBLISHED — main is unfrozen
 
 Luca, 2026-09-29: "1.2 got published". Pushing to `main` is normal

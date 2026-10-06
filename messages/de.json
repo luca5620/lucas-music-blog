@@ -870,9 +870,9 @@
       "signedOff": "Beendet",
       "auxCount": "Aux Wars · {n}",
       "myAux": "Meine Aux Wars",
-      "auxTotal": "{n, plural, one {# Battle} other {# Battles}} insgesamt",
-      "hostAux": "+ Battle hosten",
-      "noAux": "Noch keine Battles. Such dir ein Thema und gib das Aux weiter."
+      "auxTotal": "{n, plural, one {# Aux War} other {# Aux Wars}} insgesamt",
+      "hostAux": "+ Aux War hosten",
+      "noAux": "Noch keine Aux Wars. Such dir ein Thema und gib das Aux weiter."
     }
   },
   "releases": {
@@ -1169,15 +1169,32 @@
     "index": {
       "title": "AUX WARS",
       "sub": "Gib das Aux weiter. Zwei Songs gegeneinander, der Raum hört zu, der Raum stimmt ab. Brackets, Best-of-3, Live-Chat und am Ende ein Champion.",
-      "host": "Battle hosten",
+      "host": "Aux War hosten",
       "joinPlaceholder": "Raumlink einfügen…",
       "joinGo": "Los",
       "yourPrivate": "Deine privaten Räume",
       "liveNow": "Jetzt live",
       "fillingUp": "Füllt sich",
       "lastResults": "Letzte Ergebnisse",
-      "noSignal": "KEIN SIGNAL",
-      "empty": "Noch keine Battles auf Sendung. Host eine, such dir ein Thema und gib das Aux weiter."
+      "offAir": "SENDEPAUSE",
+      "offAirTitle": "Gerade läuft nichts",
+      "offAirSub": "Jede Aux War fängt mit einem Host an. Mach einen Raum auf, schick den Link rum und gib das Aux weiter.",
+      "recentWars": "Letzte Aux Wars"
+    },
+    "how": {
+      "title": "So läuft eine Aux War",
+      "openLabel": "Raum aufmachen",
+      "openBody": "Gib ihm einen Namen, wähl eine Runde oder Best of 3 und leg fest, wer entscheidet: die Crowd oder du.",
+      "topicLabel": "Thema setzen",
+      "topicBody": "Jede Runde bekommt ein Thema. Bester Sommersong, bester Trennungssong, was du willst.",
+      "songLabel": "Song auflegen",
+      "songBody": "Jeder Spieler legt einen Track von Spotify, SoundCloud oder YouTube auf.",
+      "voteLabel": "Der Raum entscheidet",
+      "voteBody": "Alle hören zu, werfen 🔥 oder 💩 und stimmen ab. Bei Gleichstand geht es in die Verlängerung.",
+      "champLabel": "Champion krönen",
+      "champBody": "Die Sieger steigen im Bracket auf, bis nur noch einer das Aux in der Hand hat.",
+      "cta": "Aux War hosten",
+      "ctaHint": "Zwei Spieler reichen zum Start. Zuschauen und abstimmen kann jeder."
     },
     "card": {
       "live": "AUF SENDUNG",
@@ -1244,8 +1261,8 @@
     "room": {
       "back": "Zurück",
       "share": "Teilen",
-      "end": "Battle beenden",
-      "endConfirm": "Die Battle jetzt beenden? Es wird kein Champion gekrönt.",
+      "end": "Aux War beenden",
+      "endConfirm": "Die Aux War jetzt beenden? Es wird kein Champion gekrönt.",
       "onAir": "AUF SENDUNG",
       "lobby": "LOBBY",
       "final": "FINALE",
@@ -1269,7 +1286,7 @@
       "grabSpot": "Platz schnappen",
       "watchOnly": "Nur zuschauen",
       "leave": "Verlassen",
-      "start": "Battle starten",
+      "start": "Aux War starten",
       "starting": "Bracket wird ausgelost…",
       "startNeed": "Es braucht mindestens zwei Spieler.",
       "overtime": "VERLÄNGERUNG",
@@ -1301,8 +1318,10 @@
       "standBy": "BITTE WARTEN",
       "champion": "CHAMPION",
       "championSub": "Hat das Aux in \"{name}\" gewonnen.",
-      "ended": "BATTLE BEENDET",
+      "ended": "AUX WAR BEENDET",
       "endedSub": "Der Host hat den Stecker gezogen, bevor ein Champion gekrönt wurde.",
+      "wentQuiet": "SENDESCHLUSS",
+      "wentQuietSub": "Hier ist zwei Stunden lang nichts passiert, also hat sich der Raum von selbst abgemeldet.",
       "hostAnother": "Noch eine hosten",
       "series": "Die Serie",
       "bracket": "Das Bracket",
@@ -1368,8 +1387,16 @@
       "overtime": "VERLÄNGERUNG",
       "takesIt": "holt es mit \"{song}\""
     },
+    "recent": {
+      "final": "FINALE",
+      "vs": "vs",
+      "pickedBy": "ausgewählt von {name}",
+      "noSong": "Kein Song gespielt",
+      "won": "Sieg",
+      "champion": "hat das Aux geholt"
+    },
     "wins": {
-      "aria": "{battles} Battles gewonnen, {rounds} Runden gewonnen",
+      "aria": "{battles} Aux Wars gewonnen, {rounds} Runden gewonnen",
       "rounds": "{n}S"
     },
     "topic": {
@@ -1409,8 +1436,11 @@
       "allTime": "Allzeit",
       "weekly": "Diese Woche",
       "rounds": "{n, plural, one {# Runde} other {# Runden}}",
-      "emptyWeek": "Diese Woche hat noch niemand eine Battle gewonnen.",
-      "fairPlay": "Siege aus einem Raum, in dem der Host mitgespielt und selbst entschieden hat, zählen nicht."
+      "emptyWeek": "Diese Woche hat noch niemand eine Aux War gewonnen.",
+      "weekResets": "Die Woche startet jeden Freitag um Mitternacht (US-Ostküstenzeit) neu.",
+      "fairPlay": "Siege, die sich ein Host selbst gibt, zählen nicht: in einem Raum, in dem er entscheidet, oder in einem Match, das er für sich selbst abpfeift.",
+      "firstTitle": "Die Ersten auf dem Board",
+      "firstSub": "Die Top 10 geht auf, sobald {n} Spieler gewonnen haben. Host eine Aux War und bring deinen Namen hier hoch."
     },
     "seat": {
       "watchOnly": "Dieser Raum ist privat: zuschauen, abstimmen und schreiben geht überall. Ein Platz im Baum braucht den Code des Hosts.",
@@ -1718,7 +1748,7 @@
     "story1": "Peak Music Reviews begann mit einem einfachen Frust: Filmfans haben ein Zuhause. Sie loggen, was sie sehen, bewerten es, streiten darüber und bauen ein Geschmacksprofil, das wirklich etwas über sie sagt. Musik, mit der die meisten von uns mehr Stunden verbringen als mit jedem Film, hat diesen Ort nie bekommen.",
     "story2": "Also haben wir es gebaut. Keine weitere Streaming-App, kein weiterer Algorithmus, der dir vorsetzt, was er glaubt, dass du schon magst: ein Ort, an dem das Hören selbst der Punkt ist. Jede Rezension hier hängt an einem echten Release, vom größten Album des Jahres bis zur Loosie, die nie auf Streaming war.",
     "thePurpose": "DER ZWECK",
-    "purpose1": "Ein Ort für dein ganzes Hörleben: bewerte Platten von 0 bis 10, bau Listen, hol dir das Aux in einer Battle und sei im Raum, live, in dem Moment, in dem ein Album erscheint. Dein Profil ist deins zum Ordnen und Gestalten; dein Feed entsteht aus den Leuten, denen du folgst, und dem, was du bewertest, nicht aus Werbung.",
+    "purpose1": "Ein Ort für dein ganzes Hörleben: bewerte Platten von 0 bis 10, bau Listen, hol dir das Aux in einer Aux War und sei im Raum, live, in dem Moment, in dem ein Album erscheint. Dein Profil ist deins zum Ordnen und Gestalten; dein Feed entsteht aus den Leuten, denen du folgst, und dem, was du bewertest, nicht aus Werbung.",
     "purpose2": "Die Wette ist einfach: Die beste Musikentdeckungsmaschine, die je gebaut wurde, sind andere Leute, denen es etwas bedeutet. Alles auf dieser Seite existiert, um dich näher an sie zu bringen.",
     "whatsDifferent": "WAS ANDERS IST",
     "diff1H": "Unveröffentlichte Musik.",

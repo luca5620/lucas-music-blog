@@ -77,10 +77,10 @@ export async function DELETE(
   const { supabase, user, room } = g;
 
   if (room.host_id === user.id) {
-    return NextResponse.json({ error: "The host can't leave — end the battle instead." }, { status: 409 });
+    return NextResponse.json({ error: "The host can't leave — end the war instead." }, { status: 409 });
   }
   if (room.status !== "lobby") {
-    return NextResponse.json({ error: "The battle is on — no leaving the bracket now." }, { status: 409 });
+    return NextResponse.json({ error: "The war is on — no leaving the bracket now." }, { status: 409 });
   }
   const { error } = await supabase
     .from("aux_members")

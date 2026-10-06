@@ -870,9 +870,9 @@
       "signedOff": "Afgesloten",
       "auxCount": "Aux Wars · {n}",
       "myAux": "Mijn Aux Wars",
-      "auxTotal": "{n, plural, one {# battle} other {# battles}} in totaal",
-      "hostAux": "+ Battle hosten",
-      "noAux": "Nog geen battles. Kies een thema en geef de aux door."
+      "auxTotal": "{n, plural, one {# Aux War} other {# Aux Wars}} in totaal",
+      "hostAux": "+ Aux War hosten",
+      "noAux": "Nog geen Aux Wars. Kies een thema en geef de aux door."
     }
   },
   "releases": {
@@ -1169,15 +1169,32 @@
     "index": {
       "title": "AUX WARS",
       "sub": "Geef de aux door. Twee nummers tegenover elkaar, de room luistert, de room stemt. Brackets, best-of-3, live chat en aan het eind een kampioen.",
-      "host": "Battle hosten",
+      "host": "Aux War hosten",
       "joinPlaceholder": "Plak een roomlink…",
       "joinGo": "Ga",
       "yourPrivate": "Je privérooms",
       "liveNow": "Nu live",
       "fillingUp": "Loopt vol",
       "lastResults": "Laatste uitslagen",
-      "noSignal": "GEEN SIGNAAL",
-      "empty": "Nog geen battles op zender. Host er een, kies een thema en geef de aux door."
+      "offAir": "UIT DE LUCHT",
+      "offAirTitle": "Er is nu niets live",
+      "offAirSub": "Elke Aux War begint met één host. Open een room, stuur de link rond en geef de aux door.",
+      "recentWars": "Recente Aux Wars"
+    },
+    "how": {
+      "title": "Zo gaat een Aux War",
+      "openLabel": "Open een room",
+      "openBody": "Geef hem een naam, kies één ronde of best of 3 en bepaal wie jureert: het publiek of jij.",
+      "topicLabel": "Kies een thema",
+      "topicBody": "Elke ronde krijgt een opdracht. Beste zomernummer, beste breakupnummer, wat je maar wilt.",
+      "songLabel": "Zet een nummer op",
+      "songBody": "Elke speler kiest één track van Spotify, SoundCloud of YouTube.",
+      "voteLabel": "De room beslist",
+      "voteBody": "Iedereen luistert, gooit 🔥 of 💩 en stemt. Gelijkspel gaat naar overtime.",
+      "champLabel": "Kroon een kampioen",
+      "champBody": "Winnaars gaan door in de bracket tot er één speler over is met de aux in handen.",
+      "cta": "Aux War hosten",
+      "ctaHint": "Met twee spelers kun je al beginnen. Iedereen mag kijken en stemmen."
     },
     "card": {
       "live": "LIVE",
@@ -1244,8 +1261,8 @@
     "room": {
       "back": "Terug",
       "share": "Delen",
-      "end": "Battle beëindigen",
-      "endConfirm": "De battle nu beëindigen? Er wordt geen kampioen gekroond.",
+      "end": "Aux War beëindigen",
+      "endConfirm": "De Aux War nu beëindigen? Er wordt geen kampioen gekroond.",
       "onAir": "LIVE",
       "lobby": "LOBBY",
       "final": "FINALE",
@@ -1269,7 +1286,7 @@
       "grabSpot": "Pak een plek",
       "watchOnly": "Alleen kijken",
       "leave": "Weggaan",
-      "start": "Battle starten",
+      "start": "Aux War starten",
       "starting": "Bracket loten…",
       "startNeed": "Minstens twee spelers nodig.",
       "overtime": "OVERTIME",
@@ -1301,8 +1318,10 @@
       "standBy": "EVEN GEDULD",
       "champion": "KAMPIOEN",
       "championSub": "Won de aux in \"{name}\".",
-      "ended": "BATTLE BEËINDIGD",
+      "ended": "AUX WAR BEËINDIGD",
       "endedSub": "De host trok de stekker eruit voordat er een kampioen was.",
+      "wentQuiet": "UITZENDING GESTOPT",
+      "wentQuietSub": "Hier gebeurde twee uur lang niets, dus de room heeft zichzelf afgemeld.",
       "hostAnother": "Nog een hosten",
       "series": "De serie",
       "bracket": "De bracket",
@@ -1368,8 +1387,16 @@
       "overtime": "OVERTIME",
       "takesIt": "pakt hem met \"{song}\""
     },
+    "recent": {
+      "final": "FINALE",
+      "vs": "vs",
+      "pickedBy": "gekozen door {name}",
+      "noSong": "Geen nummer gespeeld",
+      "won": "Gewonnen",
+      "champion": "pakte de aux"
+    },
     "wins": {
-      "aria": "{battles} battles gewonnen, {rounds} rondes gewonnen",
+      "aria": "{battles} Aux Wars gewonnen, {rounds} rondes gewonnen",
       "rounds": "{n}W"
     },
     "topic": {
@@ -1409,8 +1436,11 @@
       "allTime": "Aller tijden",
       "weekly": "Deze week",
       "rounds": "{n, plural, one {# ronde} other {# rondes}}",
-      "emptyWeek": "Deze week heeft nog niemand een battle gewonnen.",
-      "fairPlay": "Overwinningen in een room waar de host zelf meespeelde én jureerde tellen niet mee."
+      "emptyWeek": "Deze week heeft nog niemand een Aux War gewonnen.",
+      "weekResets": "De week begint elke vrijdag om middernacht opnieuw (Amerikaanse oostkusttijd).",
+      "fairPlay": "Overwinningen die een host zichzelf geeft tellen niet mee: in een room waar hij jureert, of in een match die hij in zijn eigen voordeel beslist.",
+      "firstTitle": "De eersten op het bord",
+      "firstSub": "De Top 10 gaat open zodra {n} spelers gewonnen hebben. Host een Aux War en zet je naam hier neer."
     },
     "seat": {
       "watchOnly": "Deze room is privé: kijken, stemmen en chatten mag gerust. Een plek in het schema vraagt de code van de host.",
@@ -1718,7 +1748,7 @@
     "story1": "Peak Music Reviews begon met een simpele frustratie: filmliefhebbers hebben een thuis. Ze loggen wat ze kijken, geven het een cijfer, discussiëren erover en bouwen een smaakprofiel dat echt iets over ze zegt. Muziek, waar de meesten van ons meer uren mee doorbrengen dan met welke film ook, kreeg die plek nooit.",
     "story2": "Dus bouwden we het. Geen nieuwe streamingapp, geen nieuw algoritme dat je voert wat het denkt dat je al leuk vindt: een plek waar het luisteren zelf het punt is. Elke recensie hier hangt aan een echte release, van het grootste album van het jaar tot een losse track die nooit op streaming stond.",
     "thePurpose": "HET DOEL",
-    "purpose1": "Eén plek voor je hele luisterleven: geef platen een cijfer van 0 tot 10, maak lijsten, win de aux in een battle en zit in de room, live, op het moment dat een album uitkomt. Je profiel is van jou om in te delen en een thema te geven; je feed wordt gemaakt van wie je volgt en wat je beoordeelt, niet van advertenties.",
+    "purpose1": "Eén plek voor je hele luisterleven: geef platen een cijfer van 0 tot 10, maak lijsten, win de aux in een Aux War en zit in de room, live, op het moment dat een album uitkomt. Je profiel is van jou om in te delen en een thema te geven; je feed wordt gemaakt van wie je volgt en wat je beoordeelt, niet van advertenties.",
     "purpose2": "De gok is simpel: de beste muziekontdekkingsmachine ooit gemaakt zijn andere mensen die erom geven. Alles op deze site bestaat om je dichter bij hen te brengen.",
     "whatsDifferent": "WAT ANDERS IS",
     "diff1H": "Onuitgebrachte muziek.",

@@ -1,19 +1,37 @@
 import { createClient } from "@/lib/supabase/server";
+import { getBlockedIds } from "@/lib/db/moderation";
 
 /**
- * Notifications data helpers (migration 025).
+ * Notifications data helpers (migrations 025 + 052).
  *
- * Everything runs with the CALLER's session, so RLS is the real
- * boundary: only the recipient can read/update their rows, and an
- * insert must carry the signed-in user as the actor.
+ * Everything runs with the CALLER's session. Reads go through RLS
+ * (only the recipient can read/update their rows). Writes go through
+ * two SECURITY DEFINER functions from migration 052 — notify_user() and
+ * notify_followers() — instead of plain inserts, because the rules
+ * that matter for writing can't be checked from the actor's session:
  *
- * createNotification is BEST-EFFORT everywhere it's called: the
- * like/follow/comment succeeded already, and a notification hiccup
- * must never surface as an action failure. Callers don't await
- * anything from it beyond completion; it swallows its own errors.
+ *  - "Have I already told them about this?" The actor can't SELECT a
+ *    notification it wrote (025's select policy is recipient-only), so
+ *    the old check-then-insert dedup ALWAYS found nothing and every
+ *    like/unlike loop re-rang the bell and re-buzzed the phone. 052
+ *    adds a partial UNIQUE index and the functions insert with ON
+ *    CONFLICT DO NOTHING — a repeat is skipped by the database itself.
+ *    The push trigger (032) only fires for rows actually inserted, so
+ *    a skipped repeat sends no push either.
+ *  - "Has either of us blocked the other?" The actor can't read the
+ *    recipient's block list. The functions can, and silently skip.
+ *  - The ACTOR is always auth.uid() inside the function — never a
+ *    parameter — so nobody can send a notification "from" someone else.
  *
- * Before migration 025 runs, every query here just errors → empty
- * results / silent no-ops. Nothing breaks pre-migration.
+ * createNotification / notifyFollowers are BEST-EFFORT everywhere
+ * they're called: the like/follow/comment succeeded already, and a
+ * notification hiccup must never surface as an action failure. They
+ * swallow their own errors.
+ *
+ * Before migration 052 runs, the functions don't exist; the helpers
+ * then fall back to the old direct insert (025's insert policy still
+ * allows it), so a deploy that beats the migration loses dedup and
+ * block-filtering for a few minutes, not notifications.
  */
 
 export type NotificationType =
@@ -28,18 +46,21 @@ export type NotificationType =
   | "new_post"
   | "new_list"
   | "new_debate"
-  // Aux battles (042): someone you follow is hosting a room.
+  // Aux Wars (042): someone you follow is hosting a room.
   | "new_aux"
-  // Aux battles (045): a friend pulled you into their room.
+  // Aux Wars (045): a friend pulled you into their room.
   | "aux_invite";
 
-/** The four the CREATE tab makes — the only types that fan out. */
+/** The things the CREATE tab makes — the only types that fan out. */
 export type FollowFeedType =
   | "new_review"
   | "new_post"
   | "new_list"
   | "new_debate"
   | "new_aux";
+
+/** Everything else: one actor → one recipient. */
+export type DirectNotificationType = Exclude<NotificationType, FollowFeedType>;
 
 export interface NotificationRow {
   id: string;
@@ -57,51 +78,65 @@ export interface NotificationRow {
   } | null;
 }
 
-/** One-shot types where a repeat action shouldn't re-notify. */
-const DEDUP_TYPES: NotificationType[] = [
-  "follow",
-  "review_like",
-  "post_like",
-  "list_like",
-];
+/**
+ * True when a Supabase error means "that SQL function doesn't exist
+ * yet" — i.e. migration 052 hasn't been run. PGRST202 is PostgREST's
+ * "not in the schema cache"; 42883 is Postgres' "undefined function".
+ */
+function isMissingFunction(error: { code?: string } | null): boolean {
+  return error?.code === "PGRST202" || error?.code === "42883";
+}
 
+/**
+ * One notification to one person — "X liked your review".
+ *
+ * Dedup + block rules live in the database (see the file header):
+ * calling this twice for the same like is harmless, and calling it
+ * across a block quietly does nothing.
+ */
 export async function createNotification(input: {
   recipientId: string;
   actorId: string;
-  type: NotificationType;
+  type: DirectNotificationType;
   href: string;
   title?: string | null;
 }): Promise<void> {
   const { recipientId, actorId, type, href, title } = input;
-  // Self-actions never notify (the DB check would reject them anyway).
+  // Self-actions never notify (the function would skip it anyway —
+  // this just saves the round trip).
   if (recipientId === actorId) return;
+
+  const cleanHref = href.slice(0, 300);
+  const cleanTitle = title ? title.slice(0, 200) : null;
 
   try {
     const supabase = await createClient();
 
-    // Like/follow toggles: one notification per (actor, thing), ever —
-    // an unlike/relike loop must not refill the bell. Check-then-insert;
-    // a race's worst case is one duplicate row, which is harmless.
-    if (DEDUP_TYPES.includes(type)) {
-      const { data: existing } = await supabase
-        .from("notifications")
-        .select("id")
-        .eq("user_id", recipientId)
-        .eq("actor_id", actorId)
-        .eq("type", type)
-        .eq("href", href)
-        .limit(1)
-        .maybeSingle();
-      if (existing) return;
-    }
-
-    await supabase.from("notifications").insert({
-      user_id: recipientId,
-      actor_id: actorId,
-      type,
-      href: href.slice(0, 300),
-      title: title ? title.slice(0, 200) : null,
+    // Note: no actorId is sent — notify_user() takes the actor from the
+    // session (auth.uid()), which is the whole point. actorId is only
+    // used above for the self-check and in the pre-052 fallback below.
+    const { error } = await supabase.rpc("notify_user", {
+      p_recipient: recipientId,
+      p_type: type,
+      p_href: cleanHref,
+      p_title: cleanTitle,
     } as never);
+
+    if (isMissingFunction(error)) {
+      // Pre-052 fallback: the old plain insert (no dedup, no block
+      // filter — exactly what was live before).
+      await supabase.from("notifications").insert({
+        user_id: recipientId,
+        actor_id: actorId,
+        type,
+        href: cleanHref,
+        title: cleanTitle,
+      } as never);
+      return;
+    }
+    if (error) {
+      console.error("createNotification failed (non-fatal):", error.message);
+    }
   } catch (err) {
     console.error("createNotification failed (non-fatal):", err);
   }
@@ -110,25 +145,23 @@ export async function createNotification(input: {
 /**
  * "Someone you follow posted" — one notification per follower.
  *
- * The other helper answers a single person; this one answers a crowd,
- * so it does the whole fan-out in three queries no matter how many
- * followers there are: who follows me, who have I already told, insert
- * the rest. Doing it per-follower through createNotification would be
- * two round trips each.
+ * The whole fan-out is ONE database call however many followers there
+ * are: notify_followers() looks up the caller's followers and inserts
+ * a row for each in a single INSERT … SELECT.
  *
- * Deduped by (actor, type, href) because publishing is not a one-way
- * door: unpublishing a post and publishing it again, or editing a
- * draft repeatedly, must not refill everyone's bell. First publish
- * wins, forever.
+ * Deduped by (follower, actor, type, href) via the unique index,
+ * because publishing is not a one-way door: unpublishing a post and
+ * publishing it again, or editing a draft repeatedly, must not refill
+ * everyone's bell. First publish wins, forever.
  *
  * Best-effort like everything else here — the thing was already
  * created, and a notification hiccup must never surface as a failure
  * to publish.
  *
- * Note each inserted row also fires the push trigger (033/032), so a
- * creator with N followers sends N pushes. That's the intent, and at
- * current scale it's nothing; if the site ever gets someone with
- * thousands of followers this wants a queue rather than a loop.
+ * Each inserted row fires the push trigger (032), so a creator with N
+ * followers sends N pushes. That's the intent, and at current scale
+ * it's nothing; if the site ever gets someone with thousands of
+ * followers this wants a queue rather than a trigger per row.
  */
 export async function notifyFollowers(input: {
   actorId: string;
@@ -137,64 +170,85 @@ export async function notifyFollowers(input: {
   title?: string | null;
 }): Promise<void> {
   const { actorId, type, href, title } = input;
+  const cleanHref = href.slice(0, 300);
+  const cleanTitle = title ? title.slice(0, 200) : null;
 
   try {
     const supabase = await createClient();
 
-    const { data: followers } = await supabase
-      .from("follows")
-      .select("follower_id")
-      .eq("following_id", actorId);
+    const { error } = await supabase.rpc("notify_followers", {
+      p_type: type,
+      p_href: cleanHref,
+      p_title: cleanTitle,
+    } as never);
 
-    const followerIds = (followers ?? []).map(
-      (row) => (row as { follower_id: string }).follower_id
-    );
-    if (followerIds.length === 0) return;
-
-    // Already told about this exact thing? Then this is a re-publish.
-    const { data: existing } = await supabase
-      .from("notifications")
-      .select("user_id")
-      .eq("actor_id", actorId)
-      .eq("type", type)
-      .eq("href", href);
-
-    const told = new Set(
-      (existing ?? []).map((row) => (row as { user_id: string }).user_id)
-    );
-
-    const rows = followerIds
-      // A self-follow shouldn't exist, but the DB check would reject
-      // the whole insert if one ever did.
-      .filter((id) => id !== actorId && !told.has(id))
-      .map((id) => ({
-        user_id: id,
-        actor_id: actorId,
-        type,
-        href: href.slice(0, 300),
-        title: title ? title.slice(0, 200) : null,
-      }));
-
-    if (rows.length === 0) return;
-
-    await supabase.from("notifications").insert(rows as never);
+    if (isMissingFunction(error)) {
+      // Pre-052 fallback: look up followers and insert directly, as
+      // the code did before. (The old "already told?" check is gone —
+      // it could never see anything, see the file header.)
+      const { data: followers } = await supabase
+        .from("follows")
+        .select("follower_id")
+        .eq("following_id", actorId);
+      const rows = (followers ?? [])
+        .map((row) => (row as { follower_id: string }).follower_id)
+        // A self-follow shouldn't exist, but the table check would
+        // reject the whole batch if one ever did.
+        .filter((id) => id !== actorId)
+        .map((id) => ({
+          user_id: id,
+          actor_id: actorId,
+          type,
+          href: cleanHref,
+          title: cleanTitle,
+        }));
+      if (rows.length > 0) {
+        await supabase.from("notifications").insert(rows as never);
+      }
+      return;
+    }
+    if (error) {
+      console.error("notifyFollowers failed (non-fatal):", error.message);
+    }
   } catch (err) {
     console.error("notifyFollowers failed (non-fatal):", err);
   }
 }
 
-/** The viewer's latest notifications, actor profile joined in. */
+/**
+ * PostgREST filter value for "actor is not one of these ids":
+ * `(id1,id2,…)`. Only ever built from uuids out of our own
+ * user_blocks table, so there's nothing to escape.
+ */
+function notInList(ids: string[]): string {
+  return `(${ids.join(",")})`;
+}
+
+/**
+ * The viewer's latest notifications, actor profile joined in.
+ *
+ * Rows from people the viewer has BLOCKED are filtered out. New ones
+ * can't be created any more (052's notify_user() skips blocked pairs), but
+ * this also hides the ones from before the block — blocking someone
+ * should make them vanish from your bell, not just stop new rows.
+ */
 export async function getNotifications(
   userId: string,
   limit = 25
 ): Promise<NotificationRow[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const blocked = await getBlockedIds(userId);
+
+  let query = supabase
     .from("notifications")
     .select(
       "*, profiles!notifications_actor_id_fkey(username, display_name, avatar_url)"
     )
-    .eq("user_id", userId)
+    .eq("user_id", userId);
+  if (blocked.length > 0) {
+    query = query.not("actor_id", "in", notInList(blocked));
+  }
+  const { data, error } = await query
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -215,14 +269,23 @@ export async function getNotifications(
   });
 }
 
-/** How many unread — the badge number. */
+/**
+ * How many unread — the badge number. Same blocked-actor filter as
+ * getNotifications, so the badge never counts rows the list hides.
+ */
 export async function getUnreadCount(userId: string): Promise<number> {
   const supabase = await createClient();
-  const { count, error } = await supabase
+  const blocked = await getBlockedIds(userId);
+
+  let query = supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
     .eq("read", false);
+  if (blocked.length > 0) {
+    query = query.not("actor_id", "in", notInList(blocked));
+  }
+  const { count, error } = await query;
   if (error) return 0;
   return count ?? 0;
 }

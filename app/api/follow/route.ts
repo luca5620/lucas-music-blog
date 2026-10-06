@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { followUser, unfollowUser, isFollowing } from "@/lib/db/profiles";
+import { followUser, unfollowUser } from "@/lib/db/profiles";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
 import { createNotification } from "@/lib/db/notifications";
+import { BLOCKED_ACTION_ERROR, isBlockedBy } from "@/lib/db/moderation";
 
 /**
  * POST /api/follow — Follow a user.
@@ -23,8 +24,13 @@ export async function POST(request: NextRequest) {
   const limited = await rateLimit(`follow:${user.id}`, 30, 60_000);
   if (limited) return limited;
 
-  const body = await request.json();
-  const { followingId } = body;
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+  const { followingId } = (body ?? {}) as { followingId?: unknown };
 
   if (!isUuid(followingId)) {
     return NextResponse.json(
@@ -38,6 +44,13 @@ export async function POST(request: NextRequest) {
       { error: "Cannot follow yourself" },
       { status: 400 }
     );
+  }
+
+  // Someone who blocked you can't be followed by you (052). The
+  // restrictive RLS policy on follows would refuse the insert anyway;
+  // checking first turns that into a clear 403 instead of a 500.
+  if (await isBlockedBy(followingId)) {
+    return NextResponse.json({ error: BLOCKED_ACTION_ERROR }, { status: 403 });
   }
 
   const success = await followUser(user.id, followingId);
@@ -81,8 +94,18 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
-  const { followingId } = body;
+  // Unfollow shares the follow bucket — a follow/unfollow loop is one
+  // stream of writes, and the old route let the "un" half run free.
+  const limited = await rateLimit(`follow:${user.id}`, 30, 60_000);
+  if (limited) return limited;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+  const { followingId } = (body ?? {}) as { followingId?: unknown };
 
   if (!isUuid(followingId)) {
     return NextResponse.json(

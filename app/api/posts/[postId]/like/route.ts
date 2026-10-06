@@ -4,6 +4,7 @@ import { likePost } from "@/lib/db/posts";
 import { rateLimit } from "@/lib/rate-limit";
 import { isUuid } from "@/lib/validate";
 import { createNotification } from "@/lib/db/notifications";
+import { BLOCKED_ACTION_ERROR, isBlockedBy } from "@/lib/db/moderation";
 
 /**
  * POST /api/posts/[postId]/like — Toggle like on a post.
@@ -37,18 +38,35 @@ export async function POST(
     );
   }
 
+  // The post's author, looked up before the toggle for the block check
+  // (and reused for the notification).
+  const { data: postRow } = await supabase
+    .from("posts")
+    .select("user_id, slug, title")
+    .eq("id", postId)
+    .maybeSingle();
+  const p = postRow as
+    | { user_id: string; slug: string; title: string }
+    | null;
+
+  // Blocked by the author → no new like; un-liking stays allowed
+  // (same rule as the review-like route).
+  if (p && (await isBlockedBy(p.user_id))) {
+    const { data: mine } = await supabase
+      .from("post_likes")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("post_id", postId)
+      .maybeSingle();
+    if (!mine) {
+      return NextResponse.json({ error: BLOCKED_ACTION_ERROR }, { status: 403 });
+    }
+  }
+
   const result = await likePost(user.id, postId);
 
   // A LIKE rings the author's bell (see the review-like route).
   if (result.liked) {
-    const { data: postRow } = await supabase
-      .from("posts")
-      .select("user_id, slug, title")
-      .eq("id", postId)
-      .maybeSingle();
-    const p = postRow as
-      | { user_id: string; slug: string; title: string }
-      | null;
     if (p) {
       await createNotification({
         recipientId: p.user_id,

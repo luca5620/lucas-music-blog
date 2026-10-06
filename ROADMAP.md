@@ -9,7 +9,22 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
-## 👉 PICK UP HERE — 2026-10-05 (MacBook): the review batch, waiting on Luca's hands
+## ✅ 2026-10-05 (MacBook): the review batch — LIVE
+
+**DONE 2026-10-05:** Luca ran migrations 052–056, deployed push-fanout
+and push-recap (`npx supabase functions deploy … --project-ref
+qhbtfhyzbiwqwaxtetgd` — the CLI isn't installed globally on the Mac;
+`npx supabase login` first), and changed the Confirm-signup email
+template. Claude verified from outside that every migration landed
+(new columns answer; new functions answer "permission denied" =
+present and correctly closed), then merged `lead/reviews-logs` into
+main and pushed. **Still to confirm:** that 055's
+`__PUSH_WEBHOOK_SECRET__` was replaced (check query: `select
+position('__PUSH_WEBHOOK_SECRET__' in prosrc) > 0 from pg_proc where
+proname = 'send_weekly_recaps'` must be false) and that the first
+Sunday recap actually arrives (2026-10-11, 6pm New York).
+
+The original handoff, for the record:
 
 Luca asked for a full review of the app/web, then: "start with the
 bugs then do the builds … literally everything stated should be fixed

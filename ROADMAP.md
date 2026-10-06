@@ -18,11 +18,16 @@ qhbtfhyzbiwqwaxtetgd` — the CLI isn't installed globally on the Mac;
 template. Claude verified from outside that every migration landed
 (new columns answer; new functions answer "permission denied" =
 present and correctly closed), then merged `lead/reviews-logs` into
-main and pushed. **Still to confirm:** that 055's
-`__PUSH_WEBHOOK_SECRET__` was replaced (check query: `select
-position('__PUSH_WEBHOOK_SECRET__' in prosrc) > 0 from pg_proc where
-proname = 'send_weekly_recaps'` must be false) and that the first
-Sunday recap actually arrives (2026-10-11, 6pm New York).
+main and pushed; confirmed live on peakmusicreviews.com the same
+evening. **055 verified 2026-10-05:** the secret is in
+(`position('__PUSH_WEBHOOK_SECRET__' in prosrc) > 0` on
+send_weekly_recaps = false) and pg_cron holds ONE job,
+`weekly-recap-push @ 0 22,23 * * 0` — 22:00 and 23:00 UTC Sundays,
+of which only the one that is 6pm in New York sends (DST-proof). If
+the secret ever needs finding again, it's readable from the 032
+trigger: `select substring(prosrc from 'x-push-secret'',\s*''([^'']+)''')
+from pg_proc where proname = 'notify_push_fanout'`. **Only thing left
+to watch:** the first real recap, Sunday 2026-10-11 at 6pm New York.
 
 The original handoff, for the record:
 

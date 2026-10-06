@@ -101,6 +101,28 @@ repo — rejection log, unwritten Apple requirements, iOS WebView
 quirks, pre-submit checklist, `scripts/preflight-ios.mjs`). Add every
 future Apple verdict to its playbook's "Rejection log".
 
+## ✅ 2026-10-05 — First-rating onboarding (/start) + signed-out fixes
+
+Why: 36 sign-ups in 30 days, 7 ever reviewed. The home page promises
+"your first rating takes two taps" — now it's true.
+
+- **/start — rate 3 records you know** (`app/start`, `components/onboarding/FirstRatings.tsx`, data in `lib/db/onboarding.ts`). Grid of covers (hand-picked giants already in the catalog — `STAPLE_SLUGS`, edit freely — + most-reviewed + newest drops, no unreleased/upcoming) and the catalog search; tap → the review form's own slider in a bottom sheet → POST /api/reviews `{release_id, rating, is_published: true, local_date}`, no words. 0/3 → 3/3 tape counter, "Haven't heard it", Skip, 409 handled, OSD "signal locked" finish → See your shelf / Rate more (→ /reviews/new) / Go home. **Onboarding only, not a second review flow** (Quick Rate stays rejected): 3+ published reviews → bounced to ?next=.
+- **Every new-account path reaches it once** — one rule in `lib/onboarding.ts` (account < 7 days old + zero published reviews + not yet seen), used by /auth/callback, the in-app OAuth finish, /login and /welcome. Email signup goes via its confirmation link. "Seen" = `profiles.onboarded_at` (**migration 056**) + a `pmr_onboarded` cookie, stamped by POST /api/onboarding when /start opens. Home "Rate your first record" → /start.
+- **Email confirm no longer lands looking logged out.** Signup + resend now send people to `/auth/confirm?next=/start` (a server route that sets cookies before the first render). Old "/?code=" links are rerouted there by the middleware. A failed link → /login with a calm "sign in to continue" note. Gated pages now pass `?next=` to /login, which says "Sign in to continue" instead of "Welcome back" when a visitor came from a gated feature.
+- **Own profile empty boxes get a button** (Rate a record / Start a list / Write a post / Find a release) and owner wording on the Reviews/Lists/Posts tabs.
+- **Signed-out /social** shows Top Rooms + Top Reviews This Week + a locked "your channel" panel. **Top Reviews This Week had been blank for EVERYONE**: `reviews` has two FKs to `profiles` now and the bare `profiles(...)` embed made PostgREST refuse the query. Fixed with `profiles!reviews_user_id_fkey` in `lib/db/social.ts`. Watch for this on any new reviews→profiles embed.
+- **Signed-out /your-taste** is a teaser (what it is, public preview cards, Create account / Sign in) instead of a redirect.
+- **Home community wall** is dealt one tile per reviewer per round (max 4 each while others are on it), from its own slim cached query; 24 tiles were 21 different people on 2026-10-05.
+- **Catalog picks of records already on PMR** have their own 60/min limit lane in /api/catalog/ensure; only real Spotify/Genius imports keep 10/min.
+
+**👉 Luca, two dashboard jobs:**
+1. **Run `supabase/migrations/056-onboarded-at.sql`** in the SQL Editor (adds `profiles.onboarded_at`). Safe before or after deploying. Until it runs, "seen" is remembered per browser by cookie only.
+2. **Supabase → Authentication → Email Templates → Confirm signup**: replace the link with this, so the confirm link works in ANY browser (Gmail's in-app one included):
+   ```html
+   <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/start">Confirm your email</a>
+   ```
+   (Site URL must be `https://peakmusicreviews.com`; `/auth/confirm` is already on the Redirect URLs list — reset-password uses it.)
+
 ## ✅ 2026-09-27 — Handles from real names + docked Your Taste comments
 
 - **Invented handles fixed (migration 050, RUN + verified).** Luca's report was "usernames with spaces that aren't searchable". Reality: no username can hold a space (the DB check forbids it) and display-name search already worked. The real bug was that Google/Apple sign-ins who skipped /welcome kept a handle made from the email local-part (Apple relay junk like `jfp225w4kb`). `handle_new_user` now builds it from the provider's name (`public.handle_from_name`, spaces → `_`), and the 7 affected accounts were renamed (`martijn_schilders`, …). Review slugs are frozen at creation, so old review links still work. Search also keeps accented letters now (Doğan).

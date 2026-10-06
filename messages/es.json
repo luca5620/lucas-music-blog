@@ -436,7 +436,11 @@
       "show": "Mostrar",
       "forgot": "¿La olvidaste?",
       "signIn": "Iniciar sesión",
-      "agreement": "Al iniciar sesión aceptas los <terms>Términos de uso</terms> (tolerancia cero con el contenido ofensivo y los usuarios abusivos) y la <privacy>Política de privacidad</privacy>."
+      "agreement": "Al iniciar sesión aceptas los <terms>Términos de uso</terms> (tolerancia cero con el contenido ofensivo y los usuarios abusivos) y la <privacy>Política de privacidad</privacy>.",
+      "continueTitle": "Inicia sesión para continuar",
+      "continueHelper": "¿Eres nuevo? Crear una cuenta gratis toma un minuto.",
+      "linkNoticeLabel": "ENLACE DEL CORREO",
+      "linkNotice": "Ese enlace no inició tu sesión aquí: probablemente se abrió en el navegador de otra app o caducó. Inicia sesión abajo para seguir. Si tu correo aún necesita confirmarse, te ofreceremos un enlace nuevo."
     },
     "signup": {
       "min3": "Mínimo 3 caracteres",
@@ -662,7 +666,12 @@
       "openOnSpotify": "abrir en spotify ↗",
       "iframeTitle": "Playlist de Spotify: {title}",
       "saveHint": "¿te gustó? guárdala como una de tus listas: cada canción se vuelve una entrada que puedes ordenar y comentar"
-    }
+    },
+    "ctaRate": "Califica un disco",
+    "ctaList": "Crea una lista",
+    "ctaPost": "Escribe una publicación",
+    "ctaAnticipated": "Busca un lanzamiento",
+    "noSignalOwnPosts": "SIN SEÑAL: comparte una opinión, un video o una lista y aparecerá aquí."
   },
   "badges": {
     "event": {
@@ -1518,7 +1527,9 @@
       "title": "SOCIAL",
       "body": "Salas en vivo, las reseñas más grandes de la semana y lo que escucha la gente que sigues, todo en un solo lugar.",
       "signIn": "Iniciar sesión",
-      "createAccount": "Crear cuenta"
+      "createAccount": "Crear cuenta",
+      "lockedLabel": "TU CANAL — BLOQUEADO",
+      "lockedBody": "Regístrate para ver lo que califican, escriben y organizan las personas que sigues, los podios semanales de tus amigos y lo que es popular entre ellos."
     },
     "title": "SOCIAL",
     "sub": "Salas en vivo, rankings semanales y lo que está sonando entre tu gente.",
@@ -1675,6 +1686,18 @@
       "swipe": "desliza",
       "applePreview": "Vista previa de {title} en Apple Music",
       "soundcloudPreview": "Reproductor de SoundCloud de {title}"
+    },
+    "guest": {
+      "pitch": "Un canal que se sintoniza contigo: reseñas, publicaciones y discos elegidos según lo que calificas y a quién sigues.",
+      "cta": "Crear cuenta gratis",
+      "signIn": "Ya tengo cuenta",
+      "howLabel": "Cómo se sintoniza",
+      "how1": "Califica algunos discos que ya conoces; con una nota basta.",
+      "how2": "Sigue a gente en cuyo gusto confías.",
+      "how3": "Desliza por un feed elegido para ti, que se afina mientras lo usas.",
+      "previewLabel": "Ahora en el canal de la comunidad",
+      "lockedLabel": "TU CANAL — BLOQUEADO",
+      "lockedBody": "Tu Gusto se construye con tus propias calificaciones y a quién sigues, así que se activa cuando tienes una cuenta."
     }
   },
   "artists": {
@@ -1803,5 +1826,35 @@
       "updateFailed": "No se pudieron guardar los cambios. Inténtalo de nuevo.",
       "deleteFailed": "No se pudo borrar la reseña. Inténtalo de nuevo."
     }
+  },
+  "start": {
+    "eyebrow": "PRIMER ARRANQUE · CH 01",
+    "title": "Califica {goal} discos que conozcas",
+    "sub": "Toca una portada, desliza hasta una nota y guarda. No hacen falta palabras: con un número basta.",
+    "progress": "{n}/{goal} CALIFICADOS",
+    "progressAria": "{n} de {goal} discos calificados",
+    "skip": "Omitir por ahora",
+    "searchLabel": "¿No está en la cuadrícula? Busca cualquier disco",
+    "searchPlaceholder": "Busca un álbum, artista o canción…",
+    "gridLabel": "Discos que quizá conozcas",
+    "rated": "CALIFICADO",
+    "ratedAria": "{title}: calificado con {rating}",
+    "tileAria": "Califica {title} de {artist}",
+    "sheetLabel": "Tu calificación",
+    "notHeard": "No lo he escuchado",
+    "save": "Guardar nota",
+    "saving": "Guardando…",
+    "close": "Cerrar",
+    "ratingAria": "Tu calificación, de 0 a 10",
+    "already": "Ese ya está en tu repisa: elige otro.",
+    "failed": "No se pudo guardar. Inténtalo de nuevo.",
+    "empty": "La cuadrícula aún se está sintonizando: busca un disco que conozcas.",
+    "doneEyebrow": "● REC — SEÑAL FIJADA",
+    "doneTitle": "Tu repisa está al aire",
+    "doneBody": "Esas calificaciones ya aparecen en tu perfil, y Tu Gusto empieza a sintonizarse a partir de ellas.",
+    "seeShelf": "Ver tu repisa",
+    "rateMore": "Calificar más",
+    "goHome": "Ir al inicio",
+    "coverAlt": "Portada de {title}"
   }
 }

@@ -15,6 +15,11 @@
  *
  * The EULA checkbox is the same wall /signup has (App Store 1.2 —
  * agreement before registering); a social sign-up never passed it.
+ *
+ * Afterwards (2026-10-05): a brand-new account continues to /start,
+ * the first-rating screen. /auth/callback and the in-app OAuth finish
+ * normally build that into ?next= already (/welcome?next=/start…);
+ * the check before leaving here is the backstop for any other way in.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -24,6 +29,7 @@ import { createClient } from "@/lib/supabase/client";
 import { usernameFormatErrorKey, suggestUsername } from "@/lib/username";
 import { useTranslations } from "next-intl";
 import type { Profile } from "@/lib/types/database";
+import { destinationAfterSignIn, readOnboardedCookie } from "@/lib/onboarding";
 
 type Availability = "idle" | "checking" | "free" | "taken";
 
@@ -50,6 +56,9 @@ export default function WelcomePage() {
   // Read from the raw URL instead of useSearchParams so this client
   // page doesn't need a Suspense boundary — same as /login.
   const nextRef = useRef("/");
+  // The account's creation time — the first-rating check only ever
+  // routes accounts younger than a week (lib/onboarding.ts).
+  const createdAtRef = useRef<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -67,6 +76,7 @@ export default function WelcomePage() {
         return;
       }
       setUserId(user.id);
+      createdAtRef.current = user.created_at ?? null;
 
       const { data } = await supabase
         .from("profiles")
@@ -178,7 +188,14 @@ export default function WelcomePage() {
       return;
     }
 
-    router.push(nextRef.current);
+    // Brand-new account → /start first (unless ?next= already is).
+    const destination = await destinationAfterSignIn(
+      supabase,
+      { id: userId, created_at: createdAtRef.current },
+      nextRef.current,
+      readOnboardedCookie(document.cookie)
+    );
+    router.push(destination);
     router.refresh();
   };
 

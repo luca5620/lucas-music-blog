@@ -8,12 +8,15 @@
  * popularity, most-liked fallback for cold-start users, reason chips
  * only where one clean signal explains a pick.
  *
- * Server component; auth required (middleware also gates nothing
- * here, so we redirect ourselves via requireAuth).
+ * Server component. Signed OUT (2026-10-05): no redirect to /login
+ * any more — that page says "Welcome back" to people who have never
+ * been here. A visitor gets TasteTeaser instead: what the channel is,
+ * a public preview, and Create account / Sign in.
  */
 
 import Link from "next/link";
-import { requireAuth } from "@/lib/auth";
+import { getUser } from "@/lib/auth";
+import TasteTeaser from "@/components/taste/TasteTeaser";
 import { createClient } from "@/lib/supabase/server";
 import PageHero from "@/components/ui/PageHero";
 import ChannelSurf from "@/components/taste/ChannelSurf";
@@ -34,7 +37,8 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function YourTastePage() {
-  const user = await requireAuth();
+  const user = await getUser();
+  if (!user) return <TasteTeaser />;
   const t = await getTranslations("taste.page");
   const supabase = await createClient();
 

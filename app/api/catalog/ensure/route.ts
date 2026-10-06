@@ -28,10 +28,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Imports hit external APIs — keep the ceiling low.
-  const limited = await rateLimit(`catalog-ensure:${user.id}`, 10, 60_000);
-  if (limited) return limited;
-
   let body: unknown;
   try {
     body = await request.json();
@@ -40,6 +36,21 @@ export async function POST(request: NextRequest) {
   }
 
   const { source, id } = (body ?? {}) as { source?: string; id?: string };
+
+  // Two rate-limit lanes (2026-10-05). Real imports hit Spotify/Genius,
+  // so they keep the low 10-a-minute ceiling. A "local" pick is just a
+  // read of a row that's already in our catalog — no external API, no
+  // write — and was burning the SAME 10/min bucket, so someone picking
+  // records quickly (the first-rating screen's search, the review
+  // form's "rate another" loop) hit "Too many requests" on records we
+  // already had. It still gets a ceiling (every route does), just a
+  // generous one of its own. Checked AFTER parsing the body because
+  // the lane depends on the source; a bad body costs nothing anyway.
+  const limited =
+    source === "local"
+      ? await rateLimit(`catalog-ensure-local:${user.id}`, 60, 60_000)
+      : await rateLimit(`catalog-ensure:${user.id}`, 10, 60_000);
+  if (limited) return limited;
 
   const validSources = ["local", "spotify", "spotify_track", "genius"];
   if (

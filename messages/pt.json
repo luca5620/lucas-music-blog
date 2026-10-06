@@ -436,7 +436,11 @@
       "show": "Mostrar",
       "forgot": "Esqueceu?",
       "signIn": "Entrar",
-      "agreement": "Ao entrar, você aceita os <terms>Termos de uso</terms> (tolerância zero com conteúdo ofensivo e usuários abusivos) e a <privacy>Política de privacidade</privacy>."
+      "agreement": "Ao entrar, você aceita os <terms>Termos de uso</terms> (tolerância zero com conteúdo ofensivo e usuários abusivos) e a <privacy>Política de privacidade</privacy>.",
+      "continueTitle": "Entre para continuar",
+      "continueHelper": "É novo por aqui? Criar uma conta grátis leva um minuto.",
+      "linkNoticeLabel": "LINK DO E-MAIL",
+      "linkNotice": "Esse link não fez seu login aqui — provavelmente abriu no navegador de outro app, ou expirou. Entre abaixo para continuar. Se seu e-mail ainda precisar de confirmação, vamos oferecer um link novo."
     },
     "signup": {
       "min3": "Mínimo de 3 caracteres",
@@ -662,7 +666,12 @@
       "openOnSpotify": "abrir no spotify ↗",
       "iframeTitle": "Playlist do Spotify: {title}",
       "saveHint": "gostou? guarde como uma das suas listas: cada faixa vira um item que você pode ordenar e comentar"
-    }
+    },
+    "ctaRate": "Avalie um disco",
+    "ctaList": "Crie uma lista",
+    "ctaPost": "Escreva um post",
+    "ctaAnticipated": "Encontre um lançamento",
+    "noSignalOwnPosts": "SEM SINAL: compartilhe uma opinião, um vídeo ou uma lista e ela aparece aqui."
   },
   "badges": {
     "event": {
@@ -1518,7 +1527,9 @@
       "title": "SOCIAL",
       "body": "Salas ao vivo, as maiores resenhas da semana e o que as pessoas que você segue estão ouvindo, tudo em um só lugar.",
       "signIn": "Entrar",
-      "createAccount": "Criar conta"
+      "createAccount": "Criar conta",
+      "lockedLabel": "SEU CANAL — BLOQUEADO",
+      "lockedBody": "Cadastre-se para ver o que as pessoas que você segue avaliam, escrevem e organizam, os pódios semanais dos seus amigos e o que está em alta entre eles."
     },
     "title": "SOCIAL",
     "sub": "Salas ao vivo, rankings da semana e o que a sua turma está ouvindo.",
@@ -1675,6 +1686,18 @@
       "swipe": "deslize",
       "applePreview": "Pré-visualização de {title} no Apple Music",
       "soundcloudPreview": "Player do SoundCloud de {title}"
+    },
+    "guest": {
+      "pitch": "Um canal que se sintoniza em você — resenhas, posts e discos escolhidos a partir do que você avalia e de quem você segue.",
+      "cta": "Criar conta grátis",
+      "signIn": "Já tenho conta",
+      "howLabel": "Como ele sintoniza",
+      "how1": "Avalie alguns discos que você já conhece — uma nota basta.",
+      "how2": "Siga pessoas em cujo gosto você confia.",
+      "how3": "Deslize por um feed escolhido para você, que fica mais certeiro com o uso.",
+      "previewLabel": "Agora no canal da comunidade",
+      "lockedLabel": "SEU CANAL — BLOQUEADO",
+      "lockedBody": "Seu Gosto é montado com suas próprias avaliações e quem você segue, então ele liga assim que você tem uma conta."
     }
   },
   "artists": {
@@ -1803,5 +1826,35 @@
       "updateFailed": "Não foi possível salvar as alterações. Tente de novo.",
       "deleteFailed": "Não foi possível apagar a avaliação. Tente de novo."
     }
+  },
+  "start": {
+    "eyebrow": "PRIMEIRA VEZ · CH 01",
+    "title": "Avalie {goal} discos que você conhece",
+    "sub": "Toque numa capa, deslize até uma nota e salve. Não precisa escrever nada — um número basta.",
+    "progress": "{n}/{goal} AVALIADOS",
+    "progressAria": "{n} de {goal} discos avaliados",
+    "skip": "Pular por agora",
+    "searchLabel": "Não está na grade? Encontre qualquer disco",
+    "searchPlaceholder": "Busque um álbum, artista ou música…",
+    "gridLabel": "Discos que você talvez conheça",
+    "rated": "AVALIADO",
+    "ratedAria": "{title} — nota {rating}",
+    "tileAria": "Avaliar {title} de {artist}",
+    "sheetLabel": "Sua nota",
+    "notHeard": "Não ouvi",
+    "save": "Salvar nota",
+    "saving": "Salvando…",
+    "close": "Fechar",
+    "ratingAria": "Sua nota, de 0 a 10",
+    "already": "Esse já está na sua prateleira — escolha outro.",
+    "failed": "Não deu para salvar — tente de novo.",
+    "empty": "A grade ainda está sintonizando — busque um disco que você conhece.",
+    "doneEyebrow": "● REC — SINAL TRAVADO",
+    "doneTitle": "Sua prateleira está no ar",
+    "doneBody": "Essas notas já estão no seu perfil, e o Seu Gosto começa a se sintonizar a partir delas.",
+    "seeShelf": "Ver sua prateleira",
+    "rateMore": "Avaliar mais",
+    "goHome": "Ir para o início",
+    "coverAlt": "Capa de {title}"
   }
 }

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
+import {
+  destinationAfterSignIn,
+  ONBOARDED_COOKIE,
+} from "@/lib/onboarding";
 
 /**
  * GET /auth/callback — where Google/Apple sign-ins come back to.
@@ -11,6 +15,12 @@ import type { Profile } from "@/lib/types/database";
  * with a handle we INVENTED from its email (see migration 031), so if
  * profiles.username_auto is set we send them to /welcome to claim a
  * real one before they land on the site.
+ *
+ * And a second one (2026-10-05): a BRAND-NEW account goes to /start
+ * — the first-rating screen — before `next`. The rule lives in
+ * lib/onboarding.ts (needsFirstRating) and is shared with the in-app
+ * finish in components/auth/OAuthButtons.tsx; when both apply the
+ * order is /welcome → /start → next.
  *
  * Email confirmation links keep using /auth/confirm — that route
  * handles token_hash links too, which arrive in whatever browser the
@@ -53,9 +63,19 @@ export async function GET(request: NextRequest) {
     .eq("id", data.user.id)
     .maybeSingle();
 
+  // Brand-new account → the first-rating screen, once. Decided here
+  // (not on /welcome) so the whole chain is built in one place:
+  // /welcome?next=/start?next=<next>. Fails soft to plain `next`.
+  const destination = await destinationAfterSignIn(
+    supabase,
+    data.user,
+    safeNext,
+    request.cookies.get(ONBOARDED_COOKIE)?.value ?? null
+  );
+
   if ((profile as Pick<Profile, "username_auto"> | null)?.username_auto) {
-    return bounce(`/welcome?next=${encodeURIComponent(safeNext)}`);
+    return bounce(`/welcome?next=${encodeURIComponent(destination)}`);
   }
 
-  return bounce(safeNext);
+  return bounce(destination);
 }

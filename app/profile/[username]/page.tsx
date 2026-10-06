@@ -599,6 +599,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                           ? t("noSignalOwnReviews")
                           : t("noSignalReviews")
                       }
+                      cta={isOwnProfile ? { href: "/start", label: t("ctaRate") } : undefined}
                     />
                   ) : (
                     <div className="poster-grid">
@@ -705,6 +706,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                           ? t("noSignalOwnLists")
                           : t("noSignalLists")
                       }
+                      cta={isOwnProfile ? { href: "/lists/new", label: t("ctaList") } : undefined}
                     />
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -728,6 +730,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                           ? t("noSignalOwnAnticipated")
                           : t("noSignalAnticipated")
                       }
+                      cta={isOwnProfile ? { href: "/releases", label: t("ctaAnticipated") } : undefined}
                     />
                   ) : (
                     <div className="poster-grid">
@@ -840,7 +843,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         {/* ----- Reviews tab (default) ----- */}
         {activeTab === "reviews" &&
           ((reviews as Review[]).length === 0 ? (
-            <EmptyState text={t("noSignalReviews")} />
+            /* Your OWN empty tab talks to you, with the way to fill it
+               (2026-10-05) — the visitor line read like someone else's
+               dead profile to a brand-new member. */
+            <EmptyState
+              text={isOwnProfile ? t("noSignalOwnReviews") : t("noSignalReviews")}
+              cta={isOwnProfile ? { href: "/start", label: t("ctaRate") } : undefined}
+            />
           ) : (
             /* View-switchable (detailed/posters/compact) — the choice
                persists and is shared with the reviews index. */
@@ -850,7 +859,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         {/* ----- Lists tab ----- */}
         {activeTab === "lists" &&
           (profileLists.length === 0 ? (
-            <EmptyState text={t("noSignalListsTab")} />
+            <EmptyState
+              text={isOwnProfile ? t("noSignalOwnLists") : t("noSignalListsTab")}
+              cta={isOwnProfile ? { href: "/lists/new", label: t("ctaList") } : undefined}
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {profileLists.map((list) => (
@@ -862,7 +874,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         {/* ----- Posts tab ----- */}
         {activeTab === "posts" &&
           (profilePosts.length === 0 ? (
-            <EmptyState text={t("noSignalPosts")} />
+            <EmptyState
+              text={isOwnProfile ? t("noSignalOwnPosts") : t("noSignalPosts")}
+              cta={isOwnProfile ? { href: "/posts/new", label: t("ctaPost") } : undefined}
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               {profilePosts.map((p) => (
@@ -911,10 +926,29 @@ export default async function ProfilePage({ params, searchParams }: Props) {
    Empty state — CRT static box
    ============================================ */
 
-function EmptyState({ text }: { text: string }) {
+/**
+ * The NO SIGNAL box. On your OWN profile it also carries the one
+ * button that fills it (2026-10-05: a brand-new member's profile was a
+ * wall of text-only boxes with nothing to tap). Visitors get the plain
+ * box — you can't fill someone else's shelf. "Rate a record" goes to
+ * /start, the first-rating screen, which forwards anyone past their
+ * first three to the normal flow.
+ */
+function EmptyState({
+  text,
+  cta,
+}: {
+  text: string;
+  cta?: { href: string; label: string };
+}) {
   return (
-    <div className="panel-xbox p-8 text-center">
+    <div className="panel-xbox p-8 text-center space-y-4">
       <p className="osd-text text-sm opacity-70">{text}</p>
+      {cta && (
+        <Link href={cta.href} className="btn-y2k btn-y2k-outline inline-flex text-xs">
+          {cta.label}
+        </Link>
+      )}
     </div>
   );
 }

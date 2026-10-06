@@ -436,7 +436,11 @@
       "show": "Tonen",
       "forgot": "Vergeten?",
       "signIn": "Inloggen",
-      "agreement": "Door in te loggen ga je akkoord met de <terms>Gebruiksvoorwaarden</terms> (nultolerantie voor kwetsende inhoud en misbruik) en het <privacy>Privacybeleid</privacy>."
+      "agreement": "Door in te loggen ga je akkoord met de <terms>Gebruiksvoorwaarden</terms> (nultolerantie voor kwetsende inhoud en misbruik) en het <privacy>Privacybeleid</privacy>.",
+      "continueTitle": "Log in om verder te gaan",
+      "continueHelper": "Nieuw hier? Een gratis account maken duurt een minuutje.",
+      "linkNoticeLabel": "E-MAILLINK",
+      "linkNotice": "Die link heeft je hier niet ingelogd — hij is waarschijnlijk geopend in de browser van een andere app, of hij is verlopen. Log hieronder in om verder te gaan. Moet je e-mail nog bevestigd worden, dan bieden we een nieuwe link aan."
     },
     "signup": {
       "min3": "Minimaal 3 tekens",
@@ -662,7 +666,12 @@
       "openOnSpotify": "open in spotify ↗",
       "iframeTitle": "Spotify-playlist: {title}",
       "saveHint": "vind je hem goed? bewaar hem als een van je lijsten: elk nummer wordt een item dat je kunt ordenen en van een notitie voorzien"
-    }
+    },
+    "ctaRate": "Beoordeel een plaat",
+    "ctaList": "Begin een lijst",
+    "ctaPost": "Schrijf een post",
+    "ctaAnticipated": "Zoek een release",
+    "noSignalOwnPosts": "GEEN SIGNAAL: deel een mening, een video of een lijst en die verschijnt hier."
   },
   "badges": {
     "event": {
@@ -1518,7 +1527,9 @@
       "title": "SOCIAL",
       "body": "Live rooms, de grootste recensies van de week en wat de mensen die je volgt luisteren: alles op één plek.",
       "signIn": "Inloggen",
-      "createAccount": "Account maken"
+      "createAccount": "Account maken",
+      "lockedLabel": "JOUW KANAAL — VERGRENDELD",
+      "lockedBody": "Meld je aan om te zien wat de mensen die je volgt beoordelen, schrijven en hosten, de wekelijkse podia van je vrienden en wat bij hen populair is."
     },
     "title": "SOCIAL",
     "sub": "Live rooms, weeklijsten en wat jouw mensen draaien.",
@@ -1675,6 +1686,18 @@
       "swipe": "swipe",
       "applePreview": "Apple Music-voorbeeld van {title}",
       "soundcloudPreview": "SoundCloud-speler van {title}"
+    },
+    "guest": {
+      "pitch": "Een kanaal dat zich op jou afstemt — reviews, posts en platen gekozen op basis van wat je beoordeelt en wie je volgt.",
+      "cta": "Gratis account maken",
+      "signIn": "Ik heb een account",
+      "howLabel": "Zo stemt het af",
+      "how1": "Beoordeel een paar platen die je al kent — een cijfer is genoeg.",
+      "how2": "Volg mensen van wie je de smaak vertrouwt.",
+      "how3": "Swipe door een feed die voor jou is gekozen en steeds beter wordt.",
+      "previewLabel": "Nu op het communitykanaal",
+      "lockedLabel": "JOUW KANAAL — VERGRENDELD",
+      "lockedBody": "Jouw Smaak wordt gebouwd uit je eigen beoordelingen en wie je volgt, dus hij gaat aan zodra je een account hebt."
     }
   },
   "artists": {
@@ -1803,5 +1826,35 @@
       "updateFailed": "Wijzigingen opslaan mislukt. Probeer het opnieuw.",
       "deleteFailed": "Review verwijderen mislukt. Probeer het opnieuw."
     }
+  },
+  "start": {
+    "eyebrow": "EERSTE START · CH 01",
+    "title": "Beoordeel {goal} platen die je kent",
+    "sub": "Tik op een hoes, schuif naar een cijfer, opslaan. Woorden zijn niet nodig — een cijfer is genoeg.",
+    "progress": "{n}/{goal} BEOORDEELD",
+    "progressAria": "{n} van {goal} platen beoordeeld",
+    "skip": "Nu overslaan",
+    "searchLabel": "Staat hij er niet tussen? Zoek elke plaat",
+    "searchPlaceholder": "Zoek een album, artiest of nummer…",
+    "gridLabel": "Platen die je misschien kent",
+    "rated": "BEOORDEELD",
+    "ratedAria": "{title} — beoordeeld met {rating}",
+    "tileAria": "Beoordeel {title} van {artist}",
+    "sheetLabel": "Jouw cijfer",
+    "notHeard": "Niet gehoord",
+    "save": "Cijfer opslaan",
+    "saving": "Opslaan…",
+    "close": "Sluiten",
+    "ratingAria": "Jouw cijfer, 0 tot 10",
+    "already": "Die staat al op je plank — kies een andere.",
+    "failed": "Opslaan lukte niet — probeer het opnieuw.",
+    "empty": "Het raster stemt nog af — zoek liever een plaat die je kent.",
+    "doneEyebrow": "● REC — SIGNAAL VAST",
+    "doneTitle": "Je plank is in de lucht",
+    "doneBody": "Die cijfers staan nu op je profiel, en Jouw Smaak begint zich daarop af te stemmen.",
+    "seeShelf": "Bekijk je plank",
+    "rateMore": "Meer beoordelen",
+    "goHome": "Naar home",
+    "coverAlt": "Hoes van {title}"
   }
 }

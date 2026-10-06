@@ -295,7 +295,11 @@ async function Dashboard({ userId }: { userId: string }) {
               "not under the blue button"); app-hide keeps it web-only —
               the shell already IS the app. */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-center sm:justify-start">
-            <Link href="/reviews/new" className="btn-y2k btn-y2k-primary">
+            {/* Empty shelf → the first-rating screen (/start, 2026-10-05):
+                a grid of records they probably know, three taps-and-
+                slides, done. Once anything is published it's the
+                normal review form again — /start is first-run only. */}
+            <Link href={firstRun ? "/start" : "/reviews/new"} className="btn-y2k btn-y2k-primary">
               {firstRun ? t("rateFirst") : t("writeReview")}
             </Link>
             <Link href="/aux-wars/new" className="btn-y2k btn-y2k-outline">

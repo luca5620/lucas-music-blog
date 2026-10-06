@@ -436,7 +436,11 @@
       "show": "Anzeigen",
       "forgot": "Vergessen?",
       "signIn": "Anmelden",
-      "agreement": "Mit der Anmeldung akzeptierst du die <terms>Nutzungsbedingungen</terms> (null Toleranz für verletzende Inhalte und Missbrauch) und den <privacy>Datenschutz</privacy>."
+      "agreement": "Mit der Anmeldung akzeptierst du die <terms>Nutzungsbedingungen</terms> (null Toleranz für verletzende Inhalte und Missbrauch) und den <privacy>Datenschutz</privacy>.",
+      "continueTitle": "Melde dich an, um weiterzumachen",
+      "continueHelper": "Neu hier? Ein kostenloses Konto ist in einer Minute erstellt.",
+      "linkNoticeLabel": "E-MAIL-LINK",
+      "linkNotice": "Dieser Link hat dich hier nicht angemeldet – vermutlich wurde er im Browser einer anderen App geöffnet, oder er ist abgelaufen. Melde dich unten an, um weiterzumachen. Falls deine E-Mail noch bestätigt werden muss, bieten wir dir einen neuen Link an."
     },
     "signup": {
       "min3": "Mindestens 3 Zeichen",
@@ -662,7 +666,12 @@
       "openOnSpotify": "in spotify öffnen ↗",
       "iframeTitle": "Spotify-Playlist: {title}",
       "saveHint": "gefällt sie dir? speicher sie als eine deiner listen: jeder track wird ein eintrag, den du sortieren und kommentieren kannst"
-    }
+    },
+    "ctaRate": "Platte bewerten",
+    "ctaList": "Liste anlegen",
+    "ctaPost": "Post schreiben",
+    "ctaAnticipated": "Release finden",
+    "noSignalOwnPosts": "KEIN SIGNAL: Teile eine Meinung, ein Video oder eine Liste – dann landet sie hier."
   },
   "badges": {
     "event": {
@@ -1518,7 +1527,9 @@
       "title": "SOCIAL",
       "body": "Live-Räume, die größten Rezensionen der Woche und was die Leute hören, denen du folgst: alles an einem Ort.",
       "signIn": "Anmelden",
-      "createAccount": "Konto erstellen"
+      "createAccount": "Konto erstellen",
+      "lockedLabel": "DEIN KANAL – GESPERRT",
+      "lockedBody": "Registriere dich, um zu sehen, was die Leute, denen du folgst, bewerten, schreiben und hosten, die Wochen-Podien deiner Freunde und was bei ihnen gerade beliebt ist."
     },
     "title": "SOCIAL",
     "sub": "Live-Räume, Wochencharts und was deine Leute gerade hören.",
@@ -1675,6 +1686,18 @@
       "swipe": "wischen",
       "applePreview": "Apple-Music-Vorschau von {title}",
       "soundcloudPreview": "SoundCloud-Player von {title}"
+    },
+    "guest": {
+      "pitch": "Ein Kanal, der sich auf dich einstellt – Reviews, Posts und Platten, ausgewählt nach dem, was du bewertest und wem du folgst.",
+      "cta": "Kostenloses Konto erstellen",
+      "signIn": "Ich habe ein Konto",
+      "howLabel": "So stellt er sich ein",
+      "how1": "Bewerte ein paar Platten, die du schon kennst – eine Zahl reicht.",
+      "how2": "Folge Leuten, deren Geschmack du vertraust.",
+      "how3": "Wische durch einen Feed, der für dich ausgewählt ist und mit der Zeit immer besser passt.",
+      "previewLabel": "Gerade auf dem Community-Kanal",
+      "lockedLabel": "DEIN KANAL – GESPERRT",
+      "lockedBody": "Dein Geschmack entsteht aus deinen eigenen Bewertungen und Follows – deshalb geht er an, sobald du ein Konto hast."
     }
   },
   "artists": {
@@ -1803,5 +1826,35 @@
       "updateFailed": "Änderungen konnten nicht gespeichert werden. Versuch es noch mal.",
       "deleteFailed": "Review konnte nicht gelöscht werden. Versuch es noch mal."
     }
+  },
+  "start": {
+    "eyebrow": "ERSTSTART · CH 01",
+    "title": "Bewerte {goal} Platten, die du kennst",
+    "sub": "Cover antippen, zur Wertung schieben, speichern. Worte braucht es nicht – eine Zahl reicht.",
+    "progress": "{n}/{goal} BEWERTET",
+    "progressAria": "{n} von {goal} Platten bewertet",
+    "skip": "Jetzt überspringen",
+    "searchLabel": "Nicht im Raster? Finde jede Platte",
+    "searchPlaceholder": "Suche ein Album, einen Artist oder Song…",
+    "gridLabel": "Platten, die du vielleicht kennst",
+    "rated": "BEWERTET",
+    "ratedAria": "{title} – bewertet mit {rating}",
+    "tileAria": "{title} von {artist} bewerten",
+    "sheetLabel": "Deine Wertung",
+    "notHeard": "Nicht gehört",
+    "save": "Wertung speichern",
+    "saving": "Speichern…",
+    "close": "Schließen",
+    "ratingAria": "Deine Wertung, 0 bis 10",
+    "already": "Die steht schon in deinem Regal – nimm eine andere.",
+    "failed": "Speichern hat nicht geklappt – versuch es noch mal.",
+    "empty": "Das Raster stellt sich noch ein – such lieber eine Platte, die du kennst.",
+    "doneEyebrow": "● REC – SIGNAL GESICHERT",
+    "doneTitle": "Dein Regal ist auf Sendung",
+    "doneBody": "Die Wertungen stehen jetzt in deinem Profil, und Dein Geschmack fängt an, sich danach einzustellen.",
+    "seeShelf": "Zu deinem Regal",
+    "rateMore": "Mehr bewerten",
+    "goHome": "Zur Startseite",
+    "coverAlt": "Cover von {title}"
   }
 }

@@ -10,6 +10,27 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.next({ request });
   }
 
+  // --- Old-style signup links (2026-10-05) ---
+  // Until 2026-10-05 the signup confirmation email pointed at the bare
+  // site root, so the link arrived as "/?code=…" and only the BROWSER
+  // client could exchange it — the page rendered logged-out until a
+  // refresh, and in another browser (Gmail's in-app one) it silently
+  // failed. Signup now points at /auth/confirm, but emails already
+  // sitting in inboxes (and Supabase's fallback to the Site URL when a
+  // redirect isn't allow-listed) still land here. Hand the code to
+  // the server route, which sets the session cookies properly and
+  // carries on to the first-rating screen (it bounces anyone who
+  // isn't new straight on to the home page). Nothing else on the
+  // site puts a ?code= on the home page.
+  if (request.nextUrl.pathname === "/" && request.nextUrl.searchParams.has("code")) {
+    const confirmUrl = request.nextUrl.clone();
+    confirmUrl.pathname = "/auth/confirm";
+    confirmUrl.search = "";
+    confirmUrl.searchParams.set("code", request.nextUrl.searchParams.get("code")!);
+    confirmUrl.searchParams.set("next", "/start");
+    return NextResponse.redirect(confirmUrl);
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -79,7 +100,12 @@ export async function updateSession(request: NextRequest) {
     if (protectedPrefixes.some((p) => path === p || path.startsWith(p + "/"))) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/login";
+      // Carry where they were going (2026-10-05), so signing in lands
+      // them back there — and so /login knows they came from a gated
+      // feature and says "sign in to continue" instead of greeting a
+      // first-time visitor with "Welcome back".
       loginUrl.search = "";
+      loginUrl.searchParams.set("next", path + request.nextUrl.search);
       return NextResponse.redirect(loginUrl);
     }
   }

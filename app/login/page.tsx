@@ -18,6 +18,15 @@
  *    was created — see lib/auth/amr.ts). A stolen admin password
  *    without inbox access gets nobody into the mod tools.
  *
+ * ?next= (2026-10-05): where to land after signing in. Gated pages
+ * (the middleware, Your Taste, the first-rating screen) send people
+ * here with it, and its presence also changes the greeting — someone
+ * who just tapped a members-only feature may never have had an
+ * account, so they get "Sign in to continue", not "Welcome back".
+ * ?error=link: an emailed link didn't finish signing them in (opened
+ * in another browser, or expired) — explained in a calm note.
+ * A brand-new account (lib/onboarding.ts) goes to /start first.
+ *
  * Also handled: someone signs up, never clicks the confirmation
  * email, then tries to log in. Supabase answers "Email not confirmed"
  * — we turn that into a clear message plus a one-click resend (with a
@@ -33,6 +42,11 @@ import OAuthButtons from "@/components/auth/OAuthButtons";
 import AuthShell, { ContinueButton } from "@/components/auth/AuthShell";
 import type { Profile } from "@/lib/types/database";
 import { useTranslations } from "next-intl";
+import {
+  destinationAfterSignIn,
+  readOnboardedCookie,
+  safeNextPath,
+} from "@/lib/onboarding";
 
 type Step = "door" | "identifier" | "password" | "code";
 /** Door + email + password get dots; the staff code screen rides as
@@ -72,6 +86,15 @@ export default function LoginPage() {
   const urlParams = new URLSearchParams(search);
   const adminNotice = urlParams.get("verify") === "admin";
   const oauthFailed = urlParams.get("error") === "oauth";
+  //   error=link: /auth/confirm couldn't use an emailed link here —
+  //     usually it opened in a different browser (Gmail's own), where
+  //     the email DID get confirmed but the session landed over there.
+  const linkFailed = urlParams.get("error") === "link";
+  //   next: where to go afterwards (same-site paths only). Present =
+  //     they came from a gated feature, so don't assume they're back.
+  const rawNext = urlParams.get("next");
+  const next = safeNextPath(rawNext);
+  const fromGate = !!rawNext && next !== "/";
   const [oauthDismissed, setOauthDismissed] = useState(false);
   const shownError =
     error ??
@@ -182,7 +205,18 @@ export default function LoginPage() {
       }
     }
 
-    router.push("/");
+    // Where to now: `next`, or the first-rating screen for a brand-
+    // new account (an email signup whose confirmation link opened in
+    // another browser ends up exactly here). Fails soft to `next`.
+    const destination = signInData.user
+      ? await destinationAfterSignIn(
+          supabase,
+          signInData.user,
+          next,
+          readOnboardedCookie(document.cookie)
+        )
+      : next;
+    router.push(destination);
     router.refresh();
   };
 
@@ -209,7 +243,8 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    // Staff accounts are never brand-new — straight to `next`.
+    router.push(next);
     router.refresh();
   };
 
@@ -303,8 +338,10 @@ export default function LoginPage() {
   if (step === "door") {
     return (
       <AuthShell
-        title={t("welcomeBack")}
-        helper={t("signInTo")}
+        title={fromGate || linkFailed ? t("continueTitle") : t("welcomeBack")}
+        // A bounced email link means they DO have an account (they
+        // just made it) — so no "new here?" line for them.
+        helper={fromGate && !linkFailed ? t("continueHelper") : t("signInTo")}
         steps={DOTS}
         step={0}
         error={shownError}
@@ -317,9 +354,20 @@ export default function LoginPage() {
           </div>
         )}
 
+        {/* An emailed link that didn't sign them in HERE — calm info,
+            not a red error: most of the time the email is confirmed
+            and all that's left is signing in. */}
+        {linkFailed && (
+          <div className="mb-4 p-3 rounded bg-accent-primary/10 border border-accent-primary/30 text-sm text-text-primary">
+            <span className="osd-text text-xs block mb-1">{t("linkNoticeLabel")}</span>
+            {t("linkNotice")}
+          </div>
+        )}
+
         {/* One-tap doors. Renders nothing inside a 1.0 app shell —
-            see components/auth/OAuthButtons. */}
-        <OAuthButtons />
+            see components/auth/OAuthButtons. Carries `next` through
+            the provider round trip. */}
+        <OAuthButtons next={next} />
         {/* OAuthButtons draws its own OR rule under the doors. */}
         <div className="h-4" />
         <button

@@ -9,6 +9,60 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## 👉 PICK UP HERE — 2026-10-05 (MacBook): the review batch, waiting on Luca's hands
+
+Luca asked for a full review of the app/web, then: "start with the
+bugs then do the builds … literally everything stated should be fixed
+… the only thing i wouldnt change is the example live room". All of it
+is built, merged and tested on branch **`lead/reviews-logs`** (NOT on
+main yet). Three agents did notifications/push/recap, Aux Wars, and
+signup/onboarding; the lead did reviews integrity, the logs stat, API
+error translation, speed and cleanup. The four blocks below this one
+are the details per area.
+
+**Luca's steps, in this order (nothing is live until step 4):**
+1. **Supabase → SQL Editor, run each file, in number order:**
+   `052-notification-dedup-blocks-push-locale.sql`,
+   `053-aux-wars-engine.sql` (best when no Aux War is live),
+   `054-reviews-integrity-and-logs.sql` (it STOPS with a list if any
+   person has two reviews of one record — delete the extra, re-run),
+   `055-weekly-recap-push.sql` — **first replace
+   `__PUSH_WEBHOOK_SECRET__` with the same value as in 032, and enable
+   pg_cron** (Database → Extensions) if the file complains,
+   `056-onboarded-at.sql`.
+2. **Deploy two edge functions** (they don't ship with Vercel):
+   `supabase functions deploy push-fanout --no-verify-jwt` and
+   `supabase functions deploy push-recap --no-verify-jwt`.
+3. **Supabase → Authentication → Email Templates → Confirm signup**,
+   make the link:
+   `<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/start">Confirm your email</a>`
+4. Tell Claude → it merges `lead/reviews-logs` into main and pushes
+   (right after the migrations, because 053 stops the OLD code from
+   starting Aux Wars rooms).
+
+**Tested before handing over:** the WHOLE migration history (schema +
+002…056) runs clean, in order, on a local Postgres (PGlite) with
+Supabase stand-ins; 052–056 each run twice safely; 054's rules
+(catalog derivation, duplicate lock, slur filter incl. leetspeak,
+standout tracks, owner lock, logs count incl. leap years) and 052's
+dedup + blocks behave as intended. Build + lint clean; every page
+smoke-tested on a prod build. NOT testable here: real APNs pushes,
+pg_cron actually firing on a Sunday, signed-in flows on the real DB.
+
+**Lead's own part (`613fc40` + follow-ups):** migration 054 (above);
+LOGS COMPLETED stat — months with a published review on every day —
+wearing the TROPHY on its own ladder starting at gold (1/3/6/12/24:
+gold, cyan, blue, purple elite, perfect blue), REVIEWS moved to a
+record icon, tier-0 colour is now an unearned grey so the 10th review
+visibly changes colour; THE LOG says how many days are left to
+complete the month (or "next month is a fresh log" after a miss);
+reviews are dated with the device's own calendar day (sanity-checked
+±1 day of UTC); review/rate-limit/slur-filter API errors come back in
+the member's language; middleware uses getClaims and the layout reuses
+the cached getUser (fewer Auth round-trips per page); Your Taste loads
+in parallel; dead profile components + the orphan favorites route
+deleted; CLAUDE.md no longer hard-codes the next migration number.
+
 ## ✅ 2026-10-05 — Notifications fixed, blocks enforced, Sunday recap push
 
 Code-review fixes + one new feature (branch work, merged by the lead).

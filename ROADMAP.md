@@ -301,8 +301,12 @@ aesthetic we already have and from saying no.
 **Waiting on:** better App Store screenshots — Luca is finding a
 graphic designer; he'll come back with that.
 
-**THREE CONVERSATIONS STILL OWED (Luca, 2026-09-02) — raise them,
-don't wait to be asked:**
+**THREE CONVERSATIONS STILL OWED (Luca, 2026-09-02) — STATUS 2026-10-05
+(Luca): all three are now answered or in his hands; don't re-raise them
+as "owed".** SEO is working on its own (Search Console average
+position ~60–65 → **24.4** in about a month); the app **is available in
+EU storefronts**; marketing = his TikTok/Reels edits + going into
+Musicboard-refugee and leak communities. The original notes:
 1. **SEO, properly** — the earlier "item 6" only listed leftovers
    (H1 font-repaint LCP, JS audit, per-artist unreleased hubs, GSC
    query data). He wants the actual conversation: what to rank for
@@ -319,6 +323,42 @@ don't wait to be asked:**
 ---
 
 ## ⏳ In progress
+
+### 📏 NEXT: MEASURE, DON'T BUILD — re-check on 2026-10-19
+
+Agreed 2026-10-05 after the review batch went live: **pause new
+features ~2 weeks** and see whether the two activation changes (the
+/start first-rating screen and the Sunday recap) move the number.
+**Baseline (2026-10-05, from public data):** 57 accounts; 36 signed up
+in the last 30 days, of whom **7 ever published a review (~1 in 5)**;
+21 reviewers ever; one power user (optimal_jason, 27 reviews) is most
+of the non-Luca volume; 3 Aux Wars rooms ever; 42 follows. **On
+2026-10-19 Claude re-pulls the same numbers** (count via the anon key:
+profiles by created_at, published reviews by user_id) and compares the
+share of new sign-ups who reviewed. Also watch: first Sunday recap
+2026-10-11, 6pm New York.
+
+**Marketing meanwhile (Luca, 2026-10-05):** TikTok/Reels-style videos
+and edits (made on the Windows desktop), plus seeking out more
+**Musicboard-refugee and leak/unreleased communities** — the
+community-first direction from the 2026-09-02 Strategy section.
+**SEO:** improving on its own — Search Console average position went
+from ~60–65 to **24.4** in roughly a month (reported 2026-10-05).
+**EU:** the app IS available in EU App Store storefronts (confirmed by
+Luca 2026-10-05).
+
+**Small leftovers, deliberately not urgent:**
+- Drop 025's "actors insert notifications directly" policy now that
+  052's notify_user()/notify_followers() are the way in (next
+  migration is 057).
+- Aux Wars reactions insert policy doesn't check the reaction's room
+  matches its game's room (053 fixed votes, not reactions).
+- Android push is gated off until Firebase is set up
+  (`android/app/google-services.json` + FCM in push-fanout) — only
+  matters once Play testers are recruited.
+- The new translated copy (push text, /start, Aux Wars arena) was
+  machine-written — a native-speaker read for es/fr/pt/nl/de is worth
+  it when convenient.
 
 ### 🎬 AD EDITS — ✅ ALL APPROVED, READY TO POST (2026-09-29, Windows)
 

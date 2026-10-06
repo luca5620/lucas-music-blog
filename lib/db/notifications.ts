@@ -79,15 +79,6 @@ export interface NotificationRow {
 }
 
 /**
- * True when a Supabase error means "that SQL function doesn't exist
- * yet" — i.e. migration 052 hasn't been run. PGRST202 is PostgREST's
- * "not in the schema cache"; 42883 is Postgres' "undefined function".
- */
-function isMissingFunction(error: { code?: string } | null): boolean {
-  return error?.code === "PGRST202" || error?.code === "42883";
-}
-
-/**
  * One notification to one person — "X liked your review".
  *
  * Dedup + block rules live in the database (see the file header):
@@ -114,7 +105,9 @@ export async function createNotification(input: {
 
     // Note: no actorId is sent — notify_user() takes the actor from the
     // session (auth.uid()), which is the whole point. actorId is only
-    // used above for the self-check and in the pre-052 fallback below.
+    // used above for the self-check. These functions are the ONLY way
+    // to write a notification since migration 057 removed the direct-
+    // insert policy (no fallback here any more).
     const { error } = await supabase.rpc("notify_user", {
       p_recipient: recipientId,
       p_type: type,
@@ -122,18 +115,6 @@ export async function createNotification(input: {
       p_title: cleanTitle,
     } as never);
 
-    if (isMissingFunction(error)) {
-      // Pre-052 fallback: the old plain insert (no dedup, no block
-      // filter — exactly what was live before).
-      await supabase.from("notifications").insert({
-        user_id: recipientId,
-        actor_id: actorId,
-        type,
-        href: cleanHref,
-        title: cleanTitle,
-      } as never);
-      return;
-    }
     if (error) {
       console.error("createNotification failed (non-fatal):", error.message);
     }
@@ -164,12 +145,14 @@ export async function createNotification(input: {
  * followers this wants a queue rather than a trigger per row.
  */
 export async function notifyFollowers(input: {
+  /** Kept so callers read clearly; notify_followers() ignores it and
+      takes the actor from the session, which is what makes it safe. */
   actorId: string;
   type: FollowFeedType;
   href: string;
   title?: string | null;
 }): Promise<void> {
-  const { actorId, type, href, title } = input;
+  const { type, href, title } = input;
   const cleanHref = href.slice(0, 300);
   const cleanTitle = title ? title.slice(0, 200) : null;
 
@@ -182,31 +165,6 @@ export async function notifyFollowers(input: {
       p_title: cleanTitle,
     } as never);
 
-    if (isMissingFunction(error)) {
-      // Pre-052 fallback: look up followers and insert directly, as
-      // the code did before. (The old "already told?" check is gone —
-      // it could never see anything, see the file header.)
-      const { data: followers } = await supabase
-        .from("follows")
-        .select("follower_id")
-        .eq("following_id", actorId);
-      const rows = (followers ?? [])
-        .map((row) => (row as { follower_id: string }).follower_id)
-        // A self-follow shouldn't exist, but the table check would
-        // reject the whole batch if one ever did.
-        .filter((id) => id !== actorId)
-        .map((id) => ({
-          user_id: id,
-          actor_id: actorId,
-          type,
-          href: cleanHref,
-          title: cleanTitle,
-        }));
-      if (rows.length > 0) {
-        await supabase.from("notifications").insert(rows as never);
-      }
-      return;
-    }
     if (error) {
       console.error("notifyFollowers failed (non-fatal):", error.message);
     }

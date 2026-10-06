@@ -348,11 +348,13 @@ from ~60–65 to **24.4** in roughly a month (reported 2026-10-05).
 Luca 2026-10-05).
 
 **Small leftovers, deliberately not urgent:**
-- Drop 025's "actors insert notifications directly" policy now that
-  052's notify_user()/notify_followers() are the way in (next
-  migration is 057).
-- Aux Wars reactions insert policy doesn't check the reaction's room
-  matches its game's room (053 fixed votes, not reactions).
+- ✅ (2026-10-05) **Migration 057** — drops 025's direct-insert policy
+  on notifications (notify_user()/notify_followers() are now the only
+  way in; the app's pre-052 fallback inserts were removed) and makes
+  both Aux Wars reaction policies check the game is IN the named room,
+  plus a banned check on switching. Tested in the PGlite chain.
+  **⚠️ Luca runs 057 by hand** (safe any time; the code is already
+  live). Next migration is 058.
 - Android push is gated off until Firebase is set up
   (`android/app/google-services.json` + FCM in push-fanout) — only
   matters once Play testers are recruited.

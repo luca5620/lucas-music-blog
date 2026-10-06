@@ -169,6 +169,11 @@ export async function DELETE(
     return NextResponse.json({ error: t("signIn") }, { status: 401 });
   }
 
+  // Every mutation route is rate-limited (CLAUDE.md). Deleting is
+  // rare and deliberate, so this is generous: 20 per 5 minutes.
+  const limited = await rateLimit(`reviews:delete:${user.id}`, 20, 300_000);
+  if (limited) return limited;
+
   const { reviewId } = await params;
 
   // Verify ownership

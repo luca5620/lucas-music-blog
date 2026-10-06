@@ -2,7 +2,10 @@
  * ProfileStats — the four numbers a profile leads with, Instagram
  * style, right under the name (Luca's idea, 2026-09-12):
  *
- *   FOLLOWERS · FOLLOWING · REVIEWS · LOGS · LIKES
+ *   FOLLOWERS · FOLLOWING · REVIEWS · LIKES · LOGS
+ *
+ * LOGS sits LAST, on its own at the right (Luca, 2026-10-05: keep
+ * reviews and likes next to each other).
  *
  * LOGS (2026-10-05) is the prestigious one, so it wears the TROPHY: a
  * log is a calendar month on THE LOG with a review on every single
@@ -91,15 +94,6 @@ export default async function ProfileStats({
       tier: hiddenSet.has("reviews") ? null : reviews,
     },
     {
-      key: "logs",
-      label: t("logs"),
-      value: stats.logs_completed ?? 0,
-      color: hiddenSet.has("logs") ? accentColor : logs.color,
-      link: false,
-      glyph: hiddenSet.has("logs") ? null : <TrophyGlyph className="w-4 h-4" />,
-      tier: hiddenSet.has("logs") ? null : logs,
-    },
-    {
       key: "likes",
       label: t("likes"),
       value: stats.total_likes_received,
@@ -107,6 +101,15 @@ export default async function ProfileStats({
       link: false,
       glyph: hiddenSet.has("likes") ? null : <HeartGlyph className="w-4 h-4" />,
       tier: hiddenSet.has("likes") ? null : likes,
+    },
+    {
+      key: "logs",
+      label: t("logs"),
+      value: stats.logs_completed ?? 0,
+      color: hiddenSet.has("logs") ? accentColor : logs.color,
+      link: false,
+      glyph: hiddenSet.has("logs") ? null : <TrophyGlyph className="w-4 h-4" />,
+      tier: hiddenSet.has("logs") ? null : logs,
     },
   ];
 

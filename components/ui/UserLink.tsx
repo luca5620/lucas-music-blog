@@ -327,18 +327,18 @@ function HoverCard({
       tier: hidden.has("reviews") ? null : reviews,
     },
     {
-      label: t("logs"),
-      value: summary.stats.logs_completed ?? 0,
-      color: hidden.has("logs") ? accent : logs.color,
-      glyph: hidden.has("logs") ? null : <TrophyGlyph className="w-3.5 h-3.5" />,
-      tier: hidden.has("logs") ? null : logs,
-    },
-    {
       label: t("likes"),
       value: summary.stats.total_likes_received,
       color: hidden.has("likes") ? accent : likes.color,
       glyph: hidden.has("likes") ? null : <HeartGlyph className="w-3.5 h-3.5" />,
       tier: hidden.has("likes") ? null : likes,
+    },
+    {
+      label: t("logs"),
+      value: summary.stats.logs_completed ?? 0,
+      color: hidden.has("logs") ? accent : logs.color,
+      glyph: hidden.has("logs") ? null : <TrophyGlyph className="w-3.5 h-3.5" />,
+      tier: hidden.has("logs") ? null : logs,
     },
   ];
 

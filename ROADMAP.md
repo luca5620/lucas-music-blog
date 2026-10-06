@@ -353,8 +353,10 @@ Luca 2026-10-05).
   way in; the app's pre-052 fallback inserts were removed) and makes
   both Aux Wars reaction policies check the game is IN the named room,
   plus a banned check on switching. Tested in the PGlite chain.
-  **⚠️ Luca runs 057 by hand** (safe any time; the code is already
-  live). Next migration is 058.
+  **RUN by Luca 2026-10-05.** Next migration is 058.
+- ✅ (2026-10-05) Stats order is now FOLLOWERS · FOLLOWING · REVIEWS ·
+  LIKES · LOGS — Logs moved to the far right so reviews and likes sit
+  together (Luca). Same order on the hover card and in Settings.
 - Android push is gated off until Firebase is set up
   (`android/app/google-services.json` + FCM in push-fanout) — only
   matters once Play testers are recruited.

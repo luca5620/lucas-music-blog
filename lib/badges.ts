@@ -232,7 +232,7 @@ export function eventBadge(key: string): EventBadgeDef | undefined {
  * event key COULD collide with one of these, so never register an
  * event badge named "reviews", "logs", "likes" or "tenure".
  */
-export const COMPUTED_BADGE_KEYS = ["reviews", "logs", "likes", "tenure"] as const;
+export const COMPUTED_BADGE_KEYS = ["reviews", "likes", "logs", "tenure"] as const;
 export type ComputedBadgeKey = (typeof COMPUTED_BADGE_KEYS)[number];
 
 /** Settings-page copy for the computed badges. */

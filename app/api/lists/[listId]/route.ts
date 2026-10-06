@@ -3,6 +3,7 @@ import { getUser } from "@/lib/auth";
 import { deleteList, getListById, updateList } from "@/lib/db/lists";
 import type { List } from "@/lib/types/database";
 import { checkContent } from "@/lib/content-filter";
+import { rateLimit } from "@/lib/rate-limit";
 
 // Basic UUID shape check so obviously-bad ids fail fast with a 400
 // instead of hitting the database.
@@ -26,6 +27,13 @@ async function requireOwnedList(
       ),
     };
   }
+
+  // Both handlers are writes (rename/toggle or delete), so the guard
+  // is the one place to meter them. Shares the `lists:` family with
+  // list creation but in its own bucket — editing a list's title a
+  // few times shouldn't eat into how many new lists you can make.
+  const limited = await rateLimit(`lists-edit:${user.id}`, 30, 300_000);
+  if (limited) return { errorResponse: limited };
 
   if (!UUID_RE.test(listId)) {
     return {

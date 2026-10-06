@@ -5,6 +5,8 @@ import {
   isFollowingRelease,
   unfollowRelease,
 } from "@/lib/db/releases";
+import { rateLimit } from "@/lib/rate-limit";
+import { isUuid } from "@/lib/validate";
 
 /**
  * POST /api/releases/[releaseId]/follow — Toggle following a release.
@@ -16,9 +18,11 @@ export async function POST(
 ) {
   const { releaseId } = await params;
 
-  if (!releaseId) {
+  // Release ids are uuids — anything else is junk and never reaches
+  // the database.
+  if (!isUuid(releaseId)) {
     return NextResponse.json(
-      { error: "releaseId is required" },
+      { error: "releaseId must be a valid id" },
       { status: 400 }
     );
   }
@@ -31,6 +35,11 @@ export async function POST(
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Shares the artist-follow bucket: one 30/min budget for following
+  // "things" (artists + releases), separate from following people.
+  const limited = await rateLimit(`entity-follow:${user.id}`, 30, 60_000);
+  if (limited) return limited;
 
   try {
     const currentlyFollowing = await isFollowingRelease(user.id, releaseId);

@@ -228,6 +228,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Deletes get their own bucket (not posts-edit's 10/5min) so staff
+  // clearing a spam wave aren't throttled by their own edits — 20 per
+  // 5 minutes is still a wall for a runaway script.
+  const limited = await rateLimit(`posts-delete:${user.id}`, 20, 300_000);
+  if (limited) return limited;
+
   const { postId } = await params;
   if (!isUuid(postId)) {
     return NextResponse.json({ error: "Invalid post id" }, { status: 400 });

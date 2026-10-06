@@ -5,6 +5,8 @@ import {
   isFollowingArtist,
   unfollowArtist,
 } from "@/lib/db/artists";
+import { rateLimit } from "@/lib/rate-limit";
+import { isUuid } from "@/lib/validate";
 
 /**
  * POST /api/artists/[artistId]/follow — Toggle following an artist.
@@ -16,9 +18,11 @@ export async function POST(
 ) {
   const { artistId } = await params;
 
-  if (!artistId) {
+  // Artist ids are uuids — anything else is junk and never reaches
+  // the database.
+  if (!isUuid(artistId)) {
     return NextResponse.json(
-      { error: "artistId is required" },
+      { error: "artistId must be a valid id" },
       { status: 400 }
     );
   }
@@ -31,6 +35,11 @@ export async function POST(
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Following an artist is a quiet toggle (no bell, no push), but it's
+  // still a write. Same 30/min as following people.
+  const limited = await rateLimit(`entity-follow:${user.id}`, 30, 60_000);
+  if (limited) return limited;
 
   try {
     const currentlyFollowing = await isFollowingArtist(user.id, artistId);

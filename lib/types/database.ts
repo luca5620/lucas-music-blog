@@ -17,6 +17,10 @@ export interface Profile {
       these accounts to /welcome to claim a real handle, and that
       first claim is free. Migration 031; absent until it runs. */
   username_auto?: boolean;
+  /** When this member was first shown the /start first-rating screen
+      (NULL = never). Migration 056; absent until it runs — read it
+      through lib/onboarding.ts, which tolerates that. */
+  onboarded_at?: string | null;
   bio: string | null;
   avatar_url: string | null;
   banner_url: string | null;

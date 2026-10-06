@@ -16,8 +16,12 @@ import { createClient } from "@/lib/supabase/server";
  *    when the email was requested).
  *
  * On success the session cookies are set and we bounce to ?next=
- * (recovery links use /reset-password). On failure we still land on
- * `next` with ?error=link so the page can offer a fresh start.
+ * (recovery links use /reset-password; signup links use /start, the
+ * first-rating screen — 2026-10-05). Because this is a SERVER
+ * redirect, the very first page render already sees the session — the
+ * old "/?code=" signup link left the new member looking logged out.
+ * On failure we still land on `next` with ?error=link so the page can
+ * offer a fresh start (/start passes it on to /login, which explains).
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

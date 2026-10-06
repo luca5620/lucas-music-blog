@@ -20,7 +20,6 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import OAuthButtons from "@/components/auth/OAuthButtons";
@@ -30,6 +29,25 @@ import AuthShell, { ContinueButton } from "@/components/auth/AuthShell";
 // question after a Google/Apple sign-in and the two must not drift.
 import { USERNAME_REGEX, RESERVED_USERNAMES } from "@/lib/username";
 import { useTranslations } from "next-intl";
+import { START_PATH } from "@/lib/onboarding";
+
+/**
+ * Where the confirmation link sends people (2026-10-05). It used to be
+ * the bare site root ("/?code=…"), which only the browser client could
+ * exchange — so the new member landed looking LOGGED OUT until a
+ * refresh, and a link opened in another browser (Gmail's in-app one)
+ * silently failed. /auth/confirm is a server route: it sets the
+ * session cookies before the first page renders, handles both link
+ * shapes (PKCE code, and token_hash — the any-browser kind, once the
+ * Supabase email template uses it; see ROADMAP), and on failure lands
+ * on /start?error=link, which sends a signed-out visitor to /login
+ * with a friendly "sign in to continue". Success goes to /start — the
+ * first-rating screen.
+ */
+function confirmRedirect(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return `${window.location.origin}/auth/confirm?next=${encodeURIComponent(START_PATH)}`;
+}
 
 /** Availability check result for the little status line. */
 type Availability = "idle" | "checking" | "free" | "taken";
@@ -60,7 +78,6 @@ export default function SignUpPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendNote, setResendNote] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const router = useRouter();
   // LANGUAGES: every line on these screens (messages → "auth.signup").
   const t = useTranslations("auth.signup");
 
@@ -160,10 +177,9 @@ export default function SignUpPage() {
           username,
           display_name: username,
         },
-        // After clicking the confirmation link, land back on the site
-        // signed in (the browser client exchanges the code for us).
-        emailRedirectTo:
-          typeof window !== "undefined" ? window.location.origin : undefined,
+        // After clicking the confirmation link: the server-side
+        // /auth/confirm route, then the first-rating screen.
+        emailRedirectTo: confirmRedirect(),
       },
     });
 
@@ -187,8 +203,10 @@ export default function SignUpPage() {
 
     if (data.session) {
       // Confirmation is disabled in the dashboard — we're signed in.
-      router.push("/");
-      router.refresh();
+      // Straight to the first-rating screen. A HARD navigation so the
+      // server render sees the fresh session cookies (same reason the
+      // in-app OAuth finish uses one — see OAuthButtons).
+      window.location.assign(START_PATH);
       return;
     }
 
@@ -205,6 +223,9 @@ export default function SignUpPage() {
     const { error: resendError } = await supabase.auth.resend({
       type: "signup",
       email: email.trim(),
+      // Same landing as the first email — without this the resent
+      // link would fall back to the bare Site URL.
+      options: { emailRedirectTo: confirmRedirect() },
     });
     setResendNote(resendError ? t("resendFailed") : t("signalResent"));
     setResendCooldown(60);
@@ -248,7 +269,13 @@ export default function SignUpPage() {
           >
             {resendCooldown > 0 ? t("resendIn", { s: resendCooldown }) : t("resendLink")}
           </button>
-          <Link href="/login" className="btn-y2k btn-y2k-primary w-full justify-center">
+          {/* next=/start: if the link gets opened in some other browser
+              (the session lands THERE), signing in here still takes
+              them to the first-rating screen. */}
+          <Link
+            href={`/login?next=${encodeURIComponent(START_PATH)}`}
+            className="btn-y2k btn-y2k-primary w-full justify-center"
+          >
             {t("goToSignIn")}
           </Link>
           {resendNote && (

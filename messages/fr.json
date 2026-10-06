@@ -436,7 +436,11 @@
       "show": "Afficher",
       "forgot": "Oublié ?",
       "signIn": "Se connecter",
-      "agreement": "En te connectant, tu acceptes les <terms>Conditions d'utilisation</terms> (tolérance zéro pour les contenus offensants et les utilisateurs abusifs) et la <privacy>Politique de confidentialité</privacy>."
+      "agreement": "En te connectant, tu acceptes les <terms>Conditions d'utilisation</terms> (tolérance zéro pour les contenus offensants et les utilisateurs abusifs) et la <privacy>Politique de confidentialité</privacy>.",
+      "continueTitle": "Connecte-toi pour continuer",
+      "continueHelper": "Nouveau ici ? Créer un compte gratuit prend une minute.",
+      "linkNoticeLabel": "LIEN PAR E-MAIL",
+      "linkNotice": "Ce lien ne t'a pas connecté ici : il s'est sans doute ouvert dans le navigateur d'une autre app, ou il a expiré. Connecte-toi ci-dessous pour continuer. Si ton e-mail doit encore être confirmé, on t'enverra un nouveau lien."
     },
     "signup": {
       "min3": "3 caractères minimum",
@@ -657,7 +661,12 @@
       "openOnSpotify": "ouvrir sur spotify ↗",
       "iframeTitle": "Playlist Spotify : {title}",
       "saveHint": "ça te plaît ? garde-la comme une de tes listes : chaque titre devient une entrée que tu peux classer et commenter"
-    }
+    },
+    "ctaRate": "Noter un disque",
+    "ctaList": "Créer une liste",
+    "ctaPost": "Écrire un post",
+    "ctaAnticipated": "Trouver une sortie",
+    "noSignalOwnPosts": "PAS DE SIGNAL : partage un avis, une vidéo ou une liste et ça s'affichera ici."
   },
   "badges": {
     "event": {
@@ -1483,7 +1492,9 @@
       "title": "SOCIAL",
       "body": "Les salles en direct, les plus grosses critiques de la semaine et ce qu'écoutent les gens que tu suis — tout au même endroit.",
       "signIn": "Se connecter",
-      "createAccount": "Créer un compte"
+      "createAccount": "Créer un compte",
+      "lockedLabel": "TA CHAÎNE — VERROUILLÉE",
+      "lockedBody": "Inscris-toi pour voir ce que notent, écrivent et animent les gens que tu suis, les podiums hebdo de tes amis et ce qui leur plaît."
     },
     "title": "SOCIAL",
     "sub": "Salles en direct, classements de la semaine et ce que tes gens font tourner.",
@@ -1640,6 +1651,18 @@
       "swipe": "glisse",
       "applePreview": "Aperçu Apple Music de {title}",
       "soundcloudPreview": "Lecteur SoundCloud de {title}"
+    },
+    "guest": {
+      "pitch": "Une chaîne qui se règle sur toi : critiques, posts et disques choisis d'après ce que tu notes et qui tu suis.",
+      "cta": "Créer un compte gratuit",
+      "signIn": "J'ai déjà un compte",
+      "howLabel": "Comment elle se règle",
+      "how1": "Note quelques disques que tu connais déjà — une note suffit.",
+      "how2": "Suis des gens dont tu aimes les goûts.",
+      "how3": "Fais défiler un fil choisi pour toi, qui s'affine au fil du temps.",
+      "previewLabel": "En ce moment sur la chaîne de la communauté",
+      "lockedLabel": "TA CHAÎNE — VERROUILLÉE",
+      "lockedBody": "Tes Goûts se construit à partir de tes propres notes et abonnements, donc il s'active dès que tu as un compte."
     }
   },
   "artists": {
@@ -1746,5 +1769,35 @@
     },
     "getInTouch": "NOUS CONTACTER",
     "contact": "Des questions, des idées, des problèmes ?"
+  },
+  "start": {
+    "eyebrow": "PREMIER DÉMARRAGE · CH 01",
+    "title": "Note {goal} disques que tu connais",
+    "sub": "Touche une pochette, glisse jusqu'à une note, enregistre. Pas besoin de mots : un chiffre suffit.",
+    "progress": "{n}/{goal} NOTÉS",
+    "progressAria": "{n} disques notés sur {goal}",
+    "skip": "Passer pour l'instant",
+    "searchLabel": "Pas dans la grille ? Trouve n'importe quel disque",
+    "searchPlaceholder": "Cherche un album, un artiste ou un titre…",
+    "gridLabel": "Des disques que tu connais peut-être",
+    "rated": "NOTÉ",
+    "ratedAria": "{title} — noté {rating}",
+    "tileAria": "Noter {title} de {artist}",
+    "sheetLabel": "Ta note",
+    "notHeard": "Jamais écouté",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "close": "Fermer",
+    "ratingAria": "Ta note, de 0 à 10",
+    "already": "Celui-là est déjà sur ton étagère — choisis-en un autre.",
+    "failed": "Impossible d'enregistrer — réessaie.",
+    "empty": "La grille se règle encore — cherche plutôt un disque que tu connais.",
+    "doneEyebrow": "● REC — SIGNAL ACCROCHÉ",
+    "doneTitle": "Ton étagère est à l'antenne",
+    "doneBody": "Ces notes sont déjà sur ton profil, et Tes Goûts commence à se régler à partir d'elles.",
+    "seeShelf": "Voir ton étagère",
+    "rateMore": "Noter d'autres disques",
+    "goHome": "Accueil",
+    "coverAlt": "Pochette de {title}"
   }
 }

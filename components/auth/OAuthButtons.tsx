@@ -42,6 +42,7 @@ import {
   type PluginListener,
 } from "@/lib/native";
 import type { Profile } from "@/lib/types/database";
+import { destinationAfterSignIn, readOnboardedCookie } from "@/lib/onboarding";
 import { useTranslations } from "next-intl";
 
 type Provider = "google" | "apple";
@@ -139,7 +140,7 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
   /**
    * The deep link coming back from Safari — the app's stand-in for
    * /auth/callback. Keep the two in step: they make the same
-   * cancel / error / flagged-handle decisions.
+   * cancel / error / flagged-handle / first-rating decisions.
    */
   const finish = useCallback(
     async (url: string) => {
@@ -202,7 +203,15 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
         .eq("id", data.user.id)
         .maybeSingle();
 
-      const destination = safePath(parked);
+      // Brand-new account → the first-rating screen (/start) before
+      // the parked destination — the SAME rule /auth/callback applies
+      // on the web (lib/onboarding.ts). Fails soft to the plain path.
+      const destination = await destinationAfterSignIn(
+        supabase,
+        data.user,
+        safePath(parked),
+        readOnboardedCookie(document.cookie)
+      );
       const flagged = (profile as Pick<Profile, "username_auto"> | null)
         ?.username_auto;
 

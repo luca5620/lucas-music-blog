@@ -436,7 +436,11 @@
       "show": "Show",
       "forgot": "Forgot it?",
       "signIn": "Sign in",
-      "agreement": "By signing in you agree to the <terms>Terms of Use</terms> — zero tolerance for objectionable content or abusive users — and the <privacy>Privacy Policy</privacy>."
+      "agreement": "By signing in you agree to the <terms>Terms of Use</terms> — zero tolerance for objectionable content or abusive users — and the <privacy>Privacy Policy</privacy>.",
+      "continueTitle": "Sign in to continue",
+      "continueHelper": "New here? Creating a free account takes a minute.",
+      "linkNoticeLabel": "EMAIL LINK",
+      "linkNotice": "That link didn't sign you in here — it probably opened in another app's browser, or it expired. Sign in below to carry on. If your email still needs confirming, we'll offer a fresh link."
     },
     "signup": {
       "min3": "At least 3 characters",
@@ -657,7 +661,12 @@
       "openOnSpotify": "open on spotify ↗",
       "iframeTitle": "Spotify playlist: {title}",
       "saveHint": "like it? keep it as one of your lists — every track becomes an entry you can rank and annotate"
-    }
+    },
+    "ctaRate": "Rate a record",
+    "ctaList": "Start a list",
+    "ctaPost": "Write a post",
+    "ctaAnticipated": "Find a release",
+    "noSignalOwnPosts": "NO SIGNAL — share a take, a video or a hot list and it lands here."
   },
   "badges": {
     "event": {
@@ -1483,7 +1492,9 @@
       "title": "SOCIAL",
       "body": "Live rooms, the week's biggest reviews, and what the people you follow are listening to — all in one place.",
       "signIn": "Sign In",
-      "createAccount": "Create Account"
+      "createAccount": "Create Account",
+      "lockedLabel": "YOUR CHANNEL — LOCKED",
+      "lockedBody": "Sign up to see what the people you follow rate, write and host, your friends' weekly podiums, and what's popular with them."
     },
     "title": "SOCIAL",
     "sub": "Live rooms, weekly charts, and what your people are spinning.",
@@ -1640,6 +1651,18 @@
       "swipe": "swipe",
       "applePreview": "Apple Music preview of {title}",
       "soundcloudPreview": "SoundCloud player for {title}"
+    },
+    "guest": {
+      "pitch": "A channel that tunes itself to you — reviews, posts and records picked from what you rate and who you follow.",
+      "cta": "Create free account",
+      "signIn": "I have an account",
+      "howLabel": "How it tunes in",
+      "how1": "Rate a few records you already know — a score is enough.",
+      "how2": "Follow people whose taste you trust.",
+      "how3": "Swipe through a feed picked for you, and it sharpens as you go.",
+      "previewLabel": "On the community channel now",
+      "lockedLabel": "YOUR CHANNEL — LOCKED",
+      "lockedBody": "Your Taste is built from your own ratings and follows, so it switches on once you have an account."
     }
   },
   "artists": {
@@ -1746,5 +1769,35 @@
     },
     "getInTouch": "GET IN TOUCH",
     "contact": "Questions, ideas, problems?"
+  },
+  "start": {
+    "eyebrow": "FIRST RUN · CH 01",
+    "title": "Rate {goal} records you know",
+    "sub": "Tap a cover, slide to a score, save. No words needed — a number is enough.",
+    "progress": "{n}/{goal} RATED",
+    "progressAria": "{n} of {goal} records rated",
+    "skip": "Skip for now",
+    "searchLabel": "Not on the grid? Find any record",
+    "searchPlaceholder": "Search an album, artist or song…",
+    "gridLabel": "Records you might know",
+    "rated": "RATED",
+    "ratedAria": "{title} — rated {rating}",
+    "tileAria": "Rate {title} by {artist}",
+    "sheetLabel": "Your rating",
+    "notHeard": "Haven't heard it",
+    "save": "Save rating",
+    "saving": "Saving…",
+    "close": "Close",
+    "ratingAria": "Your rating, 0 to 10",
+    "already": "That one's already on your shelf — pick another.",
+    "failed": "Couldn't save that — try again.",
+    "empty": "The grid is still tuning in — search for a record you know instead.",
+    "doneEyebrow": "● REC — SIGNAL LOCKED",
+    "doneTitle": "Your shelf is on the air",
+    "doneBody": "Those ratings are live on your profile now, and Your Taste starts tuning itself from them.",
+    "seeShelf": "See your shelf",
+    "rateMore": "Rate more",
+    "goHome": "Go home",
+    "coverAlt": "{title} cover"
   }
 }

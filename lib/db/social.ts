@@ -122,10 +122,17 @@ export async function getTopReviewsThisWeek(
     .slice(0, limit)
     .map(([id]) => id);
 
+  // The FK hint (!reviews_user_id_fkey) is REQUIRED: reviews has more
+  // than one relationship to profiles now, and a bare `profiles(...)`
+  // embed makes PostgREST refuse the whole query ("more than one
+  // relationship was found") — which the error check below turned
+  // into an empty chart. Found 2026-10-05: Top Reviews This Week had
+  // been silently blank for everyone. Same hint lib/taste.ts and
+  // lib/db/activity.ts already use.
   const { data: reviews, error: reviewError } = await supabase
     .from("reviews")
     .select(
-      "id, slug, title, artist, rating, cover_image, user_id, profiles(username, display_name, avatar_url, role)"
+      "id, slug, title, artist, rating, cover_image, user_id, profiles!reviews_user_id_fkey(username, display_name, avatar_url, role)"
     )
     .in("id", topIds)
     .eq("is_published", true);

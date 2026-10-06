@@ -14,8 +14,15 @@
  *  5. The activity feed — one sentence per event.
  *  6. "Find people" suggestions when the feed is quiet.
  *
- * Logged-out visitors get the sign-in prompt (the discovery modules
- * are follow-independent, but the page is a signed-in surface).
+ * Logged-out visitors (2026-10-05) see the PUBLIC half — Top Rooms
+ * and Top Reviews This Week, which are the same for everyone — under
+ * a header with Create account / Sign in, plus a locked panel naming
+ * what signing up adds (friends' activity, podiums, popular with
+ * friends). It used to be the sign-in buttons and nothing else, which
+ * hid the most alive page on the site from exactly the people deciding
+ * whether to join. None of these reads is inside unstable_cache, so
+ * the cookie-aware server client is fine here (and it's anonymous for
+ * a signed-out request — RLS shows them exactly the public rows).
  */
 
 import Link from "next/link";
@@ -117,26 +124,60 @@ export default async function SocialPage() {
   const user = await getUser();
   const t = await getTranslations("social");
 
-  // --- Logged out: a friendly sign-in prompt ---
+  // --- Logged out: the public half of the page + a way in ---
   if (!user) {
+    const [guestRooms, guestTopWeek] = await Promise.all([
+      getActiveRooms(12),
+      getTopReviewsThisWeek(10),
+    ]);
     return (
-      <div className="max-w-2xl mx-auto py-16">
-        <div className="panel-xbox panel-xbox-glow p-8 text-center space-y-4">
-          <h1 className="font-[family-name:var(--font-space-grotesk)] text-3xl font-extrabold text-[#e8e6e3]">
-            {t("guest.title")}
-          </h1>
-          <p className="font-[family-name:var(--font-vt323)] text-lg text-[#9a9a9e]">
-            {t("guest.body")}
-          </p>
-          <div className="flex justify-center gap-3 pt-2">
-            <Link href="/login" className="btn-y2k btn-y2k-primary">
-              {t("guest.signIn")}
-            </Link>
-            <Link href="/signup" className="btn-y2k btn-y2k-outline">
+      <div className="max-w-3xl mx-auto space-y-8 pb-12">
+        {/* Same boxed hero as the signed-in page, with the doors in it.
+            Create account leads — a signed-out visitor here is far
+            more often new than returning. */}
+        <PageHero title={t("title")} sub={t("guest.body")}>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start pt-1">
+            <Link href="/signup" className="btn-y2k btn-y2k-primary justify-center">
               {t("guest.createAccount")}
             </Link>
+            <Link href="/login?next=/social" className="btn-y2k btn-y2k-outline justify-center">
+              {t("guest.signIn")}
+            </Link>
           </div>
-        </div>
+        </PageHero>
+
+        {/* Live rooms are open to guests (they can lurk and read the
+            chat), so the rail works signed out too. */}
+        <TopRooms rooms={guestRooms} />
+
+        {/* The week's chart — public reviews, public likes. No block
+            filter: a signed-out visitor has no block list. */}
+        {guestTopWeek.length > 0 && (
+          <section className="space-y-3">
+            <div className="flex items-center gap-2">
+              <h2 className="label-xbox">{t("topWeek")}</h2>
+              <span className="text-xs text-text-muted">{t("resetsFriday")}</span>
+            </div>
+            <div className="space-y-2">
+              {guestTopWeek.map((review, i) => (
+                <TopWeekRow key={review.id} review={review} rank={i + 1} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* The personal half, shown as a locked channel: what it would
+            hold, and the one button that unlocks it. */}
+        <section className="panel-xbox p-6 text-center space-y-3 relative overflow-hidden">
+          <p className="osd-text text-sm">{t("guest.lockedLabel")}</p>
+          <p className="text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
+            {t("guest.lockedBody")}
+          </p>
+          <Link href="/signup" className="btn-y2k btn-y2k-primary inline-flex">
+            {t("guest.createAccount")}
+          </Link>
+          <div className="scan-bar" />
+        </section>
       </div>
     );
   }

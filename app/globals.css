@@ -3716,6 +3716,63 @@ fieldset {
   text-transform: uppercase;
 }
 
+/* ============================================================
+   FIRST RUN — the /start first-rating screen (2026-10-05,
+   components/onboarding/FirstRatings.tsx).
+   ============================================================ */
+
+/* The progress meter: three little tape cells, like the segments of
+   a VCR's tape counter, that light up in the accent as ratings land. */
+.first-run-cell {
+  width: 1.5rem;
+  height: 0.55rem;
+  border-radius: 2px;
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.first-run-cell-on {
+  background: var(--accent-primary);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.7);
+}
+
+/* A rated cover on the grid: accent outline, plus a REC-style tag in
+   the top-left so "done" reads at a glance from across the grid. */
+.poster.first-run-rated {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.35);
+}
+.first-run-rated-tag {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.8);
+  font-size: 0.55rem;
+}
+
+/* 3/3 — the celebratory OSD moment. The finish panel arrives the way
+   a channel locks in on an old set: a squashed bright line that
+   snaps open with one flicker. One-shot (0.6s), so it costs nothing
+   once it has played. */
+@keyframes first-run-lock {
+  0% { opacity: 0; transform: scaleY(0.04); filter: brightness(2.4); }
+  45% { opacity: 1; transform: scaleY(1.04); filter: brightness(1.6); }
+  60% { opacity: 0.55; }
+  75% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+.first-run-flash {
+  animation: first-run-lock 0.6s ease-out both;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .first-run-flash { animation: none; }
+}
+/* Low detail: decorative motion stops (see LOW DETAIL MODE). */
+.low-detail .first-run-flash { animation: none; }
+
 .cover-fan { display: flex; }
 
 .cover-fan .poster {

@@ -13,6 +13,8 @@ remnants: every piece of content is community-made and catalog-backed.
 
 **GIFs LIVE (2026-10-11):** Luca ran 058 + added the KLIPY key; verified the gif_* columns exist in prod, the key is baked into the live bundle, and KLIPY trending/search answer with CORS open and URLs that pass the DB check. Still to do: request Production access in the KLIPY Partner Panel (testing key = 100 searches/hour site-wide).
 
+**Cards too (959bfe9, 86c7a5c):** GIFs show on the home Community Feed + /reviews cards via  — the GIF fits INSIDE the words box (now 7 lines; card bottom padding trimmed to pb-2.5): no words → GIF fills it, a few words → GIF in what's left, long words → no GIF on the card + "Read the full review" link. Release pages show it under the full text. KLIPY marks removed from shown GIFs (optional per their guidelines); "Powered by KLIPY" kept in the picker, "Search KLIPY" placeholder is the one required bit. Discord update post drafted, not posted yet.
+
 **Loading screen (live on push):** tapping into a page showed the
 TUNING panel as a short band — the footer rode up mid-load and a dead
 black strip sat above the tab bar. Fixed three ways: the panel is now

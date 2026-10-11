@@ -42,9 +42,10 @@ is already live.
 - GIFs load from the **exact URL** KLIPY returned. Never re-host,
   copy or rewrite them. We store only the URL + width/height.
 - Results show **in KLIPY's order**, unfiltered by us.
-- Search box placeholder is exactly **"Search KLIPY"** and the picker
-  says **"Powered by KLIPY"** (plus a small "via KLIPY" under shown
-  GIFs). Those strings are deliberately not translated.
+- Search box placeholder is exactly **"Search KLIPY"** — the ONE
+  required attribution. "Powered by KLIPY" marks are optional; we keep
+  one in the picker (goodwill for Production access) and none on shown
+  GIFs (Luca 2026-10-11). Those strings are deliberately not translated.
 
 ## Safety
 

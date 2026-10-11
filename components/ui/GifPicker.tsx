@@ -277,7 +277,8 @@ export default function GifPicker({
         )}
       </div>
 
-      {/* KLIPY's required attribution — not translated (brand mark). */}
+      {/* KLIPY attribution — optional in their guidelines, kept here
+          on purpose (the only place we show it). Not translated. */}
       <p className="text-[10px] text-text-muted text-right tracking-wide">
         Powered by KLIPY
       </p>

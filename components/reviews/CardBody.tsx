@@ -110,11 +110,6 @@ export default function CardBody({
                 aspectRatio: `${gif.width} / ${gif.height}`,
               }}
             />
-            {/* KLIPY's attribution, as a corner tag so it costs no
-                extra line in the box. */}
-            <span className="absolute bottom-1 right-1 px-1 rounded-sm bg-black/60 text-[8px] leading-tight tracking-wide text-white/70">
-              KLIPY
-            </span>
           </Link>
         )}
       </div>

@@ -8,8 +8,10 @@ import type { Gif } from "@/lib/gif";
  * space is reserved before the GIF arrives — no jump when it loads,
  * and no growth for the page-tall liquid canvas to react to.
  *
- * The URL is used exactly as KLIPY gave it (their terms), and the
- * small "via KLIPY" mark is their attribution rule.
+ * The URL is used exactly as KLIPY gave it (their terms). No "via
+ * KLIPY" mark here: attribution on shown GIFs is OPTIONAL in their
+ * guidelines (only the "Search KLIPY" placeholder is required), and
+ * Luca dropped it 2026-10-11. The picker keeps "Powered by KLIPY".
  */
 export default function GifView({
   gif,
@@ -39,9 +41,6 @@ export default function GifView({
           className="w-full h-full object-cover block"
         />
       </div>
-      <figcaption className="text-[9px] text-text-muted mt-0.5 tracking-wide">
-        via KLIPY
-      </figcaption>
     </figure>
   );
 }

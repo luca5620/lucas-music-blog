@@ -18,8 +18,9 @@
  *  - Results are shown in the order KLIPY returns them. Filtering is
  *    configured in the KLIPY Partner Panel, plus the content_filter
  *    level we send with every request (see GIF_CONTENT_FILTER).
- *  - The search box says "Search KLIPY" and a "Powered by KLIPY"
- *    mark sits wherever their GIFs show.
+ *  - The search box says "Search KLIPY" (REQUIRED). A "Powered by
+ *    KLIPY" mark is OPTIONAL — we keep it in the picker only; shown
+ *    GIFs carry no mark (Luca 2026-10-11).
  *
  * Everything that touches the network lives in GifPicker. This file
  * is just the shape, the validator the API routes use, and the

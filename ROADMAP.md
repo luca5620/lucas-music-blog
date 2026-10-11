@@ -398,6 +398,17 @@ Musicboard-refugee and leak communities. The original notes:
 
 ## ⏳ In progress
 
+### 💸 NEXT TOPIC: a revenue stream (Luca, 2026-10-11)
+
+Luca is only losing money on this: domain, Apple Developer, Vercel
+Pro monthly, and probably Supabase soon. Side projects aren't covering
+it. He wants to TALK about ways to bring in some revenue — a
+discussion first, not a build. Before anything ships: switch the EU
+App Store listing to **trader** status (required before any in-app
+purchase), follow Apple's IAP rules (Small Business Program = 15%),
+and never paywall core features. Today's scale (~57 accounts) means
+cheap, no-build ideas and trimming costs matter as much as new income.
+
 ### 📏 NEXT: MEASURE, DON'T BUILD — re-check on 2026-10-19
 
 Agreed 2026-10-05 after the review batch went live: **pause new

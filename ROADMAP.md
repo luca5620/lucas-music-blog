@@ -11,9 +11,9 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ## ✅ 2026-10-11 — GIFs on reviews + comments (LIVE), loading-screen fix
 
-**GIFs LIVE (2026-10-11):** Luca ran 058 + added the KLIPY key; verified the gif_* columns exist in prod, the key is baked into the live bundle, and KLIPY trending/search answer with CORS open and URLs that pass the DB check. Still to do: request Production access in the KLIPY Partner Panel (testing key = 100 searches/hour site-wide).
+**GIFs LIVE (2026-10-11):** Luca ran 058 + added the KLIPY key; verified the gif_* columns exist in prod, the key is baked into the live bundle, and KLIPY trending/search answer with CORS open and URLs that pass the DB check. Production access REQUESTED by Luca 2026-10-11 (until KLIPY approves, the testing key caps GIF search at 100 requests/hour site-wide — if search fails under load, check partner.klipy.com).
 
-**Cards too (959bfe9, 86c7a5c):** GIFs show on the home Community Feed + /reviews cards via `components/reviews/CardBody.tsx` — the GIF fits INSIDE the words box (now 7 lines; card bottom padding trimmed to pb-2.5): no words → GIF fills it, a few words → GIF in what's left, long words → no GIF on the card + "Read the full review" link. Release pages show it under the full text. KLIPY marks removed from shown GIFs (optional per their guidelines); "Powered by KLIPY" kept in the picker, "Search KLIPY" placeholder is the one required bit. Discord update post drafted, not posted yet.
+**Cards too (959bfe9, 86c7a5c):** GIFs show on the home Community Feed + /reviews cards via `components/reviews/CardBody.tsx` — the GIF fits INSIDE the words box (now 7 lines; card bottom padding trimmed to pb-2.5): no words → GIF fills it, a few words → GIF in what's left, long words → no GIF on the card + "Read the full review" link. Release pages show it under the full text. KLIPY marks removed from shown GIFs (optional per their guidelines); "Powered by KLIPY" kept in the picker, "Search KLIPY" placeholder is the one required bit. Discord update POSTED 2026-10-11 — the first #updates-and-bug-fixes log entry.
 
 **Loading screen (live on push):** tapping into a page showed the
 TUNING panel as a short band — the footer rode up mid-load and a dead

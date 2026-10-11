@@ -11,6 +11,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import CardBody from "@/components/reviews/CardBody";
 import UserLink from "@/components/ui/UserLink";
 import type { ReviewWithAuthor } from "@/lib/db/reviews";
 import { getGenreColor, getRatingColor, getRatingHex, formatRating } from "@/lib/rating";
@@ -279,11 +280,12 @@ export default function ReviewsList({
             // Same words-priority as the home feed card: the fuller
             // summary when there is one, the snippet otherwise.
             const body = review.summary ?? review.snippet;
-            const isLongRead = !!body && body.length > 320;
             return (
               <article
                 key={review.id}
-                className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
+                // pb-2.5, not p-4's 16px: the space under the date went
+                // to the 7th line of words (CardBody) — Luca 2026-10-11.
+                className="panel-xbox px-4 pt-4 pb-2.5 space-y-3 hover-glow relative overflow-hidden"
                 style={{ "--rating-color": ratingColor } as React.CSSProperties}
               >
                 {/* The verdict line — who, then THE number in its own
@@ -357,20 +359,14 @@ export default function ReviewsList({
                   </div>
                 </Link>
 
-                {/* Their words, right under the record */}
-                {body && (
-                  <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-6 pt-2 border-t border-white/5">
-                    {body}
-                  </p>
-                )}
-                {isLongRead && (
-                  <Link
-                    href={`/reviews/${review.slug}`}
-                    className="block pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
-                  >
-                    {t("readFull")}
-                  </Link>
-                )}
+                {/* Their words + GIF, right under the record — one box,
+                    never taller than a card full of words (CardBody). */}
+                <CardBody
+                  body={body}
+                  review={review}
+                  href={`/reviews/${review.slug}`}
+                  readFullLabel={t("readFull")}
+                />
 
                 {/* Genre + date footer (this page's rows don't carry
                     like counts — the home feed keeps its LikeButton) */}

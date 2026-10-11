@@ -9,6 +9,8 @@
  */
 
 import Link from "next/link";
+import GifView from "@/components/ui/GifView";
+import { gifFromRow } from "@/lib/gif";
 import UserLink from "@/components/ui/UserLink";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
@@ -922,6 +924,10 @@ interface ReviewWithProfile {
   cover_image: string | null;
   snippet: string | null;
   summary: string | null;
+  /** Optional GIF (migration 058). */
+  gif_url?: string | null;
+  gif_width?: number | null;
+  gif_height?: number | null;
   created_at: string;
   profiles: {
     username: string;
@@ -951,6 +957,7 @@ function ReleaseReviewEntry({
     : review.profiles;
   const reviewerName = profile?.display_name ?? profile?.username ?? t("anonymous");
   const body = review.summary ?? review.snippet;
+  const gif = gifFromRow(review);
 
   let reviewedOn: string | null = null;
   try {
@@ -1000,16 +1007,18 @@ function ReleaseReviewEntry({
         </div>
       </div>
 
-      {/* The review itself, in full */}
+      {/* The review itself, in full — words, then the GIF reaction
+          (the release page shows reviews whole, so no box limit). */}
       {body ? (
         <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
           {body}
         </p>
-      ) : (
+      ) : gif ? null : (
         <p className="text-sm text-text-muted italic">
           {t("noWords")}
         </p>
       )}
+      {gif && <GifView gif={gif} size="sm" />}
 
       {/* Likes + comments live on the review's own page */}
       <Link

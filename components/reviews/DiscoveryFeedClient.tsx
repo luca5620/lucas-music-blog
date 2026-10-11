@@ -13,6 +13,7 @@ import Link from "next/link";
 import UserLink from "@/components/ui/UserLink";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import LikeButton from "@/components/reviews/LikeButton";
+import CardBody from "@/components/reviews/CardBody";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
 import {
@@ -36,6 +37,10 @@ export interface FeedReview {
   cover_image: string | null;
   snippet: string | null;
   summary: string | null;
+  /** Optional GIF (migration 058) — shown by CardBody when it fits. */
+  gif_url?: string | null;
+  gif_width?: number | null;
+  gif_height?: number | null;
   created_at: string;
   like_count: number;
   viewer_has_liked: boolean;
@@ -271,14 +276,11 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
             const ratingColor = getRatingHex(review.rating);
             const isVerified = profile.role !== "user";
             const body = review.summary ?? review.snippet;
-            // Clamp shows ~6 lines; past this the words are certainly
-            // cut off, so surface the full-review link.
-            const isLongRead = !!body && body.length > 320;
 
             return (
               <article
                 key={review.id}
-                className="panel-xbox p-4 space-y-3 hover-glow relative overflow-hidden"
+                className="panel-xbox px-4 pt-4 pb-2.5 space-y-3 hover-glow relative overflow-hidden"
               >
                 {/* The verdict line — who, then THE number in its own
                     box. The number lives HERE and only here (Luca
@@ -366,20 +368,14 @@ export default function DiscoveryFeedClient({ feed: allFeed }: { feed: FeedRevie
                   </div>
                 </Link>
 
-                {/* Their words, right under the record */}
-                {body && (
-                  <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line line-clamp-6 pt-2 border-t border-white/5">
-                    {body}
-                  </p>
-                )}
-                {isLongRead && (
-                  <Link
-                    href={`/reviews/${review.slug}`}
-                    className="block pixel-text text-[0.65rem] uppercase tracking-widest text-accent-primary hover:text-accent-glow transition-colors"
-                  >
-                    {t("index.readFull")}
-                  </Link>
-                )}
+                {/* Their words + GIF, right under the record — one box,
+                    never taller than a card full of words (CardBody). */}
+                <CardBody
+                  body={body}
+                  review={review}
+                  href={`/reviews/${review.slug}`}
+                  readFullLabel={t("index.readFull")}
+                />
 
                 {/* Likes + when + the release's community page (the
                     artwork goes to the review now, so this is where

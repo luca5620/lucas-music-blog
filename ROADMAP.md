@@ -9,7 +9,9 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
-## ⏳ 2026-10-11 — GIFs on reviews + comments, loading-screen fix — ⚠️ MIGRATION 058 NOT RUN YET
+## ✅ 2026-10-11 — GIFs on reviews + comments (LIVE), loading-screen fix
+
+**GIFs LIVE (2026-10-11):** Luca ran 058 + added the KLIPY key; verified the gif_* columns exist in prod, the key is baked into the live bundle, and KLIPY trending/search answer with CORS open and URLs that pass the DB check. Still to do: request Production access in the KLIPY Partner Panel (testing key = 100 searches/hour site-wide).
 
 **Loading screen (live on push):** tapping into a page showed the
 TUNING panel as a short band — the footer rode up mid-load and a dead

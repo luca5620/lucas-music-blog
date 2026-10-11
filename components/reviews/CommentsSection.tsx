@@ -17,6 +17,9 @@ import UserLink from "@/components/ui/UserLink";
 import { hapticTap } from "@/lib/native";
 import { useLikeState } from "@/lib/likeStore";
 import { useLocale, useTranslations } from "next-intl";
+import GifAttach from "@/components/ui/GifAttach";
+import GifView from "@/components/ui/GifView";
+import { gifFromRow, type Gif } from "@/lib/gif";
 
 /* ─── Types ─── */
 
@@ -32,6 +35,10 @@ interface CommentData {
   review_id: string;
   parent_id: string | null;
   content: string;
+  /** Optional GIF (migration 058) — absent on rows from before it. */
+  gif_url?: string | null;
+  gif_width?: number | null;
+  gif_height?: number | null;
   created_at: string;
   updated_at: string;
   profiles: CommentProfile | null;
@@ -115,15 +122,20 @@ function CommentForm({
   submitLabel,
   onCancel,
   autoFocus = false,
+  allowGif = false,
 }: {
-  onSubmit: (content: string) => Promise<void>;
+  onSubmit: (content: string, gif: Gif | null) => Promise<void>;
   placeholder: string;
   initialValue?: string;
   submitLabel?: string;
   onCancel?: () => void;
   autoFocus?: boolean;
+  /** New comments + replies can carry a GIF (2026-10-11). The edit
+      form can't — editing changes the words only. */
+  allowGif?: boolean;
 }) {
   const [content, setContent] = useState(initialValue);
+  const [gif, setGif] = useState<Gif | null>(null);
   const [submitting, setSubmitting] = useState(false);
   // Server rejections (content filter, length, rate limit) surface
   // here — the text stays in the box so nothing typed is lost.
@@ -140,12 +152,14 @@ function CommentForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || submitting) return;
+    // Words, a GIF, or both — a GIF on its own is a whole comment.
+    if ((!content.trim() && !gif) || submitting) return;
     setSubmitting(true);
     setError(null);
     try {
-      await onSubmit(content.trim());
+      await onSubmit(content.trim(), gif);
       setContent("");
+      setGif(null);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t("couldntPost")
@@ -165,6 +179,9 @@ function CommentForm({
         rows={3}
         className="w-full px-4 py-3 rounded-lg bg-bg-elevated border border-border-subtle text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/25 transition-all resize-none"
       />
+      {/* GIF slot — the "+ GIF" button, the picker, or the attached
+          GIF. GifAttach renders nothing without a KLIPY key. */}
+      {allowGif && <GifAttach gif={gif} onChange={setGif} size="sm" />}
       {error && (
         <p className="text-xs text-accent-rose border border-accent-rose/30 bg-accent-rose/5 rounded px-3 py-2">
           {error}
@@ -182,7 +199,7 @@ function CommentForm({
         )}
         <button
           type="submit"
-          disabled={!content.trim() || submitting}
+          disabled={(!content.trim() && !gif) || submitting}
           className="px-5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-accent-primary/15 text-accent-primary border border-accent-primary/30 hover:bg-accent-primary/25 transition-all font-[family-name:var(--font-heading)] disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {submitting ? "..." : (submitLabel ?? t("post"))}
@@ -323,8 +340,13 @@ function CommentItem({
   const displayName =
     comment.profiles?.display_name || comment.profiles?.username || t("unknown");
   const wasEdited = comment.updated_at !== comment.created_at;
+  const gif = gifFromRow(comment);
+  // A GIF-only comment has no words to edit (and the edit route
+  // requires words), so it gets Delete but no Edit.
+  const canEdit = isOwn && !sheetMode && comment.content.trim().length > 0;
 
   const handleEdit = async (content: string) => {
+    if (!content) return; // the edit form changes words only
     await onEdit(comment.id, content);
     setEditing(false);
   };
@@ -379,9 +401,18 @@ function CommentItem({
             />
           </div>
         ) : (
-          <p className="text-sm text-text-secondary leading-relaxed mt-1 whitespace-pre-wrap break-words">
-            {comment.content}
-          </p>
+          <>
+            {comment.content && (
+              <p className="text-sm text-text-secondary leading-relaxed mt-1 whitespace-pre-wrap break-words">
+                {comment.content}
+              </p>
+            )}
+            {gif && (
+              <div className="mt-2">
+                <GifView gif={gif} size="sm" />
+              </div>
+            )}
+          </>
         )}
 
         {/* Actions */}
@@ -402,7 +433,7 @@ function CommentItem({
                 {t("reply")}
               </button>
             )}
-            {isOwn && !sheetMode && (
+            {canEdit && (
               <button
                 onClick={() => setEditing(true)}
                 className="pixel-text text-[0.6rem] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors"
@@ -531,7 +562,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
     const { data, error } = await supabase
       .from("comments")
       .select(
-        "id, user_id, review_id, parent_id, content, created_at, updated_at, profiles(username, display_name, avatar_url)"
+        "*, profiles(username, display_name, avatar_url)"
       )
       .eq("review_id", reviewId)
       .order("created_at", { ascending: true });
@@ -596,21 +627,30 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
 
   /* ─── Handlers ─── */
 
-  const handlePost = async (content: string) => {
+  const handlePost = async (content: string, gif: Gif | null) => {
     const res = await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reviewId, content }),
+      body: JSON.stringify({ reviewId, content, ...(gif ? { gif } : {}) }),
     });
     if (!res.ok) await throwServerError(res, t("couldntPostComment"));
     await fetchComments();
   };
 
-  const handleReply = async (parentId: string, content: string) => {
+  const handleReply = async (
+    parentId: string,
+    content: string,
+    gif: Gif | null
+  ) => {
     const res = await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reviewId, content, parentId }),
+      body: JSON.stringify({
+        reviewId,
+        content,
+        parentId,
+        ...(gif ? { gif } : {}),
+      }),
     });
     if (!res.ok) await throwServerError(res, t("couldntPostReply"));
     setReplyingTo(null);
@@ -720,6 +760,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
         <CommentForm
           onSubmit={handlePost}
           placeholder={t("dropPlaceholder")}
+          allowGif
         />
       ) : (
         <div className="card-y2k p-4 text-center">
@@ -776,7 +817,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
                         comment.profiles?.display_name ||
                         comment.profiles?.username ||
                         t("unknown"),
-                      quote: comment.content,
+                      quote: comment.content || "GIF",
                     });
                   } else {
                     setReplyingTo(replyingTo === id ? null : id);
@@ -791,7 +832,10 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
               {!sheet && replyingTo === comment.id && user && (
                 <div className="ml-10 pl-4 border-l-2 border-accent-primary/15">
                   <CommentForm
-                    onSubmit={(content) => handleReply(comment.id, content)}
+                    onSubmit={(content, gif) =>
+                      handleReply(comment.id, content, gif)
+                    }
+                    allowGif
                     placeholder={t("replyTo", {
                       name: comment.profiles?.display_name || comment.profiles?.username || t("user"),
                     })}

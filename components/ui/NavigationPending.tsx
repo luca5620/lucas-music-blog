@@ -96,6 +96,14 @@ export default function NavigationPending({
       if (url.pathname === window.location.pathname) return;
 
       setPending(true);
+      // Jump to the top as the panel goes up (Luca 2026-10-11: tapping
+      // into a page showed a half-empty screen with the footer and a
+      // black strip). Tapping a link deep in a long feed swapped that
+      // tall page for the short panel, and the browser — now scrolled
+      // past the end of a much shorter page — clamped to its bottom:
+      // the footer, and empty space under it. Next scrolls the new
+      // page to the top anyway, so this only moves that jump earlier.
+      window.scrollTo({ top: 0, behavior: "instant" });
     };
 
     document.addEventListener("click", onClick);
@@ -129,8 +137,14 @@ export default function NavigationPending({
 function Tuning() {
   const t = useTranslations("pending");
   return (
+    // A full screen tall, not a short band (Luca 2026-10-11): with only
+    // py-32 the panel was shorter than the phone, so the footer rode up
+    // into view mid-load and the page looked broken. At ~viewport
+    // height the footer sits below the fold and the liquid wash fills
+    // the whole screen while the next page loads. The readout sits a
+    // little above center, where the eye already is after the tap.
     <div
-      className="flex flex-col items-center justify-center gap-5 py-32"
+      className="flex flex-col items-center justify-center gap-5 min-h-[80vh] min-h-[80dvh] pb-[10vh]"
       role="status"
       aria-label="Loading"
     >

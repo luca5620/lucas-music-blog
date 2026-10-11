@@ -43,7 +43,11 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "media-src 'self' https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.spotify.com https://accounts.spotify.com",
+      // api.klipy.com: the GIF picker searches KLIPY straight from the
+      // browser (their terms forbid proxying it — see lib/gif.ts). The
+      // GIFs themselves load from static*.klipy.com, already covered
+      // by img-src https:.
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.spotify.com https://accounts.spotify.com https://api.klipy.com",
       // Video embeds (Your Taste + posts). YouTube: nocookie is the
       // privacy-enhanced player, www.youtube.com covers player-internal
       // redirects. TikTok: the iframe player lives at www.tiktok.com.

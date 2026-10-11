@@ -25,6 +25,8 @@ import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
 import { useTranslations } from "next-intl";
 import { localDateString } from "@/lib/review-date";
+import GifAttach from "@/components/ui/GifAttach";
+import { gifFromRow, KLIPY_APP_KEY, type Gif } from "@/lib/gif";
 
 interface ReviewFormProps {
   mode: "create" | "edit";
@@ -55,6 +57,11 @@ export default function ReviewForm({
   const [snippet, setSnippet] = useState(review?.snippet ?? "");
   const [pickedTracks, setPickedTracks] = useState<Set<string>>(
     new Set((review?.standout_tracks ?? []).map((t) => t.title))
+  );
+  // Optional GIF reaction (2026-10-11) — on its own instead of words,
+  // or under them. See lib/gif.ts.
+  const [gif, setGif] = useState<Gif | null>(
+    review ? gifFromRow(review) : null
   );
 
   const [saving, setSaving] = useState(false);
@@ -96,15 +103,17 @@ export default function ReviewForm({
         summary?: string;
         snippet?: string;
         pickedTracks?: string[];
+        gif?: Gif | null;
       };
       // Only offer drafts that actually contain words or a pick.
-      if (!d.release && !d.summary && !d.snippet) return;
+      if (!d.release && !d.summary && !d.snippet && !d.gif) return;
       if (d.release) setRelease(d.release);
       if (d.pickedArtist) setPickedArtist(d.pickedArtist);
       if (typeof d.rating === "number") setRating(d.rating);
       setSummary(d.summary ?? "");
       setSnippet(d.snippet ?? "");
       setPickedTracks(new Set(d.pickedTracks ?? []));
+      setGif(d.gif ?? null);
       setRestoredDraft(true);
     } catch {
       /* unreadable draft — start clean */
@@ -121,7 +130,7 @@ export default function ReviewForm({
     const t = setTimeout(() => {
       try {
         // Nothing worth keeping → keep storage clean.
-        if (!release && !summary && !snippet) {
+        if (!release && !summary && !snippet && !gif) {
           localStorage.removeItem(DRAFT_KEY);
           return;
         }
@@ -134,6 +143,7 @@ export default function ReviewForm({
             summary,
             snippet,
             pickedTracks: [...pickedTracks],
+            gif,
             savedAt: Date.now(),
           })
         );
@@ -142,8 +152,7 @@ export default function ReviewForm({
       }
     }, 600);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [release, pickedArtist, rating, summary, snippet, pickedTracks, mode]);
+  }, [release, pickedArtist, rating, summary, snippet, pickedTracks, gif, mode]);
 
   function clearDraft() {
     try {
@@ -161,6 +170,7 @@ export default function ReviewForm({
     setSummary("");
     setSnippet("");
     setPickedTracks(new Set());
+    setGif(null);
     setRestoredDraft(false);
   }
 
@@ -209,6 +219,8 @@ export default function ReviewForm({
       summary: summary || null,
       snippet: snippet || null,
       standout_tracks,
+      // null = no GIF (or, when editing, "remove the one it had").
+      gif,
       is_published: isPublished,
       // This device's own calendar day — the review lands on THE LOG
       // on the day the member actually wrote it, not on the UTC date
@@ -265,6 +277,7 @@ export default function ReviewForm({
         setSummary("");
         setSnippet("");
         setPickedTracks(new Set());
+        setGif(null);
         setRestoredDraft(false);
         setSaving(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -559,6 +572,16 @@ export default function ReviewForm({
             className="form-input resize-none"
           />
         </FormField>
+
+        {/* GIF reaction — sits at the bottom of the review, exactly
+            where it shows on the review page. Hidden entirely until a
+            KLIPY key is configured (GifAttach renders null). */}
+        {KLIPY_APP_KEY && (
+          <FormField label={t("gifLabel")}>
+            <GifAttach gif={gif} onChange={setGif} />
+            <p className="text-xs text-text-muted mt-1">{t("gifHint")}</p>
+          </FormField>
+        )}
       </fieldset>
 
       {/* ========== STEP 3: PERSONAL FAVORITES (checkbox picks) ==========

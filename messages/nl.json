@@ -787,6 +787,16 @@
     "likeComment": "Deze reactie liken",
     "unlikeComment": "Like ongedaan maken"
   },
+  "gifs": {
+    "add": "GIF",
+    "remove": "GIF verwijderen",
+    "close": "GIF-zoeken sluiten",
+    "trending": "Trending",
+    "results": "Resultaten",
+    "none": "Geen GIFs gevonden.",
+    "failed": "GIFs konden niet laden — probeer het zo nog eens.",
+    "more": "Meer laden"
+  },
   "reviews": {
     "index": {
       "title": "RECENSIES",
@@ -848,7 +858,9 @@
       "published": "Gepubliceerd",
       "view": "Bekijk",
       "streakCount": "{n, plural, one {# beoordeeld deze sessie} other {# beoordeeld deze sessie}}",
-      "done": "Klaar"
+      "done": "Klaar",
+      "gifLabel": "GIF-reactie",
+      "gifHint": "Optioneel — los, in plaats van woorden, of onderaan je recensie."
     },
     "feed": {
       "title": "Communityfeed",
@@ -1828,7 +1840,8 @@
       "reviewNotFound": "Die review is niet gevonden.",
       "notYours": "Die review is niet van jou.",
       "updateFailed": "Wijzigingen opslaan mislukt. Probeer het opnieuw.",
-      "deleteFailed": "Review verwijderen mislukt. Probeer het opnieuw."
+      "deleteFailed": "Review verwijderen mislukt. Probeer het opnieuw.",
+      "invalidGif": "Die GIF kon niet worden toegevoegd — kies een andere."
     }
   },
   "start": {

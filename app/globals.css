@@ -1534,6 +1534,15 @@ body {
   border-radius: 0;
   box-shadow: none;
   max-width: none;
+  /* ALWAYS AT LEAST ONE SCREEN TALL (Luca 2026-10-11, the "black
+     area" screenshot): on a short page — a loading panel, an empty
+     list — the TV ended above the tab bar and the plain black body
+     showed underneath as a dead strip with no liquid in it. The
+     liquid layer (.crt-bezel-liquid) is inset:0 on this box, so
+     stretching the box to the viewport carries the wash all the way
+     down. vh first as the fallback for engines without dvh. */
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 .native-app .crt-body,
 .native-app .crt-screen {

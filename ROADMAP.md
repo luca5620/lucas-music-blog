@@ -9,6 +9,35 @@ remnants: every piece of content is community-made and catalog-backed.
 
 ---
 
+## ⏳ 2026-10-11 — GIFs on reviews + comments, loading-screen fix — ⚠️ MIGRATION 058 NOT RUN YET
+
+**Loading screen (live on push):** tapping into a page showed the
+TUNING panel as a short band — the footer rode up mid-load and a dead
+black strip sat above the tab bar. Fixed three ways: the panel is now
+~a screen tall (`NavigationPending.tsx`), a tap jumps to the top as
+the panel goes up (tapping deep in a feed used to clamp the shorter
+page to its footer), and in the app `.crt-tv` is always at least
+100dvh so the liquid wash reaches the tab bar on any short page.
+
+**GIFs (built, switched off until Luca's steps are done):** members
+can add a GIF to a review (alone instead of words, or at the bottom
+under them) and to comments + replies. Provider = **KLIPY** (Tenor's
+API died 2026-06-30; Discord/WhatsApp moved to KLIPY). Picker opens
+in flow (iOS keyboard rule), browser calls KLIPY directly (their
+terms), we store only the KLIPY URL + size; the DB rejects any non-
+KLIPY URL. Code: `lib/gif.ts`, `components/ui/Gif{Picker,Attach,View}.tsx`.
+Comment selects switched to `*` so nothing breaks before 058 runs.
+
+**Luca's hands (full steps in `docs/GIFS.md`):**
+1. Run `supabase/migrations/058-gifs.sql` in the SQL Editor.
+2. partner.klipy.com → API Keys → create key.
+3. Vercel env `NEXT_PUBLIC_KLIPY_APP_KEY` = key → **redeploy**.
+4. Partner Panel → strictest content filter + blocked terms.
+5. After a test, request Production access (testing = 100 req/hour).
+
+Then post the update in Discord #updates-and-bug-fixes (draft given
+in chat 2026-10-11).
+
 ## ✅ 2026-10-06 — Discord community server + home-page badge
 
 The **Peak Music Reviews** Discord is built and live. Permanent invite

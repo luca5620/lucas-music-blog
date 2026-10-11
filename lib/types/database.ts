@@ -125,6 +125,11 @@ export interface Review {
   standout_tracks: { title: string; spotifyUrl: string }[];
   is_published: boolean;
   release_id?: string | null;
+  /** Optional GIF from KLIPY (migration 058) — see lib/gif.ts.
+      Optional in the type because rows read before 058 ran lack them. */
+  gif_url?: string | null;
+  gif_width?: number | null;
+  gif_height?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -142,6 +147,10 @@ export interface Comment {
   review_id: string;
   parent_id: string | null;
   content: string;
+  /** Optional GIF (migration 058) — see lib/gif.ts. */
+  gif_url?: string | null;
+  gif_width?: number | null;
+  gif_height?: number | null;
   created_at: string;
   updated_at: string;
 }

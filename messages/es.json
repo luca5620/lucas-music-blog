@@ -787,6 +787,16 @@
     "likeComment": "Me gusta este comentario",
     "unlikeComment": "Quitar me gusta"
   },
+  "gifs": {
+    "add": "GIF",
+    "remove": "Quitar GIF",
+    "close": "Cerrar búsqueda de GIF",
+    "trending": "Tendencias",
+    "results": "Resultados",
+    "none": "No se encontraron GIFs.",
+    "failed": "No se pudieron cargar los GIFs — inténtalo de nuevo en un rato.",
+    "more": "Cargar más"
+  },
   "reviews": {
     "index": {
       "title": "RESEÑAS",
@@ -848,7 +858,9 @@
       "published": "Publicada",
       "view": "Ver",
       "streakCount": "{n, plural, one {# valorado en esta sesión} other {# valorados en esta sesión}}",
-      "done": "Listo"
+      "done": "Listo",
+      "gifLabel": "Reacción en GIF",
+      "gifHint": "Opcional — solo, en lugar de palabras, o al final de tu reseña."
     },
     "feed": {
       "title": "Feed de la comunidad",
@@ -1828,7 +1840,8 @@
       "reviewNotFound": "No se encontró esa reseña.",
       "notYours": "Esa reseña no es tuya.",
       "updateFailed": "No se pudieron guardar los cambios. Inténtalo de nuevo.",
-      "deleteFailed": "No se pudo borrar la reseña. Inténtalo de nuevo."
+      "deleteFailed": "No se pudo borrar la reseña. Inténtalo de nuevo.",
+      "invalidGif": "No se pudo adjuntar ese GIF — elige otro."
     }
   },
   "start": {

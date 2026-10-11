@@ -787,6 +787,16 @@
     "likeComment": "Like comment",
     "unlikeComment": "Unlike comment"
   },
+  "gifs": {
+    "add": "GIF",
+    "remove": "Remove GIF",
+    "close": "Close GIF search",
+    "trending": "Trending",
+    "results": "Results",
+    "none": "No GIFs found.",
+    "failed": "GIFs couldn't load — try again in a bit.",
+    "more": "Load more"
+  },
   "reviews": {
     "index": {
       "title": "REVIEWS",
@@ -848,7 +858,9 @@
       "published": "Published",
       "view": "View",
       "streakCount": "{n, plural, one {# rated this sitting} other {# rated this sitting}}",
-      "done": "Done"
+      "done": "Done",
+      "gifLabel": "GIF reaction",
+      "gifHint": "Optional — on its own instead of words, or at the bottom of your review."
     },
     "feed": {
       "title": "Community Feed",
@@ -1828,7 +1840,8 @@
       "reviewNotFound": "That review couldn't be found.",
       "notYours": "That review isn't yours to change.",
       "updateFailed": "Couldn't save your changes. Try again.",
-      "deleteFailed": "Couldn't delete that review. Try again."
+      "deleteFailed": "Couldn't delete that review. Try again.",
+      "invalidGif": "That GIF couldn't be attached — pick another one."
     }
   },
   "start": {

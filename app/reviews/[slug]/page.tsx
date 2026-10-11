@@ -24,6 +24,8 @@ import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
 import CommentsSection from "@/components/reviews/CommentsSection";
 import BackLink from "@/components/ui/BackLink";
+import GifView from "@/components/ui/GifView";
+import { gifFromRow } from "@/lib/gif";
 import LikeButton from "@/components/reviews/LikeButton";
 import ReportButton from "@/components/moderation/ReportButton";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
@@ -114,6 +116,8 @@ export default async function ReviewPage({
 
   const author = review.profiles;
   const release = review.releases;
+  // Optional GIF reaction (migration 058); null when there is none.
+  const reviewGif = gifFromRow(review);
   const isVerified = author.role !== "user";
   // The author's per-song scores on this record (migration 041) —
   // rendered as a "Track by Track" card under Personal Favorites when
@@ -418,11 +422,14 @@ export default async function ReviewPage({
             <p className="text-text-secondary leading-relaxed text-sm md:text-base">
               {review.snippet}
             </p>
-          ) : (
+          ) : reviewGif ? null : (
             <p className="text-text-muted leading-relaxed text-sm md:text-base italic">
               {t("noWords")}
             </p>
           )}
+          {/* GIF reaction (migration 058) — at the bottom of the
+              review, on its own or under the words. */}
+          {reviewGif && <GifView gif={reviewGif} />}
         </div>
 
         {/* Personal Favorites (the standout_tracks column keeps its

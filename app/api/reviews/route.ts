@@ -11,13 +11,14 @@ import { notifyFollowers } from "@/lib/db/notifications";
 import { pingIndexNow } from "@/lib/indexnow";
 import { getTranslations } from "next-intl/server";
 import { reviewDateFrom } from "@/lib/review-date";
+import { gifToRow, parseGif } from "@/lib/gif";
 
 /**
  * POST /api/reviews
  *
  * Overhaul v2 contract: a review can ONLY be written against a real
  * catalog release. The client sends
- *   { release_id, rating, summary?, snippet?, standout_tracks?, is_published? }
+ *   { release_id, rating, summary?, snippet?, standout_tracks?, is_published?, gif? }
  * and everything descriptive (title, artist, cover, release type/date,
  * genre) is derived HERE from the release row. The client never gets
  * to invent metadata — that's what killed the old form.
@@ -97,6 +98,7 @@ export async function POST(request: Request) {
       standout_tracks,
       is_published,
       local_date,
+      gif,
     } = body;
 
     // Rate limits. A review WITH words is the slow, considered thing:
@@ -106,7 +108,8 @@ export async function POST(request: Request) {
     // "rate another" loop never trips a 429. Same endpoint, same
     // rules, just two buckets — the form is the only flow (Luca
     // 2026-09-08: no parallel ways to do the same thing).
-    const wordless = !snippet && !summary;
+    // A GIF counts as saying something — it goes in the slow lane.
+    const wordless = !snippet && !summary && !gif;
     const limited = wordless
       ? await rateLimit(`reviews:rating:${user.id}`, 60, 300_000)
       : await rateLimit(`reviews:${user.id}`, 5, 300_000);
@@ -145,6 +148,13 @@ export async function POST(request: Request) {
         { error: t("invalidTracks") },
         { status: 400 }
       );
+    }
+
+    // Optional GIF reaction (migration 058): only KLIPY links, only
+    // sane sizes — see lib/gif.ts. The database checks the same thing.
+    const parsedGif = parseGif(gif);
+    if (parsedGif === false) {
+      return NextResponse.json({ error: t("invalidGif") }, { status: 400 });
     }
 
     // --- Load the release; it is the single source of truth. ---
@@ -228,6 +238,9 @@ export async function POST(request: Request) {
       // Anything implausible falls back to UTC — see lib/review-date.
       review_date: reviewDateFrom(local_date),
       release_id: release.id,
+      // The GIF columns ride along ONLY when there is a GIF, so a
+      // plain review still saves if migration 058 hasn't been run.
+      ...(parsedGif ? gifToRow(parsedGif) : {}),
     });
 
     if (!review) {

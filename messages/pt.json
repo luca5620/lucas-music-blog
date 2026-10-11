@@ -787,6 +787,16 @@
     "likeComment": "Curtir este comentário",
     "unlikeComment": "Descurtir"
   },
+  "gifs": {
+    "add": "GIF",
+    "remove": "Remover GIF",
+    "close": "Fechar busca de GIF",
+    "trending": "Em alta",
+    "results": "Resultados",
+    "none": "Nenhum GIF encontrado.",
+    "failed": "Não deu para carregar os GIFs — tente de novo daqui a pouco.",
+    "more": "Carregar mais"
+  },
   "reviews": {
     "index": {
       "title": "RESENHAS",
@@ -848,7 +858,9 @@
       "published": "Publicada",
       "view": "Ver",
       "streakCount": "{n, plural, one {# avaliado nesta sessão} other {# avaliados nesta sessão}}",
-      "done": "Pronto"
+      "done": "Pronto",
+      "gifLabel": "Reação em GIF",
+      "gifHint": "Opcional — sozinho, no lugar das palavras, ou no fim da sua resenha."
     },
     "feed": {
       "title": "Feed da comunidade",
@@ -1828,7 +1840,8 @@
       "reviewNotFound": "Essa avaliação não foi encontrada.",
       "notYours": "Essa avaliação não é sua.",
       "updateFailed": "Não foi possível salvar as alterações. Tente de novo.",
-      "deleteFailed": "Não foi possível apagar a avaliação. Tente de novo."
+      "deleteFailed": "Não foi possível apagar a avaliação. Tente de novo.",
+      "invalidGif": "Não deu para anexar esse GIF — escolha outro."
     }
   },
   "start": {

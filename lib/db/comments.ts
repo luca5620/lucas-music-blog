@@ -1,4 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
+import { gifToRow, type Gif } from "@/lib/gif";
+
+/**
+ * Every comment read selects "*" plus the author — deliberately not a
+ * column list. Migration 058 added the gif_* columns; with "*" the
+ * same query works before AND after it's run (a named column that
+ * doesn't exist yet makes PostgREST fail the whole request, which
+ * would blank every comment thread on the site).
+ */
+const COMMENT_SELECT = "*, profiles(username, display_name, avatar_url)";
 
 export interface CommentWithProfile {
   id: string;
@@ -6,6 +16,10 @@ export interface CommentWithProfile {
   review_id: string;
   parent_id: string | null;
   content: string;
+  /** Optional GIF (migration 058) — absent on rows from before it. */
+  gif_url?: string | null;
+  gif_width?: number | null;
+  gif_height?: number | null;
   created_at: string;
   updated_at: string;
   profiles: {
@@ -26,7 +40,7 @@ export async function getCommentsByReview(
   const { data, error } = await supabase
     .from("comments")
     .select(
-      "id, user_id, review_id, parent_id, content, created_at, updated_at, profiles(username, display_name, avatar_url)"
+      COMMENT_SELECT
     )
     .eq("review_id", reviewId)
     .order("created_at", { ascending: true });
@@ -46,7 +60,8 @@ export async function createComment(
   userId: string,
   reviewId: string,
   content: string,
-  parentId?: string
+  parentId?: string,
+  gif?: Gif | null
 ) {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -56,9 +71,12 @@ export async function createComment(
       review_id: reviewId,
       content,
       ...(parentId ? { parent_id: parentId } : {}),
+      // Only when there IS a GIF — a plain comment must keep saving
+      // even if migration 058 hasn't been run yet.
+      ...(gif ? gifToRow(gif) : {}),
     } as never)
     .select(
-      "id, user_id, review_id, parent_id, content, created_at, updated_at, profiles(username, display_name, avatar_url)"
+      COMMENT_SELECT
     )
     .single();
 
@@ -85,7 +103,7 @@ export async function updateComment(
     .eq("id", commentId)
     .eq("user_id", userId)
     .select(
-      "id, user_id, review_id, parent_id, content, created_at, updated_at, profiles(username, display_name, avatar_url)"
+      COMMENT_SELECT
     )
     .single();
 

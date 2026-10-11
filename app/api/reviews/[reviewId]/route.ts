@@ -4,6 +4,7 @@ import { updateReview, deleteReview } from "@/lib/db/reviews";
 import { getReleaseById } from "@/lib/db/releases";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rate-limit";
+import { gifToRow, parseGif } from "@/lib/gif";
 import type { Review } from "@/lib/types/database";
 import { isOptionalText, parseRating } from "@/lib/validate";
 import { notifyFollowers } from "@/lib/db/notifications";
@@ -81,7 +82,8 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { rating, summary, snippet, standout_tracks, is_published } = body;
+    const { rating, summary, snippet, standout_tracks, is_published, gif } =
+      body;
 
     const parsedRating = parseRating(rating);
     if (parsedRating === null) {
@@ -101,6 +103,12 @@ export async function PUT(
     // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
     const dirty = await checkContentLocalized(snippet, summary);
     if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
+
+    // Optional GIF reaction — same rules as the create route.
+    const parsedGif = parseGif(gif);
+    if (parsedGif === false) {
+      return NextResponse.json({ error: t("invalidGif") }, { status: 400 });
+    }
 
     const parsedTracks = parseTrackPicks(standout_tracks);
     if (parsedTracks === null) {
@@ -128,6 +136,10 @@ export async function PUT(
       summary: summary || null,
       standout_tracks: parsedTracks,
       is_published: is_published ?? existing.is_published,
+      // Write the GIF columns when there's a GIF to save OR one to
+      // remove. A review that never had one leaves them untouched, so
+      // edits keep working even before migration 058 is run.
+      ...(parsedGif || existing.gif_url ? gifToRow(parsedGif) : {}),
     });
 
     if (!review) {

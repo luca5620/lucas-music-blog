@@ -6,6 +6,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { checkContentLocalized } from "@/lib/content-filter";
 import { createNotification } from "@/lib/db/notifications";
 import { BLOCKED_ACTION_ERROR, isBlockedBy } from "@/lib/db/moderation";
+import { parseGif } from "@/lib/gif";
 
 // UUIDs only — anything else is rejected before touching the database.
 const UUID_RE =
@@ -29,17 +30,27 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const { reviewId, content, parentId } = body as {
+  const { reviewId, content: rawContent, parentId, gif } = body as {
     reviewId?: unknown;
     content?: unknown;
     parentId?: unknown;
+    gif?: unknown;
   };
+  // A GIF-only comment arrives with no text at all — treat that as "".
+  const content = rawContent ?? "";
+
+  // Optional GIF (migration 058) — KLIPY links only, see lib/gif.ts.
+  const parsedGif = parseGif(gif);
+  if (parsedGif === false) {
+    return NextResponse.json({ error: "Invalid GIF" }, { status: 400 });
+  }
 
   // --- Validate shape and sizes ---
   if (typeof reviewId !== "string" || !UUID_RE.test(reviewId)) {
     return NextResponse.json({ error: "Invalid reviewId" }, { status: 400 });
   }
-  if (typeof content !== "string" || !content.trim()) {
+  // Words, a GIF, or both — but never nothing.
+  if (typeof content !== "string" || (!content.trim() && !parsedGif)) {
     return NextResponse.json({ error: "Content is required" }, { status: 400 });
   }
   if (content.trim().length > MAX_COMMENT_LENGTH) {
@@ -57,7 +68,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Zero-tolerance filter (App Store 1.2) — slurs never hit the DB.
-  const dirty = await checkContentLocalized(content);
+  const dirty = content.trim() ? await checkContentLocalized(content) : null;
   if (dirty) return NextResponse.json({ error: dirty }, { status: 400 });
 
   const supabase = await createClient();
@@ -119,7 +130,8 @@ export async function POST(request: NextRequest) {
     user.id,
     reviewId,
     content.trim(),
-    (parentId as string | null | undefined) || undefined
+    (parentId as string | null | undefined) || undefined,
+    parsedGif
   );
 
   if (!comment) {

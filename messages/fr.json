@@ -787,6 +787,16 @@
     "likeComment": "Aimer ce commentaire",
     "unlikeComment": "Retirer mon like"
   },
+  "gifs": {
+    "add": "GIF",
+    "remove": "Retirer le GIF",
+    "close": "Fermer la recherche de GIF",
+    "trending": "Tendances",
+    "results": "Résultats",
+    "none": "Aucun GIF trouvé.",
+    "failed": "Impossible de charger les GIFs — réessaie dans un instant.",
+    "more": "Voir plus"
+  },
   "reviews": {
     "index": {
       "title": "CRITIQUES",
@@ -848,7 +858,9 @@
       "published": "Publiée",
       "view": "Voir",
       "streakCount": "{n, plural, one {# noté cette session} other {# notés cette session}}",
-      "done": "Terminé"
+      "done": "Terminé",
+      "gifLabel": "Réaction en GIF",
+      "gifHint": "Facultatif — seul, à la place des mots, ou en bas de ta critique."
     },
     "feed": {
       "title": "Flux de la communauté",
@@ -1828,7 +1840,8 @@
       "reviewNotFound": "Cette critique est introuvable.",
       "notYours": "Cette critique ne t'appartient pas.",
       "updateFailed": "Impossible d'enregistrer tes modifications. Réessaie.",
-      "deleteFailed": "Impossible de supprimer cette critique. Réessaie."
+      "deleteFailed": "Impossible de supprimer cette critique. Réessaie.",
+      "invalidGif": "Impossible de joindre ce GIF — choisis-en un autre."
     }
   },
   "start": {

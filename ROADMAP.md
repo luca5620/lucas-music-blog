@@ -7,6 +7,32 @@ review/list/profile backbone + Real's live rooms and debates, skinned
 as physical media — the whole site lives inside a CRT. No personal-blog
 remnants: every piece of content is community-made and catalog-backed.
 
+
+## ✅ 2026-10-18 (MacBook) — App sign-ups with Google/Apple bounced back to /login — FIXED (debb4b9)
+
+Luca: friends trying to sign up **inside the Peak Music app** with
+Google/Apple — "the redirection bugs and doesn't work". Cause: the
+app's deep-link handler exchanged the OAuth code in the WebView
+(document.cookie writes) and hard-navigated on; WKWebView can start
+that navigation before the cookies land, so the next page loads
+logged-out. Harmless while that page was public, but since 2026-10-05
+brand-new accounts go to /welcome or /start, which REQUIRE a session —
+so new sign-ups were sent straight back to /login. Existing accounts
+(public landing pages) never saw it, which is why Luca didn't.
+**Fix:** the app now navigates to `/auth/callback?code=…` and the
+SERVER exchanges it (PKCE verifier is a cookie written at button-tap),
+setting the session via Set-Cookie on its redirect — one finish for web
+and app. Also hardened: a code arriving at `/?code=` (Supabase's
+Site-URL fallback) now gets the same /welcome + /start decisions in
+/auth/confirm, and a failed one shows /login?error=oauth instead of an
+"email link" message. Live; verified the deployed bundle carries the
+hand-off and every return path redirects correctly on a prod build.
+**Not testable here:** a real Google/Apple login (needs a person's
+account) — **ask a friend to retry and confirm.** If it still fails,
+check Supabase → Authentication → URL Configuration → Redirect URLs
+still contains `com.peakmusicreviews.app://auth/callback` exactly.
+No native build or migration needed.
+
 ---
 
 ## ✅ 2026-10-11 — GIFs on reviews + comments (LIVE), loading-screen fix

@@ -17,10 +17,27 @@
  * which Google accepts) via @capacitor/browser, and Supabase is told
  * to come back to the custom scheme `com.peakmusicreviews.app://` —
  * iOS hands that to the shell, the App plugin's `appUrlOpen` fires
- * INSIDE the WebView, and we exchange the code right there. Doing the
- * exchange in the WebView is the whole point: that's where
- * signInWithOAuth stashed the PKCE verifier, and where the session
- * cookies have to land for the site to see them.
+ * INSIDE the WebView, and we hand the code to our own /auth/callback
+ * route — the exact same server finish the web uses.
+ *
+ * WHY THE SERVER FINISHES IT, NOT THE PAGE (2026-10-18). Until then the
+ * app exchanged the code right here with the browser client, which
+ * writes the session cookies through document.cookie, then hard-
+ * navigated on. Inside WKWebView those document.cookie writes reach the
+ * cookie store a beat LATER than the navigation can start, so the next
+ * page could load as logged-out. Harmless while that page was public
+ * (the home page). But since 2026-10-05 a brand-new account goes to
+ * /welcome or /start, and BOTH require a session — so friends signing
+ * up in the app were bounced straight back to /login: "the redirection
+ * bugs and doesn't work" (Luca, 2026-10-18). Existing accounts, landing
+ * on public pages, never saw it.
+ *
+ * Now the WebView navigates to /auth/callback?code=…, the SERVER
+ * exchanges it (the PKCE verifier is a cookie written back when the
+ * button was tapped, long since settled), and its redirect response
+ * carries the session as Set-Cookie headers — which the WebView applies
+ * before it requests the next page. One finish for web and app, so the
+ * /welcome → /start → next decisions can never drift apart again.
  *
  * The app buttons only appear on shells that actually carry the
  * Browser plugin — see browserPlugin() in lib/native. The 1.0 build
@@ -41,8 +58,6 @@ import {
   isNativeApp,
   type PluginListener,
 } from "@/lib/native";
-import type { Profile } from "@/lib/types/database";
-import { destinationAfterSignIn, readOnboardedCookie } from "@/lib/onboarding";
 import { useTranslations } from "next-intl";
 
 type Provider = "google" | "apple";
@@ -185,52 +200,22 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
         return;
       }
 
-      const supabase = createClient();
-      const { data, error: exchangeError } =
-        await supabase.auth.exchangeCodeForSession(code);
-
-      if (exchangeError || !data.user) {
-        giveUp(t("couldntFinish"));
-        return;
-      }
-
-      // Fresh social account → pick a handle first. Guarded the same
-      // way /auth/callback is: if the column isn't there the select
-      // errors, `profile` comes back null, and we just carry on.
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username_auto")
-        .eq("id", data.user.id)
-        .maybeSingle();
-
-      // Brand-new account → the first-rating screen (/start) before
-      // the parked destination — the SAME rule /auth/callback applies
-      // on the web (lib/onboarding.ts). Fails soft to the plain path.
-      const destination = await destinationAfterSignIn(
-        supabase,
-        data.user,
-        safePath(parked),
-        readOnboardedCookie(document.cookie)
-      );
-      const flagged = (profile as Pick<Profile, "username_auto"> | null)
-        ?.username_auto;
-
-      const target = flagged
-        ? `/welcome?next=${encodeURIComponent(destination)}`
-        : destination;
-
-      // HARD navigation, not router.push (Luca 2026-09-02: on mobile
-      // the account "wasn't recognized until you click view profile").
-      // exchangeCodeForSession just wrote the session COOKIES, but a
-      // client-side router.push inside the WebView renders the next
-      // page from the RSC cache/middleware without those cookies having
-      // reliably taken hold — so the nav, and every SSR read after it,
-      // still saw a logged-OUT request (hence the /profile 404 on a
-      // username the client didn't have yet). The web flow never hit
-      // this because it finishes via a full server redirect out of
-      // /auth/callback. A full document load here does the same: the
-      // WebView reloads, the cookies ride along, SSR sees the session.
-      window.location.assign(target);
+      // Hand the code to the SERVER — /auth/callback, the web's own
+      // finish (see the header for why the page no longer exchanges it
+      // itself). It exchanges the code using the PKCE verifier cookie
+      // written when the button was tapped, sets the session cookies
+      // on its redirect response, and applies the same decisions as on
+      // the web: a fresh social handle → /welcome, a brand-new account
+      // → /start, then the parked destination. A bad or expired code
+      // comes back as /login?error=oauth, which this page explains.
+      //
+      // A HARD navigation (Luca 2026-09-02: a client-side router.push
+      // inside the WebView rendered the next page without the session),
+      // and `replace` so Back doesn't return to a spent code.
+      const callback = new URL("/auth/callback", window.location.origin);
+      callback.searchParams.set("code", code);
+      callback.searchParams.set("next", safePath(parked));
+      window.location.replace(callback.toString());
     },
     [t]
   );

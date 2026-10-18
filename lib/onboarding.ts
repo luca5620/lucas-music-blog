@@ -10,7 +10,8 @@
  * Every sign-in path asks the same question, and they must never
  * drift apart (same lesson as OAuthButtons.finish ↔ /auth/callback):
  *   - app/auth/callback/route.ts       Google/Apple on the web (server)
- *   - components/auth/OAuthButtons.tsx Google/Apple inside the app
+ *   - app/auth/confirm/route.ts         home-page fallback + email links
+ *   (the app's Google/Apple finish now goes through /auth/callback too)
  *   - app/login/page.tsx               email/username + password
  *   - app/welcome/page.tsx             after claiming a social handle
  * Email signup doesn't ask — its confirmation link points straight at

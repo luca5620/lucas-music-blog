@@ -28,6 +28,12 @@ export async function updateSession(request: NextRequest) {
     confirmUrl.search = "";
     confirmUrl.searchParams.set("code", request.nextUrl.searchParams.get("code")!);
     confirmUrl.searchParams.set("next", "/start");
+    // Tell /auth/confirm this code arrived via the home-page fallback:
+    // it may be a Google/Apple sign-in (Supabase falls back to the Site
+    // URL when a redirect isn't allow-listed), so on success it gets
+    // the same /welcome → /start decisions as /auth/callback, and on
+    // failure a sign-in message instead of an "email link" one.
+    confirmUrl.searchParams.set("src", "root");
     return NextResponse.redirect(confirmUrl);
   }
 

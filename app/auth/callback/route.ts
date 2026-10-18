@@ -7,7 +7,13 @@ import {
 } from "@/lib/onboarding";
 
 /**
- * GET /auth/callback — where Google/Apple sign-ins come back to.
+ * GET /auth/callback — where Google/Apple sign-ins come back to, on
+ * the web AND in the app. Since 2026-10-18 the app's deep-link handler
+ * (components/auth/OAuthButtons.tsx) no longer exchanges the code in
+ * the WebView — it navigates here with it, so the session cookies
+ * arrive as Set-Cookie on this redirect and the protected /welcome and
+ * /start pages always see a signed-in request (they bounced new app
+ * sign-ups to /login before).
  *
  * The provider redirects to Supabase, Supabase redirects here with a
  * PKCE `code`; exchanging it sets the session cookies. Then one extra
@@ -18,9 +24,8 @@ import {
  *
  * And a second one (2026-10-05): a BRAND-NEW account goes to /start
  * — the first-rating screen — before `next`. The rule lives in
- * lib/onboarding.ts (needsFirstRating) and is shared with the in-app
- * finish in components/auth/OAuthButtons.tsx; when both apply the
- * order is /welcome → /start → next.
+ * lib/onboarding.ts (needsFirstRating); when both apply the order is
+ * /welcome → /start → next.
  *
  * Email confirmation links keep using /auth/confirm — that route
  * handles token_hash links too, which arrive in whatever browser the

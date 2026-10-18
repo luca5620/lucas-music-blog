@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/types/database";
+import { destinationAfterSignIn, ONBOARDED_COOKIE } from "@/lib/onboarding";
 
 /**
  * GET /auth/confirm — where auth email links land.
@@ -43,10 +45,43 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(safeNext, request.url));
     }
   } else if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(new URL(safeNext, request.url));
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && data.user) {
+      // Recovery (reset-password) links go exactly where they asked.
+      if (safeNext.startsWith("/reset-password")) {
+        return NextResponse.redirect(new URL(safeNext, request.url));
+      }
+      // Anything else that exchanged a code here may be a brand-new
+      // account — an email signup, OR a Google/Apple sign-in that
+      // Supabase sent to the home page (src=root, see lib/supabase/
+      // middleware.ts). Same decisions as /auth/callback (2026-10-18):
+      // a fresh invented social handle → /welcome first, a brand-new
+      // account → /start, everyone else straight on.
+      const destination = await destinationAfterSignIn(
+        supabase,
+        data.user,
+        safeNext,
+        request.cookies.get(ONBOARDED_COOKIE)?.value ?? null
+      );
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username_auto")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      const target = (profile as Pick<Profile, "username_auto"> | null)?.username_auto
+        ? `/welcome?next=${encodeURIComponent(destination)}`
+        : destination;
+      return NextResponse.redirect(new URL(target, request.url));
     }
+  }
+
+  // A code from the home-page fallback that couldn't be used is far
+  // more likely a social sign-in that started in another browser (the
+  // app's Safari sheet) than an emailed link — say "sign-in didn't go
+  // through, try again" (/login?error=oauth) rather than talk about a
+  // link the person never clicked.
+  if (code && searchParams.get("src") === "root") {
+    return NextResponse.redirect(new URL("/login?error=oauth", request.url));
   }
 
   const failed = new URL(safeNext, request.url);

@@ -302,7 +302,31 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
       try {
         await browserPlugin()?.open({
           url: data.url,
-          presentationStyle: "fullscreen",
+          // "popover", NOT "fullscreen" (2026-10-18) — this one word is
+          // the whole fix for the button hanging on "HANDING OVER…".
+          //
+          // For "fullscreen", Capacitor's bridge (CapacitorBridge.
+          // presentVC) builds a brand-new temporary UIWindow with
+          // UIWindow(frame:) and presents Safari inside it. Since 1.2
+          // the shell runs the UIScene life cycle (required by the
+          // iOS 27 SDK — ios/App/App/SceneDelegate.swift), and under
+          // scenes a window that isn't attached to a UIWindowScene is
+          // never put on screen. So Safari was created, loaded Google
+          // off-screen, and open() never resolved: every 1.2 user
+          // tapping Google/Apple saw "HANDING OVER…" forever (Luca +
+          // friends, 2026-10-18; confirmed in the iOS 27 simulator —
+          // the Safari view service ran "NotVisible" in a second,
+          // hidden window).
+          //
+          // For "popover" the bridge skips the temporary window and
+          // presents from its own view controller, which lives in the
+          // real, visible scene window. On iPhone a popover adapts to
+          // full screen automatically (the plugin sets no adaptive
+          // override), so it looks exactly like before; on iPad it's a
+          // centred sheet. close() handles both paths. A native fix
+          // (attach the temp window to the scene) would need a new App
+          // Store build; this works on the 1.2 binary already out.
+          presentationStyle: "popover",
         });
       } catch {
         setError(t("couldntOpen"));

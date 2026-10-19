@@ -8,6 +8,28 @@ as physical media — the whole site lives inside a CRT. No personal-blog
 remnants: every piece of content is community-made and catalog-backed.
 
 
+## ✅ 2026-10-18 (MacBook) — Google/Apple in the 1.2 app stuck on "HANDING OVER…" — FIXED (ac1c26c)
+
+Luca: "in the ios app i click it and it just says handing over … and
+nothing happens" — EVERY 1.2 user, not just new sign-ups. **Root
+cause (confirmed in the iOS 27 simulator):** for a "fullscreen"
+presentation, Capacitor's `CapacitorBridge.presentVC` creates a
+temporary `UIWindow(frame:)`; since 1.2 adopted the UIScene life cycle
+(iOS 27 SDK), a window with no windowScene is never put on screen. The
+Safari sheet loaded off-screen (log: SafariViewService
+"running-active-NotVisible", hosted in a second hidden window) and
+`Browser.open()` never resolved. **Fix, no new binary:**
+`presentationStyle: "popover"` in `components/auth/OAuthButtons.tsx` —
+the bridge then presents from its own view controller in the real
+scene window; on iPhone a popover adapts to full screen, so it looks
+identical. **Verified in the simulator on the live site:** Google's
+sign-in page and Apple's both open; ✕ closes and re-arms the buttons.
+Only the Browser plugin used presentVC this way (Share presents from
+the bridge VC directly). **Next native build:** keep "popover", or
+patch the temp window to attach to the scene — and ALWAYS tap through
+social sign-in on the iOS 27 simulator before submitting (it was never
+re-tested after the UIScene change; this is how it slipped into 1.2).
+
 ## ✅ 2026-10-18 (MacBook) — App sign-ups with Google/Apple bounced back to /login — FIXED (debb4b9)
 
 Luca: friends trying to sign up **inside the Peak Music app** with

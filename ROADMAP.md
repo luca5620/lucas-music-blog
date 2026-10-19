@@ -22,7 +22,9 @@ Safari sheet loaded off-screen (log: SafariViewService
 `presentationStyle: "popover"` in `components/auth/OAuthButtons.tsx` —
 the bridge then presents from its own view controller in the real
 scene window; on iPhone a popover adapts to full screen, so it looks
-identical. **Verified in the simulator on the live site:** Google's
+identical. **✅ CONFIRMED END TO END BY LUCA 2026-10-18 ("it works") —
+a real Google/Apple sign-in in the app now returns him signed in.**
+**Verified in the simulator on the live site:** Google's
 sign-in page and Apple's both open; ✕ closes and re-arms the buttons.
 Only the Browser plugin used presentVC this way (Share presents from
 the bridge VC directly). **Next native build:** keep "popover", or
@@ -49,8 +51,7 @@ Site-URL fallback) now gets the same /welcome + /start decisions in
 /auth/confirm, and a failed one shows /login?error=oauth instead of an
 "email link" message. Live; verified the deployed bundle carries the
 hand-off and every return path redirects correctly on a prod build.
-**Not testable here:** a real Google/Apple login (needs a person's
-account) — **ask a friend to retry and confirm.** If it still fails,
+**✅ Real sign-in confirmed working by Luca 2026-10-18.** If it still fails,
 check Supabase → Authentication → URL Configuration → Redirect URLs
 still contains `com.peakmusicreviews.app://auth/callback` exactly.
 No native build or migration needed.

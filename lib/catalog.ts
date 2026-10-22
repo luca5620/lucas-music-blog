@@ -17,6 +17,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { spotifyFetch, slugify } from "@/lib/spotify-import";
 import { searchReleases, getReleaseBySpotifyId } from "@/lib/db/releases";
+import { getArtistById } from "@/lib/db/artists";
 import { isUpcoming } from "@/lib/upcoming";
 import {
   searchGeniusSongs,
@@ -24,6 +25,7 @@ import {
   geniusDateToIso,
   geniusConfigured,
 } from "@/lib/genius";
+import { foldText, matchScore, artistMatches } from "@/lib/catalog-rank";
 import type { Release, ReleaseTrack } from "@/lib/types/database";
 
 /* ---------------------------------------------------------------
@@ -50,6 +52,23 @@ export interface CatalogResult {
   /** Community average for local rows (null = no published reviews
       yet) — the pick UI shows it labeled "community avg". */
   avg_rating?: number | null;
+  /** Track count for albums/EPs — two editions of the same record
+      ("Rappels" vs "Rappels 1 + 2") are told apart by this. */
+  tracks?: number;
+  /** For song results: the record the song is on. */
+  album?: string;
+  /** Local rows: the Spotify id the row was imported from (the preview
+      player reads it). */
+  spotify_id?: string | null;
+}
+
+/** An artist result. Tapping one opens their discography. */
+export interface CatalogArtist {
+  /** Spotify artist id. */
+  id: string;
+  name: string;
+  image: string | null;
+  genres: string[];
 }
 
 /* ---------------------------------------------------------------
@@ -119,7 +138,7 @@ async function resolveSpotifyLink(
           source: "local",
           id: existing.id,
           title: existing.title,
-          artist: "", // detail page carries the artist; search UI tolerates blank
+          artist: (await getArtistById(existing.primary_artist_id))?.name ?? "",
           cover: existing.cover_image,
           year: existing.release_date?.slice(0, 4) ?? null,
           kind: existing.release_type,
@@ -147,6 +166,7 @@ async function resolveSpotifyLink(
             album.album_type === "single" && album.tracks.items.length > 3
               ? "EP"
               : album.album_type,
+          tracks: album.tracks.items.length,
           upcoming: isUpcoming(album.release_date ?? null),
         },
       ],
@@ -178,28 +198,39 @@ interface SpotifyAlbumHit {
   album_type: "album" | "single" | "compilation";
   release_date?: string;
   total_tracks?: number;
-  artists: { name: string }[];
+  artists: { id?: string; name: string }[];
   images?: { url: string; width: number | null }[];
 }
 
+/** Spotify album → result row. Shared by search and discographies. */
+function albumHitToResult(a: SpotifyAlbumHit): CatalogResult {
+  return {
+    source: "spotify",
+    id: a.id,
+    title: a.name,
+    artist: a.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
+    cover: a.images?.[0]?.url ?? null,
+    year: a.release_date?.slice(0, 4) ?? null,
+    kind: a.album_type === "single" && (a.total_tracks ?? 1) > 3 ? "EP" : a.album_type,
+    tracks: a.total_tracks ?? undefined,
+    upcoming: isUpcoming(a.release_date ?? null),
+  };
+}
+
+// Spotify caps search pages at 10 for apps in development mode (asking
+// for more is a 400 "Invalid limit") — every limit below stays ≤ 10.
 async function searchSpotifyAlbums(
   query: string,
-  limit = 8
+  limit = 10
 ): Promise<CatalogResult[]> {
   try {
     const raw = (await spotifyFetch(
       `/search?type=album&limit=${limit}&q=${encodeURIComponent(query)}`
-    )) as { albums?: { items?: SpotifyAlbumHit[] } };
+    )) as { albums?: { items?: (SpotifyAlbumHit | null)[] } };
 
-    return (raw.albums?.items ?? []).map((a) => ({
-      source: "spotify" as const,
-      id: a.id,
-      title: a.name,
-      artist: a.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
-      cover: a.images?.[0]?.url ?? null,
-      year: a.release_date?.slice(0, 4) ?? null,
-      kind: a.album_type === "single" && (a.total_tracks ?? 1) > 3 ? "EP" : a.album_type,
-    }));
+    return (raw.albums?.items ?? [])
+      .filter((a): a is SpotifyAlbumHit => !!a)
+      .map(albumHitToResult);
   } catch (err) {
     console.warn("Spotify search failed:", err instanceof Error ? err.message : err);
     return [];
@@ -211,6 +242,7 @@ interface SpotifyTrackHit {
   name: string;
   artists: { name: string }[];
   album?: {
+    name?: string;
     images?: { url: string; width: number | null }[];
     release_date?: string;
   };
@@ -223,25 +255,75 @@ interface SpotifyTrackHit {
  */
 async function searchSpotifyTracks(
   query: string,
-  limit = 6
+  limit = 10
 ): Promise<CatalogResult[]> {
   try {
     const raw = (await spotifyFetch(
       `/search?type=track&limit=${limit}&q=${encodeURIComponent(query)}`
-    )) as { tracks?: { items?: SpotifyTrackHit[] } };
+    )) as { tracks?: { items?: (SpotifyTrackHit | null)[] } };
 
-    return (raw.tracks?.items ?? []).map((t) => ({
-      source: "spotify_track" as const,
-      id: t.id,
-      title: t.name,
-      artist: t.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
-      cover: t.album?.images?.[0]?.url ?? null,
-      year: t.album?.release_date?.slice(0, 4) ?? null,
-      kind: "song",
-    }));
+    return (raw.tracks?.items ?? [])
+      .filter((t): t is SpotifyTrackHit => !!t)
+      .map((t) => ({
+        source: "spotify_track" as const,
+        id: t.id,
+        title: t.name,
+        artist: t.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
+        cover: t.album?.images?.[0]?.url ?? null,
+        year: t.album?.release_date?.slice(0, 4) ?? null,
+        kind: "song",
+        // Which record the song is on — "La bombe humaine" exists on
+        // six Téléphone records; this line is how you tell them apart.
+        album: t.album?.name,
+      }));
   } catch (err) {
     console.warn(
       "Spotify track search failed:",
+      err instanceof Error ? err.message : err
+    );
+    return [];
+  }
+}
+
+interface SpotifyArtistHit {
+  id: string;
+  name: string;
+  images?: { url: string; width: number | null }[];
+  genres?: string[];
+}
+
+/**
+ * Artist search — "find by artist" (Luca 2026-10-22). An artist result
+ * in the picker opens that artist's discography right there, so you can
+ * scroll their records instead of guessing the album's exact name.
+ * Loosely related names Spotify pads the answer with are dropped (see
+ * artistMatches).
+ */
+async function searchSpotifyArtists(
+  query: string,
+  limit = 6
+): Promise<CatalogArtist[]> {
+  try {
+    const raw = (await spotifyFetch(
+      `/search?type=artist&limit=${limit}&q=${encodeURIComponent(query)}`
+    )) as { artists?: { items?: (SpotifyArtistHit | null)[] } };
+
+    return (raw.artists?.items ?? [])
+      .filter((a): a is SpotifyArtistHit => !!a && artistMatches(query, a.name))
+      .slice(0, 4)
+      .map((a) => ({
+        id: a.id,
+        name: a.name,
+        // Smallest image that's still ≥ 160px — the row thumb is tiny.
+        image:
+          [...(a.images ?? [])].reverse().find((i) => (i.width ?? 0) >= 160)?.url ??
+          a.images?.[0]?.url ??
+          null,
+        genres: (a.genres ?? []).slice(0, 2),
+      }));
+  } catch (err) {
+    console.warn(
+      "Spotify artist search failed:",
       err instanceof Error ? err.message : err
     );
     return [];
@@ -264,12 +346,14 @@ async function searchGenius(query: string, limit = 8): Promise<CatalogResult[]> 
   }));
 }
 
-async function searchLocal(query: string, limit = 6): Promise<CatalogResult[]> {
-  type Row = Release & { artists: { name: string } | { name: string }[] | null };
-  const rows = (await searchReleases(query, limit)) as Row[];
+type LocalRow = Release & {
+  artists: { name: string } | { name: string }[] | null;
+};
 
-  // One batched query for the community averages of every hit (max 6
-  // rows — cheaper than six get_release_stats RPCs). Ratings are
+/** Local rows → results, with the community average batched in. */
+async function localRowsToResults(rows: LocalRow[]): Promise<CatalogResult[]> {
+  // One batched query for the community averages of every hit —
+  // cheaper than one get_release_stats RPC per row. Ratings are
   // garnish: any failure here must never sink the search itself.
   const avgByRelease = new Map<string, { sum: number; n: number }>();
   if (rows.length > 0) {
@@ -308,32 +392,231 @@ async function searchLocal(query: string, limit = 6): Promise<CatalogResult[]> {
       cover: r.cover_image,
       year: r.release_date?.slice(0, 4) ?? null,
       kind: r.release_type,
+      tracks: Array.isArray(r.tracks) && r.tracks.length > 1 ? r.tracks.length : undefined,
       slug: r.slug,
       unreleased: r.is_unreleased,
       upcoming: isUpcoming(r.release_date),
       avg_rating: acc ? acc.sum / acc.n : null,
+      spotify_id: r.spotify_id,
     };
   });
 }
 
+const LOCAL_SELECT = "*, artists!releases_primary_artist_id_fkey(name)";
+
+/** Escape LIKE wildcards so a "_" or "%" in the query is literal. */
+function likeSafe(s: string): string {
+  return s.replace(/[%_\\]/g, "\\$&");
+}
+
 /**
- * Fan out to all three sources. Spotify results that are already in
- * the local DB are deduped (local wins — it has a slug). Genius stays
- * separate because song-level hits complement album-level ones.
+ * Records already on PMR. Used to match the TITLE only, so typing
+ * "rappels telephone" (title + artist, the natural way to search) found
+ * nothing here. Now three small lookups run together and the scorer
+ * keeps the ones that actually match:
+ *   1. title contains the whole query
+ *   2. title contains the longest typed word
+ *   3. releases by artists whose name contains a typed word
+ */
+async function searchLocal(query: string, limit = 8): Promise<CatalogResult[]> {
+  const supabase = await createClient();
+  const typed = query
+    .split(/\s+/)
+    .map((w) => w.replace(/[^\p{L}\p{N}'-]/gu, ""))
+    .filter((w) => w.length >= 3);
+  const longest = [...typed].sort((a, b) => b.length - a.length)[0];
+
+  const [byTitle, byWord, artistIds] = await Promise.all([
+    searchReleases(query, limit) as Promise<LocalRow[]>,
+    longest && typed.length > 1
+      ? supabase
+          .from("releases")
+          .select(LOCAL_SELECT)
+          .ilike("title", `%${likeSafe(longest)}%`)
+          .order("popularity", { ascending: false, nullsFirst: false })
+          .limit(15)
+          .then(({ data }) => (data ?? []) as LocalRow[])
+      : Promise.resolve([] as LocalRow[]),
+    typed.length > 0
+      ? supabase
+          .from("artists")
+          .select("id")
+          .or(typed.slice(0, 4).map((w) => `name.ilike.%${likeSafe(w)}%`).join(","))
+          .limit(6)
+          .then(({ data }) => ((data ?? []) as { id: string }[]).map((a) => a.id))
+      : Promise.resolve([] as string[]),
+  ]);
+
+  const byArtist =
+    artistIds.length > 0
+      ? (((
+          await supabase
+            .from("releases")
+            .select(LOCAL_SELECT)
+            .in("primary_artist_id", artistIds)
+            .order("popularity", { ascending: false, nullsFirst: false })
+            .limit(25)
+        ).data ?? []) as LocalRow[])
+      : [];
+
+  // Merge, dedupe by id, keep only real matches, best first.
+  const seen = new Set<string>();
+  const merged = [...byTitle, ...byWord, ...byArtist].filter((r) => {
+    if (seen.has(r.id)) return false;
+    seen.add(r.id);
+    return true;
+  });
+  const scored = merged
+    .map((r) => {
+      const joined = Array.isArray(r.artists) ? r.artists[0] : r.artists;
+      return { r, s: matchScore(query, r.title, joined?.name ?? "") };
+    })
+    // ≥ 50 = every typed word is in the title or artist name.
+    .filter((x) => x.s >= 50)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, limit)
+    .map((x) => x.r);
+
+  return localRowsToResults(scored);
+}
+
+/**
+ * Swap Spotify/Genius hits that are ALREADY on PMR for their local row
+ * (it has a slug, a community average, and its reviews). Before, only
+ * album hits were checked — a song somebody already reviewed came back
+ * as a fresh Spotify result and looked like it had never been rated.
+ */
+async function swapInKnown(results: CatalogResult[]): Promise<CatalogResult[]> {
+  const spotifyIds = results
+    .filter((r) => r.source === "spotify" || r.source === "spotify_track")
+    .map((r) => r.id);
+  const geniusIds = results.filter((r) => r.source === "genius").map((r) => `song:${r.id}`);
+  if (spotifyIds.length === 0 && geniusIds.length === 0) return results;
+
+  const supabase = await createClient();
+  const [bySpotify, byGenius] = await Promise.all([
+    spotifyIds.length > 0
+      ? supabase.from("releases").select(LOCAL_SELECT).in("spotify_id", spotifyIds)
+      : Promise.resolve({ data: [] }),
+    geniusIds.length > 0
+      ? supabase.from("releases").select(LOCAL_SELECT).in("genius_id", geniusIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+  const rows = [
+    ...((bySpotify.data ?? []) as LocalRow[]),
+    ...((byGenius.data ?? []) as LocalRow[]),
+  ];
+  if (rows.length === 0) return results;
+
+  const locals = await localRowsToResults(rows);
+  const bySourceKey = new Map<string, CatalogResult>();
+  rows.forEach((row, i) => {
+    if (row.spotify_id) bySourceKey.set(`spotify:${row.spotify_id}`, locals[i]);
+    if (row.genius_id) bySourceKey.set(`genius:${row.genius_id.replace(/^song:/, "")}`, locals[i]);
+  });
+
+  return results.map((r) => {
+    const key =
+      r.source === "genius" ? `genius:${r.id}` : r.source === "local" ? "" : `spotify:${r.id}`;
+    const local = key ? bySourceKey.get(key) : undefined;
+    // Keep the song's album line — the local row doesn't carry it.
+    return local ? { ...local, album: r.album } : r;
+  });
+}
+
+/**
+ * One record, several doors: the same song comes back as a Spotify
+ * track AND a Genius song, a one-track Spotify "single" album AND that
+ * track, a PMR row AND the Spotify hit it came from. Showing all of
+ * them made the list look twice as long and half as useful. Keep the
+ * first of each — the list is already sorted best-first, and PMR rows
+ * sort ahead of their twins.
+ */
+function dedupe(results: CatalogResult[]): CatalogResult[] {
+  const seenIds = new Set<string>();
+  const seenSongs = new Set<string>();
+  const out: CatalogResult[] = [];
+  for (const r of results) {
+    const idKey = `${r.source === "spotify_track" ? "spotify" : r.source}:${r.id}`;
+    if (seenIds.has(idKey)) continue;
+    seenIds.add(idKey);
+
+    // A "song" here = anything that is one song: a song hit, or a
+    // single with a single track.
+    const isOneSong = r.kind === "song" || (r.kind === "single" && (r.tracks ?? 1) <= 1);
+    if (isOneSong) {
+      // Main artist only: Spotify says "Lady Gaga, Beyoncé", Genius
+      // says "Lady Gaga (Ft. Beyoncé)" — same song, same main artist.
+      const firstArtist = foldText(
+        r.artist.split(/,|&|\(|\bfeat\.?\s|\bft\.?\s|\bwith\s/i)[0] ?? ""
+      );
+      const songKey = `${foldText(r.title)}|${firstArtist}`;
+      if (seenSongs.has(songKey)) continue;
+      seenSongs.add(songKey);
+    }
+    out.push(r);
+  }
+  return out;
+}
+
+/** Small nudges between equally-good matches. PMR rows first (they
+    carry community scores), then albums, then songs. */
+const SOURCE_BONUS: Record<CatalogResult["source"], number> = {
+  local: 4,
+  spotify: 2,
+  spotify_track: 1,
+  genius: 0,
+};
+
+/**
+ * Sort by how well each result matches what was typed. Within a source
+ * the provider's own order is a weak tiebreaker (Spotify's #1 is usually
+ * the popular edition) — worth at most 2 points, never enough to lift a
+ * worse match over a better one.
+ */
+function rank(query: string, lanes: CatalogResult[][]): CatalogResult[] {
+  return lanes
+    .flatMap((lane) =>
+      lane.map((r, i) => ({
+        r,
+        s:
+          matchScore(query, r.title, r.artist, r.album) +
+          SOURCE_BONUS[r.source] +
+          Math.max(0, 2 - i * 0.2),
+      }))
+    )
+    .sort((a, b) => b.s - a.s)
+    .map((x) => x.r);
+}
+
+/**
+ * Fan out to every source, then rank + dedupe into one list.
+ *
+ * Lanes: PMR rows, Spotify albums, Spotify songs, Spotify artists,
+ * Genius songs. When the query CONTAINS an artist's name ("rappels
+ * telephone"), a second, sharper round asks Spotify for
+ * `artist:Téléphone rappels` — the plain text search for that query
+ * came back full of unrelated "Telephone" singles.
  */
 export async function searchCatalog(query: string): Promise<{
   results: CatalogResult[];
+  /** Matching artists — tap one to browse their discography. */
+  artists: CatalogArtist[];
   geniusEnabled: boolean;
   /** Human hint shown under the search box (e.g. countdown-link help). */
   notice?: string;
 }> {
   // Pasted Spotify link? Resolve it directly — this is how UPCOMING
-  // albums get in, since Spotify search hides them until release day.
+  // albums get in (Spotify search hides them until release day), and
+  // how "dark" albums get in: some old records (Téléphone's Rappels,
+  // 1YdVwoghaAxlkb5W8oAXHb) still open by id but Spotify has dropped
+  // them from search AND from the artist's discography — verified
+  // 2026-10-22, no query of ours can surface them.
   const linkRef = parseSpotifyLink(query);
   if (linkRef) {
     try {
       const resolved = await resolveSpotifyLink(linkRef);
-      return { ...resolved, geniusEnabled: geniusConfigured() };
+      return { ...resolved, artists: [], geniusEnabled: geniusConfigured() };
     } catch (err) {
       console.warn(
         "Spotify link resolve failed:",
@@ -341,6 +624,7 @@ export async function searchCatalog(query: string): Promise<{
       );
       return {
         results: [],
+        artists: [],
         geniusEnabled: geniusConfigured(),
         notice:
           "Couldn't read that Spotify link — double-check it, or try searching by name.",
@@ -348,37 +632,144 @@ export async function searchCatalog(query: string): Promise<{
     }
   }
 
-  const [local, spotify, spotifyTracks, genius] = await Promise.all([
+  const [local, albums, songs, artists, genius] = await Promise.all([
     searchLocal(query),
-    searchSpotifyAlbums(query, 6),
-    searchSpotifyTracks(query, 6),
+    searchSpotifyAlbums(query),
+    searchSpotifyTracks(query),
+    searchSpotifyArtists(query),
     searchGenius(query, 6),
   ]);
 
-  const supabase = await createClient();
-  const spotifyIds = spotify.map((s) => s.id);
-  const known = new Set<string>();
-  if (spotifyIds.length > 0) {
-    const { data } = await supabase
-      .from("releases")
-      .select("spotify_id")
-      .in("spotify_id", spotifyIds);
-    (data ?? []).forEach((r) => {
-      const row = r as { spotify_id: string | null };
-      if (row.spotify_id) known.add(row.spotify_id);
-    });
+  // Round two: the query names an artist AND something else.
+  const qFold = foldText(query);
+  const named = artists.find((a) => {
+    const n = foldText(a.name);
+    return n !== qFold && ` ${qFold} `.includes(` ${n} `);
+  });
+  let sharpAlbums: CatalogResult[] = [];
+  let sharpSongs: CatalogResult[] = [];
+  if (named) {
+    const rest = ` ${qFold} `.replace(` ${foldText(named.name)} `, " ").trim();
+    if (rest) {
+      const sharp = `artist:${named.name} ${rest}`;
+      [sharpAlbums, sharpSongs] = await Promise.all([
+        searchSpotifyAlbums(sharp),
+        searchSpotifyTracks(sharp, 8),
+      ]);
+    }
   }
 
+  const ranked = rank(query, [local, sharpAlbums, albums, sharpSongs, songs, genius]);
+  const swapped = await swapInKnown(ranked);
+
   return {
-    // Order: what's already here, album matches, then song-level
-    // matches (Spotify tracks + Genius) for "I typed a song name".
-    results: [
-      ...local,
-      ...spotify.filter((s) => !known.has(s.id)),
-      ...spotifyTracks,
-      ...genius,
-    ],
+    // Weak tail trimmed: a result where NONE of the typed words
+    // appear is noise. Keep 30 so the Albums/Songs tabs stay full.
+    results: dedupe(swapped)
+      .filter((r) => matchScore(query, r.title, r.artist, r.album) > 0 || r.source === "local")
+      .slice(0, 30),
+    artists,
     geniusEnabled: geniusConfigured(),
+  };
+}
+
+/* ---------------------------------------------------------------
+   Artist discography — what an artist result opens
+   --------------------------------------------------------------- */
+
+/** Display order inside a discography: albums, then EPs, live/
+    compilations, then singles; newest first within each. */
+const KIND_ORDER: Record<string, number> = {
+  album: 0,
+  EP: 1,
+  compilation: 2,
+  single: 3,
+};
+
+/**
+ * Everything Spotify lists for one artist, as pickable results. Dev-mode
+ * pages hold 10, so albums take three pages (30 — more than almost any
+ * artist has), singles two, compilations one; all six requests go out
+ * together. Rows already on PMR come back as local rows.
+ */
+export async function getArtistDiscography(
+  artistId: string
+): Promise<{ artist: CatalogArtist | null; results: CatalogResult[] }> {
+  if (!/^[A-Za-z0-9]{10,30}$/.test(artistId)) return { artist: null, results: [] };
+
+  const page = (group: string, offset: number) =>
+    spotifyFetch(
+      `/artists/${artistId}/albums?include_groups=${group}&limit=10&offset=${offset}`
+    )
+      .then((raw) => ((raw as { items?: (SpotifyAlbumHit | null)[] }).items ?? []))
+      .catch(() => [] as (SpotifyAlbumHit | null)[]);
+
+  const [info, ...pages] = await Promise.all([
+    (spotifyFetch(`/artists/${artistId}`) as Promise<SpotifyArtistHit>).catch(() => null),
+    page("album", 0),
+    page("album", 10),
+    page("album", 20),
+    page("compilation", 0),
+    page("single", 0),
+    page("single", 10),
+  ]);
+
+  const seen = new Set<string>();
+  const albums = pages
+    .flat()
+    .filter((a): a is SpotifyAlbumHit => !!a && !seen.has(a.id) && !!seen.add(a.id))
+    .map(albumHitToResult)
+    .sort(
+      (a, b) =>
+        (KIND_ORDER[a.kind] ?? 9) - (KIND_ORDER[b.kind] ?? 9) ||
+        (b.year ?? "").localeCompare(a.year ?? "")
+    );
+
+  return {
+    artist: info
+      ? {
+          id: info.id,
+          name: info.name,
+          image: info.images?.[0]?.url ?? null,
+          genres: (info.genres ?? []).slice(0, 2),
+        }
+      : null,
+    results: await swapInKnown(albums),
+  };
+}
+
+/**
+ * "More from this artist" after a review is published: the discography
+ * of a PMR release's primary artist, minus that release. Artists that
+ * only came in through Genius have no Spotify id → empty list, and the
+ * form just doesn't show the row.
+ */
+export async function getMoreFromArtist(releaseId: string): Promise<{
+  artist: CatalogArtist | null;
+  results: CatalogResult[];
+}> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("releases")
+    .select("id, spotify_id, artists!releases_primary_artist_id_fkey(spotify_id)")
+    .eq("id", releaseId)
+    .maybeSingle();
+  const row = data as
+    | {
+        id: string;
+        spotify_id: string | null;
+        artists: { spotify_id: string | null } | { spotify_id: string | null }[] | null;
+      }
+    | null;
+  const joined = Array.isArray(row?.artists) ? row?.artists[0] : row?.artists;
+  if (!row || !joined?.spotify_id) return { artist: null, results: [] };
+
+  const disco = await getArtistDiscography(joined.spotify_id);
+  return {
+    artist: disco.artist,
+    results: disco.results.filter(
+      (r) => r.id !== row.id && (!row.spotify_id || r.id !== row.spotify_id)
+    ),
   };
 }
 

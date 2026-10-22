@@ -860,7 +860,15 @@
       "streakCount": "{n, plural, one {# valorado en esta sesión} other {# valorados en esta sesión}}",
       "done": "Listo",
       "gifLabel": "Reacción en GIF",
-      "gifHint": "Opcional — solo, en lugar de palabras, o al final de tu reseña."
+      "gifHint": "Opcional — solo, en lugar de palabras, o al final de tu reseña.",
+      "postedStamp": "PUBLICADA",
+      "postedTitle": "Reseña publicada",
+      "postedLive": "Ya está en tu perfil y en el feed.",
+      "reviewAnother": "Reseñar otro",
+      "seeReview": "Ver tu reseña",
+      "moreFrom": "Más de {artist}",
+      "moreFromHint": "Toca una portada para reseñarla a continuación. ▶ reproduce un adelanto.",
+      "reviewThis": "Reseñar {title}"
     },
     "feed": {
       "title": "Feed de la comunidad",
@@ -1011,7 +1019,47 @@
     "unreleased": "INÉDITO",
     "dropsSoon": "SALE PRONTO",
     "loading": "CARGANDO…",
-    "onPmr": "EN PMR"
+    "onPmr": "EN PMR",
+    "tabs": {
+      "all": "Todo",
+      "albums": "Álbumes",
+      "songs": "Canciones",
+      "artists": "Artistas"
+    },
+    "back": "Atrás",
+    "discography": "Discografía",
+    "noDiscography": "Spotify no muestra discos de este artista.",
+    "bestMatch": "Mejor resultado",
+    "artistsSection": "Artistas",
+    "albumsSection": "Álbumes y EP",
+    "songsSection": "Canciones",
+    "seeAll": "Ver los {n}",
+    "seeRecords": "Discos",
+    "artistKind": "Artista",
+    "onAlbum": "en {album}",
+    "tracksCount": "{n, plural, one {# canción} other {# canciones}}",
+    "kinds": {
+      "song": "Canción",
+      "album": "Álbum",
+      "ep": "EP",
+      "single": "Sencillo",
+      "compilation": "Recopilatorio",
+      "mixtape": "Mixtape"
+    },
+    "opening": "ABRIENDO…",
+    "clear": "Borrar búsqueda",
+    "tip": "Busca por título, artista o ambos.",
+    "pasteLink": "Pegar un enlace de Spotify",
+    "pasteNoLink": "No hay ningún enlace de Spotify en tu portapapeles. En Spotify, abre el álbum, toca Compartir → Copiar enlace y vuelve a intentarlo.",
+    "pasteManual": "No pudimos leer tu portapapeles. Mantén pulsada la barra de búsqueda y pega el enlace ahí.",
+    "noSignal": "SIN SEÑAL",
+    "nothing": "Nada para «{query}». Prueba solo con el nombre del artista para ver sus discos, o pega el enlace de Spotify del álbum.",
+    "missingTip": "¿No aparece? Spotify oculta algunos discos antiguos de su búsqueda. <b>Pega su enlace de Spotify</b> y aparecerá.",
+    "preview": "Escuchar 30 segundos",
+    "playPreview": "Escuchar un adelanto de {title}",
+    "stopPreview": "Parar el adelanto de {title}",
+    "noPreview": "No hay adelanto para este",
+    "nowPlaying": "Sonando: {title}"
   },
   "lists": {
     "index": {
@@ -1607,14 +1655,16 @@
       "reviews": "Reseñas",
       "lists": "Listas",
       "posts": "Publicaciones",
-      "auxBattles": "Aux Wars"
+      "auxBattles": "Aux Wars",
+      "music": "Música"
     },
     "communityAvg": "promedio",
     "closed": "CERRADO",
     "byOwner": "de @{owner}",
     "auxPlayers": "{n, plural, one {# jugador} other {# jugadores}}",
     "auxLive": "AL AIRE",
-    "auxLobby": "SALA DE ESPERA"
+    "auxLobby": "SALA DE ESPERA",
+    "musicHint": "Todos los álbumes y canciones de Spotify y Genius. Toca uno que aún no esté en Peak Music y su página se crea para ti."
   },
   "userSearch": {
     "placeholder": "Busca gente por nombre de usuario…",

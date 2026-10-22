@@ -860,7 +860,15 @@
       "streakCount": "{n, plural, one {# beoordeeld deze sessie} other {# beoordeeld deze sessie}}",
       "done": "Klaar",
       "gifLabel": "GIF-reactie",
-      "gifHint": "Optioneel — los, in plaats van woorden, of onderaan je recensie."
+      "gifHint": "Optioneel — los, in plaats van woorden, of onderaan je recensie.",
+      "postedStamp": "GEPLAATST",
+      "postedTitle": "Review geplaatst",
+      "postedLive": "Hij staat nu op je profiel en in de feed.",
+      "reviewAnother": "Nog een reviewen",
+      "seeReview": "Bekijk je review",
+      "moreFrom": "Meer van {artist}",
+      "moreFromHint": "Tik op een hoes om die hierna te reviewen. ▶ speelt een fragment.",
+      "reviewThis": "{title} reviewen"
     },
     "feed": {
       "title": "Communityfeed",
@@ -1011,7 +1019,47 @@
     "unreleased": "ONUITGEBRACHT",
     "dropsSoon": "KOMT BINNENKORT",
     "loading": "LADEN…",
-    "onPmr": "OP PMR"
+    "onPmr": "OP PMR",
+    "tabs": {
+      "all": "Alles",
+      "albums": "Albums",
+      "songs": "Nummers",
+      "artists": "Artiesten"
+    },
+    "back": "Terug",
+    "discography": "Discografie",
+    "noDiscography": "Spotify toont geen platen voor deze artiest.",
+    "bestMatch": "Beste match",
+    "artistsSection": "Artiesten",
+    "albumsSection": "Albums & EP's",
+    "songsSection": "Nummers",
+    "seeAll": "Alle {n} bekijken",
+    "seeRecords": "Platen",
+    "artistKind": "Artiest",
+    "onAlbum": "op {album}",
+    "tracksCount": "{n, plural, one {# nummer} other {# nummers}}",
+    "kinds": {
+      "song": "Nummer",
+      "album": "Album",
+      "ep": "EP",
+      "single": "Single",
+      "compilation": "Compilatie",
+      "mixtape": "Mixtape"
+    },
+    "opening": "OPENEN…",
+    "clear": "Zoekopdracht wissen",
+    "tip": "Zoek op titel, artiest of allebei.",
+    "pasteLink": "Spotify-link plakken",
+    "pasteNoLink": "Geen Spotify-link op je klembord. Open het album in Spotify, tik op Delen → Link kopiëren en probeer het opnieuw.",
+    "pasteManual": "Kon je klembord niet lezen. Houd het zoekveld ingedrukt en plak de link daar.",
+    "noSignal": "GEEN SIGNAAL",
+    "nothing": "Niets voor ‘{query}’. Probeer alleen de naam van de artiest om door hun platen te bladeren, of plak de Spotify-link van het album.",
+    "missingTip": "Zie je hem niet? Spotify verbergt sommige oudere platen in de zoekfunctie. <b>Plak de Spotify-link</b> en hij verschijnt.",
+    "preview": "Fragment van 30 seconden afspelen",
+    "playPreview": "Fragment van {title} afspelen",
+    "stopPreview": "Fragment van {title} stoppen",
+    "noPreview": "Geen fragment voor deze",
+    "nowPlaying": "Speelt nu: {title}"
   },
   "lists": {
     "index": {
@@ -1607,14 +1655,16 @@
       "reviews": "Recensies",
       "lists": "Lijsten",
       "posts": "Posts",
-      "auxBattles": "Aux Wars"
+      "auxBattles": "Aux Wars",
+      "music": "Muziek"
     },
     "communityAvg": "gemiddelde",
     "closed": "GESLOTEN",
     "byOwner": "door @{owner}",
     "auxPlayers": "{n, plural, one {# speler} other {# spelers}}",
     "auxLive": "LIVE",
-    "auxLobby": "LOBBY"
+    "auxLobby": "LOBBY",
+    "musicHint": "Elk album en nummer op Spotify en Genius. Tik op een die nog niet op Peak Music staat en de pagina wordt voor je gemaakt."
   },
   "userSearch": {
     "placeholder": "Zoek mensen op gebruikersnaam…",

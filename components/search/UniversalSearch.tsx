@@ -3,9 +3,18 @@
 /**
  * UniversalSearch — one box, the whole station (Luca 2026-08-22).
  *
- * Searches everything at once: people, artists, releases, reviews,
- * debates, lists, posts — grouped results, each row linking straight
- * to its page. Lives on /search (the app's middle tab; the web
+ * Searches everything at once: people, artists, music, reviews,
+ * Aux Wars, lists, posts — grouped results, each row linking straight
+ * to its page.
+ *
+ * MUSIC (2026-10-22): the old "Releases" lane only searched records
+ * already on PMR, so most albums simply weren't there (Luca: "there
+ * are hardly any music to find... the page will get generated on the
+ * spot for the users convenience instead of doing the workaround
+ * through write a review"). It now runs the SAME ranked catalog search
+ * as the review picker — PMR rows + all of Spotify + Genius, with
+ * artists, tabs and ▶ previews — and a record that isn't on PMR yet
+ * opens through /catalog/open, which creates its page and redirects. Lives on /search (the app's middle tab; the web
  * header's magnifier). Queries run from the browser against the
  * world-readable tables, same pattern as UserSearch on /friends —
  * RLS keeps private rows (unpublished reviews, private lists) out,
@@ -17,8 +26,13 @@ import Link from "next/link";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { useLocationSearch } from "@/lib/useLocationSearch";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import { getRatingHex, formatRating } from "@/lib/rating";
+import {
+  useCatalogSearch,
+  CatalogResultList,
+} from "@/components/catalog/CatalogSearch";
 
 interface UserHit {
   username: string;
@@ -30,17 +44,6 @@ interface ArtistHit {
   slug: string;
   name: string;
   image_url: string | null;
-}
-interface ReleaseHit {
-  id: string;
-  slug: string;
-  title: string;
-  cover_image: string | null;
-  release_type: string;
-  artists: { name: string } | { name: string }[] | null;
-  /** Community average (same RPC the release pages use) — attached
-      after the search query resolves; null when nobody's rated it. */
-  avg_rating?: number | null;
 }
 interface ReviewHit {
   slug: string;
@@ -69,7 +72,6 @@ interface PostHit {
 interface Results {
   users: UserHit[];
   artists: ArtistHit[];
-  releases: ReleaseHit[];
   reviews: ReviewHit[];
   aux: AuxHit[];
   lists: ListHit[];
@@ -79,7 +81,6 @@ interface Results {
 const EMPTY: Results = {
   users: [],
   artists: [],
-  releases: [],
   reviews: [],
   aux: [],
   lists: [],
@@ -110,6 +111,15 @@ export default function UniversalSearch() {
 
   function handleChange(value: string) {
     setQuery(value);
+    seededRef.current = true;
+    try {
+      const url = new URL(window.location.href);
+      if (value.trim()) url.searchParams.set("q", value.trim());
+      else url.searchParams.delete("q");
+      window.history.replaceState(window.history.state, "", url);
+    } catch {
+      /* URL sync is a convenience */
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     // Same hygiene as UserSearch: strip anything that could confuse
@@ -129,9 +139,9 @@ export default function UniversalSearch() {
       // Escape LIKE wildcards so "_" in a name can't match anything.
       const pattern = `%${cleaned.replace(/[%_]/g, "\\$&")}%`;
 
-      // All seven lanes at once — each degrades to [] on error so one
+      // All six lanes at once — each degrades to [] on error so one
       // broken lane never blanks the page.
-      const [users, artists, releases, reviews, aux, lists, posts] =
+      const [users, artists, reviews, aux, lists, posts] =
         await Promise.all([
           supabase
             .from("profiles")
@@ -145,41 +155,6 @@ export default function UniversalSearch() {
             .ilike("name", pattern)
             .limit(PER_SECTION)
             .then(({ data }) => (data as ArtistHit[]) ?? []),
-          supabase
-            .from("releases")
-            .select(
-              "id, slug, title, cover_image, release_type, artists!releases_primary_artist_id_fkey(name)",
-            )
-            .ilike("title", pattern)
-            .limit(PER_SECTION)
-            .then(async ({ data }) => {
-              const hits = (data as ReleaseHit[]) ?? [];
-              // Attach each release's community average so the number
-              // shown in results is labeled for what it is — the
-              // community's average, not one person's score (Luca
-              // 2026-08-26). Any RPC hiccup just drops the ratings.
-              try {
-                return await Promise.all(
-                  hits.map(async (h) => {
-                    const { data: s } = await supabase.rpc(
-                      "get_release_stats",
-                      { release_uuid: h.id } as never,
-                    );
-                    const row = (Array.isArray(s) ? s[0] : s) as {
-                      avg_rating: number | string | null;
-                    } | null;
-                    const avg = row?.avg_rating;
-                    return {
-                      ...h,
-                      avg_rating:
-                        avg === null || avg === undefined ? null : Number(avg),
-                    };
-                  }),
-                );
-              } catch {
-                return hits;
-              }
-            }),
           supabase
             .from("reviews")
             .select("slug, title, artist, rating, cover_image")
@@ -213,16 +188,39 @@ export default function UniversalSearch() {
 
       // Ignore stale responses from older keystrokes.
       if (lastQueryRef.current !== cleaned) return;
-      setResults({ users, artists, releases, reviews, aux, lists, posts });
+      setResults({ users, artists, reviews, aux, lists, posts });
       setSearching(false);
       setSearched(true);
     }, 300);
   }
 
+  /* The search lives in the URL (/search?q=…) — so tapping a result
+     and coming BACK lands on the same results instead of an empty box,
+     and a search can be shared as a link. Seeded once on arrival. */
+  const locationSearch = useLocationSearch();
+  const seededRef = useRef(false);
+  useEffect(() => {
+    if (seededRef.current) return;
+    const q = new URLSearchParams(locationSearch).get("q");
+    if (!q) return;
+    seededRef.current = true;
+    // Deferred a tick: handleChange sets state, and the seed is a
+    // one-off sync with the URL, not a render-driven loop.
+    const id = setTimeout(() => handleChange(q.slice(0, 120)), 0);
+    return () => clearTimeout(id);
+  }, [locationSearch]);
+
+  // Music comes from the catalog search (its own debounce + fetch).
+  const music = useCatalogSearch(query);
+  // The record being opened (its page is created on the spot when it
+  // isn't on PMR yet — takes a second, so the row says OPENING…).
+  const [opening, setOpening] = useState<string | null>(null);
+  const musicCount = music.results.length + music.artists.length;
+
   const total =
+    musicCount +
     results.users.length +
     results.artists.length +
-    results.releases.length +
     results.reviews.length +
     results.aux.length +
     results.lists.length +
@@ -252,7 +250,7 @@ export default function UniversalSearch() {
           className="form-input !pl-10 pr-24"
           aria-label={t("aria")}
         />
-        {searching && (
+        {(searching || music.searching) && (
           <span className="osd-text absolute right-3 top-1/2 -translate-y-1/2 text-xs animate-pulse">
             {t("tuning")}
           </span>
@@ -265,7 +263,7 @@ export default function UniversalSearch() {
           {t("hint")}
         </p>
       )}
-      {searched && total === 0 && !searching && (
+      {searched && total === 0 && !searching && !music.searching && (
         /* Same NO SIGNAL voice as every other empty surface. */
         <div className="panel-xbox p-8 text-center space-y-3">
           <p className="osd-text text-sm">{t("noSignal")}</p>
@@ -273,6 +271,22 @@ export default function UniversalSearch() {
             {t("nothing", { query: query.trim() })}
           </p>
         </div>
+      )}
+
+      {/* ===== Music — every album/song/artist, on PMR or not ===== */}
+      {musicCount > 0 && (
+        <section className="space-y-2">
+          <h2 className="label-xbox">{t("sections.music")}</h2>
+          <CatalogResultList
+            results={music.results}
+            artists={music.artists}
+            query={music.searchedFor}
+            linkMode
+            busyKey={opening}
+            onSelect={(r) => setOpening(`${r.source}:${r.id}`)}
+          />
+          <p className="text-[11px] text-text-muted">{t("musicHint")}</p>
+        </section>
       )}
 
       {/* ===== Users ===== */}
@@ -303,43 +317,6 @@ export default function UniversalSearch() {
               <Thumb src={a.image_url} fallback="♪" round />
               <span className="min-w-0 flex-1 text-sm font-bold text-text-primary truncate">
                 {a.name}
-              </span>
-            </Row>
-          ))}
-        </Section>
-      )}
-
-      {/* ===== Releases ===== */}
-      {results.releases.length > 0 && (
-        <Section label={t("sections.releases")}>
-          {results.releases.map((r) => (
-            <Row key={r.slug} href={`/releases/${r.slug}`}>
-              <Thumb src={r.cover_image} fallback="💿" />
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-bold text-text-primary truncate">
-                  {r.title}
-                </span>
-                <span className="block text-xs text-text-secondary truncate">
-                  {one(r.artists)?.name ?? ""}
-                </span>
-              </span>
-              {/* Rated releases show the number WITH its meaning —
-                  it's the community average, not one person's take. */}
-              {typeof r.avg_rating === "number" && (
-                <span className="shrink-0 text-right">
-                  <span
-                    className="block pixel-text text-sm font-bold tabular-nums"
-                    style={{ color: getRatingHex(r.avg_rating) }}
-                  >
-                    {formatRating(r.avg_rating)}
-                  </span>
-                  <span className="block pixel-text text-[8px] uppercase tracking-widest text-text-muted">
-                    {t("communityAvg")}
-                  </span>
-                </span>
-              )}
-              <span className="pixel-text text-[10px] uppercase tracking-widest text-text-muted shrink-0">
-                {r.release_type.toUpperCase()}
               </span>
             </Row>
           ))}

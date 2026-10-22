@@ -8,6 +8,47 @@ as physical media — the whole site lives inside a CRT. No personal-blog
 remnants: every piece of content is community-made and catalog-backed.
 
 
+## ✅ 2026-10-22 — Search round 2: ranked catalog search, artists, ▶ previews, music on /search, "Review posted" card
+
+Luca: find Téléphone's "Rappels" (not Rappels 2); /search has "hardly
+any music"; previews when picking; post-review flow unclear. **No
+migration, no env vars, no native build.**
+
+- **Why Rappels was unfindable:** Spotify has it (1YdVwoghaAxlkb5W8oAXHb)
+  but keeps it OUT of search and out of Téléphone's discography — a
+  "dark" album, verified every query shape. Only a pasted link reaches
+  it, so the picker now has a **Paste a Spotify link** button (reads
+  the clipboard) + a "not seeing it?" tip. Deezer was considered and
+  dropped on Luca's word ("no need for deezer").
+- **Ranking** (`lib/catalog-rank.ts`): accent-blind score vs what was
+  typed — exact title > artist+title > title prefix > all words (songs
+  also match the record they're on). Spotify artist search added;
+  "rappels téléphone" triggers a sharper `artist:Téléphone rappels`
+  round. PMR rows swap in for their Spotify/Genius twins; same-song
+  dupes (Spotify track vs Genius vs one-track single) collapse.
+  Spotify dev-mode caps search pages at 10 (limit>10 = 400).
+- **Picker UI** (`components/catalog/CatalogSearch.tsx`): All/Albums/
+  Songs/Artists tabs, Best match, artist chips → inline discography
+  (`/api/search/catalog?artist=`), track counts + "on <album>" lines,
+  highlighted matches, ↑↓/Enter/Esc, clear ✕, skeleton rows.
+- **Previews:** `/api/preview` reads 30s MP3s from Spotify's public
+  EMBED page JSON (API preview_url is dead) — `lib/spotify/preview.ts`;
+  one shared player `lib/preview-player.ts`; ▶ on every result, the
+  picked record, each favorites track, and "more from" covers. CDN-cached
+  a day. Genius songs matched to Spotify by exact name or no preview.
+- **/search music:** the Releases lane (PMR-only) is replaced by the same
+  catalog search; non-PMR results open `/catalog/open/[source]/[id]`,
+  which imports + redirects to the release page (signed out → login →
+  back). `/api/search/catalog` is now open to signed-out visitors (IP
+  rate limit). /search keeps `?q=` in the URL so Back restores results.
+- **Posted card** (`ReviewForm.tsx`): publishing swaps the form for a
+  POSTED card — Review another / See your review / Done + a "More from
+  <artist>" cover row (tap = next review starts on it, ▶ previews).
+- New strings in all six message files (catalog.*, reviews.form.posted*,
+  search.sections.music/musicHint). Low-detail lines added at the end of
+  globals.css. **Not clicked through signed in** (local prod build can't
+  sign in) — the picker + posted card want a real pass on a phone.
+
 ## ✅ 2026-10-18 (MacBook) — Google/Apple in the 1.2 app stuck on "HANDING OVER…" — FIXED (ac1c26c)
 
 Luca: "in the ios app i click it and it just says handing over … and

@@ -5344,3 +5344,151 @@ fieldset {
 .low-detail .aux-react-mine { box-shadow: none; }
 /* Docked comments panel: appears in place, no slide. */
 .low-detail .dock-anim-in { animation: none; }
+
+/* =====================================================================
+   CATALOG SEARCH round 2 (2026-10-22) — tabs, artist chips, the ▶
+   preview button, skeleton rows, the paste-a-link button, and the
+   "review posted" card in the review form.
+   ===================================================================== */
+.catalog-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+}
+.catalog-tab:hover { color: var(--text-primary); border-color: var(--border-medium); }
+.catalog-tab-on {
+  color: #000;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+.catalog-tab-on:hover { color: #000; }
+.catalog-tab-n {
+  font-family: var(--font-vt323);
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.artist-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.3rem;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  background: rgba(var(--accent-rgb), 0.07);
+  transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+}
+.artist-chip:hover { background: rgba(var(--accent-rgb), 0.16); border-color: rgba(var(--accent-rgb), 0.6); }
+.artist-chip:active { transform: scale(0.97); }
+
+/* ▶ on a cover: sits on the corner, lifts a bit so it reads as a button. */
+.preview-btn { background: rgba(255, 255, 255, 0.18); }
+.preview-btn-cover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); }
+.preview-btn:hover > span { background: rgba(var(--accent-rgb), 0.9); color: #000; }
+.preview-btn-loading { animation: preview-pulse 0.9s ease-in-out infinite; }
+@keyframes preview-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.55); }
+  50%      { box-shadow: 0 0 0 5px rgba(var(--accent-rgb), 0); }
+}
+/* Three equalizer bars while a preview plays. */
+.preview-eq { display: inline-flex; align-items: flex-end; gap: 1.5px; height: 10px; }
+.preview-eq i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  background: var(--accent-glow);
+  border-radius: 1px;
+  transform-origin: bottom;
+  animation: preview-eq 0.8s ease-in-out infinite;
+}
+.preview-eq i:nth-child(2) { animation-delay: -0.3s; }
+.preview-eq i:nth-child(3) { animation-delay: -0.55s; }
+@keyframes preview-eq {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1); }
+}
+
+.catalog-skel {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 200% 100%;
+  animation: catalog-skel 1.2s linear infinite;
+}
+@keyframes catalog-skel {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+.catalog-row-busy { background: rgba(var(--accent-rgb), 0.1); }
+
+.paste-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.4rem;
+  border: 1px dashed rgba(47, 255, 94, 0.45);
+  color: var(--osd-green);
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background-color 0.15s;
+}
+.paste-link-btn:hover { background: rgba(47, 255, 94, 0.08); }
+
+/* "Review posted" — the card that replaces the form after publishing.
+   The POSTED stamp thunks down onto the cover like a rubber stamp. */
+.posted-card {
+  position: relative;
+  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(var(--accent-rgb), 0.16), transparent 60%),
+    rgba(0, 0, 0, 0.55);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 40px rgba(var(--accent-rgb), 0.18);
+  animation: posted-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+@keyframes posted-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+.posted-stamp {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  rotate: -12deg;
+  padding: 0.05em 0.35em;
+  border: 3px solid var(--accent-glow);
+  border-radius: 0.3rem;
+  font-family: var(--font-vt323);
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  color: var(--accent-glow);
+  background: rgba(0, 0, 0, 0.55);
+  text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.9);
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.5);
+  animation: posted-stamp 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) 0.15s both;
+}
+@keyframes posted-stamp {
+  from { opacity: 0; scale: 2.2; }
+  to   { opacity: 1; scale: 1; }
+}
+
+/* ---- low-detail: everything above holds still. ---- */
+.low-detail .preview-btn-loading { animation: none; }
+.low-detail .preview-eq i { animation: none; transform: scaleY(0.7); }
+.low-detail .catalog-skel { animation: none; }
+.low-detail .posted-card { animation: none; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
+.low-detail .posted-stamp { animation: none; text-shadow: none; box-shadow: none; }

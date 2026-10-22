@@ -20,7 +20,10 @@ import Link from "next/link";
 import type { Release, Review } from "@/lib/types/database";
 import CatalogSearch, {
   type CatalogPick,
+  type CatalogResult,
 } from "@/components/catalog/CatalogSearch";
+import PreviewButton from "@/components/catalog/PreviewButton";
+import { stopPreview } from "@/lib/preview-player";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
 import { useTranslations } from "next-intl";
@@ -75,9 +78,33 @@ export default function ReviewForm({
      form, the only way in (Quick Rate was rejected for being a second
      way). Drafts still go to My Stuff; an essay is a different mood. ── */
   const [streak, setStreak] = useState<
-    { slug: string; title: string; cover: string | null; rating: number }[]
+    {
+      slug: string;
+      title: string;
+      artist: string;
+      releaseId: string;
+      cover: string | null;
+      rating: number;
+    }[]
   >([]);
   const last = streak.length > 0 ? streak[streak.length - 1] : null;
+
+  /* ── "Posted" moment (Luca 2026-10-22: "it should be more clear that
+     you did a review and you want to continue to write more since it
+     isn't very clear after completing a review"). The old loop reset
+     the form silently with a small strip on top — easy to miss, and it
+     looked like the review had vanished. Now publishing swaps the whole
+     form for a POSTED card with the next moves spelled out: review
+     another, a row of more records by the same artist (tap one and its
+     review starts right away), see the review, or done. The form comes
+     back only when they choose to keep going. Still the same one form —
+     no second flow (Quick Rate stays rejected). ── */
+  const [posted, setPosted] = useState(false);
+  const [moreFrom, setMoreFrom] = useState<{
+    artist: string;
+    results: CatalogResult[];
+  } | null>(null);
+  const [startingNext, setStartingNext] = useState<string | null>(null);
   // LANGUAGES: messages → reviews.form (+ common for cover alt / cancel).
   const t = useTranslations("reviews.form");
   const tc = useTranslations("common");
@@ -185,6 +212,34 @@ export default function ReviewForm({
     setPickedTracks(new Set());
   }
 
+  /** POSTED card → "Review another": back to a clean form + search. */
+  function keepGoing() {
+    stopPreview();
+    setPosted(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /** POSTED card → a "more from" record: import it, start its review. */
+  async function startNext(r: CatalogResult) {
+    setStartingNext(`${r.source}:${r.id}`);
+    try {
+      const res = await fetch("/api/catalog/ensure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: r.source, id: r.id }),
+      });
+      const data = (await res.json()) as { release?: Release };
+      if (!res.ok || !data.release) throw new Error("import failed");
+      handlePick({ release: data.release, artist_name: r.artist });
+      keepGoing();
+    } catch {
+      // Fall back to the plain search — never strand them on the card.
+      keepGoing();
+    } finally {
+      setStartingNext(null);
+    }
+  }
+
   function toggleTrack(title: string) {
     setPickedTracks((prev) => {
       const next = new Set(prev);
@@ -266,10 +321,29 @@ export default function ReviewForm({
           {
             slug: created?.slug ?? "",
             title: release.title,
+            artist: pickedArtist,
+            releaseId: release.id,
             cover: release.cover_image ?? null,
             rating,
           },
         ]);
+        // Show the POSTED card, and fetch "more from this artist" for
+        // it in the background (garnish — no row if it fails/empty).
+        stopPreview();
+        setPosted(true);
+        setMoreFrom(null);
+        const postedId = release.id;
+        const postedArtist = pickedArtist;
+        fetch(`/api/search/catalog?moreFrom=${postedId}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d: { results?: CatalogResult[] } | null) => {
+            const reviewed = new Set(streak.map((s) => s.releaseId).concat(postedId));
+            const results = (d?.results ?? [])
+              .filter((r) => !(r.source === "local" && reviewed.has(r.id)))
+              .slice(0, 12);
+            if (results.length > 0) setMoreFrom({ artist: postedArtist, results });
+          })
+          .catch(() => {});
         // Reset to a clean form — the search box comes back focused.
         setRelease(null);
         setPickedArtist("");
@@ -307,6 +381,119 @@ export default function ReviewForm({
         </p>
       </div>
 
+      {/* ========== POSTED — replaces the form after publishing ========== */}
+      {posted && last && (
+        <div className="posted-card rounded-xl p-5 space-y-5" role="status" aria-live="polite">
+          <div className="flex items-center gap-4">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden border border-white/10 bg-bg-elevated shrink-0">
+              {last.cover ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={last.cover}
+                  alt={tc("coverAlt", { title: last.title })}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="w-full h-full flex items-center justify-center text-3xl">💿</span>
+              )}
+              <span className="posted-stamp">{t("postedStamp")}</span>
+            </div>
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="label-xbox text-accent-primary">{t("postedTitle")} ✓</p>
+              <p className="font-[family-name:var(--font-heading)] text-xl font-bold text-text-primary leading-tight line-clamp-2">
+                {last.title}
+              </p>
+              {last.artist && (
+                <p className="text-sm text-text-secondary truncate">{last.artist}</p>
+              )}
+              <p className="text-xs text-text-muted">{t("postedLive")}</p>
+            </div>
+            <div
+              className={`rating-badge shrink-0 w-12 h-12 text-lg ${getRatingColor(last.rating)}`}
+              style={{
+                color: getRatingHex(last.rating),
+                borderColor: getRatingHex(last.rating),
+              }}
+            >
+              {formatRating(last.rating)}
+            </div>
+          </div>
+
+          {/* The next move, spelled out — the big button is "keep going". */}
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={keepGoing} className="btn-y2k btn-y2k-primary" autoFocus>
+              {t("reviewAnother")}
+            </button>
+            {last.slug && (
+              <Link href={`/reviews/${last.slug}`} className="btn-y2k btn-y2k-outline">
+                {t("seeReview")}
+              </Link>
+            )}
+            <Link href="/reviews/mine" className="btn-y2k btn-y2k-outline">
+              {t("done")}
+            </Link>
+          </div>
+
+          {/* More from the same artist — one tap starts the next review. */}
+          {moreFrom && (
+            <div className="space-y-2 border-t border-border-subtle pt-4">
+              <p className="label-xbox">{t("moreFrom", { artist: moreFrom.artist })}</p>
+              <p className="text-xs text-text-muted">{t("moreFromHint")}</p>
+              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
+                {moreFrom.results.map((r) => {
+                  const key = `${r.source}:${r.id}`;
+                  return (
+                    <div key={key} className="w-24 shrink-0">
+                      <div className="relative w-24 h-24">
+                        <button
+                          type="button"
+                          onClick={() => startNext(r)}
+                          disabled={startingNext !== null}
+                          className={`block w-full h-full rounded-md overflow-hidden border bg-bg-elevated transition-transform active:scale-95 disabled:opacity-60 ${
+                            startingNext === key
+                              ? "border-accent-primary animate-pulse"
+                              : "border-white/10 hover:border-[rgba(var(--accent-rgb),0.6)]"
+                          }`}
+                          aria-label={t("reviewThis", { title: r.title })}
+                        >
+                          {r.cover ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={r.cover} alt="" className="w-full h-full object-cover" loading="lazy" />
+                          ) : (
+                            <span className="w-full h-full flex items-center justify-center text-2xl">💿</span>
+                          )}
+                        </button>
+                        <span className="absolute bottom-1 right-1">
+                          <PreviewButton
+                            previewKey={key}
+                            src={{ source: r.source, id: r.id, title: r.title, artist: r.artist }}
+                            label={r.title}
+                          />
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-bold text-text-primary line-clamp-2 leading-snug">
+                        {r.title}
+                      </p>
+                      <p className="text-[11px] text-text-muted">
+                        {[r.year, typeof r.avg_rating === "number" ? `★ ${formatRating(r.avg_rating)}` : null]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <p className="pixel-text text-xs text-text-muted">
+            {t("streakCount", { n: streak.length })}
+          </p>
+        </div>
+      )}
+
+      {!posted && (
+      <>
       {/* The streak strip — what you just published, everything from
           this sitting, and the one way out (DONE → My Stuff). */}
       {last && (
@@ -409,20 +596,31 @@ export default function ReviewForm({
 
         {release ? (
           <div className="flex items-center gap-4 p-3 rounded-lg border border-[rgba(var(--accent-rgb),0.4)] bg-[rgba(var(--accent-rgb),0.08)]">
-            {/* Locked-in cover */}
-            <div className="w-20 h-20 rounded-lg overflow-hidden border border-white/10 bg-bg-elevated shrink-0">
-              {release.cover_image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={release.cover_image}
-                  alt={tc("coverAlt", { title: release.title })}
-                  className="w-full h-full object-cover"
+            {/* Locked-in cover, with a ▶ for "wait, how does it go?" —
+                an album plays its first track; each song in the
+                favorites list below has its own ▶. */}
+            <div className="relative w-20 h-20 shrink-0">
+              <div className="w-full h-full rounded-lg overflow-hidden border border-white/10 bg-bg-elevated">
+                {release.cover_image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={release.cover_image}
+                    alt={tc("coverAlt", { title: release.title })}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="w-full h-full flex items-center justify-center text-2xl">
+                    💿
+                  </span>
+                )}
+              </div>
+              <span className="absolute -bottom-1.5 -right-1.5">
+                <PreviewButton
+                  previewKey={`local:${release.id}`}
+                  src={{ source: "local", id: release.id }}
+                  label={release.title}
                 />
-              ) : (
-                <span className="w-full h-full flex items-center justify-center text-2xl">
-                  💿
-                </span>
-              )}
+              </span>
             </div>
 
             <div className="min-w-0 flex-1">
@@ -598,14 +796,15 @@ export default function ReviewForm({
             {tracks.map((track) => {
               const picked = pickedTracks.has(track.title);
               return (
-                <label
+                <div
                   key={`${track.position}-${track.title}`}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors border ${
+                  className={`flex items-center gap-2 pr-1.5 rounded-lg transition-colors border ${
                     picked
                       ? "border-[rgba(var(--accent-rgb),0.4)] bg-[rgba(var(--accent-rgb),0.1)]"
                       : "border-transparent hover:bg-bg-elevated"
                   }`}
                 >
+                <label className="flex-1 min-w-0 flex items-center gap-3 px-3 py-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={picked}
@@ -623,6 +822,21 @@ export default function ReviewForm({
                     {track.title}
                   </span>
                 </label>
+                {/* This song's preview — outside the label so a tap
+                    plays it without ticking the box. Matched by Spotify
+                    id, else by title (Genius rows have no id). */}
+                <PreviewButton
+                  variant="inline"
+                  previewKey={`local:${release.id}#${track.position}`}
+                  src={{ source: "local", id: release.id }}
+                  pick={(list) =>
+                    list.find((p) => track.spotify_id && p.spotify_id === track.spotify_id) ??
+                    list.find((p) => p.title === track.title) ??
+                    (tracks.length === 1 ? list[0] : undefined)
+                  }
+                  label={track.title}
+                />
+                </div>
               );
             })}
           </div>
@@ -668,6 +882,8 @@ export default function ReviewForm({
           {tc("cancel")}
         </button>
       </div>
+      </>
+      )}
     </div>
   );
 }

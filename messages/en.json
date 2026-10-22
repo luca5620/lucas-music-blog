@@ -860,7 +860,15 @@
       "streakCount": "{n, plural, one {# rated this sitting} other {# rated this sitting}}",
       "done": "Done",
       "gifLabel": "GIF reaction",
-      "gifHint": "Optional — on its own instead of words, or at the bottom of your review."
+      "gifHint": "Optional — on its own instead of words, or at the bottom of your review.",
+      "postedStamp": "POSTED",
+      "postedTitle": "Review posted",
+      "postedLive": "It's live on your profile and in the feed.",
+      "reviewAnother": "Review another",
+      "seeReview": "See your review",
+      "moreFrom": "More from {artist}",
+      "moreFromHint": "Tap a cover to review it next. ▶ plays a preview.",
+      "reviewThis": "Review {title}"
     },
     "feed": {
       "title": "Community Feed",
@@ -1011,7 +1019,47 @@
     "unreleased": "UNRELEASED",
     "dropsSoon": "DROPS SOON",
     "loading": "LOADING…",
-    "onPmr": "ON PMR"
+    "onPmr": "ON PMR",
+    "tabs": {
+      "all": "All",
+      "albums": "Albums",
+      "songs": "Songs",
+      "artists": "Artists"
+    },
+    "back": "Back",
+    "discography": "Discography",
+    "noDiscography": "Spotify doesn't list any records for this artist.",
+    "bestMatch": "Best match",
+    "artistsSection": "Artists",
+    "albumsSection": "Albums & EPs",
+    "songsSection": "Songs",
+    "seeAll": "See all {n}",
+    "seeRecords": "Records",
+    "artistKind": "Artist",
+    "onAlbum": "on {album}",
+    "tracksCount": "{n, plural, one {# track} other {# tracks}}",
+    "kinds": {
+      "song": "Song",
+      "album": "Album",
+      "ep": "EP",
+      "single": "Single",
+      "compilation": "Compilation",
+      "mixtape": "Mixtape"
+    },
+    "opening": "OPENING…",
+    "clear": "Clear search",
+    "tip": "Search by title, artist, or both.",
+    "pasteLink": "Paste a Spotify link",
+    "pasteNoLink": "No Spotify link on your clipboard. In Spotify, open the album, tap Share → Copy link, then try again.",
+    "pasteManual": "Couldn't read your clipboard. Long-press the search box and paste the link there.",
+    "noSignal": "NO SIGNAL",
+    "nothing": "Nothing for “{query}”. Try just the artist's name to browse their records, or paste the album's Spotify link.",
+    "missingTip": "Not seeing it? Spotify hides some older records from search. <b>Paste its Spotify link</b> and it'll show up.",
+    "preview": "Play a 30-second preview",
+    "playPreview": "Play a preview of {title}",
+    "stopPreview": "Stop the preview of {title}",
+    "noPreview": "No preview for this one",
+    "nowPlaying": "Now playing: {title}"
   },
   "lists": {
     "index": {
@@ -1607,14 +1655,16 @@
       "reviews": "Reviews",
       "lists": "Lists",
       "posts": "Posts",
-      "auxBattles": "Aux Wars"
+      "auxBattles": "Aux Wars",
+      "music": "Music"
     },
     "communityAvg": "community avg",
     "closed": "CLOSED",
     "byOwner": "by @{owner}",
     "auxPlayers": "{n, plural, one {# player} other {# players}}",
     "auxLive": "ON AIR",
-    "auxLobby": "LOBBY"
+    "auxLobby": "LOBBY",
+    "musicHint": "Every album and song on Spotify and Genius. Tap one that isn't on Peak Music yet and its page gets made for you."
   },
   "userSearch": {
     "placeholder": "Find people by username…",

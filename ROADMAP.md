@@ -8,6 +8,22 @@ as physical media — the whole site lives inside a CRT. No personal-blog
 remnants: every piece of content is community-made and catalog-backed.
 
 
+## 📝 2026-10-22 — Reddit, banner, penguin 3-D (not in the repo)
+
+- **Subreddit: r/peakmusicreviewsapp.** The first sub was insta-banned
+  by Reddit's spam filter (self-promo + a Discord invite in the
+  welcome post). Rule: no Discord invites in Reddit posts. The site
+  doesn't link the subreddit yet.
+- **Reddit banner** (1920×384, text only — Luca rejects the penguin ON
+  banners; it's the community icon): Windows
+  `claudework/output/peak-music-reddit-banner*.png`.
+- **Penguin 3-D, round 3:** a 2.5-D rig in Luca's installed Blender
+  5.2 — the real photo projected onto a soft relief (no fake fur), good
+  for ±15° camera moves. Loops, stills and the rerunnable `build.py`
+  are in Windows `claudework/output/penguin-3d/`. A truly accurate
+  full model would need an image-to-3D tool (Tripo/Meshy → .glb) or a
+  paid artist; Luca parked it ("its fine").
+
 ## ✅ 2026-10-22 — Search round 2: ranked catalog search, artists, ▶ previews, music on /search, "Review posted" card
 
 Luca: find Téléphone's "Rappels" (not Rappels 2); /search has "hardly

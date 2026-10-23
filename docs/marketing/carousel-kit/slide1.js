@@ -7,7 +7,7 @@ const CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const SRC = "C:/Users/lucap/OneDrive/Desktop/download.png";
 
 // Screen glass in the 1120x1400 photo (measured).
-const S = { x: 268, y: 166, w: 670, h: 492, rx: 92, ry: 78 };
+const S = { x: 243, y: 150, w: 718, h: 522, rx: 84, ry: 72 };
 const SCALE = 2; // render the screen at 2x, then shrink — crisper text
 
 const html = `<!doctype html><meta charset=utf-8><style>
@@ -15,7 +15,7 @@ const html = `<!doctype html><meta charset=utf-8><style>
 @font-face{font-family:VT;src:url(../fonts/VT323-Regular.ttf)}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:${S.w}px;height:${S.h}px;overflow:hidden}
-body{position:relative;background:radial-gradient(ellipse at 50% 42%,#123a7a 0%,#0a2350 45%,#041029 80%,#020814 100%)}
+body{position:relative;box-shadow:inset 0 0 22px 6px rgba(40,120,255,.55),inset 0 0 70px rgba(0,0,0,.6);background:radial-gradient(ellipse at 50% 42%,#123a7a 0%,#0a2350 45%,#041029 80%,#020814 100%)}
 body:after{content:"";position:absolute;inset:0;background:
   repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px),
   radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}

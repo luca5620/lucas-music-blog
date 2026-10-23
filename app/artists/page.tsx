@@ -10,15 +10,6 @@ import { getTranslations } from "next-intl/server";
 import { listArtists } from "@/lib/db/artists";
 import ArtistCard from "@/components/artists/ArtistCard";
 
-export const metadata: Metadata = {
-  title: "Artists",
-  description:
-    "Browse artists on Peak Music Reviews — sort by popularity, recency, or alphabetically.",
-  alternates: {
-    canonical: "https://peakmusicreviews.com/artists",
-  },
-};
-
 type SortKey = "popularity" | "recent" | "alpha";
 
 // Labels live in messages (artists.index.sort.<key>).
@@ -39,6 +30,26 @@ function parsePage(raw: string | undefined): number {
   const n = Number(raw ?? "1");
   if (!Number.isFinite(n) || n < 1) return 1;
   return Math.floor(n);
+}
+
+// SEO REVIEW 2026-10-22: same fix as /releases — ?page=N used to
+// canonicalize to page 1, hiding every artist past the first 24 from
+// Google. Each page number is now its own canonical (sort dropped).
+export async function generateMetadata({
+  searchParams,
+}: PageProps): Promise<Metadata> {
+  const page = parsePage((await searchParams).page);
+  return {
+    title: page > 1 ? `Artists — page ${page}` : "Artists",
+    description:
+      "Browse artists on Peak Music Reviews — sort by popularity, recency, or alphabetically.",
+    alternates: {
+      canonical:
+        page > 1
+          ? `https://peakmusicreviews.com/artists?page=${page}`
+          : "https://peakmusicreviews.com/artists",
+    },
+  };
 }
 
 function buildHref(sort: SortKey, page: number): string {

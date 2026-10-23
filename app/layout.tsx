@@ -93,8 +93,15 @@ export const metadata: Metadata = {
   },
   description:
     "Rate albums, log your taste, join live release rooms and Aux Wars. A music social platform — every record on Spotify and the deep Genius catalog, unreleased included.",
+  // SEO REVIEW 2026-10-22: this used to be the absolute homepage URL,
+  // so EVERY page that didn't set its own canonical (/lists, /aux-wars,
+  // /privacy, /terms, user lists, /login…) told Google "I'm a duplicate
+  // of the homepage" — /lists ranked at ~64 and /aux-wars never got
+  // indexed. "./" makes Next resolve the canonical against each page's
+  // own path (query strings dropped), so the default is now
+  // "canonical = myself". Pages with their own canonical still win.
   alternates: {
-    canonical: "https://peakmusicreviews.com",
+    canonical: "./",
   },
   openGraph: {
     type: "website",

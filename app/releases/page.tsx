@@ -28,15 +28,6 @@ type SortOption = "recent" | "popularity" | "alpha";
 // `value` doubles as the key into messages → releases.index.sort.
 const SORT_OPTIONS: SortOption[] = ["recent", "popularity", "alpha"];
 
-export const metadata: Metadata = {
-  title: "Releases",
-  description:
-    "Browse albums, EPs, mixtapes, and singles. Follow releases to be in the room when they drop.",
-  alternates: {
-    canonical: "https://peakmusicreviews.com/releases",
-  },
-};
-
 interface PageProps {
   searchParams: Promise<{
     sort?: string;
@@ -44,6 +35,30 @@ interface PageProps {
     /** "1" = only unreleased records (Luca 2026-09-03). */
     unreleased?: string;
   }>;
+}
+
+// SEO REVIEW 2026-10-22: every ?page=N used to declare /releases (page
+// 1) as its canonical, which tells Google "skip me, I'm a copy" — and
+// these pages are the ONLY crawl path to most release pages, so ~275
+// of them sat in Search Console as "Discovered – currently not
+// indexed". Each page number now canonicalizes to itself. Sort and
+// the unreleased filter are dropped so they don't multiply the URLs.
+export async function generateMetadata({
+  searchParams,
+}: PageProps): Promise<Metadata> {
+  const sp = await searchParams;
+  const pageNum = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  return {
+    title: pageNum > 1 ? `Releases — page ${pageNum}` : "Releases",
+    description:
+      "Browse albums, EPs, mixtapes, and singles. Follow releases to be in the room when they drop.",
+    alternates: {
+      canonical:
+        pageNum > 1
+          ? `https://peakmusicreviews.com/releases?page=${pageNum}`
+          : "https://peakmusicreviews.com/releases",
+    },
+  };
 }
 
 export default async function ReleasesPage({ searchParams }: PageProps) {

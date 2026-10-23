@@ -525,13 +525,21 @@ lists all claimed to be the homepage → now `"./"` (self); (2)
 /releases?page=N and /artists?page=N canonicalized to page 1, hiding
 the crawl path to most release pages → each page is its own canonical.
 
-**Still open (ideas, not started):**
-- /reviews shows only the newest 100 and has no pagination — older
-  reviews are only reachable via release/profile pages.
-- Release pages win "{album} release date / tracklist" searches but
-  get ~1% CTR — the meta description doesn't mention date/tracklist.
-- Luca's OK needed: resubmit the sitemap in Search Console so Google
-  re-reads the pages after the fix.
+✅ **fba9cae** — /reviews paginates (?page=2, 3…, 100 each, own
+canonical, 404 past the end) so all 266 reviews are crawlable. Same
+commit: /welcome (Google/Apple sign-ups) now also asks for a
+**display name**, pre-filled with the provider name, with a "use a
+nickname for privacy" hint (Luca 2026-10-22).
+
+**Still open:**
+- **Luca:** resubmit the sitemap (Search Console → Sitemaps → enter
+  https://peakmusicreviews.com/sitemap.xml → Submit), then URL
+  Inspection → Request indexing on /lists, /aux-wars, /releases?page=2,
+  /reviews?page=2. Check Pages report again ~Nov 5.
+- Release meta descriptions: Luca wants to DISCUSS first (date /
+  tracklist wording for "{album} release date" searches, ~1% CTR).
+- 100-user celebration post: caption + image prompt handed over
+  2026-10-22 (103 accounts, 266 reviews that day).
 
 ### 💸 NEXT TOPIC: a revenue stream (Luca, 2026-10-11)
 

@@ -536,8 +536,7 @@ nickname for privacy" hint (Luca 2026-10-22).
   https://peakmusicreviews.com/sitemap.xml → Submit), then URL
   Inspection → Request indexing on /lists, /aux-wars, /releases?page=2,
   /reviews?page=2. Check Pages report again ~Nov 5.
-- Release meta descriptions: Luca wants to DISCUSS first (date /
-  tracklist wording for "{album} release date" searches, ~1% CTR).
+- ✅ 078e321 — release meta descriptions now lead with type + date ("Album, released October 9, 2026. Rated 7/10 from 1 review. Tracklist and previews on Peak Music Reviews."), "Be the first to rate it." when unreviewed. Re-check CTR on release pages ~Nov 5.
 - 100-user celebration post: caption + image prompt handed over
   2026-10-22 (103 accounts, 266 reviews that day).
 

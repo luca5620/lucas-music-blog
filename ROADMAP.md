@@ -504,6 +504,35 @@ Musicboard-refugee and leak communities. The original notes:
 
 ## ⏳ In progress
 
+### 🔎 SEO review, last 3 months (Search Console via Chrome, 2026-10-22)
+
+**Trend:** weekly impressions ~150 (early Sept) → **1,353** (week of
+Oct 12); clicks 5/wk → ~30/wk; avg position ~48 → **~8.5**. 90-day
+totals: 135 clicks, 4.71K impressions, 2.9% CTR. Mobile 85 clicks
+(pos 9.2) vs desktop 48 (pos 20.3). US first, then UK, France, Canada.
+**Top pages:** home (55 clicks, mostly brand queries), /musicboard-
+alternative (999 impr, 24 clicks), /releases/how-to-quit-smoking-
+dominic-fike (744 impr — "release date"/"tracklist" queries, 1%
+CTR), my-jealousy, towards-happiness-feldup. Generic head terms
+("music reviews", "album ratings") sit at 50–80 — not reachable yet.
+**Indexing:** 159 indexed, **382 "Discovered – currently not indexed"**
+(275 releases, 105 reviews, never crawled). Redirect "failures" are
+the expected www/http → canonical hops — ignore.
+
+✅ **Fixed f71bd7f** — two canonical bugs: (1) root layout canonical was
+the homepage, so /lists, /aux-wars, /privacy, /terms, /login and user
+lists all claimed to be the homepage → now `"./"` (self); (2)
+/releases?page=N and /artists?page=N canonicalized to page 1, hiding
+the crawl path to most release pages → each page is its own canonical.
+
+**Still open (ideas, not started):**
+- /reviews shows only the newest 100 and has no pagination — older
+  reviews are only reachable via release/profile pages.
+- Release pages win "{album} release date / tracklist" searches but
+  get ~1% CTR — the meta description doesn't mention date/tracklist.
+- Luca's OK needed: resubmit the sitemap in Search Console so Google
+  re-reads the pages after the fix.
+
 ### 💸 NEXT TOPIC: a revenue stream (Luca, 2026-10-11)
 
 Luca is only losing money on this: domain, Apple Developer, Vercel

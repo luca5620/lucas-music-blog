@@ -504,6 +504,19 @@ Musicboard-refugee and leak communities. The original notes:
 
 ## ⏳ In progress
 
+### 📸 Instagram community posts (2026-10-22)
+
+- **100-members carousel is ready to post** (on the Windows Desktop in
+  `peak-music-100-post-FINAL`): slide 1 = `1-100-members-v4-glow.png`
+  (or `-v4-subtle`), then `2-what-we-built.png`, `3-join-in.png`.
+  Caption already saved by Luca. Kit + how-to: `docs/marketing/carousel-kit/`.
+- **Next:** 2 mocked-up looks for each of the 4 series (member review
+  wall, Peak Music charts, unreleased spotlight, Aux Wars results) for
+  Luca to pick → then reels: brakence first, then artists members rate
+  most, then trending releases. K-pop reels parked. Info goes ON the
+  slides; every carousel ends on the app-plug slide; Reprised = the
+  community idea only, never copy their layouts.
+
 ### 🔎 SEO review, last 3 months (Search Console via Chrome, 2026-10-22)
 
 **Trend:** weekly impressions ~150 (early Sept) → **1,353** (week of

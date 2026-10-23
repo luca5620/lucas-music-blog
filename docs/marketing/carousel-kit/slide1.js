@@ -93,6 +93,21 @@ body:after{content:"";position:absolute;inset:0;background:
     if (touches) mask[at(x, y)] = Math.round(255 * Math.min(1, Math.max(0, (luma(x, y) - 55) / 100)));
   }
 
+  // Soft fade: toward the rim the picture thins out so the photo's own
+  // lit glass glows through, like a real CRT picture fading into its
+  // bezel. It only lowers alpha INSIDE the glass outline, so the frame
+  // is never painted over and the outline itself stays exact.
+  const FADE = Number(process.env.FADE || 28); // fade-in distance, px
+  const EDGE = Number(process.env.EDGE || 0.05); // how much picture is left right at the rim
+  if (FADE > 0) {
+    const soft = await sharp(mask, { raw: { width: W, height: H, channels: 1 } })
+      .blur(FADE / 2).extractChannel(0).raw().toBuffer();
+    for (let i = 0; i < W * H; i++) {
+      const t = Math.min(1, Math.max(0, (soft[i] / 255 - 0.5) / 0.5)); // 0 at the rim → 1 inside
+      mask[i] = Math.round(mask[i] * (EDGE + (1 - EDGE) * Math.sqrt(t)));
+    }
+  }
+
   const rgb = await sharp(shot).resize(S.w, S.h).removeAlpha().raw().toBuffer();
   const rgba = Buffer.alloc(S.w * S.h * 4);
   for (let i = 0; i < S.w * S.h; i++) {
@@ -107,6 +122,6 @@ body:after{content:"";position:absolute;inset:0;background:
   // runs resize before composite inside one pipeline, which pasted the
   // screen onto the already-shrunk photo and shifted it right/down.
   const full1 = await sharp(SRC).composite([{ input: screen, left: S.x, top: S.y }]).png().toBuffer();
-  await sharp(full1).resize(1080, 1350).png().toFile(path.join(__dirname, "slide1-A-crt.png"));
+  await sharp(full1).resize(1080, 1350).png().toFile(path.join(__dirname, process.env.OUT || "slide1-A-crt.png"));
   console.log("ok");
 })();

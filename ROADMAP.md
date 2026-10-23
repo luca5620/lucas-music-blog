@@ -532,7 +532,7 @@ commit: /welcome (Google/Apple sign-ups) now also asks for a
 nickname for privacy" hint (Luca 2026-10-22).
 
 **Still open:**
-- **Luca:** resubmit the sitemap (Search Console → Sitemaps → enter
+- ✅ Luca did both 2026-10-22 (sitemap resubmitted + indexing requested). Was: resubmit the sitemap (Search Console → Sitemaps → enter
   https://peakmusicreviews.com/sitemap.xml → Submit), then URL
   Inspection → Request indexing on /lists, /aux-wars, /releases?page=2,
   /reviews?page=2. Check Pages report again ~Nov 5.

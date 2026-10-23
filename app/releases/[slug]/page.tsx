@@ -144,19 +144,62 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   ]);
   const artistName = artist?.name ?? "Unknown Artist";
 
-  // Meta description: lead with the community rating when one exists,
-  // then the synopsis. Collapse whitespace and cap near Google's
-  // ~160-char snippet limit so long Genius blurbs don't get dumped raw.
-  const ratingLead =
+  // Meta description = the grey sentence under our link on Google.
+  //
+  // SEO REVIEW 2026-10-22: release pages show up for "{album} release
+  // date" / "{album} tracklist" searches, but the old sentence (rating
+  // + synopsis) never answered either, so ~1% clicked. Luca's call:
+  // lead with the type + date on EVERY release, say what's on the page
+  // (tracklist, previews), then the rating — or "Be the first to rate
+  // it." when nobody has. The synopsis fills whatever room is left.
+  // Example: "Album, released October 9, 2026. Rated 7/10 from 1
+  // review. Tracklist and previews on Peak Music Reviews."
+  const typeLabel = release.is_unreleased
+    ? `Unreleased ${release.release_type === "single" ? "song" : release.release_type}`
+    : release.release_type === "EP"
+      ? "EP"
+      : release.release_type.charAt(0).toUpperCase() + release.release_type.slice(1);
+  // Full dates only — a bare year or a placeholder would read as
+  // "Invalid Date". Upcoming records say "out", the rest "released".
+  const dateText = /^\d{4}-\d{2}-\d{2}$/.test(release.release_date ?? "")
+    ? formatDate(release.release_date, "en-US")
+    : null;
+  const lead = dateText
+    ? `${typeLabel}, ${isUpcoming(release.release_date) ? "out" : "released"} ${dateText}.`
+    : `${typeLabel} by ${artistName}.`;
+
+  const ratingLine =
     stats && stats.review_count > 0 && stats.avg_rating !== null
       ? `Rated ${formatRating(stats.avg_rating)}/10 from ${stats.review_count} ${
           stats.review_count === 1 ? "review" : "reviews"
-        }. `
-      : "";
-  const synopsis =
-    release.description?.replace(/\s+/g, " ").trim() ||
-    `${release.title} by ${artistName} — listen, follow, and read reviews on Peak Music Reviews.`;
-  let description = ratingLead + synopsis;
+        }.`
+      : null;
+
+  // Only promise what the page really has: a tracklist when there's
+  // more than one track, previews when a Spotify player is there.
+  const hasTracklist = (release.tracks ?? []).length > 1;
+  const hasPreviews = !!release.spotify_id;
+  const onPage =
+    hasTracklist && hasPreviews
+      ? "Tracklist and previews on Peak Music Reviews."
+      : hasTracklist
+        ? "Tracklist on Peak Music Reviews."
+        : hasPreviews
+          ? "Previews on Peak Music Reviews."
+          : "Ratings and reviews on Peak Music Reviews.";
+
+  const synopsis = release.description?.replace(/\s+/g, " ").trim() ?? "";
+  let description = [
+    lead,
+    ratingLine,
+    onPage,
+    ratingLine ? null : "Be the first to rate it.",
+    synopsis,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  // Cap near Google's ~160-char snippet limit (the synopsis is last,
+  // so it's what gets trimmed — the date and rating always survive).
   if (description.length > 160) {
     description = description.slice(0, 157).replace(/\s+\S*$/, "") + "…";
   }

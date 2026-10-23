@@ -16,6 +16,15 @@
  * The EULA checkbox is the same wall /signup has (App Store 1.2 —
  * agreement before registering); a social sign-up never passed it.
  *
+ * Display name (Luca 2026-10-22): Google/Apple hand us the person's
+ * full first + last name and it used to go straight onto their
+ * profile with no say. Now it's a field here too, pre-filled with
+ * that name, so anyone who'd rather go by a nickname can — for
+ * privacy, before a single review shows their real name. Until they
+ * touch the username box, the suggested handle follows whatever they
+ * type as their display name (so changing "Jane Doe" to "jd" doesn't
+ * leave @jane_doe behind).
+ *
  * Afterwards (2026-10-05): a brand-new account continues to /start,
  * the first-rating screen. /auth/callback and the in-app OAuth finish
  * normally build that into ?next= already (/welcome?next=/start…);
@@ -40,6 +49,13 @@ export default function WelcomePage() {
   // they're replacing, and what they keep if they leave it be.
   const [generated, setGenerated] = useState("");
   const [username, setUsername] = useState("");
+  // What people see on reviews — pre-filled with the provider name.
+  const [displayName, setDisplayName] = useState("");
+  // The name the trigger saved, so we only write it back if changed
+  // (display names are limited to two changes a day).
+  const originalDisplayNameRef = useRef("");
+  // Once they type in the username box, stop re-suggesting it.
+  const usernameTouchedRef = useRef(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [availability, setAvailability] = useState<Availability>("idle");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -80,10 +96,13 @@ export default function WelcomePage() {
 
       const { data } = await supabase
         .from("profiles")
-        .select("username, username_auto")
+        .select("username, username_auto, display_name")
         .eq("id", user.id)
         .single();
-      const profile = data as Pick<Profile, "username" | "username_auto"> | null;
+      const profile = data as Pick<
+        Profile,
+        "username" | "username_auto" | "display_name"
+      > | null;
 
       // Already picked a handle (or migration 031 hasn't run, in
       // which case the flag is undefined) — nothing to do here.
@@ -102,6 +121,9 @@ export default function WelcomePage() {
         user.email ??
         "";
       setUsername(suggestUsername(seed) || profile.username);
+      const name = profile.display_name ?? "";
+      originalDisplayNameRef.current = name;
+      setDisplayName(name);
       setReady(true);
     }
 
@@ -110,7 +132,7 @@ export default function WelcomePage() {
   }, []);
 
   /** Format check now, availability check after a quiet moment. */
-  const onUsernameChange = (value: string) => {
+  const checkUsername = (value: string) => {
     const lower = value.toLowerCase();
     setUsername(lower);
     setAvailability("idle");
@@ -140,6 +162,20 @@ export default function WelcomePage() {
     }, 400);
   };
 
+  /** Typing in the username box — from now on it's theirs. */
+  const onUsernameChange = (value: string) => {
+    usernameTouchedRef.current = true;
+    checkUsername(value);
+  };
+
+  /** Display name edits re-suggest the handle until they've typed one. */
+  const onDisplayNameChange = (value: string) => {
+    setDisplayName(value);
+    if (usernameTouchedRef.current) return;
+    const suggestion = suggestUsername(value);
+    if (suggestion) checkUsername(suggestion);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -160,6 +196,11 @@ export default function WelcomePage() {
       return;
     }
 
+    // Blank display name → fall back to the handle, same as the
+    // signup trigger does when a provider sends no name.
+    const name = displayName.trim() || lower;
+    const nameChanged = name !== originalDisplayNameRef.current;
+
     setSaving(true);
     const supabase = createClient();
     const { error: updateError } = await supabase
@@ -167,6 +208,9 @@ export default function WelcomePage() {
       // @ts-expect-error — Supabase Relationships type narrowing
       .update({
         username: lower,
+        // Only sent when it changed, so keeping the provider name
+        // doesn't spend one of the day's two display-name changes.
+        ...(nameChanged ? { display_name: name } : {}),
         // Cleared even when they keep the generated handle, so
         // /welcome never greets them twice. The trigger allows
         // true -> false and forbids the reverse.
@@ -179,6 +223,8 @@ export default function WelcomePage() {
       const msg = updateError.message;
       if (msg.includes("USERNAME_RESERVED")) {
         setError(t("reserved"));
+      } else if (msg.includes("DISPLAY_NAME_DAILY_LIMIT")) {
+        setError(t("displayNameLimit"));
       } else if (/unique|duplicate/i.test(msg)) {
         setError(t("justTaken"));
       } else {
@@ -238,6 +284,28 @@ export default function WelcomePage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Display name first — it's the bigger privacy call, and
+                the handle suggestion below follows it. */}
+            <div>
+              <label
+                htmlFor="display-name"
+                className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2 font-[family-name:var(--font-heading)]"
+              >
+                {t("displayNameLabel")}
+              </label>
+              <input
+                id="display-name"
+                type="text"
+                value={displayName}
+                onChange={(e) => onDisplayNameChange(e.target.value)}
+                className="form-input"
+                placeholder={t("displayNamePlaceholder")}
+                autoComplete="nickname"
+                maxLength={50}
+              />
+              <p className="mt-1.5 text-xs text-text-muted">{t("displayNameHint")}</p>
+            </div>
+
             <div>
               <label
                 htmlFor="username"
@@ -256,7 +324,6 @@ export default function WelcomePage() {
                 autoComplete="username"
                 autoCapitalize="none"
                 spellCheck={false}
-                autoFocus
               />
               {usernameError ? (
                 <p className="mt-1.5 text-xs text-red-400">{usernameError}</p>

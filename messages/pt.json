@@ -523,15 +523,19 @@
     "welcome": {
       "tuningIn": "SINTONIZANDO…",
       "keeping": "✓ ficando com @{username}",
-      "title": "ESCOLHA SEU USUÁRIO",
-      "intro": "Você já está logado, falta só uma coisa. Seu nome de usuário é o que todo mundo vê nas suas resenhas, então escolha o que quiser. Enquanto isso, deixamos você como <handle>@name</handle>.",
+      "title": "ESCOLHA SEU NOME",
+      "intro": "Você já está logado, falta só uma coisa. Escolha o nome que todo mundo vê e seu usuário (ele aparece em cada link para suas resenhas). Enquanto isso, deixamos você como <handle>@name</handle>.",
       "freeNote": "Esta troca é grátis. Depois, o nome de usuário só pode mudar uma vez a cada 2 semanas.",
       "saving": "Salvando…",
       "enter": "Entrar",
       "enterUsername": "Digite um nome de usuário",
       "agreeRequired": "Para concluir, você precisa aceitar os Termos de uso.",
       "reserved": "Esse nome de usuário é reservado.",
-      "justTaken": "Alguém acabou de pegar esse nome de usuário. Tente outro."
+      "justTaken": "Alguém acabou de pegar esse nome de usuário. Tente outro.",
+      "displayNameLabel": "Nome de exibição",
+      "displayNamePlaceholder": "O que todo mundo vê nas suas resenhas",
+      "displayNameHint": "Aparece no seu perfil e nas suas resenhas. Use um apelido se preferir não mostrar seu nome completo.",
+      "displayNameLimit": "O nome de exibição só pode mudar duas vezes por dia — tente amanhã."
     }
   },
   "profile": {
@@ -807,7 +811,10 @@
       "emptyAll": "Ainda não há resenhas no mural. Seja o primeiro: escolha um disco e solte sua opinião.",
       "emptyFilters": "Nada bate com esses filtros. Tente outra nota ou limpe a busca.",
       "ratedThis": "avaliou este lançamento",
-      "readFull": "Ler a resenha completa →"
+      "readFull": "Ler a resenha completa →",
+      "newer": "← Mais recentes",
+      "older": "Mais antigas →",
+      "page": "Página {n}"
     },
     "page": {
       "draft": "RASCUNHO: só você vê. Publique pela página de edição.",

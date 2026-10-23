@@ -523,15 +523,19 @@
     "welcome": {
       "tuningIn": "SENDERSUCHE…",
       "keeping": "✓ du behältst @{username}",
-      "title": "WÄHL DEINEN NUTZERNAMEN",
-      "intro": "Du bist schon angemeldet, eins fehlt noch. Dein Nutzername ist das, was alle bei deinen Rezensionen sehen, also wähl, was du willst. Vorläufig nennen wir dich <handle>@name</handle>.",
+      "title": "RICHTE DEINEN NAMEN EIN",
+      "intro": "Du bist schon angemeldet, eins fehlt noch. Wähl den Namen, den alle sehen, und deinen Nutzernamen (er steht in jedem Link zu deinen Rezensionen). Vorläufig nennen wir dich <handle>@name</handle>.",
       "freeNote": "Dieser Wechsel ist gratis. Danach lässt sich der Nutzername nur alle 2 Wochen ändern.",
       "saving": "Wird gespeichert…",
       "enter": "Rein",
       "enterUsername": "Gib einen Nutzernamen ein",
       "agreeRequired": "Zum Abschließen musst du die Nutzungsbedingungen akzeptieren.",
       "reserved": "Dieser Nutzername ist reserviert.",
-      "justTaken": "Jemand hat sich diesen Nutzernamen gerade geschnappt. Versuch einen anderen."
+      "justTaken": "Jemand hat sich diesen Nutzernamen gerade geschnappt. Versuch einen anderen.",
+      "displayNameLabel": "Anzeigename",
+      "displayNamePlaceholder": "Was alle bei deinen Rezensionen sehen",
+      "displayNameHint": "Steht auf deinem Profil und bei deinen Rezensionen. Nimm einen Spitznamen, wenn du deinen vollen Namen nicht zeigen willst.",
+      "displayNameLimit": "Anzeigenamen kannst du nur zweimal am Tag ändern — versuch es morgen wieder."
     }
   },
   "profile": {
@@ -807,7 +811,10 @@
       "emptyAll": "An der Wand hängt noch nichts. Sei der Erste: such dir eine Platte und sag, was du denkst.",
       "emptyFilters": "Nichts passt zu diesen Filtern. Versuch eine andere Bewertung oder leer die Suche.",
       "ratedThis": "hat dieses Release bewertet",
-      "readFull": "Ganze Rezension lesen →"
+      "readFull": "Ganze Rezension lesen →",
+      "newer": "← Neuere",
+      "older": "Ältere →",
+      "page": "Seite {n}"
     },
     "page": {
       "draft": "ENTWURF: nur du siehst das. Veröffentliche über die Bearbeitungsseite.",

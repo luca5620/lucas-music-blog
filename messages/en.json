@@ -523,15 +523,19 @@
     "welcome": {
       "tuningIn": "TUNING IN…",
       "keeping": "✓ keeping @{username}",
-      "title": "PICK YOUR HANDLE",
-      "intro": "You're signed in — one thing left. Your username is what everyone sees on your reviews, so pick the one you want. We parked you on <handle>@name</handle> in the meantime.",
+      "title": "SET UP YOUR NAME",
+      "intro": "You're signed in — one thing left. Pick the name people see and your username (it's in every link to your reviews). We parked you on <handle>@name</handle> in the meantime.",
       "freeNote": "This one's free — after it, usernames change once every 2 weeks.",
       "saving": "Saving…",
       "enter": "Enter the site",
       "enterUsername": "Please enter a username",
       "agreeRequired": "You need to agree to the Terms of Use to finish setting up.",
       "reserved": "That username is reserved.",
-      "justTaken": "That username was just taken — try another."
+      "justTaken": "That username was just taken — try another.",
+      "displayNameLabel": "Display name",
+      "displayNamePlaceholder": "What people see on your reviews",
+      "displayNameHint": "Shown on your profile and reviews. Use a nickname if you'd rather not show your full name.",
+      "displayNameLimit": "Display names can only change twice a day — try again tomorrow."
     }
   },
   "profile": {
@@ -807,7 +811,10 @@
       "emptyAll": "No reviews on the wall yet. Be the first — pick a record and drop your take.",
       "emptyFilters": "Nothing matches those filters. Loosen the rating or clear the search.",
       "ratedThis": "rated this release",
-      "readFull": "Read the full review →"
+      "readFull": "Read the full review →",
+      "newer": "← Newer",
+      "older": "Older →",
+      "page": "Page {n}"
     },
     "page": {
       "draft": "DRAFT — only you can see this. Publish it from the edit page.",

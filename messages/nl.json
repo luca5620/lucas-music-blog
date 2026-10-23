@@ -523,15 +523,19 @@
     "welcome": {
       "tuningIn": "AFSTEMMEN…",
       "keeping": "✓ je houdt @{username}",
-      "title": "KIES JE GEBRUIKERSNAAM",
-      "intro": "Je bent al ingelogd, er is nog één ding. Je gebruikersnaam is wat iedereen bij je recensies ziet, dus kies wat je wilt. Voorlopig heten we je <handle>@name</handle>.",
+      "title": "KIES JE NAAM",
+      "intro": "Je bent al ingelogd, er is nog één ding. Kies de naam die iedereen ziet en je gebruikersnaam (die staat in elke link naar je recensies). Voorlopig heten we je <handle>@name</handle>.",
       "freeNote": "Deze wissel is gratis. Daarna kan je gebruikersnaam maar eens per 2 weken veranderen.",
       "saving": "Opslaan…",
       "enter": "Naar binnen",
       "enterUsername": "Vul een gebruikersnaam in",
       "agreeRequired": "Om af te ronden moet je akkoord gaan met de Gebruiksvoorwaarden.",
       "reserved": "Die gebruikersnaam is gereserveerd.",
-      "justTaken": "Iemand heeft die gebruikersnaam net gepakt. Probeer een andere."
+      "justTaken": "Iemand heeft die gebruikersnaam net gepakt. Probeer een andere.",
+      "displayNameLabel": "Weergavenaam",
+      "displayNamePlaceholder": "Wat iedereen bij je recensies ziet",
+      "displayNameHint": "Staat op je profiel en bij je recensies. Gebruik een bijnaam als je je volledige naam liever niet laat zien.",
+      "displayNameLimit": "Je weergavenaam kan maar twee keer per dag veranderen — probeer het morgen opnieuw."
     }
   },
   "profile": {
@@ -807,7 +811,10 @@
       "emptyAll": "Er hangt nog niets aan de muur. Wees de eerste: kies een plaat en zeg wat je ervan vindt.",
       "emptyFilters": "Niets past bij deze filters. Probeer een ander cijfer of maak het zoekveld leeg.",
       "ratedThis": "beoordeelde deze release",
-      "readFull": "Hele recensie lezen →"
+      "readFull": "Hele recensie lezen →",
+      "newer": "← Nieuwere",
+      "older": "Oudere →",
+      "page": "Pagina {n}"
     },
     "page": {
       "draft": "CONCEPT: alleen jij ziet dit. Publiceer via de bewerkpagina.",

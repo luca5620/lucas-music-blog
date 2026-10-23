@@ -523,15 +523,19 @@
     "welcome": {
       "tuningIn": "RÉGLAGE…",
       "keeping": "✓ tu gardes @{username}",
-      "title": "CHOISIS TON PSEUDO",
-      "intro": "Tu es connecté, il reste une chose. Ton nom d'utilisateur est ce que tout le monde voit sur tes critiques, alors choisis celui que tu veux. En attendant, on t'a mis sur <handle>@name</handle>.",
+      "title": "CHOISIS TON NOM",
+      "intro": "Tu es connecté, il reste une chose. Choisis le nom que tout le monde voit et ton nom d'utilisateur (il apparaît dans chaque lien vers tes critiques). En attendant, on t'a mis sur <handle>@name</handle>.",
       "freeNote": "Ce changement-là est gratuit. Ensuite, le nom d'utilisateur ne change qu'une fois toutes les 2 semaines.",
       "saving": "Enregistrement…",
       "enter": "Entrer",
       "enterUsername": "Entre un nom d'utilisateur",
       "agreeRequired": "Pour terminer, tu dois accepter les Conditions d'utilisation.",
       "reserved": "Ce nom d'utilisateur est réservé.",
-      "justTaken": "Quelqu'un vient de prendre ce nom d'utilisateur. Essaie un autre."
+      "justTaken": "Quelqu'un vient de prendre ce nom d'utilisateur. Essaie un autre.",
+      "displayNameLabel": "Nom affiché",
+      "displayNamePlaceholder": "Ce que tout le monde voit sur tes critiques",
+      "displayNameHint": "Affiché sur ton profil et tes critiques. Prends un surnom si tu préfères ne pas montrer ton nom complet.",
+      "displayNameLimit": "Le nom affiché ne peut changer que deux fois par jour — réessaie demain."
     }
   },
   "profile": {
@@ -807,7 +811,10 @@
       "emptyAll": "Pas encore de critiques sur le mur. Sois le premier : choisis un disque et donne ton avis.",
       "emptyFilters": "Rien ne correspond à ces filtres. Essaie une autre note ou efface la recherche.",
       "ratedThis": "a noté cette sortie",
-      "readFull": "Lire la critique complète →"
+      "readFull": "Lire la critique complète →",
+      "newer": "← Plus récentes",
+      "older": "Plus anciennes →",
+      "page": "Page {n}"
     },
     "page": {
       "draft": "BROUILLON : toi seul le vois. Publie-le depuis la page de modification.",

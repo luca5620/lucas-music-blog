@@ -555,9 +555,8 @@ foldable) launched 2026-10-23. Full write-up + the guidelines changes:
   /admin/reports shows the reported profile's picture + banner with
   **Remove avatar / Remove banner** (deletes every uploaded copy, blanks
   the column; report stays open → Resolve after).
-  ⚠️ **Needs migration 059 RUN in the Supabase SQL editor**
-  (`supabase/migrations/059-staff-remove-profile-images.sql`) — until then
-  the buttons say "run migration 059" instead of working.
+  ✅ **Migration 059 RUN 2026-10-24** — verified live: the function
+  exists and refuses non-staff callers ("Staff only").
 - ✅ **SoundCloud preview player REMOVED** (2026-10-24, Luca's pick
   "remove it, keep in git") — Apple's new 2.5.19 bans dormant features.
   Gone: the flag, the release-page/Your Taste resolver, SoundCloudEmbed,

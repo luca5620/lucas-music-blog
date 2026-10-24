@@ -27,6 +27,7 @@ import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowButton from "./FollowButton";
 import BlockButton from "@/components/moderation/BlockButton";
 import ReportButton from "@/components/moderation/ReportButton";
+import MonthShareButton from "@/components/share/MonthShareButton";
 import { isBlocked } from "@/lib/db/moderation";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
@@ -415,13 +416,22 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           {/* Follow / Edit button */}
           <div className="profile-head-action shrink-0">
             {isOwnProfile ? (
-              <Link
-                href="/settings/profile"
-                className="btn-y2k btn-y2k-outline"
-                style={{ borderColor: accentColor, color: accentColor }}
-              >
-                {t("customize")}
-              </Link>
+              <span className="profile-head-own inline-flex items-center gap-2">
+                <Link
+                  href="/settings/profile"
+                  className="btn-y2k btn-y2k-outline"
+                  style={{ borderColor: accentColor, color: accentColor }}
+                >
+                  {t("customize")}
+                </Link>
+                {/* The My month share card (Luca 2026-10-24) */}
+                <MonthShareButton
+                  userId={profile.id}
+                  handle={profile.username}
+                  avatarUrl={profile.avatar_url}
+                  accentColor={accentColor}
+                />
+              </span>
             ) : currentUser ? (
               <span className="profile-head-pair inline-flex items-center gap-2">
                 <FollowButton

@@ -5,6 +5,9 @@
  * (Luca 2026-10-24, sleeve option 1): Like · Comment · Share · ⋯.
  * No boxes; a hairline above and below, like a record's run-out groove.
  *
+ * Share opens the share sheet (scorecard video · sticker · link — see
+ * components/share/ReviewShareSheet), loaded only when tapped.
+ *
  * ⋯ holds the quieter things: the release page, and Report (it used to
  * sit out in the open beside the like count). Report still has to be
  * one tap from the review for App Store guideline 1.2 — it is: ⋯ → 🚩.
@@ -14,30 +17,36 @@
  * someone taps inside that popover would throw their report away.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import LikeButton from "@/components/reviews/LikeButton";
 import ReportButton from "@/components/moderation/ReportButton";
-import { hapticTap, shareLink } from "@/lib/native";
+import { hapticTap } from "@/lib/native";
+import type { ReviewCard } from "@/components/share/ReviewShareSheet";
+
+// The share sheet (canvas drawings + recorder) only downloads on tap.
+const ReviewShareSheet = dynamic(() => import("@/components/share/ReviewShareSheet"), { ssr: false });
 
 export default function ReviewActions({
   reviewId,
   likeCount,
   liked,
-  shareTitle,
-  shareUrl,
+  card,
   releaseHref,
   labels,
 }: {
   reviewId: string;
   likeCount: number;
   liked: boolean;
-  shareTitle: string;
-  shareUrl: string;
+  /** Everything the share cards draw. */
+  card: ReviewCard;
   releaseHref: string | null;
   labels: { comment: string; share: string; more: string; viewRelease: string };
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const closeShare = useCallback(() => setSharing(false), []);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close the menu on a tap anywhere outside it (the report popover
@@ -70,7 +79,7 @@ export default function ReviewActions({
         className="review-action"
         onClick={() => {
           hapticTap();
-          shareLink(shareTitle, shareUrl);
+          setSharing(true);
         }}
       >
         <span aria-hidden="true">↗</span>
@@ -102,6 +111,7 @@ export default function ReviewActions({
           </div>
         </div>
       </div>
+      {sharing && <ReviewShareSheet card={card} onClose={closeShare} />}
     </div>
   );
 }

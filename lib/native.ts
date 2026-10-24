@@ -32,7 +32,19 @@ interface CapacitorBridge {
         title?: string;
         text?: string;
         url?: string;
+        /** file:// URIs (e.g. from Filesystem.writeFile) — share cards. */
+        files?: string[];
       }) => Promise<unknown>;
+    };
+    /** @capacitor/filesystem — in the binary from build 1.3 on (share
+        cards need a real file on disk to hand to the share sheet). */
+    Filesystem?: {
+      writeFile: (opts: {
+        path: string;
+        data: string;
+        directory?: string;
+        recursive?: boolean;
+      }) => Promise<{ uri: string }>;
     };
     PushNotifications?: {
       checkPermissions: () => Promise<PushPermissionStatus>;
@@ -223,5 +235,36 @@ export async function shareLink(title: string, url: string): Promise<void> {
     }
   } catch {
     /* user cancelled the sheet — fine */
+  }
+}
+
+/**
+ * Share a FILE (a share card's image or video) through the native
+ * share sheet: write it to the app's cache folder with the Filesystem
+ * plugin, then hand that file to the Share plugin. Builds before 1.3
+ * don't have the Filesystem plugin → "unavailable", and the caller
+ * falls back (see lib/share-cards/export.ts).
+ */
+export async function nativeShareFile(
+  blob: Blob,
+  filename: string,
+  title: string
+): Promise<"shared" | "cancelled" | "unavailable"> {
+  const plugins = bridge()?.Plugins;
+  if (!plugins?.Filesystem || !plugins.Share) return "unavailable";
+  try {
+    const data = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      // "data:video/mp4;base64,AAAA…" → just the base64 part
+      reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+    const { uri } = await plugins.Filesystem.writeFile({ path: filename, data, directory: "CACHE" });
+    await plugins.Share.share({ title, files: [uri] });
+    return "shared";
+  } catch {
+    // Closing the sheet without picking anything also lands here.
+    return "cancelled";
   }
 }

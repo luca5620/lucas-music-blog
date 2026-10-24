@@ -372,8 +372,22 @@ export default async function ReviewPage({
         reviewId={review.id}
         likeCount={likeCount}
         liked={viewerHasLiked}
-        shareTitle={`${review.title} by ${review.artist} — ${author.display_name || author.username} on Peak Music`}
-        shareUrl={`https://peakmusicreviews.com/reviews/${review.slug}`}
+        card={{
+          title: review.title,
+          artist: review.artist,
+          year,
+          typeLabel,
+          rating: review.rating,
+          handle: author.username,
+          avatarUrl: author.avatar_url,
+          coverUrl: review.cover_image,
+          quote: review.snippet || null,
+          // The scorecard rolls in only the songs they scored.
+          songs: reviewSongs.map((s) => ({ n: s.position, title: s.title, score: s.score })),
+          url: `https://peakmusicreviews.com/reviews/${review.slug}`,
+          shareTitle: `${review.title} by ${review.artist} — ${author.display_name || author.username} on Peak Music`,
+          slug: review.slug,
+        }}
         releaseHref={release ? `/releases/${release.slug}` : null}
         labels={{
           comment: t("comment"),

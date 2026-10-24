@@ -4703,6 +4703,10 @@ fieldset {
   .profile-header-wrap:has(.profile-head-login) {
     --head-action-room: 17rem;
   }
+  .profile-header-wrap:has(.profile-head-own) {
+    /* Customize + Share my month (2026-10-24) */
+    --head-action-room: 24rem;
+  }
   .profile-header-wrap:has(.profile-head-pair) {
     /* Follow + Block + Report (the report flag joined 2026-10-24) */
     --head-action-room: 25rem;
@@ -6087,3 +6091,161 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 .low-detail .review-sleeve-disc { animation: none; }
 .low-detail .review-menu,
 .low-detail .review-action { transition: none; }
+
+/* ============================================================
+   SHARE SHEETS — share cards (Luca 2026-10-24; components/share/,
+   drawings in lib/share-cards/render.ts). A panel that rises from
+   the bottom on phones and sits centred on desktop, with the card
+   playing live inside it.
+   ============================================================ */
+.share-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+}
+@media (min-width: 48rem) {
+  .share-sheet-backdrop { align-items: center; }
+}
+.share-sheet {
+  width: 100%;
+  max-width: 27rem;
+  max-height: 100dvh;
+  overflow-y: auto;
+  padding: 0.9rem 1rem calc(1.1rem + env(safe-area-inset-bottom));
+  border-radius: 22px 22px 0 0;
+  background: #0f1015;
+  border: 1px solid var(--border-medium);
+  border-bottom: 0;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.6);
+  animation: share-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (min-width: 48rem) {
+  .share-sheet {
+    border-radius: 22px;
+    border-bottom: 1px solid var(--border-medium);
+    padding-bottom: 1.1rem;
+  }
+}
+@keyframes share-rise {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.share-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.share-sheet-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+.share-sheet-x {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+.share-sheet-x:hover { background: rgba(255, 255, 255, 0.07); color: var(--text-primary); }
+.share-tabs { margin-bottom: 0.9rem; }
+
+/* The card itself, at story proportions (drawn at 1080×1920). */
+.share-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.share-canvas {
+  display: block;
+  height: min(56dvh, 520px);
+  aspect-ratio: 9 / 16;
+  width: auto;
+  border-radius: 18px;
+  background: #050506;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.share-stage-wait {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.share-hint {
+  margin: 0.8rem auto 0;
+  max-width: 22rem;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+.share-progress {
+  margin: 0.8rem auto 0;
+  max-width: 18rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.share-progress .rate-progress { margin-bottom: 0.4rem; }
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+.share-note {
+  margin: 0.75rem auto 0;
+  max-width: 22rem;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+/* Old app builds: press-and-hold this to save (iOS's own image menu). */
+.share-hold-image {
+  display: block;
+  width: 100%;
+  max-width: 16rem;
+  margin: 0.75rem auto 0;
+  border-radius: 12px;
+  -webkit-touch-callout: default;
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+/* "Share my month" on your own profile. */
+.month-share-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.month-share-nav button {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  color: var(--text-primary);
+}
+.month-share-nav button:disabled { opacity: 0.3; }
+.month-share-nav button:not(:disabled):hover { background: rgba(255, 255, 255, 0.07); }
+
+.month-share-btn { gap: 0.4rem; }
+@media (max-width: 639px) {
+  .month-share-label { display: none; }
+  .month-share-btn { padding-left: 0.9rem; padding-right: 0.9rem; }
+}
+
+.low-detail .share-sheet { animation: none; }

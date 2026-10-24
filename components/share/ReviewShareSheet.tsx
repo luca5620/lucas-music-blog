@@ -195,28 +195,55 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
     }
   }
 
+  /** The sticker alone, on transparent pixels, with room for its shadow. */
+  function stickerPng(): Promise<Blob> {
+    const off = document.createElement("canvas");
+    const probe = off.getContext("2d")!;
+    const { w, h } = stickerSize(probe, assets!, sticker);
+    off.width = (w + 40) * SCALE;
+    off.height = (h + 56) * SCALE;
+    const ctx = off.getContext("2d")!;
+    ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+    drawSticker(ctx, assets!, sticker, 1.2, 20, 16);
+    return canvasToPng(off);
+  }
+
   async function shareSticker() {
     if (!assets) return;
     setBusy(true);
     setNote(null);
     hapticTap();
     try {
-      // The sticker alone, on transparent pixels, with room for its shadow.
-      const off = document.createElement("canvas");
-      const probe = off.getContext("2d")!;
-      const { w, h } = stickerSize(probe, assets, sticker);
-      off.width = (w + 40) * SCALE;
-      off.height = (h + 56) * SCALE;
-      const ctx = off.getContext("2d")!;
-      ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
-      drawSticker(ctx, assets, sticker, 1.2, 20, 16);
-      const png = await canvasToPng(off);
+      const png = await stickerPng();
       report(await shareOrSave(png, `peak-music-sticker-${card.slug}.png`, card.shareTitle), png, false);
     } catch {
       setNote(t("failed"));
     } finally {
       setBusy(false);
     }
+  }
+
+  /**
+   * "Copy sticker" — how a sticker ends up on top of someone's own
+   * video (Luca 2026-10-24: mirror how the reference app's sticker
+   * lands on reaction videos, which are Instagram stories). The
+   * see-through PNG goes on the clipboard; in Instagram they film or
+   * pick their clip, then paste and it drops in as a movable sticker.
+   * Works on the website and in today's app — no new build needed.
+   * The ClipboardItem gets the PNG as a promise so the copy still
+   * counts as part of the tap (Safari's rule).
+   */
+  const canCopyImage =
+    typeof window !== "undefined" && typeof ClipboardItem !== "undefined" && !!navigator.clipboard?.write;
+  function copySticker() {
+    if (!assets) return;
+    setNote(null);
+    setHoldImage(null);
+    hapticTap();
+    navigator.clipboard
+      .write([new ClipboardItem({ "image/png": stickerPng() })])
+      .then(() => setNote(t("stickerCopied")))
+      .catch(() => setNote(t("failed")));
   }
 
   const left = Math.max(0, Math.ceil(duration * (1 - progress)));
@@ -281,6 +308,16 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
                     : t("makeVideo")
                 : t("shareSticker")}
             </button>
+            {tab === "sticker" && canCopyImage && (
+              <button
+                type="button"
+                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+                disabled={!assets || busy}
+                onClick={copySticker}
+              >
+                {t("copySticker")}
+              </button>
+            )}
           </div>
         </>
       ) : (

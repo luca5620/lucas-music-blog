@@ -1997,6 +1997,8 @@
     "monthEmpty": "Rien de noté en {month} pour l'instant. Note quelque chose et reviens.",
     "prevMonth": "Mois précédent",
     "nextMonth": "Mois suivant",
-    "makeVideo": "Créer la vidéo"
+    "makeVideo": "Créer la vidéo",
+    "copySticker": "Copier le sticker",
+    "stickerCopied": "Copié. Dans Instagram, filme ou choisis ta vidéo, puis colle le sticker par-dessus."
   }
 }

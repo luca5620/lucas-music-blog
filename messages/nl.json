@@ -1997,6 +1997,8 @@
     "monthEmpty": "Nog niets beoordeeld in {month}. Beoordeel iets en kom terug.",
     "prevMonth": "Vorige maand",
     "nextMonth": "Volgende maand",
-    "makeVideo": "Video maken"
+    "makeVideo": "Video maken",
+    "copySticker": "Sticker kopiëren",
+    "stickerCopied": "Gekopieerd. Film of kies je video in Instagram en plak de sticker erop."
   }
 }

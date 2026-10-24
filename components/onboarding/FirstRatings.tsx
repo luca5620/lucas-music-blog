@@ -40,6 +40,7 @@ import { hapticTap } from "@/lib/native";
 import { smallCover } from "@/lib/images";
 import { FIRST_RATINGS_GOAL } from "@/lib/onboarding";
 import type { StarterPick } from "@/lib/db/onboarding";
+import PlayerPick from "@/components/onboarding/PlayerPick";
 // The device's own calendar day, sent as local_date so each rating
 // lands on the right day of THE LOG (see lib/review-date.ts).
 import { localDateString } from "@/lib/review-date";
@@ -60,9 +61,19 @@ interface FirstRatingsProps {
   username: string | null;
   /** Published reviews they already had — they count toward the 3. */
   startCount: number;
+  /** For the "Where do you listen?" row (PlayerPick). */
+  userId: string;
+  preferredPlayer: "spotify" | "apple";
 }
 
-export default function FirstRatings({ picks, next, username, startCount }: FirstRatingsProps) {
+export default function FirstRatings({
+  picks,
+  next,
+  username,
+  startCount,
+  userId,
+  preferredPlayer,
+}: FirstRatingsProps) {
   // LANGUAGES: every word here comes from messages → "start".
   const t = useTranslations("start");
 
@@ -296,6 +307,11 @@ export default function FirstRatings({ picks, next, username, startCount }: Firs
 
       {!done && (
         <>
+          {/* ===== Where do you listen? — the preview-player pick, put in
+              front of every new member (it used to hide in Settings).
+              Spotify is preselected, so ignoring it changes nothing. ===== */}
+          <PlayerPick userId={userId} initial={preferredPlayer} />
+
           {/* ===== Search — for the record that isn't on the grid ===== */}
           <section className="panel-xbox p-4">
             <CatalogSearch

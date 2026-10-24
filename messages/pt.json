@@ -1924,6 +1924,10 @@
     "seeShelf": "Ver sua prateleira",
     "rateMore": "Avaliar mais",
     "goHome": "Ir para o início",
-    "coverAlt": "Capa de {title}"
+    "coverAlt": "Capa de {title}",
+    "playerLabel": "ONDE VOCÊ OUVE MÚSICA?",
+    "playerHint": "As páginas de lançamentos tocam prévias pela sua escolha. Você pode mudar quando quiser em Configurações.",
+    "playerSaved": "Salvo ✓",
+    "playerFailed": "Não foi possível salvar — tente de novo."
   }
 }

@@ -1924,6 +1924,10 @@
     "seeShelf": "See your shelf",
     "rateMore": "Rate more",
     "goHome": "Go home",
-    "coverAlt": "{title} cover"
+    "coverAlt": "{title} cover",
+    "playerLabel": "WHERE DO YOU LISTEN?",
+    "playerHint": "Release pages play previews from your pick. You can change it any time in Settings.",
+    "playerSaved": "Saved ✓",
+    "playerFailed": "Couldn't save — try again."
   }
 }

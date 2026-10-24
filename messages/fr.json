@@ -1924,6 +1924,10 @@
     "seeShelf": "Voir ton étagère",
     "rateMore": "Noter d'autres disques",
     "goHome": "Accueil",
-    "coverAlt": "Pochette de {title}"
+    "coverAlt": "Pochette de {title}",
+    "playerLabel": "OÙ ÉCOUTES-TU TA MUSIQUE ?",
+    "playerHint": "Les pages des sorties lisent les extraits depuis ton choix. Tu peux le changer à tout moment dans les Paramètres.",
+    "playerSaved": "Enregistré ✓",
+    "playerFailed": "Échec de l'enregistrement — réessaie."
   }
 }

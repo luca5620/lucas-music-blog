@@ -1924,6 +1924,10 @@
     "seeShelf": "Bekijk je plank",
     "rateMore": "Meer beoordelen",
     "goHome": "Naar home",
-    "coverAlt": "Hoes van {title}"
+    "coverAlt": "Hoes van {title}",
+    "playerLabel": "WAAR LUISTER JIJ?",
+    "playerHint": "Releasepagina's spelen previews af via jouw keuze. Je kunt het altijd wijzigen in Instellingen.",
+    "playerSaved": "Opgeslagen ✓",
+    "playerFailed": "Opslaan mislukt — probeer het opnieuw."
   }
 }

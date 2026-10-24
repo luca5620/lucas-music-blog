@@ -502,6 +502,20 @@ Musicboard-refugee and leak communities. The original notes:
 
 ---
 
+## ✅ 2026-10-24 — "Where do you listen?" on the first-run screen
+
+Luca: people probably prefer Apple Music but don't know the setting
+exists — on 2026-10-24 all 105 members were on the Spotify default and
+the Apple option (live since September) had zero takers. `/start` (every
+new account passes it once, email and Google/Apple alike) now shows a
+slim **WHERE DO YOU LISTEN?** row under the header: Spotify (preselected)
+or Apple Music, saves on tap to `profiles.preferred_player` — the same
+column Settings → Preview Player writes. `components/onboarding/
+PlayerPick.tsx`; strings in all six languages (start.player*). YouTube
+as a third player was discussed and **not built** (no YouTube Music
+embed/API; official-only filter wouldn't help unreleased music; nobody
+uses the second option yet).
+
 ## ⏳ In progress
 
 ### 📱 1.3 (build 4) = the iPhone Duo build — Windows prep DONE 2026-10-24, MacBook steps next

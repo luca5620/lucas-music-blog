@@ -1924,6 +1924,10 @@
     "seeShelf": "Ver tu repisa",
     "rateMore": "Calificar más",
     "goHome": "Ir al inicio",
-    "coverAlt": "Portada de {title}"
+    "coverAlt": "Portada de {title}",
+    "playerLabel": "¿DÓNDE ESCUCHAS MÚSICA?",
+    "playerHint": "Las páginas de lanzamientos reproducen avances desde tu elección. Puedes cambiarla cuando quieras en Configuración.",
+    "playerSaved": "Guardado ✓",
+    "playerFailed": "No se pudo guardar. Inténtalo de nuevo."
   }
 }

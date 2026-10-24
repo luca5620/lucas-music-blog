@@ -62,7 +62,11 @@ export default async function StartPage({
     // grid, published ones count toward the three.
     supabase.from("reviews").select("release_id, is_published").eq("user_id", user.id),
   ]);
-  const profile = profileRow as { username?: string; username_auto?: boolean } | null;
+  const profile = profileRow as {
+    username?: string;
+    username_auto?: boolean;
+    preferred_player?: string;
+  } | null;
   const mine = (reviewRows ?? []) as { release_id: string | null; is_published: boolean }[];
 
   // A social sign-in that skipped the handle screen (e.g. the old
@@ -87,6 +91,10 @@ export default async function StartPage({
       next={next}
       username={profile?.username ?? null}
       startCount={published}
+      userId={user.id}
+      // Only Apple counts as a real pick; Spotify is the default, and a
+      // leftover 'soundcloud' (player removed 2026-10-24) shows as it.
+      preferredPlayer={profile?.preferred_player === "apple" ? "apple" : "spotify"}
     />
   );
 }

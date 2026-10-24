@@ -1924,6 +1924,10 @@
     "seeShelf": "Zu deinem Regal",
     "rateMore": "Mehr bewerten",
     "goHome": "Zur Startseite",
-    "coverAlt": "Cover von {title}"
+    "coverAlt": "Cover von {title}",
+    "playerLabel": "WO HÖRST DU MUSIK?",
+    "playerHint": "Release-Seiten spielen Vorschauen über deine Wahl ab. Du kannst sie jederzeit in den Einstellungen ändern.",
+    "playerSaved": "Gespeichert ✓",
+    "playerFailed": "Speichern fehlgeschlagen – versuch es noch mal."
   }
 }

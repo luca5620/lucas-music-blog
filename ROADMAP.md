@@ -563,9 +563,32 @@ verified:
      press-and-hold image; videos there say "comes with the next update".
      **Untested on a real iPhone:** whether iOS Safari records the canvas
      smoothly at 1080×1920 and whether WKWebView offers navigator.share.
-     Not built: an animated sticker composited over your own video (would
-     need picking a clip from the camera roll; the PNG sticker goes on
-     top of any story/video in Instagram instead) — ask Luca.
+     Sticker over your own video: see ROUND 2 below (Copy sticker shipped;
+     native Instagram share = optional next step).
+
+### 🔁 ROUND 2 after Luca tried it (2026-10-24 evening) — SHIPPED 75fb1bc + e88c113
+
+- Rating screen: ruler halved (34px per point, 0→10 = one swipe) + tap the
+  ruler to jump; the score is back in the site's rating BADGE (stinky 0–1.9,
+  elite 9.5+, perfect 10 — "the charm", via zoom so plumes/sparks scale);
+  song scores glow in those bands too. Song rows 56px, ♥ is a 44px target,
+  a slide locks to its row (non-passive touchmove; keeps the last value if
+  the phone cancels) — a wandering finger no longer resets it.
+- Scorecard video calmer: rows fade up, song scores appear at their value
+  (no 0→score spin), album score rolls only its last point in its final
+  colour, no overshoot/pulse; background + record at ~half speed.
+- Review page roll-out now plays under Low detail too (Luca: "sure").
+- "Copy sticker" in the share sheet: his sticker reference is an Instagram
+  story — the clip is theirs, the card is pasted on top. Copy → in Instagram
+  film/pick the clip → paste = movable sticker. Web + today's app.
+- **Next step if he wants it (native, build 1.3+):** Instagram's official
+  "Share to Stories" (pasteboard backgroundVideo + stickerImage,
+  instagram-stories:// scheme) so one tap opens Instagram with their picked
+  clip as the background and our sticker on top. Needs a Facebook App ID
+  (Meta developer dashboard, his step) + LSApplicationQueriesSchemes
+  instagram-stories + a small native plugin. Run the App Store rules check
+  first. Ask before building.
+- Luca is testing all weekend; wait for his notes before more changes here.
 
 ### 🎨 UI/UX direction (Luca, 2026-10-24) — discussion stage, nothing built yet
 

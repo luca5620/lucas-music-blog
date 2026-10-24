@@ -4649,6 +4649,11 @@ fieldset {
        collides with the banner); the button sits just under the edge */
     margin-top: 7.25rem;
   }
+  /* Follow + Block + Report share one row beside the handle: the report
+     flag drops its word on phones and stays a tappable 🚩 */
+  .profile-head-pair .report-label {
+    display: none;
+  }
 }
 /* Beside the handle: small numbers, tight labels, no progress lines */
 .stats-strip-compact {
@@ -4699,7 +4704,8 @@ fieldset {
     --head-action-room: 17rem;
   }
   .profile-header-wrap:has(.profile-head-pair) {
-    --head-action-room: 20rem;
+    /* Follow + Block + Report (the report flag joined 2026-10-24) */
+    --head-action-room: 25rem;
   }
   /* The left column hugs its content (name block, bio, links) so The
      Log sits right after it instead of at the page edge (Luca

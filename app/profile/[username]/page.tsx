@@ -26,6 +26,7 @@ import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowButton from "./FollowButton";
 import BlockButton from "@/components/moderation/BlockButton";
+import ReportButton from "@/components/moderation/ReportButton";
 import { isBlocked } from "@/lib/db/moderation";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
@@ -433,6 +434,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                   targetUsername={profile.username}
                   initialBlocked={viewerHasBlocked}
                 />
+                {/* Report the PROFILE itself (avatar, banner, name, bio).
+                    Before this, a profile only reached /admin/reports when
+                    someone blocked it — so a bad profile picture had no
+                    direct flag, and staff's Remove avatar / Remove banner
+                    buttons had nothing to act on. */}
+                <ReportButton targetType="profile" targetId={profile.id} />
               </span>
             ) : (
               <Link href="/login" className="profile-head-login btn-y2k btn-y2k-outline">

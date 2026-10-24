@@ -228,7 +228,7 @@ export default function ReportButton({
             : "text-xs px-2 py-1 rounded border border-transparent hover:border-accent-rose/30"
         }`}
       >
-        🚩{!small && <span className="ml-1 uppercase tracking-wider">{t("button")}</span>}
+        🚩{!small && <span className="report-label ml-1 uppercase tracking-wider">{t("button")}</span>}
       </button>
 
       {open &&

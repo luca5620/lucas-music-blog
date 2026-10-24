@@ -829,7 +829,15 @@
       "previewHint": "jeden Favoriten direkt hier anhören",
       "spotify": "Spotify ↗",
       "trackByTrack": "Track für Track",
-      "trackByTrackAll": "Alle Bewertungen ↗"
+      "trackByTrackAll": "Alle Bewertungen ↗",
+      "outOf": "VON 10",
+      "reviewedOn": "bewertet am {date}",
+      "comment": "Kommentieren",
+      "share": "Teilen",
+      "more": "Mehr",
+      "songBySong": "Song für Song · {n} bewertet",
+      "showAllSongs": "Alle {n} Songs zeigen",
+      "showFewer": "Weniger zeigen"
     },
     "form": {
       "editTitle": "Rezension bearbeiten",

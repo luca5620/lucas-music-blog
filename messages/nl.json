@@ -829,7 +829,15 @@
       "previewHint": "speel elke keuze hier meteen af",
       "spotify": "Spotify ↗",
       "trackByTrack": "Nummer voor nummer",
-      "trackByTrackAll": "Alle cijfers ↗"
+      "trackByTrackAll": "Alle cijfers ↗",
+      "outOf": "VAN 10",
+      "reviewedOn": "beoordeeld op {date}",
+      "comment": "Reageren",
+      "share": "Delen",
+      "more": "Meer",
+      "songBySong": "Nummer voor nummer · {n} beoordeeld",
+      "showAllSongs": "Alle {n} nummers tonen",
+      "showFewer": "Minder tonen"
     },
     "form": {
       "editTitle": "Recensie bewerken",

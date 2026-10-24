@@ -829,7 +829,15 @@
       "previewHint": "play any pick right here",
       "spotify": "Spotify ↗",
       "trackByTrack": "Track by Track",
-      "trackByTrackAll": "All ratings ↗"
+      "trackByTrackAll": "All ratings ↗",
+      "outOf": "OUT OF 10",
+      "reviewedOn": "reviewed {date}",
+      "comment": "Comment",
+      "share": "Share",
+      "more": "More",
+      "songBySong": "Song by song · {n} rated",
+      "showAllSongs": "Show all {n} songs",
+      "showFewer": "Show fewer"
     },
     "form": {
       "editTitle": "Edit Review",

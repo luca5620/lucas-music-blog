@@ -3,6 +3,12 @@
  * One review by one member about one real catalog release. Shows the
  * reviewer's identity (with verified badge), links back to the
  * canonical release page, and keeps likes + comments.
+ *
+ * Layout = "sleeve option 1" (Luca 2026-10-24): no box around the
+ * review; the cover with the record slid out to its right and the score
+ * on the record label (ReviewSleeve), one Like · Comment · Share · ⋯ row
+ * (ReviewActions — Report lives in ⋯), the words at reading size, then
+ * Personal Favorites and the author's Song by song list (ReviewSongList).
  */
 
 import { notFound, permanentRedirect } from "next/navigation";
@@ -19,16 +25,16 @@ import {
   appleMusicUrl,
 } from "@/lib/apple-music";
 import FavoritePlayers, { type FavoriteTrack } from "@/components/reviews/FavoritePlayers";
-import { getRatingColor, getGenreColor, formatRating } from "@/lib/rating";
+import { getGenreColor } from "@/lib/rating";
 import { BreadcrumbSchema, ReviewSchema } from "@/app/schema";
 import { createClient } from "@/lib/supabase/server";
 import CommentsSection from "@/components/reviews/CommentsSection";
 import BackLink from "@/components/ui/BackLink";
 import GifView from "@/components/ui/GifView";
 import { gifFromRow } from "@/lib/gif";
-import LikeButton from "@/components/reviews/LikeButton";
-import ReportButton from "@/components/moderation/ReportButton";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
+import ReviewActions from "@/components/reviews/ReviewActions";
+import ReviewSleeve from "@/components/reviews/ReviewSleeve";
+import ReviewSongList, { type ReviewSong } from "@/components/reviews/ReviewSongList";
 import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 // LANGUAGES: page copy (messages → reviews.page); dates in the viewer's locale.
@@ -120,7 +126,7 @@ export default async function ReviewPage({
   const reviewGif = gifFromRow(review);
   const isVerified = author.role !== "user";
   // The author's per-song scores on this record (migration 041) —
-  // rendered as a "Track by Track" card under Personal Favorites when
+  // rendered as the "Song by song" list under Personal Favorites when
   // they've rated at least one track. Fails soft to nothing.
   const authorTrackRatings =
     release && (release.tracks ?? []).length > 0
@@ -232,8 +238,25 @@ export default async function ReviewPage({
     // Likes are decorative — never block the page on them.
   }
 
+  // Song by song (sleeve option 1): every song the author rated, in
+  // album order, with a ♥ on their personal favourites.
+  const favoriteTitles = new Set(favoritePicks.map((p) => p.title));
+  const reviewSongs: ReviewSong[] = ratedTracks.map((track) => ({
+    position: track.position,
+    title: track.title,
+    spotify_id: track.spotify_id ?? null,
+    score: authorTrackRatings[track.position],
+    favorite: favoriteTitles.has(track.title),
+  }));
+
+  // "Album · 2001" — the year from the release date when there is one.
+  const typeLabel = review.release_type
+    ? review.release_type.charAt(0).toUpperCase() + review.release_type.slice(1)
+    : null;
+  const year = review.release_date ? review.release_date.slice(0, 4) : null;
+
   return (
-    <div className="space-y-6 max-w-3xl lg:max-w-5xl mx-auto overflow-hidden">
+    <div className="review-page space-y-6 max-w-3xl lg:max-w-5xl mx-auto">
       {/* JSON-LD Structured Data */}
       <BreadcrumbSchema
         items={[
@@ -264,6 +287,10 @@ export default async function ReviewPage({
         authorUrl={`https://peakmusicreviews.com/profile/${author.username}`}
       />
 
+      {/* The site-wide liquid light takes this album's colours while
+          you're on the page. */}
+      <CoverLiquidSync coverUrl={review.cover_image} />
+
       {/* Back link */}
       <BackLink
         fallback="/reviews"
@@ -280,241 +307,133 @@ export default async function ReviewPage({
         </div>
       )}
 
-      {/* Main content card */}
-      <div className="panel-xbox-glow p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 relative isolate overflow-hidden">
-        {/* Molten light drifting behind the review — recolored to
-            this album's cover palette while you're on the page. */}
-        <CoverLiquidSync coverUrl={review.cover_image} />
-        <LiquidAtmosphere />
-        {/* Header: cover beside the metadata on desktop, stacked on
-            phones — the review text then gets the full width below. */}
-        <div className="lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-8 lg:items-start">
-        {/* Cover from the catalog */}
-        <div className="aspect-square max-w-sm mx-auto lg:mx-0 lg:max-w-none rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border border-[rgba(var(--accent-rgb),0.15)] relative">
-          {review.cover_image ? (
-            <img
-              src={review.cover_image}
-              alt={tc("coverAlt", { title: review.title })}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-6xl">💿</span>
-          )}
-          {release?.is_unreleased && (
-            <span className="poster-unreleased">{tc("unreleased")}</span>
-          )}
-        </div>
+      {/* ========== THE SLEEVE (Luca 2026-10-24, option 1) ==========
+          No box around the review any more: the record and its sleeve
+          sit straight on the page. Phones stack sleeve → title; desktop
+          puts the title beside the sleeve, bottom-aligned. (A local liquid glow was tried
+          here and drew a visible rectangle — the site-wide wash, recoloured
+          by CoverLiquidSync, is the only light.) */}
+      <header className="review-head">
+        <ReviewSleeve
+          cover={review.cover_image}
+          coverAlt={tc("coverAlt", { title: review.title })}
+          rating={review.rating}
+          outOfLabel={t("outOf")}
+          unreleasedLabel={release?.is_unreleased ? tc("unreleased") : null}
+        />
 
-        {/* Right column of the header grid on desktop */}
-        <div className="space-y-5 sm:space-y-6 mt-5 sm:mt-6 lg:mt-0">
-        {/* Release type + Rating */}
-        <div className="flex items-center justify-between">
-          <span className="label-xbox text-[0.6rem]">
-            {(review.release_type ?? "RELEASE").toUpperCase()}
-          </span>
-          <div className={`rating-badge text-2xl ${getRatingColor(review.rating)}`}>
-            {formatRating(review.rating)}
+        <div className="review-head-text">
+          {review.genre && (
+            <p className={`pixel-text text-[11px] uppercase tracking-widest ${getGenreColor(review.genre)}`}>
+              {review.genre}
+            </p>
+          )}
+          <h1 className="crt-title text-[1.75rem] leading-tight sm:text-4xl lg:text-5xl break-words">
+            {release ? (
+              <Link href={`/releases/${release.slug}`} className="hover:text-accent-glow transition-colors">
+                {review.title}
+              </Link>
+            ) : (
+              review.title
+            )}
+          </h1>
+          <p className="text-base text-text-secondary mt-1">
+            {[review.artist, typeLabel, year].filter(Boolean).join(" · ")}
+          </p>
+
+          {/* Who wrote it, and when */}
+          <div className="flex items-center gap-2.5 mt-4 text-sm flex-wrap">
+            <UserLink username={author.username} className="inline-flex items-center gap-2 group">
+              {author.avatar_url ? (
+                <img
+                  src={author.avatar_url}
+                  alt=""
+                  className="w-7 h-7 rounded-full object-cover border border-white/10"
+                />
+              ) : (
+                <span className="w-7 h-7 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-xs font-bold text-accent-primary uppercase">
+                  {(author.username || "U")[0]}
+                </span>
+              )}
+              <span className="font-bold text-text-primary group-hover:text-accent-glow transition-colors">
+                {author.display_name || author.username}
+              </span>
+              {isVerified && <VerifiedBadge role={author.role} />}
+            </UserLink>
+            {review.review_date && (
+              <span className="text-text-muted">· {t("reviewedOn", { date: longDate(review.review_date) })}</span>
+            )}
           </div>
         </div>
+      </header>
 
-        {/* Title + Artist */}
-        <div>
-          <h1 className="crt-title text-2xl sm:text-3xl md:text-4xl break-words">
-            {review.title}
-          </h1>
-          <p className="text-lg text-text-secondary mt-1">{review.artist}</p>
-        </div>
+      {/* Like · Comment · Share · ⋯ (release page + Report inside ⋯) */}
+      <ReviewActions
+        reviewId={review.id}
+        likeCount={likeCount}
+        liked={viewerHasLiked}
+        shareTitle={`${review.title} by ${review.artist} — ${author.display_name || author.username} on Peak Music`}
+        shareUrl={`https://peakmusicreviews.com/reviews/${review.slug}`}
+        releaseHref={release ? `/releases/${release.slug}` : null}
+        labels={{
+          comment: t("comment"),
+          share: t("share"),
+          more: t("more"),
+          viewRelease: t("viewRelease"),
+        }}
+      />
 
-        {/* Reviewer identity */}
-        <UserLink
-          username={author.username}
-          className="inline-flex items-center gap-2.5 group"
-        >
-          {author.avatar_url ? (
-            <img
-              src={author.avatar_url}
-              alt=""
-              className="w-8 h-8 rounded-full object-cover border border-white/10"
-            />
-          ) : (
-            <span className="w-8 h-8 rounded-full bg-accent-primary/20 border border-accent-primary/30 inline-flex items-center justify-center text-xs font-bold text-accent-primary uppercase">
-              {(author.username || "U")[0]}
-            </span>
-          )}
-          <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors flex items-center gap-1.5">
-            {t("reviewBy")}{" "}
-            <span className="font-bold text-text-primary">
-              {author.display_name || author.username}
-            </span>
-            {isVerified && <VerifiedBadge role={author.role} />}
-          </span>
-        </UserLink>
-
-        {/* Like + report */}
-        <div className="flex items-center gap-3">
-          <LikeButton
-            reviewId={review.id}
-            initialCount={likeCount}
-            initialLiked={viewerHasLiked}
-            size="md"
-          />
-          <span className="label-xbox text-[0.6rem]">{t("likes")}</span>
-          <ReportButton targetType="review" targetId={review.id} />
-        </div>
-
-        {/* Genre + Dates */}
-        <div className="flex flex-wrap items-center gap-3">
-          {review.genre && (
-            <span
-              className={`pixel-text text-xs uppercase tracking-widest ${getGenreColor(review.genre)}`}
-            >
-              {review.genre}
-            </span>
-          )}
-          {review.release_date && (
-            <span className="text-text-muted text-xs">
-              {t("released", { date: longDate(review.release_date) })}
-            </span>
-          )}
-          {review.review_date && (
-            <span className="text-text-muted text-xs">
-              {t("reviewed", { date: longDate(review.review_date) })}
-            </span>
-          )}
-        </div>
-
-        {/* Link to the canonical release page — a full boxed button
-            (like the like button) so it stands out, not a text link
-            (Luca 2026-08-26). */}
-        {release && (
-          <Link
-            href={`/releases/${release.slug}`}
-            className="btn-y2k btn-y2k-outline inline-flex items-center gap-2"
-          >
-            {t("viewRelease")}
-          </Link>
+      {/* Their words — the reading starts right away, no heading. */}
+      <div className="space-y-4">
+        {review.summary ? (
+          <p className="review-words whitespace-pre-line">{review.summary}</p>
+        ) : review.snippet ? (
+          <p className="review-words">{review.snippet}</p>
+        ) : reviewGif ? null : (
+          <p className="text-text-muted leading-relaxed text-base italic">{t("noWords")}</p>
         )}
-        </div>
-        </div>
-
-        {/* Divider */}
-        <div className="divider-glow" />
-
-        {/* Review body — labeled like the release page's Song/Album
-            Bio heading, so it's obvious at a glance whether this is
-            a song or an album being reviewed. */}
-        <div className="flex items-center gap-2">
-          <span className="glow-orb" />
-          <span className="label-xbox">
-            {review.release_type === "single"
-              ? t("songReview")
-              : review.release_type
-              ? t("albumReview")
-              : t("review")}
-          </span>
-        </div>
-        <div className="space-y-4">
-          {review.summary ? (
-            <p className="text-text-secondary leading-relaxed text-sm md:text-base whitespace-pre-line">
-              {review.summary}
-            </p>
-          ) : review.snippet ? (
-            <p className="text-text-secondary leading-relaxed text-sm md:text-base">
-              {review.snippet}
-            </p>
-          ) : reviewGif ? null : (
-            <p className="text-text-muted leading-relaxed text-sm md:text-base italic">
-              {t("noWords")}
-            </p>
-          )}
-          {/* GIF reaction (migration 058) — at the bottom of the
-              review, on its own or under the words. */}
-          {reviewGif && <GifView gif={reviewGif} />}
-        </div>
-
-        {/* Personal Favorites (the standout_tracks column keeps its
-            name — this is a display-label rename only) */}
-        {review.standout_tracks.length > 0 && (
-          <>
-            <div className="divider-glow" />
-
-            <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="glow-orb" />
-                  <span className="label-xbox">{t("favorites")}</span>
-                </div>
-                {/* Only promise a player when there is one to play. */}
-                {favoriteTracks.some((f) => f.src) && (
-                  <span className="pixel-text text-[10px] text-text-muted uppercase tracking-widest">
-                    {t("previewHint")}
-                  </span>
-                )}
-              </div>
-
-              <FavoritePlayers tracks={favoriteTracks} />
-            </div>
-          </>
-        )}
-
-        {/* Track by Track — the author's per-song scores from the
-            release page's TRACK RATINGS card (Luca 2026-09-08). Only
-            the tracks they actually rated; the record's score above
-            is the review, these are the songs. */}
-        {release && ratedTracks.length > 0 && (
-          <>
-            <div className="divider-glow" />
-
-            <div className="card-y2k p-4 sm:p-5 space-y-3 overflow-hidden">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="glow-orb" />
-                  <span className="label-xbox">{t("trackByTrack")}</span>
-                </div>
-                <Link
-                  href={`/releases/${release.slug}`}
-                  className="pixel-text text-[10px] text-text-muted hover:text-accent-primary uppercase tracking-widest transition-colors"
-                >
-                  {t("trackByTrackAll")}
-                </Link>
-              </div>
-
-              <ol className="space-y-1">
-                {ratedTracks.map((track) => {
-                  const score = authorTrackRatings[track.position];
-                  return (
-                    <li
-                      key={`${track.position}-${track.title}`}
-                      className="flex items-center justify-between gap-2 py-2 border-b border-border-subtle last:border-0"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="pixel-text text-sm text-text-muted shrink-0 w-6 tabular-nums">
-                          {track.position}
-                        </span>
-                        <span className="text-sm font-medium text-text-primary truncate">
-                          {track.title}
-                        </span>
-                      </div>
-                      <span
-                        className={`pixel-text text-base tabular-nums shrink-0 ${getRatingColor(score)}`}
-                      >
-                        {formatRating(score)}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
-          </>
-        )}
-
-        {/* Scan bar */}
-        <div className="scan-bar" />
+        {/* GIF reaction (migration 058) — at the bottom of the
+            review, on its own or under the words. */}
+        {reviewGif && <GifView gif={reviewGif} />}
       </div>
+
+      {/* Personal Favorites, each with the viewer's own player (the
+          standout_tracks column keeps its name — display label only). */}
+      {review.standout_tracks.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="review-h">
+            <span>{t("favorites")}</span>
+            {/* Only promise a player when there is one to play. */}
+            {favoriteTracks.some((f) => f.src) && <small>{t("previewHint")}</small>}
+          </h2>
+          <FavoritePlayers tracks={favoriteTracks} />
+        </section>
+      )}
+
+      {/* Song by song — the author's per-song scores (track_ratings,
+          migration 041). Only the songs they actually rated, and only on
+          records with 2+ songs (on a single the score above IS the song). */}
+      {release && reviewSongs.length > 0 && (release.tracks ?? []).length >= 2 && (
+        <section className="space-y-1">
+          <h2 className="review-h">
+            <span>{t("songBySong", { n: reviewSongs.length })}</span>
+          </h2>
+          <ReviewSongList
+            releaseId={release.id}
+            songs={reviewSongs}
+            single={(release.tracks ?? []).length === 1}
+            labels={{
+              showAll: t("showAllSongs", { n: reviewSongs.length }),
+              showFewer: t("showFewer"),
+              favorite: t("favorites"),
+            }}
+          />
+        </section>
+      )}
 
       {/* Comments Section */}
       {/* id anchors the Taste fullscreen rail's 💬 deep link */}
-      <div id="comments">
+      <div id="comments" className="scroll-mt-24">
         <CommentsSection reviewId={review.id} />
       </div>
     </div>

@@ -829,7 +829,15 @@
       "previewHint": "écoutez chaque choix ici même",
       "spotify": "Spotify ↗",
       "trackByTrack": "Titre par titre",
-      "trackByTrackAll": "Toutes les notes ↗"
+      "trackByTrackAll": "Toutes les notes ↗",
+      "outOf": "SUR 10",
+      "reviewedOn": "critiqué le {date}",
+      "comment": "Commenter",
+      "share": "Partager",
+      "more": "Plus",
+      "songBySong": "Titre par titre · {n} notés",
+      "showAllSongs": "Voir les {n} titres",
+      "showFewer": "Voir moins"
     },
     "form": {
       "editTitle": "Modifier la critique",

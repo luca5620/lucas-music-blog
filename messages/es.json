@@ -829,7 +829,15 @@
       "previewHint": "escucha cualquier elección aquí mismo",
       "spotify": "Spotify ↗",
       "trackByTrack": "Canción por canción",
-      "trackByTrackAll": "Todas las notas ↗"
+      "trackByTrackAll": "Todas las notas ↗",
+      "outOf": "DE 10",
+      "reviewedOn": "reseñado el {date}",
+      "comment": "Comentar",
+      "share": "Compartir",
+      "more": "Más",
+      "songBySong": "Canción por canción · {n} con nota",
+      "showAllSongs": "Ver las {n} canciones",
+      "showFewer": "Ver menos"
     },
     "form": {
       "editTitle": "Editar reseña",

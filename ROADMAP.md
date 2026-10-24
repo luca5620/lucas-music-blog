@@ -551,10 +551,13 @@ foldable) launched 2026-10-23. Full write-up + the guidelines changes:
    **freeze main** while in review.
 
 **Before submitting 1.3 (compliance, from the 2026-10-16 guidelines update):**
-- Profiles are reportable, but I found no staff tool to remove a
-  reported **avatar/banner image** — Apple's 1.2 now explicitly calls
-  out intimate imagery and treats unfixed violations as a Code of
-  Conduct issue. Build "staff: remove profile image" first (website-only).
+- ✅ **Staff can now remove a reported avatar/banner** (2026-10-24):
+  /admin/reports shows the reported profile's picture + banner with
+  **Remove avatar / Remove banner** (deletes every uploaded copy, blanks
+  the column; report stays open → Resolve after).
+  ⚠️ **Needs migration 059 RUN in the Supabase SQL editor**
+  (`supabase/migrations/059-staff-remove-profile-images.sql`) — until then
+  the buttons say "run migration 059" instead of working.
 - `SOUNDCLOUD_PLAYER_ENABLED = false` is built-but-off code; new 2.5.19
   bans hidden/dormant features. Low risk (it's on the site, not in the
   binary) — decide: delete it, or mention it in reviewer notes.

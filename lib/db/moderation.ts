@@ -123,6 +123,31 @@ export async function getReportById(id: string): Promise<ContentReport | null> {
   return data as ContentReport;
 }
 
+/** What the queue needs to SEE a reported profile: who it is and the
+    two images staff can take down (see /api/admin/reports). */
+export interface ReportedProfile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  banner_url: string | null;
+}
+
+/** Look up every reported profile in one query, keyed by id. */
+export async function getReportedProfiles(
+  ids: string[]
+): Promise<Map<string, ReportedProfile>> {
+  const map = new Map<string, ReportedProfile>();
+  if (ids.length === 0) return map;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, username, avatar_url, banner_url")
+    .in("id", ids);
+  if (error || !data) return map;
+  for (const row of data as ReportedProfile[]) map.set(row.id, row);
+  return map;
+}
+
 export async function setReportStatus(
   id: string,
   status: "resolved" | "dismissed"

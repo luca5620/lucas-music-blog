@@ -6,7 +6,9 @@ import type { Profile } from "@/lib/types/database";
 import {
   getOpenReports,
   getHandledReportCount,
+  getReportedProfiles,
   type ReportTargetType,
+  type ReportedProfile,
 } from "@/lib/db/moderation";
 import ReportActions from "./ReportActions";
 
@@ -91,6 +93,15 @@ export default async function AdminReportsPage() {
     getHandledReportCount(),
   ]);
 
+  // Profile reports show the member's picture + banner right in the
+  // queue, so staff can judge them and take either one down without
+  // leaving the page (Apple 1.2, tightened 2026-10-16).
+  const reportedProfiles = await getReportedProfiles([
+    ...new Set(
+      reports.filter((r) => r.target_type === "profile").map((r) => r.target_id)
+    ),
+  ]);
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-12 space-y-6">
       <div className="space-y-2">
@@ -98,6 +109,8 @@ export default async function AdminReportsPage() {
         <p className="text-text-secondary text-sm">
           Open reports, newest first. Resolve = handled, Dismiss = bogus
           report, Delete content = remove the reported thing and resolve.
+          On a profile report, Remove avatar / Remove banner delete that
+          image (the report stays open — resolve it when you&apos;re done).
         </p>
       </div>
 
@@ -143,11 +156,22 @@ export default async function AdminReportsPage() {
                   <p className="text-[11px] text-text-muted font-mono break-all">
                     target: {r.target_id}
                   </p>
+                  {r.target_type === "profile" && (
+                    <ReportedProfilePreview profile={reportedProfiles.get(r.target_id)} />
+                  )}
                 </div>
 
                 <ReportActions
                   reportId={r.id}
                   deletable={DELETABLE_TYPES.includes(r.target_type)}
+                  profileImages={
+                    r.target_type === "profile"
+                      ? {
+                          avatar: !!reportedProfiles.get(r.target_id)?.avatar_url,
+                          banner: !!reportedProfiles.get(r.target_id)?.banner_url,
+                        }
+                      : undefined
+                  }
                 />
               </div>
             </div>
@@ -159,5 +183,46 @@ export default async function AdminReportsPage() {
         {handledCount} report{handledCount === 1 ? "" : "s"} previously handled.
       </p>
     </main>
+  );
+}
+
+/** The reported member's link + current picture and banner. Plain
+    <img> on purpose: next/image would keep a cached copy on Vercel,
+    and a removed image must actually be gone. */
+function ReportedProfilePreview({ profile }: { profile: ReportedProfile | undefined }) {
+  if (!profile) {
+    return <p className="text-xs text-text-muted">Profile no longer exists.</p>;
+  }
+  return (
+    <div className="space-y-2 pt-1">
+      <Link
+        href={`/profile/${profile.username}`}
+        className="text-xs text-accent-primary hover:underline"
+      >
+        @{profile.username}
+      </Link>
+      <div className="flex items-end gap-3">
+        {profile.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={profile.avatar_url}
+            alt="Reported avatar"
+            className="w-14 h-14 rounded-full object-cover border border-border-medium"
+          />
+        ) : (
+          <span className="text-[11px] text-text-muted">no avatar</span>
+        )}
+        {profile.banner_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={profile.banner_url}
+            alt="Reported banner"
+            className="h-14 w-40 rounded object-cover border border-border-medium"
+          />
+        ) : (
+          <span className="text-[11px] text-text-muted">no banner</span>
+        )}
+      </div>
+    </div>
   );
 }

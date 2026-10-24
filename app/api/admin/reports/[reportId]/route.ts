@@ -14,6 +14,12 @@ import type { Profile } from "@/lib/types/database";
  *   action: "dismiss"        → mark bogus/spam report
  *   action: "delete_content" → delete the reported row (where that
  *                              makes sense), then mark resolved
+ *   action: "remove_avatar" / "remove_banner"
+ *                            → PROFILE reports only: delete that
+ *                              member's uploaded picture/banner files
+ *                              and blank the column. The report stays
+ *                              OPEN — a profile can need both images
+ *                              pulled, so staff resolve it afterwards.
  *
  * Staff-only. Deletion runs with the admin's session — the delete
  * policies from migration 007 are what actually authorize it.
@@ -91,7 +97,13 @@ export async function POST(
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
   const { action } = (body ?? {}) as { action?: string };
-  if (action !== "resolve" && action !== "dismiss" && action !== "delete_content") {
+  if (
+    action !== "resolve" &&
+    action !== "dismiss" &&
+    action !== "delete_content" &&
+    action !== "remove_avatar" &&
+    action !== "remove_banner"
+  ) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
 
@@ -101,6 +113,18 @@ export async function POST(
   }
 
   try {
+    if (action === "remove_avatar" || action === "remove_banner") {
+      if (report.target_type !== "profile") {
+        return NextResponse.json(
+          { error: "Only profile reports have images to remove" },
+          { status: 400 }
+        );
+      }
+      const which = action === "remove_avatar" ? "avatar" : "banner";
+      await removeProfileImage(supabase, report.target_id, which);
+      return NextResponse.json({ ok: true, removed: which, status: "open" });
+    }
+
     if (action === "delete_content") {
       const table = DELETABLE[report.target_type];
       if (table) {
@@ -128,6 +152,73 @@ export async function POST(
     return NextResponse.json({ ok: true, deleted: false, status });
   } catch (err) {
     console.error("admin report action failed:", err);
-    return NextResponse.json({ error: "Action failed" }, { status: 500 });
+    // MigrationMissing carries a message written for staff ("run 059");
+    // anything else stays generic.
+    const message = err instanceof MigrationMissing ? err.message : "Action failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+/** Thrown when the database doesn't have migration 059 yet, so the
+    queue can say exactly that instead of a vague failure. */
+class MigrationMissing extends Error {}
+
+/**
+ * Take one member's avatar or banner down — the FILES first (they are
+ * the actual harmful thing, and a public URL keeps serving a file
+ * until it's deleted), then the column that points at them.
+ *
+ * Every upload has a timestamped name (settings/profile/page.tsx) and
+ * old ones are never cleaned up, so the member's whole folder in that
+ * bucket is emptied, not just the file the profile shows today — an
+ * earlier copy of the same image would otherwise still be reachable.
+ *
+ * Both steps run with the staff member's own session; migration 059
+ * is what allows them (a storage delete policy + the
+ * staff_clear_profile_image function).
+ */
+async function removeProfileImage(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  profileId: string,
+  which: "avatar" | "banner"
+): Promise<void> {
+  const bucket = which === "avatar" ? "avatars" : "banners";
+
+  // 1. Files. Listing works for anyone (the buckets are public-read).
+  const { data: files, error: listError } = await supabase.storage
+    .from(bucket)
+    .list(profileId, { limit: 1000 });
+  if (listError) throw new Error(`list ${bucket} failed: ${listError.message}`);
+
+  const paths = (files ?? []).map((f) => `${profileId}/${f.name}`);
+  if (paths.length > 0) {
+    const { data: removed, error: removeError } = await supabase.storage
+      .from(bucket)
+      .remove(paths);
+    if (removeError) {
+      throw new Error(`remove from ${bucket} failed: ${removeError.message}`);
+    }
+    // Storage doesn't error when a policy forbids a delete — it just
+    // deletes nothing. Nothing removed = the staff policy isn't there.
+    if (!removed || removed.length === 0) {
+      throw new MigrationMissing(
+        "Couldn't delete the files — run migration 059 in the Supabase SQL editor first."
+      );
+    }
+  }
+
+  // 2. The column, through the narrow staff-only function.
+  const { error: rpcError } = await supabase.rpc(
+    "staff_clear_profile_image",
+    { _target: profileId, _which: which } as never
+  );
+  if (rpcError) {
+    // PGRST202 = function not found = migration not run.
+    if (rpcError.code === "PGRST202") {
+      throw new MigrationMissing(
+        "Files deleted, but the profile still points at them — run migration 059 in the Supabase SQL editor, then press this again."
+      );
+    }
+    throw new Error(`staff_clear_profile_image failed: ${rpcError.message}`);
   }
 }

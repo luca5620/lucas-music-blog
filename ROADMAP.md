@@ -522,7 +522,10 @@ uses the second option yet).
 
 Luca signed off on everything below. Build order, each pushed to main when
 verified:
-1. **Rating flow** (ReviewForm): "Whole album / Song by song" switch in the
+1. ✅ **SHIPPED 2d776e2** — **Rating flow** (ReviewForm, ScoreRuler.tsx,
+   TrackScoreList.tsx): verified on the dev server at 1440px + 390px (ruler
+   drag, row slides, average, "Set my own"). Signed-out saves 401 as expected.
+   Original brief: "Whole album / Song by song" switch in the
    one rating screen. Whole album = big number + drag ruler. Song by song =
    slide across each song row to score it; **keep the ▶ preview on every
    row** (Luca: previews must stay, in favourites AND song by song); ♥ marks

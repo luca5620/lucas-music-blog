@@ -518,6 +518,32 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🌙 OVERNIGHT BUILD 2026-10-24 → 25 (Windows, Luca asleep) — FINAL VERDICTS
+
+Luca signed off on everything below. Build order, each pushed to main when
+verified:
+1. **Rating flow** (ReviewForm): "Whole album / Song by song" switch in the
+   one rating screen. Whole album = big number + drag ruler. Song by song =
+   slide across each song row to score it; **keep the ▶ preview on every
+   row** (Luca: previews must stay, in favourites AND song by song); ♥ marks
+   favourites in the list; album score = average of the songs unless "Set
+   my own". Writes song scores to track_ratings (041), no migration. Web =
+   two columns (cover + score left, switch + songs + words right) — see
+   output/rating-flow-web-*.png. Phone = output/rating-flow-phone.png.
+2. **Review page = SLEEVE OPTION 1** (record slid out to the right of the
+   cover, score on the record's label in the rating colour; no boxes; ♥ in
+   the song-by-song list; Report inside ⋯). Web release pages untouched.
+3. **Share cards** (mockup sources in docs/design/share-cards/):
+   - Sticker: glass tinted with the cover's colours, cover + SPINNING record
+     behind it to the right (NO score on the record), penguin + "Peak Music"
+     in the PlayStation font.
+   - Album scorecard VIDEO: cover + spinning record behind to the right (no
+     score on it), cover-colour liquid background, odometer-rolling numbers,
+     then **an 8-second hold** on the finished card so people can read it.
+   - My month: approved as is (+ penguin logo).
+   - Needs @capacitor/filesystem in 1.3 so the app can save the image/video
+     and hand it to the share sheet.
+
 ### 🎨 UI/UX direction (Luca, 2026-10-24) — discussion stage, nothing built yet
 
 - **Yes to:** (1) taste-match follow suggestions after /start, (2) "save for

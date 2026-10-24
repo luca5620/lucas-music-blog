@@ -1,0 +1,126 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="brand.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #101218; font-family: Inter, sans-serif; color: #fff; padding: 28px; width: 1276px; -webkit-font-smoothing: antialiased; }
+  h1 { font-size: 22px; font-weight: 800; }
+  .sub { color: #8b90a0; font-size: 13px; margin: 6px 0 22px; line-height: 1.5; max-width: 1100px; }
+  .row { display: flex; gap: 34px; align-items: flex-start; }
+  .col { width: 380px; }
+  .frame { width: 360px; height: 640px; border-radius: 22px; overflow: hidden; position: relative; }
+  .cap { margin-top: 12px; font-size: 14px; font-weight: 700; }
+  .cap span { display: block; font-weight: 400; color: #8b90a0; font-size: 12px; margin-top: 4px; line-height: 1.5; }
+  .ava { border-radius: 50%; background: url(https://qhbtfhyzbiwqwaxtetgd.supabase.co/storage/v1/object/public/avatars/8587299c-dbb8-49a9-b984-e25c089a65fc/avatar-1787128014158.jpeg) center/cover; flex: none; }
+
+  /* ---------- 1 · sticker ---------- */
+  .video { position: absolute; inset: 0; background:
+      linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.35)),
+      radial-gradient(60% 40% at 70% 70%, rgba(255,214,170,.55), transparent 70%), radial-gradient(50% 35% at 20% 30%, rgba(120,140,170,.5), transparent 70%), linear-gradient(160deg, #6b625a, #2f2b29 70%);
+  }
+  .video .person { position: absolute; left: 50%; bottom: -30px; width: 230px; height: 260px; transform: translateX(-50%);
+    border-radius: 115px 115px 0 0; background: linear-gradient(180deg, #3b3f4a, #23262e); }
+  .video .head { position: absolute; left: 50%; bottom: 200px; width: 110px; height: 130px; transform: translateX(-50%);
+    border-radius: 55px; background: linear-gradient(180deg, #e3b9a0, #c8987e); }
+  .video .tag { position: absolute; left: 0; right: 0; bottom: 18px; text-align: center; font-size: 11px; color: rgba(255,255,255,.85); letter-spacing: .02em; }
+  .sticker { position: absolute; left: 20px; right: 20px; top: 118px; background: rgba(255,255,255,.97); color: #111; border-radius: 22px; padding: 14px 16px 16px;
+    box-shadow: 0 12px 34px rgba(0,0,0,.28); }
+  .st-top { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+  .st-top .when { color: #8a8a8e; font-weight: 500; }
+  .st-top .brand { margin-left: auto; font-size: 11.5px; font-weight: 700; letter-spacing: -.01em; color: #111; }
+  .st-mid { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .st-cover { width: 70px; height: 70px; border-radius: 10px; background-size: cover; flex: none; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+  .st-t b { display: block; font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
+  .st-t span { font-size: 13px; color: #6e6e73; }
+  .st-score { margin-left: auto; text-align: right; }
+  .st-score b { font-size: 34px; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .st-score i { display: block; font-style: normal; font-size: 11px; color: #8a8a8e; margin-top: 3px; }
+  .st-q { margin-top: 12px; font-size: 14.5px; color: #1d1d1f; line-height: 1.4; }
+  .mini { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; width: 360px; }
+  .mini .sticker { position: static; padding: 10px 12px 12px; border-radius: 16px; transform: none; width: 100%; }
+  .mini .dark { background: rgba(28,28,30,.96); color: #fff; }
+  .mini .dark .st-t span, .mini .dark .when { color: #98989d; }
+  .mini .dark .brand { color: #fff; }
+
+  /* ---------- 2 · scorecard video ---------- */
+  .vid img { width: 360px; height: 640px; display: block; }
+  .keys { display: flex; gap: 8px; margin-top: 10px; }
+  .keys figure { width: 115px; }
+  .keys img { width: 115px; height: 204px; border-radius: 10px; display: block; }
+  .keys figcaption { font-size: 10.5px; color: #8b90a0; margin-top: 4px; text-align: center; }
+  .play { position: absolute; right: 14px; top: 14px; background: rgba(255,255,255,.14); backdrop-filter: blur(8px); border-radius: 99px; padding: 5px 10px; font-size: 11px; font-weight: 600; }
+
+  /* ---------- 3 · my month ---------- */
+  .month { background: #050506; padding: 30px 24px 0; }
+  .month .glow { position: absolute; left: -60px; top: -140px; width: 480px; height: 380px; background: radial-gradient(closest-side, rgba(30,144,255,.25), transparent); }
+  .month .in { position: relative; }
+  .m-k { font-size: 12px; color: rgba(255,255,255,.5); font-weight: 600; }
+  .m-h { font-size: 27px; font-weight: 800; letter-spacing: -.035em; line-height: 1.05; margin-top: 6px; }
+  .m-stats { display: flex; gap: 18px; margin-top: 14px; }
+  .m-stats div b { display: block; font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+  .m-stats div span { font-size: 11px; color: rgba(255,255,255,.45); }
+  .m-list { margin-top: 14px; }
+  .m-r { display: flex; align-items: center; gap: 11px; height: 50px; border-top: .5px solid rgba(255,255,255,.09); }
+  .m-r .d { width: 40px; font-size: 11px; color: rgba(255,255,255,.4); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .m-r .cv { width: 40px; height: 40px; border-radius: 7px; background-size: cover; flex: none; }
+  .m-r .tt { flex: 1; min-width: 0; }
+  .m-r .tt b { display: block; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-r .tt span { font-size: 12px; color: rgba(255,255,255,.5); }
+  .m-r .s { font-size: 20px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .m-aw { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .m-aw > div { background: rgba(255,255,255,.06); border-radius: 16px; padding: 12px 14px; }
+  .m-aw .k { font-size: 11px; color: rgba(255,255,255,.5); font-weight: 600; }
+  .m-aw .v { font-size: 28px; font-weight: 700; letter-spacing: -.04em; margin-top: 2px; }
+  .m-aw .w { font-size: 12.5px; color: rgba(255,255,255,.8); }
+  .foot { position: absolute; left: 24px; right: 24px; bottom: 20px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; }
+  .foot .who { display: flex; align-items: center; gap: 7px; }
+  .foot .brand { font-weight: 700; color: rgba(255,255,255,.85); }
+.frame img.full{width:360px;height:640px;display:block}</style></head>
+<body>
+  <h1>Share cards: round three</h1>
+  <p class="sub">All three now carry the penguin logo with Peak Music in the PS3 font. The sticker and the scorecard take their colours from the album cover and both move; the two .mp4 files sit next to this image. My month is unchanged apart from the logo.</p>
+  <div class="row">
+
+    <!-- 1 · sticker -->
+    <div class="col">
+      <div class="frame"><img class="full" src="st2-still.png"><span class="play">▶ moving</span></div>
+      <p class="cap">1 · The sticker<span>See-through glass tinted with the cover's own colours, which slowly swirl inside it, so every album gets its own sticker. The structure is ours too: logo top-left, the cover with a record peeking out, and the score in the rating colour. Over someone's reaction video, their video shows through the glass. File: <b>share-sticker-preview.mp4</b>.</span></p>
+    </div>
+
+    <!-- 2 · scorecard video -->
+    <div class="col">
+      <div class="frame vid"><img src="sc2-final.png"><span class="play">▶ 10 s video</span></div>
+      <div class="keys">
+        <figure><img src="sc2-k1.png"><figcaption>songs roll in</figcaption></figure>
+        <figure><img src="sc2-k2.png"><figcaption>final score rolls up</figcaption></figure>
+        <figure><img src="sc2-final.png"><figcaption>lands + glows</figcaption></figure>
+      </div>
+      <p class="cap">2 · The album scorecard (video)<span>The record spins with the cover as its centre label, and the background drifts in the cover's colours, like the website's liquid. Every score rolls like an odometer, the digits spinning and passing through the rating colours, then the album score rolls up, overshoots a touch and settles with a glow. File: <b>share-scorecard-video.mp4</b>. Song scores are examples.</span></p>
+    </div>
+
+    <!-- 3 · my month -->
+    <div class="col">
+      <div class="frame month">
+        <div class="glow"></div>
+        <div class="in">
+          <div class="m-k">October 2026</div>
+          <div class="m-h">My month on<br>Peak Music</div>
+          <div class="m-stats"><div><b>5</b><span>rated</span></div><div><b>7.1</b><span>average</span></div><div><b>5</b><span>reviews written</span></div></div>
+          <div class="m-list">
+            <div class="m-r"><span class="d">Oct 6</span><div class="cv" style="background-image:url(https://images.genius.com/487b97066216bfec07a158c152bd814e.335x335x1.jpg)"></div><div class="tt"><b>TOKYO</b><span>The Weeknd</span></div><span class="s" style="color:#2563eb">8.9</span></div>
+            <div class="m-r"><span class="d">Oct 11</span><div class="cv" style="background-image:url(https://i.scdn.co/image/ab67616d0000b273af44773914c32c0327509e57)"></div><div class="tt"><b>Rewind</b><span>Wonder Girls</span></div><span class="s" style="color:#c084fc">9.5</span></div>
+            <div class="m-r"><span class="d">Oct 16</span><div class="cv" style="background-image:url(https://i.scdn.co/image/ab67616d0000b273bf9bbc5686fd4fdd8197b717)"></div><div class="tt"><b>Society</b><span>pathetic240px</span></div><span class="s" style="color:#06b6d4">7.7</span></div>
+            <div class="m-r"><span class="d">Oct 22</span><div class="cv" style="background-image:url(https://i.scdn.co/image/ab67616d0000b273ecfc27fbfdc6b4c0bbacab7a)"></div><div class="tt"><b>Chiltern Firehouse.</b><span>fakemink</span></div><span class="s" style="color:#c084fc">9.2</span></div>
+            <div class="m-r"><span class="d">Oct 23</span><div class="cv" style="background-image:url(https://i.scdn.co/image/ab67616d0000b2735675e83f707f1d7271e5cf8a)"></div><div class="tt"><b>Evolve</b><span>Imagine Dragons</span></div><span class="s" style="color:#a3764a">0</span></div>
+          </div>
+          <div class="m-aw">
+            <div><div class="k">Top of the month</div><div class="v" style="color:#c084fc">9.5</div><div class="w">Rewind</div></div>
+            <div><div class="k">Hottest take</div><div class="v" style="color:#a3764a">0</div><div class="w">Evolve</div></div>
+          </div>
+        </div>
+        <div class="foot"><span class="who"><span class="ava" style="width:22px;height:22px"></span>@luca</span><span class="brand-lock"><img src="penguin.webp" alt=""><span>Peak Music</span></span></div>
+      </div>
+      <p class="cap">3 · My month<span>As you approved it, now with the penguin logo in the corner.</span></p>
+    </div>
+  </div>
+</body></html>

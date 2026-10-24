@@ -1,0 +1,4 @@
+@font-face { font-family: 'PlayStation'; src: url('ps.ttf') format('truetype'); }
+.brand-lock { display: inline-flex; align-items: center; gap: 6px; }
+.brand-lock img { width: 22px; height: 22px; object-fit: contain; display: block; }
+.brand-lock span { font-family: 'PlayStation', sans-serif; font-size: 14px; letter-spacing: .02em; color: rgba(255,255,255,.92); line-height: 1; }

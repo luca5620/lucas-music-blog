@@ -1,0 +1,80 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="brand.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 360px; height: 640px; overflow: hidden; background: #000; }
+  body { font-family: Inter, -apple-system, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; }
+  #frame { position: relative; width: 360px; height: 640px; overflow: hidden; }
+  /* stand-in for the member's own video: a slow handheld pan across a warm room */
+  .room { position: absolute; inset: -40px; background:
+      radial-gradient(40% 30% at 72% 62%, rgba(255,206,160,.75), transparent 70%),
+      radial-gradient(35% 25% at 22% 28%, rgba(140,160,190,.6), transparent 70%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 46px),
+      linear-gradient(160deg, #7a6c5f, #3a322d 70%); }
+  .tag { position: absolute; left: 0; right: 0; bottom: 18px; text-align: center; font-size: 11px; color: rgba(255,255,255,.8); }
+  /* the sticker: see-through glass tinted with the cover's own colours */
+  .st { position: absolute; left: 18px; right: 18px; top: 120px; border-radius: 26px; overflow: hidden;
+    backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow: 0 14px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.28); }
+  .tint { position: absolute; inset: -40px; filter: blur(26px); opacity: .78; }
+  .tint div { position: absolute; border-radius: 50%; }
+  .glass { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,0) 50%), rgba(10,14,30,.22); }
+  .stin { position: relative; padding: 14px 16px 16px; }
+  .row1 { display: flex; align-items: center; justify-content: space-between; }
+  .who { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; }
+  .ava { width: 22px; height: 22px; border-radius: 50%; background: url(https://qhbtfhyzbiwqwaxtetgd.supabase.co/storage/v1/object/public/avatars/8587299c-dbb8-49a9-b984-e25c089a65fc/avatar-1787128014158.jpeg) center/cover; box-shadow: 0 0 0 1.5px rgba(255,255,255,.5); }
+  .row2 { display: flex; align-items: center; gap: 13px; margin-top: 13px; }
+  .sleeve { position: relative; width: 112px; height: 78px; flex: none; }
+  .sleeve .cv { position: absolute; left: 0; top: 0; width: 78px; height: 78px; border-radius: 6px; background: url(https://i.scdn.co/image/ab67616d0000b273ecfc27fbfdc6b4c0bbacab7a) center/cover; z-index: 2; box-shadow: 3px 4px 12px rgba(0,0,0,.35); }
+  .sleeve .vn { position: absolute; left: 38px; top: 3px; width: 72px; height: 72px; border-radius: 50%; background: repeating-radial-gradient(circle, #111 0 1.4px, #1f1f22 1.4px 2.4px); }
+  .sleeve .vn::after { content: ""; position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px; border-radius: 50%; background: url(https://i.scdn.co/image/ab67616d0000b273ecfc27fbfdc6b4c0bbacab7a) center/cover; }
+  .tt { flex: 1; min-width: 0; }
+  .tt b { display: block; font-size: 16.5px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+  .tt span { display: block; font-size: 12.5px; color: rgba(255,255,255,.78); margin-top: 2px; }
+  .score { text-align: right; }
+  .score b { display: block; font-size: 36px; font-weight: 800; letter-spacing: -.05em; line-height: 1; color: #d8b4fe; text-shadow: 0 0 14px rgba(192,132,252,.55); }
+  .score span { font-size: 10.5px; color: rgba(255,255,255,.7); }
+  .quote { margin-top: 12px; font-size: 14.5px; line-height: 1.4; font-weight: 500; }
+</style></head>
+<body>
+<div id="frame">
+  <div class="room" id="room"></div>
+  <div class="tag">(stand-in for your own video)</div>
+  <div class="st" id="st">
+    <div class="tint" id="tint"></div>
+    <div class="glass"></div>
+    <div class="stin">
+      <div class="row1"><span class="brand-lock"><img src="penguin.webp" alt=""><span>Peak Music</span></span><span class="who"><span class="ava"></span>@luca</span></div>
+      <div class="row2">
+        <div class="sleeve"><div class="vn" id="vn"></div><div class="cv"></div></div>
+        <div class="tt"><b>Chiltern Firehouse.</b><span>fakemink · Single</span></div>
+        <div class="score"><b>9.2</b><span>out of 10</span></div>
+      </div>
+      <div class="quote">“Must-listen UK rap.”</div>
+    </div>
+  </div>
+</div>
+<script>
+// Colours sampled from the Chiltern Firehouse cover (green, rust, navy), brightened.
+const PAL = ["#6fbf22", "#b4561a", "#2c4c9a"];
+const tint = document.getElementById("tint");
+const blobs = PAL.map(c => { const d = document.createElement("div"); d.style.background = c; tint.appendChild(d); return d; });
+window.render = function (t) {
+  // slow handheld drift on the stand-in video
+  document.getElementById("room").style.transform = `translate(${Math.sin(t * 0.7) * 14}px, ${Math.cos(t * 0.5) * 9}px) scale(1.04)`;
+  // the tint swirls inside the glass (one full loop every 6 s, so the video loops cleanly)
+  const w = Math.PI * 2 / 6;
+  blobs.forEach((b, i) => {
+    const a = t * w + i * 2.1, s = 210;
+    b.style.width = b.style.height = s + "px";
+    b.style.left = (150 + Math.cos(a) * 110 - s / 2 + 40) + "px";
+    b.style.top = (95 + Math.sin(a) * 60 - s / 2 + 40) + "px";
+  });
+  // the record spins behind the sleeve
+  document.getElementById("vn").style.transform = `rotate(${t * 120}deg)`;
+};
+render(1.2);
+</script>
+</body></html>

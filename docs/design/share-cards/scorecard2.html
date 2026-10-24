@@ -1,0 +1,137 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="brand.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 360px; height: 640px; background: #000; overflow: hidden; }
+  body { font-family: Inter, -apple-system, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; }
+  #card { position: relative; width: 360px; height: 640px; overflow: hidden; background: #040405; }
+  /* moving cover-colour liquid (colours pulled from the cover) */
+  .liquid { position: absolute; inset: -80px; filter: blur(46px) saturate(1.25); opacity: .75; }
+  .blob { position: absolute; border-radius: 50%; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,.45) 42%, rgba(0,0,0,.7) 100%); }
+  .in { position: relative; padding: 22px 24px 0; display: flex; flex-direction: column; align-items: center; }
+  /* the record */
+  .rec { position: relative; width: 210px; height: 146px; }
+  .jacket { position: absolute; left: 0; top: 0; width: 146px; height: 146px; border-radius: 5px; z-index: 2; background: url(https://i.scdn.co/image/ab67616d0000b2731e81bff9807a9e629fce5ade) center/cover; box-shadow: 6px 10px 26px rgba(0,0,0,.6), inset -1px 0 0 rgba(255,255,255,.15); }
+  .disc { position: absolute; left: 72px; top: 4px; width: 138px; height: 138px; border-radius: 50%;
+    background: repeating-radial-gradient(circle, #0d0d0f 0 1.6px, #19191c 1.6px 2.6px); box-shadow: 0 14px 34px rgba(0,0,0,.7); }
+  .disc .lbl { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%;
+    background: url(https://i.scdn.co/image/ab67616d0000b2731e81bff9807a9e629fce5ade) center/cover; box-shadow: 0 0 0 2px rgba(0,0,0,.6); }
+  .disc .lbl::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: #040405; }
+  .sheen { position: absolute; left: 72px; top: 4px; width: 138px; height: 138px; border-radius: 50%; pointer-events: none;
+    background: conic-gradient(from 300deg, transparent 0deg, rgba(255,255,255,.16) 25deg, transparent 60deg, transparent 180deg, rgba(255,255,255,.1) 205deg, transparent 240deg); }
+  .title { font-size: 20px; font-weight: 700; letter-spacing: -.02em; margin-top: 14px; }
+  .artist { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 1px; }
+  .overall { margin-top: 8px; height: 58px; display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
+  .of { font-size: 14px; color: rgba(255,255,255,.4); font-weight: 600; padding-bottom: 6px; }
+  .progress { font-size: 11.5px; color: rgba(255,255,255,.55); font-weight: 500; padding-bottom: 14px; }
+  /* odometer */
+  .odo { display: inline-flex; align-items: flex-end; font-variant-numeric: tabular-nums; }
+  .odo .col { overflow: hidden; position: relative; }
+  .odo .strip { display: flex; flex-direction: column; }
+  .odo .strip span { display: block; text-align: center; }
+  .odo .dot { display: block; }
+  .tracks { width: 100%; margin-top: 6px; }
+  .t { display: flex; align-items: center; height: 21px; font-size: 12px; border-top: .5px solid rgba(255,255,255,.08); }
+  .t .n { width: 20px; color: rgba(255,255,255,.35); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+  .t .nm { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+  .t .sc { width: 32px; display: flex; justify-content: flex-end; font-weight: 650; }
+  .foot { position: absolute; left: 24px; right: 24px; bottom: 18px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+  .who { display: flex; align-items: center; gap: 7px; font-weight: 600; }
+  .ava { width: 22px; height: 22px; border-radius: 50%; background: url(https://qhbtfhyzbiwqwaxtetgd.supabase.co/storage/v1/object/public/avatars/8587299c-dbb8-49a9-b984-e25c089a65fc/avatar-1787128014158.jpeg) center/cover; }
+</style></head>
+<body>
+<div id="card">
+  <div class="liquid" id="liquid"></div>
+  <div class="shade"></div>
+  <div class="in">
+    <div class="rec" id="rec"><div class="disc" id="disc"><div class="lbl"></div></div><div class="sheen"></div><div class="jacket"></div></div>
+    <div class="title" id="title">Discovery</div>
+    <div class="artist" id="artist">Daft Punk · 2001</div>
+    <div class="overall" id="overall"></div>
+    <div class="tracks" id="tracks"></div>
+  </div>
+  <div class="foot" id="foot"><span class="who"><span class="ava"></span>@luca</span><span class="brand-lock"><img src="penguin.webp" alt=""><span>Peak Music</span></span></div>
+</div>
+<script>
+// Same colour steps as lib/rating.ts getRatingHex.
+function hex(r){ if(r>=10)return"#1e90ff"; if(r>=9)return"#c084fc"; if(r>=8)return"#2563eb"; if(r>=7)return"#06b6d4"; if(r>=6)return"#166534"; if(r>=5)return"#84cc16"; if(r>=4)return"#facc15"; if(r>=3)return"#fb923c"; if(r>=2)return"#ef4444"; return"#a3764a"; }
+// Colours sampled from the Discovery cover (amber chrome, deep blue, silver), brightened for the liquid.
+const PAL = ["#c2702a", "#2b6c9e", "#9aa6b4", "#5a2a0c"];
+const SONGS = [["One More Time",9.8],["Aerodynamic",9.4],["Digital Love",9.3],["Harder, Better, Faster, Stronger",9.7],["Crescendolls",8.4],["Nightvision",9.0],["Superheroes",8.6],["High Life",8.2],["Something About Us",9.5],["Voyager",9.6],["Veridis Quo",9.9],["Short Circuit",8.0],["Face to Face",9.1],["Too Long",8.7]];
+const FINAL = 9.1;
+
+const liq = document.getElementById("liquid");
+const blobs = PAL.map((c, i) => { const d = document.createElement("div"); d.className = "blob"; d.style.background = c; liq.appendChild(d); return d; });
+
+// odometer: one rolling column per digit (units + tenths)
+function makeOdo(size, weight) {
+  const el = document.createElement("span"); el.className = "odo"; el.style.fontSize = size + "px"; el.style.fontWeight = weight;
+  el.style.lineHeight = "1"; el.style.letterSpacing = size > 30 ? "-.04em" : "0";
+  const col = () => { const c = document.createElement("span"); c.className = "col"; c.style.height = size + "px";
+    const s = document.createElement("span"); s.className = "strip"; for (let d = 0; d <= 10; d++) { const x = document.createElement("span"); x.textContent = d % 10; x.style.height = size + "px"; x.style.lineHeight = size + "px"; s.appendChild(x); } c.appendChild(s); return c; };
+  const u = col(), dot = document.createElement("span"), tn = col();
+  dot.className = "dot"; dot.textContent = "."; dot.style.lineHeight = size + "px"; dot.style.height = size + "px";
+  el.append(u, dot, tn);
+  el.set = (v) => {
+    const n = Math.max(0, v * 10), tp = n % 10, up = Math.floor(n / 10) + Math.min(Math.max(tp - 9, 0), 1);
+    u.firstChild.style.transform = `translateY(${-up * size}px)`;
+    tn.firstChild.style.transform = `translateY(${-tp * size}px)`;
+    el.style.color = hex(v);
+  };
+  return el;
+}
+const tr = document.getElementById("tracks");
+const rowOdos = SONGS.map(([n], i) => {
+  tr.insertAdjacentHTML("beforeend", `<div class="t" id="t${i}"><span class="n">${i+1}</span><span class="nm">${n}</span><span class="sc"></span></div>`);
+  const o = makeOdo(12, 650); document.querySelector(`#t${i} .sc`).appendChild(o); return o;
+});
+const ov = document.getElementById("overall");
+const prog = document.createElement("span"); prog.className = "progress";
+const big = makeOdo(54, 800); const of = document.createElement("span"); of.className = "of"; of.textContent = "/10";
+const bigWrap = document.createElement("span"); bigWrap.style.display = "inline-flex"; bigWrap.style.alignItems = "flex-end"; bigWrap.style.gap = "4px"; bigWrap.append(big, of);
+
+const clamp = x => Math.min(Math.max(x, 0), 1);
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeBack = x => { x = clamp(x); const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const T0 = 1.0, STEP = 0.33, TICK = 0.55, OV0 = 6.1, OV = 1.7;
+
+window.render = function (t) {
+  // liquid drift: slow, looping orbits
+  blobs.forEach((b, i) => {
+    const s = 260 + i * 40, a = t * (0.35 + i * 0.07) + i * 1.7;
+    b.style.width = b.style.height = s + "px";
+    b.style.left = (180 + Math.cos(a) * 90 + (i - 1.5) * 40 - s / 2 + 80) + "px";
+    b.style.top = (160 + Math.sin(a * 1.2) * 110 + i * 120 - s / 2 + 80) + "px";
+  });
+  const intro = easeOut(t / 0.9);
+  const rec = document.getElementById("rec");
+  rec.style.opacity = intro; rec.style.transform = `scale(${0.9 + 0.1 * intro})`;
+  document.getElementById("disc").style.transform = `rotate(${t * 200}deg)`;
+  for (const id of ["title", "artist", "foot"]) { const el = document.getElementById(id); el.style.opacity = intro; el.style.transform = `translateY(${(1 - intro) * 8}px)`; }
+  let done = 0;
+  SONGS.forEach(([, v], i) => {
+    const s = T0 + i * STEP, row = document.getElementById("t" + i), k = easeOut((t - s) / 0.3);
+    row.style.opacity = k; row.style.transform = `translateX(${(1 - k) * -10}px)`;
+    rowOdos[i].set(v * easeOut((t - s) / TICK));
+    if (t >= s + TICK) done++;
+  });
+  if (t < OV0) {
+    if (ov.firstChild !== prog) { ov.innerHTML = ""; ov.appendChild(prog); }
+    prog.textContent = `${done} of ${SONGS.length} songs`;
+  } else {
+    if (ov.firstChild !== bigWrap) { ov.innerHTML = ""; ov.appendChild(bigWrap); }
+    const p = (t - OV0) / OV;
+    big.set(FINAL * easeBack(p));
+    const land = t - OV0 - OV;
+    const pulse = land > 0 ? Math.exp(-land * 3) : 0;
+    bigWrap.style.filter = `drop-shadow(0 0 ${8 + 18 * pulse}px ${hex(FINAL)}${pulse > .05 ? "aa" : "55"})`;
+    bigWrap.style.transform = `scale(${1 + 0.05 * pulse})`;
+  }
+};
+const q = new URLSearchParams(location.search).get("t");
+render(q === null ? 9.5 : parseFloat(q));
+</script>
+</body></html>

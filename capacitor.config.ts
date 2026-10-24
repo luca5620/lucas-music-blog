@@ -14,7 +14,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 /** The build number of the binary this config ships in. Keep equal to
     CURRENT_PROJECT_VERSION in ios/App/App.xcodeproj/project.pbxproj. */
-const NATIVE_BUILD = 3;
+const NATIVE_BUILD = 4;
 
 const config: CapacitorConfig = {
   appId: "com.peakmusicreviews.app",

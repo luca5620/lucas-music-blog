@@ -33,6 +33,10 @@ Database changes are plain SQL files in `supabase/migrations/`, numbered — **l
 
 `README.md` has the stack overview; `docs/LAUNCH-CHECKLIST.md` tracks human-hands setup steps (store accounts, tokens, dashboard toggles); `docs/MACBOOK-IOS-SETUP.md` is the Mac/Xcode path to TestFlight.
 
+## App Store rules check (IMPORTANT)
+
+Apple changes the App Review Guidelines several times a year with no changelog, and because the app loads the live site, a website feature can fall out of the rules without any new build. **Before any native build, any App Store submission, and before building anything with uploads, payments, AI or chat**, run the check in `docs/APP-STORE-RULES-WATCH.md`: read Apple Developer News + the live guidelines since its "Last checked" date, log each change (what changed → does it hit Peak Music → what to do), and tell the owner in plain words about anything that a live feature now breaks. Update the date when done.
+
 ## Cross-machine workflow (IMPORTANT)
 
 The owner works on this repo from exactly two machines — a Windows 11 desktop (primary) and a MacBook Pro (on-the-go fixes) — and syncs **only through git**. Claude Code's memory does not travel between them; the repo is the single source of shared truth. So:

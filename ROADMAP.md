@@ -504,6 +504,68 @@ Musicboard-refugee and leak communities. The original notes:
 
 ## ⏳ In progress
 
+### 📱 1.3 (build 4) = the iPhone Duo build — Windows prep DONE 2026-10-24, MacBook steps next
+
+Luca: "make a build for the app to run well on the new iPhone Duo …
+check the newest changes to the Apple guidelines". iPhone Duo (Apple's
+foldable) launched 2026-10-23. Full write-up + the guidelines changes:
+`docs/APP-STORE-RULES-WATCH.md`.
+
+**Done on Windows (already live on the website, reaches the 1.2 app too):**
+- `globals.css` "SIDE SAFE AREAS": page, full-screen Your Taste and the
+  slide-up sheets pad by the real left/right safe-area insets (the Duo's
+  camera sits on the SIDE of its inner screen). Zero on every upright
+  iPhone, so the approved portrait layout is unchanged; sideways, content
+  now clears the notch.
+- `OAuthButtons.tsx`: the Google/Apple sheet gets 540×720pt on wide
+  screens (iPad + Duo inner screen) instead of UIKit's cramped default
+  popover. Phones still go full-screen.
+- Version **1.3 / build 4** in the Xcode project, `NATIVE_BUILD = 4` in
+  `capacitor.config.ts` (in sync; preflight passes, no blockers).
+  `SPLASH_HANDOFF_MIN_BUILD` stays 3 (it's "3 or newer").
+
+**👉 MacBook steps (in order):**
+1. `git pull`. Update **Xcode to 27.1 or newer** (App Store) — 27.1 is
+   what adds the iPhone Duo SDK + simulator. Built with anything older
+   the app shows boxed in the middle of the Duo's inner screen.
+2. Accept the **new Apple Developer Program License Agreement**
+   (2026-10-13) at developer.apple.com/account — uploads are blocked
+   until it's accepted.
+3. `npm install` → `npm run mobile:sync` → `npm run mobile:ios`.
+4. Run on the **iPhone Duo simulator**; use Device Hub to fold/unfold
+   and rotate. Check: nothing hides under the side camera; tab bar
+   spans and works; header fits; Your Taste full-screen + comments
+   sheet; release live-room sheet; Google AND Apple sign-in open as a
+   proper-sized sheet and return signed in; photo picker for avatar;
+   share sheet; splash → curtain hand-off; airplane-mode cold launch
+   (NO SIGNAL page). Then the same quick pass on an ordinary iPhone
+   simulator (iOS 27) for regressions.
+5. Archive → upload → **TestFlight on the real phone** (friends'
+   trial run). Duo owners among friends = bonus.
+6. **Duo screenshots** from the simulator: inner 2007×2853, outer
+   1398×2034 (earn the "Made for iPhone Duo" badge now; required for
+   every submission from April 2027).
+7. App Store Connect, version 1.3: re-answer the **age-rating
+   questionnaire — "social media capabilities" = Yes** (required for
+   updates since Sept 2026); What's New; attach build 4; submit;
+   **freeze main** while in review.
+
+**Before submitting 1.3 (compliance, from the 2026-10-16 guidelines update):**
+- Profiles are reportable, but I found no staff tool to remove a
+  reported **avatar/banner image** — Apple's 1.2 now explicitly calls
+  out intimate imagery and treats unfixed violations as a Code of
+  Conduct issue. Build "staff: remove profile image" first (website-only).
+- `SOUNDCLOUD_PLAYER_ENABLED = false` is built-but-off code; new 2.5.19
+  bans hidden/dormant features. Low risk (it's on the site, not in the
+  binary) — decide: delete it, or mention it in reviewer notes.
+- Optional: Texas age-assurance / Declared Age Range API — look at it
+  before 1.3 since it would ride in the same build.
+
+**What's New draft (1.3):** "Made for iPhone Duo — Peak Music now fills
+the big inner screen edge to edge and steps around the camera. Smoother
+Google and Apple sign-in on iPad and iPhone Duo, and the offline screen
+retries on its own."
+
 ### 📸 Instagram community posts (2026-10-22)
 
 - **100-members carousel is ready to post** (on the Windows Desktop in

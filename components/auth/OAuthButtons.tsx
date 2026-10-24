@@ -327,6 +327,17 @@ export default function OAuthButtons({ next = "/" }: OAuthButtonsProps) {
           // (attach the temp window to the scene) would need a new App
           // Store build; this works on the 1.2 binary already out.
           presentationStyle: "popover",
+          // THE SHEET'S SIZE ON BIG SCREENS (2026-10-24). A popover only
+          // turns full-screen on a phone-width screen. On an iPad and on
+          // the iPhone Duo's unfolded inner screen (iPad-like width) it
+          // stays a real centred popover — and with no size given, UIKit
+          // picks a cramped default that squeezes Google's and Apple's
+          // sign-in pages. These are points (iOS's unit, not pixels);
+          // iOS shrinks the box to fit if a screen is smaller (the Duo
+          // held sideways is ~670pt tall). Ordinary iPhones ignore both
+          // numbers and stay full-screen exactly as before.
+          width: 540,
+          height: 720,
         });
       } catch {
         setError(t("couldntOpen"));

@@ -48,6 +48,10 @@ interface CapacitorBridge {
       open: (opts: {
         url: string;
         presentationStyle?: "fullscreen" | "popover";
+        /** Popover size in points — only used where the popover stays a
+            popover (iPad, iPhone Duo inner screen). */
+        width?: number;
+        height?: number;
       }) => Promise<void>;
       close: () => Promise<void>;
       addListener: (

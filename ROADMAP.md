@@ -590,6 +590,35 @@ verified:
   first. Ask before building.
 - Luca is testing all weekend; wait for his notes before more changes here.
 
+### 🅿️ PARKED NEXT STEPS (Luca 2026-10-24, end of session) — do these later, in this order unless he says otherwise
+
+Round 3 shipped 825bdc0: the review page's record label wears the special
+bands (stinky / elite / perfect), and the rating screen says "Use average".
+Luca: share cards "look good now". He's testing everything this weekend.
+
+1. **One-tap share to Instagram AND TikTok** (Luca: "sure we can do the
+   one-tap version, but can we do it with tiktok too?" — parked for later).
+   - Instagram: official "Share to Stories" — pasteboard
+     com.instagram.sharedSticker.backgroundVideo (their picked clip) +
+     stickerImage (our sticker), open instagram-stories://share?source_application=<FB App ID>.
+     Needs a Facebook App ID (Meta developer dashboard — his step, narrate
+     one step at a time), LSApplicationQueriesSchemes instagram-stories, a
+     small native plugin → rides in a native build.
+   - TikTok: TikTok's Share Kit hands finished videos/photos to TikTok's
+     editor; check its current docs when building, but expect NO separate
+     sticker layer like Instagram's — so for TikTok, combine on the phone
+     first (their clip + our sticker burned in) and hand TikTok the result.
+     Needs a TikTok developer app + approval (his step).
+   - Both: pick a clip from the camera roll (needs a photo-library
+     permission string), App Store rules check first (APP-STORE-RULES-WATCH).
+     Batch into one native build with anything else native.
+2. **Showcases overhaul** (Luca flagged it 2026-10-24: "we definitely need to
+   overhaul showcases") — talk options + mockups first, nothing built yet.
+3. Still queued from before: taste-match follows after /start, save-for-later
+   shelf + release-day push, Duo/iPad two-column layout, the "less boxy"
+   pass (comments box), build 1.3 on the MacBook (cap sync adds
+   @capacitor/filesystem).
+
 ### 🎨 UI/UX direction (Luca, 2026-10-24) — discussion stage, nothing built yet
 
 - **Yes to:** (1) taste-match follow suggestions after /start, (2) "save for

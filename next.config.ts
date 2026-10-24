@@ -52,8 +52,8 @@ const securityHeaders = [
       // privacy-enhanced player, www.youtube.com covers player-internal
       // redirects. TikTok: the iframe player lives at www.tiktok.com.
       // Spotify: the /embed/... preview player on release pages.
-      // SoundCloud: w.soundcloud.com is the widget player (release
-      // pages' third preview option + aux battle songs, 2026-09-13).
+      // SoundCloud: w.soundcloud.com is the widget player Aux Wars
+      // uses for SoundCloud songs (2026-09-13).
       "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.tiktok.com https://open.spotify.com https://embed.music.apple.com https://w.soundcloud.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",

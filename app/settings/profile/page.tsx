@@ -34,7 +34,6 @@ import {
   eventBadge,
   hiddenBadgeSet,
 } from "@/lib/badges";
-import { SOUNDCLOUD_PLAYER_ENABLED } from "@/lib/flags";
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import SettingsSection from "@/components/settings/SettingsSection";
@@ -187,8 +186,9 @@ export default function ProfileSettingsPage() {
   // Preview player on release pages (migration 036): Spotify by
   // default, Apple Music as the one alternative — never both on a
   // page (Luca 2026-09-02). Gated on the column existing, as above.
-  // SoundCloud joined as the third pick on 2026-09-13 (migration 042).
-  const [preferredPlayer, setPreferredPlayer] = useState<"spotify" | "apple" | "soundcloud">("spotify");
+  // (SoundCloud was a third pick 2026-09-13 → 2026-10-24, removed as
+  // a dormant feature — Apple 2.5.19.)
+  const [preferredPlayer, setPreferredPlayer] = useState<"spotify" | "apple">("spotify");
   const [supportsPreferredPlayer, setSupportsPreferredPlayer] = useState(false);
   // Hidden badges (migration 040, Luca 2026-09-03): the keys the
   // member does NOT want under their username — "reviews" / "likes" /
@@ -295,15 +295,10 @@ export default function ProfileSettingsPage() {
           p.featured_playlist_id ? playlistUrl(p.featured_playlist_id) : ""
         );
         setSupportsFeaturedPlaylist("featured_playlist_id" in p);
-        // A saved 'soundcloud' pick stays in the database but shows
-        // as Spotify while the flag is off, so the UI never highlights
-        // a card that isn't on screen.
-        setPreferredPlayer(
-          p.preferred_player === "apple" ||
-            (p.preferred_player === "soundcloud" && SOUNDCLOUD_PLAYER_ENABLED)
-            ? p.preferred_player
-            : "spotify"
-        );
+        // A saved 'soundcloud' pick (the SoundCloud player was removed
+        // 2026-10-24) stays in the database but shows — and plays — as
+        // Spotify, so the UI never highlights a card that isn't there.
+        setPreferredPlayer(p.preferred_player === "apple" ? "apple" : "spotify");
         setSupportsPreferredPlayer("preferred_player" in p);
         setSupportsHiddenBadges("hidden_badges" in p);
         setHiddenBadges([...hiddenBadgeSet(p.hidden_badges)]);
@@ -1086,24 +1081,14 @@ export default function ProfileSettingsPage() {
           <SettingsSection
             id="preview-player"
             title={tSettings("player.title")}
-            hint={tSettings(SOUNDCLOUD_PLAYER_ENABLED ? "player.hint" : "player.hintTwo")}
+            hint={tSettings("player.hintTwo")}
           >
             <p className="text-xs text-text-muted">{tSettings("player.intro")}</p>
-            <div
-              className={`grid grid-cols-1 gap-3 ${
-                SOUNDCLOUD_PLAYER_ENABLED ? "sm:grid-cols-3" : "sm:grid-cols-2"
-              }`}
-            >
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {(
                 [
                   ["spotify", "Spotify", tSettings("player.spotifyBlurb")],
                   ["apple", "Apple Music", tSettings("player.appleBlurb")],
-                  // SoundCloud is on hold (lib/flags.ts) — the card is
-                  // hidden rather than deleted, so turning the flag on
-                  // brings the whole option straight back.
-                  ...(SOUNDCLOUD_PLAYER_ENABLED
-                    ? ([["soundcloud", "SoundCloud", tSettings("player.soundcloudBlurb")]] as const)
-                    : []),
                 ] as const
               ).map(([id, label, blurb]) => {
                 const active = preferredPlayer === id;

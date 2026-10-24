@@ -262,16 +262,10 @@ function SurfCard({
     item.type === "review" || item.type === "release"
       ? (item.apple_embed_url ?? null)
       : null;
-  // SoundCloud's widget for members who picked it (2026-09-13) — the
-  // page resolves the src; the card only mounts it.
-  const scSrc =
-    item.type === "review" || item.type === "release"
-      ? (item.soundcloud_embed_url ?? null)
-      : null;
   const wantsEmbed =
     fullscreen &&
     (item.type === "review" || item.type === "release") &&
-    (!!appleSrc || !!scSrc || (!!item.spotify_url && !!toSpotifyEmbed(item.spotify_url)));
+    (!!appleSrc || (!!item.spotify_url && !!toSpotifyEmbed(item.spotify_url)));
   // Album embeds get real room (Luca 2026-08-31: the 152px compact
   // player is too small to actually use on albums): the web goes
   // wide + tall (352 = Spotify's full album player, tracklist
@@ -286,15 +280,8 @@ function SurfCard({
         : null
       )?.match(/open\.spotify\.com\/(track|album)\//)?.[1] ?? null);
   // Apple's song player is 175px (Spotify's compact one is 152).
-  // SoundCloud: the compact strip is 166; a set (album) link gets the
-  // album room ("/sets/" is URL-encoded inside the widget src).
-  const embedHeight = scSrc
-    ? scSrc.includes("%2Fsets%2F")
-      ? native
-        ? 232
-        : 352
-      : 166
-    : spotifyKind === "album"
+  const embedHeight =
+    spotifyKind === "album"
       ? native
         ? 232
         : 352
@@ -304,9 +291,9 @@ function SurfCard({
   const embedWidthClass =
     spotifyKind === "album" && !native ? "max-w-2xl" : "max-w-md";
   // The one player here with a predictable cover position: Spotify's
-  // 152px single-track strip (no Apple / SoundCloud source, not an
-  // album). PRESS MODE frosts just its cover square — see below.
-  const compactSpotify = !appleSrc && !scSrc && spotifyKind === "track";
+  // 152px single-track strip (no Apple source, not an album). PRESS
+  // MODE frosts just its cover square — see below.
+  const compactSpotify = !appleSrc && spotifyKind === "track";
   // Web-fullscreen body budget: the card has no inner scroll any
   // more, so when the tall album player shares the frame the words
   // clamp earlier (and get the read-the-rest button sooner).
@@ -701,16 +688,6 @@ function SurfCard({
                     title={t("applePreview", { title: item.title })}
                     className="w-full rounded-lg"
                     style={{ background: "transparent", overflow: "hidden" }}
-                  />
-                ) : scSrc ? (
-                  <iframe
-                    src={scSrc}
-                    width="100%"
-                    height={embedHeight}
-                    frameBorder="0"
-                    allow="autoplay; clipboard-write; encrypted-media"
-                    title={t("soundcloudPreview", { title: item.title })}
-                    className="w-full rounded-lg"
                   />
                 ) : (
                   <iframe

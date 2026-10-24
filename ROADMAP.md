@@ -558,9 +558,14 @@ foldable) launched 2026-10-23. Full write-up + the guidelines changes:
   ⚠️ **Needs migration 059 RUN in the Supabase SQL editor**
   (`supabase/migrations/059-staff-remove-profile-images.sql`) — until then
   the buttons say "run migration 059" instead of working.
-- `SOUNDCLOUD_PLAYER_ENABLED = false` is built-but-off code; new 2.5.19
-  bans hidden/dormant features. Low risk (it's on the site, not in the
-  binary) — decide: delete it, or mention it in reviewer notes.
+- ✅ **SoundCloud preview player REMOVED** (2026-10-24, Luca's pick
+  "remove it, keep in git") — Apple's new 2.5.19 bans dormant features.
+  Gone: the flag, the release-page/Your Taste resolver, SoundCloudEmbed,
+  the Settings option, 6 languages' strings. Kept: Aux Wars SoundCloud
+  songs (search + pasted links), profile SoundCloud links, DB columns.
+  Restore = revert the commit that removed it.
+- Age-rating "social media" + new license agreement → Luca does these
+  when he uploads 1.3. Duo screenshots → Luca, later.
 - Optional: Texas age-assurance / Declared Age Range API — look at it
   before 1.3 since it would ride in the same build.
 

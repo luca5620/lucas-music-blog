@@ -169,11 +169,9 @@
     },
     "player": {
       "title": "Preview Player",
-      "hint": "Spotify, Apple Music or SoundCloud on release pages.",
       "intro": "Release pages show one preview player. Pick the service you actually use — signed in to it in your browser, previews become full tracks.",
       "spotifyBlurb": "The default. Every release we have.",
       "appleBlurb": "Where Apple carries the record; otherwise Spotify fills in.",
-      "soundcloudBlurb": "Where SoundCloud carries the record; otherwise Spotify fills in.",
       "hintTwo": "Spotify or Apple Music on release pages."
     },
     "song": {
@@ -995,9 +993,7 @@
       "spotifyClips": "30s clips · via Spotify",
       "appleClips": "30s clips · via Apple Music ↗",
       "spotifyTitle": "Spotify preview of {title}",
-      "appleTitle": "Apple Music preview of {title}",
-      "soundcloudClips": "via SoundCloud ↗",
-      "soundcloudTitle": "SoundCloud player for {title}"
+      "appleTitle": "Apple Music preview of {title}"
     },
     "feed": {
       "latestDrops": "Latest Drops",
@@ -1757,8 +1753,7 @@
       "prev": "Previous pick",
       "next": "Next pick",
       "swipe": "swipe",
-      "applePreview": "Apple Music preview of {title}",
-      "soundcloudPreview": "SoundCloud player for {title}"
+      "applePreview": "Apple Music preview of {title}"
     },
     "guest": {
       "pitch": "A channel that tunes itself to you — reviews, posts and records picked from what you rate and who you follow.",

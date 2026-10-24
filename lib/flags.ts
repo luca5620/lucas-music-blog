@@ -5,36 +5,16 @@
  * config, and they belong in git where the reason is written down.
  */
 
-/**
- * SoundCloud as a preview player on release pages / Your Taste.
- *
- * OFF since 2026-09-13 (Luca: "let's just put soundcloud on hold and
- * I'll revisit the API status — remove any buttons or mentions of the
- * previews for soundcloud but keep it available in the back").
- *
- * WHY: finding a record's SoundCloud page needs the SoundCloud API,
- * and their API keys now require a paid Artist Pro subscription. With
- * no keys the resolver can never find anything, so the option was a
- * setting that silently did nothing.
- *
- * WHAT IS STILL HERE, untouched and ready: lib/soundcloud.ts (search,
- * link reading, the release-page resolver + its cache),
- * components/releases/SoundCloudEmbed.tsx, the `soundcloud_url` /
- * `soundcloud_checked_at` columns and `catalog_set_soundcloud`
- * (migration 042), the widget host in the CSP, and the copy in all six
- * languages. The DB check on `profiles.preferred_player` still allows
- * 'soundcloud', so anyone who already picked it keeps their row — they
- * just see Spotify while this is off.
- *
- * TO TURN IT BACK ON: set the SOUNDCLOUD_CLIENT_ID / _SECRET env vars
- * and flip this to true. That is the whole job — nothing else to
- * rebuild.
- *
- * NOTE: this flag does NOT touch Aux Wars. Putting a SoundCloud
- * song on in a battle works today with no API key at all, because a
- * pasted link is read through SoundCloud's open oEmbed endpoint.
+/*
+ * (SOUNDCLOUD_PLAYER_ENABLED lived here 2026-09-13 → 2026-10-24: a
+ * SoundCloud preview player built but kept OFF because SoundCloud's API
+ * keys need a paid plan. Apple's guideline 2.5.19 (2026-10-16) bans
+ * hidden or dormant features, so the player was REMOVED rather than
+ * left switched off — see lib/soundcloud.ts. To bring it back, restore
+ * it from git history (the commit that removed it says so). Lesson for
+ * this file: a flag that stays off for weeks is a dormant feature in
+ * Apple's eyes — ship it or delete it.)
  */
-export const SOUNDCLOUD_PLAYER_ENABLED: boolean = false;
 
 /**
  * The animated app opening (components/ui/SplashCurtain.tsx).

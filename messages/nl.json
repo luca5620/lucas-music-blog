@@ -169,11 +169,9 @@
     },
     "player": {
       "title": "Speler",
-      "hint": "Spotify, Apple Music of SoundCloud op releasepagina's.",
       "intro": "Elke releasepagina toont één speler. Kies de dienst die je echt gebruikt: ben je daar in je browser ingelogd, dan worden de previews volledige nummers.",
       "spotifyBlurb": "De standaard. Heeft al onze releases.",
       "appleBlurb": "Als Apple de plaat heeft; anders zie je Spotify.",
-      "soundcloudBlurb": "Als SoundCloud de plaat heeft; anders zie je Spotify.",
       "hintTwo": "Spotify of Apple Music op releasepagina's."
     },
     "song": {
@@ -995,9 +993,7 @@
       "spotifyClips": "clips van 30 s · via Spotify",
       "appleClips": "clips van 30 s · via Apple Music ↗",
       "spotifyTitle": "Preview van {title} op Spotify",
-      "appleTitle": "Preview van {title} op Apple Music",
-      "soundcloudClips": "via SoundCloud ↗",
-      "soundcloudTitle": "SoundCloud-speler van {title}"
+      "appleTitle": "Preview van {title} op Apple Music"
     },
     "feed": {
       "latestDrops": "Nieuwste releases",
@@ -1757,8 +1753,7 @@
       "prev": "Vorige keuze",
       "next": "Volgende keuze",
       "swipe": "swipe",
-      "applePreview": "Apple Music-voorbeeld van {title}",
-      "soundcloudPreview": "SoundCloud-speler van {title}"
+      "applePreview": "Apple Music-voorbeeld van {title}"
     },
     "guest": {
       "pitch": "Een kanaal dat zich op jou afstemt — reviews, posts en platen gekozen op basis van wat je beoordeelt en wie je volgt.",

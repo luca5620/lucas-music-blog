@@ -9,8 +9,8 @@
  * "The designated preview player" means exactly what it means on the
  * release page: the service the viewer chose in Settings. The page
  * builds each `src` server-side — Apple's song player for members on
- * Apple Music, Spotify's track player for everyone else (SoundCloud
- * is on hold behind lib/flags.ts and falls back to Spotify), so this
+ * Apple Music, Spotify's track player for everyone else (a saved
+ * SoundCloud pick — player removed 2026-10-24 — gets Spotify), so this
  * shell never decides anything about services or ids.
  *
  * ONE open at a time, and closing UNMOUNTS the iframe. That is

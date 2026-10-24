@@ -134,9 +134,9 @@ export default async function ReviewPage({
      Spotify; now each pick opens THE VIEWER'S OWN preview player
      inline, the same service rule the release page follows:
      preferred_player = apple → Apple's song player, everyone else →
-     Spotify's track player. (SoundCloud is on hold behind
-     lib/flags.ts, so a SoundCloud pick falls back to Spotify like it
-     does everywhere else.)
+     Spotify's track player. (A saved SoundCloud pick — that player
+     was removed 2026-10-24 — falls back to Spotify like it does
+     everywhere else.)
 
      Apple costs ONE extra public iTunes lookup per page, and only
      for members who picked Apple Music: the cached album id has no

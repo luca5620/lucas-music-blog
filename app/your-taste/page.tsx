@@ -22,8 +22,6 @@ import PageHero from "@/components/ui/PageHero";
 import ChannelSurf from "@/components/taste/ChannelSurf";
 import { buildTasteProfile, getTunedToYou } from "@/lib/taste";
 import { resolveAppleEmbedsForReleases } from "@/lib/apple-music";
-import { resolveSoundCloudEmbedsForReleases } from "@/lib/soundcloud";
-import { SOUNDCLOUD_PLAYER_ENABLED } from "@/lib/flags";
 
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { getTranslations } from "next-intl/server";
@@ -68,25 +66,21 @@ export default async function YourTastePage() {
      Apple doesn't carry. (`pref` is fetched in the Promise.all above.) ---- */
   const preferred = (pref as { preferred_player?: string } | null)?.preferred_player;
   const wantsApple = preferred === "apple";
-  // SoundCloud, the third pick (2026-09-13) — same carry-over, its own
-  // resolver (needs the SoundCloud API keys on the server; without
-  // them the map is empty and Spotify plays).
-  const wantsSoundCloud = preferred === "soundcloud" && SOUNDCLOUD_PLAYER_ENABLED;
+  // (SoundCloud was a third pick until 2026-10-24 — removed as a
+  // dormant feature, see the release page. A saved 'soundcloud' pick
+  // gets Spotify.)
   let tunedItems = tunedRaw;
-  if (wantsApple || wantsSoundCloud) {
+  if (wantsApple) {
     const releaseIds = tunedRaw.flatMap((it) =>
       it.type === "release" ? [it.id] : it.type === "review" && it.release_id ? [it.release_id] : []
     );
-    const embeds = wantsApple
-      ? await resolveAppleEmbedsForReleases(releaseIds)
-      : await resolveSoundCloudEmbedsForReleases(releaseIds);
-    const field = wantsApple ? "apple_embed_url" : "soundcloud_embed_url";
+    const embeds = await resolveAppleEmbedsForReleases(releaseIds);
     tunedItems = tunedRaw.map((it) => {
       if (it.type === "release") {
-        return { ...it, [field]: embeds.get(it.id) ?? null };
+        return { ...it, apple_embed_url: embeds.get(it.id) ?? null };
       }
       if (it.type === "review" && it.release_id) {
-        return { ...it, [field]: embeds.get(it.release_id) ?? null };
+        return { ...it, apple_embed_url: embeds.get(it.release_id) ?? null };
       }
       return it;
     });

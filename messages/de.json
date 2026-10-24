@@ -169,11 +169,9 @@
     },
     "player": {
       "title": "Player",
-      "hint": "Spotify, Apple Music oder SoundCloud auf Release-Seiten.",
       "intro": "Jede Release-Seite zeigt einen Player. Wähl den Dienst, den du wirklich nutzt: bist du dort im Browser angemeldet, werden aus den Vorschauen ganze Songs.",
       "spotifyBlurb": "Der Standard. Hat alle unsere Releases.",
       "appleBlurb": "Wenn Apple die Platte hat; sonst siehst du Spotify.",
-      "soundcloudBlurb": "Wenn SoundCloud die Platte hat; sonst siehst du Spotify.",
       "hintTwo": "Spotify oder Apple Music auf Release-Seiten."
     },
     "song": {
@@ -995,9 +993,7 @@
       "spotifyClips": "30-Sekunden-Clips · via Spotify",
       "appleClips": "30-Sekunden-Clips · via Apple Music ↗",
       "spotifyTitle": "Vorschau von {title} auf Spotify",
-      "appleTitle": "Vorschau von {title} auf Apple Music",
-      "soundcloudClips": "via SoundCloud ↗",
-      "soundcloudTitle": "SoundCloud-Player von {title}"
+      "appleTitle": "Vorschau von {title} auf Apple Music"
     },
     "feed": {
       "latestDrops": "Neueste Releases",
@@ -1757,8 +1753,7 @@
       "prev": "Vorherige Auswahl",
       "next": "Nächste Auswahl",
       "swipe": "wischen",
-      "applePreview": "Apple-Music-Vorschau von {title}",
-      "soundcloudPreview": "SoundCloud-Player von {title}"
+      "applePreview": "Apple-Music-Vorschau von {title}"
     },
     "guest": {
       "pitch": "Ein Kanal, der sich auf dich einstellt – Reviews, Posts und Platten, ausgewählt nach dem, was du bewertest und wem du folgst.",

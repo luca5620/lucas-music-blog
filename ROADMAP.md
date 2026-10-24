@@ -534,7 +534,7 @@ uses the second option yet).
   review page facelift (what you see opening someone's review, phone) + the
   rating flow + less boxy modules. **Spine PARKED** (he's not a fan of the
   VHS spine-label idea — don't re-pitch).
-- **Mockups made (Windows, not in git):** output/share-cards-mockup.png (A tape-label sticker · B album scorecard · C "My month" TV guide) and (in C:/Users/lucap/claudework/)
+- **Mockups made (Windows, not in git):** output/share-cards-mockup.png (A tape-label sticker · B album scorecard · C "My month" TV guide) — folder C:/Users/lucap/claudework/ —
   and output/review-page-mockup.png (A "Liner notes" compact · B "Cover poster"
   with a score sticker on the sleeve). Waiting on his pick. Open question:
   sharing an image FILE from inside the app may need a native plugin — if

@@ -530,6 +530,15 @@ uses the second option yet).
 - Also open: the left "Peak Music" spine on the web TV (keep/change/remove),
   and making the site feel less "locked into modules" (fewer boxes, more fluid).
 - ✅ Fixed same day: the liquid background fading to black over time (d8982d2).
+- **Narrowed (Luca, later 2026-10-24):** doing share cards + the FINISHED
+  review page facelift (what you see opening someone's review, phone) + the
+  rating flow + less boxy modules. **Spine PARKED** (he's not a fan of the
+  VHS spine-label idea — don't re-pitch).
+- **Mockups made (Windows, not in git):**   (A tape-label sticker · B album scorecard · C "My month" TV guide) and
+   (A "Liner notes" compact · B "Cover poster"
+  with a score sticker on the sleeve). Waiting on his pick. Open question:
+  sharing an image FILE from inside the app may need a native plugin — if
+  so it must go into 1.3 before he archives.
 
 ### 📱 1.3 (build 4) = the iPhone Duo build — Windows prep DONE 2026-10-24, MacBook steps next
 

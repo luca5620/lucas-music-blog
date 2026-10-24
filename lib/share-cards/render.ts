@@ -9,10 +9,15 @@
  *     to the right (no score on the record), the score in the rating
  *     colour. Exported as a transparent PNG to drop on a story/video.
  *   - SCORECARD (drawScorecard): a 9:16 video. Cover + spinning record,
- *     the background drifting in the cover's colours, every song score
- *     rolling in like an odometer, then the album score rolls up,
- *     overshoots a touch and settles with a glow — then an 8-second
- *     hold so people can actually read it when it's posted.
+ *     the background drifting slowly in the cover's colours, the songs
+ *     fading up one after another with their scores, then the album
+ *     score eases in and settles — then an 8-second hold so people can
+ *     actually read it when it's posted. Round 2 (Luca 2026-10-24:
+ *     "softer, professional and cleaner, not volatile and erratic"):
+ *     song scores no longer spin from 0 through every colour, the album
+ *     score keeps its final colour, rolls only its last point and
+ *     never overshoots or pulses, and the background + record move at
+ *     about half the speed.
  *   - MY MONTH  (drawMonth): a still 9:16 image of a member's month.
  *
  * Everything is drawn in the mockups' 360×640 "card units" and scaled
@@ -53,13 +58,8 @@ export const DEFAULT_PALETTE = ["30, 144, 255", "192, 132, 252", "6, 182, 212"];
 
 const clamp01 = (x: number) => Math.min(Math.max(x, 0), 1);
 const easeOut = (x: number) => 1 - Math.pow(1 - clamp01(x), 3);
-/** Ease with a small overshoot — the album score "lands". */
-const easeBack = (x: number) => {
-  const p = clamp01(x);
-  const c1 = 1.4;
-  const c3 = c1 + 1;
-  return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
-};
+/** A long, soft settle — fast at first, then a slow glide to rest. */
+const easeOutQuart = (x: number) => 1 - Math.pow(1 - clamp01(x), 4);
 
 function font(a: CardAssets, size: number, weight = 400) {
   return `${weight} ${size}px ${a.sans}`;
@@ -295,7 +295,8 @@ function drawLiquid(ctx: CanvasRenderingContext2D, palette: string[], t: number)
   const pal = palette.length >= 4 ? palette : [...palette, ...DEFAULT_PALETTE].slice(0, 4);
   pal.slice(0, 4).forEach((rgb, i) => {
     const s = 260 + i * 40;
-    const ang = t * (0.35 + i * 0.07) + i * 1.7;
+    // slow drift (was 0.35 + i·0.07 — too busy behind the numbers)
+    const ang = t * (0.16 + i * 0.035) + i * 1.7;
     const cx = 180 + Math.cos(ang) * 90 + (i - 1.5) * 40;
     const cy = 160 + Math.sin(ang * 1.2) * 110 + i * 120;
     glowBlob(ctx, rgb, cx, cy, s / 2 + 46, 0.7);
@@ -326,15 +327,18 @@ export interface ScorecardData {
 }
 
 const SC_T0 = 1.0;
-const SC_TICK = 0.55;
-const SC_OV = 1.7;
+/** How long after its row a song's score fades in, and how long it takes. */
+const SC_SCORE_DELAY = 0.18;
+const SC_FADE = 0.55;
+/** The album score's ease-in. */
+const SC_OV = 1.6;
 /** Luca: "a 5-10 second buffer after for people to read the number
     ratings with ample time when people post it". */
 export const SCORECARD_HOLD = 8;
 
 function scorecardTiming(count: number) {
-  const step = count > 0 ? Math.min(0.33, 4.6 / count) : 0;
-  const ov0 = count > 0 ? SC_T0 + count * step + SC_TICK + 0.05 : 1.2;
+  const step = count > 0 ? Math.min(0.3, 4.4 / count) : 0;
+  const ov0 = count > 0 ? SC_T0 + count * step + SC_SCORE_DELAY + SC_FADE : 1.2;
   return { step, ov0, end: ov0 + SC_OV };
 }
 
@@ -356,7 +360,8 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   ctx.translate(CARD_W / 2, 22 + 73);
   ctx.scale(scale, scale);
   ctx.translate(-recW / 2, -73);
-  drawDisc(ctx, 72 + 69, 4 + 69, 69, (t * 200 * Math.PI) / 180, a.cover, 28, 2.6);
+  // a calm turn (was 200°/s)
+  drawDisc(ctx, 72 + 69, 4 + 69, 69, (t * 110 * Math.PI) / 180, a.cover, 28, 2.6);
   ctx.save();
   ctx.shadowColor = "rgba(0,0,0,0.6)";
   ctx.shadowBlur = 26;
@@ -400,14 +405,15 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   let done = 0;
   d.songs.forEach((song, i) => {
     const s = SC_T0 + i * step;
-    if (t >= s + SC_TICK) done++;
+    if (t >= s + SC_SCORE_DELAY) done++;
     if (i >= visible.length) return;
-    const k = easeOut((t - s) / 0.3);
+    // The row fades up a few units into place…
+    const k = easeOut((t - s) / SC_FADE);
     if (k <= 0) return;
     const y = top + i * rowH;
     ctx.save();
     ctx.globalAlpha = k;
-    ctx.translate((1 - k) * -10, 0);
+    ctx.translate(0, (1 - k) * 5);
     ctx.fillStyle = "rgba(255,255,255,0.08)";
     ctx.fillRect(24, y, 312, 0.5);
     const mid = y + rowH / 2 + fs * 0.36;
@@ -419,7 +425,10 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, fs, 400);
     ctx.fillStyle = "#fff";
     ctx.fillText(fit(ctx, song.title, 312 - 20 - 44), 44, mid);
-    drawOdometer(ctx, a, song.score * easeOut((t - s) / SC_TICK), { right: 336, baseline: mid, size: fs, weight: 650 });
+    // …and its score follows a beat later, already at its value and
+    // colour — no counting up per song.
+    ctx.globalAlpha = k * easeOut((t - s - SC_SCORE_DELAY) / SC_FADE);
+    drawOdometer(ctx, a, song.score, { right: 336, baseline: mid, size: fs, weight: 650 });
     ctx.restore();
   });
   if (hidden > 0 && t >= SC_T0 + visible.length * step) {
@@ -441,24 +450,29 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   }
 
   // The album score: "x of n songs" while they roll in, then it rolls up.
-  if (t < ov0) {
-    if (d.songs.length) {
-      ctx.font = font(a, 11.5, 500);
-      ctx.fillStyle = "rgba(255,255,255,0.55)";
-      ctx.textAlign = "center";
-      ctx.fillText(d.labels.songsProgress(done, d.songs.length), CARD_W / 2, 274);
-    }
-  } else {
-    const p = (t - ov0) / SC_OV;
-    const v = d.rating * easeBack(p);
-    const land = t - ov0 - SC_OV;
-    const pulse = land > 0 ? Math.exp(-land * 3) : 0;
-    const color = getRatingHex(Math.round(Math.max(0, v) * 10) / 10);
+  // The progress line fades out as the score fades in (a crossfade,
+  // not a cut).
+  if (d.songs.length && t < ov0 + 0.35) {
     ctx.save();
-    ctx.translate(CARD_W / 2, 270);
-    ctx.scale(1 + 0.05 * pulse, 1 + 0.05 * pulse);
+    ctx.globalAlpha = 1 - clamp01((t - ov0) / 0.35);
+    ctx.font = font(a, 11.5, 500);
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.textAlign = "center";
+    ctx.fillText(d.labels.songsProgress(done, d.songs.length), CARD_W / 2, 274);
+    ctx.restore();
+  }
+  if (t >= ov0) {
+    // Fades up while its last point rolls into place, slowing to a
+    // stop. Final colour from the first frame; no overshoot, no pulse.
+    const p = (t - ov0) / SC_OV;
+    const from = Math.max(0, d.rating - 1);
+    const v = from + (d.rating - from) * easeOutQuart(p);
+    const color = getRatingHex(d.rating);
+    ctx.save();
+    ctx.globalAlpha = easeOut(p / 0.45);
+    ctx.translate(CARD_W / 2, 270 + (1 - easeOut(p / 0.6)) * 8);
     ctx.shadowColor = color;
-    ctx.shadowBlur = 8 + 18 * pulse;
+    ctx.shadowBlur = 14 * easeOut(p);
     ctx.font = font(a, 14, 600);
     const ofW = ctx.measureText(d.labels.outOf).width;
     ctx.font = font(a, 54, 800);

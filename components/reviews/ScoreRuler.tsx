@@ -19,11 +19,15 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { formatRating, getRatingHex } from "@/lib/rating";
+import { formatRating, getRatingColor, getRatingHex } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
 
-/** Pixels between whole numbers on the ruler (0.1 = a tenth of this). */
-const PX_PER_POINT = 66;
+/** Pixels between whole numbers on the ruler (0.1 = a tenth of this).
+ *  Was 66, which made 0 → 10 about two phone-widths of dragging (Luca
+ *  2026-10-24: "too large and can take forever"). At 34 the whole
+ *  scale is one swipe across a phone, and a tap jumps straight to the
+ *  spot you tapped. */
+const PX_PER_POINT = 34;
 
 const clamp = (v: number) => Math.min(10, Math.max(0, Math.round(v * 10) / 10));
 
@@ -36,7 +40,7 @@ interface ScoreRulerProps {
 export default function ScoreRuler({ value, onChange, ariaLabel }: ScoreRulerProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(320);
-  const drag = useRef<{ x: number; start: number } | null>(null);
+  const drag = useRef<{ x: number; start: number; moved: boolean } | null>(null);
   const color = getRatingHex(value);
 
   // The strip is positioned from the box's real width, so it stays
@@ -118,16 +122,27 @@ export default function ScoreRuler({ value, onChange, ariaLabel }: ScoreRulerPro
         else if (e.key === "End") { e.preventDefault(); set(10); }
       }}
       onPointerDown={(e) => {
-        drag.current = { x: e.clientX, start: value };
+        drag.current = { x: e.clientX, start: value, moved: false };
         e.currentTarget.setPointerCapture(e.pointerId);
       }}
       onPointerMove={(e) => {
         if (!drag.current) return;
+        if (Math.abs(e.clientX - drag.current.x) > 4) drag.current.moved = true;
         // The ruler follows the finger: drag left → higher numbers
         // slide under the needle.
         set(drag.current.start - (e.clientX - drag.current.x) / PX_PER_POINT);
       }}
-      onPointerUp={() => { drag.current = null; }}
+      onPointerUp={(e) => {
+        const d = drag.current;
+        drag.current = null;
+        // A tap (no drag) jumps to the number you tapped: tap the "8"
+        // and the score is 8. The needle sits in the middle, so the
+        // distance from the middle is the difference.
+        if (d && !d.moved) {
+          const r = e.currentTarget.getBoundingClientRect();
+          set(d.start + (e.clientX - r.left - r.width / 2) / PX_PER_POINT);
+        }
+      }}
       onPointerCancel={() => { drag.current = null; }}
     >
       <div
@@ -164,6 +179,11 @@ export function ScoreNumber({
   const [draft, setDraft] = useState("");
   const color = value === null ? undefined : getRatingHex(value);
   const cls = `score-number score-number-${size}`;
+  // The number sits in the site's own rating badge, blown up — so a
+  // 9.5+ glows purple with its sparks, a 10 goes full white-blue, and
+  // a 0–1.9 is the brown stinky one with the plumes (Luca 2026-10-24:
+  // "should still have the charm … not just a regular ass number").
+  const tier = value === null ? "" : getRatingColor(value);
 
   if (editing && onChange) {
     return (
@@ -202,7 +222,14 @@ export function ScoreNumber({
         setEditing(true);
       }}
     >
-      {value === null ? "–" : formatRating(value)}
+      <span className="score-badge-zoom">
+        <span
+          className={`rating-badge score-badge ${tier}`}
+          style={color ? { color, borderColor: color } : undefined}
+        >
+          {value === null ? "–" : formatRating(value)}
+        </span>
+      </span>
       <small>/10</small>
     </button>
   );

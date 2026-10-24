@@ -534,21 +534,27 @@ uses the second option yet).
   review page facelift (what you see opening someone's review, phone) + the
   rating flow + less boxy modules. **Spine PARKED** (he's not a fan of the
   VHS spine-label idea — don't re-pitch).
-- **Mockups ROUND 2 (2026-10-24, Windows, in C:/Users/lucap/claudework/output/):**
-  share-cards-round2.png + share-scorecard-video.mp4, review-page-round2.png,
-  album-rating-flow.png. Round 1 REJECTED: review pages copied the Ratings
-  app (cover-left header, ring score, gradient slider, blurred-cover bg) —
-  those patterns are banned. Share cards: all 3 kept but Apple-clean; sticker
-  = minimal white card for people's own reaction videos (not a tape); album
-  scorecard = a VIDEO where songs tick in then the final rating counts up
-  (no barcode); My month = the TV-guide layout, cleaned up.
-- **NEW ask (Luca):** album rating gets a "Whole album / Song by song" switch
-  inside the ONE rating screen; song-by-song = slide across each song row,
-  album score defaults to the average ("Set my own" overrides), ♥ favourites
-  in the list. Song scores write to the existing track_ratings table (041) —
-  no migration. Review page then shows the song-by-song list.
-- Open question: sharing an image FILE from inside the app may need a native
-  plugin — if so it must go into 1.3 before he archives.
+- **Mockups ROUND 3 (2026-10-24 late, C:/Users/lucap/claudework/output/):**
+  - Rating flow: phone APPROVED ("10x better"); web versions made
+    (rating-flow-web-*.png — real TV shell, score left, switch + songs right,
+    drag/hover-and-type/arrow keys on desktop).
+  - Review page: only the SLEEVE look (record out of the sleeve, score on the
+    label) is in the running — review-page-round3.png shows 3 ways: 1 slid out
+    to the side, 2 pulled up out of the top, 3 full-bleed cover with the record
+    dropping out of the bottom. Waiting on his pick.
+  - Share cards (share-cards-round3.png + share-sticker-preview.mp4 +
+    share-scorecard-video.mp4): sticker = see-through glass tinted with the
+    COVER's colours, swirling; scorecard = spinning record (cover as label),
+    cover-colour liquid background, odometer-rolling numbers; My month
+    approved. ALL THREE carry the penguin mark + "Peak Music" in the
+    PlayStation font (public/fonts/playstation).
+- **Song by song (Luca):** album rating gets a "Whole album / Song by song"
+  switch inside the ONE rating screen; slide across each song row; album score
+  defaults to the average ("Set my own" overrides); ♥ favourites in the list.
+  Writes to the existing track_ratings table (041) — no migration.
+- **PARKED for later (Luca):** overhaul profile SHOWCASES. Not now.
+- Open question: sharing an image/video FILE from inside the app may need a
+  native plugin — if so it must go into 1.3 before he archives.
 
 ### 📱 1.3 (build 4) = the iPhone Duo build — Windows prep DONE 2026-10-24, MacBook steps next
 

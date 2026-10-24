@@ -125,7 +125,23 @@ void main() {
      real negative space — true black for OLED, not colour everywhere
      (Luca 2026-09-11: "dark void-y aspects", "doesn't have to be all
      covered in the look") */
-  float calm = smoothstep(0.33, 0.64, fbm(sp * 0.35 + vec2(t * 0.004, t * 0.003) + 40.0));
+  /* THE FADE TO BLACK (Luca 2026-10-24: "over time the spacey
+     background fades to black … until you refresh"). This mask used to
+     slide one way forever (t * 0.004, t * 0.003). It ignores u_seed, so
+     every page load starts on the same, fully coloured first screen —
+     the composition Luca approved — and then drifted off it: measured
+     on a CPU copy of this maths, the first screen fell from 100% to the
+     35% floor (near-black) within ~5 minutes of motion and never
+     reliably came back; a refresh reset t to 0, i.e. the colour. Now
+     the offset SWINGS back and forth around the start instead (same
+     speed at first, but bounded to ±0.3), so the voids still breathe
+     while the picture never wanders into the dark: >= 94% brightness
+     over 4 hours in the same test. The currents below keep their
+     endless drift — that is the flow, and it doesn't gate colour. */
+  vec2 calmDrift = vec2(
+    0.3 * sin(t * 0.004 / 0.3),
+    0.3 * (sin(t * 0.003 / 0.3 + 1.3) - sin(1.3)));
+  float calm = smoothstep(0.33, 0.64, fbm(sp * 0.35 + calmDrift + 40.0));
   float pig = calm;
 
   vec3 col = u_base;

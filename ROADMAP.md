@@ -518,6 +518,19 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🎨 UI/UX direction (Luca, 2026-10-24) — discussion stage, nothing built yet
+
+- **Yes to:** (1) taste-match follow suggestions after /start, (2) "save for
+  later" shelf + release-day push, (3) **SHARE CARDS — Luca's top priority**
+  ("basically free marketing"; he has reference cards; don't copy them),
+  (5) Duo/iPad two-column layout after 1.3. **No to** (4) Top 4 favourites.
+- **Overhaul wanted:** the RATING flow (more intuitive + compact) and the
+  REVIEW pages a bit, mainly on phones. **Release pages on the website are
+  "spot on" — don't touch them.**
+- Also open: the left "Peak Music" spine on the web TV (keep/change/remove),
+  and making the site feel less "locked into modules" (fewer boxes, more fluid).
+- ✅ Fixed same day: the liquid background fading to black over time (d8982d2).
+
 ### 📱 1.3 (build 4) = the iPhone Duo build — Windows prep DONE 2026-10-24, MacBook steps next
 
 Luca: "make a build for the app to run well on the new iPhone Duo …

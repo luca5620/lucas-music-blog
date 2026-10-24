@@ -534,11 +534,21 @@ uses the second option yet).
   review page facelift (what you see opening someone's review, phone) + the
   rating flow + less boxy modules. **Spine PARKED** (he's not a fan of the
   VHS spine-label idea — don't re-pitch).
-- **Mockups made (Windows, not in git):** output/share-cards-mockup.png (A tape-label sticker · B album scorecard · C "My month" TV guide) — folder C:/Users/lucap/claudework/ —
-  and output/review-page-mockup.png (A "Liner notes" compact · B "Cover poster"
-  with a score sticker on the sleeve). Waiting on his pick. Open question:
-  sharing an image FILE from inside the app may need a native plugin — if
-  so it must go into 1.3 before he archives.
+- **Mockups ROUND 2 (2026-10-24, Windows, in C:/Users/lucap/claudework/output/):**
+  share-cards-round2.png + share-scorecard-video.mp4, review-page-round2.png,
+  album-rating-flow.png. Round 1 REJECTED: review pages copied the Ratings
+  app (cover-left header, ring score, gradient slider, blurred-cover bg) —
+  those patterns are banned. Share cards: all 3 kept but Apple-clean; sticker
+  = minimal white card for people's own reaction videos (not a tape); album
+  scorecard = a VIDEO where songs tick in then the final rating counts up
+  (no barcode); My month = the TV-guide layout, cleaned up.
+- **NEW ask (Luca):** album rating gets a "Whole album / Song by song" switch
+  inside the ONE rating screen; song-by-song = slide across each song row,
+  album score defaults to the average ("Set my own" overrides), ♥ favourites
+  in the list. Song scores write to the existing track_ratings table (041) —
+  no migration. Review page then shows the song-by-song list.
+- Open question: sharing an image FILE from inside the app may need a native
+  plugin — if so it must go into 1.3 before he archives.
 
 ### 📱 1.3 (build 4) = the iPhone Duo build — Windows prep DONE 2026-10-24, MacBook steps next
 

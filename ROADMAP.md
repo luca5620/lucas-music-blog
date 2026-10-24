@@ -533,7 +533,11 @@ verified:
    my own". Writes song scores to track_ratings (041), no migration. Web =
    two columns (cover + score left, switch + songs + words right) — see
    output/rating-flow-web-*.png. Phone = output/rating-flow-phone.png.
-2. **Review page = SLEEVE OPTION 1** (record slid out to the right of the
+2. ✅ **SHIPPED de11d3c** — ReviewSleeve / ReviewActions / ReviewSongList.
+   Verified on real reviews at 390px + 1440px (roll-out animation, ⋯ menu →
+   report sheet, show all songs). Roll-out is OFF while Low detail is on
+   (the default), as the mockup said. Song list hidden on singles.
+   Original brief: **Review page = SLEEVE OPTION 1** (record slid out to the right of the
    cover, score on the record's label in the rating colour; no boxes; ♥ in
    the song-by-song list; Report inside ⋯). Web release pages untouched.
 3. **Share cards** (mockup sources in docs/design/share-cards/):

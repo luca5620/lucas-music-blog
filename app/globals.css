@@ -5520,3 +5520,259 @@ fieldset {
 .low-detail .catalog-skel { animation: none; }
 .low-detail .posted-card { animation: none; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
 .low-detail .posted-stamp { animation: none; text-shadow: none; box-shadow: none; }
+
+/* ============================================================
+   RATING SCREEN (Luca 2026-10-24, "10x better") — the score part of
+   the review form: the segmented switches, the camera-dial ruler, the
+   big tap-to-type number, and the song rows that double as sliders
+   (components/reviews/ScoreRuler.tsx + TrackScoreList.tsx).
+   ============================================================ */
+/* Desktop: one soft panel around the two columns. Phones: no box. */
+@media (min-width: 1024px) {
+  .rate-sheet {
+    padding: 1.75rem;
+    border-radius: 14px;
+    border: 1px solid rgba(var(--accent-rgb), 0.22);
+    background: linear-gradient(170deg, rgba(14, 28, 48, 0.55), rgba(4, 8, 16, 0.6));
+  }
+  .rate-cover {
+    box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.3), 0 0 40px rgba(var(--accent-rgb), 0.15);
+  }
+}
+/* iOS-style segmented control: Whole album / Song by song, and
+   Use average / Set my own */
+.rate-seg {
+  display: flex;
+  padding: 3px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.07);
+}
+.rate-seg button {
+  flex: 1;
+  padding: 0.55rem 0.5rem;
+  border-radius: 9px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  transition: background-color 0.15s, color 0.15s;
+}
+.rate-seg button.is-on {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+/* "6 of 14 rated" bar */
+.rate-progress {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.rate-progress i {
+  display: block;
+  height: 100%;
+  background: #fff;
+  border-radius: 2px;
+  transition: width 0.25s;
+}
+/* The big score — a button: tap it to type */
+.score-number {
+  /* its own line under the label (label-xbox is inline) */
+  display: flex;
+  width: max-content;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: 5.25rem;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: text;
+}
+.score-number small {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.35);
+}
+.score-number:disabled { cursor: default; }
+.score-number-input {
+  width: 3.4ch;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+  outline: none;
+  color: #fff;
+}
+/* The ruler: ticks every 0.1, numbers on the wholes, a fixed needle */
+.score-ruler {
+  position: relative;
+  height: 56px;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+}
+.score-ruler:active { cursor: grabbing; }
+.score-ruler:focus-visible { box-shadow: inset 0 -2px 0 rgba(var(--accent-rgb), 0.7); }
+.score-ruler-strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  will-change: transform;
+}
+.score-ruler-tick {
+  position: absolute;
+  bottom: 20px;
+  width: 1.5px;
+  height: 9px;
+  background: rgba(255, 255, 255, 0.35);
+  translate: -50% 0;
+}
+.score-ruler-tick.is-half { height: 16px; }
+.score-ruler-tick.is-major { height: 24px; background: rgba(255, 255, 255, 0.7); }
+.score-ruler-tick b {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  translate: -50% 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+.score-ruler-needle {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  width: 3px;
+  height: 40px;
+  border-radius: 2px;
+  translate: -50% 0;
+  pointer-events: none;
+}
+/* Song rows. Desktop song-by-song: two columns of rows. */
+.track-score-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@media (min-width: 1024px) {
+  .track-score-list.is-rateable {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 10px;
+  }
+}
+.track-score-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 46px;
+  padding: 0 0.35rem 0 0.75rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+}
+/* the row is the slider: sideways drags rate, vertical ones scroll */
+.track-score-list.is-rateable .track-score-row {
+  touch-action: pan-y;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.track-score-row.is-fav { background: rgba(244, 114, 182, 0.07); }
+.track-score-row:focus-visible { outline: 2px solid rgba(var(--accent-rgb), 0.6); outline-offset: -2px; }
+.track-score-row > :not(.track-score-fill):not(.track-score-edge) { position: relative; }
+.track-score-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  transition: width 0.12s;
+}
+.track-score-row.is-live .track-score-fill { transition: none; }
+.track-score-edge {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.track-score-n {
+  width: 1.5rem;
+  flex: none;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+.track-score-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.88rem;
+}
+.track-score-heart {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.15s;
+}
+.track-score-heart:hover { color: rgba(255, 255, 255, 0.7); }
+.track-score-heart.is-on { color: #f472b6; }
+.track-score-value {
+  width: 3.2rem;
+  flex: none;
+  text-align: right;
+  padding: 0.5rem 0.35rem 0.5rem 0;
+  background: none;
+  border: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: text;
+}
+.track-score-row.is-live .track-score-value { font-size: 1.15rem; }
+.track-score-value em {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.4);
+}
+.track-score-input {
+  width: 3.2rem;
+  flex: none;
+  text-align: right;
+  padding: 0.3rem 0.4rem;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: 700;
+  outline: none;
+}
+
+/* ---- low-detail: the rating screen's glows + slides hold still ---- */
+.low-detail .score-ruler-needle,
+.low-detail .track-score-edge { box-shadow: none !important; }
+.low-detail .track-score-fill,
+.low-detail .rate-progress i,
+.low-detail .rate-seg button,
+.low-detail .track-score-heart { transition: none; }

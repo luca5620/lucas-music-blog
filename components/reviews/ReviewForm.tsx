@@ -25,11 +25,18 @@ import CatalogSearch, {
 import PreviewButton from "@/components/catalog/PreviewButton";
 import { stopPreview } from "@/lib/preview-player";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
-import { hapticTap } from "@/lib/native";
 import { useTranslations } from "next-intl";
 import { localDateString } from "@/lib/review-date";
 import GifAttach from "@/components/ui/GifAttach";
 import { gifFromRow, KLIPY_APP_KEY, type Gif } from "@/lib/gif";
+import ScoreRuler, { ScoreNumber } from "@/components/reviews/ScoreRuler";
+import TrackScoreList from "@/components/reviews/TrackScoreList";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
+
+/** "album" = one score for the record; "songs" = score each song and
+    the album score follows their average (Luca 2026-10-24). */
+type ScoreMode = "album" | "songs";
 
 interface ReviewFormProps {
   mode: "create" | "edit";
@@ -69,6 +76,20 @@ export default function ReviewForm({
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  /* ── Song by song (Luca 2026-10-24: "an option to do it track by
+     track or not"). One switch inside the one rating screen — not a
+     second flow. Song scores save the moment a finger lifts, straight
+     into track_ratings (migration 041, the same table the release
+     page's TRACK RATINGS tab reads), so nothing new in the database
+     and nothing lost if they leave halfway. The ALBUM score is still
+     reviews.rating: by default the average of the rated songs, or
+     their own number once they tap "Set my own". ── */
+  const { user } = useAuth();
+  const [scoreMode, setScoreMode] = useState<ScoreMode>("album");
+  const [ownScore, setOwnScore] = useState(false);
+  const [trackScores, setTrackScores] = useState<Record<number, number>>({});
+  const trackTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
 
   /* ── The backfill loop (2026-09-09). Publishing a review in create
      mode does NOT leave the page: the record lands in this strip, the
@@ -131,6 +152,8 @@ export default function ReviewForm({
         snippet?: string;
         pickedTracks?: string[];
         gif?: Gif | null;
+        scoreMode?: ScoreMode;
+        ownScore?: boolean;
       };
       // Only offer drafts that actually contain words or a pick.
       if (!d.release && !d.summary && !d.snippet && !d.gif) return;
@@ -141,6 +164,8 @@ export default function ReviewForm({
       setSnippet(d.snippet ?? "");
       setPickedTracks(new Set(d.pickedTracks ?? []));
       setGif(d.gif ?? null);
+      if (d.scoreMode === "songs") setScoreMode("songs");
+      if (d.ownScore) setOwnScore(true);
       setRestoredDraft(true);
     } catch {
       /* unreadable draft — start clean */
@@ -171,6 +196,8 @@ export default function ReviewForm({
             snippet,
             pickedTracks: [...pickedTracks],
             gif,
+            scoreMode,
+            ownScore,
             savedAt: Date.now(),
           })
         );
@@ -179,7 +206,7 @@ export default function ReviewForm({
       }
     }, 600);
     return () => clearTimeout(t);
-  }, [release, pickedArtist, rating, summary, snippet, pickedTracks, gif, mode]);
+  }, [release, pickedArtist, rating, summary, snippet, pickedTracks, gif, scoreMode, ownScore, mode]);
 
   function clearDraft() {
     try {
@@ -198,18 +225,96 @@ export default function ReviewForm({
     setSnippet("");
     setPickedTracks(new Set());
     setGif(null);
+    setScoreMode("album");
+    setOwnScore(false);
     setRestoredDraft(false);
   }
 
-  const ratingColor = getRatingHex(rating);
   const tracks = release?.tracks ?? [];
   const year = release?.release_date?.slice(0, 4) ?? null;
+  // Song by song only means something with 2+ songs.
+  const canScoreSongs = tracks.length >= 2;
+  const songsMode = canScoreSongs && scoreMode === "songs";
+
+  /* The member's existing song scores for this record (from earlier
+     reviews of it or the release page) — loaded whenever the release
+     changes, so the list opens already filled in. A record they've
+     already scored song by song opens in that mode. */
+  const releaseId = release?.id ?? null;
+  useEffect(() => {
+    setTrackScores({});
+    if (!releaseId || !user) return;
+    let cancelled = false;
+    createClient()
+      .from("track_ratings")
+      .select("track_position, rating")
+      .eq("user_id", user.id)
+      .eq("release_id", releaseId)
+      .then(({ data }) => {
+        if (cancelled || !data) return;
+        const rows = data as { track_position: number; rating: number }[];
+        const next: Record<number, number> = {};
+        for (const r of rows) next[r.track_position] = Number(r.rating);
+        setTrackScores(next);
+        if (rows.length >= 2) {
+          setScoreMode("songs");
+          // Editing a review whose score isn't the songs' average → they
+          // had set their own; keep it.
+          if (review) {
+            const avg = rows.reduce((s, r) => s + Number(r.rating), 0) / rows.length;
+            if (Math.abs(Math.round(avg * 10) / 10 - review.rating) >= 0.05) setOwnScore(true);
+          }
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [releaseId, user?.id]);
+
+  const ratedSongs = Object.values(trackScores);
+  const songAverage =
+    ratedSongs.length > 0
+      ? Math.round((ratedSongs.reduce((s, v) => s + v, 0) / ratedSongs.length) * 10) / 10
+      : null;
+
+  // Album score follows the songs' average until they set their own.
+  useEffect(() => {
+    if (songsMode && !ownScore && songAverage !== null) setRating(songAverage);
+  }, [songsMode, ownScore, songAverage]);
+
+  /** One song scored (or cleared): update now, save after a beat so a
+      quick re-slide doesn't send two requests. */
+  function scoreTrack(position: number, value: number | null) {
+    if (!release) return;
+    setTrackScores((prev) => {
+      const next = { ...prev };
+      if (value === null) delete next[position];
+      else next[position] = value;
+      return next;
+    });
+    const rid = release.id;
+    clearTimeout(trackTimers.current[position]);
+    trackTimers.current[position] = setTimeout(() => {
+      fetch(`/api/releases/${rid}/track-ratings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ position, rating: value }),
+      })
+        .then((res) => {
+          if (!res.ok) setError(t("songSaveFailed"));
+        })
+        .catch(() => setError(t("songSaveFailed")));
+    }, 350);
+  }
 
   function handlePick(pick: CatalogPick) {
     setRelease(pick.release);
     setPickedArtist(pick.artist_name);
-    // A fresh release means fresh track picks.
+    // A fresh release means fresh track picks and a fresh score mode.
     setPickedTracks(new Set());
+    setScoreMode("album");
+    setOwnScore(false);
   }
 
   /** POSTED card → "Review another": back to a clean form + search. */
@@ -252,6 +357,12 @@ export default function ReviewForm({
   async function handleSubmit(isPublished: boolean) {
     if (!release) {
       setError(t("pickFirst"));
+      return;
+    }
+    // Song by song with nothing scored yet and no own number → there is
+    // no album score to post.
+    if (songsMode && !ownScore && songAverage === null) {
+      setError(t("needSongs"));
       return;
     }
 
@@ -352,6 +463,8 @@ export default function ReviewForm({
         setSnippet("");
         setPickedTracks(new Set());
         setGif(null);
+        setScoreMode("album");
+        setOwnScore(false);
         setRestoredDraft(false);
         setSaving(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -368,7 +481,7 @@ export default function ReviewForm({
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className={`max-w-2xl mx-auto space-y-6${release && !posted ? " lg:max-w-5xl" : ""}`}>
       {/* Header — same centered module + plain-sentence intro as the
           posts/debates create pages (Luca 2026-08-26: one consistent
           format across everything the create button offers). */}
@@ -588,19 +701,61 @@ export default function ReviewForm({
         </div>
       )}
 
-      {/* ========== STEP 1: THE RELEASE ==========
+      {/* ========== THE RELEASE (search) ==========
+          Until a record is picked, the search is the whole screen.
           overflow-visible: this panel hosts the search dropdown —
           the panel's default overflow:hidden would clip the list. */}
-      <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
-        <legend className="label-xbox">{t("theRelease")}</legend>
+      {!release && (
+        <fieldset className="panel-xbox overflow-visible p-5 space-y-4">
+          <legend className="label-xbox">{t("theRelease")}</legend>
+          <CatalogSearch
+            onPick={handlePick}
+            autoFocus
+            placeholder={t("searchPlaceholder")}
+          />
+          <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
+            {t("tiedNote")}
+          </p>
+          {/* The door for releases the search can't reach (Luca
+              2026-09-02): Bandcamp-only records, private-press stuff,
+              regional catalogs, anything neither Spotify nor Genius
+              carries. Staff import those by hand through the admin
+              tool's Manual tab, so the ask is one email. */}
+          {mode === "create" && (
+            <p className="text-xs text-text-secondary leading-relaxed border-t border-border-subtle pt-3">
+              {t.rich("cantFind", {
+                b: (chunks) => <span className="text-text-primary font-bold">{chunks}</span>,
+                a: (chunks) => (
+                  <a
+                    href="mailto:contact@peakmusicreviews.com?subject=Please%20import%20a%20release"
+                    className="text-accent-primary hover:underline"
+                  >
+                    {chunks}
+                  </a>
+                ),
+              })}
+            </p>
+          )}
+        </fieldset>
+      )}
 
-        {release ? (
-          <div className="flex items-center gap-4 p-3 rounded-lg border border-[rgba(var(--accent-rgb),0.4)] bg-[rgba(var(--accent-rgb),0.08)]">
-            {/* Locked-in cover, with a ▶ for "wait, how does it go?" —
-                an album plays its first track; each song in the
-                favorites list below has its own ▶. */}
-            <div className="relative w-20 h-20 shrink-0">
-              <div className="w-full h-full rounded-lg overflow-hidden border border-white/10 bg-bg-elevated">
+      {/* ========== THE RATING SCREEN (Luca 2026-10-24) ==========
+          One screen, no stacked boxes. Phones: a single column in the
+          order release → switch → score → songs → words → post (in
+          song-by-song mode the album score drops below the songs, since
+          it comes from them). Desktop (lg): two columns — the record and
+          the score on the left like the release page, the switch, songs
+          and words on the right. The right column's wrapper is
+          display:contents on phones so its pieces can interleave with
+          the left ones via `order`. */}
+      {release && (
+        <div className="rate-sheet flex flex-col gap-5 lg:grid lg:grid-cols-[300px_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:items-start">
+          {/* The record */}
+          <div className="order-1 lg:col-start-1 lg:row-start-1 flex items-center gap-4 lg:block">
+            {/* ▶ on the cover for "wait, how does it go?" — an album
+                plays its first song; every song row has its own ▶. */}
+            <div className="relative w-16 h-16 lg:w-full lg:h-auto lg:aspect-square shrink-0">
+              <div className="w-full h-full rounded-lg overflow-hidden border border-white/10 bg-bg-elevated rate-cover">
                 {release.cover_image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -609,12 +764,10 @@ export default function ReviewForm({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="w-full h-full flex items-center justify-center text-2xl">
-                    💿
-                  </span>
+                  <span className="w-full h-full flex items-center justify-center text-2xl">💿</span>
                 )}
               </div>
-              <span className="absolute -bottom-1.5 -right-1.5">
+              <span className="absolute -bottom-1.5 -right-1.5 lg:bottom-2 lg:right-2">
                 <PreviewButton
                   previewKey={`local:${release.id}`}
                   src={{ source: "local", id: release.id }}
@@ -622,12 +775,11 @@ export default function ReviewForm({
                 />
               </span>
             </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="font-[family-name:var(--font-heading)] font-bold text-text-primary truncate">
+            <div className="min-w-0 flex-1 lg:mt-5">
+              <p className="font-[family-name:var(--font-heading)] font-bold text-text-primary truncate text-lg lg:text-3xl lg:whitespace-normal lg:leading-tight">
                 {release.title}
               </p>
-              <p className="text-sm text-text-secondary truncate">
+              <p className="text-sm lg:text-base text-text-secondary truncate">
                 {pickedArtist}
                 {year ? ` · ${year}` : ""} · {release.release_type}
               </p>
@@ -636,252 +788,221 @@ export default function ReviewForm({
                   {t("unreleasedStamp")}
                 </span>
               )}
+              {/* Release is only swappable while creating. */}
+              {mode === "create" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRelease(null);
+                    setPickedTracks(new Set());
+                    setScoreMode("album");
+                    setOwnScore(false);
+                  }}
+                  className="label-xbox hover:text-accent-primary transition-colors text-[0.65rem] mt-1 lg:mt-3 block"
+                >
+                  {t("change")}
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* Release is only swappable while creating. */}
-            {mode === "create" && (
-              <button
-                type="button"
-                onClick={() => {
-                  setRelease(null);
-                  setPickedTracks(new Set());
-                }}
-                className="label-xbox hover:text-accent-primary transition-colors text-[0.65rem] shrink-0"
-              >
-                {t("change")}
-              </button>
+          {/* The score — "whole album": the big number + ruler.
+              "Song by song": the songs' average, or their own number. */}
+          <div
+            className={`${songsMode ? "order-5" : "order-3"} lg:col-start-1 lg:row-start-2 space-y-2`}
+          >
+            <p className="label-xbox">{songsMode ? t("albumScore") : t("yourRating")}</p>
+            {songsMode ? (
+              <>
+                <ScoreNumber
+                  value={ownScore ? rating : songAverage}
+                  typeLabel={t("typeScore")}
+                  onChange={(v) => {
+                    setOwnScore(true);
+                    setRating(v);
+                  }}
+                />
+                <p className="text-xs text-text-muted">
+                  {ownScore
+                    ? songAverage !== null
+                      ? t("avgCompare", { avg: formatRating(songAverage) })
+                      : t("avgNone")
+                    : songAverage !== null
+                      ? t("avgOf", { n: ratedSongs.length })
+                      : t("avgNone")}
+                </p>
+                <div className="rate-seg" role="radiogroup" aria-label={t("albumScore")}>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={!ownScore}
+                    className={!ownScore ? "is-on" : ""}
+                    onClick={() => setOwnScore(false)}
+                  >
+                    {songAverage !== null ? t("useAverageN", { avg: formatRating(songAverage) }) : t("useAverage")}
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={ownScore}
+                    className={ownScore ? "is-on" : ""}
+                    onClick={() => setOwnScore(true)}
+                  >
+                    {t("setOwn")}
+                  </button>
+                </div>
+                {ownScore && (
+                  <ScoreRuler value={rating} onChange={setRating} ariaLabel={t("ratingAria")} />
+                )}
+              </>
+            ) : (
+              <>
+                <ScoreNumber value={rating} onChange={setRating} typeLabel={t("typeScore")} />
+                <ScoreRuler value={rating} onChange={setRating} ariaLabel={t("ratingAria")} />
+                <p className="text-xs text-text-muted">{t("rulerHint")}</p>
+              </>
             )}
           </div>
-        ) : (
-          <CatalogSearch
-            onPick={handlePick}
-            autoFocus
-            placeholder={t("searchPlaceholder")}
-          />
-        )}
 
-        <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-          {t("tiedNote")}
-        </p>
-
-        {/* The door for releases the search can't reach (Luca
-            2026-09-02): Bandcamp-only records, private-press stuff,
-            regional catalogs, anything neither Spotify nor Genius
-            carries. Staff import those by hand through the admin
-            tool's Manual tab, so the ask is one email. Shown only
-            while picking, and only in create mode — once a release is
-            locked in there's nothing left to be missing. */}
-        {mode === "create" && !release && (
-          <p className="text-xs text-text-secondary leading-relaxed border-t border-border-subtle pt-3">
-            {t.rich("cantFind", {
-              b: (chunks) => <span className="text-text-primary font-bold">{chunks}</span>,
-              a: (chunks) => (
-                <a
-                  href="mailto:contact@peakmusicreviews.com?subject=Please%20import%20a%20release"
-                  className="text-accent-primary hover:underline"
+          {/* Right column on desktop; on phones its pieces interleave. */}
+          <div className="contents lg:block lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:space-y-6">
+            {canScoreSongs && (
+              <div className="order-2 rate-seg" role="radiogroup" aria-label={t("modeAria")}>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!songsMode}
+                  className={!songsMode ? "is-on" : ""}
+                  onClick={() => setScoreMode("album")}
                 >
-                  {chunks}
-                </a>
-              ),
-            })}
-          </p>
-        )}
-      </fieldset>
+                  {t("modeAlbum")}
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={songsMode}
+                  className={songsMode ? "is-on" : ""}
+                  onClick={() => setScoreMode("songs")}
+                >
+                  {t("modeSongs")}
+                </button>
+              </div>
+            )}
 
-      {/* ========== STEP 2: THE VERDICT ========== */}
-      <fieldset className="panel-xbox p-5 space-y-4">
-        <legend className="label-xbox">{t("verdict")}</legend>
+            {/* The songs. Song by song: every row is a slider. Whole
+                album: the same rows for ♥ favourites + ▶ previews. */}
+            {tracks.length > 0 && (
+              <div className="order-4 space-y-2">
+                {songsMode ? (
+                  <>
+                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="text-text-secondary">
+                        {t.rich("ratedOf", {
+                          n: ratedSongs.length,
+                          total: tracks.length,
+                          b: (chunks) => <b className="text-text-primary">{chunks}</b>,
+                        })}
+                      </span>
+                      <span className="text-xs text-text-muted text-right">{t("songsHint")}</span>
+                    </div>
+                    <div className="rate-progress">
+                      <i style={{ width: `${(ratedSongs.length / tracks.length) * 100}%` }} />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="label-xbox">{t("favorites")}</p>
+                    <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
+                      {t("favoritesHint")}
+                    </p>
+                  </>
+                )}
+                <div className={songsMode ? "" : "max-h-80 overflow-y-auto pr-1"}>
+                  <TrackScoreList
+                    releaseId={release.id}
+                    tracks={tracks}
+                    rateable={songsMode}
+                    scores={trackScores}
+                    onScore={scoreTrack}
+                    favorites={pickedTracks}
+                    onToggleFavorite={toggleTrack}
+                    labels={{
+                      slide: t("slide"),
+                      favorite: t("favorite"),
+                      typeScore: t("typeScore"),
+                      clear: t("clearHint"),
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
-        <div className="flex items-center gap-5">
-          {/* Big live rating readout — the SAME badge treatment the
-              home-page cards use (getRatingColor supplies the tier
-              classes, so 9.5+ pulses the purple elite glow and a 10
-              goes full rating-perfect), just scaled up a bit. */}
-          <div
-            className={`rating-badge shrink-0 w-14 h-14 text-2xl ${getRatingColor(rating)}`}
-            style={{ color: ratingColor, borderColor: ratingColor }}
-          >
-            {formatRating(rating)}
-          </div>
+            {/* Their words — all optional. */}
+            <div className="order-6 space-y-4">
+              <FormField label={t("oneLiner", { n: snippet.length })}>
+                <input
+                  type="text"
+                  value={snippet}
+                  onChange={(e) => setSnippet(e.target.value.slice(0, 200))}
+                  placeholder={t("oneLinerPlaceholder")}
+                  maxLength={200}
+                  className="form-input"
+                />
+                <p className="text-xs text-text-muted mt-1">{t("oneLinerHint")}</p>
+              </FormField>
 
-          <div className="flex-1 space-y-2">
-            <input
-              type="range"
-              min="0"
-              max="10"
-              step="0.1"
-              value={rating}
-              onChange={(e) => {
-                // onChange only fires when the value actually moves, so
-                // this ratchets once per 0.1 tick — the iOS-picker feel.
-                // No-op on web.
-                hapticTap();
-                setRating(parseFloat(e.target.value));
-              }}
-              // .rating-slider (globals.css) rebuilds the thumb that
-              // appearance:none removes — accentColor alone did
-              // nothing once the native look was stripped, so the
-              // ball was invisible. The inline gradient fills the
-              // track up to the current score in the rating color.
-              className={`rating-slider${
-                rating === 10
-                  ? " rating-slider-perfect"
-                  : rating >= 9.5
-                    ? " rating-slider-elite"
-                    : ""
-              }`}
-              style={
-                {
-                  "--slider-color": ratingColor,
-                  background: `linear-gradient(90deg, ${ratingColor}30 0%, ${ratingColor}99 ${rating * 10}%, rgba(255,255,255,0.08) ${rating * 10}%)`,
-                } as React.CSSProperties
-              }
-              aria-label={t("ratingAria")}
-            />
-            <div className="flex justify-between text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-              <span>0</span>
-              <span>5</span>
-              <span>10</span>
+              <FormField label={t("fullReview", { n: summary.length })}>
+                <textarea
+                  value={summary}
+                  onChange={(e) => setSummary(e.target.value.slice(0, 10000))}
+                  placeholder={t("fullPlaceholder")}
+                  rows={8}
+                  maxLength={10000}
+                  className="form-input resize-none"
+                />
+              </FormField>
+
+              {/* GIF reaction — sits at the bottom of the review, exactly
+                  where it shows on the review page. Hidden entirely until
+                  a KLIPY key is configured (GifAttach renders null). */}
+              {KLIPY_APP_KEY && (
+                <FormField label={t("gifLabel")}>
+                  <GifAttach gif={gif} onChange={setGif} />
+                  <p className="text-xs text-text-muted mt-1">{t("gifHint")}</p>
+                </FormField>
+              )}
+            </div>
+
+            {error && (
+              <div className="order-7 panel-xbox p-4 border-red-500/30 bg-red-500/5">
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+
+            <div className="order-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => handleSubmit(true)}
+                disabled={saving}
+                className="btn-y2k btn-y2k-primary disabled:opacity-50"
+              >
+                {saving ? tc("saving") : mode === "edit" ? t("updatePublish") : t("publish")}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSubmit(false)}
+                disabled={saving}
+                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+              >
+                {saving ? tc("saving") : t("saveDraft")}
+              </button>
+              <button type="button" onClick={() => router.back()} className="btn-y2k btn-y2k-outline">
+                {tc("cancel")}
+              </button>
             </div>
           </div>
         </div>
-
-        <FormField label={t("oneLiner", { n: snippet.length })}>
-          <input
-            type="text"
-            value={snippet}
-            onChange={(e) => setSnippet(e.target.value.slice(0, 200))}
-            placeholder={t("oneLinerPlaceholder")}
-            maxLength={200}
-            className="form-input"
-          />
-          <p className="text-xs text-text-muted mt-1">
-            {t("oneLinerHint")}
-          </p>
-        </FormField>
-
-        <FormField label={t("fullReview", { n: summary.length })}>
-          <textarea
-            value={summary}
-            onChange={(e) => setSummary(e.target.value.slice(0, 10000))}
-            placeholder={t("fullPlaceholder")}
-            rows={10}
-            maxLength={10000}
-            className="form-input resize-none"
-          />
-        </FormField>
-
-        {/* GIF reaction — sits at the bottom of the review, exactly
-            where it shows on the review page. Hidden entirely until a
-            KLIPY key is configured (GifAttach renders null). */}
-        {KLIPY_APP_KEY && (
-          <FormField label={t("gifLabel")}>
-            <GifAttach gif={gif} onChange={setGif} />
-            <p className="text-xs text-text-muted mt-1">{t("gifHint")}</p>
-          </FormField>
-        )}
-      </fieldset>
-
-      {/* ========== STEP 3: PERSONAL FAVORITES (checkbox picks) ==========
-          (Renamed from "Standout Tracks" 2026-08-25 — display label
-          only; the DB column and API field stay standout_tracks.) */}
-      {release && tracks.length > 0 && (
-        <fieldset className="panel-xbox p-5 space-y-3">
-          <legend className="label-xbox">{t("favorites")}</legend>
-          <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-            {t("favoritesHint")}
-          </p>
-
-          <div className="max-h-72 overflow-y-auto space-y-1 pr-1">
-            {tracks.map((track) => {
-              const picked = pickedTracks.has(track.title);
-              return (
-                <div
-                  key={`${track.position}-${track.title}`}
-                  className={`flex items-center gap-2 pr-1.5 rounded-lg transition-colors border ${
-                    picked
-                      ? "border-[rgba(var(--accent-rgb),0.4)] bg-[rgba(var(--accent-rgb),0.1)]"
-                      : "border-transparent hover:bg-bg-elevated"
-                  }`}
-                >
-                <label className="flex-1 min-w-0 flex items-center gap-3 px-3 py-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={picked}
-                    onChange={() => toggleTrack(track.title)}
-                    className="accent-[var(--accent-primary)] w-4 h-4"
-                  />
-                  <span className="pixel-text text-sm text-text-muted w-6 shrink-0 text-right">
-                    {track.position}
-                  </span>
-                  <span
-                    className={`text-sm truncate ${
-                      picked ? "text-text-primary font-medium" : "text-text-secondary"
-                    }`}
-                  >
-                    {track.title}
-                  </span>
-                </label>
-                {/* This song's preview — outside the label so a tap
-                    plays it without ticking the box. Matched by Spotify
-                    id, else by title (Genius rows have no id). */}
-                <PreviewButton
-                  variant="inline"
-                  previewKey={`local:${release.id}#${track.position}`}
-                  src={{ source: "local", id: release.id }}
-                  pick={(list) =>
-                    list.find((p) => track.spotify_id && p.spotify_id === track.spotify_id) ??
-                    list.find((p) => p.title === track.title) ??
-                    (tracks.length === 1 ? list[0] : undefined)
-                  }
-                  label={track.title}
-                />
-                </div>
-              );
-            })}
-          </div>
-        </fieldset>
       )}
-
-      {/* ========== ERROR ========== */}
-      {error && (
-        <div className="panel-xbox p-4 border-red-500/30 bg-red-500/5">
-          <p className="text-red-400 text-sm">{error}</p>
-        </div>
-      )}
-
-      {/* ========== ACTIONS ========== */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={() => handleSubmit(true)}
-          disabled={saving || !release}
-          className="btn-y2k btn-y2k-primary disabled:opacity-50"
-        >
-          {saving
-            ? tc("saving")
-            : mode === "edit"
-            ? t("updatePublish")
-            : t("publish")}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleSubmit(false)}
-          disabled={saving || !release}
-          className="btn-y2k btn-y2k-outline disabled:opacity-50"
-        >
-          {saving ? tc("saving") : t("saveDraft")}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="btn-y2k btn-y2k-outline"
-        >
-          {tc("cancel")}
-        </button>
-      </div>
       </>
       )}
     </div>

@@ -596,6 +596,8 @@ Round 3 shipped 825bdc0: the review page's record label wears the special
 bands (stinky / elite / perfect), and the rating screen says "Use average".
 Luca: share cards "look good now". He's testing everything this weekend.
 
+0. **Improve the share flow itself** (Luca 2026-10-24, last word of the session: "the actual share functionality needs to be improved for next time"). Cards are approved; it is the HANDING-OFF that needs work. FIRST ask him what bugged him while testing. Likely suspects: two taps for video on the web (Make video → Share video), ~16s wait while it records, the app falls back to press-and-hold until build 1.3, Copy sticker needs a manual paste. The one-tap Instagram/TikTok work below is probably most of the answer.
+   Also shipped ce07dd7: the whole record on the review page shows the score bands (rim light, shimmer, rot haze, 4 sparks/plumes), moving even in Low detail.
 1. **One-tap share to Instagram AND TikTok** (Luca: "sure we can do the
    one-tap version, but can we do it with tiktok too?" — parked for later).
    - Instagram: official "Share to Stories" — pasteboard

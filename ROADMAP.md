@@ -649,6 +649,14 @@ cheap, no-build ideas and trimming costs matter as much as new income.
 
 ### 📏 NEXT: MEASURE, DON'T BUILD — re-check on 2026-10-19
 
+**✅ MEASURED 2026-10-24 (live data, anon key):** /start WORKED.
+Sign-ups who rated ≥1 record: **21% before** (Sep 5–Oct 5: 7 of 33) →
+**67% after** (Oct 5–24: 34 of 51); rated ≥3: 5 → 21. 271 published
+ratings (217 in the last 30 days), 110 with words. **The new gap is
+coming back:** only 13 of 55 raters were active on 2+ different days;
+45 follows, 12 comments, 1 list, 4 Aux Wars rooms, 3 release follows,
+0 profile favorites. Next UX work targets the return visit + social graph.
+
 Agreed 2026-10-05 after the review batch went live: **pause new
 features ~2 weeks** and see whether the two activation changes (the
 /start first-rating screen and the Sunday recap) move the number.

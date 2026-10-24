@@ -58,18 +58,20 @@ export default function ReviewSleeve({
     <div className="review-sleeve">
       {/* The record. The label is part of it, so it turns with the
           record as it rolls out and lands upright. */}
-      <div className="review-sleeve-disc" aria-hidden="true">
+      <div className={`review-sleeve-disc${tier}`} aria-hidden="true">
         <span
           className={`review-sleeve-label${tier}`}
           style={{ background: color, color: labelInk(color) }}
         >
           <b>{formatRating(rating)}</b>
           <i>{outOfLabel}</i>
-          {/* two plumes (stinky) or two sparks (9.5+), crossing */}
+          {/* four plumes (stinky) or four sparks (9.5+), staggered */}
           {tier && (
             <>
               <em className="sleeve-fx sleeve-fx-a" />
               <em className="sleeve-fx sleeve-fx-b" />
+              <em className="sleeve-fx sleeve-fx-c" />
+              <em className="sleeve-fx sleeve-fx-d" />
             </>
           )}
         </span>

@@ -6392,15 +6392,114 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   animation-name: rating-spark-alt;
   animation-delay: 1.3s;
 }
+
+/* ROUND 2 (Luca 2026-10-24: "not enough effect on the vinyl") — the
+   whole RECORD joins in now, not just the label: a rim light and a
+   slowly turning coloured shimmer across the grooves for 9.5+ / 10,
+   a green rot haze over the grooves for 0–1.9; bigger halos; four
+   sparks / plumes instead of two. And it keeps moving under Low detail
+   and in the app's still state: it's one element on one page, and
+   the paused version showed nothing (the sparks rest invisible), which
+   is why it read as "not enough". Reduced motion still stops it. */
+.review-sleeve-disc.is-elite { --disc-glow: 168, 85, 247; }
+.review-sleeve-disc.is-perfect { --disc-glow: 30, 144, 255; }
+.review-sleeve-disc.is-elite,
+.review-sleeve-disc.is-perfect {
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.6),
+    0 0 0 1.5px rgba(var(--disc-glow), 0.55),
+    0 0 34px rgba(var(--disc-glow), 0.5),
+    0 0 90px rgba(var(--disc-glow), 0.28);
+}
+.review-sleeve-disc.is-stinky {
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.6),
+    0 0 0 1.5px rgba(132, 168, 58, 0.5),
+    0 0 46px rgba(132, 168, 58, 0.45);
+}
+/* the shimmer / the rot, laid over the grooves */
+.review-sleeve-disc.is-elite::after,
+.review-sleeve-disc.is-perfect::after,
+.review-sleeve-disc.is-stinky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.review-sleeve-disc.is-elite::after,
+.review-sleeve-disc.is-perfect::after {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(var(--disc-glow), 0.45) 30deg,
+    rgba(255, 255, 255, 0.25) 42deg,
+    transparent 75deg,
+    transparent 180deg,
+    rgba(var(--disc-glow), 0.35) 210deg,
+    rgba(255, 255, 255, 0.18) 222deg,
+    transparent 255deg
+  );
+  mix-blend-mode: screen;
+  /* only over the grooves, not the label */
+  -webkit-mask-image: radial-gradient(circle, transparent 0 21%, #000 23%);
+  mask-image: radial-gradient(circle, transparent 0 21%, #000 23%);
+  animation: disc-shimmer 6s linear infinite;
+}
+.review-sleeve-disc.is-perfect::after { animation-duration: 4.5s; }
+@keyframes disc-shimmer {
+  to { transform: rotate(360deg); }
+}
+.review-sleeve-disc.is-stinky::after {
+  background:
+    radial-gradient(ellipse 50% 34% at 30% 25%, rgba(146, 186, 66, 0.5), transparent 70%),
+    radial-gradient(ellipse 44% 30% at 72% 70%, rgba(120, 150, 50, 0.4), transparent 70%),
+    radial-gradient(circle at 60% 20%, rgba(90, 64, 30, 0.35), transparent 40%);
+  animation: disc-rot 3.2s ease-in-out infinite;
+}
+@keyframes disc-rot {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+/* bigger halos on the label itself */
+.review-sleeve-label.is-elite,
+.review-sleeve-label.is-perfect {
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.3),
+    0 0 26px rgba(var(--label-glow), 0.95),
+    0 0 70px rgba(var(--label-glow), 0.55);
+}
+/* four sparks: bigger, spread round the top of the label */
+.review-sleeve-label.is-elite .sleeve-fx,
+.review-sleeve-label.is-perfect .sleeve-fx {
+  width: calc(var(--sleeve) * 0.15);
+  height: calc(var(--sleeve) * 0.15);
+}
+.review-sleeve-label.is-elite .sleeve-fx-c,
+.review-sleeve-label.is-perfect .sleeve-fx-c { left: -26%; bottom: 30%; animation-delay: 0.65s; }
+.review-sleeve-label.is-elite .sleeve-fx-d,
+.review-sleeve-label.is-perfect .sleeve-fx-d {
+  right: -28%;
+  bottom: 40%;
+  animation-name: rating-spark-alt;
+  animation-delay: 1.95s;
+}
+/* four plumes: fatter, taller */
+.review-sleeve-label.is-stinky .sleeve-fx {
+  width: calc(var(--sleeve) * 0.15);
+  height: calc(var(--sleeve) * 0.34);
+  filter: blur(2.4px) brightness(1.25);
+}
+.review-sleeve-label.is-stinky .sleeve-fx-c { left: 40%; animation-delay: 0.7s; }
+.review-sleeve-label.is-stinky .sleeve-fx-d {
+  right: 40%;
+  animation-name: stink-wisp-alt;
+  animation-delay: 2.1s;
+}
 @media (prefers-reduced-motion: reduce) {
   .review-sleeve-label.is-elite,
   .review-sleeve-label.is-perfect,
-  .review-sleeve-label .sleeve-fx { animation: none; }
+  .review-sleeve-label .sleeve-fx,
+  .review-sleeve-disc::after { animation: none; }
 }
-.native-app:not(.motion-on) .review-sleeve-label.is-elite,
-.native-app:not(.motion-on) .review-sleeve-label.is-perfect,
-.native-app:not(.motion-on) .review-sleeve-label .sleeve-fx { animation-play-state: paused; }
-/* Low detail: the glow and stain stay, the motion stops (same as the badges) */
-.low-detail .review-sleeve-label.is-elite,
-.low-detail .review-sleeve-label.is-perfect,
-.low-detail .review-sleeve-label .sleeve-fx { animation: none; }
+/* Low detail: deliberately NOT stopped (see the note above). */

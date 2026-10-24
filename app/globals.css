@@ -6299,3 +6299,108 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 }
 
 .low-detail .share-sheet { animation: none; }
+
+/* ============================================================
+   RECORD LABEL BANDS (Luca 2026-10-24: "the record needs to have the
+   effects too") — the review page's record label wears the same
+   special bands as the rating badges: stinky 0–1.9, elite 9.5–9.9,
+   perfect 10. Plumes / sparks are two <em>s on the label (its ::after
+   is the spindle hole), sized off --sleeve so they scale with the
+   record. They reuse the badge keyframes (stink-wisp, rating-spark).
+   ============================================================ */
+.review-sleeve-label .sleeve-fx {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+}
+/* Stinky: a stained brown label with a green haze where the fumes leave */
+.review-sleeve-label.is-stinky {
+  background:
+    radial-gradient(ellipse 70% 55% at 30% 20%, rgba(146, 186, 66, 0.35), transparent 68%),
+    radial-gradient(circle at 72% 80%, rgba(78, 54, 28, 0.55), transparent 70%),
+    #4a341e !important;
+  color: #e0b07a !important;
+  text-shadow: 0 0 9px rgba(150, 190, 70, 0.5), 0 1px 0 rgba(0, 0, 0, 0.6);
+  box-shadow:
+    inset 0 0 0 3px rgba(109, 74, 42, 0.9),
+    inset 0 0 18px rgba(58, 64, 22, 0.6),
+    0 0 18px rgba(132, 168, 58, 0.3);
+}
+.review-sleeve-label.is-stinky .sleeve-fx {
+  bottom: 70%;
+  width: calc(var(--sleeve) * 0.09);
+  height: calc(var(--sleeve) * 0.2);
+  background:
+    radial-gradient(ellipse 62% 48% at 50% 82%, rgba(168, 214, 86, 0.75), rgba(140, 180, 64, 0.28) 52%, transparent 76%),
+    radial-gradient(ellipse 44% 34% at 46% 34%, rgba(198, 228, 130, 0.45), transparent 72%);
+  filter: blur(3.6px);
+  animation: stink-wisp 2.8s ease-in-out infinite;
+}
+.review-sleeve-label.is-stinky .sleeve-fx-a { left: 18%; }
+.review-sleeve-label.is-stinky .sleeve-fx-b {
+  right: 16%;
+  animation-name: stink-wisp-alt;
+  animation-delay: 1.4s;
+}
+/* Elite + perfect: the label glows onto the vinyl, sparks lift off it */
+.review-sleeve-label.is-elite {
+  --spark: rgba(216, 168, 255, 0.95);
+  --spark-core: rgba(245, 232, 255, 0.85);
+  --label-glow: 168, 85, 247;
+}
+.review-sleeve-label.is-perfect {
+  --spark: rgba(150, 205, 255, 0.95);
+  --spark-core: rgba(255, 255, 255, 0.95);
+  --label-glow: 30, 144, 255;
+  /* white ink like the perfect badge, with a blue halo */
+  color: #fff !important;
+  text-shadow: 0 0 10px rgba(30, 144, 255, 1), 0 0 22px rgba(30, 144, 255, 0.7);
+}
+.review-sleeve-label.is-elite,
+.review-sleeve-label.is-perfect {
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.25),
+    0 0 16px rgba(var(--label-glow), 0.75),
+    0 0 40px rgba(var(--label-glow), 0.4);
+  animation: sleeve-label-glow 2.5s ease-in-out infinite;
+}
+@keyframes sleeve-label-glow {
+  50% {
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.3),
+      0 0 24px rgba(var(--label-glow), 0.95),
+      0 0 60px rgba(var(--label-glow), 0.5);
+  }
+}
+.review-sleeve-label.is-elite .sleeve-fx,
+.review-sleeve-label.is-perfect .sleeve-fx {
+  width: calc(var(--sleeve) * 0.1);
+  height: calc(var(--sleeve) * 0.1);
+  background:
+    radial-gradient(ellipse 52% 13% at 50% 50%, var(--spark), transparent 70%),
+    radial-gradient(ellipse 13% 52% at 50% 50%, var(--spark), transparent 70%),
+    radial-gradient(circle at 50% 50%, var(--spark-core), transparent 26%);
+  filter: drop-shadow(0 0 4px var(--spark));
+  animation: rating-spark 2.6s ease-in-out infinite;
+}
+.review-sleeve-label.is-elite .sleeve-fx-a,
+.review-sleeve-label.is-perfect .sleeve-fx-a { left: 2%; bottom: 66%; }
+.review-sleeve-label.is-elite .sleeve-fx-b,
+.review-sleeve-label.is-perfect .sleeve-fx-b {
+  right: 0;
+  bottom: 74%;
+  animation-name: rating-spark-alt;
+  animation-delay: 1.3s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .review-sleeve-label.is-elite,
+  .review-sleeve-label.is-perfect,
+  .review-sleeve-label .sleeve-fx { animation: none; }
+}
+.native-app:not(.motion-on) .review-sleeve-label.is-elite,
+.native-app:not(.motion-on) .review-sleeve-label.is-perfect,
+.native-app:not(.motion-on) .review-sleeve-label .sleeve-fx { animation-play-state: paused; }
+/* Low detail: the glow and stain stay, the motion stops (same as the badges) */
+.low-detail .review-sleeve-label.is-elite,
+.low-detail .review-sleeve-label.is-perfect,
+.low-detail .review-sleeve-label .sleeve-fx { animation: none; }

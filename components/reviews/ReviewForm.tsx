@@ -839,7 +839,9 @@ export default function ReviewForm({
                     className={!ownScore ? "is-on" : ""}
                     onClick={() => setOwnScore(false)}
                   >
-                    {songAverage !== null ? t("useAverageN", { avg: formatRating(songAverage) }) : t("useAverage")}
+                    {/* "Use average", not "Use 8.8" — the number is already shown
+                        above (Luca 2026-10-24: "doesn't make any sense") */}
+                    {t("useAverage")}
                   </button>
                   <button
                     type="button"

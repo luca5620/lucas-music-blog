@@ -12,6 +12,11 @@
  * Banned on purpose (Luca 2026-10-24, never borrow from the Ratings
  * app): no ring score, no gradient slider, no blurred-cover background.
  *
+ * The label keeps the site's special score bands, like every rating
+ * badge (Luca 2026-10-24: "the record needs to have the effects too"):
+ * 0–1.9 is the brown stinky label with green plumes rising off it,
+ * 9.5–9.9 glows purple with sparks, a 10 glows white-blue with sparks.
+ *
  * Pure markup, no hooks, so it renders on the server with the page.
  * Sizes come from one CSS variable (--sleeve, set in globals.css under
  * "REVIEW SLEEVE") so the record, its label and the number all scale
@@ -48,17 +53,25 @@ export default function ReviewSleeve({
   unreleasedLabel?: string | null;
 }) {
   const color = getRatingHex(rating);
+  const tier = rating === 10 ? " is-perfect" : rating >= 9.5 ? " is-elite" : rating < 2 ? " is-stinky" : "";
   return (
     <div className="review-sleeve">
       {/* The record. The label is part of it, so it turns with the
           record as it rolls out and lands upright. */}
       <div className="review-sleeve-disc" aria-hidden="true">
         <span
-          className="review-sleeve-label"
+          className={`review-sleeve-label${tier}`}
           style={{ background: color, color: labelInk(color) }}
         >
           <b>{formatRating(rating)}</b>
           <i>{outOfLabel}</i>
+          {/* two plumes (stinky) or two sparks (9.5+), crossing */}
+          {tier && (
+            <>
+              <em className="sleeve-fx sleeve-fx-a" />
+              <em className="sleeve-fx sleeve-fx-b" />
+            </>
+          )}
         </span>
       </div>
       {/* The sleeve (the cover) sits on top of the record. */}

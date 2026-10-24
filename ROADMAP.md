@@ -550,6 +550,22 @@ verified:
    - My month: approved as is (+ penguin logo).
    - Needs @capacitor/filesystem in 1.3 so the app can save the image/video
      and hand it to the share sheet.
+   - ✅ **SHIPPED a73aab0** — lib/share-cards/ (render.ts = the drawings,
+     assets.ts, export.ts) + components/share/ (ReviewShareSheet,
+     MonthShareSheet/Button, SheetFrame). Review page Share → Scorecard ·
+     Sticker · Link; own profile → "Share my month" (↗ on phones).
+     Verified in Chrome: a real 1080×1920 H.264 MP4 (16s, hold from ~8s),
+     transparent sticker PNG, My month with real data (Oct + Sep).
+     Video = two taps on the web ("Make video" → "Share video") because
+     browsers only open the share sheet straight after a tap.
+     @capacitor/filesystem 7.1.9 is in package.json → rides in build 1.3
+     (cap sync on the Mac). Until then the app falls back to a
+     press-and-hold image; videos there say "comes with the next update".
+     **Untested on a real iPhone:** whether iOS Safari records the canvas
+     smoothly at 1080×1920 and whether WKWebView offers navigator.share.
+     Not built: an animated sticker composited over your own video (would
+     need picking a clip from the camera roll; the PNG sticker goes on
+     top of any story/video in Instagram instead) — ask Luca.
 
 ### 🎨 UI/UX direction (Luca, 2026-10-24) — discussion stage, nothing built yet
 
@@ -616,13 +632,16 @@ foldable) launched 2026-10-23. Full write-up + the guidelines changes:
 2. Accept the **new Apple Developer Program License Agreement**
    (2026-10-13) at developer.apple.com/account — uploads are blocked
    until it's accepted.
-3. `npm install` → `npm run mobile:sync` → `npm run mobile:ios`.
+3. `npm install` → `npm run mobile:sync` → `npm run mobile:ios`. (The sync
+   now also installs **@capacitor/filesystem**, added 2026-10-24 for the
+   share cards — check it appears under Pods.)
 4. Run on the **iPhone Duo simulator**; use Device Hub to fold/unfold
    and rotate. Check: nothing hides under the side camera; tab bar
    spans and works; header fits; Your Taste full-screen + comments
    sheet; release live-room sheet; Google AND Apple sign-in open as a
    proper-sized sheet and return signed in; photo picker for avatar;
-   share sheet; splash → curtain hand-off; airplane-mode cold launch
+   share sheet (incl. a review → Share → Scorecard → Make video → Share
+   video → the iOS sheet offers Instagram/Save Video, and the Sticker PNG); splash → curtain hand-off; airplane-mode cold launch
    (NO SIGNAL page). Then the same quick pass on an ordinary iPhone
    simulator (iOS 27) for regressions.
 5. Archive → upload → **TestFlight on the real phone** (friends'

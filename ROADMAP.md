@@ -545,7 +545,11 @@ Luca's list ("so that settles 1"), all live on main:
   visitors only, hidden on your own profile) and **Most loved songs** (♥
   favourites + top song-by-song scores across their reviews).
 - Universal: hide empty showcases from visitors, featured review not
-  repeated in Now Showing, same settings. Mockup first, then build.
+  repeated in Now Showing, same settings. **Mix mockup SENT 2026-10-24:**
+  claude.ai/artifact/TJraLVJi8qGRJWrJrNNzdj (visitor view + owner view;
+  B = boxless featured record / Most loved / Now showing, C = tinted
+  widgets for SOTD, ratings, rotation, listening, Taste match). Waiting on
+  his OK, then build.
 
 
 ### 🎚️ RATING SLIDER = OPTION A "jump to your finger" (2026-10-24 evening, Windows) — SHIPPED

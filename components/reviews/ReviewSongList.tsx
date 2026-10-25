@@ -19,11 +19,12 @@
  * (FavoritePlayerEmbed — the viewer's Spotify or Apple player, which
  * has the service's own "open in Spotify" button). Same rules as
  * there: one open at a time, closing unmounts it (= the music stops).
- * The small ▶ still plays the 30-second preview right in the row;
- * pressing it closes an open player, and opening a player stops the
- * ▶, so two songs never play over each other. Hearts and badges are
- * untouched. A song with no playable id (Genius rows) just isn't
- * tappable — nothing to open.
+ * Hearts and badges are untouched.
+ *
+ * Round 6 (same day): playable rows now look and open EXACTLY like
+ * Personal Favorites rows (round ▶ / ■ glyph, soft highlight when
+ * open) and lost the separate 30-second ▶. Only rows with no playable
+ * id (Genius) keep the little ▶, since there's nothing to drop down.
  *
  * The first 7 rows show; "Show all N songs" opens the rest in place.
  * A client component because the ▶ button needs a `pick` function
@@ -83,50 +84,69 @@ export default function ReviewSongList({
             setPlaying(isOpen ? null : song.position);
           };
 
+          const heart = song.favorite && (
+            <span className="review-song-fav" title={labels.favorite} aria-label={labels.favorite}>
+              {/* same heart shape as TrackScoreList's */}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 20.5s-7.5-4.6-9.3-9.3C1.4 7.8 3.6 4.5 7 4.5c2.1 0 3.8 1.2 5 3 1.2-1.8 2.9-3 5-3 3.4 0 5.6 3.3 4.3 6.7-1.8 4.7-9.3 9.3-9.3 9.3z" />
+              </svg>
+            </span>
+          );
+          const badge = (
+            <span className={`rating-badge review-song-score ${getRatingColor(song.score)}`}>
+              {formatRating(song.score)}
+            </span>
+          );
+
+          // Round 6 (Luca 2026-10-25): "open down like the original way
+          // personal favorites are done" + the same play button. So a
+          // playable row IS a Personal Favorites row: the whole row is
+          // one button, its round ▶ / ■ glyph (FavoritePlayers' exact
+          // classes) toggles the drop-down player under it, and the open
+          // row gets the same soft highlight. No separate 30-second ▶ on
+          // these rows any more: the drop-down is the player.
+          if (player) {
+            return (
+              <li key={`${song.position}-${song.title}`}>
+                <button
+                  type="button"
+                  onClick={toggle}
+                  aria-expanded={isOpen}
+                  className={`review-song w-full text-left px-2 -mx-2 rounded-lg transition-colors ${
+                    isOpen ? "bg-bg-elevated/60" : "hover:bg-bg-elevated/50"
+                  }`}
+                >
+                  <span className="review-song-n">{song.position}</span>
+                  <span className="review-song-title">{song.title}</span>
+                  {heart}
+                  {/* A play/close glyph, no words — same as Personal
+                      Favorites (the row already carries the title). */}
+                  <span
+                    aria-hidden="true"
+                    className={`shrink-0 w-6 h-6 rounded-full border flex items-center justify-center text-[10px] transition-colors ${
+                      isOpen
+                        ? "border-accent-primary/50 text-accent-primary"
+                        : "border-border-medium text-text-muted"
+                    }`}
+                  >
+                    {isOpen ? "■" : "▶"}
+                  </span>
+                  {badge}
+                </button>
+                {/* The drop-down — the Personal Favorites player, verbatim. */}
+                {isOpen && <FavoritePlayerEmbed track={player} />}
+              </li>
+            );
+          }
+
+          // No playable id (Genius rows): nothing to drop down, so the
+          // little ▶ stays — previews wherever songs are listed.
           return (
             <li key={`${song.position}-${song.title}`}>
-              {/* The whole row is the tap target (Luca: "tapping a song
-                  row"). The click lands here from anywhere on the row;
-                  the ▶ stops its own tap from bubbling up (see
-                  PreviewButton), so it never opens the player too. */}
-              <div
-                className={`review-song${player ? " cursor-pointer" : ""}`}
-                onClick={player ? toggle : undefined}
-              >
-                {/* The number + title are a real <button> so keyboards
-                    and screen readers can open the player too. It has
-                    no click handler of its own: its click (mouse, tap,
-                    or Enter/Space) bubbles to the row above, which
-                    toggles exactly once. */}
-                {player ? (
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    className="flex flex-1 min-w-0 items-center gap-2 self-stretch text-left"
-                  >
-                    <span className="review-song-n">{song.position}</span>
-                    {/* accent colour = this row's player is open */}
-                    <span
-                      className="review-song-title"
-                      style={isOpen ? { color: "var(--accent-primary)" } : undefined}
-                    >
-                      {song.title}
-                    </span>
-                  </button>
-                ) : (
-                  <>
-                    <span className="review-song-n">{song.position}</span>
-                    <span className="review-song-title">{song.title}</span>
-                  </>
-                )}
-                {song.favorite && (
-                  <span className="review-song-fav" title={labels.favorite} aria-label={labels.favorite}>
-                    {/* same heart shape as TrackScoreList's */}
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M12 20.5s-7.5-4.6-9.3-9.3C1.4 7.8 3.6 4.5 7 4.5c2.1 0 3.8 1.2 5 3 1.2-1.8 2.9-3 5-3 3.4 0 5.6 3.3 4.3 6.7-1.8 4.7-9.3 9.3-9.3 9.3z" />
-                    </svg>
-                  </span>
-                )}
+              <div className="review-song">
+                <span className="review-song-n">{song.position}</span>
+                <span className="review-song-title">{song.title}</span>
+                {heart}
                 {/* Matched by Spotify id, else by title (Genius rows have no id). */}
                 <PreviewButton
                   variant="inline"
@@ -138,16 +158,11 @@ export default function ReviewSongList({
                     (single ? list[0] : undefined)
                   }
                   label={song.title}
-                  // The ▶ wins over an open player: close it (which
-                  // unmounts the iframe and silences it).
+                  // The ▶ wins over an open player elsewhere in the list.
                   onPress={() => setPlaying(null)}
                 />
-                <span className={`rating-badge review-song-score ${getRatingColor(song.score)}`}>
-                  {formatRating(song.score)}
-                </span>
+                {badge}
               </div>
-              {/* The drop-down — the Personal Favorites player, verbatim. */}
-              {isOpen && player && <FavoritePlayerEmbed track={player} />}
             </li>
           );
         })}

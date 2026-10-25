@@ -506,7 +506,8 @@ export default async function ReviewPage({
       {release && showSongList && (
         <section className="space-y-1">
           <h2 className="review-h">
-            <span>{t("songBySong", { n: reviewSongs.length })}</span>
+            {/* just "Song by song", no "· N rated" count (Luca 2026-10-25) */}
+            <span>{t("songBySong")}</span>
             {/* Same promise as Personal Favorites' hint — and only when
                 at least one row actually opens a player. */}
             {reviewSongs.some((s) => s.player?.src) && <small>{t("songsPreviewHint")}</small>}

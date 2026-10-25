@@ -6131,6 +6131,22 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   font-variant-numeric: tabular-nums;
 }
 .review-song { min-height: 3.1rem; }
+/* Rows with no drop-down player (Genius songs, no Spotify id) keep the
+   30-second ▶, dressed as the SAME round outlined glyph the playable
+   rows and Personal Favorites use (Luca 2026-10-25) so the column of
+   play buttons looks like one thing. The progress ring still fills the
+   border while it plays (the inline style sets the background). */
+.review-song .preview-btn {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 1px;
+  background: var(--border-medium);
+}
+.review-song .preview-btn > span {
+  background: var(--bg-primary, #0a0a0b);
+  color: var(--text-muted);
+}
+.review-song .preview-btn > span svg { width: 0.55rem; height: 0.55rem; }
 .review-songs-more {
   padding: 0.75rem 0 0;
   font-size: 0.85rem;

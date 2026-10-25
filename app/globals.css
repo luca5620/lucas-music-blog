@@ -6162,6 +6162,7 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   align-items: flex-end;
   justify-content: center;
   background: rgba(0, 0, 0, 0.72);
+  animation: share-dim-in 0.3s ease both;
 }
 @media (min-width: 48rem) {
   .share-sheet-backdrop { align-items: center; }
@@ -6180,7 +6181,8 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   border: 1px solid var(--border-medium);
   border-bottom: 0;
   box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.6);
-  animation: share-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* slides up from the bottom edge (Luca 2026-10-25: it used to pop) */
+  animation: share-rise 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @media (min-width: 48rem) {
   .share-sheet {
@@ -6190,8 +6192,46 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   }
 }
 @keyframes share-rise {
-  from { transform: translateY(24px); opacity: 0; }
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes share-fall {
+  from { transform: none; }
+  to { transform: translateY(100%); }
+}
+@keyframes share-dim-in {
+  from { background-color: rgba(0, 0, 0, 0); }
+}
+@keyframes share-dim-out {
+  to { background-color: rgba(0, 0, 0, 0); }
+}
+/* desktop: the panel sits centred, so it grows in instead of rising */
+@keyframes share-pop {
+  from { transform: translateY(14px) scale(0.96); opacity: 0; }
   to { transform: none; opacity: 1; }
+}
+@keyframes share-unpop {
+  to { transform: translateY(10px) scale(0.97); opacity: 0; }
+}
+@media (min-width: 48rem) {
+  .share-sheet { animation-name: share-pop; animation-duration: 0.32s; }
+}
+/* closing (SheetFrame waits 240ms before unmounting) */
+.share-sheet-backdrop.is-closing {
+  animation: share-dim-out 0.24s ease both;
+  pointer-events: none;
+}
+.share-sheet-backdrop.is-closing .share-sheet {
+  animation: share-fall 0.24s cubic-bezier(0.4, 0, 1, 1) both;
+}
+@media (min-width: 48rem) {
+  .share-sheet-backdrop.is-closing .share-sheet { animation-name: share-unpop; }
+}
+/* each tab's contents fade up when you switch tabs */
+.share-swap { animation: share-swap 0.28s ease both; }
+@keyframes share-swap {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }
 /* the title row + ✕ stay pinned to the top of the sheet if it scrolls */
 .share-sheet-head {
@@ -6265,8 +6305,35 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 0.6rem;
   margin-top: 0.9rem;
+}
+/* One-tap Instagram / TikTok: round logo buttons, each in its own
+   brand look (Instagram's gradient, TikTok's black with its
+   cyan/red offset glow). */
+.share-logo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 999px;
+  color: #fff;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.share-logo-btn svg { width: 1.35rem; height: 1.35rem; }
+.share-logo-btn:active:not(:disabled) { transform: scale(0.92); }
+.share-logo-btn:disabled { opacity: 0.45; }
+.share-logo-btn.is-instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+}
+.share-logo-btn.is-tiktok {
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+.share-logo-btn.is-tiktok svg {
+  filter: drop-shadow(-1.5px -1px 0 #25f4ee) drop-shadow(1.5px 1px 0 #fe2c55);
 }
 .share-note {
   margin: 0.75rem auto 0;
@@ -6302,7 +6369,6 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   .month-share-btn { padding-left: 0.9rem; padding-right: 0.9rem; }
 }
 
-.low-detail .share-sheet { animation: none; }
 
 /* ============================================================
    RECORD LABEL BANDS (Luca 2026-10-24: "the record needs to have the
@@ -7009,3 +7075,14 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 .low-detail .sc-live-dot { animation: none; }
 .low-detail .sc-hist-col i { animation: none; }
 .low-detail .sc-heart { filter: none; }
+/* Share sheets: the slide up / down, backdrop fade and tab swap are
+   NOT switched off by Low detail (2026-10-25). Low detail is ON by
+   default and is a GPU diet for decorative effects; these are cheap
+   transform/opacity moves on one panel that make the sheet read as a
+   sheet (Luca: "it just pops up", which was this very rule). Only the
+   OS reduced-motion setting turns them off. */
+@media (prefers-reduced-motion: reduce) {
+  .share-sheet,
+  .share-sheet-backdrop,
+  .share-swap { animation: none; }
+}

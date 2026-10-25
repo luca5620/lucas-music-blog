@@ -278,6 +278,33 @@ function drawWho(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x
 }
 
 /**
+ * "@handle · Peak Music" on ONE line (Luca 2026-10-25). Both cards used
+ * to put the handle bottom-left and the brand bottom-right, which is
+ * exactly where TikTok / Reels lay their username + caption over the
+ * video. Now it sits in the middle of the card, under the title.
+ * align "center" centres the whole line on x; "left" starts it at x.
+ * maxW caps the line; a long handle ends in an ellipsis.
+ */
+function drawCredit(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x: number, cy: number, align: "left" | "center", maxW: number) {
+  const size = 11.5;
+  const bsize = 12.5;
+  ctx.font = `${bsize}px ${a.brand}`;
+  const brandW = bsize * 1.57 + 6 + ctx.measureText("Peak Music").width;
+  const sep = 18; // room for the dot between the two halves
+  const av = size * 1.83;
+  ctx.font = font(a, size, 600);
+  const label = fit(ctx, `@${handle}`, maxW - brandW - sep - av - 7);
+  const whoW = av + 7 + ctx.measureText(label).width;
+  const left = align === "center" ? x - (whoW + sep + brandW) / 2 : x;
+  drawWho(ctx, a, label.slice(1), left, cy, "left", size);
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  ctx.beginPath();
+  ctx.arc(left + whoW + sep / 2, cy, 1.4, 0, Math.PI * 2);
+  ctx.fill();
+  drawBrand(ctx, a, left + whoW + sep, cy, "left", bsize);
+}
+
+/**
  * Odometer number: one rolling column for the whole number, one for
  * the tenths. As `v` climbs, the digits spin past and the colour walks
  * through the rating colours. Drawn with its right edge at `right`
@@ -399,7 +426,18 @@ export function scorecardDuration(data: ScorecardData): number {
  * song scores on the right stay clear of TikTok's like / comment /
  * share column (and Reels' buttons) and the card still looks centred.
  * Was 24 / 336, edge to edge.
+ *
+ * Top to bottom (reordered 2026-10-25): record, title, the credit line,
+ * the score, the songs, and then NOTHING below about y 505, so TikTok /
+ * Reels can lay their username + caption over the bottom fifth without
+ * covering anything. The record shrank a little (146 → 120) to make the
+ * room, so a 17-song album still shows every song.
  */
+/** How much smaller the record is than it was drawn (146 → 120). */
+const SC_REC = 120 / 146;
+/** Where the song list starts and the last pixel it may use. */
+const SC_LIST_TOP = 276;
+const SC_LIST_END = 505;
 const SC_X = 54;
 const SC_R = CARD_W - SC_X;
 const SC_INNER = SC_R - SC_X;
@@ -413,8 +451,8 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   ctx.globalAlpha = intro;
   const recW = 210;
   const scale = 0.9 + 0.1 * intro;
-  ctx.translate(CARD_W / 2, 22 + 73);
-  ctx.scale(scale, scale);
+  ctx.translate(CARD_W / 2, 22 + 73 * SC_REC);
+  ctx.scale(scale * SC_REC, scale * SC_REC);
   ctx.translate(-recW / 2, -73);
   // a calm turn (was 200°/s)
   drawDisc(ctx, 72 + 69, 4 + 69, 69, (t * 110 * Math.PI) / 180, a.cover, 28, 2.6);
@@ -437,17 +475,19 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "#fff";
   ctx.font = font(a, 20, 700);
-  ctx.fillText(fit(ctx, d.title, SC_INNER), CARD_W / 2, 202 + (1 - intro) * 8);
+  ctx.fillText(fit(ctx, d.title, SC_INNER), CARD_W / 2, 166 + (1 - intro) * 8);
   ctx.fillStyle = "rgba(255,255,255,0.6)";
   ctx.font = font(a, 12, 400);
-  ctx.fillText(fit(ctx, d.subtitle, SC_INNER), CARD_W / 2, 218 + (1 - intro) * 8);
+  ctx.fillText(fit(ctx, d.subtitle, SC_INNER), CARD_W / 2, 181 + (1 - intro) * 8);
+  // who made it + Peak Music, out of the caption corner
+  drawCredit(ctx, a, d.handle, CARD_W / 2, 203 + (1 - intro) * 8, "center", SC_INNER);
   ctx.restore();
 
   const { step, ov0 } = scorecardTiming(d.songs.length);
 
   // Song rows
-  const top = 294;
-  const room = 296;
+  const top = SC_LIST_TOP;
+  const room = SC_LIST_END - SC_LIST_TOP;
   let rowH = d.songs.length ? Math.min(21, room / d.songs.length) : 21;
   let visible = d.songs;
   let hidden = 0;
@@ -517,7 +557,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, 17, 500);
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    wrap(ctx, `“${d.quote}”`, SC_INNER - 22, 6).forEach((line, i) => ctx.fillText(line, CARD_W / 2, 330 + i * 25));
+    wrap(ctx, `“${d.quote}”`, SC_INNER - 22, 6).forEach((line, i) => ctx.fillText(line, CARD_W / 2, 300 + i * 25));
     ctx.restore();
   }
 
@@ -530,7 +570,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, 11.5, 500);
     ctx.fillStyle = "rgba(255,255,255,0.55)";
     ctx.textAlign = "center";
-    ctx.fillText(d.labels.songsProgress(done, d.songs.length), CARD_W / 2, 274);
+    ctx.fillText(d.labels.songsProgress(done, d.songs.length), CARD_W / 2, 254);
     ctx.restore();
   }
   if (t >= ov0) {
@@ -542,7 +582,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     const color = getRatingHex(d.rating);
     ctx.save();
     ctx.globalAlpha = easeOut(p / 0.45);
-    ctx.translate(CARD_W / 2, 270 + (1 - easeOut(p / 0.6)) * 8);
+    ctx.translate(CARD_W / 2, 250 + (1 - easeOut(p / 0.6)) * 8);
     ctx.shadowColor = color;
     ctx.shadowBlur = 14 * easeOut(p);
     ctx.font = font(a, 14, 600);
@@ -560,14 +600,6 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.fillText(d.labels.outOf, left + numW + gap, 8);
     ctx.restore();
   }
-
-  // Foot: who + brand
-  ctx.save();
-  ctx.globalAlpha = intro;
-  // the handle gets what the brand leaves free (brand ≈ 90 wide)
-  drawWho(ctx, a, d.handle, SC_X, 611, "left", 12, "#fff", SC_INNER - 100);
-  drawBrand(ctx, a, SC_R, 611, "right");
-  ctx.restore();
 }
 
 /* ------------------------------------------------------------------ */
@@ -766,16 +798,22 @@ export function drawMonth(ctx: CanvasRenderingContext2D, a: CardAssets, d: Month
   glowBlob(ctx, "30, 144, 255", 0, 0, 240, 0.25);
   ctx.restore();
 
-  const L = 24;
-  const R = CARD_W - 24;
+  // Safe zones (Luca 2026-10-25, same as the scorecard): the same
+  // margins as SC_X on both sides (scores on the right stay clear of
+  // TikTok's buttons), nothing in the top-left corner (Instagram
+  // Stories puts the poster's name there), the credit line under the
+  // stats instead of bottom-left, and everything done by about y 515
+  // so a caption never covers it. Rows got a little slimmer for that.
+  const L = SC_X;
+  const R = SC_R;
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   ctx.font = font(a, 12, 600);
   ctx.fillStyle = "rgba(255,255,255,0.5)";
-  ctx.fillText(d.monthLabel, L, 42);
-  ctx.font = font(a, 27, 800);
+  ctx.fillText(d.monthLabel, L, 74);
+  ctx.font = font(a, 24, 800);
   ctx.fillStyle = "#fff";
-  d.labels.heading.split("\n").forEach((line, i) => ctx.fillText(fit(ctx, line, R - L), L, 74 + i * 28.5));
+  d.labels.heading.split("\n").forEach((line, i) => ctx.fillText(fit(ctx, line, R - L), L, 104 + i * 26));
 
   // stats
   const stats: [string, string][] = [
@@ -787,49 +825,52 @@ export function drawMonth(ctx: CanvasRenderingContext2D, a: CardAssets, d: Month
   stats.forEach(([v, k]) => {
     ctx.font = font(a, 20, 700);
     ctx.fillStyle = "#fff";
-    ctx.fillText(v, sx, 140);
+    ctx.fillText(v, sx, 166);
     const vw = ctx.measureText(v).width;
     ctx.font = font(a, 11, 400);
     ctx.fillStyle = "rgba(255,255,255,0.45)";
-    ctx.fillText(k, sx, 157);
+    ctx.fillText(k, sx, 181);
     sx += Math.max(vw, ctx.measureText(k).width) + 18;
   });
 
+  // who made it + Peak Music, out of the caption corner
+  drawCredit(ctx, a, d.handle, L, 204, "left", R - L);
+
   // the list
-  let y = 176;
+  let y = 222;
   d.rows.forEach((row) => {
     ctx.fillStyle = "rgba(255,255,255,0.09)";
     ctx.fillRect(L, y, R - L, 0.5);
-    const cy = y + 25;
-    ctx.font = font(a, 11, 600);
+    const cy = y + 20;
+    ctx.font = font(a, 10.5, 600);
     ctx.fillStyle = "rgba(255,255,255,0.4)";
     ctx.textAlign = "left";
     ctx.fillText(row.date, L, cy + 4);
-    drawCover(ctx, row.cover, L + 51, cy - 20, 40, 40, 7);
-    ctx.font = font(a, 20, 700);
+    drawCover(ctx, row.cover, L + 42, cy - 16, 32, 32, 6);
+    ctx.font = font(a, 17, 700);
     const sc = row.score.toFixed(1).replace(/\.0$/, "");
     const sw = ctx.measureText(sc).width;
     ctx.fillStyle = getRatingHex(row.score);
     ctx.textAlign = "right";
-    ctx.fillText(sc, R, cy + 7);
+    ctx.fillText(sc, R, cy + 6);
     ctx.textAlign = "left";
-    const tx = L + 51 + 40 + 11;
-    const tw = R - sw - 12 - tx;
-    ctx.font = font(a, 14, 600);
+    const tx = L + 42 + 32 + 10;
+    const tw = R - sw - 10 - tx;
+    ctx.font = font(a, 13, 600);
     ctx.fillStyle = "#fff";
     ctx.fillText(fit(ctx, row.title, tw), tx, cy - 2);
-    ctx.font = font(a, 12, 400);
+    ctx.font = font(a, 11, 400);
     ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.fillText(fit(ctx, row.artist, tw), tx, cy + 14);
-    y += 50;
+    ctx.fillText(fit(ctx, row.artist, tw), tx, cy + 12);
+    y += 40;
   });
   if (d.moreCount > 0) {
     ctx.fillStyle = "rgba(255,255,255,0.09)";
     ctx.fillRect(L, y, R - L, 0.5);
-    ctx.font = font(a, 11.5, 500);
+    ctx.font = font(a, 11, 500);
     ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.fillText(d.labels.more(d.moreCount), L, y + 20);
-    y += 28;
+    ctx.fillText(d.labels.more(d.moreCount), L, y + 18);
+    y += 24;
   }
 
   // the two awards
@@ -838,25 +879,22 @@ export function drawMonth(ctx: CanvasRenderingContext2D, a: CardAssets, d: Month
     [d.labels.hottest, d.hottest],
   ];
   const boxW = (R - L - 10) / 2;
-  y += 12;
+  y += 10;
   awards.forEach(([k, v], i) => {
     if (!v) return;
     const bx = L + i * (boxW + 10);
-    roundRect(ctx, bx, y, boxW, 78, 16);
+    roundRect(ctx, bx, y, boxW, 64, 14);
     ctx.fillStyle = "rgba(255,255,255,0.06)";
     ctx.fill();
     ctx.textAlign = "left";
-    ctx.font = font(a, 11, 600);
+    ctx.font = font(a, 10.5, 600);
     ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.fillText(k, bx + 14, y + 23);
-    ctx.font = font(a, 28, 700);
+    ctx.fillText(fit(ctx, k, boxW - 24), bx + 12, y + 18);
+    ctx.font = font(a, 22, 700);
     ctx.fillStyle = getRatingHex(v.score);
-    ctx.fillText(v.score.toFixed(1).replace(/\.0$/, ""), bx + 14, y + 52);
-    ctx.font = font(a, 12.5, 400);
+    ctx.fillText(v.score.toFixed(1).replace(/\.0$/, ""), bx + 12, y + 41);
+    ctx.font = font(a, 11.5, 400);
     ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText(fit(ctx, v.title, boxW - 28), bx + 14, y + 69);
+    ctx.fillText(fit(ctx, v.title, boxW - 24), bx + 12, y + 57);
   });
-
-  drawWho(ctx, a, d.handle, L, 609, "left");
-  drawBrand(ctx, a, R, 609, "right");
 }

@@ -44,6 +44,7 @@ import {
   type StickerData,
 } from "@/lib/share-cards/render";
 import { canRecordVideo, canvasToPng, extFor, recordCanvas, shareOrSave, type HandOff } from "@/lib/share-cards/export";
+import { InstagramLogo, TikTokLogo } from "@/components/share/SocialLogos";
 import { hapticTap, isNativeApp, shareLink, socialSharePlugin, socialTargets, writeCacheFile } from "@/lib/native";
 
 /** "r, g, b" (a palette entry from assets.ts) → "#rrggbb", optionally darker. */
@@ -356,8 +357,10 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
         ))}
       </div>
 
+      {/* keyed by tab: each tab's content fades in when you switch
+          (the sheet's height glides in SheetFrame) */}
       {tab !== "link" ? (
-        <>
+        <div key={tab} className="share-swap">
           <div className="share-stage">
             <canvas
               ref={canvasRef}
@@ -394,25 +397,31 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
                     : t("makeVideo")
                 : t("shareSticker")}
             </button>
-            {/* One-tap targets (app 1.3+, only the apps on this phone). */}
+            {/* One-tap targets (app 1.3+, only the apps on this phone),
+                as round logo buttons (Luca 2026-10-25). The name stays
+                as the aria-label + tooltip for screen readers. */}
             {social.instagram && (
               <button
                 type="button"
-                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+                className="share-logo-btn is-instagram"
                 disabled={!assets || busy || (tab === "scorecard" && !videoOk)}
                 onClick={() => sendSocial("instagram")}
+                aria-label={t("instagramStory")}
+                title={t("instagramStory")}
               >
-                {t("instagramStory")}
+                <InstagramLogo />
               </button>
             )}
             {social.tiktok && (
               <button
                 type="button"
-                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+                className="share-logo-btn is-tiktok"
                 disabled={!assets || busy || (tab === "scorecard" && !videoOk)}
                 onClick={() => sendSocial("tiktok")}
+                aria-label="TikTok"
+                title="TikTok"
               >
-                TikTok
+                <TikTokLogo />
               </button>
             )}
             {tab === "sticker" && canCopyImage && (
@@ -429,9 +438,9 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
           {tab === "sticker" && (social.instagram || social.tiktok) && (
             <p className="share-hint">{t("pickClipHint")}</p>
           )}
-        </>
+        </div>
       ) : (
-        <>
+        <div key="link" className="share-swap">
           <p className="share-hint">{t("linkHint")}</p>
           <div className="share-actions">
             <button
@@ -459,7 +468,7 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
               {t("copyLink")}
             </button>
           </div>
-        </>
+        </div>
       )}
 
       {note && <p className="share-note">{note}</p>}

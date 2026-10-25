@@ -635,7 +635,17 @@ Luca: share cards "look good now". He's testing everything this weekend.
      permission string), App Store rules check first (APP-STORE-RULES-WATCH).
      Batch into one native build with anything else native.
 2. **Showcases overhaul** (Luca flagged it 2026-10-24: "we definitely need to
-   overhaul showcases") — talk options + mockups first, nothing built yet.
+   overhaul showcases") — **mockups SENT 2026-10-24 evening, waiting on his
+   pick**: claude.ai/artifact/5xPrr4vESX4WKUXcMN6mqF, built from caushun's
+   real profile. A Shelf (small showcases = swipe row of same-size tiles,
+   Now Showing = cover row), B Liner notes (no boxes; featured = sleeve +
+   record like the review page, "Right now" rows, one-line rating
+   spectrum), C Widgets (iOS-widget bento, tinted tiles, no borders). All
+   options: hide empty showcases from visitors (no NO SIGNAL), featured
+   review not repeated in Now Showing, same settings, no migration;
+   optional: Song of the day hides after a week without a pick.
+   (Slider unification shipped d47b32a: onboarding + release-page song
+   ratings now use ScoreSlider, 0.1 steps; old .rating-slider CSS deleted.)
 3. Still queued from before: taste-match follows after /start, save-for-later
    shelf + release-day push, Duo/iPad two-column layout, the "less boxy"
    pass (comments box), build 1.3 on the MacBook (cap sync adds

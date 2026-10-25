@@ -18,8 +18,12 @@ import { APP_STORE_URL } from "@/lib/app-store";
  * a plain one-sentence definition with the facts an answer needs
  * (what it is, what it costs, where it runs, what's different), and
  * the FAQ below is the same copy the JSON-LD carries — visible text
- * and structured data never disagree. The story sections are still
- * Luca's to rewrite in his own words.
+ * and structured data never disagree.
+ *
+ * THE STORY was rewritten 2026-10-25 in Luca's voice (first person,
+ * "made by one person: me"): the old "film lovers have a home" pitch
+ * is gone. Three beats: best platform I could make → what the others
+ * leave out (leaks etc.) → a homemade look that isn't low effort.
  */
 
 export const metadata: Metadata = {
@@ -98,6 +102,9 @@ export default function AboutPage() {
           </p>
           <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
             {t("story2")}
+          </p>
+          <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
+            {t("story3")}
           </p>
         </div>
       </section>

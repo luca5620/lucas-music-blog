@@ -491,8 +491,9 @@ export default async function ReviewPage({
       )}
 
       {/* Comments Section */}
-      {/* id anchors the Taste fullscreen rail's 💬 deep link */}
-      <div id="comments" className="scroll-mt-24">
+      {/* id anchors the Taste fullscreen rail's 💬 deep link;
+          cover-accent tints the panel with the album cover (2026-10-25) */}
+      <div id="comments" className="scroll-mt-24 cover-accent">
         <CommentsSection reviewId={review.id} />
       </div>
     </div>

@@ -5994,6 +5994,20 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 @media (min-width: 48rem) {
   .review-body { padding: 1.5rem 1.6rem 1.6rem; }
 }
+/* .cover-accent: everything inside takes the ALBUM COVER as its accent
+   instead of the site blue (Luca 2026-10-25, the review page's
+   comments box: same immersion fix as .review-body). Re-points the
+   accent tokens at the cover trio CoverLiquidSync puts on <html>;
+   the theme block is "@theme inline", so every accent utility and
+   panel inside (panel-xbox, label-xbox, orbs, buttons, focus rings)
+   follows. The text colour is lifted toward white so it stays
+   readable even on a dark cover. */
+.cover-accent {
+  --accent-rgb: var(--liquid-1);
+  --accent-primary: color-mix(in srgb, rgb(var(--liquid-1)) 72%, #fff);
+  --accent-glow: color-mix(in srgb, rgb(var(--liquid-2)) 60%, #fff);
+  --accent-dim: color-mix(in srgb, rgb(var(--liquid-1)) 70%, #000);
+}
 .review-body-label {
   align-self: flex-start;
   padding: 0.25rem 0.6rem;

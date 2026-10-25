@@ -518,6 +518,32 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🔧 Feedback batch (2026-10-25, Windows) — SHIPPED
+- 8f1a696: one-tap Instagram story / TikTok buttons were missing in the 1.3
+  Xcode build: lib/native.ts asked for window.Capacitor.registerPlugin, which
+  only exists in @capacitor/core (the site never loads it). Now reads
+  Capacitor.Plugins.SocialShare. Web-only fix, the current build picks it up.
+  NEXT: Luca reopens Share on the iPhone → both logo buttons should show →
+  record the TikTok demo with the TikTok button (his first recording used the
+  iOS share sheet, which is not Share Kit, so not usable for the review).
+- 8f1a696: scorecard video = true 60fps H.264 MP4 drawn frame by frame
+  (WebCodecs via mediabunny, lazy-loaded); MediaRecorder fallback. Verified
+  739 frames / 12.3 s, no repeats. Showcase tiles use the profile theme;
+  ratings tile = 0–10 bar chart + "Average of all N reviews"; Most loved
+  songs is an opt-in showcase (loved_songs); badges settings: logs badge copy.
+- 581e26b + 1e50941: share cards out of TikTok/Reels overlay zones (54-unit
+  side margins, "@handle · Peak Music" credit line mid-card, content ends ~80%
+  down; month card same + no top-left text). Round Instagram/TikTok logo
+  buttons. Share sheet slides up/down, glides between heights, tabs
+  cross-fade (kept on under Low detail; reduced motion turns it off).
+- Review page: label "Review", review box + comments tinted with the album
+  cover (.cover-accent, ac17498).
+- 156d10a: profile ← Back only after an in-site jump (hidden from tab bar /
+  top-right menu via lib/nav-root.ts, and on direct loads).
+- In progress (helper agent): song-by-song rows open the Spotify preview
+  dropdown like Personal favorites; preview audio kept playing after leaving
+  the page → stop on unmount / route change.
+
 ### 🧾 Share-flow + review-page batch (2026-10-24 late, Windows) — SHIPPED
 Luca's list ("so that settles 1"), all live on main:
 - 9d01754 share sheets: dropped the press-and-hold fallback image (it can't

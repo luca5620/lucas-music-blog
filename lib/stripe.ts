@@ -50,6 +50,13 @@ export async function createSupportCheckout(opts: {
   // Stripe's API takes form-encoded bodies with bracket keys.
   const form = new URLSearchParams({
     mode: "payment",
+    // OFF on purpose. The account has Managed Payments (Stripe as the
+    // seller of record) on by default, and then Stripe REFUSES any
+    // session whose product has no Managed-Payments tax code — that
+    // was the "Couldn't reach the payment page" error on 2026-10-25.
+    // A cosmetic badge doesn't map cleanly onto any eligible code, so
+    // these stay plain Stripe payments (Peak Music is the seller).
+    "managed_payments[enabled]": "false",
     client_reference_id: opts.userId,
     "metadata[user_id]": opts.userId,
     "metadata[kind]": "supporter",

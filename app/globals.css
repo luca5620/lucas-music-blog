@@ -5768,14 +5768,24 @@ fieldset {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 1.45rem;
-  line-height: 1;
   color: rgba(255, 255, 255, 0.38);
   transition: color 0.15s, transform 0.15s;
 }
+/* the SVG heart: same shape and size on and off — off = outline,
+   on = the same outline filled in */
+.track-score-heart svg {
+  width: 1.45rem;
+  height: 1.45rem;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  transition: fill 0.15s;
+}
 .track-score-heart:hover { color: rgba(255, 255, 255, 0.75); }
 .track-score-heart:active { transform: scale(0.88); }
-.track-score-heart.is-on { color: #f472b6; text-shadow: 0 0 10px rgba(244, 114, 182, 0.55); }
+.track-score-heart.is-on { color: #f472b6; }
+.track-score-heart.is-on svg { fill: currentColor; filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.55)); }
 /* Song scores keep the special bands too, as a glow on the number */
 .track-score-value.is-elite { color: #e0b0ff !important; text-shadow: 0 0 8px rgba(168, 85, 247, 0.95), 0 0 18px rgba(168, 85, 247, 0.55); }
 .track-score-value.is-perfect { color: #fff !important; text-shadow: 0 0 8px rgba(30, 144, 255, 1), 0 0 20px rgba(30, 144, 255, 0.7); }
@@ -5818,7 +5828,7 @@ fieldset {
 .low-detail .rate-progress i,
 .low-detail .rate-seg button,
 .low-detail .track-score-heart { transition: none; }
-.low-detail .track-score-heart.is-on { text-shadow: none; }
+.low-detail .track-score-heart.is-on svg { filter: none; transition: none; }
 
 /* ============================================================
    REVIEW SLEEVE — the finished review page (Luca 2026-10-24,

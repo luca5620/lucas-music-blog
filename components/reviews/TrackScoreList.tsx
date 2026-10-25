@@ -127,7 +127,12 @@ function TrackRow({
           aria-label={`${labels.favorite}: ${track.title}`}
           onClick={onToggleFavorite}
         >
-          {favorite ? "♥" : "♡"}
+          {/* One drawn heart, outlined or filled — the ♡ / ♥ characters
+              come from different fonts, so the filled one shrank when
+              tapped (Luca 2026-10-24). */}
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20.5s-7.5-4.6-9.3-9.3C1.4 7.8 3.6 4.5 7 4.5c2.1 0 3.8 1.2 5 3 1.2-1.8 2.9-3 5-3 3.4 0 5.6 3.3 4.3 6.7-1.8 4.7-9.3 9.3-9.3 9.3z" />
+          </svg>
         </button>
         {/* Matched by Spotify id, else by title (Genius rows have no id). */}
         <PreviewButton

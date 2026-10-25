@@ -837,7 +837,11 @@
       "more": "Mais",
       "songBySong": "Faixa por faixa · {n} avaliadas",
       "showAllSongs": "Ver as {n} faixas",
-      "showFewer": "Ver menos"
+      "showFewer": "Ver menos",
+      "edited": "Editada em {date}",
+      "edit": "Editar",
+      "theReview": "A resenha",
+      "favoritesInList": "♥ = favoritas pessoais"
     },
     "form": {
       "editTitle": "Editar resenha",

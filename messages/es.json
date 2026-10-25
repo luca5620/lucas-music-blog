@@ -837,7 +837,11 @@
       "more": "Más",
       "songBySong": "Canción por canción · {n} con nota",
       "showAllSongs": "Ver las {n} canciones",
-      "showFewer": "Ver menos"
+      "showFewer": "Ver menos",
+      "edited": "Editada el {date}",
+      "edit": "Editar",
+      "theReview": "La reseña",
+      "favoritesInList": "♥ = sus favoritas personales"
     },
     "form": {
       "editTitle": "Editar reseña",

@@ -837,7 +837,11 @@
       "more": "Meer",
       "songBySong": "Nummer voor nummer · {n} beoordeeld",
       "showAllSongs": "Alle {n} nummers tonen",
-      "showFewer": "Minder tonen"
+      "showFewer": "Minder tonen",
+      "edited": "Bewerkt op {date}",
+      "edit": "Bewerken",
+      "theReview": "De review",
+      "favoritesInList": "♥ = persoonlijke favorieten"
     },
     "form": {
       "editTitle": "Recensie bewerken",

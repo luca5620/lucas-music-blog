@@ -9,6 +9,12 @@
  * on the record label (ReviewSleeve), one Like · Comment · Share · ⋯ row
  * (ReviewActions — Report lives in ⋯), the words at reading size, then
  * Personal Favorites and the author's Song by song list (ReviewSongList).
+ *
+ * Round 4 (Luca 2026-10-24): the words get their own clearly marked
+ * section ("THE REVIEW" — "it is the centerpiece of the app"), the
+ * author gets an Edit button, an edited review shows its last-edited
+ * date under the original one, and on a song-by-song review the ♥s in
+ * the song list ARE the personal favourites (no repeated section).
  */
 
 import { notFound, permanentRedirect } from "next/navigation";
@@ -214,6 +220,18 @@ export default async function ReviewPage({
       day: "numeric",
       year: "numeric",
     });
+  // "Edited …" only for a real edit: updateReview stamps updated_at, and
+  // anything within 10 minutes of posting (a quick typo fix, a draft
+  // published straight away) doesn't count.
+  const editedAt =
+    new Date(review.updated_at).getTime() - new Date(review.created_at).getTime() > 10 * 60 * 1000
+      ? new Date(review.updated_at).toLocaleDateString(locale, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : null;
+  const isOwner = !!user && user.id === review.user_id;
 
   // Likes: count + whether the viewer already liked it.
   let likeCount = 0;
@@ -248,6 +266,13 @@ export default async function ReviewPage({
     score: authorTrackRatings[track.position],
     favorite: favoriteTitles.has(track.title),
   }));
+  const showSongList = !!release && reviewSongs.length > 0 && (release.tracks ?? []).length >= 2;
+  // On a song-by-song review the ♥s in the song list ARE the personal
+  // favourites, so the separate section would just repeat them (Luca
+  // 2026-10-24). It stays when a pick isn't in the list (a favourite
+  // they didn't score) and on every review that isn't song by song.
+  const favoritesInList =
+    showSongList && favoritePicks.length > 0 && favoritePicks.every((p) => reviewSongs.some((s) => s.title === p.title && s.favorite));
 
   // "Album · 2001" — the year from the release date when there is one.
   const typeLabel = review.release_type
@@ -360,10 +385,14 @@ export default async function ReviewPage({
               </span>
               {isVerified && <VerifiedBadge role={author.role} />}
             </UserLink>
-            {review.review_date && (
-              <span className="text-text-muted">· {t("reviewedOn", { date: longDate(review.review_date) })}</span>
-            )}
           </div>
+          {/* The original review date, and the last edit right under it. */}
+          {(review.review_date || editedAt) && (
+            <div className="review-dates">
+              {review.review_date && <span>{t("reviewed", { date: longDate(review.review_date) })}</span>}
+              {editedAt && <span>{t("edited", { date: editedAt })}</span>}
+            </div>
+          )}
         </div>
       </header>
 
@@ -389,7 +418,9 @@ export default async function ReviewPage({
           slug: review.slug,
         }}
         releaseHref={release ? `/releases/${release.slug}` : null}
+        editHref={isOwner ? `/reviews/${review.slug}/edit` : null}
         labels={{
+          edit: t("edit"),
           comment: t("comment"),
           share: t("share"),
           more: t("more"),
@@ -397,23 +428,35 @@ export default async function ReviewPage({
         }}
       />
 
-      {/* Their words — the reading starts right away, no heading. */}
-      <div className="space-y-4">
+      {/* THE REVIEW — its own clearly marked section (Luca 2026-10-24:
+          "it is the centerpiece of the app"). The one-liner leads as a
+          pull quote when there's a full review under it too. */}
+      {/* A rating with no words and no GIF keeps the plain one-liner —
+          an empty-looking box would be worse than none. */}
+      {!review.summary && !review.snippet && !reviewGif ? (
+        <p className="text-text-muted leading-relaxed text-base italic">{t("noWords")}</p>
+      ) : (
+      <section className="review-body" aria-label={t("theReview")}>
+        <p className="review-body-label">{t("theReview")}</p>
         {review.summary ? (
-          <p className="review-words whitespace-pre-line">{review.summary}</p>
+          <>
+            {review.snippet && review.snippet.trim() !== review.summary.trim() && (
+              <p className="review-quote">{review.snippet}</p>
+            )}
+            <p className="review-words whitespace-pre-line">{review.summary}</p>
+          </>
         ) : review.snippet ? (
           <p className="review-words">{review.snippet}</p>
-        ) : reviewGif ? null : (
-          <p className="text-text-muted leading-relaxed text-base italic">{t("noWords")}</p>
-        )}
+        ) : null}
         {/* GIF reaction (migration 058) — at the bottom of the
             review, on its own or under the words. */}
         {reviewGif && <GifView gif={reviewGif} />}
-      </div>
+      </section>
+      )}
 
       {/* Personal Favorites, each with the viewer's own player (the
           standout_tracks column keeps its name — display label only). */}
-      {review.standout_tracks.length > 0 && (
+      {review.standout_tracks.length > 0 && !favoritesInList && (
         <section className="space-y-2">
           <h2 className="review-h">
             <span>{t("favorites")}</span>
@@ -427,11 +470,13 @@ export default async function ReviewPage({
       {/* Song by song — the author's per-song scores (track_ratings,
           migration 041). Only the songs they actually rated, and only on
           records with 2+ songs (on a single the score above IS the song). */}
-      {release && reviewSongs.length > 0 && (release.tracks ?? []).length >= 2 && (
+      {release && showSongList && (
         <section className="space-y-1">
           <h2 className="review-h">
             <span>{t("songBySong", { n: reviewSongs.length })}</span>
           </h2>
+          {/* heads-up: the hearts are the personal favourites */}
+          {favoritesInList && <p className="review-h-note">{t("favoritesInList")}</p>}
           <ReviewSongList
             releaseId={release.id}
             songs={reviewSongs}

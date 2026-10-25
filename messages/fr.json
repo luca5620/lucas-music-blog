@@ -837,7 +837,11 @@
       "more": "Plus",
       "songBySong": "Titre par titre · {n} notés",
       "showAllSongs": "Voir les {n} titres",
-      "showFewer": "Voir moins"
+      "showFewer": "Voir moins",
+      "edited": "Modifiée le {date}",
+      "edit": "Modifier",
+      "theReview": "La critique",
+      "favoritesInList": "♥ = ses coups de cœur"
     },
     "form": {
       "editTitle": "Modifier la critique",

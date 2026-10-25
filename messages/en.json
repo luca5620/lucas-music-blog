@@ -837,7 +837,11 @@
       "more": "More",
       "songBySong": "Song by song · {n} rated",
       "showAllSongs": "Show all {n} songs",
-      "showFewer": "Show fewer"
+      "showFewer": "Show fewer",
+      "edited": "Edited {date}",
+      "edit": "Edit",
+      "theReview": "The review",
+      "favoritesInList": "♥ = their personal favorites"
     },
     "form": {
       "editTitle": "Edit Review",

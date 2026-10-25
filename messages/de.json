@@ -837,7 +837,11 @@
       "more": "Mehr",
       "songBySong": "Song für Song · {n} bewertet",
       "showAllSongs": "Alle {n} Songs zeigen",
-      "showFewer": "Weniger zeigen"
+      "showFewer": "Weniger zeigen",
+      "edited": "Bearbeitet am {date}",
+      "edit": "Bearbeiten",
+      "theReview": "Die Rezension",
+      "favoritesInList": "♥ = persönliche Favoriten"
     },
     "form": {
       "editTitle": "Rezension bearbeiten",

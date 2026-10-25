@@ -8,6 +8,9 @@
  * Share opens the share sheet (scorecard video · sticker · link — see
  * components/share/ReviewShareSheet), loaded only when tapped.
  *
+ * On their own review the author also gets ✎ Edit (Luca 2026-10-24:
+ * "there should be an edit button to edit it there").
+ *
  * ⋯ holds the quieter things: the release page, and Report (it used to
  * sit out in the open beside the like count). Report still has to be
  * one tap from the review for App Store guideline 1.2 — it is: ⋯ → 🚩.
@@ -34,6 +37,7 @@ export default function ReviewActions({
   liked,
   card,
   releaseHref,
+  editHref,
   labels,
 }: {
   reviewId: string;
@@ -42,7 +46,9 @@ export default function ReviewActions({
   /** Everything the share cards draw. */
   card: ReviewCard;
   releaseHref: string | null;
-  labels: { comment: string; share: string; more: string; viewRelease: string };
+  /** Set only when the viewer wrote this review. */
+  editHref?: string | null;
+  labels: { edit: string; comment: string; share: string; more: string; viewRelease: string };
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -85,6 +91,12 @@ export default function ReviewActions({
         <span aria-hidden="true">↗</span>
         <b>{labels.share}</b>
       </button>
+      {editHref && (
+        <Link href={editHref} className="review-action">
+          <span aria-hidden="true">✎</span>
+          <b>{labels.edit}</b>
+        </Link>
+      )}
       <div ref={menuRef} className="relative">
         <button
           type="button"

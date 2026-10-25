@@ -10,6 +10,14 @@
 //   { "type": "RECAP", "recaps": [ { user_id, kind, username, rated,
 //     avg_rating, top_title, top_rating, likes, new_followers }, … ] }
 //
+// Since 2026-10-25 it also sends the Song of the Day streak saver
+// (migration 060, every evening at 6pm Pacific):
+//
+//   { "type": "STREAK", "streaks": [ { user_id, username, streak }, … ] }
+//
+// Same devices, same APNs path, same secret — just different words —
+// so it lives here instead of in a third function to deploy.
+//
 // This function only does the part Postgres can't: look up each
 // person's iOS devices (service role — tokens are private), write the
 // copy in each DEVICE's language (push_tokens.locale, 052), and talk
@@ -28,9 +36,20 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { hasPushSecret, sendApns } from "../_shared/apns.ts";
-import { asLocale, recapAlert, type RecapStats } from "../_shared/push-copy.ts";
+import {
+  asLocale,
+  recapAlert,
+  streakAlert,
+  type Locale,
+  type RecapStats,
+  type StreakSave,
+} from "../_shared/push-copy.ts";
 
 interface RecapRow extends RecapStats {
+  user_id: string;
+}
+
+interface StreakRow extends StreakSave {
   user_id: string;
 }
 
@@ -56,6 +75,22 @@ function isRecapRow(value: unknown): value is RecapRow {
   );
 }
 
+function isStreakRow(value: unknown): value is StreakRow {
+  const r = value as Partial<StreakRow> | null;
+  return (
+    !!r &&
+    typeof r.user_id === "string" &&
+    typeof r.username === "string" &&
+    typeof r.streak === "number"
+  );
+}
+
+/** One message per person; each device gets it in its own language. */
+interface Outgoing {
+  user_id: string;
+  alertFor: (locale: Locale) => ReturnType<typeof recapAlert>;
+}
+
 Deno.serve(async (req) => {
   // Same shared secret as push-fanout: only our own database job may
   // make phones buzz.
@@ -64,11 +99,23 @@ Deno.serve(async (req) => {
   }
 
   const payload = await req.json().catch(() => null);
-  if (payload?.type !== "RECAP" || !Array.isArray(payload.recaps)) {
+
+  // Turn either message type into the same "who + what to say" list.
+  let outgoing: Outgoing[];
+  if (payload?.type === "RECAP" && Array.isArray(payload.recaps)) {
+    outgoing = (payload.recaps as unknown[]).filter(isRecapRow).map((r) => ({
+      user_id: r.user_id,
+      alertFor: (locale) => recapAlert(locale, r),
+    }));
+  } else if (payload?.type === "STREAK" && Array.isArray(payload.streaks)) {
+    outgoing = (payload.streaks as unknown[]).filter(isStreakRow).map((s) => ({
+      user_id: s.user_id,
+      alertFor: (locale) => streakAlert(locale, s),
+    }));
+  } else {
     return new Response("ignored", { status: 200 });
   }
-  const recaps = (payload.recaps as unknown[]).filter(isRecapRow);
-  if (recaps.length === 0) return new Response("nothing to send", { status: 200 });
+  if (outgoing.length === 0) return new Response("nothing to send", { status: 200 });
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -80,7 +127,7 @@ Deno.serve(async (req) => {
   const { data: tokenData, error } = await supabase
     .from("push_tokens")
     .select("id, user_id, token, platform, locale")
-    .in("user_id", recaps.map((r) => r.user_id))
+    .in("user_id", outgoing.map((o) => o.user_id))
     .eq("platform", "ios"); // FCM: post-Play-launch
   if (error) {
     console.error("push-recap token lookup failed:", error.message);
@@ -97,10 +144,10 @@ Deno.serve(async (req) => {
   const deadIds: string[] = [];
   let sent = 0;
   await Promise.all(
-    recaps.flatMap((recap) =>
-      (byUser.get(recap.user_id) ?? []).map(async (device) => {
+    outgoing.flatMap((msg) =>
+      (byUser.get(msg.user_id) ?? []).map(async (device) => {
         // Copy per DEVICE language, like push-fanout.
-        const alert = recapAlert(asLocale(device.locale), recap);
+        const alert = msg.alertFor(asLocale(device.locale));
         if (!alert) return;
         const result = await sendApns(device.token, alert);
         if (result === "ok") sent += 1;

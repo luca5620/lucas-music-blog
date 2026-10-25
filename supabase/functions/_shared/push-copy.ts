@@ -336,3 +336,60 @@ export function recapAlert(
   // now live. Encoded anyway, so an odd handle can never break the link.
   return { title: copy.title, body, href: `/profile/${encodeURIComponent(s.username)}` };
 }
+
+/* ---------- Song of the Day streak saver (push-recap, type STREAK) ---------- */
+
+// Migration 060 sends these at 6pm Pacific to people with a 3+ day
+// Song of the Day streak who haven't picked today. "Song of the Day"
+// matches the profile widget's name in each language (profile.sotd in
+// messages/<locale>.json). "About to end", not "at midnight": the
+// day resets at PACIFIC midnight, which isn't midnight for anyone
+// outside the US west coast. Plain and calm on purpose — the growth
+// skill's rule: a streak push states the fact, never guilt-trips.
+
+/** What the 060 SQL job sends per person (see send_sotd_streak_savers). */
+export interface StreakSave {
+  username: string;
+  streak: number;
+}
+
+const STREAK_COPY: Record<Locale, { title: string; body: string }> = {
+  en: {
+    title: "Your {n}-day streak is about to end",
+    body: "Pick today's song of the day to keep it going.",
+  },
+  es: {
+    title: "Tu racha de {n} días está por terminar",
+    body: "Elige tu canción del día para mantenerla.",
+  },
+  fr: {
+    title: "Ta série de {n} jours est sur le point de finir",
+    body: "Choisis ton morceau du jour pour la garder.",
+  },
+  pt: {
+    title: "Sua sequência de {n} dias está quase acabando",
+    body: "Escolha a música do dia para manter.",
+  },
+  nl: {
+    title: "Je streak van {n} dagen loopt bijna af",
+    body: "Kies je nummer van de dag om hem vast te houden.",
+  },
+  de: {
+    title: "Dein {n}-Tage-Streak läuft gleich ab",
+    body: "Wähl deinen Song des Tages, um ihn zu halten.",
+  },
+};
+
+/** The streak-saver push for one person in one language. */
+export function streakAlert(
+  locale: Locale,
+  s: StreakSave
+): { title: string; body: string; href: string } {
+  const copy = STREAK_COPY[locale];
+  return {
+    title: fill(copy.title, { n: String(s.streak) }),
+    body: copy.body,
+    // Their own profile — the Song of the Day picker lives there.
+    href: `/profile/${encodeURIComponent(s.username)}`,
+  };
+}

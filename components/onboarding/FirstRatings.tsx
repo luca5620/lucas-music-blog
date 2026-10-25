@@ -25,9 +25,10 @@
  * (60 / 5 min), and is_published defaults to FALSE — leave it out
  * and the rating silently becomes a draft nobody sees.
  *
- * The rating widget is the review form's own slider (`rating-slider`
- * + the rating-badge readout, lib/rating.ts colours) — deliberately
- * not a new widget, so a score means the same thing everywhere.
+ * The rating widget is the review form's own slider (ScoreSlider —
+ * "jump to your finger", Luca 2026-10-24 — + the rating-badge
+ * readout, lib/rating.ts colours) — deliberately not a new widget, so
+ * a score means the same thing everywhere.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -37,6 +38,7 @@ import { useTranslations } from "next-intl";
 import CatalogSearch, { type CatalogPick } from "@/components/catalog/CatalogSearch";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
+import ScoreSlider from "@/components/reviews/ScoreSlider";
 import { smallCover } from "@/lib/images";
 import { FIRST_RATINGS_GOAL } from "@/lib/onboarding";
 import type { StarterPick } from "@/lib/db/onboarding";
@@ -431,34 +433,9 @@ export default function FirstRatings({
             >
               {formatRating(rating)}
             </div>
-            <div className="flex-1 space-y-2">
-              <input
-                type="range"
-                min="0"
-                max="10"
-                step="0.1"
-                value={rating}
-                onChange={(e) => {
-                  // One haptic tick per 0.1 step on the phone, no-op on web.
-                  hapticTap();
-                  setRating(parseFloat(e.target.value));
-                }}
-                className={`rating-slider${
-                  rating === 10 ? " rating-slider-perfect" : rating >= 9.5 ? " rating-slider-elite" : ""
-                }`}
-                style={
-                  {
-                    "--slider-color": ratingColor,
-                    background: `linear-gradient(90deg, ${ratingColor}30 0%, ${ratingColor}99 ${rating * 10}%, rgba(255,255,255,0.08) ${rating * 10}%)`,
-                  } as React.CSSProperties
-                }
-                aria-label={t("ratingAria")}
-              />
-              <div className="flex justify-between text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-                <span>0</span>
-                <span>5</span>
-                <span>10</span>
-              </div>
+            {/* tap or slide anywhere on the bar; it does its own haptics */}
+            <div className="flex-1 min-w-0">
+              <ScoreSlider value={rating} onChange={setRating} ariaLabel={t("ratingAria")} scale />
             </div>
           </div>
 

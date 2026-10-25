@@ -6,7 +6,8 @@
  *
  * Every track gets its own row: community average + count on the
  * right, the viewer's own score beside it once they've rated. Tap a
- * row and it opens the same 0–10 slider the review form uses, saved
+ * row and it opens the same 0–10 slider the review form uses
+ * (ScoreSlider — tap or slide anywhere, 0.1 steps; was 0.5), saved
  * on release (debounced — dragging doesn't spam the API). "Clear"
  * removes the score. Signed-out visitors see the numbers and a
  * sign-in nudge; tapping a row sends them to /login.
@@ -22,6 +23,7 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap } from "@/lib/native";
 import { formatRating, getRatingColor, getRatingHex } from "@/lib/rating";
+import ScoreSlider from "@/components/reviews/ScoreSlider";
 import type { TrackRatingSummary } from "@/lib/db/track-ratings";
 
 export interface TrackRatingTrack {
@@ -109,8 +111,8 @@ export default function TrackRatings({ releaseId, tracks, initial, bare = false 
     setOpen(position);
   }
 
+  // (no haptic here — ScoreSlider ticks once per 0.1 itself)
   function onSlide(position: number, value: number) {
-    hapticTap();
     setDraft(value);
     // Optimistic YOU chip so the row reflects the drag at once.
     setSummaries((prev) => ({
@@ -252,28 +254,13 @@ export default function TrackRatings({ releaseId, tracks, initial, bare = false 
                   >
                     {formatRating(draft)}
                   </span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    step="0.5"
-                    value={draft}
-                    onChange={(e) => onSlide(track.position, parseFloat(e.target.value))}
-                    className={`rating-slider flex-1${
-                      draft === 10
-                        ? " rating-slider-perfect"
-                        : draft >= 9.5
-                          ? " rating-slider-elite"
-                          : ""
-                    }`}
-                    style={
-                      {
-                        "--slider-color": getRatingHex(draft),
-                        background: `linear-gradient(90deg, ${getRatingHex(draft)}30 0%, ${getRatingHex(draft)}99 ${draft * 10}%, rgba(255,255,255,0.08) ${draft * 10}%)`,
-                      } as React.CSSProperties
-                    }
-                    aria-label={t("sliderAria", { title: track.title })}
-                  />
+                  <div className="flex-1 min-w-0">
+                    <ScoreSlider
+                      value={draft}
+                      onChange={(v) => onSlide(track.position, v)}
+                      ariaLabel={t("sliderAria", { title: track.title })}
+                    />
+                  </div>
                   {mine !== null && (
                     <button
                       type="button"

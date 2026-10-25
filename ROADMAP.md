@@ -528,17 +528,15 @@ uses the second option yet).
   place of the placeholder) and `supabase functions deploy push-recap
   --no-verify-jwt`. Check it works with the "saved vs sent" query at the
   bottom of 060.
-- **Supporter checkmark (af1237b)** — Luca's picks: Stripe Checkout, silver
-  badge, any amount = forever, **ads held**. /support page (web only; in the
-  app it's just the wall), footer link (web only), silver 'supporter' role,
-  "Supporter since <year>" on profiles, Terms + Privacy updated.
-  ⚠️ **Luca's hands, in order:** (1) open a Stripe account; (2) make a long
-  random secret, paste it into **migration 061** and run it; (3) Stripe →
-  Webhooks → endpoint https://peakmusicreviews.com/api/stripe/webhook,
-  event checkout.session.completed; (4) Vercel env: STRIPE_SECRET_KEY,
-  STRIPE_WEBHOOK_SECRET, SUPPORTER_RPC_SECRET → redeploy; (5) test with a
-  sk_test_ key + card 4242 4242 4242 4242 first. Until then /support says
-  "isn't switched on yet".
+- **Supporter checkmark — LIVE ✅ (af1237b, 1a043b6, 6d76495).** Stripe live
+  keys + webhook (checkout.session.completed) on Vercel, migration 061 run,
+  RPC secret set. End-to-end verified 2026-10-25 with Luca's real $1 payment:
+  Stripe paid → webhook → supporters row → "Supporter since 2026" on /profile/luca.
+  Gotcha: the Stripe account has **Managed Payments on by default**, which
+  rejects sessions without an eligible tax code → checkout passes
+  managed_payments[enabled]=false. Optional later: add
+  checkout.session.async_payment_succeeded to the webhook (only matters if
+  bank-debit methods get enabled).
 - **Peak Music Rewind (December recap):** 2 mockups SENT from Luca's real data —
   https://claude.ai/artifact/VLZrPrS3UHJMP7FsTUnpUs — A "Year-end broadcast"
   (CRT channels + static) vs B "Your year, the album" (CD booklet: cover grid,

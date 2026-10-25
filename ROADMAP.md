@@ -539,7 +539,11 @@ uses the second option yet).
   STRIPE_WEBHOOK_SECRET, SUPPORTER_RPC_SECRET → redeploy; (5) test with a
   sk_test_ key + card 4242 4242 4242 4242 first. Until then /support says
   "isn't switched on yet".
-- **Peak Music Rewind (December recap):** 2 mockups next, then build.
+- **Peak Music Rewind (December recap):** 2 mockups SENT from Luca's real data —
+  https://claude.ai/artifact/VLZrPrS3UHJMP7FsTUnpUs — A "Year-end broadcast"
+  (CRT channels + static) vs B "Your year, the album" (CD booklet: cover grid,
+  top-10 tracklist, credits). Waiting on his pick; build by late November
+  (/rewind, opens Dec 1). Source: scratchpad rewind-template.html.
 
 ### 📈 Growth / money / SEO research + skills (2026-10-25 night, Windows)
 - **TikTok Share Kit submitted for review** (2026-10-25) with the 04-40-33

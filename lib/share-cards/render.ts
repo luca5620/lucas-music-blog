@@ -18,6 +18,9 @@
  *     score keeps its final colour, rolls only its last point and
  *     never overshoots or pulses, and the background + record move at
  *     about half the speed.
+ *     Round 4 (Luca 2026-10-24): song-by-song scores trickle in slowly
+ *     — "a bit more of a dramatic reveal" — and each one lands in the
+ *     site's classic square rating badge instead of plain text.
  *   - MY MONTH  (drawMonth): a still 9:16 image of a member's month.
  *
  * Everything is drawn in the mockups' 360×640 "card units" and scaled
@@ -31,7 +34,7 @@
  * Ratings app — no ring score, no barcode, no gradient slider.
  */
 
-import { getRatingHex } from "@/lib/rating";
+import { formatRating, getRatingHex } from "@/lib/rating";
 
 export const CARD_W = 360;
 export const CARD_H = 640;
@@ -151,6 +154,42 @@ function wrap(ctx: CanvasRenderingContext2D, text: string, maxW: number, maxLine
 }
 
 /** A soft round glow of one colour (stands in for a blurred blob). */
+/** "#rrggbb" → "r, g, b" for glowBlob. */
+function hexToRgb(hex: string) {
+  const n = parseInt(hex.slice(1), 16);
+  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+}
+
+/**
+ * The site's classic square rating badge, centred on (cx, cy): dark
+ * fill, a border in the rating colour, the score in the same colour.
+ * The special bands carry over — 10 is white ink with a blue glow,
+ * 9.5+ glows purple, 0–1.9 gets the darker brown border.
+ */
+function drawScoreBadge(ctx: CanvasRenderingContext2D, a: CardAssets, score: number, cx: number, cy: number, w: number, h: number) {
+  const color = getRatingHex(score);
+  const perfect = score === 10;
+  const elite = !perfect && score >= 9.5;
+  ctx.save();
+  if (perfect || elite) {
+    ctx.shadowColor = perfect ? "rgba(30, 144, 255, 0.95)" : "rgba(168, 85, 247, 0.9)";
+    ctx.shadowBlur = h * 0.7;
+  }
+  roundRect(ctx, cx - w / 2, cy - h / 2, w, h, h * 0.24);
+  ctx.fillStyle = "rgba(6, 8, 14, 0.62)";
+  ctx.fill();
+  ctx.lineWidth = Math.max(1, h * 0.1);
+  ctx.strokeStyle = score < 2 ? "#7a5735" : color;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = perfect ? "#ffffff" : color;
+  ctx.font = font(a, h * 0.56, 800);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(formatRating(score), cx, cy + h * 0.04);
+  ctx.restore();
+}
+
 function glowBlob(ctx: CanvasRenderingContext2D, rgb: string, cx: number, cy: number, r: number, alpha: number) {
   const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
   g.addColorStop(0, `rgba(${rgb}, ${alpha})`);
@@ -327,9 +366,12 @@ export interface ScorecardData {
 }
 
 const SC_T0 = 1.0;
-/** How long after its row a song's score fades in, and how long it takes. */
-const SC_SCORE_DELAY = 0.18;
+/** How long after its row a song's score lands, and how long it takes.
+    Round 4: a longer beat between the title and its score — the reveal. */
+const SC_SCORE_DELAY = 0.4;
 const SC_FADE = 0.55;
+/** A score's badge settles from a little bigger into place. */
+const SC_LAND = 0.5;
 /** The album score's ease-in. */
 const SC_OV = 1.6;
 /** Luca: "a 5-10 second buffer after for people to read the number
@@ -337,7 +379,9 @@ const SC_OV = 1.6;
 export const SCORECARD_HOLD = 8;
 
 function scorecardTiming(count: number) {
-  const step = count > 0 ? Math.min(0.3, 4.4 / count) : 0;
+  // Round 4: about twice as slow as before — up to 0.75s per song, and
+  // a long album spreads over ~8s instead of racing (was 0.3s / 4.4s).
+  const step = count > 0 ? Math.min(0.75, 8 / count) : 0;
   const ov0 = count > 0 ? SC_T0 + count * step + SC_SCORE_DELAY + SC_FADE : 1.2;
   return { step, ov0, end: ov0 + SC_OV };
 }
@@ -425,10 +469,26 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, fs, 400);
     ctx.fillStyle = "#fff";
     ctx.fillText(fit(ctx, song.title, 312 - 20 - 44), 44, mid);
-    // …and its score follows a beat later, already at its value and
-    // colour — no counting up per song.
-    ctx.globalAlpha = k * easeOut((t - s - SC_SCORE_DELAY) / SC_FADE);
-    drawOdometer(ctx, a, song.score, { right: 336, baseline: mid, size: fs, weight: 650 });
+    // …and its score lands a beat later in the classic square badge,
+    // already at its value and colour (no counting up): it fades in
+    // while shrinking from a touch bigger into place, with a soft flash
+    // of its colour behind it that dies away.
+    const land = (t - s - SC_SCORE_DELAY) / SC_LAND;
+    if (land > 0) {
+      const kl = easeOut(land);
+      const bh = Math.min(rowH * 0.82, 18);
+      const bw = bh * 1.34;
+      const bx = 336 - bw / 2;
+      const by = y + rowH / 2;
+      ctx.globalAlpha = k * kl;
+      if (land < 1) glowBlob(ctx, hexToRgb(getRatingHex(song.score)), bx, by, bh * 1.6, 0.5 * (1 - kl));
+      ctx.save();
+      ctx.translate(bx, by);
+      const sc = 1 + 0.22 * (1 - kl);
+      ctx.scale(sc, sc);
+      drawScoreBadge(ctx, a, song.score, 0, 0, bw, bh);
+      ctx.restore();
+    }
     ctx.restore();
   });
   if (hidden > 0 && t >= SC_T0 + visible.length * step) {

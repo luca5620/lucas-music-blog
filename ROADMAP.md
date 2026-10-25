@@ -519,6 +519,11 @@ uses the second option yet).
 ## ⏳ In progress
 
 ### 🔧 Feedback batch (2026-10-25, Windows) — SHIPPED
+- b409d06: song-by-song rows now look and open exactly like Personal favorites
+  (round ▶/■ glyph, the player drops down under the row); the "· N rated" count is gone;
+  both hints say "play any song right here". TikTok demo re-recorded with Share Kit
+  (04-40-33 recording, checked OK); next = submit the TikTok app review, then swap the
+  production Client key into Info.plist.
 - 8f1a696: one-tap Instagram story / TikTok buttons were missing in the 1.3
   Xcode build: lib/native.ts asked for window.Capacitor.registerPlugin, which
   only exists in @capacitor/core (the site never loads it). Now reads

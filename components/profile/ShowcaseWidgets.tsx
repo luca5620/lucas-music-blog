@@ -56,10 +56,16 @@ export function Widget({
 }
 
 /* ------------------------------------------------------------
-   RATINGS — replaces the old full-width histogram ("the rating
-   chart takes a whole screen to say one number"): the average in a
-   rating badge, how many records, and one row of dots along a 0–10
-   line, one dot per rating, stacked where ratings pile up.
+   RATINGS — the average in a rating badge, "Average of all N
+   reviews", and a real bar chart of how the ratings spread
+   (Luca 2026-10-25: the old row of dots "meant nothing").
+
+   11 bars, one per whole score: 0–0.9, 1–1.9 … 9–9.9, and a perfect
+   10 on its own (it has its own colour on the site). Each bar wears
+   the rating colour of its score, its height is its share of the
+   busiest bar, and the busiest bar carries its count on top. A thin
+   line marks where the average falls. Empty scores keep a faint stub
+   so the 0–10 scale always reads the same width.
    ------------------------------------------------------------ */
 export function RatingsWidget({ ratings }: { ratings: number[] }) {
   const t = useTranslations("profile.sc");
@@ -67,35 +73,53 @@ export function RatingsWidget({ ratings }: { ratings: number[] }) {
   if (valid.length === 0) return null; // nothing to say yet
   const avg = Math.round((valid.reduce((s, r) => s + r, 0) / valid.length) * 10) / 10;
 
-  // One dot per rating, bucketed to the half point so equal-ish
-  // ratings stack upward instead of hiding behind each other. Stacks
-  // cap at 4 dots so a big profile can't grow the tile.
-  const stacks = new Map<number, number>();
-  const dots: { left: number; level: number; color: string }[] = [];
-  for (const r of valid) {
-    const bucket = Math.round(Math.min(10, Math.max(0, r)) * 2) / 2;
-    const level = stacks.get(bucket) ?? 0;
-    stacks.set(bucket, level + 1);
-    if (level < 4) dots.push({ left: bucket * 10, level, color: getRatingHex(bucket) });
-  }
+  const bins = Array<number>(11).fill(0);
+  for (const r of valid) bins[Math.min(10, Math.floor(Math.max(0, r)))] += 1;
+  const peak = Math.max(...bins);
+  // Where the average sits across the 11 columns: column i spans
+  // i/11 → (i+1)/11, so 8.4 lands 40% into the "8" column. A 10.0
+  // average sits in the middle of the "10" column.
+  const avgLeft = ((avg >= 10 ? 10.5 : avg) / 11) * 100;
 
   return (
     <Widget tint="rate" label={t("ratings")}>
-      <span className={`rating-badge sc-widget-badge ${getRatingColor(avg)}`}>
-        {formatRating(avg)}
-      </span>
-      <span className="sc-widget-sub">{t("averageOf", { n: valid.length })}</span>
-      <div className="sc-dots" aria-hidden="true">
-        {dots.map((d, i) => (
-          <i
-            key={i}
-            style={{
-              left: `${d.left}%`,
-              bottom: `${d.level * 8}px`,
-              background: d.color,
-            }}
-          />
-        ))}
+      <div className="sc-rate-head">
+        <span className={`rating-badge sc-widget-badge ${getRatingColor(avg)}`}>
+          {formatRating(avg)}
+        </span>
+        <span className="sc-widget-sub">{t("averageOf", { n: valid.length })}</span>
+      </div>
+      <div className="sc-hist" aria-hidden="true">
+        <div className="sc-hist-bars">
+          {bins.map((n, i) => (
+            <span
+              key={i}
+              className="sc-hist-col"
+              title={`${i === 10 ? "10" : `${i}–${i}.9`}: ${n}`}
+            >
+              {n > 0 && n === peak && <em>{n}</em>}
+              <i
+                className={n === 0 ? "is-empty" : undefined}
+                style={
+                  n > 0
+                    ? {
+                        height: `${Math.max(10, (n / peak) * 100)}%`,
+                        background: getRatingHex(i),
+                        animationDelay: `${i * 35}ms`,
+                      }
+                    : undefined
+                }
+              />
+            </span>
+          ))}
+          <b className="sc-hist-avg" style={{ left: `${avgLeft}%` }} />
+        </div>
+        {/* 0 / 5 / 10 under the middle of their columns */}
+        <div className="sc-hist-axis">
+          <span style={{ left: `${(0.5 / 11) * 100}%` }}>0</span>
+          <span style={{ left: `${(5.5 / 11) * 100}%` }}>5</span>
+          <span style={{ left: `${(10.5 / 11) * 100}%` }}>10</span>
+        </div>
       </div>
     </Widget>
   );

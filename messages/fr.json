@@ -144,14 +144,15 @@
       "hint": "Quels blocs apparaissent sur ton profil, et dans quel ordre.",
       "intro": "Choisis les blocs qui s'affichent sur ton profil et règle leur ordre avec les flèches. Le premier de la liste est le premier de ta page.",
       "hints": {
-        "stats": "Ta moyenne + chaque note en rangée de points",
+        "stats": "Ta moyenne + un graphique de la répartition de tes notes",
         "recent_reviews": "Tes 8 dernières critiques en mur de pochettes",
         "featured_review": "Une critique épinglée, bien en avant",
         "lists": "Tes listes publiques les plus récentes",
         "anticipated": "Les sorties que tu suis, inédits compris",
         "listening": "Ce que tu écoutes en ce moment ou en dernier (nécessite ton lien stats.fm ci-dessous)",
         "listening_stats": "Minutes et écoutes cumulées depuis le début (nécessite ton lien stats.fm ci-dessous)",
-        "sotd": "Ton choix du jour : tiens le rythme et ta flamme grandit"
+        "sotd": "Ton choix du jour : tiens le rythme et ta flamme grandit",
+        "loved_songs": "Tes morceaux ♥ et meilleures notes par morceau"
       },
       "toggle": "Afficher ou masquer {label}",
       "moveUp": "Monter {label}",
@@ -163,7 +164,7 @@
     "badges": {
       "title": "Badges",
       "hint": "Choisis les badges affichés sous ton nom.",
-      "intro": "Chaque profil affiche sous le nom un trophée de critiques, un trophée de likes et un badge d'ancienneté, plus les badges qu'on t'a remis. Décoche ceux que tu préfères garder pour toi : rien n'est supprimé, et tu continues de les voir en grisé sur ton propre profil.",
+      "intro": "Les badges masqués restent visibles pour toi, atténués.",
       "show": "Afficher {label} sur mon profil",
       "hidden": "masqué"
     },
@@ -682,7 +683,7 @@
     "noSignalOwnPosts": "PAS DE SIGNAL : partage un avis, une vidéo ou une liste et ça s'affichera ici.",
     "sc": {
       "ratings": "Notes",
-      "averageOf": "{n, plural, one {sur # note} other {moyenne de #}}",
+      "averageOf": "{n, plural, one {Sur # critique} other {Moyenne des # critiques}}",
       "tasteMatch": "Affinité · toi + {name}",
       "tasteBoth": "Vous avez tous les deux mis {score} à {title}",
       "tasteClose": "{title} : toi {mine}, eux {theirs}",
@@ -720,16 +721,20 @@
     },
     "computed": {
       "reviews": {
-        "label": "Trophée de critiques",
-        "description": "Le nombre de critiques que tu as publiées, un palier tous les 100."
+        "label": "Disque de critiques",
+        "description": "Les critiques que tu as publiées."
+      },
+      "logs": {
+        "label": "Trophée des logs",
+        "description": "Mois avec une critique chaque jour dans The Log."
       },
       "likes": {
         "label": "Trophée de likes",
-        "description": "Les likes reçus sur tes critiques, un palier tous les 100."
+        "description": "Les likes sur tes critiques."
       },
       "tenure": {
         "label": "Ancienneté",
-        "description": "Depuis combien de temps tu es membre : des mois d'abord, puis des années."
+        "description": "Depuis combien de temps tu es membre."
       }
     }
   },
@@ -856,7 +861,7 @@
       "showFewer": "Voir moins",
       "edited": "Modifiée le {date}",
       "edit": "Modifier",
-      "theReview": "La critique",
+      "theReview": "Critique",
       "favoritesInList": "♥ = ses coups de cœur"
     },
     "form": {

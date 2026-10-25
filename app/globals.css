@@ -5983,8 +5983,13 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   gap: 0.9rem;
   padding: 1.1rem 1.1rem 1.25rem;
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.09), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  /* Tinted with the ALBUM COVER, not the site blue (Luca 2026-10-25:
+     the blue box broke the immersion). CoverLiquidSync puts the
+     cover's three colours on <html> as --liquid-1/2/3 for the page's
+     glow; the box borrows the same light, so it reads as part of the
+     room. Before the cover is sampled it shows the default trio. */
+  background: linear-gradient(180deg, rgba(var(--liquid-1), 0.1), rgba(var(--liquid-3), 0.04));
+  border: 1px solid rgba(var(--liquid-1), 0.22);
 }
 @media (min-width: 48rem) {
   .review-body { padding: 1.5rem 1.6rem 1.6rem; }
@@ -5993,13 +5998,13 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   align-self: flex-start;
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
-  background: rgba(var(--accent-rgb), 0.16);
+  background: rgba(var(--liquid-1), 0.16);
   font-family: var(--font-heading);
   font-weight: 800;
   font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent-primary);
+  color: color-mix(in srgb, rgb(var(--liquid-1)) 70%, #fff);
 }
 .review-quote {
   font-family: var(--font-heading);
@@ -6589,7 +6594,8 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 .sc-widgets:empty { display: none; }
 
 .sc-widget {
-  --sc-ink: #cbd5e1;
+  /* label ink: the tile colour, lifted toward white */
+  --sc-ink: color-mix(in srgb, rgb(var(--sc-rgb)) 72%, #fff);
   position: relative;
   min-width: 0;
   min-height: 9rem;
@@ -6615,12 +6621,24 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 .sc-widget .text-text-primary { color: #fff; }
 .sc-widget-skeleton { min-height: 6rem; background: rgba(255, 255, 255, 0.04); }
 
-/* Each widget's own colour (from mockup C) + the ink of its label. */
-.sc-tint-rate { --sc-ink: #d8b4fe; background: linear-gradient(160deg, #2a1846, #150d26); }
-.sc-tint-sotd { --sc-ink: #fdba74; background: linear-gradient(160deg, #3b1d08, #1d1009); }
-.sc-tint-rotation { --sc-ink: #f0abfc; background: linear-gradient(160deg, #2c1240, #130b22); }
-.sc-tint-listen { --sc-ink: #93c5fd; background: linear-gradient(160deg, #0f2a4d, #0a172b); }
-.sc-tint-match { --sc-ink: #5eead4; background: linear-gradient(160deg, #0b3a37, #0a1d22); }
+/* Tile colours come from the PROFILE THEME (Luca 2026-10-25: not
+   random per-widget colours). Every theme-* class sets the liquid trio
+   --liquid-1/2/3 (the same colours its background glows in), so an
+   Xbox OG profile gets green tiles, PS3 silver-blue, and so on. Tiles
+   take turns between the three shades so the grid isn't one flat
+   block. Tiles stay dark with light text on every theme, so the
+   tint goes over a fixed near-black base. */
+.sc-widget {
+  --sc-rgb: var(--liquid-1);
+  background:
+    linear-gradient(160deg, rgba(var(--sc-rgb), 0.3), rgba(var(--sc-rgb), 0.08)),
+    #0c0d12;
+}
+.sc-tint-rate,
+.sc-tint-listen { --sc-rgb: var(--liquid-1); }
+.sc-tint-sotd,
+.sc-tint-match { --sc-rgb: var(--liquid-2); }
+.sc-tint-rotation { --sc-rgb: var(--liquid-3); }
 
 .sc-widget-label {
   display: flex;
@@ -6702,19 +6720,97 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   font-size: 1.2rem;
   font-variant-numeric: tabular-nums;
 }
-.sc-dots {
-  position: relative;
-  height: 2.1rem;
-  margin: auto 4px 0;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+/* Ratings: badge + "Average of all N reviews" side by side, then
+   the bar chart (one bar per whole score, see RatingsWidget). */
+.sc-rate-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
 }
-.sc-dots i {
+.sc-rate-head .sc-widget-sub { line-height: 1.25; }
+.sc-hist {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+.sc-hist-bars {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 3px;
+  align-items: end;
+  height: 3.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+.sc-hist-col {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+.sc-hist-col i {
+  display: block;
+  width: 100%;
+  border-radius: 3px 3px 1px 1px;
+  transform-origin: bottom;
+  animation: sc-hist-grow 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+/* a score nobody got: a faint stub so the scale stays readable */
+.sc-hist-col i.is-empty {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  animation: none;
+}
+/* the busiest bar's count, sitting on top of it */
+.sc-hist-col em {
+  font-style: normal;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.62rem;
+  line-height: 1;
+  margin-bottom: 3px;
+  color: rgba(233, 238, 248, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+/* where the average falls */
+.sc-hist-avg {
   position: absolute;
-  width: 7px;
-  height: 7px;
-  margin-bottom: 2px;
-  border-radius: 50%;
+  top: -0.2rem;
+  bottom: -4px;
+  width: 0;
+  border-left: 1.5px dashed rgba(255, 255, 255, 0.75);
   translate: -50% 0;
+  pointer-events: none;
+}
+.sc-hist-avg::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -4px;
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  background: #fff;
+}
+.sc-hist-axis {
+  position: relative;
+  height: 0.9rem;
+  margin-top: 3px;
+  font-family: var(--font-vt323);
+  font-size: 0.8rem;
+  line-height: 1;
+  color: rgba(233, 238, 248, 0.5);
+}
+.sc-hist-axis span {
+  position: absolute;
+  top: 0;
+  translate: -50% 0;
+}
+@keyframes sc-hist-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
 }
 
 /* Taste match: both avatars overlapping, the meter. */
@@ -6730,7 +6826,7 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   width: 2.9rem;
   height: 2.9rem;
   border-radius: 50%;
-  border: 2px solid #0b3a37;
+  border: 2px solid #0c0d12;
   object-fit: cover;
 }
 .sc-pair > :first-child { left: 0; }
@@ -6739,7 +6835,7 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1d4ed8;
+  background: rgb(var(--liquid-3));
   font-family: var(--font-heading);
   font-weight: 700;
   color: #fff;
@@ -6756,7 +6852,7 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   display: block;
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, #14b8a6, #5eead4);
+  background: linear-gradient(90deg, rgb(var(--sc-rgb)), color-mix(in srgb, rgb(var(--sc-rgb)) 60%, #fff));
 }
 
 /* On rotation: the "playing right now" dot */
@@ -6893,7 +6989,9 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sc-live-dot { animation: none; }
+  .sc-live-dot,
+  .sc-hist-col i { animation: none; }
 }
 .low-detail .sc-live-dot { animation: none; }
+.low-detail .sc-hist-col i { animation: none; }
 .low-detail .sc-heart { filter: none; }

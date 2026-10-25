@@ -144,14 +144,15 @@
       "hint": "Qué bloques aparecen en tu perfil y en qué orden.",
       "intro": "Elige qué bloques se muestran en tu perfil y ordénalos con las flechas. Lo primero de la lista es lo primero de tu página.",
       "hints": {
-        "stats": "Tu media + cada valoración como una fila de puntos",
+        "stats": "Tu media + un gráfico de cómo se reparten tus notas",
         "recent_reviews": "Tus últimas 8 reseñas como un muro de portadas",
         "featured_review": "Una reseña fijada, al frente y al centro",
         "lists": "Tus listas públicas más recientes",
         "anticipated": "Lanzamientos que sigues, incluidos los inéditos",
         "listening": "Lo que estás escuchando ahora o lo último que escuchaste (necesita tu enlace de stats.fm de abajo)",
         "listening_stats": "Minutos y reproducciones de toda tu vida (necesita tu enlace de stats.fm de abajo)",
-        "sotd": "Tu elección de cada día: no la dejes pasar y tu llama de racha crece"
+        "sotd": "Tu elección de cada día: no la dejes pasar y tu llama de racha crece",
+        "loved_songs": "Tus canciones ♥ y mejores notas por canción"
       },
       "toggle": "Mostrar u ocultar {label}",
       "moveUp": "Subir {label}",
@@ -163,7 +164,7 @@
     "badges": {
       "title": "Insignias",
       "hint": "Elige qué insignias se ven debajo de tu nombre.",
-      "intro": "Cada perfil muestra debajo del nombre un trofeo de reseñas, un trofeo de me gusta y una insignia de antigüedad, más las insignias que te hayan dado. Desmarca las que prefieras no mostrar: no se borra nada, y tú seguirás viéndolas atenuadas en tu perfil.",
+      "intro": "Las insignias ocultas las sigues viendo tú, atenuadas.",
       "show": "Mostrar {label} en mi perfil",
       "hidden": "oculta"
     },
@@ -682,7 +683,7 @@
     "noSignalOwnPosts": "SIN SEÑAL: comparte una opinión, un video o una lista y aparecerá aquí.",
     "sc": {
       "ratings": "Valoraciones",
-      "averageOf": "{n, plural, one {de # valoración} other {media de #}}",
+      "averageOf": "{n, plural, one {De # reseña} other {Media de las # reseñas}}",
       "tasteMatch": "Afinidad · tú + {name}",
       "tasteBoth": "Los dos le dieron un {score} a {title}",
       "tasteClose": "{title}: tú {mine}, ellos {theirs}",
@@ -720,16 +721,20 @@
     },
     "computed": {
       "reviews": {
-        "label": "Trofeo de reseñas",
-        "description": "Cuántas reseñas has publicado, un nivel por cada 100."
+        "label": "Disco de reseñas",
+        "description": "Las reseñas que has publicado."
+      },
+      "logs": {
+        "label": "Trofeo de logs",
+        "description": "Meses con una reseña cada día en The Log."
       },
       "likes": {
         "label": "Trofeo de me gusta",
-        "description": "Me gusta recibidos en tus reseñas, un nivel por cada 100."
+        "description": "Me gusta en tus reseñas."
       },
       "tenure": {
         "label": "Antigüedad",
-        "description": "Cuánto tiempo llevas como miembro: primero meses, después años."
+        "description": "Cuánto tiempo llevas como miembro."
       }
     }
   },
@@ -856,7 +861,7 @@
       "showFewer": "Ver menos",
       "edited": "Editada el {date}",
       "edit": "Editar",
-      "theReview": "La reseña",
+      "theReview": "Reseña",
       "favoritesInList": "♥ = sus favoritas personales"
     },
     "form": {

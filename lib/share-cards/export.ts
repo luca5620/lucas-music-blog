@@ -1,12 +1,18 @@
 /**
  * Share cards — turning the canvas into a file and handing it off.
  *
- * VIDEO: the scorecard is recorded straight off the canvas with
- * MediaRecorder while it plays (canvas.captureStream), so making the
- * video takes as long as the video itself (~16s). The sheet shows the
- * card playing while it records, which doubles as the preview. iOS
- * Safari records MP4; desktop Chrome records MP4 when it can, WebM
- * otherwise.
+ * VIDEO (rebuilt 2026-10-25, Luca: "choppy and laggy"): every frame
+ * is drawn on its own and handed to the phone's hardware H.264 encoder
+ * (WebCodecs, through the Mediabunny library), then packed into an MP4.
+ * That makes a true 60fps file with no dropped frames, even when the
+ * phone is too slow to draw in real time. It used to be filmed live off
+ * the screen with MediaRecorder at 30fps, so any frame the phone drew
+ * late simply went missing. That live way is still the fallback for
+ * browsers without WebCodecs (iOS before 16.4).
+ *
+ * Frames are never drawn faster than real time, so the card in the
+ * sheet still plays at normal speed while the video is made, and that
+ * doubles as the preview.
  *
  * HANDING IT OFF, in order:
  *   1. In the app with the Filesystem plugin (build 1.3+): write the
@@ -38,18 +44,91 @@ export function pickVideoMime(): string | null {
   return options.find((m) => MediaRecorder.isTypeSupported(m)) ?? null;
 }
 
-/** True when this device can make the scorecard video. */
+/** True when this device can make the scorecard video (either way). */
 export function canRecordVideo(): boolean {
   if (typeof document === "undefined") return false;
+  if (typeof VideoEncoder !== "undefined") return true;
   const c = document.createElement("canvas") as HTMLCanvasElement & { captureStream?: unknown };
   return typeof c.captureStream === "function" && pickVideoMime() !== null;
 }
 
+/** Frames per second of the finished video. */
+const FPS = 60;
+
+/** Wait for the next screen refresh (lets the sheet repaint). */
+const nextFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()));
+
 /**
- * Record `duration` seconds of the canvas. `frame(t)` is called every
- * animation frame to draw time t; `onProgress(0–1)` drives the bar.
+ * Make `duration` seconds of video from the canvas. `frame(t)` draws
+ * time t; `onProgress(0–1)` drives the bar. Frame-by-frame MP4 when the
+ * device can encode H.264 at this size, the live recording otherwise.
  */
-export function recordCanvas(
+export async function recordCanvas(
+  canvas: HTMLCanvasElement,
+  frame: (t: number) => void,
+  duration: number,
+  onProgress?: (p: number) => void
+): Promise<Blob> {
+  if (typeof VideoEncoder !== "undefined") {
+    const video = await encodeFrames(canvas, frame, duration, onProgress).catch(() => null);
+    if (video) return video;
+  }
+  return recordLive(canvas, frame, duration, onProgress);
+}
+
+/** The frame-by-frame way. null when this device can't encode it. */
+async function encodeFrames(
+  canvas: HTMLCanvasElement,
+  frame: (t: number) => void,
+  duration: number,
+  onProgress?: (p: number) => void
+): Promise<Blob | null> {
+  // Loaded only when someone actually makes a video.
+  const { Output, Mp4OutputFormat, BufferTarget, CanvasSource, Quality, canEncodeVideo } = await import("mediabunny");
+  if (!(await canEncodeVideo("avc", { width: canvas.width, height: canvas.height }))) return null;
+
+  const output = new Output({
+    // "in-memory" puts the index at the front, so the file starts
+    // playing straight away in Photos / Instagram / TikTok.
+    format: new Mp4OutputFormat({ fastStart: "in-memory" }),
+    target: new BufferTarget(),
+  });
+  const source = new CanvasSource(canvas, { codec: "avc", quality: new Quality("high") });
+  output.addVideoTrack(source, { frameRate: FPS });
+  await output.start();
+
+  // +1 so the very last pose (t = duration) is in the file.
+  const total = Math.round(duration * FPS) + 1;
+  const start = performance.now();
+  let lastPaint = start;
+  try {
+    for (let i = 0; i < total; i++) {
+      const t = i / FPS;
+      // Ahead of the clock: wait, so the preview plays at normal speed.
+      while (t * 1000 > performance.now() - start) await nextFrame();
+      // Behind the clock: keep going without waiting, but still let the
+      // screen repaint now and then so the progress bar moves.
+      if (performance.now() - lastPaint > 50) {
+        await nextFrame();
+        lastPaint = performance.now();
+      }
+      frame(Math.min(t, duration));
+      // Each frame gets its exact time stamp, so the file is a steady
+      // 60fps no matter how long this frame took to draw.
+      await source.add(t, 1 / FPS);
+      onProgress?.(i / (total - 1));
+    }
+    await output.finalize();
+  } catch (e) {
+    await output.cancel().catch(() => {});
+    throw e;
+  }
+  const buffer = output.target.buffer;
+  return buffer ? new Blob([buffer], { type: "video/mp4" }) : null;
+}
+
+/** The old live recording, for browsers without WebCodecs. */
+function recordLive(
   canvas: HTMLCanvasElement,
   frame: (t: number) => void,
   duration: number,
@@ -57,7 +136,7 @@ export function recordCanvas(
 ): Promise<Blob> {
   const mime = pickVideoMime();
   if (!mime) return Promise.reject(new Error("no-recorder"));
-  const stream = (canvas as HTMLCanvasElement & { captureStream: (fps?: number) => MediaStream }).captureStream(30);
+  const stream = (canvas as HTMLCanvasElement & { captureStream: (fps?: number) => MediaStream }).captureStream(FPS);
   const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
   const chunks: Blob[] = [];
   recorder.ondataavailable = (e) => {

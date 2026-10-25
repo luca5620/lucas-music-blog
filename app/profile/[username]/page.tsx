@@ -141,6 +141,11 @@ const DEFAULT_SHOWCASES: ShowcaseType[] = ["stats", "recent_reviews"];
    (Luca, showcases overhaul round 2) — only 2 and 1 profiles used
    them. Same trick as above: rows still carrying them just don't
    render them, and Settings drops them on the next save. */
+/* "loved_songs" joined 2026-10-25 (Luca: "i dont even want it on my
+   profile, why is it permanently baked in?"). Most loved songs used to
+   be added to every profile automatically; now it's a showcase like
+   the others: off until you switch it on in Settings, and it sits
+   wherever you put it in the order. */
 const VALID_SHOWCASES: ShowcaseType[] = [
   "stats",
   "recent_reviews",
@@ -148,6 +153,7 @@ const VALID_SHOWCASES: ShowcaseType[] = [
   "listening",
   "listening_stats",
   "sotd",
+  "loved_songs",
 ];
 
 /** The small "live" showcases that render as widgets in ONE grid
@@ -155,9 +161,8 @@ const VALID_SHOWCASES: ShowcaseType[] = [
     the member's order; inside it they keep their relative order. */
 const WIDGET_SHOWCASES: ShowcaseType[] = ["stats", "sotd", "listening", "listening_stats"];
 
-/** One block of the showcase column: a big showcase, the widget grid,
-    or the automatic Most loved songs list. */
-type ShowcaseBlock = ShowcaseType | "widgets" | "loved";
+/** One block of the showcase column: a big showcase or the widget grid. */
+type ShowcaseBlock = ShowcaseType | "widgets";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
@@ -274,7 +279,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   // Viewer-relative bits need currentUser, so they get a second batch
   // — still one round trip for all of them together. Taste match (and
   // the visitor's own avatar for it) only for a signed-in VISITOR;
-  // Most loved songs rides along because it needs the reviews list.
+  // Most loved songs rides along (only when it's switched on) because
+  // it needs the reviews list.
   const viewerId = currentUser && !isOwnProfile ? currentUser.id : null;
   const [userFollows, viewerHasBlocked, tasteMatch, viewerProfile, lovedSongs] =
     await Promise.all([
@@ -282,7 +288,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       viewerId ? isBlocked(viewerId, profile.id) : false,
       viewerId ? getTasteMatch(viewerId, reviews as Review[]) : null,
       viewerId ? getProfile() : null,
-      getMostLovedSongs(profile.id, reviews as Review[]),
+      showcases.includes("loved_songs")
+        ? getMostLovedSongs(profile.id, reviews as Review[])
+        : [],
     ]);
 
   const featuredReview = (featuredRes.data as Review | null) ?? null;
@@ -300,11 +308,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   if (tasteMatch && !blocks.includes("widgets")) {
     blocks.splice(blocks.indexOf("featured_review") + 1, 0, "widgets");
   }
-  // Most loved songs goes just above Now showing (mockup order), or at
-  // the end when Now showing is off. It renders nothing when empty.
-  const nowAt = blocks.indexOf("recent_reviews");
-  if (nowAt >= 0) blocks.splice(nowAt, 0, "loved");
-  else blocks.push("loved");
 
   const displayName = profile.display_name ?? profile.username;
   const memberSince = new Date(profile.created_at).toLocaleDateString(locale, {
@@ -682,7 +685,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 </WidgetGrid>
               );
 
-            case "loved":
+            case "loved_songs":
               return <MostLovedSongs key={block} songs={lovedSongs} />;
 
             case "recent_reviews": {

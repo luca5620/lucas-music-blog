@@ -144,14 +144,15 @@
       "hint": "Quais blocos aparecem no seu perfil e em que ordem.",
       "intro": "Escolha quais blocos aparecem no seu perfil e ordene com as setas. O primeiro da lista é o primeiro da sua página.",
       "hints": {
-        "stats": "Sua média + cada avaliação como uma fileira de pontos",
+        "stats": "Sua média + um gráfico de como suas notas se distribuem",
         "recent_reviews": "Suas últimas 8 resenhas como um mural de capas",
         "featured_review": "Uma resenha fixada, em destaque",
         "lists": "Suas listas públicas mais recentes",
         "anticipated": "Lançamentos que você segue, inéditos incluídos",
         "listening": "O que você está ouvindo agora ou ouviu por último (precisa do seu link do stats.fm abaixo)",
         "listening_stats": "Minutos e reproduções de toda a sua vida (precisa do seu link do stats.fm abaixo)",
-        "sotd": "Sua escolha de cada dia: não deixe passar e sua chama de sequência cresce"
+        "sotd": "Sua escolha de cada dia: não deixe passar e sua chama de sequência cresce",
+        "loved_songs": "Suas músicas ♥ e melhores notas por música"
       },
       "toggle": "Mostrar ou ocultar {label}",
       "moveUp": "Subir {label}",
@@ -163,7 +164,7 @@
     "badges": {
       "title": "Emblemas",
       "hint": "Escolha quais emblemas aparecem abaixo do seu nome.",
-      "intro": "Todo perfil mostra abaixo do nome um troféu de resenhas, um troféu de curtidas e um emblema de tempo de casa, além dos emblemas que você recebeu. Desmarque os que preferir não mostrar: nada é apagado, e você continua vendo os ocultos esmaecidos no seu perfil.",
+      "intro": "Emblemas ocultos continuam visíveis para você, esmaecidos.",
       "show": "Mostrar {label} no meu perfil",
       "hidden": "oculto"
     },
@@ -682,7 +683,7 @@
     "noSignalOwnPosts": "SEM SINAL: compartilhe uma opinião, um vídeo ou uma lista e ela aparece aqui.",
     "sc": {
       "ratings": "Avaliações",
-      "averageOf": "{n, plural, one {de # avaliação} other {média de #}}",
+      "averageOf": "{n, plural, one {De # resenha} other {Média das # resenhas}}",
       "tasteMatch": "Afinidade · você + {name}",
       "tasteBoth": "Vocês dois deram {score} para {title}",
       "tasteClose": "{title}: você {mine}, eles {theirs}",
@@ -720,16 +721,20 @@
     },
     "computed": {
       "reviews": {
-        "label": "Troféu de resenhas",
-        "description": "Quantas resenhas você publicou, um nível a cada 100."
+        "label": "Disco de resenhas",
+        "description": "As resenhas que você publicou."
+      },
+      "logs": {
+        "label": "Troféu de logs",
+        "description": "Meses com uma resenha em todos os dias do The Log."
       },
       "likes": {
         "label": "Troféu de curtidas",
-        "description": "Curtidas recebidas nas suas resenhas, um nível a cada 100."
+        "description": "Curtidas nas suas resenhas."
       },
       "tenure": {
         "label": "Tempo de casa",
-        "description": "Há quanto tempo você é membro: primeiro meses, depois anos."
+        "description": "Há quanto tempo você é membro."
       }
     }
   },
@@ -856,7 +861,7 @@
       "showFewer": "Ver menos",
       "edited": "Editada em {date}",
       "edit": "Editar",
-      "theReview": "A resenha",
+      "theReview": "Resenha",
       "favoritesInList": "♥ = favoritas pessoais"
     },
     "form": {

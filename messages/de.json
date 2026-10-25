@@ -144,14 +144,15 @@
       "hint": "Welche Blöcke auf deinem Profil stehen, und in welcher Reihenfolge.",
       "intro": "Wähl aus, welche Blöcke auf deinem Profil stehen, und ordne sie mit den Pfeilen. Was hier oben steht, steht auch auf deiner Seite oben.",
       "hints": {
-        "stats": "Dein Schnitt + jede Bewertung als Punktreihe",
+        "stats": "Dein Schnitt + ein Diagramm, wie deine Bewertungen verteilt sind",
         "recent_reviews": "Deine letzten 8 Rezensionen als Wand aus Covern",
         "featured_review": "Eine angepinnte Rezension, groß in Szene gesetzt",
         "lists": "Deine neuesten öffentlichen Listen",
         "anticipated": "Releases, denen du folgst, unveröffentlichte inklusive",
         "listening": "Was du gerade oder zuletzt gehört hast (braucht deinen stats.fm-Link unten)",
         "listening_stats": "Deine Minuten und Streams aller Zeiten (braucht deinen stats.fm-Link unten)",
-        "sotd": "Dein Song für jeden Tag: lass keinen aus und deine Streak-Flamme wächst"
+        "sotd": "Dein Song für jeden Tag: lass keinen aus und deine Streak-Flamme wächst",
+        "loved_songs": "Deine ♥-Songs und besten Song-Wertungen"
       },
       "toggle": "{label} anzeigen oder ausblenden",
       "moveUp": "{label} nach oben",
@@ -163,7 +164,7 @@
     "badges": {
       "title": "Badges",
       "hint": "Wähl, welche Badges unter deinem Namen stehen.",
-      "intro": "Jedes Profil zeigt unter dem Namen eine Rezensionstrophäe, eine Like-Trophäe und ein Badge für die Mitgliedsdauer, dazu die Badges, die du bekommen hast. Hak ab, was du lieber nicht zeigst: nichts wird gelöscht, und auf deinem eigenen Profil siehst du versteckte Badges weiterhin abgedunkelt.",
+      "intro": "Ausgeblendete Badges siehst du weiter, abgedunkelt.",
       "show": "{label} auf meinem Profil zeigen",
       "hidden": "versteckt"
     },
@@ -682,7 +683,7 @@
     "noSignalOwnPosts": "KEIN SIGNAL: Teile eine Meinung, ein Video oder eine Liste – dann landet sie hier.",
     "sc": {
       "ratings": "Bewertungen",
-      "averageOf": "{n, plural, one {aus # Bewertung} other {Schnitt aus #}}",
+      "averageOf": "{n, plural, one {Aus # Rezension} =2 {Schnitt beider Rezensionen} other {Schnitt aller # Rezensionen}}",
       "tasteMatch": "Geschmacks-Match · du + {name}",
       "tasteBoth": "Ihr habt beide {title} eine {score} gegeben",
       "tasteClose": "{title}: du {mine}, sie {theirs}",
@@ -720,16 +721,20 @@
     },
     "computed": {
       "reviews": {
-        "label": "Rezensionstrophäe",
-        "description": "Wie viele Rezensionen du veröffentlicht hast, eine Stufe je 100."
+        "label": "Rezensions-Platte",
+        "description": "Deine veröffentlichten Rezensionen."
+      },
+      "logs": {
+        "label": "Log-Trophäe",
+        "description": "Monate mit einer Rezension an jedem Tag im Log."
       },
       "likes": {
         "label": "Like-Trophäe",
-        "description": "Likes auf deine Rezensionen, eine Stufe je 100."
+        "description": "Likes auf deine Rezensionen."
       },
       "tenure": {
         "label": "Mitgliedsdauer",
-        "description": "Wie lange du schon Mitglied bist: erst Monate, dann Jahre."
+        "description": "Wie lange du schon dabei bist."
       }
     }
   },
@@ -856,7 +861,7 @@
       "showFewer": "Weniger zeigen",
       "edited": "Bearbeitet am {date}",
       "edit": "Bearbeiten",
-      "theReview": "Die Rezension",
+      "theReview": "Rezension",
       "favoritesInList": "♥ = persönliche Favoriten"
     },
     "form": {

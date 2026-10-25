@@ -144,14 +144,15 @@
       "hint": "Which blocks appear on your profile, and in what order.",
       "intro": "Pick which blocks appear on your profile and drag their order with the arrows. Top of the list = top of your page.",
       "hints": {
-        "stats": "Your average rating + every rating as a row of dots",
+        "stats": "Your average + a chart of how your ratings spread",
         "recent_reviews": "Your latest 8 reviews as a poster wall",
         "featured_review": "One pinned review, front and center",
         "lists": "Your newest public lists",
         "anticipated": "Releases you follow, unreleased included",
         "listening": "What you're playing right now / last played (needs your stats.fm link below)",
         "listening_stats": "Lifetime minutes + total streams (needs your stats.fm link below)",
-        "sotd": "Daily pick — keep it up every day to grow your streak flame"
+        "sotd": "Daily pick — keep it up every day to grow your streak flame",
+        "loved_songs": "Your ♥ songs and top song-by-song scores"
       },
       "toggle": "Toggle {label}",
       "moveUp": "Move {label} up",
@@ -163,7 +164,7 @@
     "badges": {
       "title": "Badges",
       "hint": "Choose which badges show under your username.",
-      "intro": "Every profile wears a reviews trophy, a likes trophy and a years-of-service badge under the username, plus any badge you've been awarded. Untick the ones you'd rather keep to yourself — nothing is deleted, and you'll still see hidden ones dimmed on your own profile.",
+      "intro": "Hidden badges still show for you, dimmed.",
       "show": "Show {label} on my profile",
       "hidden": "hidden"
     },
@@ -682,7 +683,7 @@
     "noSignalOwnPosts": "NO SIGNAL — share a take, a video or a hot list and it lands here.",
     "sc": {
       "ratings": "Ratings",
-      "averageOf": "{n, plural, one {from # rating} other {average of #}}",
+      "averageOf": "{n, plural, one {From # review} =2 {Average of both reviews} other {Average of all # reviews}}",
       "tasteMatch": "Taste match · you + {name}",
       "tasteBoth": "You both gave {title} a {score}",
       "tasteClose": "{title}: you {mine}, them {theirs}",
@@ -720,16 +721,20 @@
     },
     "computed": {
       "reviews": {
-        "label": "Reviews Trophy",
-        "description": "How many reviews you've published, tiered per 100."
+        "label": "Reviews Record",
+        "description": "Reviews you've published."
+      },
+      "logs": {
+        "label": "Logs Trophy",
+        "description": "Months with a review on every day of The Log."
       },
       "likes": {
         "label": "Likes Trophy",
-        "description": "Likes received on your reviews, tiered per 100."
+        "description": "Likes on your reviews."
       },
       "tenure": {
         "label": "Years of Service",
-        "description": "How long you've been a member — months, then years."
+        "description": "How long you've been a member."
       }
     }
   },
@@ -856,7 +861,7 @@
       "showFewer": "Show fewer",
       "edited": "Edited {date}",
       "edit": "Edit",
-      "theReview": "The review",
+      "theReview": "Review",
       "favoritesInList": "♥ = their personal favorites"
     },
     "form": {

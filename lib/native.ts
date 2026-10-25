@@ -44,11 +44,11 @@ interface SocialSharePlugin {
 interface CapacitorBridge {
   isNativePlatform?: () => boolean;
   getPlatform?: () => string;
-  /** True when the installed binary has a native plugin by that name. */
-  isPluginAvailable?: (name: string) => boolean;
-  /** Capacitor's way to reach a native plugin that has no npm package. */
-  registerPlugin?: <T>(name: string) => T;
   Plugins?: {
+    /** Our own plugin (ios/App/App/SocialSharePlugin.swift), build 1.3+.
+        The native side puts every registered plugin here with its
+        methods already wired up, the same as Share or Haptics. */
+    SocialShare?: SocialSharePlugin;
     Haptics?: { impact: (opts: { style: string }) => Promise<void> };
     Share?: {
       share: (opts: {
@@ -311,9 +311,11 @@ export async function writeCacheFile(blob: Blob, filename: string): Promise<stri
  * plain Share button). 2026-10-25, docs/ONE-TAP-SHARE-SETUP.md.
  */
 export function socialSharePlugin(): SocialSharePlugin | null {
-  const cap = bridge();
-  if (!cap?.isPluginAvailable?.("SocialShare") || !cap.registerPlugin) return null;
-  return cap.registerPlugin<SocialSharePlugin>("SocialShare");
+  // Read straight off Capacitor.Plugins (2026-10-25 fix). The first
+  // version asked for window.Capacitor.registerPlugin, but that helper
+  // only exists in the @capacitor/core npm package, which this site
+  // never loads. So it was always missing and the buttons never showed.
+  return bridge()?.Plugins?.SocialShare ?? null;
 }
 
 /** Which of Instagram / TikTok this phone can hand off to (both false off-app). */

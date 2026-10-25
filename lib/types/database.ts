@@ -106,7 +106,8 @@ export type ShowcaseType =
   | "anticipated"
   | "listening" // ON ROTATION — now playing / last played (stats.fm)
   | "listening_stats" // ALL-TIME LISTENING — lifetime minutes/streams (stats.fm)
-  | "sotd"; // SONG OF THE DAY — daily pick + streak flame
+  | "sotd" // SONG OF THE DAY — daily pick + streak flame
+  | "loved_songs"; // MOST LOVED SONGS — ♥ picks + top song scores (opt-in since 2026-10-25)
 
 export interface Review {
   id: string;

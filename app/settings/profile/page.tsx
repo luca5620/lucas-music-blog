@@ -81,7 +81,9 @@ const THEMES: { id: ProfileTheme; label: string; hex: string }[] = [
    profile, nothing to arrange.
    Mixtapes (lists) and Waiting On (anticipated) left 2026-10-24 (Luca,
    showcases overhaul round 2) — the same load filter drops them on the
-   next save. Taste match + Most loved songs are automatic, not here. */
+   next save. Taste match is automatic, not here. Most loved songs was
+   automatic too until 2026-10-25 (Luca didn't want it forced on his
+   profile), now it's an option like the rest. */
 // LANGUAGES: `label` is a key into messages → home.showcases (shared
 // with the logged-out home's customization card); the hint is
 // settings.showcases.hints.<id>.
@@ -92,6 +94,7 @@ const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string }[] = [
   { id: "listening", label: "onRotation" },
   { id: "listening_stats", label: "listeningStats" },
   { id: "sotd", label: "songOfTheDay" },
+  { id: "loved_songs", label: "mostLoved" },
 ];
 
 /** Uploads are capped client-side; the buckets are public-read.

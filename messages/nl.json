@@ -144,14 +144,15 @@
       "hint": "Welke blokken op je profiel staan, en in welke volgorde.",
       "intro": "Kies welke blokken op je profiel staan en zet ze met de pijlen in de goede volgorde. Wat hier bovenaan staat, staat ook bovenaan je pagina.",
       "hints": {
-        "stats": "Je gemiddelde + elke beoordeling als rij stippen",
+        "stats": "Je gemiddelde + een grafiek van hoe je cijfers verdeeld zijn",
         "recent_reviews": "Je laatste 8 recensies als een muur van hoezen",
         "featured_review": "Eén vastgezette recensie, uitgelicht",
         "lists": "Je nieuwste openbare lijsten",
         "anticipated": "Releases die je volgt, ook onuitgebrachte",
         "listening": "Wat je nu of als laatste hebt geluisterd (heeft je stats.fm-link hieronder nodig)",
         "listening_stats": "Je minuten en streams van alle tijden (heeft je stats.fm-link hieronder nodig)",
-        "sotd": "Je keuze van elke dag: sla geen dag over en je streak-vlam groeit"
+        "sotd": "Je keuze van elke dag: sla geen dag over en je streak-vlam groeit",
+        "loved_songs": "Je ♥-nummers en hoogste cijfers per nummer"
       },
       "toggle": "{label} tonen of verbergen",
       "moveUp": "{label} omhoog",
@@ -163,7 +164,7 @@
     "badges": {
       "title": "Badges",
       "hint": "Kies welke badges onder je naam staan.",
-      "intro": "Elk profiel toont onder de naam een recensietrofee, een liketrofee en een badge voor hoe lang je lid bent, plus de badges die je hebt gekregen. Vink uit wat je liever niet toont: er wordt niets gewist, en jij ziet verborgen badges nog steeds gedimd op je eigen profiel.",
+      "intro": "Verborgen badges zie je zelf nog, gedimd.",
       "show": "{label} op mijn profiel tonen",
       "hidden": "verborgen"
     },
@@ -682,7 +683,7 @@
     "noSignalOwnPosts": "GEEN SIGNAAL: deel een mening, een video of een lijst en die verschijnt hier.",
     "sc": {
       "ratings": "Beoordelingen",
-      "averageOf": "{n, plural, one {uit # beoordeling} other {gemiddelde van #}}",
+      "averageOf": "{n, plural, one {Uit # recensie} =2 {Gemiddelde van beide recensies} other {Gemiddelde van alle # recensies}}",
       "tasteMatch": "Smaakmatch · jij + {name}",
       "tasteBoth": "Jullie gaven {title} allebei een {score}",
       "tasteClose": "{title}: jij {mine}, zij {theirs}",
@@ -720,16 +721,20 @@
     },
     "computed": {
       "reviews": {
-        "label": "Recensietrofee",
-        "description": "Hoeveel recensies je hebt geplaatst, een niveau per 100."
+        "label": "Recensieplaat",
+        "description": "De recensies die je hebt geplaatst."
+      },
+      "logs": {
+        "label": "Logtrofee",
+        "description": "Maanden met een recensie op elke dag van The Log."
       },
       "likes": {
         "label": "Liketrofee",
-        "description": "Likes op je recensies, een niveau per 100."
+        "description": "Likes op je recensies."
       },
       "tenure": {
         "label": "Lidmaatschap",
-        "description": "Hoe lang je al lid bent: eerst maanden, dan jaren."
+        "description": "Hoe lang je al lid bent."
       }
     }
   },
@@ -856,7 +861,7 @@
       "showFewer": "Minder tonen",
       "edited": "Bewerkt op {date}",
       "edit": "Bewerken",
-      "theReview": "De review",
+      "theReview": "Review",
       "favoritesInList": "♥ = persoonlijke favorieten"
     },
     "form": {

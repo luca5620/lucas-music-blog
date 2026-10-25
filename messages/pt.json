@@ -2017,6 +2017,10 @@
     "nextMonth": "Próximo mês",
     "makeVideo": "Criar vídeo",
     "copySticker": "Copiar sticker",
-    "stickerCopied": "Copiado. No Instagram, grava ou escolhe o teu vídeo e cola o sticker por cima."
+    "stickerCopied": "Copiado. No Instagram, grava ou escolhe o teu vídeo e cola o sticker por cima.",
+    "instagramStory": "Story do Instagram",
+    "notInstalled": "O {app} não está instalado neste telefone.",
+    "photosDenied": "O Peak Music precisa de acesso às Fotos para passar o vídeo. Podes ativar isso nos Ajustes.",
+    "pickClipHint": "Story do Instagram ou TikTok: escolhe um clipe do teu rolo da câmara e o sticker vai por cima."
   }
 }

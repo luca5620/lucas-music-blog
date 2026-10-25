@@ -2017,6 +2017,10 @@
     "nextMonth": "Next month",
     "makeVideo": "Make video",
     "copySticker": "Copy sticker",
-    "stickerCopied": "Copied. In Instagram, film or pick your video, then paste the sticker on top."
+    "stickerCopied": "Copied. In Instagram, film or pick your video, then paste the sticker on top.",
+    "instagramStory": "Instagram story",
+    "notInstalled": "{app} isn't installed on this phone.",
+    "photosDenied": "Peak Music needs access to Photos to hand the video over. You can turn it on in Settings.",
+    "pickClipHint": "Instagram story or TikTok: pick a clip from your camera roll and the sticker goes on top."
   }
 }

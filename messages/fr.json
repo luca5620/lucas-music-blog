@@ -2017,6 +2017,10 @@
     "nextMonth": "Mois suivant",
     "makeVideo": "Créer la vidéo",
     "copySticker": "Copier le sticker",
-    "stickerCopied": "Copié. Dans Instagram, filme ou choisis ta vidéo, puis colle le sticker par-dessus."
+    "stickerCopied": "Copié. Dans Instagram, filme ou choisis ta vidéo, puis colle le sticker par-dessus.",
+    "instagramStory": "Story Instagram",
+    "notInstalled": "{app} n’est pas installé sur ce téléphone.",
+    "photosDenied": "Peak Music a besoin d’accéder à Photos pour transmettre la vidéo. Tu peux l’activer dans Réglages.",
+    "pickClipHint": "Story Instagram ou TikTok : choisis un clip dans ta pellicule, le sticker se pose dessus."
   }
 }

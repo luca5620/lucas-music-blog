@@ -22,9 +22,32 @@ export interface PluginListener {
   remove: () => Promise<void>;
 }
 
+/** The app's own SocialSharePlugin (ios/App/App/SocialSharePlugin.swift,
+    build 1.3+): one-tap Instagram story + TikTok. Paths are file://
+    URIs from Filesystem.writeFile. */
+interface SocialSharePlugin {
+  isAvailable: () => Promise<{ instagram: boolean; tiktok: boolean }>;
+  instagramStory: (opts: {
+    videoPath?: string;
+    stickerPath?: string;
+    pickBackground?: boolean;
+    topColor?: string;
+    bottomColor?: string;
+  }) => Promise<{ opened?: boolean; cancelled?: boolean }>;
+  tiktok: (opts: {
+    videoPath?: string;
+    stickerPath?: string;
+    pickBackground?: boolean;
+  }) => Promise<{ shared?: boolean; cancelled?: boolean }>;
+}
+
 interface CapacitorBridge {
   isNativePlatform?: () => boolean;
   getPlatform?: () => string;
+  /** True when the installed binary has a native plugin by that name. */
+  isPluginAvailable?: (name: string) => boolean;
+  /** Capacitor's way to reach a native plugin that has no npm package. */
+  registerPlugin?: <T>(name: string) => T;
   Plugins?: {
     Haptics?: { impact: (opts: { style: string }) => Promise<void> };
     Share?: {
@@ -253,18 +276,53 @@ export async function nativeShareFile(
   const plugins = bridge()?.Plugins;
   if (!plugins?.Filesystem || !plugins.Share) return "unavailable";
   try {
-    const data = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      // "data:video/mp4;base64,AAAA…" → just the base64 part
-      reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(blob);
-    });
-    const { uri } = await plugins.Filesystem.writeFile({ path: filename, data, directory: "CACHE" });
+    const uri = await writeCacheFile(blob, filename);
+    if (!uri) return "unavailable";
     await plugins.Share.share({ title, files: [uri] });
     return "shared";
   } catch {
     // Closing the sheet without picking anything also lands here.
     return "cancelled";
+  }
+}
+
+/**
+ * Write a blob into the app's cache folder and return its file:// URI —
+ * how a share card becomes a real file for the native side. null when
+ * the binary has no Filesystem plugin (builds before 1.3).
+ */
+export async function writeCacheFile(blob: Blob, filename: string): Promise<string | null> {
+  const fs = bridge()?.Plugins?.Filesystem;
+  if (!fs) return null;
+  const data = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    // "data:video/mp4;base64,AAAA…" → just the base64 part
+    reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+  const { uri } = await fs.writeFile({ path: filename, data, directory: "CACHE" });
+  return uri;
+}
+
+/**
+ * The SocialShare plugin, or null on the web and on app builds that
+ * don't have it yet (it ships in the binary, so older installs keep the
+ * plain Share button). 2026-10-25, docs/ONE-TAP-SHARE-SETUP.md.
+ */
+export function socialSharePlugin(): SocialSharePlugin | null {
+  const cap = bridge();
+  if (!cap?.isPluginAvailable?.("SocialShare") || !cap.registerPlugin) return null;
+  return cap.registerPlugin<SocialSharePlugin>("SocialShare");
+}
+
+/** Which of Instagram / TikTok this phone can hand off to (both false off-app). */
+export async function socialTargets(): Promise<{ instagram: boolean; tiktok: boolean }> {
+  const plugin = socialSharePlugin();
+  if (!plugin) return { instagram: false, tiktok: false };
+  try {
+    return await plugin.isAvailable();
+  } catch {
+    return { instagram: false, tiktok: false };
   }
 }

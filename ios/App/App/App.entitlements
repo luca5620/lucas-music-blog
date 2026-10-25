@@ -9,5 +9,13 @@
 	     CODE_SIGN_ENTITLEMENTS on both configurations. -->
 	<key>aps-environment</key>
 	<string>production</string>
+	<!-- Universal Links (2026-10-25): TikTok's Share Kit hands people
+	     back via https://peakmusicreviews.com/share/tiktok-callback.
+	     The site's /.well-known/apple-app-site-association claims ONLY
+	     that path, so every other link still opens in the browser. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:peakmusicreviews.com</string>
+	</array>
 </dict>
 </plist>

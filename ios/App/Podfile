@@ -23,6 +23,11 @@ end
 target 'App' do
   capacitor_pods
   # Add your Pods here
+  # TikTok Share Kit (2026-10-25) — one-tap "TikTok" on the review Share
+  # sheet (App/SocialSharePlugin.swift, docs/ONE-TAP-SHARE-SETUP.md).
+  # Outside capacitor_pods on purpose: cap sync rewrites that block.
+  pod 'TikTokOpenSDKCore'
+  pod 'TikTokOpenShareSDK'
 end
 
 post_install do |installer|

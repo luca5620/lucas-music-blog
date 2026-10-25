@@ -11,6 +11,15 @@
  *   - Sticker: the see-through glass sticker as a transparent PNG.
  *   - Link: the review page itself (the old Share button's job).
  *
+ * ONE-TAP INSTAGRAM STORY + TIKTOK (2026-10-25, app build 1.3+ only —
+ * ios/App/App/SocialSharePlugin.swift, docs/ONE-TAP-SHARE-SETUP.md):
+ *   - Scorecard tab: the video goes straight in as the story / TikTok.
+ *   - Sticker tab: they pick their own clip, and the sticker lands on
+ *     top (a real movable sticker in Instagram; glued on for TikTok,
+ *     which has no sticker layer for other apps).
+ * The buttons only appear when the installed app has the plugin AND
+ * that app is on the phone; everyone else keeps the normal Share.
+ *
  * The drawings live in lib/share-cards/render.ts, the file hand-off in
  * lib/share-cards/export.ts. Loaded lazily — none of this code ships
  * with the review page until someone taps Share.
@@ -35,7 +44,20 @@ import {
   type StickerData,
 } from "@/lib/share-cards/render";
 import { canRecordVideo, canvasToPng, extFor, recordCanvas, shareOrSave, type HandOff } from "@/lib/share-cards/export";
-import { hapticTap, isNativeApp, shareLink } from "@/lib/native";
+import { hapticTap, isNativeApp, shareLink, socialSharePlugin, socialTargets, writeCacheFile } from "@/lib/native";
+
+/** "r, g, b" (a palette entry from assets.ts) → "#rrggbb", optionally darker. */
+function rgbToHex(rgb: string | undefined, darken = 0): string {
+  const parts = (rgb ?? "").split(",").map((n) => Number(n.trim()));
+  if (parts.length < 3 || parts.some((n) => Number.isNaN(n))) return "#0f1015";
+  return (
+    "#" +
+    parts
+      .slice(0, 3)
+      .map((n) => Math.round(n * (1 - darken)).toString(16).padStart(2, "0"))
+      .join("")
+  );
+}
 
 export interface ReviewCard {
   title: string;
@@ -70,6 +92,16 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
   // True once the video is recorded and waiting for its Share tap.
   const [videoReady, setVideoReady] = useState(false);
   const videoOk = useMemo(() => canRecordVideo(), []);
+  // Which one-tap targets this phone has (both false on the web and on
+  // app builds without the plugin).
+  const [social, setSocial] = useState({ instagram: false, tiktok: false });
+  useEffect(() => {
+    let alive = true;
+    socialTargets().then((s) => alive && setSocial(s));
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -157,6 +189,68 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
     return png;
   }
 
+  /** Record the scorecard once and keep it (Share / Instagram / TikTok reuse it). */
+  async function ensureVideo(): Promise<Blob> {
+    if (videoRef.current) return videoRef.current;
+    recording.current = true;
+    setProgress(0);
+    try {
+      videoRef.current = await recordCanvas(canvasRef.current!, draw, duration, setProgress);
+    } finally {
+      recording.current = false;
+    }
+    setVideoReady(true);
+    return videoRef.current;
+  }
+
+  /** What went wrong in a one-tap hand-off, in words. */
+  function socialError(e: unknown, app: string) {
+    const code = (e as { code?: string })?.code;
+    if (code === "NOT_INSTALLED") setNote(t("notInstalled", { app }));
+    else if (code === "PHOTOS_DENIED") setNote(t("photosDenied"));
+    else setNote(t("failed"));
+  }
+
+  /**
+   * One tap to Instagram's story editor or TikTok's. Scorecard tab: the
+   * video itself. Sticker tab: the native side opens the photo picker
+   * for their own clip and puts the sticker on top.
+   */
+  async function sendSocial(target: "instagram" | "tiktok") {
+    const plugin = socialSharePlugin();
+    if (!plugin || !assets || !canvasRef.current) return;
+    const app = target === "instagram" ? "Instagram" : "TikTok";
+    setBusy(true);
+    setNote(null);
+    hapticTap();
+    try {
+      if (tab === "scorecard") {
+        const video = await ensureVideo();
+        const videoPath = await writeCacheFile(video, `peak-music-${card.slug}.${extFor(video)}`);
+        if (!videoPath) throw new Error("no-file");
+        if (target === "instagram") await plugin.instagramStory({ videoPath });
+        else await plugin.tiktok({ videoPath });
+      } else {
+        const stickerPath = await writeCacheFile(await stickerPng(), `peak-music-sticker-${card.slug}.png`);
+        if (!stickerPath) throw new Error("no-file");
+        if (target === "instagram") {
+          await plugin.instagramStory({
+            stickerPath,
+            pickBackground: true,
+            topColor: rgbToHex(assets.palette[0]),
+            bottomColor: rgbToHex(assets.palette[1] ?? assets.palette[0], 0.5),
+          });
+        } else {
+          await plugin.tiktok({ stickerPath, pickBackground: true });
+        }
+      }
+    } catch (e) {
+      socialError(e, app);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function shareScorecard() {
     if (!canvasRef.current || !assets) return;
     setBusy(true);
@@ -171,18 +265,14 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
         return;
       }
       if (!videoRef.current) {
-        recording.current = true;
-        setProgress(0);
-        videoRef.current = await recordCanvas(canvasRef.current, draw, duration, setProgress);
-        recording.current = false;
-        setVideoReady(true);
+        await ensureVideo();
         // Browsers only open the share sheet right after a tap, and the
         // ~16s recording used that tap up — so on the web the button
         // turns into "Share video" for a second, fresh tap. The app's
         // native share has no such rule and goes straight on.
         if (!isNativeApp()) return;
       }
-      const video = videoRef.current;
+      const video = await ensureVideo();
       const result = await shareOrSave(video, `${base}.${extFor(video)}`, card.shareTitle);
       report(result, true);
     } catch {
@@ -304,6 +394,27 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
                     : t("makeVideo")
                 : t("shareSticker")}
             </button>
+            {/* One-tap targets (app 1.3+, only the apps on this phone). */}
+            {social.instagram && (
+              <button
+                type="button"
+                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+                disabled={!assets || busy || (tab === "scorecard" && !videoOk)}
+                onClick={() => sendSocial("instagram")}
+              >
+                {t("instagramStory")}
+              </button>
+            )}
+            {social.tiktok && (
+              <button
+                type="button"
+                className="btn-y2k btn-y2k-outline disabled:opacity-50"
+                disabled={!assets || busy || (tab === "scorecard" && !videoOk)}
+                onClick={() => sendSocial("tiktok")}
+              >
+                TikTok
+              </button>
+            )}
             {tab === "sticker" && canCopyImage && (
               <button
                 type="button"
@@ -315,6 +426,9 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
               </button>
             )}
           </div>
+          {tab === "sticker" && (social.instagram || social.tiktok) && (
+            <p className="share-hint">{t("pickClipHint")}</p>
+          )}
         </>
       ) : (
         <>

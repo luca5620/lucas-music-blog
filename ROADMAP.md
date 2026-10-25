@@ -535,10 +535,11 @@ Luca's list ("so that settles 1"), all live on main:
 - 0017195 scorecard share: songs land one at a time (≤0.75s apart) as square
   rating badges with a pop + glow, then the big score.
 - 8015362 stinky 0–1.9 record toned down (2 plumes, halo/haze ~halved).
-- NEXT: Luca approves the showcases mix (below). One-tap IG/TikTok guide
-  written: docs/ONE-TAP-SHARE-SETUP.md. Waiting on his Facebook App ID,
-  TikTok Client key (after their review) + Apple Team ID, then Claude
-  builds Part 3 and it ships with the next native build.
+- ONE-TAP INSTAGRAM STORY + TIKTOK: code DONE 2026-10-25 (SocialSharePlugin.swift,
+  share sheet buttons, AASA, TikTok pods, sandbox key in Info.plist). NEXT is
+  Luca on the MacBook: docs/ONE-TAP-SHARE-SETUP.md Part 4 (build on his iPhone)
+  → Part 5 (screen-record the TikTok demo, submit TikTok review) → swap in
+  the production TikTok key after approval → App Store build 1.3.
 
 ### 🪟 SHOWCASES B+C mix — ✅ SHIPPED 94773d3 (2026-10-25)
 Featured = sleeve+record; Most loved songs + Now showing boxless; Ratings /

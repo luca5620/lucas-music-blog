@@ -2017,6 +2017,10 @@
     "nextMonth": "Volgende maand",
     "makeVideo": "Video maken",
     "copySticker": "Sticker kopiëren",
-    "stickerCopied": "Gekopieerd. Film of kies je video in Instagram en plak de sticker erop."
+    "stickerCopied": "Gekopieerd. Film of kies je video in Instagram en plak de sticker erop.",
+    "instagramStory": "Instagram-story",
+    "notInstalled": "{app} staat niet op deze telefoon.",
+    "photosDenied": "Peak Music heeft toegang tot Foto's nodig om de video door te geven. Je kunt dat aanzetten in Instellingen.",
+    "pickClipHint": "Instagram-story of TikTok: kies een clip uit je filmrol en de sticker komt erop."
   }
 }

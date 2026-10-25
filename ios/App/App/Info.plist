@@ -67,7 +67,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Lets you take a photo when uploading a profile avatar or banner.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Lets you pick a photo when uploading a profile avatar or banner.</string>
+	<string>Lets you pick a photo for your avatar or banner, and saves your review video to Photos when you share it to TikTok.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Saves your review video to Photos when you share it to TikTok or Instagram.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleURLTypes</key>
@@ -80,6 +82,24 @@
 				<string>com.peakmusicreviews.app</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>tiktok</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sbawg43ojzaf6kd4h2</string>
+			</array>
+		</dict>
+	</array>
+	<key>TikTokClientKey</key>
+	<string>sbawg43ojzaf6kd4h2</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>instagram-stories</string>
+		<string>tiktokopensdk</string>
+		<string>tiktoksharesdk</string>
+		<string>snssdk1180</string>
+		<string>snssdk1233</string>
 	</array>
 </dict>
 </plist>

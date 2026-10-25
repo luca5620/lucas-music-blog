@@ -1,5 +1,6 @@
 import UIKit
 import Capacitor
+import TikTokOpenSDKCore
 
 /// The scene delegate — REQUIRED from the iOS 27 SDK (2026-09-21).
 ///
@@ -104,6 +105,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private func forward(_ contexts: Set<UIOpenURLContext>) {
         for context in contexts {
+            // TikTok's Share Kit answer (2026-10-25): TikTok reopens the
+            // app with its result; its SDK claims the URL and fires the
+            // completion in SocialSharePlugin. Anything else → Capacitor.
+            if TikTokURLHandler.handleOpenURL(context.url) { continue }
             // Rebuild the options dictionary the old AppDelegate entry
             // point used to receive, so plugins see the same shape.
             var options: [UIApplication.OpenURLOptionsKey: Any] = [
@@ -119,6 +124,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func forward(_ activity: NSUserActivity) {
+        // The Universal Link TikTok returns to
+        // (https://peakmusicreviews.com/share/tiktok-callback…).
+        if let url = activity.webpageURL, TikTokURLHandler.handleOpenURL(url) { return }
         _ = ApplicationDelegateProxy.shared.application(
             UIApplication.shared, continue: activity, restorationHandler: { _ in }
         )

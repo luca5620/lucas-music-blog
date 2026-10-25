@@ -2017,6 +2017,10 @@
     "nextMonth": "Mes siguiente",
     "makeVideo": "Crear video",
     "copySticker": "Copiar sticker",
-    "stickerCopied": "Copiado. En Instagram, graba o elige tu vídeo y pega el sticker encima."
+    "stickerCopied": "Copiado. En Instagram, graba o elige tu vídeo y pega el sticker encima.",
+    "instagramStory": "Historia de Instagram",
+    "notInstalled": "{app} no está instalada en este teléfono.",
+    "photosDenied": "Peak Music necesita acceso a Fotos para pasar el vídeo. Puedes activarlo en Ajustes.",
+    "pickClipHint": "Historia de Instagram o TikTok: elige un clip de tu carrete y el sticker va encima."
   }
 }

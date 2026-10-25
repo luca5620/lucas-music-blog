@@ -89,53 +89,69 @@ Don't paste the **App Secret** anywhere. We don't need it.
 - The review form needs a **demo video of the working feature, made with the Sandbox client key** (the app has never been approved). So the order is: Sandbox tab → create sandbox → add Luca's TikTok account as a target user → copy the **sandbox Client key** → Claude builds Part 3 → MacBook build with the sandbox key → screen-record on the iPhone (start by opening the app, then review → Share → TikTok → TikTok editor opens with the video) → submit with the explanation text → after approval swap in the production key.
 - Remove Login Kit / any scope we don't use before submitting (unused products delay review).
 
-## Part 3 — the code (Claude, on Windows, ships with the website)
+## Part 3 — the code (Claude) — DONE 2026-10-25
 
-Claude does these. Listed so the MacBook session knows the state.
+Team ID `82VZZ93GVV` (matches DEVELOPMENT_TEAM in the Xcode project).
+TikTok **sandbox** client key `sbawg43ojzaf6kd4h2` is in Info.plist for now.
 
-- [ ] Share sheet: "Instagram Story" + "TikTok" buttons, shown only in
-      the app build that has the native side (older builds keep plain
-      Share). Option to pick a clip from the camera roll, or use the
-      card's own video.
-- [ ] Sticker export: the review card as a transparent PNG sticker
-      (Instagram) and "clip + sticker glued together" as an MP4
-      (TikTok). Instagram limits: background video H.264, up to 20 s,
-      under 50 MB.
-- [ ] Universal link for TikTok's "come back to the app" step: a
-      `/.well-known/apple-app-site-association` file on
-      peakmusicreviews.com (needs your Apple **Team ID**, the 10-letter
-      code at developer.apple.com → Membership).
-- [ ] A small native plugin (`ios/App/App/SocialSharePlugin.swift`):
-  - Instagram: put the background video and sticker on the pasteboard
-    (`com.instagram.sharedSticker.backgroundVideo`,
-    `com.instagram.sharedSticker.stickerImage`) and open
-    `instagram-stories://share?source_application=<App ID>`.
-  - TikTok: save the MP4 to Photos, then send a `TikTokShareRequest`
-    (TikTok's `TikTokOpenShareSDK`) with that video.
+- [x] Share sheet (components/share/ReviewShareSheet.tsx): "Instagram
+      story" + "TikTok" buttons, only when the installed app has the
+      plugin AND that app is on the phone (lib/native.ts socialTargets).
+      Scorecard tab → the scorecard video. Sticker tab → native photo
+      picker for their own clip, sticker on top.
+- [x] Native plugin `ios/App/App/SocialSharePlugin.swift` (registered in
+      AppViewController.capacitorDidLoad in AppDelegate.swift; added to
+      project.pbxproj next to SceneDelegate.swift):
+  - Instagram: background video/photo + sticker PNG on the pasteboard,
+    opens `instagram-stories://share?source_application=3357751604411052`.
+    Clips over 20 s get cut to 20 s first.
+  - TikTok: (sticker glued onto the clip with AVFoundation when they
+    picked one) → saved to Photos → `TikTokShareRequest`.
+- [x] TikTok SDK via CocoaPods (ios/App/Podfile: TikTokOpenSDKCore +
+      TikTokOpenShareSDK, outside capacitor_pods so cap sync keeps them).
+- [x] Info.plist: LSApplicationQueriesSchemes (instagram-stories,
+      tiktokopensdk, tiktoksharesdk, snssdk1180, snssdk1233),
+      TikTokClientKey, a URL type with the client key, photo strings.
+- [x] Universal Link: App.entitlements has
+      `applinks:peakmusicreviews.com`; the site serves
+      /.well-known/apple-app-site-association claiming ONLY
+      /share/tiktok-callback (everything else still opens in Safari).
+      SceneDelegate/AppDelegate let TikTokURLHandler take its URL first.
 
-## Part 4 — the MacBook build (Luca + Claude on the Mac)
+## Part 4 — the MacBook build (Luca; Claude on the Mac helps)
 
-1. `git pull`, then `npm install` and `npm run mobile:sync`.
+1. `git pull`, then `npm install` and `npm run mobile:sync` (this runs
+   `pod install`, which downloads TikTok's SDK and adds
+   @capacitor/filesystem).
 2. `npm run mobile:ios` opens Xcode.
-3. Xcode → **File → Add Package Dependencies…** → paste
-   `https://github.com/tiktok/tiktok-opensdk-ios` → "Up to Next Major
-   Version" → tick **TikTokOpenSDKCore** and **TikTokOpenShareSDK**
-   → Add.
-4. Info.plist (Claude will have committed these, just check they're
-   there): `LSApplicationQueriesSchemes` contains `instagram-stories`,
-   `tiktoksharesdk`, `snssdk1180`, `snssdk1233`. Also `TikTokClientKey`
-   = the client key, and a URL type whose scheme is the client key.
-5. Xcode → App target → **Signing & Capabilities → + Capability →
-   Associated Domains** → add `applinks:peakmusicreviews.com`.
-6. Run on the Duo simulator for a smoke test. The real test needs a
-   real iPhone with Instagram + TikTok installed (simulators don't have
-   them), via TestFlight.
-7. Before submitting: run the App Store rules check again
-   (APP-STORE-RULES-WATCH.md) and mention in the reviewer notes:
-   "Share to Instagram Stories / TikTok opens those apps with the
-   user's own review card; no login to those services."
+3. **Signing & Capabilities** tab: check **Associated Domains** shows
+   `applinks:peakmusicreviews.com` (it comes from App.entitlements).
+   If Xcode shows a red signing error about it, click **Try Again** and
+   let "Automatically manage signing" fix the profile.
+4. **Product → Build**. If Swift errors appear, paste them to Claude —
+   the plugin was written on Windows without a compiler.
+5. Run on your **real iPhone** (plug it in, pick it as the target, ▶).
+   Simulators don't have Instagram or TikTok.
+6. Sign into TikTok on the phone with the account you added as the
+   sandbox target user.
 
-## What Claude needs from Luca, in one line
+## Part 5 — the TikTok demo video (Luca, ~1 min)
 
-The **Facebook App ID** (Part 1, step 5), the **TikTok Client key**
-(Part 2, step 6, after their approval) and your **Apple Team ID**.
+1. iPhone Control Center → **Screen Recording** (add it in Settings →
+   Control Center if it's not there). Start it, go to the home screen.
+2. Tap the **Peak Music** icon (TikTok wants the video to start with the
+   app opening).
+3. Open one of your reviews → **Share** → **TikTok**.
+4. Wait while the video is made (the bar fills). TikTok opens with it
+   in the editor. Tap **Next** → post it (or save as a draft, either is
+   fine), then come back to Peak Music.
+5. Stop the recording. Upload it in the TikTok review form with the
+   explanation text, and submit.
+6. **After TikTok approves:** send Claude the **production** Client key.
+   Info.plist's TikTokClientKey + URL scheme get swapped from the sandbox
+   key, then a normal App Store build.
+
+Before submitting the app to Apple: run the App Store rules check
+(APP-STORE-RULES-WATCH.md) and add to the reviewer notes: "Share to
+Instagram Stories / TikTok opens those apps with the user's own review
+card; no login to those services."

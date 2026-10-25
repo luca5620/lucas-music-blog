@@ -39,6 +39,7 @@ import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
 import ProfileStats from "@/components/profile/ProfileStats";
 import TheLog from "@/components/profile/TheLog";
+import BackLink from "@/components/ui/BackLink";
 import { THEME_SPECS, VALID_THEMES } from "@/lib/profile-theme";
 import PlatformIcon from "@/components/profile/PlatformIcons";
 import { resolveVisibleLinks } from "@/lib/social-links";
@@ -175,6 +176,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const { tab: rawTab } = await searchParams;
   const activeTab = resolveTab(rawTab);
   const t = await getTranslations("profile");
+  const tc = await getTranslations("common");
   const locale = await getLocale();
 
   // --- Resolve theme + showcases defensively. Until migration 006
@@ -330,6 +332,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       {/* Recolor the site-wide liquid (room glow + canvas wash) to
           this profile's theme while the page is open */}
       <ThemeLiquidSync theme={theme} />
+
+      {/* ← Back, like every other detail page (Luca 2026-10-24: opening a
+          profile from a review or the home feed had no way back). Pops
+          real history; a direct visit falls back to the home page. */}
+      <BackLink
+        fallback="/"
+        label={tc("back")}
+        className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1 pt-4 sm:pt-6"
+      />
 
       {/* ========== BANNER ==========
           A rounded CARD (radius + clip + faint dark ground on the

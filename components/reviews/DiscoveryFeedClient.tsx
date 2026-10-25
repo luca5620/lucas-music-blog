@@ -48,7 +48,7 @@ export interface FeedReview {
     username: string;
     display_name: string | null;
     avatar_url: string | null;
-    role: "user" | "reviewer" | "admin" | "owner" | "tester";
+    role: "user" | "reviewer" | "admin" | "owner" | "tester" | "supporter";
   };
   /** Embedded catalog release (when the review is catalog-attached) —
       lets the card link straight to the release's community page. */

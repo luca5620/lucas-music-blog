@@ -47,7 +47,8 @@
     "about": "Sobre nós",
     "privacy": "Política de privacidade",
     "terms": "Termos de uso",
-    "switching": "Vindo do Musicboard?"
+    "switching": "Vindo do Musicboard?",
+    "support": "Apoie o Peak Music"
   },
   "lowDetail": {
     "footer": "Modo leve: {state}",
@@ -668,7 +669,8 @@
       "owner": "Fundador",
       "admin": "Admin",
       "reviewer": "Resenhista verificado",
-      "tester": "Testador da primeira hora"
+      "tester": "Testador da primeira hora",
+      "supporter": "Apoiador"
     },
     "playlist": {
       "label": "Playlist",
@@ -2029,5 +2031,36 @@
     "notInstalled": "O {app} não está instalado neste telefone.",
     "photosDenied": "O Peak Music precisa de acesso às Fotos para passar o vídeo. Podes ativar isso nos Ajustes.",
     "pickClipHint": "Story do Instagram ou TikTok: escolhe um clipe do teu rolo da câmara e o sticker vai por cima."
+  },
+  "support": {
+    "title": "Apoie o Peak Music",
+    "sub": "Grátis, sem anúncios, feito por uma pessoa só. Contribua e ganhe o selo prateado.",
+    "wallTitle": "Apoiadores",
+    "whyLabel": "POR QUÊ",
+    "why": "O Peak Music é grátis e não tem anúncios. Eu faço sozinho, e o domínio, os servidores e a conta de desenvolvedor da Apple custam dinheiro todo mês. Apoiar é como você ajuda a manter tudo funcionando e crescendo.",
+    "getLabel": "O QUE VOCÊ GANHA",
+    "get1": "O selo prateado de apoiador ao lado do seu @usuário: no perfil, nas resenhas, nos comentários e nos cards de compartilhar. É seu para sempre.",
+    "get2": "\"Apoiador desde\" no seu perfil.",
+    "get3": "Seu nome no mural de apoiadores aqui embaixo.",
+    "nothingLocked": "Nada fica bloqueado. Avaliar, resenhar, listas, Aux Wars e salas ao vivo continuam grátis para todo mundo.",
+    "amountLabel": "ESCOLHA UM VALOR",
+    "already": "Você é apoiador desde {since}. Valeu! Pode contribuir de novo quando quiser.",
+    "notYet": "O apoio ainda não está ativado. Volte em breve.",
+    "loginFirst": "Entre primeiro, para o selo ir para a sua conta.",
+    "login": "Entrar",
+    "other": "Outro",
+    "otherAria": "Valor em dólares americanos",
+    "cta": "Apoiar com {amount}",
+    "ctaPick": "Escolha um valor",
+    "opening": "Abrindo o Stripe…",
+    "oneTime": "Pagamento único pelo Stripe. Qualquer valor ganha o selo.",
+    "error": "Algo deu errado. Tente de novo em um minuto.",
+    "thanks": "Valeu! Seu selo prateado aparece em até um minuto. Se não aparecer, escreva para contact@peakmusicreviews.com que eu resolvo.",
+    "wallLabel": "APOIADORES",
+    "wallEmpty": "Ninguém ainda. Você pode ser o primeiro.",
+    "wallEmptyApp": "Ninguém ainda.",
+    "finePrint": "Os pagamentos são feitos pelo Stripe; o Peak Music nunca vê seu cartão. O apoio é um pagamento único, não uma doação (o Peak Music não é uma instituição de caridade), e não é reembolsável, exceto onde a lei exigir.",
+    "terms": "Termos de uso",
+    "since": "Apoiador desde {since}"
   }
 }

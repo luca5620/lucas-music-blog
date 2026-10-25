@@ -38,7 +38,7 @@ interface UserHit {
   username: string;
   display_name: string | null;
   avatar_url: string | null;
-  role: "user" | "reviewer" | "admin" | "owner" | "tester";
+  role: "user" | "reviewer" | "admin" | "owner" | "tester" | "supporter";
 }
 interface ArtistHit {
   slug: string;

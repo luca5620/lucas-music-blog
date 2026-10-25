@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "The house rules for Peak Music Reviews.",
 };
 
-const LAST_UPDATED = "August 18, 2026";
+const LAST_UPDATED = "October 25, 2026";
 
 export default function TermsPage() {
   return (
@@ -86,6 +86,26 @@ export default function TermsPage() {
           platform, not a bank. Features may change. Album metadata and
           artwork come from third-party catalogs (Spotify, Genius) and belong
           to their respective owners; ratings shown are community opinions.
+        </p>
+      </section>
+
+      {/* Supporters (2026-10-25): web-only Stripe payments → the silver
+          checkmark. Wording per the web-monetization skill: "support",
+          never "donation"; nothing functional is sold. */}
+      <section className="space-y-3 text-sm leading-relaxed text-text-secondary">
+        <h2 className="vhs-label text-base">Supporters</h2>
+        <p>
+          You can support Peak Music on the website with a one-time payment
+          of any amount, handled by Stripe. Supporters get a silver
+          checkmark next to their @handle, a &ldquo;Supporter since&rdquo;
+          line on their profile, and their name on the supporters wall. The
+          checkmark doesn&apos;t expire. Supporting doesn&apos;t unlock any
+          feature: rating, reviewing, lists, Aux Wars and live rooms are free
+          for everyone. Support is a payment to the person who runs Peak
+          Music, not a charitable donation, and it&apos;s non-refundable
+          except where the law requires otherwise. We may remove the
+          checkmark from an account that&apos;s banned under the house rules,
+          and supporter perks may change over time.
         </p>
       </section>
 

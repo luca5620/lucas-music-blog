@@ -47,7 +47,8 @@
     "about": "À propos",
     "privacy": "Politique de confidentialité",
     "terms": "Conditions d'utilisation",
-    "switching": "Tu viens de Musicboard ?"
+    "switching": "Tu viens de Musicboard ?",
+    "support": "Soutenir Peak Music"
   },
   "lowDetail": {
     "footer": "Mode léger : {state}",
@@ -668,7 +669,8 @@
       "owner": "Fondateur",
       "admin": "Admin",
       "reviewer": "Critique vérifié",
-      "tester": "Testeur de la première heure"
+      "tester": "Testeur de la première heure",
+      "supporter": "Soutien"
     },
     "playlist": {
       "label": "Playlist",
@@ -2029,5 +2031,36 @@
     "notInstalled": "{app} n’est pas installé sur ce téléphone.",
     "photosDenied": "Peak Music a besoin d’accéder à Photos pour transmettre la vidéo. Tu peux l’activer dans Réglages.",
     "pickClipHint": "Story Instagram ou TikTok : choisis un clip dans ta pellicule, le sticker se pose dessus."
+  },
+  "support": {
+    "title": "Soutenir Peak Music",
+    "sub": "Gratuit, sans pub, fait par une seule personne. Participe et obtiens le badge argenté.",
+    "wallTitle": "Soutiens",
+    "whyLabel": "POURQUOI",
+    "why": "Peak Music est gratuit et sans pub. Je le fais seul, et le nom de domaine, les serveurs et le compte développeur Apple coûtent de l'argent chaque mois. Soutenir, c'est aider à le faire tourner et grandir.",
+    "getLabel": "CE QUE TU REÇOIS",
+    "get1": "Le badge argenté de soutien à côté de ton @pseudo : sur ton profil, tes critiques, tes commentaires et tes cartes de partage. Il est à toi pour toujours.",
+    "get2": "« Soutien depuis » sur ton profil.",
+    "get3": "Ton nom sur le mur des soutiens ci-dessous.",
+    "nothingLocked": "Rien n'est verrouillé. Noter, critiquer, les listes, les Aux Wars et les salons en direct restent gratuits pour tout le monde.",
+    "amountLabel": "CHOISIS UN MONTANT",
+    "already": "Tu soutiens Peak Music depuis {since}. Merci ! Tu peux toujours participer à nouveau.",
+    "notYet": "Le soutien n'est pas encore activé. Reviens bientôt.",
+    "loginFirst": "Connecte-toi d'abord, pour que le badge arrive sur ton compte.",
+    "login": "Se connecter",
+    "other": "Autre",
+    "otherAria": "Montant en dollars américains",
+    "cta": "Soutenir avec {amount}",
+    "ctaPick": "Choisis un montant",
+    "opening": "Ouverture de Stripe…",
+    "oneTime": "Paiement unique via Stripe. N'importe quel montant donne le badge.",
+    "error": "Un problème est survenu. Réessaie dans une minute.",
+    "thanks": "Merci ! Ton badge argenté apparaît d'ici une minute. Sinon, écris à contact@peakmusicreviews.com et je m'en occupe.",
+    "wallLabel": "SOUTIENS",
+    "wallEmpty": "Personne pour l'instant. Tu pourrais être le premier.",
+    "wallEmptyApp": "Personne pour l'instant.",
+    "finePrint": "Les paiements sont gérés par Stripe ; Peak Music ne voit jamais ta carte. Le soutien est un paiement unique, pas un don (Peak Music n'est pas une association caritative), et il n'est pas remboursable sauf là où la loi l'exige.",
+    "terms": "Conditions d'utilisation",
+    "since": "Soutien depuis {since}"
   }
 }

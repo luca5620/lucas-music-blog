@@ -47,7 +47,8 @@
     "about": "Over ons",
     "privacy": "Privacybeleid",
     "terms": "Gebruiksvoorwaarden",
-    "switching": "Kom je van Musicboard?"
+    "switching": "Kom je van Musicboard?",
+    "support": "Steun Peak Music"
   },
   "lowDetail": {
     "footer": "Lichte modus: {state}",
@@ -668,7 +669,8 @@
       "owner": "Oprichter",
       "admin": "Admin",
       "reviewer": "Geverifieerd recensent",
-      "tester": "Tester van het eerste uur"
+      "tester": "Tester van het eerste uur",
+      "supporter": "Supporter"
     },
     "playlist": {
       "label": "Playlist",
@@ -2029,5 +2031,36 @@
     "notInstalled": "{app} staat niet op deze telefoon.",
     "photosDenied": "Peak Music heeft toegang tot Foto's nodig om de video door te geven. Je kunt dat aanzetten in Instellingen.",
     "pickClipHint": "Instagram-story of TikTok: kies een clip uit je filmrol en de sticker komt erop."
+  },
+  "support": {
+    "title": "Steun Peak Music",
+    "sub": "Gratis, geen advertenties, gemaakt door één persoon. Doe mee en krijg het zilveren vinkje.",
+    "wallTitle": "Supporters",
+    "whyLabel": "WAAROM",
+    "why": "Peak Music is gratis en heeft geen advertenties. Ik maak het in mijn eentje, en het domein, de servers en het Apple-ontwikkelaarsaccount kosten elke maand geld. Steunen is hoe je helpt het draaiende te houden en te laten groeien.",
+    "getLabel": "WAT JE KRIJGT",
+    "get1": "Het zilveren supportersvinkje naast je @naam: op je profiel, recensies, reacties en deelkaarten. Het is voorgoed van jou.",
+    "get2": "\"Supporter sinds\" op je profiel.",
+    "get3": "Je naam op de supportersmuur hieronder.",
+    "nothingLocked": "Er zit niets achter slot. Beoordelen, recenseren, lijsten, Aux Wars en live rooms blijven gratis voor iedereen.",
+    "amountLabel": "KIES EEN BEDRAG",
+    "already": "Je bent supporter sinds {since}. Bedankt! Je kunt altijd nog een keer bijdragen.",
+    "notYet": "Steunen staat nog niet aan. Kom snel terug.",
+    "loginFirst": "Log eerst in, zodat het vinkje op jouw account komt.",
+    "login": "Inloggen",
+    "other": "Anders",
+    "otherAria": "Bedrag in Amerikaanse dollars",
+    "cta": "Steun met {amount}",
+    "ctaPick": "Kies een bedrag",
+    "opening": "Stripe wordt geopend…",
+    "oneTime": "Eenmalige betaling via Stripe. Elk bedrag geeft het vinkje.",
+    "error": "Er ging iets mis. Probeer het over een minuut opnieuw.",
+    "thanks": "Bedankt! Je zilveren vinkje verschijnt binnen een minuut. Zo niet, mail contact@peakmusicreviews.com en ik los het op.",
+    "wallLabel": "SUPPORTERS",
+    "wallEmpty": "Nog niemand. Jij kunt de eerste zijn.",
+    "wallEmptyApp": "Nog niemand.",
+    "finePrint": "Betalingen lopen via Stripe; Peak Music ziet je kaart nooit. Steun is een eenmalige betaling, geen donatie (Peak Music is geen goed doel), en wordt niet terugbetaald behalve waar de wet dat vereist.",
+    "terms": "Gebruiksvoorwaarden",
+    "since": "Supporter sinds {since}"
   }
 }

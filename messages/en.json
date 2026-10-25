@@ -47,7 +47,8 @@
     "about": "About Us",
     "privacy": "Privacy Policy",
     "terms": "Terms of Use",
-    "switching": "Switching from Musicboard?"
+    "switching": "Switching from Musicboard?",
+    "support": "Support Peak Music"
   },
   "lowDetail": {
     "footer": "Low detail: {state}",
@@ -668,7 +669,8 @@
       "owner": "Founder",
       "admin": "Admin",
       "reviewer": "Verified Reviewer",
-      "tester": "Early Tester"
+      "tester": "Early Tester",
+      "supporter": "Supporter"
     },
     "playlist": {
       "label": "Playlist",
@@ -2029,5 +2031,36 @@
     "notInstalled": "{app} isn't installed on this phone.",
     "photosDenied": "Peak Music needs access to Photos to hand the video over. You can turn it on in Settings.",
     "pickClipHint": "Instagram story or TikTok: pick a clip from your camera roll and the sticker goes on top."
+  },
+  "support": {
+    "title": "Support Peak Music",
+    "sub": "Free, no ads, made by one person. Chip in and get the silver checkmark.",
+    "wallTitle": "Supporters",
+    "whyLabel": "WHY",
+    "why": "Peak Music is free and has no ads. I make it by myself, and the domain, the servers and the Apple developer account cost money every month. Supporting is how you help keep it running and growing.",
+    "getLabel": "WHAT YOU GET",
+    "get1": "The silver supporter checkmark next to your @handle: on your profile, reviews, comments and share cards. It's yours for good.",
+    "get2": "\"Supporter since\" on your profile.",
+    "get3": "Your name on the supporters wall below.",
+    "nothingLocked": "Nothing is locked. Rating, reviewing, lists, Aux Wars and live rooms stay free for everyone.",
+    "amountLabel": "PICK AN AMOUNT",
+    "already": "You've been a supporter since {since}. Thank you! You can always chip in again.",
+    "notYet": "Supporting isn't switched on yet. Check back soon.",
+    "loginFirst": "Log in first, so the checkmark lands on your account.",
+    "login": "Log in",
+    "other": "Other",
+    "otherAria": "Amount in US dollars",
+    "cta": "Support with {amount}",
+    "ctaPick": "Pick an amount",
+    "opening": "Opening Stripe…",
+    "oneTime": "One-time payment through Stripe. Any amount gets the checkmark.",
+    "error": "Something went wrong. Try again in a minute.",
+    "thanks": "Thank you! Your silver checkmark shows up within a minute. If it doesn't, email contact@peakmusicreviews.com and I'll sort it out.",
+    "wallLabel": "SUPPORTERS",
+    "wallEmpty": "No one yet. You could be the first.",
+    "wallEmptyApp": "No one yet.",
+    "finePrint": "Payments are handled by Stripe; Peak Music never sees your card. Support is a one-time payment, not a donation (Peak Music isn't a charity), and it's non-refundable except where the law says otherwise.",
+    "terms": "Terms of Use",
+    "since": "Supporter since {since}"
   }
 }

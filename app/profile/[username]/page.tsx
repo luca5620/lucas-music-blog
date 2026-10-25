@@ -39,6 +39,7 @@ import MonthShareButton from "@/components/share/MonthShareButton";
 import { isBlocked } from "@/lib/db/moderation";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
+import { getSupporterSince } from "@/lib/db/supporters";
 import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
 import {
@@ -199,6 +200,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const t = await getTranslations("profile");
   const tc = await getTranslations("common");
   const tr = await getTranslations("reviews.page");
+  const tSupport = await getTranslations("support");
   const locale = await getLocale();
 
   // --- Resolve theme + showcases defensively. Until migration 006
@@ -239,6 +241,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     profilePosts,
     featuredRes,
     profileLists,
+    supporterSince,
   ] = await Promise.all([
     getUser(),
     getProfileStats(profile.id),
@@ -264,6 +267,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             .maybeSingle()
       : Promise.resolve({ data: null }),
     needsLists ? getListsByUsername(profile.username) : Promise.resolve([]),
+    // "Supporter since …" under the handle (migration 061). Null for
+    // everyone who never supported, and before 061 runs.
+    getSupporterSince(profile.id),
   ]);
 
   const isOwnProfile = currentUser?.id === profile.id;
@@ -511,6 +517,17 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             </h1>
             <p className="font-[family-name:var(--font-vt323)] text-lg text-text-secondary">
               @{profile.username}
+              {/* Silver, like the checkmark. Plain text, no link and no
+                  price: this line shows in the app too (Apple 3.1.3 —
+                  recognition is fine, a route to paying isn't). */}
+              {supporterSince && (
+                <span className="text-[#e2e8f0]/80">
+                  {" · "}
+                  {tSupport("since", {
+                    since: new Date(supporterSince).getUTCFullYear().toString(),
+                  })}
+                </span>
+              )}
             </p>
 
 

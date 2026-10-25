@@ -9,6 +9,7 @@ import Link from "next/link";
 import PressTapTarget from "@/components/ui/PressTapTarget";
 import LowDetailToggle from "@/components/ui/LowDetailToggle";
 import LanguagePicker from "@/components/ui/LanguagePicker";
+import SupportFooterLink from "@/components/support/SupportFooterLink";
 import { getTranslations } from "next-intl/server";
 
 export default async function SiteFooter() {
@@ -60,6 +61,8 @@ export default async function SiteFooter() {
         >
           {t("switching")}
         </Link>
+        {/* Web only — renders nothing inside the app (see the component). */}
+        <SupportFooterLink label={t("support")} />
         {" · "}
         {/* Per-device performance switch, reachable from every page
             without an account (lib/lowDetail.ts). */}

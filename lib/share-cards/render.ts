@@ -267,7 +267,8 @@ function drawBrand(ctx: CanvasRenderingContext2D, a: CardAssets, x: number, cy: 
  * checkmarks too, in any share feature with the @"). Same badge as
  * components/ui/RoleBadge.tsx: a tinted circle with a check, gold for
  * the Founder ('owner'), site blue for Admin, green for Verified
- * Reviewer, purple for Early Tester; all but the reviewer green glow.
+ * Reviewer, purple for Early Tester, silver for Supporter; all but the
+ * reviewer green and the supporter silver have the strong glow.
  * Regular members ('user', or no role) get nothing. Keep these colours
  * in step with RoleBadge's badgeConfig.
  */
@@ -276,6 +277,7 @@ const ROLE_BADGES: Record<string, { color: string; glow: boolean }> = {
   admin: { color: "#1e90ff", glow: true },
   reviewer: { color: "#22c55e", glow: false },
   tester: { color: "#a855f7", glow: true },
+  supporter: { color: "#e2e8f0", glow: false },
 };
 
 /** Width the badge adds after the handle (gap + circle), 0 for none. */

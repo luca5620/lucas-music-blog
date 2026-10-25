@@ -47,7 +47,8 @@
     "about": "Über uns",
     "privacy": "Datenschutz",
     "terms": "Nutzungsbedingungen",
-    "switching": "Kommst du von Musicboard?"
+    "switching": "Kommst du von Musicboard?",
+    "support": "Peak Music unterstützen"
   },
   "lowDetail": {
     "footer": "Sparmodus: {state}",
@@ -668,7 +669,8 @@
       "owner": "Gründer",
       "admin": "Admin",
       "reviewer": "Verifizierter Rezensent",
-      "tester": "Tester der ersten Stunde"
+      "tester": "Tester der ersten Stunde",
+      "supporter": "Unterstützer"
     },
     "playlist": {
       "label": "Playlist",
@@ -2029,5 +2031,36 @@
     "notInstalled": "{app} ist auf diesem Handy nicht installiert.",
     "photosDenied": "Peak Music braucht Zugriff auf Fotos, um das Video zu übergeben. Du kannst ihn in den Einstellungen erlauben.",
     "pickClipHint": "Instagram-Story oder TikTok: Wähl einen Clip aus deiner Galerie, der Sticker kommt obendrauf."
+  },
+  "support": {
+    "title": "Peak Music unterstützen",
+    "sub": "Kostenlos, ohne Werbung, von einer Person gemacht. Unterstütze und hol dir das silberne Häkchen.",
+    "wallTitle": "Unterstützer",
+    "whyLabel": "WARUM",
+    "why": "Peak Music ist kostenlos und hat keine Werbung. Ich mache es allein, und die Domain, die Server und der Apple-Entwickleraccount kosten jeden Monat Geld. Mit deiner Unterstützung hilfst du, dass es weiterläuft und wächst.",
+    "getLabel": "WAS DU BEKOMMST",
+    "get1": "Das silberne Unterstützer-Häkchen neben deinem @Namen: auf deinem Profil, in Rezensionen, Kommentaren und Share-Karten. Es gehört dir für immer.",
+    "get2": "„Unterstützer seit“ auf deinem Profil.",
+    "get3": "Deinen Namen auf der Unterstützer-Wand unten.",
+    "nothingLocked": "Nichts wird gesperrt. Bewerten, Rezensieren, Listen, Aux Wars und Live-Räume bleiben für alle kostenlos.",
+    "amountLabel": "WÄHL EINEN BETRAG",
+    "already": "Du unterstützt Peak Music seit {since}. Danke! Du kannst jederzeit noch mal etwas geben.",
+    "notYet": "Unterstützen ist noch nicht freigeschaltet. Schau bald wieder vorbei.",
+    "loginFirst": "Melde dich zuerst an, damit das Häkchen auf deinem Account landet.",
+    "login": "Anmelden",
+    "other": "Anderer",
+    "otherAria": "Betrag in US-Dollar",
+    "cta": "Mit {amount} unterstützen",
+    "ctaPick": "Wähl einen Betrag",
+    "opening": "Stripe wird geöffnet…",
+    "oneTime": "Einmalige Zahlung über Stripe. Jeder Betrag bekommt das Häkchen.",
+    "error": "Etwas ist schiefgelaufen. Versuch es in einer Minute noch mal.",
+    "thanks": "Danke! Dein silbernes Häkchen erscheint innerhalb einer Minute. Wenn nicht, schreib an contact@peakmusicreviews.com und ich kümmere mich darum.",
+    "wallLabel": "UNTERSTÜTZER",
+    "wallEmpty": "Noch niemand. Du könntest der Erste sein.",
+    "wallEmptyApp": "Noch niemand.",
+    "finePrint": "Zahlungen laufen über Stripe; Peak Music sieht deine Karte nie. Die Unterstützung ist eine einmalige Zahlung, keine Spende (Peak Music ist keine gemeinnützige Organisation), und wird nicht erstattet, außer wo das Gesetz es verlangt.",
+    "terms": "Nutzungsbedingungen",
+    "since": "Unterstützer seit {since}"
   }
 }

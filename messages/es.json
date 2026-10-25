@@ -47,7 +47,8 @@
     "about": "Sobre nosotros",
     "privacy": "Política de privacidad",
     "terms": "Términos de uso",
-    "switching": "¿Vienes de Musicboard?"
+    "switching": "¿Vienes de Musicboard?",
+    "support": "Apoya Peak Music"
   },
   "lowDetail": {
     "footer": "Modo ligero: {state}",
@@ -668,7 +669,8 @@
       "owner": "Fundador",
       "admin": "Admin",
       "reviewer": "Reseñista verificado",
-      "tester": "Tester de la primera hora"
+      "tester": "Tester de la primera hora",
+      "supporter": "Colaborador"
     },
     "playlist": {
       "label": "Playlist",
@@ -2029,5 +2031,36 @@
     "notInstalled": "{app} no está instalada en este teléfono.",
     "photosDenied": "Peak Music necesita acceso a Fotos para pasar el vídeo. Puedes activarlo en Ajustes.",
     "pickClipHint": "Historia de Instagram o TikTok: elige un clip de tu carrete y el sticker va encima."
+  },
+  "support": {
+    "title": "Apoya Peak Music",
+    "sub": "Gratis, sin anuncios, hecho por una sola persona. Aporta y consigue el check plateado.",
+    "wallTitle": "Colaboradores",
+    "whyLabel": "POR QUÉ",
+    "why": "Peak Music es gratis y no tiene anuncios. Lo hago yo solo, y el dominio, los servidores y la cuenta de desarrollador de Apple cuestan dinero cada mes. Apoyar es la forma de ayudar a que siga funcionando y creciendo.",
+    "getLabel": "QUÉ RECIBES",
+    "get1": "El check plateado de colaborador junto a tu @usuario: en tu perfil, reseñas, comentarios y tarjetas para compartir. Es tuyo para siempre.",
+    "get2": "\"Colaborador desde\" en tu perfil.",
+    "get3": "Tu nombre en el muro de colaboradores de abajo.",
+    "nothingLocked": "No se bloquea nada. Calificar, reseñar, listas, Aux Wars y salas en vivo siguen gratis para todos.",
+    "amountLabel": "ELIGE UNA CANTIDAD",
+    "already": "Eres colaborador desde {since}. ¡Gracias! Siempre puedes volver a aportar.",
+    "notYet": "Todavía no se puede apoyar. Vuelve pronto.",
+    "loginFirst": "Inicia sesión primero, para que el check llegue a tu cuenta.",
+    "login": "Iniciar sesión",
+    "other": "Otra",
+    "otherAria": "Cantidad en dólares estadounidenses",
+    "cta": "Apoyar con {amount}",
+    "ctaPick": "Elige una cantidad",
+    "opening": "Abriendo Stripe…",
+    "oneTime": "Pago único a través de Stripe. Cualquier cantidad da el check.",
+    "error": "Algo salió mal. Inténtalo de nuevo en un minuto.",
+    "thanks": "¡Gracias! Tu check plateado aparece en menos de un minuto. Si no, escribe a contact@peakmusicreviews.com y lo arreglo.",
+    "wallLabel": "COLABORADORES",
+    "wallEmpty": "Nadie todavía. Puedes ser el primero.",
+    "wallEmptyApp": "Nadie todavía.",
+    "finePrint": "Los pagos los gestiona Stripe; Peak Music nunca ve tu tarjeta. El apoyo es un pago único, no una donación (Peak Music no es una organización benéfica), y no es reembolsable salvo donde la ley lo exija.",
+    "terms": "Términos de uso",
+    "since": "Colaborador desde {since}"
   }
 }

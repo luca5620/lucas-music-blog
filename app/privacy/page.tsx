@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "What Peak Music Reviews collects, why, and what it never does.",
 };
 
-const LAST_UPDATED = "September 3, 2026";
+const LAST_UPDATED = "October 25, 2026";
 
 export default function PrivacyPage() {
   return (
@@ -53,6 +53,11 @@ export default function PrivacyPage() {
             standard server logs (IP address, browser type) kept briefly by
             our hosting providers for security and abuse prevention.
           </li>
+          <li>
+            <strong className="text-text-primary">If you support Peak Music:</strong>{" "}
+            the amount, currency, date and Stripe&apos;s payment reference.
+            Your card details go straight to Stripe and never reach us.
+          </li>
         </ul>
       </section>
 
@@ -73,7 +78,9 @@ export default function PrivacyPage() {
           <strong className="text-text-primary">Vercel</strong> (hosting). Album,
           artist, and song metadata comes from the Spotify and Genius public
           APIs — your searches are sent to those services to return results,
-          without your identity attached.
+          without your identity attached. Supporter payments are processed
+          by <strong className="text-text-primary">Stripe</strong>, under
+          Stripe&apos;s own privacy policy.
         </p>
       </section>
 

@@ -43,7 +43,7 @@ export interface Profile {
   /** NULL for accounts that never picked genres (signup trigger
       doesn't set it) — always guard with ?? [] before iterating. */
   favorite_genres: string[] | null;
-  role: "user" | "reviewer" | "admin" | "owner" | "tester";
+  role: "user" | "reviewer" | "admin" | "owner" | "tester" | "supporter";
   /* Steam-style customization (migration 006) */
   theme: ProfileTheme;
   showcases: ShowcaseType[];

@@ -7,12 +7,15 @@
  * - Admin: site blue with a strong glow
  * - Verified Reviewer: green, subtle (no dramatic glow)
  * - Early Tester: PURPLE with a strong glow — the day-one crew
+ * - Supporter: SILVER/white, soft glow — anyone who supported Peak
+ *   Music on the website, any amount, kept forever (Luca 2026-10-25;
+ *   migration 061 sets the role from the Stripe webhook)
  * - Regular users: no badge
  */
 
 import { useTranslations } from "next-intl";
 
-type Role = "user" | "reviewer" | "admin" | "owner" | "tester";
+type Role = "user" | "reviewer" | "admin" | "owner" | "tester" | "supporter";
 
 interface RoleBadgeProps {
   role: Role;
@@ -47,6 +50,14 @@ const badgeConfig: Record<
     glow: "#a855f7",
     label: "Early Tester",
     strongGlow: true,
+  },
+  // Silver core, white halo, soft (not the staff-strength glow): it
+  // reads as "thank you", not as an official title.
+  supporter: {
+    color: "#e2e8f0",
+    glow: "#ffffff",
+    label: "Supporter",
+    strongGlow: false,
   },
 };
 

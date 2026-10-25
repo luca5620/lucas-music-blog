@@ -35,8 +35,11 @@ yarn-error.log*
 # ...but DO commit the example template (it contains no secrets)
 !.env.example
 
-# local Claude Code session config
-.claude/
+# local Claude Code session config — but the skills folder is shared
+# between the Windows desktop and the MacBook (growth-marketing,
+# web-monetization, seo), so it is committed.
+.claude/*
+!.claude/skills/
 
 # vercel
 .vercel

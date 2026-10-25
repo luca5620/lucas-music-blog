@@ -518,6 +518,42 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 📈 Growth / money / SEO research + skills (2026-10-25 night, Windows)
+- **TikTok Share Kit submitted for review** (2026-10-25) with the 04-40-33
+  demo recording (checked: Share Kit → TikTok editor → post screen). While
+  it's in review, don't edit the app in the TikTok portal. After approval:
+  swap the production Client key into Info.plist (TikTokClientKey + URL
+  scheme), then the 1.3 build with the App Store rules check.
+- **Money plan (Luca's decision):** website-only display ads first + a
+  "donator" supporter checkmark; subscriptions later. Website-only keeps the
+  EU listing non-trader. Every ad / support link must be hidden in the app
+  (`isNativeApp()`). Honest note given: at today's traffic ads earn cents,
+  so the supporter checkmark is the bigger earner at first. Plan + Apple
+  traps logged in docs/APP-STORE-RULES-WATCH.md (2026-10-25 planning row).
+  **Not built yet.** Next: discuss provider (Ko-fi first suggested), badge
+  colour, where ad slots go, then build.
+- **New shared skills** in `.claude/skills/` (committed; .gitignore now
+  keeps only skills/ from .claude/): `growth-marketing` (Duolingo growth
+  model + streaks + notification discipline + unhinged-owl social and its
+  2025 pullback, Airbuds/Letterboxd/Wrapped/Receiptify/Strava, a
+  frame-by-frame breakdown of the @ayoships "Block Blast decompiled"
+  reference video and how to do that format with no face/voice),
+  `web-monetization` (ad network ladder, CMP/ads.txt, placements,
+  supporter checkmark via Ko-fi webhook → badge, Apple 3.1.1/3.1.3(b)/2.5.18),
+  `seo` (state, structured-data rules incl. July 2026 fake-review rule,
+  "Discovered – not indexed" playbook, safe programmatic plays).
+- **SEO shipped a8dbb83:** release JSON-LD now has numTracks + a
+  MusicRecording tracklist; sitemap.xml lists all ~262 artist pages.
+  Re-check Search Console Pages report ~2026-11-05.
+- **Song by song shipped b409d06 + 1b49d03:** rows look/open like Personal
+  favorites (round ▶/■, player drops down), no "· N rated", hints say
+  "play any song right here", rows now as wide as favorites rows.
+- **Ideas parked for discussion (from the research, don't build unasked):**
+  SOTD streak-saver push (~8pm, streak 3+), weekly rating streak, December
+  "Peak Music Rewind", code-exposé / data-exposé TikToks, "<artist> albums
+  ranked" on artist pages, per-artist unreleased hubs, more internal links
+  to unindexed release pages.
+
 ### 🔧 Feedback batch (2026-10-25, Windows) — SHIPPED
 - b409d06: song-by-song rows now look and open exactly like Personal favorites
   (round ▶/■ glyph, the player drops down under the row); the "· N rated" count is gone;

@@ -84,6 +84,11 @@ Don't paste the **App Secret** anywhere. We don't need it.
    **Copy it and paste it to Claude.** Never paste the **Client
    secret**. Share Kit doesn't use it.
 
+### TikTok status (2026-10-25)
+- URL properties verified (privacy, terms, site root); the verification files were then removed (in git history if TikTok ever re-checks).
+- The review form needs a **demo video of the working feature, made with the Sandbox client key** (the app has never been approved). So the order is: Sandbox tab → create sandbox → add Luca's TikTok account as a target user → copy the **sandbox Client key** → Claude builds Part 3 → MacBook build with the sandbox key → screen-record on the iPhone (start by opening the app, then review → Share → TikTok → TikTok editor opens with the video) → submit with the explanation text → after approval swap in the production key.
+- Remove Login Kit / any scope we don't use before submitting (unused products delay review).
+
 ## Part 3 — the code (Claude, on Windows, ships with the website)
 
 Claude does these. Listed so the MacBook session knows the state.

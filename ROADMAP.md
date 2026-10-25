@@ -541,7 +541,18 @@ uses the second option yet).
   top-10 tracklist, credits). He wants a MIX → v2 at the same link: 1 Late-night
   broadcast (CRT frame, album type), 2 Booklet on the TV (white pages inside a
   CRT set), 3 Liner notes, rewound (album pages + tape counter/timecode/REC).
-  Waiting on his pick; build by late November (/rewind, opens Dec 1).
+  He picked **Mix 1** → take 2 at the same link (2026-10-25): real CRT
+  channel change (picture collapses to a line → beam → rolling snow with hum
+  bar → new screen rolls in with vertical-hold overshoot + RGB split → green
+  channel number pops big, blinks, tucks into the corner) and the share-card
+  credit line (avatar @handle + role check · penguin + "Peak Music" in the
+  PlayStation font, mirrors drawCredit in lib/share-cards/render.ts) on the
+  first/last screens; penguin mark replaces "PEAK MUSIC" in the corners.
+  Waiting on his OK, then build /rewind (opens Dec 1) by late November.
+- **Support links (9ddc0dd):** home end-of-feed module now plugs /support
+  (replaced the Your Taste teaser), About has a SUPPORT PEAK MUSIC section
+  above Contact, Settings has a Support row. All via
+  components/support/SupportTeaser.tsx, website only (useWebOnly).
 
 ### 📈 Growth / money / SEO research + skills (2026-10-25 night, Windows)
 - **TikTok Share Kit submitted for review** (2026-10-25) with the 04-40-33
@@ -555,8 +566,7 @@ uses the second option yet).
   (`isNativeApp()`). Honest note given: at today's traffic ads earn cents,
   so the supporter checkmark is the bigger earner at first. Plan + Apple
   traps logged in docs/APP-STORE-RULES-WATCH.md (2026-10-25 planning row).
-  **Not built yet.** Next: discuss provider (Ko-fi first suggested), badge
-  colour, where ad slots go, then build.
+  Supporter checkmark BUILT + LIVE (see above, Stripe). Ads still HELD.
 - **New shared skills** in `.claude/skills/` (committed; .gitignore now
   keeps only skills/ from .claude/): `growth-marketing` (Duolingo growth
   model + streaks + notification discipline + unhinged-owl social and its

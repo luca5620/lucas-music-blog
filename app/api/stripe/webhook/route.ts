@@ -8,8 +8,10 @@ import { verifyStripeSignature } from "@/lib/stripe";
  * POST /api/stripe/webhook — Stripe tells us a payment went through.
  *
  * In Stripe → Developers → Webhooks, add an endpoint
- *   https://peakmusicreviews.com/api/stripe/webhook
- * listening to `checkout.session.completed`, and put its signing
+ *   https://peakmusicreviews.com/api/stripe/webhook   (no www — Stripe
+ *   doesn't follow the www → apex redirect)
+ * listening to `checkout.session.completed` AND
+ * `checkout.session.async_payment_succeeded`, and put its signing
  * secret (whsec_…) in Vercel as STRIPE_WEBHOOK_SECRET.
  *
  * Three gates before anything is written:
@@ -64,17 +66,25 @@ export async function POST(request: NextRequest) {
 
   // Anything else (Stripe sends whatever the endpoint subscribes to):
   // acknowledge and ignore.
+  // Two ways a supporter payment finishes (Stripe's fulfillment guide):
+  //  • checkout.session.completed — cards, Apple Pay, Link… already
+  //    paid when the customer finishes Checkout;
+  //  • checkout.session.async_payment_succeeded — bank debits (SEPA,
+  //    Bacs, …) that Stripe's dynamic payment methods / Adaptive
+  //    Pricing can offer: "completed" arrives first with
+  //    payment_status "unpaid", the money days later. Both carry the
+  //    same Checkout Session, and the session id makes a repeat a no-op.
   const session = event.data?.object;
   if (
-    event.type !== "checkout.session.completed" ||
+    (event.type !== "checkout.session.completed" &&
+      event.type !== "checkout.session.async_payment_succeeded") ||
     !session ||
     session.metadata?.kind !== "supporter"
   ) {
     return NextResponse.json({ received: true });
   }
-  // "paid" only — a delayed method (bank debit) would arrive later as
-  // checkout.session.async_payment_succeeded; one-off cards are
-  // instant, so that path isn't wired up.
+  // Only grant once the money is actually in ("unpaid" = a bank debit
+  // still on its way; its async_payment_succeeded event comes later).
   if (session.payment_status !== "paid") {
     return NextResponse.json({ received: true });
   }

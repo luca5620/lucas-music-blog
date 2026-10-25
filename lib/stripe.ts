@@ -18,6 +18,11 @@ import { createHmac, timingSafeEqual } from "crypto";
  */
 
 const STRIPE_API = "https://api.stripe.com/v1";
+// Pinned to the SAME API version as the webhook destination
+// (Dashboard → Webhooks), so the Checkout Session we create and the
+// one the webhook hands back always have the same shape — an account
+// default upgrade can't silently change either. Bump both together.
+const STRIPE_VERSION = "2026-09-30.endive";
 
 /** Smallest/largest support we accept, in cents. Stripe's own floor is
     50¢; $1 keeps card fees from eating the whole thing. */
@@ -65,6 +70,7 @@ export async function createSupportCheckout(opts: {
     headers: {
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/x-www-form-urlencoded",
+      "Stripe-Version": STRIPE_VERSION,
     },
     body: form,
   });

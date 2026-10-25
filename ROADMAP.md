@@ -538,8 +538,10 @@ uses the second option yet).
 - **Peak Music Rewind (December recap):** 2 mockups SENT from Luca's real data —
   https://claude.ai/artifact/VLZrPrS3UHJMP7FsTUnpUs — A "Year-end broadcast"
   (CRT channels + static) vs B "Your year, the album" (CD booklet: cover grid,
-  top-10 tracklist, credits). Waiting on his pick; build by late November
-  (/rewind, opens Dec 1). Source: scratchpad rewind-template.html.
+  top-10 tracklist, credits). He wants a MIX → v2 at the same link: 1 Late-night
+  broadcast (CRT frame, album type), 2 Booklet on the TV (white pages inside a
+  CRT set), 3 Liner notes, rewound (album pages + tape counter/timecode/REC).
+  Waiting on his pick; build by late November (/rewind, opens Dec 1).
 
 ### 📈 Growth / money / SEO research + skills (2026-10-25 night, Windows)
 - **TikTok Share Kit submitted for review** (2026-10-25) with the 04-40-33

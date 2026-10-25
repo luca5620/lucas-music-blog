@@ -540,7 +540,15 @@ Luca's list ("so that settles 1"), all live on main:
   TikTok Client key (after their review) + Apple Team ID, then Claude
   builds Part 3 and it ships with the next native build.
 
-### 🪟 SHOWCASES — he picked a MIX OF B + C (2026-10-24) + new lineup
+### 🪟 SHOWCASES B+C mix — ✅ SHIPPED 94773d3 (2026-10-25)
+Featured = sleeve+record; Most loved songs + Now showing boxless; Ratings /
+SOTD / On rotation / Listening / Taste match = tinted widget grid. Taste match
++ Most loved songs are AUTOMATIC (not in Settings). Mixtapes + Waiting On
+removed (profile, Settings, home card). SOTD hides from visitors after 7 days.
+Also fixed: perfect-10 badges blew up small badges (review song list too).
+Not tested headless: Taste match + owner view (needs sign-in) — check on phone.
+
+(original brief:)
 - Remove: Waiting On (anticipated), Mixtapes (lists). Keep: stats, Now
   Showing (recent reviews), featured review, listening, listening stats,
   Song of the day. Add: **Taste match** (visitor vs owner overlap, signed-in

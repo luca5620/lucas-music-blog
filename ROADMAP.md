@@ -518,6 +518,29 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 💸 Supporters + streak push + About (2026-10-25 late, Windows)
+- **About story rewritten (99418cd)** in Luca's voice, 6 languages: "made by
+  one person: me", best platform I could make, leaks/what others leave out,
+  homemade-not-low-effort look. Replaces "film lovers have a home".
+- **Song of the Day streak-saver push (4a7f9a9).** 6pm Pacific daily, streak
+  3+ and no pick today → "Your N-day streak is about to end" → own profile.
+  ⚠️ **Luca's hands:** run **migration 060** (paste PUSH_WEBHOOK_SECRET in
+  place of the placeholder) and `supabase functions deploy push-recap
+  --no-verify-jwt`. Check it works with the "saved vs sent" query at the
+  bottom of 060.
+- **Supporter checkmark (af1237b)** — Luca's picks: Stripe Checkout, silver
+  badge, any amount = forever, **ads held**. /support page (web only; in the
+  app it's just the wall), footer link (web only), silver 'supporter' role,
+  "Supporter since <year>" on profiles, Terms + Privacy updated.
+  ⚠️ **Luca's hands, in order:** (1) open a Stripe account; (2) make a long
+  random secret, paste it into **migration 061** and run it; (3) Stripe →
+  Webhooks → endpoint https://peakmusicreviews.com/api/stripe/webhook,
+  event checkout.session.completed; (4) Vercel env: STRIPE_SECRET_KEY,
+  STRIPE_WEBHOOK_SECRET, SUPPORTER_RPC_SECRET → redeploy; (5) test with a
+  sk_test_ key + card 4242 4242 4242 4242 first. Until then /support says
+  "isn't switched on yet".
+- **Peak Music Rewind (December recap):** 2 mockups next, then build.
+
 ### 📈 Growth / money / SEO research + skills (2026-10-25 night, Windows)
 - **TikTok Share Kit submitted for review** (2026-10-25) with the 04-40-33
   demo recording (checked: Share Kit → TikTok editor → post screen). While

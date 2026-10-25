@@ -524,10 +524,8 @@ uses the second option yet).
   homemade-not-low-effort look. Replaces "film lovers have a home".
 - **Song of the Day streak-saver push (4a7f9a9).** 6pm Pacific daily, streak
   3+ and no pick today → "Your N-day streak is about to end" → own profile.
-  ⚠️ **Luca's hands:** run **migration 060** (paste PUSH_WEBHOOK_SECRET in
-  place of the placeholder) and `supabase functions deploy push-recap
-  --no-verify-jwt`. Check it works with the "saved vs sent" query at the
-  bottom of 060.
+  060 run ✓ (job id 4); push-recap redeployed ✓ 2026-10-25 (CLI from Windows,
+  --use-api). Only open check: that 060's secret placeholder was replaced.
 - **Supporter checkmark — LIVE ✅ (af1237b, 1a043b6, 6d76495).** Stripe live
   keys + webhook (checkout.session.completed) on Vercel, migration 061 run,
   RPC secret set. End-to-end verified 2026-10-25 with Luca's real $1 payment:

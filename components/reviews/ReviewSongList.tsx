@@ -108,11 +108,15 @@ export default function ReviewSongList({
           if (player) {
             return (
               <li key={`${song.position}-${song.title}`}>
+                {/* Width: 100% + the two -mx-2 sides, so the row (and its open
+                    highlight) reaches as far right as a Personal Favorites row
+                    does. Plain w-full left it 1rem short on the right (Luca
+                    2026-10-25: "looks like you made the box smaller"). */}
                 <button
                   type="button"
                   onClick={toggle}
                   aria-expanded={isOpen}
-                  className={`review-song w-full text-left px-2 -mx-2 rounded-lg transition-colors ${
+                  className={`review-song w-[calc(100%+1rem)] text-left px-2 -mx-2 rounded-lg transition-colors ${
                     isOpen ? "bg-bg-elevated/60" : "hover:bg-bg-elevated/50"
                   }`}
                 >

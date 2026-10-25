@@ -29,7 +29,7 @@ import { useTranslations } from "next-intl";
 import { localDateString } from "@/lib/review-date";
 import GifAttach from "@/components/ui/GifAttach";
 import { gifFromRow, KLIPY_APP_KEY, type Gif } from "@/lib/gif";
-import ScoreRuler, { ScoreNumber } from "@/components/reviews/ScoreRuler";
+import ScoreSlider, { ScoreNumber } from "@/components/reviews/ScoreSlider";
 import TrackScoreList from "@/components/reviews/TrackScoreList";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
@@ -806,7 +806,9 @@ export default function ReviewForm({
             </div>
           </div>
 
-          {/* The score — "whole album": the big number + ruler.
+          {/* The score — "whole album": the big number + the slider with
+              − / + for the exact 0.1 (the camera-dial ruler was "not very
+              precise", Luca 2026-10-24).
               "Song by song": the songs' average, or their own number. */}
           <div
             className={`${songsMode ? "order-5" : "order-3"} lg:col-start-1 lg:row-start-2 space-y-2`}
@@ -854,13 +856,27 @@ export default function ReviewForm({
                   </button>
                 </div>
                 {ownScore && (
-                  <ScoreRuler value={rating} onChange={setRating} ariaLabel={t("ratingAria")} />
+                  <ScoreSlider
+                    value={rating}
+                    onChange={setRating}
+                    ariaLabel={t("ratingAria")}
+                    downLabel={t("nudgeDown")}
+                    upLabel={t("nudgeUp")}
+                    scale
+                  />
                 )}
               </>
             ) : (
               <>
                 <ScoreNumber value={rating} onChange={setRating} typeLabel={t("typeScore")} />
-                <ScoreRuler value={rating} onChange={setRating} ariaLabel={t("ratingAria")} />
+                <ScoreSlider
+                  value={rating}
+                  onChange={setRating}
+                  ariaLabel={t("ratingAria")}
+                  downLabel={t("nudgeDown")}
+                  upLabel={t("nudgeUp")}
+                  scale
+                />
                 <p className="text-xs text-text-muted">{t("rulerHint")}</p>
               </>
             )}
@@ -929,8 +945,9 @@ export default function ReviewForm({
                     favorites={pickedTracks}
                     onToggleFavorite={toggleTrack}
                     labels={{
-                      slide: t("slide"),
                       favorite: t("favorite"),
+                      nudgeDown: t("nudgeDown"),
+                      nudgeUp: t("nudgeUp"),
                       typeScore: t("typeScore"),
                       clear: t("clearHint"),
                     }}

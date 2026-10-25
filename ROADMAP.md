@@ -518,6 +518,23 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🎚️ RATING SWIPE REVERTED (2026-10-24 evening, Windows) — SHIPPED
+Luca: the ruler + slide-across-the-row "not very precise and feels off".
+He picked **"original + fine-tune"** for BOTH the album score and the song
+rows: the original `.rating-slider` (grab the dot, 0 · 5 · 10 under it) with
+**− / + buttons (0.1 per tap, hold to repeat)** on each side.
+- `components/reviews/ScoreRuler.tsx` → **`ScoreSlider.tsx`** (ScoreSlider +
+  ScoreNumber; the camera-dial ruler is gone). Song rows (TrackScoreList)
+  now have the same slider under the title; an unscored song shows a grey
+  dot in the middle. Tap the number to type still works everywhere.
+- Strings: new `nudgeDown` / `nudgeUp`, new `rulerHint` / `songsHint`, the
+  "slide →" hint removed (6 languages).
+- Verified on the dev server at 390px + 1440px; − / + and hold-repeat
+  checked (8.4 → 8.6 → 8.5, hold → 9.3). Fixed a desktop overflow (long
+  title widened the right column) with `minmax(0, 1fr)`.
+- If he still finds the dot hard to grab on iPhone: make the thumb's TAP
+  area bigger (not its look; he said the 22px glowing dot "popped out").
+
 ### 🌙 OVERNIGHT BUILD 2026-10-24 → 25 (Windows, Luca asleep) — FINAL VERDICTS
 
 Luca signed off on everything below. Build order, each pushed to main when

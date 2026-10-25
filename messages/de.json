@@ -861,7 +861,7 @@
       "fullReview": "Ausführliche Rezension ({n}/10000), optional",
       "fullPlaceholder": "Was sticht heraus? Was funktioniert nicht? Etwas aus einem dummen Grund zu mögen zählt genauso wie eine technische Analyse.",
       "favorites": "Persönliche Favoriten",
-      "favoritesHint": "tipp ♥ bei denen, die gesessen haben · ▶ spielt eine Vorschau",
+      "favoritesHint": "♥ alle persönlichen Favoriten, die du in deiner Rezension hervorheben willst",
       "pickFirst": "Wähl zuerst ein Release; such oben.",
       "wentWrong": "Etwas ist schiefgelaufen.",
       "networkError": "Netzwerkfehler. Versuch es noch mal.",

@@ -861,7 +861,7 @@
       "fullReview": "Critique complète ({n}/10000), facultatif",
       "fullPlaceholder": "Qu'est-ce qui ressort ? Qu'est-ce qui ne marche pas ? Aimer un truc pour une raison bête vaut autant qu'une analyse technique.",
       "favorites": "Favoris personnels",
-      "favoritesHint": "touche ♥ sur ceux qui t'ont marqué · ▶ lance un extrait",
+      "favoritesHint": "♥ les coups de cœur que tu veux mettre en avant dans ta critique",
       "pickFirst": "Choisis d'abord une sortie ; cherche-la ci-dessus.",
       "wentWrong": "Quelque chose a mal tourné.",
       "networkError": "Erreur de connexion. Réessaie.",

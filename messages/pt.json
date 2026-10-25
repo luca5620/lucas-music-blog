@@ -861,7 +861,7 @@
       "fullReview": "Resenha completa ({n}/10000), opcional",
       "fullPlaceholder": "O que se destaca? O que não funciona? Gostar de algo por um motivo bobo vale tanto quanto uma análise técnica.",
       "favorites": "Favoritas pessoais",
-      "favoritesHint": "toque ♥ nas que acertaram · ▶ toca uma prévia",
+      "favoritesHint": "♥ as favoritas que você quer destacar na sua resenha",
       "pickFirst": "Escolha um lançamento primeiro; busque acima.",
       "wentWrong": "Algo deu errado.",
       "networkError": "Erro de conexão. Tente de novo.",

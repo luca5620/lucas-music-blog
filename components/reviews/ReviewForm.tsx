@@ -926,7 +926,7 @@ export default function ReviewForm({
                 ) : (
                   <>
                     <p className="label-xbox">{t("favorites")}</p>
-                    <p className="text-xs text-text-muted font-[family-name:var(--font-vt323)]">
+                    <p className="text-xs text-text-muted">
                       {t("favoritesHint")}
                     </p>
                   </>

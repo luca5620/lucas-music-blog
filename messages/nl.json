@@ -861,7 +861,7 @@
       "fullReview": "Volledige recensie ({n}/10000), optioneel",
       "fullPlaceholder": "Wat valt op? Wat werkt niet? Iets goed vinden om een stomme reden telt net zo hard als een technische analyse.",
       "favorites": "Persoonlijke favorieten",
-      "favoritesHint": "tik ♥ bij wat raak was · ▶ speelt een fragment",
+      "favoritesHint": "♥ de persoonlijke favorieten die je in je review wilt uitlichten",
       "pickFirst": "Kies eerst een release; zoek hierboven.",
       "wentWrong": "Er ging iets mis.",
       "networkError": "Netwerkfout. Probeer het opnieuw.",

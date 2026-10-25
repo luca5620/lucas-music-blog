@@ -861,7 +861,7 @@
       "fullReview": "Full review ({n}/10000) — optional",
       "fullPlaceholder": "What stands out? What doesn't work? Liking something for a dumb reason is just as valid as a technical breakdown.",
       "favorites": "Personal Favorites",
-      "favoritesHint": "tap ♥ on the ones that hit · ▶ plays a preview",
+      "favoritesHint": "♥ any personal favorites you want to highlight on your review",
       "pickFirst": "Pick a release first — search above.",
       "wentWrong": "Something went wrong.",
       "networkError": "Network error. Please try again.",

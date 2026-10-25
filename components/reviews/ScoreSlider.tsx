@@ -4,167 +4,180 @@
  * ScoreSlider — the score picker in the review form, for the whole
  * album AND for every song in song-by-song mode.
  *
- * History: it started as a plain slider (a bar with a dot you grab).
- * On 2026-10-24 it became a camera-dial ruler and the song rows became
- * "slide across the whole row" sliders — and Luca found both "not very
- * precise", because 0.1 was only ~3px of finger travel and the rows
- * jumped to wherever your finger first landed. Same day he picked
- * "original + fine-tune": the original slider back, plus − / + buttons.
+ * History (all 2026-10-24): plain slider → camera-dial ruler + slide-
+ * the-whole-row songs ("not very precise and feels off") → the plain
+ * slider + − / + buttons (still "off", and he didn't like the buttons)
+ * → Luca tried four live mockups and picked option A, "jump to your
+ * finger". That's this:
  *
- *   [ − ]  ●━━━━━━━━━━━━━━○──────  [ + ]
- *          0         5          10
+ *   ●━━━━━━━━━━━━━━○──────     (the bar LOOKS thin: 6px)
+ *   ↕ 52px of touch area around it — grab it anywhere, no aiming
  *
- * - The slider only moves when you grab the dot, so touching it never
- *   throws your score somewhere else. Swipe = get close.
- * - − / + nudge by exactly 0.1. Hold one down and it keeps going.
- * - The bar fills in the score's colour; 9.5+ makes the dot pulse
- *   (the .rating-slider styles in globals.css, unchanged from before).
- * - Every 0.1 step fires one light haptic in the app (no-op on web).
+ * - Touch anywhere on the strip and the dot jumps there, then follows
+ *   the finger smoothly (it glides; the number rounds to 0.1).
+ * - The dot grows a little while held, so you can see you've got it.
+ * - Vertical swipes still scroll the page. On a phone the jump only
+ *   happens once the finger lifts (a tap) or clearly moves sideways,
+ *   so scrolling past a song row never changes its score.
+ * - Every 0.1 crossed fires one light haptic in the app (no-op on web).
+ * - Arrow keys work when it has focus (desktop).
  *
- * `value` can be null (a song that isn't scored yet): the dot sits
- * greyed out in the middle, and the first slide or tap scores it.
+ * `value` can be null (a song that isn't scored yet): no fill, a grey
+ * dot in the middle, and the first tap or slide scores it.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { formatRating, getRatingColor, getRatingHex } from "@/lib/rating";
 import { hapticTap } from "@/lib/native";
 
-const clamp = (v: number) => Math.min(10, Math.max(0, Math.round(v * 10) / 10));
+const round = (v: number) => Math.round(v * 10) / 10;
+const clamp = (v: number) => Math.min(10, Math.max(0, v));
+
+/** Inset of the bar inside the touch strip — the dot's radius plus a
+ *  little, so a 0 or a 10 doesn't hang off the edge. Matches the
+ *  left/right of .score-strip-track in globals.css. */
+const INSET = 10;
 
 interface ScoreSliderProps {
   value: number | null;
   onChange: (v: number) => void;
   ariaLabel: string;
-  /** aria-labels for the − / + buttons ("Lower by 0.1" / "Raise by 0.1") */
-  downLabel: string;
-  upLabel: string;
   /** show the 0 · 5 · 10 under the bar (the big album slider does) */
   scale?: boolean;
 }
 
-export default function ScoreSlider({
-  value,
-  onChange,
-  ariaLabel,
-  downLabel,
-  upLabel,
-  scale = false,
-}: ScoreSliderProps) {
-  // Held − / + buttons repeat from a timer, so they need the value as
-  // it is NOW, not as it was when the press started.
-  const valueRef = useRef(value);
-  useEffect(() => {
-    valueRef.current = value;
-  }, [value]);
+export default function ScoreSlider({ value, onChange, ariaLabel, scale = false }: ScoreSliderProps) {
+  const stripRef = useRef<HTMLDivElement>(null);
+  // `live` = the dot's continuous position while a finger is on it
+  // (null = at rest, the dot sits on `value`).
+  const [live, setLive] = useState<number | null>(null);
+  const drag = useRef<{
+    id: number;
+    x: number;
+    y: number;
+    /** sideways drag confirmed (or a mouse) — the dot follows */
+    on: boolean;
+    /** the last rounded score sent up */
+    sent: number | null;
+  } | null>(null);
 
-  function set(v: number) {
-    const next = clamp(v);
-    if (next !== valueRef.current) {
-      valueRef.current = next;
+  /** Score under a screen x position. */
+  function posAt(clientX: number) {
+    const r = stripRef.current!.getBoundingClientRect();
+    return clamp(((clientX - r.left - INSET) / (r.width - INSET * 2)) * 10);
+  }
+
+  /** Move the dot; send the rounded score up when it changes. */
+  function follow(pos: number) {
+    const d = drag.current!;
+    setLive(pos);
+    const score = round(pos);
+    if (score !== d.sent && score !== value) {
+      d.sent = score;
       hapticTap();
-      onChange(next);
+      onChange(score);
     }
   }
 
-  // An unscored song nudges from the middle of the scale.
-  const nudge = (dir: 1 | -1) => set((valueRef.current ?? 5) + dir * 0.1);
-
-  const shown = value ?? 5;
-  const color = value === null ? "#ffffff" : getRatingHex(value);
-  const fill = value === null ? "rgba(255,255,255,0.08)" : `${color}30 0%, ${color}99 ${shown * 10}%`;
+  const shown = live ?? value ?? 5;
+  const score = live !== null ? round(live) : value;
+  const color = score === null ? "rgba(255, 255, 255, 0.35)" : getRatingHex(score);
+  const pct = shown * 10;
+  const tier =
+    score === null ? "" : score === 10 ? " is-perfect" : score >= 9.5 ? " is-elite" : "";
 
   return (
-    <div className="score-slider">
-      <Nudge label={downLabel} onStep={() => nudge(-1)}>−</Nudge>
-      <div className="score-slider-bar">
-        <input
-          type="range"
-          min="0"
-          max="10"
-          step="0.1"
-          value={shown}
-          onChange={(e) => set(parseFloat(e.target.value))}
-          className={`rating-slider${
-            value === null
-              ? " is-empty"
-              : value === 10
-                ? " rating-slider-perfect"
-                : value >= 9.5
-                  ? " rating-slider-elite"
-                  : ""
-          }`}
-          style={
-            {
-              "--slider-color": color,
-              background:
-                value === null
-                  ? fill
-                  : `linear-gradient(90deg, ${fill}, rgba(255,255,255,0.08) ${shown * 10}%)`,
-            } as React.CSSProperties
+    <div className="score-strip-wrap">
+      <div
+        ref={stripRef}
+        className={`score-strip${live !== null ? " is-held" : ""}${tier}`}
+        role="slider"
+        tabIndex={0}
+        aria-label={ariaLabel}
+        aria-valuemin={0}
+        aria-valuemax={10}
+        aria-valuenow={value ?? undefined}
+        aria-valuetext={value === null ? "–" : formatRating(value)}
+        onKeyDown={(e) => {
+          const step =
+            e.key === "ArrowRight" || e.key === "ArrowUp" ? 0.1
+            : e.key === "ArrowLeft" || e.key === "ArrowDown" ? -0.1
+            : e.key === "PageUp" ? 1
+            : e.key === "PageDown" ? -1
+            : null;
+          if (step === null) return;
+          e.preventDefault();
+          onChange(round(clamp((value ?? 5) + step)));
+        }}
+        onPointerDown={(e) => {
+          if (e.button !== 0) return;
+          // A mouse can't be scrolling the page, so it jumps right away.
+          // A finger waits to see whether it's a tap, a slide or a scroll.
+          const mouse = e.pointerType === "mouse";
+          drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, on: mouse, sent: null };
+          if (mouse) {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            follow(posAt(e.clientX));
           }
-          aria-label={ariaLabel}
-          aria-valuetext={value === null ? "–" : formatRating(value)}
+        }}
+        onPointerMove={(e) => {
+          const d = drag.current;
+          if (!d || d.id !== e.pointerId) return;
+          if (!d.on) {
+            const dx = Math.abs(e.clientX - d.x);
+            const dy = Math.abs(e.clientY - d.y);
+            if (dy > 8 && dy > dx) { drag.current = null; return; } // a scroll
+            if (dx < 4) return;
+            d.on = true;
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }
+          follow(posAt(e.clientX));
+        }}
+        onPointerUp={(e) => {
+          const d = drag.current;
+          if (!d || d.id !== e.pointerId) return;
+          // a tap: jump to where the finger was
+          if (!d.on) follow(posAt(e.clientX));
+          drag.current = null;
+          setLive(null);
+        }}
+        onPointerCancel={() => {
+          // The phone took the touch (usually a scroll). Whatever score
+          // was already sent stays — it's what they slid to.
+          drag.current = null;
+          setLive(null);
+        }}
+      >
+        <span className="score-strip-track">
+          {score !== null && (
+            <span
+              className="score-strip-fill"
+              style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}40, ${color}cc)` }}
+            />
+          )}
+        </span>
+        <span className="score-strip-ticks" aria-hidden="true">
+          {Array.from({ length: 21 }, (_, i) => (
+            <i key={i} style={{ left: `${i * 5}%` }} className={i % 2 ? "is-half" : ""} />
+          ))}
+        </span>
+        <span
+          className="score-strip-dot"
+          style={{
+            left: `calc(${INSET}px + (100% - ${INSET * 2}px) * ${shown / 10})`,
+            background: color,
+            boxShadow: score === null ? "none" : `0 0 6px ${color}`,
+          }}
         />
-        {scale && (
-          <div className="flex justify-between text-xs text-text-muted font-[family-name:var(--font-vt323)]">
-            <span>0</span>
-            <span>5</span>
-            <span>10</span>
-          </div>
-        )}
       </div>
-      <Nudge label={upLabel} onStep={() => nudge(1)}>+</Nudge>
+      {scale && (
+        <div className="score-strip-scale font-[family-name:var(--font-vt323)]">
+          <span>0</span>
+          <span>5</span>
+          <span>10</span>
+        </div>
+      )}
     </div>
-  );
-}
-
-/**
- * One − or + button. A tap = one 0.1 step; hold it and after a short
- * pause it keeps stepping (like the volume buttons), so getting from
- * 6.0 to 6.9 doesn't take nine taps.
- */
-function Nudge({
-  label,
-  onStep,
-  children,
-}: {
-  label: string;
-  onStep: () => void;
-  children: React.ReactNode;
-}) {
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const stop = () => clearTimeout(timer.current);
-  useEffect(() => stop, []);
-
-  return (
-    <button
-      type="button"
-      className="score-nudge"
-      aria-label={label}
-      onPointerDown={(e) => {
-        // stops the long-press text selection / callout on iPhone
-        e.preventDefault();
-        onStep();
-        const repeat = (delay: number) => {
-          timer.current = setTimeout(() => {
-            onStep();
-            repeat(70);
-          }, delay);
-        };
-        repeat(420);
-      }}
-      onPointerUp={stop}
-      onPointerLeave={stop}
-      onPointerCancel={stop}
-      onContextMenu={(e) => e.preventDefault()}
-      // Keyboard (Enter / Space) has no pointer events; detail === 0
-      // tells a keyboard "click" apart from a finger or mouse one.
-      onClick={(e) => {
-        if (e.detail === 0) onStep();
-      }}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -215,7 +228,7 @@ export function ScoreNumber({
 
   function commit() {
     const n = parseFloat(draft.replace(",", "."));
-    if (Number.isFinite(n) && onChange) onChange(clamp(n));
+    if (Number.isFinite(n) && onChange) onChange(round(clamp(n)));
     setEditing(false);
   }
 

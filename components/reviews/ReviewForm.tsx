@@ -806,9 +806,9 @@ export default function ReviewForm({
             </div>
           </div>
 
-          {/* The score — "whole album": the big number + the slider with
-              − / + for the exact 0.1 (the camera-dial ruler was "not very
-              precise", Luca 2026-10-24).
+          {/* The score — "whole album": the big number + the slider (tap
+              or slide anywhere on it — option A of the mockups Luca tried,
+              2026-10-24).
               "Song by song": the songs' average, or their own number. */}
           <div
             className={`${songsMode ? "order-5" : "order-3"} lg:col-start-1 lg:row-start-2 space-y-2`}
@@ -860,8 +860,6 @@ export default function ReviewForm({
                     value={rating}
                     onChange={setRating}
                     ariaLabel={t("ratingAria")}
-                    downLabel={t("nudgeDown")}
-                    upLabel={t("nudgeUp")}
                     scale
                   />
                 )}
@@ -873,8 +871,6 @@ export default function ReviewForm({
                   value={rating}
                   onChange={setRating}
                   ariaLabel={t("ratingAria")}
-                  downLabel={t("nudgeDown")}
-                  upLabel={t("nudgeUp")}
                   scale
                 />
                 <p className="text-xs text-text-muted">{t("rulerHint")}</p>
@@ -946,8 +942,6 @@ export default function ReviewForm({
                     onToggleFavorite={toggleTrack}
                     labels={{
                       favorite: t("favorite"),
-                      nudgeDown: t("nudgeDown"),
-                      nudgeUp: t("nudgeUp"),
                       typeScore: t("typeScore"),
                       clear: t("clearHint"),
                     }}

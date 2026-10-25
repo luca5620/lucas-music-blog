@@ -5630,62 +5630,82 @@ fieldset {
   outline: none;
   color: #fff;
 }
-/* The score slider: [ − ] the original .rating-slider bar [ + ].
-   The ruler that sat here was "not very precise" (Luca 2026-10-24). */
-.score-slider {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.score-slider-bar {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-/* − / + : 36px circles inside a 44px tap target (Apple's minimum) */
-.score-nudge {
-  width: 2.75rem;
-  height: 2.75rem;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  background: none;
-  padding: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.7);
-  touch-action: manipulation;
+/* The score slider (ScoreSlider.tsx) — option A of the mockups Luca
+   tried 2026-10-24, "jump to your finger". The bar LOOKS thin (6px);
+   the strip around it is 52px tall, and all of it is touchable. */
+.score-strip {
+  position: relative;
+  height: 52px;
+  touch-action: pan-y;
+  cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  cursor: pointer;
+  border-radius: 12px;
+  outline: none;
 }
-.score-nudge::before {
-  content: "";
+.score-strip:focus-visible { box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.45); }
+/* left/right 10px = INSET in ScoreSlider.tsx */
+.score-strip-track {
   position: absolute;
-  width: 2.25rem;
-  height: 2.25rem;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  height: 6px;
+  translate: 0 -50%;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.09);
+  overflow: hidden;
+  pointer-events: none;
+}
+.score-strip-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: inherit;
+}
+/* small marks under the bar: every whole number, fainter on the halves */
+.score-strip-ticks {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: calc(50% + 7px);
+  height: 5px;
+  pointer-events: none;
+}
+.score-strip-ticks i {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.28);
+}
+.score-strip-ticks i.is-half { height: 3px; background: rgba(255, 255, 255, 0.16); }
+.score-strip-dot {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  translate: 0 -50%;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: background 0.12s, transform 0.12s;
+  border: 1.5px solid rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  transition: transform 0.12s ease;
 }
-.score-nudge { position: relative; }
-.score-nudge:hover::before { background: rgba(255, 255, 255, 0.12); }
-.score-nudge:active::before { background: rgba(255, 255, 255, 0.18); transform: scale(0.9); }
-/* A song with no score yet: grey dot resting in the middle */
-.rating-slider.is-empty::-webkit-slider-thumb {
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow: none;
-}
-.rating-slider.is-empty::-moz-range-thumb {
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow: none;
+/* held: the dot grows so you can see you've got it */
+.score-strip.is-held .score-strip-dot { transform: scale(1.45); }
+/* 9.5+ and 10 keep a stronger glow on the dot */
+.score-strip.is-elite .score-strip-dot { box-shadow: 0 0 8px rgba(168, 85, 247, 0.95), 0 0 16px rgba(168, 85, 247, 0.55) !important; }
+.score-strip.is-perfect .score-strip-dot { box-shadow: 0 0 8px rgba(30, 144, 255, 1), 0 0 18px rgba(30, 144, 255, 0.65) !important; }
+.score-strip-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -10px;
+  padding: 0 4px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.45));
 }
 /* Song rows. Desktop song-by-song: two columns of rows. */
 .track-score-list {
@@ -5717,8 +5737,11 @@ fieldset {
 }
 /* song by song: the slider line under the title, a tighter top line */
 .track-score-list.is-rateable .track-score-top { min-height: 48px; }
-.track-score-list.is-rateable .track-score-row { padding: 0 0.25rem 0.35rem 0.75rem; }
-.track-score-list.is-rateable .score-slider { margin-left: -0.6rem; }
+.track-score-list.is-rateable .track-score-row { padding: 0 0.25rem 0 0.75rem; }
+/* the strip tucks up under the title line (its top 12px sit behind the
+   ♥ / ▶ buttons, which stay on top and keep their taps) */
+.track-score-list.is-rateable .score-strip { margin: -12px 0 -4px -0.5rem; }
+.track-score-list.is-rateable .track-score-top { position: relative; z-index: 1; }
 .track-score-row.is-fav { background: rgba(244, 114, 182, 0.07); }
 .track-score-n {
   width: 1.5rem;
@@ -5791,7 +5814,7 @@ fieldset {
 }
 
 /* ---- low-detail: the rating screen's glows + slides hold still ---- */
-.low-detail .score-nudge::before { transition: none; }
+.low-detail .score-strip-dot { transition: none; }
 .low-detail .rate-progress i,
 .low-detail .rate-seg button,
 .low-detail .track-score-heart { transition: none; }

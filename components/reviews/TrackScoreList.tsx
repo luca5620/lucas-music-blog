@@ -12,14 +12,14 @@
  *   - the song itself.
  *
  * In SONG BY SONG mode (`rateable`) each row also gets a ScoreSlider
- * under the title: [ − ] ●━━━━○── [ + ]. Grab the dot to get close,
- * − / + for the exact 0.1, or tap the number to type it. Each change
+ * under the title: tap or slide anywhere on it (Luca picked option A,
+ * "jump to your finger"), or tap the number to type it. Each change
  * goes to the parent, which saves it to track_ratings (debounced).
  *
  * Round 3 (Luca 2026-10-24, "not very precise and feels off"): the
  * whole row USED to be the slider — the score jumped to wherever the
  * finger landed and 0.1 was ~3px of travel. It's now the same slider
- * as the album score, which only moves when you grab the dot.
+ * as the album score.
  */
 
 import { useState } from "react";
@@ -47,8 +47,6 @@ interface TrackScoreListProps {
     favorite: string;
     typeScore: string;
     clear: string;
-    nudgeDown: string;
-    nudgeUp: string;
   };
 }
 
@@ -181,8 +179,6 @@ function TrackRow({
           value={shown}
           onChange={onScore}
           ariaLabel={track.title}
-          downLabel={`${labels.nudgeDown}: ${track.title}`}
-          upLabel={`${labels.nudgeUp}: ${track.title}`}
         />
       )}
     </div>

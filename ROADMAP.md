@@ -518,22 +518,25 @@ uses the second option yet).
 
 ## ⏳ In progress
 
-### 🎚️ RATING SWIPE REVERTED (2026-10-24 evening, Windows) — SHIPPED
-Luca: the ruler + slide-across-the-row "not very precise and feels off".
-He picked **"original + fine-tune"** for BOTH the album score and the song
-rows: the original `.rating-slider` (grab the dot, 0 · 5 · 10 under it) with
-**− / + buttons (0.1 per tap, hold to repeat)** on each side.
-- `components/reviews/ScoreRuler.tsx` → **`ScoreSlider.tsx`** (ScoreSlider +
-  ScoreNumber; the camera-dial ruler is gone). Song rows (TrackScoreList)
-  now have the same slider under the title; an unscored song shows a grey
-  dot in the middle. Tap the number to type still works everywhere.
-- Strings: new `nudgeDown` / `nudgeUp`, new `rulerHint` / `songsHint`, the
-  "slide →" hint removed (6 languages).
-- Verified on the dev server at 390px + 1440px; − / + and hold-repeat
-  checked (8.4 → 8.6 → 8.5, hold → 9.3). Fixed a desktop overflow (long
-  title widened the right column) with `minmax(0, 1fr)`.
-- If he still finds the dot hard to grab on iPhone: make the thumb's TAP
-  area bigger (not its look; he said the 22px glowing dot "popped out").
+### 🎚️ RATING SLIDER = OPTION A "jump to your finger" (2026-10-24 evening, Windows) — SHIPPED
+Path: camera-dial ruler + slide-the-row ("not very precise and feels off")
+→ original slider + − / + (c3ec4cc; still "off", and he disliked − / +) →
+four live mockups (claude.ai/artifact/B2RGkHy6vmgzbRnvYPTnLN: A jump, B grab
+anywhere no jump, C slow = fine, D swells while held) → **he picked A**.
+- `components/reviews/ScoreSlider.tsx`: a custom pointer slider, used for
+  the album score AND every song row. The bar LOOKS thin (6px, small ticks
+  under it) but the touch strip is 52px tall. Touch anywhere → the dot jumps
+  there and glides with the finger (number rounds to 0.1), dot grows while
+  held. On phones the jump waits for a tap or a clear sideways move, so
+  scrolling past a song row never scores it. No − / + (strings removed).
+- Verified with real CDP touch + mouse input at 390px + 1440px: tap 25% →
+  2.5, slide → 8.3, vertical swipe over a bar changes nothing (album and an
+  unscored row), desktop drag → 9.7. Song rows tightened (strip tucks under
+  the title line; ♥ / ▶ stay on top).
+- Untouched: the old `.rating-slider` still lives in onboarding
+  (FirstRatings) and the release page's track ratings (TrackRatings) —
+  offer to switch those to option A too if he likes it.
+- Haptic still ticks every 0.1; offer "whole numbers only" if it feels buzzy.
 
 ### 🌙 OVERNIGHT BUILD 2026-10-24 → 25 (Windows, Luca asleep) — FINAL VERDICTS
 

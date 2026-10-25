@@ -34,6 +34,7 @@ const SUPABASE_ORIGIN = (() => {
   }
 })();
 import NavigationPending from "@/components/ui/NavigationPending";
+import { PreviewRouteStop } from "@/lib/preview-player";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SoftwareApplicationSchema, WebSiteSchema } from "@/app/schema";
@@ -306,6 +307,9 @@ export default async function RootLayout({
           <PullToRefresh />
           {/* Site-wide cover-art blur-up on image load */}
           <ImageReveal />
+          {/* Stops a ▶ preview when you leave the page (renders null;
+              see lib/preview-player.ts for the 2026-10-25 bug). */}
+          <PreviewRouteStop />
         </AuthProvider>
         </NextIntlClientProvider>
         {/* Vercel Web Analytics (enabled in the dashboard 2026-08-25).

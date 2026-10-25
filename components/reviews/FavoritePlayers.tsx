@@ -19,12 +19,22 @@
  * player would be audio you can see no way to stop, and ten mounted
  * iframes on a ten-pick card would be ten players loading at once.
  * Open = there is a player; closed = there isn't.
+ *
+ * The drop-down player itself is `FavoritePlayerEmbed` below, exported
+ * so the Song by song list (ReviewSongList) opens the EXACT same
+ * player under a tapped row (Luca 2026-10-25: "it needs to open the
+ * dropdown to play the preview for convenience to get directed to
+ * spotify"). One component, two lists — change it here and both move.
+ *
+ * Opening a player also stops the site's little ▶ preview
+ * (lib/preview-player.ts) so two songs never play over each other.
  */
 
 import { useState } from "react";
 // LANGUAGES: every word comes from messages/<locale>.json.
 import { useTranslations } from "next-intl";
 import { hapticTap } from "@/lib/native";
+import { stopPreview } from "@/lib/preview-player";
 
 export interface FavoriteTrack {
   title: string;
@@ -36,18 +46,49 @@ export interface FavoriteTrack {
   openUrl: string;
 }
 
+/**
+ * The drop-down player: the service's own embed (Spotify's compact
+ * track player, or Apple's song player), which plays the preview AND
+ * carries the service's own "open in Spotify / Apple Music" button —
+ * that's the "get directed to Spotify" part, no extra link needed.
+ *
+ * Render it only while the row is open; unmounting it is what stops
+ * the music (see the header).
+ */
+export function FavoritePlayerEmbed({ track }: { track: FavoriteTrack }) {
+  const tEmbed = useTranslations("releases.embed");
+  if (!track.src) return null;
+  // Apple's song player is 175px, Spotify's compact track player
+  // 152px — their own minimums, same as the release page.
+  const height = track.source === "apple" ? 175 : 152;
+  return (
+    <div className="pt-2 pb-1">
+      <iframe
+        src={track.src}
+        width="100%"
+        height={height}
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+        title={
+          track.source === "apple"
+            ? tEmbed("appleTitle", { title: track.title })
+            : tEmbed("spotifyTitle", { title: track.title })
+        }
+        className="rounded-lg block w-full"
+      />
+    </div>
+  );
+}
+
 export default function FavoritePlayers({ tracks }: { tracks: FavoriteTrack[] }) {
   const t = useTranslations("reviews.page");
-  const tEmbed = useTranslations("releases.embed");
   const [open, setOpen] = useState<number | null>(null);
 
   return (
     <div className="space-y-2">
       {tracks.map((track, i) => {
         const isOpen = open === i;
-        // Apple's song player is 175px, Spotify's compact track
-        // player 152px — their own minimums, same as the release page.
-        const height = track.source === "apple" ? 175 : 152;
 
         const row = (
           <div
@@ -90,6 +131,8 @@ export default function FavoritePlayers({ tracks }: { tracks: FavoriteTrack[] })
                 type="button"
                 onClick={() => {
                   hapticTap();
+                  // Opening a player hushes any ▶ preview first.
+                  if (!isOpen) stopPreview();
                   setOpen(isOpen ? null : i);
                 }}
                 aria-expanded={isOpen}
@@ -97,24 +140,7 @@ export default function FavoritePlayers({ tracks }: { tracks: FavoriteTrack[] })
               >
                 {row}
               </button>
-              {isOpen && (
-                <div className="pt-2 pb-1">
-                  <iframe
-                    src={track.src}
-                    width="100%"
-                    height={height}
-                    frameBorder="0"
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    title={
-                      track.source === "apple"
-                        ? tEmbed("appleTitle", { title: track.title })
-                        : tEmbed("spotifyTitle", { title: track.title })
-                    }
-                    className="rounded-lg block w-full"
-                  />
-                </div>
-              )}
+              {isOpen && <FavoritePlayerEmbed track={track} />}
             </div>
           );
         }

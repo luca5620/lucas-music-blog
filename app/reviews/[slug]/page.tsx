@@ -156,10 +156,20 @@ export default async function ReviewPage({
      titles against the album's song list. Anything that misses —
      Apple doesn't carry the record, a title doesn't match, the
      lookup fails — falls back to the Spotify player for that one
-     row, and a pick with no id at all stays the plain line it was. ── */
+     row, and a pick with no id at all stays the plain line it was.
+
+     Song by song gets the SAME players (Luca 2026-10-25): tapping a
+     rated song opens the drop-down Personal Favorites uses, so the
+     service lookup and the Apple title match below run once over the
+     favourites AND the rated songs together — still one iTunes call. ── */
   const favoritePicks = review.standout_tracks ?? [];
+  // The song list only shows on records with 2+ songs (see below), so
+  // only then are its titles worth resolving players for.
+  const songListTracks = release && (release.tracks ?? []).length >= 2 ? ratedTracks : [];
   let favoriteTracks: FavoriteTrack[] = [];
-  if (favoritePicks.length > 0) {
+  // Rated song position → its drop-down player (Spotify or Apple).
+  const songPlayers = new Map<number, FavoriteTrack>();
+  if (favoritePicks.length > 0 || songListTracks.length > 0) {
     let preferred: string | undefined;
     if (user) {
       const { data: pref } = await supabase
@@ -170,6 +180,11 @@ export default async function ReviewPage({
       preferred = (pref as { preferred_player?: string } | null)?.preferred_player;
     }
 
+    // Every title we need a player for, favourites first, no repeats.
+    const playerTitles = [
+      ...new Set([...favoritePicks.map((p) => p.title), ...songListTracks.map((tr) => tr.title)]),
+    ];
+
     let appleAlbumId: string | null = null;
     let appleSongIds = new Map<string, string>();
     if (preferred === "apple" && release) {
@@ -178,37 +193,51 @@ export default async function ReviewPage({
         appleAlbumId = apple.albumId;
         appleSongIds = apple.trackId
           ? // A single: the cached ref already points at the song.
-            new Map([[favoritePicks[0].title, apple.trackId]])
-          : await resolveAppleSongIds(
-              apple.albumId,
-              favoritePicks.map((p) => p.title)
-            );
+            new Map([[playerTitles[0], apple.trackId]])
+          : await resolveAppleSongIds(apple.albumId, playerTitles);
       }
     }
 
-    favoriteTracks = favoritePicks.map((pick) => {
-      const appleTrackId = appleSongIds.get(pick.title);
+    /* One song → its drop-down player. Apple when the viewer picked
+       Apple Music and the title matched; otherwise Spotify when we
+       have a track id; otherwise src null (the row stays plain).
+       `spotifyId` is shape-checked before it goes anywhere near an
+       iframe src — we wrote it ourselves from the catalog, but the
+       rule is the rule. */
+    const playerFor = (title: string, spotifyId: string | null, openUrl: string): FavoriteTrack => {
+      const appleTrackId = appleSongIds.get(title);
       if (appleAlbumId && appleTrackId) {
         const ref = { albumId: appleAlbumId, trackId: appleTrackId };
         return {
-          title: pick.title,
+          title,
           src: appleMusicEmbedSrc(ref),
           source: "apple" as const,
           openUrl: appleMusicUrl(ref),
         };
       }
-      // The id is re-derived from the stored link and shape-checked
-      // before it goes anywhere near an iframe src — we wrote that
-      // link ourselves from the catalog, but the rule is the rule.
-      const link = pick.spotifyUrl ?? "";
-      const id = link.match(/\/track\/([A-Za-z0-9]{22})/)?.[1];
+      const id = spotifyId && /^[A-Za-z0-9]{22}$/.test(spotifyId) ? spotifyId : null;
       return {
-        title: pick.title,
+        title,
         src: id ? `https://open.spotify.com/embed/track/${id}?theme=0` : null,
         source: "spotify" as const,
-        openUrl: link,
+        openUrl,
       };
+    };
+
+    // Favourites carry a stored Spotify LINK; the id is re-derived from it.
+    favoriteTracks = favoritePicks.map((pick) => {
+      const link = pick.spotifyUrl ?? "";
+      const id = link.match(/\/track\/([A-Za-z0-9]{22})/)?.[1] ?? null;
+      return playerFor(pick.title, id, link);
     });
+    // Rated songs carry the catalog's Spotify track id directly.
+    for (const tr of songListTracks) {
+      const id = tr.spotify_id ?? null;
+      songPlayers.set(
+        tr.position,
+        playerFor(tr.title, id, id ? `https://open.spotify.com/track/${id}` : "")
+      );
+    }
   }
 
   const t = await getTranslations("reviews.page");
@@ -265,6 +294,8 @@ export default async function ReviewPage({
     spotify_id: track.spotify_id ?? null,
     score: authorTrackRatings[track.position],
     favorite: favoriteTitles.has(track.title),
+    // Tap the row → this player drops down (null = nothing to open).
+    player: songPlayers.get(track.position) ?? null,
   }));
   const showSongList = !!release && reviewSongs.length > 0 && (release.tracks ?? []).length >= 2;
   // On a song-by-song review the ♥s in the song list ARE the personal
@@ -408,6 +439,8 @@ export default async function ReviewPage({
           typeLabel,
           rating: review.rating,
           handle: author.username,
+          // the checkmark after the @ on the share cards
+          role: author.role,
           avatarUrl: author.avatar_url,
           coverUrl: review.cover_image,
           quote: review.snippet || null,
@@ -474,6 +507,9 @@ export default async function ReviewPage({
         <section className="space-y-1">
           <h2 className="review-h">
             <span>{t("songBySong", { n: reviewSongs.length })}</span>
+            {/* Same promise as Personal Favorites' hint — and only when
+                at least one row actually opens a player. */}
+            {reviewSongs.some((s) => s.player?.src) && <small>{t("songsPreviewHint")}</small>}
           </h2>
           {/* heads-up: the hearts are the personal favourites */}
           {favoritesInList && <p className="review-h-note">{t("favoritesInList")}</p>}

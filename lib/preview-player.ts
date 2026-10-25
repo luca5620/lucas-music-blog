@@ -13,9 +13,22 @@
  * The answer per record is cached here for the session, so pressing ▶
  * twice, or opening the tracklist after previewing the album, costs
  * nothing.
+ *
+ * LEAVING THE PAGE STOPS IT (bug fix 2026-10-25, Luca: press ▶ on a
+ * song-by-song row, go to another page, the song kept playing).
+ * Why it happened: the <audio> element lives in THIS module, not in
+ * any component — it's created with `new Audio()` and never put on
+ * the page. Client-side navigation (a Link tap, the back button)
+ * unmounts the review page's components, but a module-level object
+ * doesn't belong to any of them, so nothing ever told it to pause.
+ * The fix is `PreviewRouteStop` at the bottom: mounted once in the
+ * root layout (which never unmounts), it watches the URL path and
+ * stops the player whenever it changes. Plus a `pagehide` listener
+ * for real page unloads / the app being backgrounded mid-navigation.
  */
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
 
 export interface PreviewSource {
   /** Same values as CatalogResult.source. */
@@ -63,6 +76,9 @@ function getAudio(): HTMLAudioElement {
     if (!audio || !audio.duration) return;
     set({ progress: Math.min(1, audio.currentTime / audio.duration) });
   });
+  // A real page unload (full reload, leaving the site, iOS putting the
+  // page in the back/forward cache) — stop, so nothing resumes later.
+  window.addEventListener("pagehide", stopPreview);
   return audio;
 }
 
@@ -156,4 +172,23 @@ export function usePreview(): State {
     () => state,
     () => SERVER_STATE
   );
+}
+
+/**
+ * Stops the preview on every page change. Renders nothing; mounted
+ * ONCE in app/layout.tsx (the root layout stays mounted across every
+ * client-side navigation, so this effect sees every path change —
+ * Link taps, router.push, and the browser/app back button alike).
+ *
+ * Path only, not the query string: re-filtering /search (?q=…) is the
+ * same page, and a preview you started there should keep playing.
+ */
+export function PreviewRouteStop(): null {
+  const pathname = usePathname();
+  useEffect(() => {
+    // Runs after the new page commits. Also runs once on first load,
+    // when nothing is playing yet — stopPreview is a no-op then.
+    stopPreview();
+  }, [pathname]);
+  return null;
 }

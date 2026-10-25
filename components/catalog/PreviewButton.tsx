@@ -28,6 +28,10 @@ interface PreviewButtonProps {
   variant?: "cover" | "inline";
   /** What's being previewed, for the screen-reader label. */
   label: string;
+  /** Optional: told about every press, AFTER the tap has been kept
+      from reaching the row. ReviewSongList uses it to close an open
+      Spotify/Apple player so two songs never play at once. */
+  onPress?: () => void;
 }
 
 export default function PreviewButton({
@@ -36,6 +40,7 @@ export default function PreviewButton({
   pick,
   variant = "cover",
   label,
+  onPress,
 }: PreviewButtonProps) {
   const t = useTranslations("catalog");
   const p = usePreview();
@@ -58,6 +63,7 @@ export default function PreviewButton({
         // Never let the tap reach the row (which would PICK the record).
         e.preventDefault();
         e.stopPropagation();
+        onPress?.();
         void togglePreview(previewKey, src, pick);
       }}
       aria-label={

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 
 interface ProfileSongPlayerProps {
@@ -27,6 +27,22 @@ export default function ProfileSongPlayer({
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const t = useTranslations("profile.song");
+
+  // Leaving the profile stops the song (2026-10-25 — same leak as the
+  // ▶ previews in lib/preview-player.ts). `new Audio()` is never put on
+  // the page, so unmounting this component does NOT silence it on its
+  // own; without this cleanup the song played on into the next page.
+  // Pause, drop the source (frees the download) and forget it.
+  useEffect(() => {
+    return () => {
+      const el = audioRef.current;
+      if (!el) return;
+      el.pause();
+      el.removeAttribute("src");
+      el.load();
+      audioRef.current = null;
+    };
+  }, []);
 
   // Non-audio target (catalog pick without a preview): song-as-link.
   if (!isPlayableAudio(url) && (url.startsWith("https://") || url.startsWith("/"))) {

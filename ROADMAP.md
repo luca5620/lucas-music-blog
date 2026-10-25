@@ -535,8 +535,10 @@ Luca's list ("so that settles 1"), all live on main:
 - 0017195 scorecard share: songs land one at a time (≤0.75s apart) as square
   rating badges with a pop + glow, then the big score.
 - 8015362 stinky 0–1.9 record toned down (2 plumes, halo/haze ~halved).
-- NEXT: showcases B+C mix mockup with the new lineup (below), then the
-  step-by-step one-tap IG/TikTok walkthrough for Luca.
+- NEXT: Luca approves the showcases mix (below). One-tap IG/TikTok guide
+  written: docs/ONE-TAP-SHARE-SETUP.md. Waiting on his Facebook App ID,
+  TikTok Client key (after their review) + Apple Team ID, then Claude
+  builds Part 3 and it ships with the next native build.
 
 ### 🪟 SHOWCASES — he picked a MIX OF B + C (2026-10-24) + new lineup
 - Remove: Waiting On (anticipated), Mixtapes (lists). Keep: stats, Now

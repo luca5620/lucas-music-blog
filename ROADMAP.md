@@ -540,9 +540,10 @@ uses the second option yet).
   cover (.cover-accent, ac17498).
 - 156d10a: profile ← Back only after an in-site jump (hidden from tab bar /
   top-right menu via lib/nav-root.ts, and on direct loads).
-- In progress (helper agent): song-by-song rows open the Spotify preview
-  dropdown like Personal favorites; preview audio kept playing after leaving
-  the page → stop on unmount / route change.
+- a5ec890: song-by-song rows open the Personal favorites Spotify/Apple player;
+  previews stop on every page change (PreviewRouteStop in the root layout;
+  the shared Audio lived outside any component). Not tried on a real iPhone.
+- d80c92c: verification checkmark after the @handle on all share cards.
 
 ### 🧾 Share-flow + review-page batch (2026-10-24 late, Windows) — SHIPPED
 Luca's list ("so that settles 1"), all live on main:

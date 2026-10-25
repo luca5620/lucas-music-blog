@@ -87,7 +87,9 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="space-y-3 text-sm leading-relaxed text-text-secondary">
+      {/* id = the "data deletion instructions" link Meta asks for (Facebook
+          App ID for Instagram Stories sharing, 2026-10-25) */}
+      <section id="delete-your-data" className="space-y-3 text-sm leading-relaxed text-text-secondary scroll-mt-24">
         <h2 className="vhs-label text-base">Your controls</h2>
         <ul className="list-disc pl-5 space-y-2">
           <li>Edit or delete your own content at any time.</li>

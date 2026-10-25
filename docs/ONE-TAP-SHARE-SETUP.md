@@ -1,6 +1,6 @@
 # One-tap share to Instagram Stories + TikTok — setup, step by step
 
-Written 2026-10-24 for Luca. **What it does when done:** on a review's
+Written 2026-10-24 for Luca. **Facebook App ID (got it 2026-10-25): `3357751604411052`** (not a secret; it goes in the share URL). **What it does when done:** on a review's
 Share sheet, you tap "Instagram Story" or "TikTok", pick a clip from
 your camera roll (or use the card's own video), and the app opens
 straight into Instagram / TikTok with everything already in place.
@@ -42,6 +42,9 @@ sharing to Stories". It's free and not a secret.
    - At the top you'll see **App ID**, a long number like
      `1234567890123456`. **Copy it and paste it to Claude.** That's
      the only thing needed from Meta.
+   - **User data deletion** (Meta blocks Live mode without it): pick
+     "Data deletion instructions URL" and paste
+     `https://peakmusicreviews.com/privacy#delete-your-data`.
    - While you're on this page, fill in **Privacy Policy URL**:
      `https://peakmusicreviews.com/privacy` and **Terms of Service
      URL**: `https://peakmusicreviews.com/terms`. Pick a category

@@ -21,6 +21,14 @@ export default function ImageReveal() {
     const onLoad = (e: Event) => {
       const t = e.target as HTMLElement;
       if (!t || t.tagName !== "IMG") return;
+      // Skip images React hasn't hydrated yet (2026-10-25). A streamed
+      // section (e.g. the profile's On rotation widget behind Suspense)
+      // can finish loading its cover BEFORE React adopts that HTML; adding
+      // a class then makes the server/client markup differ and React logs
+      // a hydration mismatch. React tags every element it owns with a
+      // "__reactFiber$…" key, so no key = not hydrated = just show it
+      // without the fade, like a cached image.
+      if (!Object.keys(t).some((k) => k.startsWith("__reactFiber"))) return;
       t.classList.add("img-reveal");
       t.addEventListener(
         "animationend",

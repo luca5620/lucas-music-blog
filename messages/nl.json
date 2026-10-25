@@ -232,7 +232,9 @@
       "forever": "Voorgoed verwijderen",
       "cancel": "Annuleren",
       "failed": "Account verwijderen mislukt"
-    }
+    },
+    "support": "Steun Peak Music",
+    "supportHint": "Elk bedrag, één keer. Het zilveren vinkje is voorgoed van jou."
   },
   "pending": {
     "tuning": "AFSTEMMEN…"
@@ -2061,6 +2063,10 @@
     "wallEmptyApp": "Nog niemand.",
     "finePrint": "Betalingen lopen via Stripe; Peak Music ziet je kaart nooit. Steun is een eenmalige betaling, geen donatie (Peak Music is geen goed doel), en wordt niet terugbetaald behalve waar de wet dat vereist.",
     "terms": "Gebruiksvoorwaarden",
-    "since": "Supporter sinds {since}"
+    "since": "Supporter sinds {since}",
+    "teaserTitle": "Houd dit kanaal in de lucht",
+    "teaserBody": "Peak Music is gratis, reclamevrij en gemaakt door één persoon. Geef elk bedrag en krijg het zilveren vinkje.",
+    "teaserCta": "Steunen →",
+    "aboutLabel": "STEUN PEAK MUSIC"
   }
 }

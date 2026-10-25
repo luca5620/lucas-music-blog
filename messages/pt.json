@@ -232,7 +232,9 @@
       "forever": "Excluir para sempre",
       "cancel": "Cancelar",
       "failed": "Não deu para excluir a conta"
-    }
+    },
+    "support": "Apoie o Peak Music",
+    "supportHint": "Qualquer valor, uma vez. O selo prateado é seu para sempre."
   },
   "pending": {
     "tuning": "SINTONIZANDO…"
@@ -2061,6 +2063,10 @@
     "wallEmptyApp": "Ninguém ainda.",
     "finePrint": "Os pagamentos são feitos pelo Stripe; o Peak Music nunca vê seu cartão. O apoio é um pagamento único, não uma doação (o Peak Music não é uma instituição de caridade), e não é reembolsável, exceto onde a lei exigir.",
     "terms": "Termos de uso",
-    "since": "Apoiador desde {since}"
+    "since": "Apoiador desde {since}",
+    "teaserTitle": "Mantenha este canal no ar",
+    "teaserBody": "O Peak Music é grátis, sem anúncios e feito por uma pessoa só. Contribua com qualquer valor e ganhe o selo prateado.",
+    "teaserCta": "Apoiar →",
+    "aboutLabel": "APOIE O PEAK MUSIC"
   }
 }

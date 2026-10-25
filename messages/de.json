@@ -232,7 +232,9 @@
       "forever": "Für immer löschen",
       "cancel": "Abbrechen",
       "failed": "Konto konnte nicht gelöscht werden"
-    }
+    },
+    "support": "Peak Music unterstützen",
+    "supportHint": "Beliebiger Betrag, einmalig. Das silberne Häkchen bleibt für immer."
   },
   "pending": {
     "tuning": "SENDERSUCHE…"
@@ -2061,6 +2063,10 @@
     "wallEmptyApp": "Noch niemand.",
     "finePrint": "Zahlungen laufen über Stripe; Peak Music sieht deine Karte nie. Die Unterstützung ist eine einmalige Zahlung, keine Spende (Peak Music ist keine gemeinnützige Organisation), und wird nicht erstattet, außer wo das Gesetz es verlangt.",
     "terms": "Nutzungsbedingungen",
-    "since": "Unterstützer seit {since}"
+    "since": "Unterstützer seit {since}",
+    "teaserTitle": "Halte diesen Sender auf Sendung",
+    "teaserBody": "Peak Music ist kostenlos, werbefrei und von einer Person gemacht. Gib einen beliebigen Betrag und hol dir das silberne Häkchen.",
+    "teaserCta": "Unterstützen →",
+    "aboutLabel": "PEAK MUSIC UNTERSTÜTZEN"
   }
 }

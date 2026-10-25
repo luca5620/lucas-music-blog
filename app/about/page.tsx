@@ -8,6 +8,7 @@ import FAQSchema from "@/components/seo/FAQSchema";
 import { BreadcrumbSchema } from "@/app/schema";
 import { aboutFAQs } from "@/lib/faq-data";
 import { APP_STORE_URL } from "@/lib/app-store";
+import SupportTeaser from "@/components/support/SupportTeaser";
 
 /**
  * About page — what Peak Music Reviews is, the story, and an FAQ.
@@ -166,6 +167,10 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
+
+      {/* ===== SUPPORT (website only — the component hides itself in
+          the app shell, Apple 3.1.1) ===== */}
+      <SupportTeaser variant="about" />
 
       {/* ===== CONTACT (already real — the working inbox) ===== */}
       <section className="space-y-3">

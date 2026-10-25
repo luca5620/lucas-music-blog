@@ -37,6 +37,8 @@ import {
 import DeleteAccountSection from "@/components/settings/DeleteAccountSection";
 import ChangePasswordSection from "@/components/settings/ChangePasswordSection";
 import SettingsSection from "@/components/settings/SettingsSection";
+import SupportTeaser from "@/components/support/SupportTeaser";
+import { useWebOnly } from "@/lib/useWebOnly";
 import LowDetailToggle from "@/components/ui/LowDetailToggle";
 import LanguagePicker from "@/components/ui/LanguagePicker";
 import { useTranslations } from "next-intl";
@@ -110,6 +112,8 @@ export default function ProfileSettingsPage() {
   // (tSettings); showcase block names come from home.showcases (tShow).
   // Theme names, platform names and catalog titles are data — untouched.
   const tSettings = useTranslations("settings");
+  // Website only: the Support row never shows in the app shell (Apple 3.1.1).
+  const webOnly = useWebOnly();
   const tShow = useTranslations("home.showcases");
   const tBadges = useTranslations("badges");
   const router = useRouter();
@@ -1462,6 +1466,19 @@ export default function ProfileSettingsPage() {
       >
         <LanguagePicker variant="row" accent={themeHex} />
       </SettingsSection>
+
+      {/* ========== SUPPORT ==========
+          Website only (Luca 2026-10-25) — links to /support. Hidden in
+          the app: no pointing at payments outside Apple (3.1.1). */}
+      {webOnly && (
+        <SettingsSection
+          id="support"
+          title={tSettings("support")}
+          hint={tSettings("supportHint")}
+        >
+          <SupportTeaser variant="settings" />
+        </SettingsSection>
+      )}
 
       {/* ========== ACCOUNT DELETION ==========
           In-app account deletion — App Store guideline 5.1.1(v)

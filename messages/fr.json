@@ -232,7 +232,9 @@
       "forever": "Supprimer définitivement",
       "cancel": "Annuler",
       "failed": "La suppression a échoué"
-    }
+    },
+    "support": "Soutenir Peak Music",
+    "supportHint": "N'importe quel montant, une seule fois. Le badge argenté est à vous pour de bon."
   },
   "pending": {
     "tuning": "RÉGLAGE…"
@@ -2061,6 +2063,10 @@
     "wallEmptyApp": "Personne pour l'instant.",
     "finePrint": "Les paiements sont gérés par Stripe ; Peak Music ne voit jamais ta carte. Le soutien est un paiement unique, pas un don (Peak Music n'est pas une association caritative), et il n'est pas remboursable sauf là où la loi l'exige.",
     "terms": "Conditions d'utilisation",
-    "since": "Soutien depuis {since}"
+    "since": "Soutien depuis {since}",
+    "teaserTitle": "Gardez cette chaîne à l'antenne",
+    "teaserBody": "Peak Music est gratuit, sans pub et fait par une seule personne. Donnez le montant de votre choix et obtenez le badge argenté.",
+    "teaserCta": "Soutenir →",
+    "aboutLabel": "SOUTENIR PEAK MUSIC"
   }
 }

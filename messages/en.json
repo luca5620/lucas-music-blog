@@ -232,7 +232,9 @@
       "forever": "Delete Forever",
       "cancel": "Cancel",
       "failed": "Deletion failed"
-    }
+    },
+    "support": "Support Peak Music",
+    "supportHint": "Any amount, once. You get the silver checkmark for good."
   },
   "pending": {
     "tuning": "TUNING…"
@@ -2061,6 +2063,10 @@
     "wallEmptyApp": "No one yet.",
     "finePrint": "Payments are handled by Stripe; Peak Music never sees your card. Support is a one-time payment, not a donation (Peak Music isn't a charity), and it's non-refundable except where the law says otherwise.",
     "terms": "Terms of Use",
-    "since": "Supporter since {since}"
+    "since": "Supporter since {since}",
+    "teaserTitle": "Keep this channel on the air",
+    "teaserBody": "Peak Music is free, ad-free and made by one person. Chip in any amount and get the silver checkmark.",
+    "teaserCta": "Support →",
+    "aboutLabel": "SUPPORT PEAK MUSIC"
   }
 }

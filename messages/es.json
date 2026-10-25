@@ -232,7 +232,9 @@
       "forever": "Eliminar para siempre",
       "cancel": "Cancelar",
       "failed": "No se pudo eliminar la cuenta"
-    }
+    },
+    "support": "Apoya Peak Music",
+    "supportHint": "Cualquier cantidad, una vez. El check plateado es tuyo para siempre."
   },
   "pending": {
     "tuning": "SINTONIZANDO…"
@@ -2061,6 +2063,10 @@
     "wallEmptyApp": "Nadie todavía.",
     "finePrint": "Los pagos los gestiona Stripe; Peak Music nunca ve tu tarjeta. El apoyo es un pago único, no una donación (Peak Music no es una organización benéfica), y no es reembolsable salvo donde la ley lo exija.",
     "terms": "Términos de uso",
-    "since": "Colaborador desde {since}"
+    "since": "Colaborador desde {since}",
+    "teaserTitle": "Mantén este canal en el aire",
+    "teaserBody": "Peak Music es gratis, sin anuncios y lo hace una sola persona. Aporta lo que quieras y llévate el check plateado.",
+    "teaserCta": "Apoyar →",
+    "aboutLabel": "APOYA PEAK MUSIC"
   }
 }

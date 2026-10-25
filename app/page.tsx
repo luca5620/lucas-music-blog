@@ -35,6 +35,7 @@ import LiveBadge from "@/components/rooms/LiveBadge";
 import ChromeDisc from "@/components/ui/ChromeDisc";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import { BreadcrumbSchema } from "@/app/schema";
+import SupportTeaser from "@/components/support/SupportTeaser";
 /* App Store link for the web-only download badge in the HOME band —
    shared constant in lib/app-store.ts (also used by the SEO landing
    pages). The listing goes live the moment Apple approves the app. */
@@ -403,19 +404,10 @@ async function Dashboard({ userId }: { userId: string }) {
         <ListsRail />
       </Suspense>
 
-      {/* ===== Your Taste teaser ===== Web only (app-hide): the app
-          has the Your Taste tab right in the bottom bar, and with the
-          website plug below, two end-of-scroll modules crowded the
-          shell (Luca 2026-08-26). */}
-      <section className="app-hide panel-xbox p-5 flex flex-col sm:flex-row items-center gap-4 justify-between">
-        <div>
-          <p className="pixel-text text-lg text-accent-glow">{t("tasteTitle")}</p>
-          <p className="text-xs text-text-secondary mt-1">{t("tasteBody")}</p>
-        </div>
-        <Link href="/your-taste" className="btn-y2k btn-y2k-outline shrink-0">
-          {t("tuneIn")}
-        </Link>
-      </section>
+      {/* ===== Support Peak Music ===== Replaced the Your Taste teaser
+          (Luca 2026-10-25). Website only — SupportTeaser renders nothing
+          on the server and nothing in the app shell (Apple 3.1.1). */}
+      <SupportTeaser variant="home" />
 
       {/* About Us moved to the universal SiteFooter (Luca 2026-08-22:
           the blue pill duplicated it once the footer link shipped). */}

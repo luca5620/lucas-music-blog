@@ -144,7 +144,7 @@
       "hint": "Qué bloques aparecen en tu perfil y en qué orden.",
       "intro": "Elige qué bloques se muestran en tu perfil y ordénalos con las flechas. Lo primero de la lista es lo primero de tu página.",
       "hints": {
-        "stats": "Cuántas reseñas llevas, tu promedio y el histograma de notas",
+        "stats": "Tu media + cada valoración como una fila de puntos",
         "recent_reviews": "Tus últimas 8 reseñas como un muro de portadas",
         "featured_review": "Una reseña fijada, al frente y al centro",
         "lists": "Tus listas públicas más recientes",
@@ -342,7 +342,9 @@
       "waitingOn": "En espera",
       "onRotation": "En rotación",
       "songOfTheDay": "Canción del día",
-      "listeningStats": "Escucha total"
+      "listeningStats": "Escucha total",
+      "tasteMatch": "Afinidad",
+      "mostLoved": "Canciones más queridas"
     },
     "community": {
       "eyebrow": "Comunidad",
@@ -677,7 +679,21 @@
     "ctaList": "Crea una lista",
     "ctaPost": "Escribe una publicación",
     "ctaAnticipated": "Busca un lanzamiento",
-    "noSignalOwnPosts": "SIN SEÑAL: comparte una opinión, un video o una lista y aparecerá aquí."
+    "noSignalOwnPosts": "SIN SEÑAL: comparte una opinión, un video o una lista y aparecerá aquí.",
+    "sc": {
+      "ratings": "Valoraciones",
+      "averageOf": "{n, plural, one {de # valoración} other {media de #}}",
+      "tasteMatch": "Afinidad · tú + {name}",
+      "tasteBoth": "Los dos le dieron un {score} a {title}",
+      "tasteClose": "{title}: tú {mine}, ellos {theirs}",
+      "tasteCommon": "{n} lanzamientos en común",
+      "mostLoved": "Canciones más queridas",
+      "mostLovedHint": "♥ favoritas + mejores notas por canción",
+      "loved": "Favorita personal",
+      "addShowcase": "＋ Añadir una sección",
+      "onlyYou": "Solo tú ves esto",
+      "statsfmNudge": "Muestra lo que escuchas: añade tu enlace de stats.fm en <link>Ajustes</link>."
+    }
   },
   "badges": {
     "event": {

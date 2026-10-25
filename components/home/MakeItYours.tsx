@@ -38,8 +38,8 @@ const SHOWCASE_KEYS = [
   "tasteReadout",
   "nowShowing",
   "featurePresentation",
-  "mixtapes",
-  "waitingOn",
+  "tasteMatch",
+  "mostLoved",
   "onRotation",
   "songOfTheDay",
 ] as const;

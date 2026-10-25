@@ -4,8 +4,15 @@
  * Every profile is a little owned space: the user picks a THEME
  * (a preset — the `theme-*` classes in globals.css re-skin accents,
  * heading fonts, and panel styling inside the wrapper div) and
- * arranges SHOWCASES (ordered blocks: stats, recent reviews,
- * featured review, badges, lists, anticipated releases…).
+ * arranges SHOWCASES (ordered blocks: ratings, recent reviews,
+ * featured review, song of the day, stats.fm listening…).
+ *
+ * Showcases overhaul round 2 (Luca 2026-10-24, "a mix of B and C"):
+ * the big pieces (the featured record, Most loved songs, Now showing)
+ * sit on the page with no box and a hairline heading; the small live
+ * ones (Ratings, Song of the day, On rotation, All-time listening, and
+ * Taste match for visitors) are tinted widgets in one two-column grid.
+ * Empty showcases are hidden from visitors.
  *
  * Everything renders on the server; tabs are plain links (?tab=)
  * so switching needs no client JS.
@@ -21,8 +28,9 @@ import {
   getProfileStats,
   isFollowing,
 } from "@/lib/db/profiles";
-import { getListsByUsername, type ListSummary } from "@/lib/db/lists";
-import { getUser } from "@/lib/auth";
+import { getListsByUsername } from "@/lib/db/lists";
+import { getUser, getProfile } from "@/lib/auth";
+import { getTasteMatch, getMostLovedSongs } from "@/lib/db/showcases";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import FollowButton from "./FollowButton";
 import BlockButton from "@/components/moderation/BlockButton";
@@ -31,9 +39,16 @@ import MonthShareButton from "@/components/share/MonthShareButton";
 import { isBlocked } from "@/lib/db/moderation";
 import ProfileSongPlayer from "./ProfileSongPlayer";
 import RoleBadge from "@/components/ui/RoleBadge";
-import RatingHistogram from "@/components/profile/RatingHistogram";
 import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
+import {
+  WidgetGrid,
+  RatingsWidget,
+  TasteMatchWidget,
+  AddShowcaseHint,
+} from "@/components/profile/ShowcaseWidgets";
+import MostLovedSongs from "@/components/profile/MostLovedSongs";
+import ReviewSleeve from "@/components/reviews/ReviewSleeve";
 import ProfileReviewsGrid from "@/components/profile/ProfileReviewsGrid";
 import ThemeBackdrop from "@/components/profile/ThemeBackdrop";
 import ThemeLiquidSync from "@/components/profile/ThemeLiquidSync";
@@ -122,16 +137,27 @@ const DEFAULT_SHOWCASES: ShowcaseType[] = ["stats", "recent_reviews"];
    badges now live under the username on every profile, so the block
    is gone the same way "favorites" went — rows still carrying it just
    don't render it. */
+/* "lists" (Mixtapes) and "anticipated" (Waiting On) left 2026-10-24
+   (Luca, showcases overhaul round 2) — only 2 and 1 profiles used
+   them. Same trick as above: rows still carrying them just don't
+   render them, and Settings drops them on the next save. */
 const VALID_SHOWCASES: ShowcaseType[] = [
   "stats",
   "recent_reviews",
   "featured_review",
-  "lists",
-  "anticipated",
   "listening",
   "listening_stats",
   "sotd",
 ];
+
+/** The small "live" showcases that render as widgets in ONE grid
+    (ShowcaseWidgets.tsx). The grid sits where the first of them is in
+    the member's order; inside it they keep their relative order. */
+const WIDGET_SHOWCASES: ShowcaseType[] = ["stats", "sotd", "listening", "listening_stats"];
+
+/** One block of the showcase column: a big showcase, the widget grid,
+    or the automatic Most loved songs list. */
+type ShowcaseBlock = ShowcaseType | "widgets" | "loved";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
@@ -155,16 +181,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
    lib/social-links.ts — which ones show, and in what order, is the
    member's `visible_links` choice (migration 039). */
 
-/* --- Shapes for showcase queries done inline below --- */
-
-interface AnticipatedRelease {
-  id: string;
-  slug: string;
-  title: string;
-  cover_image: string | null;
-  is_unreleased: boolean | null;
-}
-
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { username } = await params;
   const profile = await getProfileByUsername(username);
@@ -177,6 +193,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const activeTab = resolveTab(rawTab);
   const t = await getTranslations("profile");
   const tc = await getTranslations("common");
+  const tr = await getTranslations("reviews.page");
   const locale = await getLocale();
 
   // --- Resolve theme + showcases defensively. Until migration 006
@@ -203,8 +220,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   // user's highest-rated published review so enabling the showcase
   // always shows SOMETHING (a pin in Settings overrides the pick).
   const needsFeatured = showcases.includes("featured_review");
-  const needsLists = showcases.includes("lists") || activeTab === "lists";
-  const needsAnticipated = showcases.includes("anticipated");
+  // Lists are only the Lists tab now (the Mixtapes showcase is gone).
+  const needsLists = activeTab === "lists";
 
   // ONE batch for everything that only needs the profile row. This
   // page used to do these across four sequential awaits — on a phone
@@ -217,7 +234,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     profilePosts,
     featuredRes,
     profileLists,
-    anticipatedRes,
   ] = await Promise.all([
     getUser(),
     getProfileStats(profile.id),
@@ -243,14 +259,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             .maybeSingle()
       : Promise.resolve({ data: null }),
     needsLists ? getListsByUsername(profile.username) : Promise.resolve([]),
-    needsAnticipated
-      ? supabase
-          .from("release_follows")
-          .select("releases!inner(id, slug, title, cover_image, is_unreleased)")
-          .eq("follower_id", profile.id)
-          .order("created_at", { ascending: false })
-          .limit(8)
-      : Promise.resolve({ data: null }),
   ]);
 
   const isOwnProfile = currentUser?.id === profile.id;
@@ -263,22 +271,40 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   // allow-list so a bad stored value renders nothing.
   const visibleLinks = resolveVisibleLinks(profile);
   const hasStreamingLinks = visibleLinks.length > 0;
-  // Viewer-relative flags need currentUser, so they get a second
-  // (small) batch — still one round trip for both together.
-  const [userFollows, viewerHasBlocked] =
-    currentUser && !isOwnProfile
-      ? await Promise.all([
-          isFollowing(currentUser.id, profile.id),
-          isBlocked(currentUser.id, profile.id),
-        ])
-      : [false, false];
+  // Viewer-relative bits need currentUser, so they get a second batch
+  // — still one round trip for all of them together. Taste match (and
+  // the visitor's own avatar for it) only for a signed-in VISITOR;
+  // Most loved songs rides along because it needs the reviews list.
+  const viewerId = currentUser && !isOwnProfile ? currentUser.id : null;
+  const [userFollows, viewerHasBlocked, tasteMatch, viewerProfile, lovedSongs] =
+    await Promise.all([
+      viewerId ? isFollowing(viewerId, profile.id) : false,
+      viewerId ? isBlocked(viewerId, profile.id) : false,
+      viewerId ? getTasteMatch(viewerId, reviews as Review[]) : null,
+      viewerId ? getProfile() : null,
+      getMostLovedSongs(profile.id, reviews as Review[]),
+    ]);
 
   const featuredReview = (featuredRes.data as Review | null) ?? null;
-  const anticipated: AnticipatedRelease[] = (
-    (anticipatedRes.data as { releases: AnticipatedRelease | AnticipatedRelease[] }[] | null) ?? []
-  )
-    .map((row) => (Array.isArray(row.releases) ? row.releases[0] : row.releases))
-    .filter((r): r is AnticipatedRelease => !!r);
+
+  // --- The showcase column, block by block (see ShowcaseBlock). ---
+  const widgetTypes = showcases.filter((s) => WIDGET_SHOWCASES.includes(s));
+  const blocks: ShowcaseBlock[] = [];
+  for (const s of showcases) {
+    if (!WIDGET_SHOWCASES.includes(s)) blocks.push(s);
+    else if (!blocks.includes("widgets")) blocks.push("widgets");
+  }
+  // Taste match lives in the widget grid — a profile with no widget
+  // showcases still gets the grid for it, right under the featured
+  // record (or first, when there's no featured record).
+  if (tasteMatch && !blocks.includes("widgets")) {
+    blocks.splice(blocks.indexOf("featured_review") + 1, 0, "widgets");
+  }
+  // Most loved songs goes just above Now showing (mockup order), or at
+  // the end when Now showing is off. It renders nothing when empty.
+  const nowAt = blocks.indexOf("recent_reviews");
+  if (nowAt >= 0) blocks.splice(nowAt, 0, "loved");
+  else blocks.push("loved");
 
   const displayName = profile.display_name ?? profile.username;
   const memberSince = new Date(profile.created_at).toLocaleDateString(locale, {
@@ -594,40 +620,89 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      {/* ========== SHOWCASES — rendered in the user's chosen order ========== */}
+      {/* ========== SHOWCASES — rendered in the user's chosen order ==========
+          (blocks built above: big showcases, the widget grid, Most loved) */}
       <div className="px-4 sm:px-8 space-y-8">
-        {showcases.map((type) => {
-          switch (type) {
-            case "stats":
+        {blocks.map((block) => {
+          switch (block) {
+            case "widgets":
               return (
-                <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">{t("ratingOverview")}</div>
-                  <div className="panel-xbox p-5">
-                    {/* The average, stated, and the frequency graph of
-                        every published rating (Luca 2026-09-12). The
-                        four headline numbers lead the profile header
-                        (ProfileStats). */}
-                    <RatingHistogram
-                      ratings={(reviews as Review[]).map((r) => r.rating)}
-                      accentColor={accentColor}
+                <WidgetGrid key={block}>
+                  {/* Taste match leads the grid — it's the one tile that's
+                      about YOU, the visitor. */}
+                  {tasteMatch && (
+                    <TasteMatchWidget
+                      match={tasteMatch}
+                      ownerName={displayName}
+                      ownerAvatar={profile.avatar_url}
+                      viewerAvatar={viewerProfile?.avatar_url ?? null}
+                      viewerInitial={(viewerProfile?.display_name || viewerProfile?.username || "?")[0].toUpperCase()}
                     />
-                  </div>
-                </section>
+                  )}
+                  {widgetTypes.map((type) => {
+                    switch (type) {
+                      case "stats":
+                        // RATINGS — the average in a badge + one row of dots.
+                        return (
+                          <RatingsWidget
+                            key={type}
+                            ratings={(reviews as Review[]).map((r) => Number(r.rating))}
+                          />
+                        );
+                      case "sotd":
+                        // SONG OF THE DAY — daily pick + streak (migrations
+                        // 009 + 010). Suspense: it streams in after the page.
+                        return (
+                          <Suspense key={type} fallback={<WidgetSkeleton />}>
+                            <SongOfDayShowcase
+                              userId={profile.id}
+                              isOwner={isOwnProfile}
+                              streakIcon={(profile.streak_icon ?? "flame") as StreakIcon}
+                            />
+                          </Suspense>
+                        );
+                      case "listening":
+                      case "listening_stats":
+                        // ON ROTATION / ALL-TIME LISTENING (stats.fm). These
+                        // await an EXTERNAL API — they must stream in after
+                        // the page, never hold the page back.
+                        return (
+                          <Suspense key={type} fallback={<WidgetSkeleton wide />}>
+                            <ListeningShowcase
+                              mode={type === "listening" ? "track" : "stats"}
+                              statsfmUrl={profile.statsfm_url}
+                              isOwner={isOwnProfile}
+                            />
+                          </Suspense>
+                        );
+                      default:
+                        return null;
+                    }
+                  })}
+                </WidgetGrid>
               );
 
+            case "loved":
+              return <MostLovedSongs key={block} songs={lovedSongs} />;
+
             case "recent_reviews": {
-              const recent = (reviews as Review[]).slice(0, 8);
+              // The featured record isn't repeated here ("grapes shows up
+              // three times", 2026-10-24).
+              const recent = (reviews as Review[])
+                .filter((r) => r.id !== featuredReview?.id)
+                .slice(0, 8);
+              // Visitors never see an empty Now showing; the owner gets the
+              // one button that fills it.
+              if (recent.length === 0 && !isOwnProfile) return null;
               return (
-                <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">{t("nowShowing")}</div>
+                <section key={block} className="space-y-3">
+                  <h2 className="sc-label">
+                    <span>{t("nowShowing")}</span>
+                  </h2>
                   {recent.length === 0 ? (
                     <EmptyState
-                      text={
-                        isOwnProfile
-                          ? t("noSignalOwnReviews")
-                          : t("noSignalReviews")
-                      }
-                      cta={isOwnProfile ? { href: "/start", label: t("ctaRate") } : undefined}
+                      text={t("noSignalOwnReviews")}
+                      cta={{ href: "/start", label: t("ctaRate") }}
                     />
                   ) : (
                     <div className="poster-grid">
@@ -654,7 +729,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                                 💿
                               </span>
                             )}
-                            <span className="poster-rating">{review.rating}</span>
+                            {/* the site's rating badge, never a bare number */}
+                            <span className={`rating-badge sc-poster-badge ${getRatingColor(review.rating)}`}>
+                              {formatRating(review.rating)}
+                            </span>
                           </span>
                           <span className="block">
                             <span className="block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)] rating-title-hover">
@@ -674,168 +752,42 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
             case "featured_review": {
               if (!featuredReview) return null; // unset or unpublished — skip silently
-              const ratingColor = getRatingHex(featuredReview.rating);
+              // Mockup B: the review page's record-out-of-the-sleeve, with
+              // the score on the record's label, straight on the page.
               return (
-                <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">{t("featurePresentation")}</div>
-                  <Link
-                    href={`/reviews/${featuredReview.slug}`}
-                    className="panel-xbox-glow p-5 flex gap-5 items-start group hover-glow"
-                  >
-                    <span className="poster w-24 h-24 sm:w-32 sm:h-32 shrink-0">
-                      {featuredReview.cover_image ? (
-                        <img
-                          src={featuredReview.cover_image}
-                          alt={t("coverAlt", { title: featuredReview.title })}
-                        />
-                      ) : (
-                        <span className="w-full h-full flex items-center justify-center text-4xl">
-                          💿
-                        </span>
+                <section key={block} className="space-y-3">
+                  <h2 className="sc-label">
+                    <span>{t("featurePresentation")}</span>
+                  </h2>
+                  <Link href={`/reviews/${featuredReview.slug}`} className="sc-feature group">
+                    <ReviewSleeve
+                      cover={featuredReview.cover_image}
+                      coverAlt={t("coverAlt", { title: featuredReview.title })}
+                      rating={featuredReview.rating}
+                      outOfLabel={tr("outOf")}
+                    />
+                    <span className="sc-feature-text">
+                      <span className="sc-feature-title group-hover:text-accent-primary transition-colors">
+                        {featuredReview.title}
+                      </span>
+                      <span className="sc-widget-sub block">{featuredReview.artist}</span>
+                      {featuredReview.snippet && (
+                        <span className="sc-feature-quote">“{featuredReview.snippet}”</span>
                       )}
                     </span>
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`rating-badge ${getRatingColor(featuredReview.rating)}`}
-                          style={{ color: ratingColor, borderColor: ratingColor }}
-                        >
-                          {formatRating(featuredReview.rating)}
-                        </span>
-                        <div className="min-w-0">
-                          <h3 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-text-primary truncate group-hover:text-accent-primary transition-colors">
-                            {featuredReview.title}
-                          </h3>
-                          <p className="text-sm text-text-secondary truncate">
-                            {featuredReview.artist}
-                          </p>
-                        </div>
-                      </div>
-                      {featuredReview.snippet && (
-                        <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">
-                          {featuredReview.snippet}
-                        </p>
-                      )}
-                    </div>
                   </Link>
                 </section>
               );
             }
 
-            case "lists": {
-              const rail = profileLists.slice(0, 3);
-              return (
-                <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">{t("mixtapes")}</div>
-                  {rail.length === 0 ? (
-                    <EmptyState
-                      text={
-                        isOwnProfile
-                          ? t("noSignalOwnLists")
-                          : t("noSignalLists")
-                      }
-                      cta={isOwnProfile ? { href: "/lists/new", label: t("ctaList") } : undefined}
-                    />
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {rail.map((list: ListSummary) => (
-                        <ListCard key={list.id} list={list} />
-                      ))}
-                    </div>
-                  )}
-                </section>
-              );
-            }
-
-            case "anticipated":
-              return (
-                <section key={type} className="space-y-3">
-                  <div className="vhs-label inline-block text-sm">{t("waitingOn")}</div>
-                  {anticipated.length === 0 ? (
-                    <EmptyState
-                      text={
-                        isOwnProfile
-                          ? t("noSignalOwnAnticipated")
-                          : t("noSignalAnticipated")
-                      }
-                      cta={isOwnProfile ? { href: "/releases", label: t("ctaAnticipated") } : undefined}
-                    />
-                  ) : (
-                    <div className="poster-grid">
-                      {anticipated.map((rel) => (
-                        <Link
-                          key={rel.id}
-                          href={`/releases/${rel.slug}`}
-                          className="group space-y-1.5"
-                          title={rel.title}
-                        >
-                          <span className="poster">
-                            {rel.cover_image ? (
-                              <img src={rel.cover_image} alt={t("coverAlt", { title: rel.title })} />
-                            ) : (
-                              <span className="w-full h-full flex items-center justify-center text-4xl">
-                                📼
-                              </span>
-                            )}
-                            {rel.is_unreleased && (
-                              <span className="poster-unreleased">{t("unreleased")}</span>
-                            )}
-                          </span>
-                          <span className="block text-sm font-bold text-text-primary truncate font-[family-name:var(--font-heading)]">
-                            {rel.title}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              );
-
-            case "listening":
-              // ON ROTATION — now playing / last played (stats.fm).
-              // Suspense: this block awaits an EXTERNAL API — it must
-              // stream in after the page, never hold the page back.
-              return (
-                <Suspense key={type} fallback={<ShowcaseSkeleton />}>
-                  <ListeningShowcase
-                    mode="track"
-                    statsfmUrl={profile.statsfm_url}
-                    isOwner={isOwnProfile}
-                    accentColor={accentColor}
-                  />
-                </Suspense>
-              );
-
-            case "listening_stats":
-              // ALL-TIME LISTENING — lifetime minutes + streams (stats.fm).
-              return (
-                <Suspense key={type} fallback={<ShowcaseSkeleton />}>
-                  <ListeningShowcase
-                    mode="stats"
-                    statsfmUrl={profile.statsfm_url}
-                    isOwner={isOwnProfile}
-                    accentColor={accentColor}
-                  />
-                </Suspense>
-              );
-
-            case "sotd":
-              // SONG OF THE DAY — daily pick + animated streak
-              // (migrations 009 + 010).
-              return (
-                <Suspense key={type} fallback={<ShowcaseSkeleton />}>
-                  <SongOfDayShowcase
-                    userId={profile.id}
-                    isOwner={isOwnProfile}
-                    streakIcon={(profile.streak_icon ?? "flame") as StreakIcon}
-                  />
-                </Suspense>
-              );
-
             default:
               return null;
           }
         })}
+
+        {/* The owner's way to add more — only while some showcase is
+            still switched off. Visitors never see it. */}
+        {isOwnProfile && showcases.length < VALID_SHOWCASES.length && <AddShowcaseHint />}
       </div>
 
       {/* Glowing divider between showcases and the tab section */}
@@ -981,16 +933,13 @@ function EmptyState({
   );
 }
 
-/** Streaming placeholder for the slow (external-data) showcases. */
-async function ShowcaseSkeleton() {
-  const t = await getTranslations("profile");
+/** Streaming placeholder for the slow (external-data) widgets — a
+    plain tile the size of the real one, so the grid doesn't jump. */
+function WidgetSkeleton({ wide = false }: { wide?: boolean }) {
   return (
-    <section className="space-y-3" aria-hidden="true">
-      <div className="vhs-label inline-block text-sm opacity-50">{t("tuning")}</div>
-      <div className="panel-xbox p-5">
-        <div className="h-10 rounded bg-white/5 animate-pulse" />
-      </div>
-    </section>
+    <div className={`sc-widget sc-widget-skeleton${wide ? " is-wide" : " is-half"}`} aria-hidden="true">
+      <div className="h-10 rounded bg-white/5 animate-pulse" />
+    </div>
   );
 }
 

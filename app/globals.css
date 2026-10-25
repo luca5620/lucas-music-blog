@@ -6488,3 +6488,412 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   .review-sleeve-disc::after { animation: none; }
 }
 /* Low detail: deliberately NOT stopped (see the note above). */
+
+/* ============================================================
+   PROFILE SHOWCASES, ROUND 2 (Luca 2026-10-24: "a mix of B and C";
+   app/profile/[username]/page.tsx, components/profile/
+   ShowcaseWidgets.tsx, MostLovedSongs.tsx, ListeningShowcase.tsx,
+   SongOfDayShowcase.tsx).
+   From mockup B: the big pieces (featured record, Most loved songs,
+   Now showing) sit on the page with no box, under a small heading
+   with a hairline running off to the right (.sc-label).
+   From mockup C: the small live showcases are tinted WIDGETS in one
+   grid — no borders, their own colour each, a small OSD label
+   inside the tile instead of a big VHS heading.
+   ============================================================ */
+
+/* The hairline heading: small caps title, a quiet note, a line. */
+.sc-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+.sc-label small {
+  font-family: var(--font-vt323);
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.sc-label::after {
+  content: "";
+  flex: 1;
+  min-width: 1rem;
+  height: 1px;
+  align-self: center;
+  background: var(--border-subtle);
+}
+
+/* ---- The featured record (the review page's sleeve, smaller) ---- */
+.sc-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.sc-feature .review-sleeve { --sleeve: min(44vw, 11rem); }
+@media (min-width: 40rem) {
+  .sc-feature { flex-direction: row; align-items: center; gap: 2rem; }
+  .sc-feature .review-sleeve { --sleeve: 12rem; }
+}
+@media (min-width: 64rem) {
+  .sc-feature .review-sleeve { --sleeve: 13rem; }
+}
+.sc-feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.sc-feature-title {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sc-feature-quote {
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- The widget grid ---- */
+.sc-widgets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+/* Wide screens: four columns, so a wide tile + two small ones share a
+   row instead of each tile stretching across the whole page. */
+@media (min-width: 64rem) {
+  .sc-widgets { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+/* every widget turned out empty → no stray gap in the column */
+.sc-widgets:empty { display: none; }
+
+.sc-widget {
+  --sc-ink: #cbd5e1;
+  position: relative;
+  min-width: 0;
+  min-height: 9rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 1.15rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  /* The tiles are always dark, so their text is fixed light — the
+     Wii / LimeWire themes flip the text TOKENS dark for the page. */
+  color: #e9eef8;
+}
+.sc-widget.is-wide {
+  grid-column: span 2;
+  min-height: 0;
+}
+.sc-widget.is-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.85rem;
+}
+.sc-widget .text-text-primary { color: #fff; }
+.sc-widget-skeleton { min-height: 6rem; background: rgba(255, 255, 255, 0.04); }
+
+/* Each widget's own colour (from mockup C) + the ink of its label. */
+.sc-tint-rate { --sc-ink: #d8b4fe; background: linear-gradient(160deg, #2a1846, #150d26); }
+.sc-tint-sotd { --sc-ink: #fdba74; background: linear-gradient(160deg, #3b1d08, #1d1009); }
+.sc-tint-rotation { --sc-ink: #f0abfc; background: linear-gradient(160deg, #2c1240, #130b22); }
+.sc-tint-listen { --sc-ink: #93c5fd; background: linear-gradient(160deg, #0f2a4d, #0a172b); }
+.sc-tint-match { --sc-ink: #5eead4; background: linear-gradient(160deg, #0b3a37, #0a1d22); }
+
+.sc-widget-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  font-family: var(--font-vt323);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--sc-ink);
+}
+.sc-widget-label > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sc-widget-credit {
+  flex: none;
+  color: rgba(233, 238, 248, 0.5);
+  transition: color 0.15s;
+}
+.sc-widget-credit:hover { color: #fff; }
+
+.sc-widget-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sc-widget-sub {
+  font-size: 0.8rem;
+  color: rgba(233, 238, 248, 0.62);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sc-wrap { white-space: normal; }
+.sc-widget-big {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.sc-widget-big small {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: rgba(233, 238, 248, 0.62);
+}
+.sc-widget-cover {
+  flex: none;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+.sc-widget-cover.is-lg { width: 4rem; height: 4rem; border-radius: 0.7rem; }
+.sc-widget-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Ratings: the average in the site's badge + the dot line. */
+.rating-badge.sc-widget-badge {
+  width: 3.2rem;
+  height: 2.6rem;
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.sc-dots {
+  position: relative;
+  height: 2.1rem;
+  margin: auto 4px 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+}
+.sc-dots i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  translate: -50% 0;
+}
+
+/* Taste match: both avatars overlapping, the meter. */
+.sc-pair {
+  position: relative;
+  flex: none;
+  width: 4.2rem;
+  height: 2.9rem;
+}
+.sc-pair > * {
+  position: absolute;
+  top: 0;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 50%;
+  border: 2px solid #0b3a37;
+  object-fit: cover;
+}
+.sc-pair > :first-child { left: 0; }
+.sc-pair > :last-child { left: 1.3rem; }
+.sc-pair > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d4ed8;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: #fff;
+}
+.sc-meter {
+  display: block;
+  height: 4px;
+  margin: 0.3rem 0 0.25rem;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+.sc-meter i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #14b8a6, #5eead4);
+}
+
+/* On rotation: the "playing right now" dot */
+.sc-live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 0.4rem 0.1rem 0;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: middle;
+  animation: sc-live 1.6s ease-in-out infinite;
+}
+@keyframes sc-live {
+  50% { opacity: 0.25; }
+}
+
+/* The owner's "＋ Add a showcase" strip */
+.sc-add-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.95rem;
+  border: 1.5px dashed var(--border-medium);
+  border-radius: 1rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  transition: border-color 0.15s, color 0.15s;
+}
+.sc-add-hint:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+.sc-add-hint small {
+  font-family: var(--font-vt323);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ---- Most loved songs (boxless rows on the page) ---- */
+.sc-loved {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+@media (min-width: 64rem) {
+  .sc-loved { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; }
+}
+.sc-loved-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+/* these rows sit on the page, not in a tile, so back to theme tokens */
+.sc-loved .sc-widget-title { color: var(--text-primary); }
+.sc-loved .sc-widget-sub,
+.sc-feature .sc-widget-sub { color: var(--text-secondary); }
+.sc-loved .sc-widget-cover { background: var(--bg-elevated); }
+.sc-loved-n {
+  flex: none;
+  width: 1rem;
+  text-align: right;
+  font-family: var(--font-vt323);
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+.rating-badge.sc-loved-score {
+  flex-shrink: 0;
+  width: 2.35rem;
+  height: 2.1rem;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+/* the SVG heart, same shape as the rating page's song rows */
+.sc-heart {
+  flex: none;
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: #f43f5e;
+  filter: drop-shadow(0 0 5px rgba(244, 63, 94, 0.55));
+}
+
+/* ---- Now showing: the score as a real rating badge on the poster ---- */
+.rating-badge.sc-poster-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: auto;
+  min-width: 2.1rem;
+  height: 1.75rem;
+  padding: 0 0.3rem;
+  border-radius: 0.4rem;
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.72);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A half tile with no half-tile neighbour (e.g. Ratings when Song of
+   the day is hidden) takes the whole row instead of leaving a hole. */
+.sc-widget.is-half:not(.is-half + .is-half):not(:has(+ .is-half)) {
+  grid-column: span 2;
+}
+
+/* The heading never wraps: the note gives way (ellipsis) first. */
+.sc-label > span { white-space: nowrap; }
+.sc-label small { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* The perfect-10 badge forces its big size with !important (the
+   review page's hero badge), which blew up every SMALL badge that
+   lands on a 10 — Now showing posters, Most loved rows, the Ratings
+   widget, and the review page's song-by-song list. Same !important
+   back down to each spot's own size. */
+.rating-badge.rating-perfect.sc-poster-badge {
+  width: auto !important;
+  height: 1.75rem !important;
+  font-size: 0.78rem !important;
+  border-width: 2px !important;
+}
+.rating-badge.rating-perfect.sc-loved-score,
+.rating-badge.rating-perfect.review-song-score {
+  width: 2.35rem !important;
+  height: 2.1rem !important;
+  font-size: 0.85rem !important;
+  border-width: 2px !important;
+}
+.rating-badge.rating-perfect.sc-widget-badge {
+  width: 3.2rem !important;
+  height: 2.6rem !important;
+  font-size: 1.2rem !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-live-dot { animation: none; }
+}
+.low-detail .sc-live-dot { animation: none; }
+.low-detail .sc-heart { filter: none; }

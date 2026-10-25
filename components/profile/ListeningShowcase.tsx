@@ -1,5 +1,8 @@
 /**
- * ListeningShowcase — the two stats.fm-powered profile blocks.
+ * ListeningShowcase — the two stats.fm-powered profile showcases,
+ * drawn as WIDGETS since the showcases overhaul (Luca 2026-10-24,
+ * round 2 "mix of B and C"): wide tinted tiles in the profile's widget
+ * grid (ShowcaseWidgets.tsx), no panel, no VHS heading.
  *
  * mode="track" → "ON ROTATION": what's playing right now (or the
  *                last stream), nothing else.
@@ -9,6 +12,9 @@
  * independently. Both read the user's public stats.fm profile via
  * the link Settings already collects; lib/statsfm caches so a
  * profile showing both doesn't fetch twice.
+ *
+ * Visitors only ever see a filled widget. The owner gets a short
+ * owner-only hint in the same tile when something's missing.
  */
 
 import Link from "next/link";
@@ -17,18 +23,18 @@ import {
   parseStatsfmUsername,
   getListeningSnapshot,
 } from "@/lib/statsfm";
+import { Widget } from "@/components/profile/ShowcaseWidgets";
 
 interface Props {
   mode: "track" | "stats";
   statsfmUrl: string | null;
   isOwner: boolean;
-  accentColor: string;
 }
 
-/** Coarse "2h ago" formatting for the last-played timestamp. */
 /** LANGUAGES: `t` is the profile.listening translator. */
 type Translator = Awaited<ReturnType<typeof getTranslations>>;
 
+/** Coarse "2h ago" formatting for the last-played timestamp. */
 function timeAgo(iso: string | null, t: Translator): string | null {
   if (!iso) return null;
   const ms = Date.now() - new Date(iso).getTime();
@@ -41,58 +47,49 @@ function timeAgo(iso: string | null, t: Translator): string | null {
   return t("daysAgo", { n: Math.floor(hours / 24) });
 }
 
+/** The little "stats.fm ↗" credit in the tile's label row. */
+function Credit({ href }: { href: string | null }) {
+  return (
+    <a
+      href={href ?? "https://stats.fm"}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="sc-widget-credit"
+    >
+      stats.fm ↗
+    </a>
+  );
+}
+
 export default async function ListeningShowcase({
   mode,
   statsfmUrl,
   isOwner,
-  accentColor,
 }: Props) {
   const t = await getTranslations("profile.listening");
+  const tsc = await getTranslations("profile.sc");
   const locale = await getLocale();
   const fmt = new Intl.NumberFormat(locale);
+  const tint = mode === "track" ? "rotation" : "listen";
   const label = mode === "track" ? t("onRotation") : t("allTime");
   const username = parseStatsfmUsername(statsfmUrl);
 
-  // No stats.fm link: give the owner a setup nudge (once, on the
-  // track block only so it isn't repeated), show visitors nothing.
+  // No stats.fm link: a one-line setup nudge for the owner (on the
+  // track tile only, so it isn't said twice); visitors see nothing.
   if (!username) {
     if (!isOwner || mode === "stats") return null;
     return (
-      <section className="space-y-3">
-        <div className="vhs-label inline-block text-sm">{label}</div>
-        <div className="panel-xbox p-5 text-sm text-text-secondary space-y-2">
-          <p>{t("setupIntro")}</p>
-          <ol className="list-decimal pl-5 space-y-1 text-text-muted">
-            <li>
-              {t.rich("step1", {
-                a: (chunks) => (
-                  <a
-                    href="https://stats.fm"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-accent-primary hover:text-accent-glow"
-                  >
-                    {chunks}
-                  </a>
-                ),
-              })}
-            </li>
-            <li>
-              {t.rich("step2", {
-                link: (chunks) => (
-                  <Link
-                    href="/settings/profile"
-                    className="text-accent-primary hover:text-accent-glow"
-                  >
-                    {chunks}
-                  </Link>
-                ),
-              })}
-            </li>
-          </ol>
-          <p className="text-xs text-text-muted">{t("onlyYou")}</p>
-        </div>
-      </section>
+      <Widget tint={tint} wide label={label}>
+        <p className="sc-widget-sub sc-wrap">
+          {tsc.rich("statsfmNudge", {
+            link: (chunks) => (
+              <Link href="/settings/profile" className="text-accent-primary hover:text-accent-glow">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      </Widget>
     );
   }
 
@@ -103,70 +100,45 @@ export default async function ListeningShowcase({
     if (!track) {
       if (!isOwner) return null;
       return (
-        <section className="space-y-3">
-          <div className="vhs-label inline-block text-sm">{label}</div>
-          <div className="panel-xbox p-5 text-sm text-text-secondary">
+        <Widget tint={tint} wide label={label}>
+          <p className="sc-widget-sub sc-wrap">
             {t.rich("cantRead", {
               b: (chunks) => <span className="text-text-primary">{chunks}</span>,
             })}
-          </div>
-        </section>
+          </p>
+        </Widget>
       );
     }
 
     const ago = !track.isPlaying ? timeAgo(track.endedAt, t) : null;
+    // Short enough for the label row: "● Listening now" while it's
+    // playing, else "On rotation · 2h ago" (the "Last played" words cut
+    // the label off on phones).
+    const status = track.isPlaying ? t("listeningNow") : `${label}${ago ? ` · ${ago}` : ""}`;
 
     return (
-      <section className="space-y-3">
-        <div className="vhs-label inline-block text-sm">{label}</div>
-        {/* Single compact row — cover, track info, attribution tucked
-            in the corner. No dead vertical space. */}
-        <div className="panel-xbox p-3 flex items-center gap-3">
-          <div className="w-12 h-12 rounded overflow-hidden bg-bg-elevated border border-border-subtle shrink-0">
-            {track.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={track.image}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="w-full h-full flex items-center justify-center text-xl">
-                💿
-              </span>
-            )}
+      <div className="sc-widget sc-tint-rotation is-wide is-row">
+        <span className="sc-widget-cover is-lg">
+          {track.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={track.image} alt="" />
+          ) : (
+            <span>💿</span>
+          )}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="sc-widget-label">
+            <span>
+              {/* the live dot only while it's actually playing */}
+              {track.isPlaying && <span className="sc-live-dot" aria-hidden="true" />}
+              {status}
+            </span>
+            <Credit href={statsfmUrl} />
           </div>
-
-          <div className="min-w-0 flex-1">
-            <p className="pixel-text text-[11px] uppercase tracking-widest">
-              {track.isPlaying ? (
-                <span className="text-accent-primary">
-                  <span className="animate-pulse">●</span> {t("listeningNow")}
-                </span>
-              ) : (
-                <span className="text-text-muted">
-                  {t("lastPlayed")}{ago ? ` · ${ago}` : ""}
-                </span>
-              )}
-            </p>
-            <p className="font-[family-name:var(--font-heading)] text-sm font-bold text-text-primary truncate">
-              {track.name}
-            </p>
-            <p className="text-xs text-text-secondary truncate">
-              {track.artists}
-            </p>
-          </div>
-
-          <a
-            href={statsfmUrl ?? "https://stats.fm"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors shrink-0 self-end"
-          >
-            stats.fm ↗
-          </a>
+          <p className="sc-widget-title">{track.name}</p>
+          <p className="sc-widget-sub">{track.artists}</p>
         </div>
-      </section>
+      </div>
     );
   }
 
@@ -174,52 +146,20 @@ export default async function ListeningShowcase({
   if (!stats) {
     if (!isOwner) return null;
     return (
-      <section className="space-y-3">
-        <div className="vhs-label inline-block text-sm">{label}</div>
-        <div className="panel-xbox p-5 text-sm text-text-secondary">{t("noNumbers")}</div>
-      </section>
+      <Widget tint={tint} wide label={label}>
+        <p className="sc-widget-sub sc-wrap">{t("noNumbers")}</p>
+      </Widget>
     );
   }
 
   return (
-    <section className="space-y-3">
-      <div className="vhs-label inline-block text-sm">{label}</div>
-      {/* Compact strip: both numbers on one row, attribution in the
-          corner — sized to the two stats it holds, nothing more. */}
-      <div className="panel-xbox p-3 flex items-end gap-6">
-        <div className="flex flex-wrap items-baseline gap-x-8 gap-y-1 flex-1">
-          <p className="whitespace-nowrap">
-            <span
-              className="font-[family-name:var(--font-heading)] text-xl font-extrabold"
-              style={{ color: accentColor }}
-            >
-              {fmt.format(stats.minutes)}
-            </span>{" "}
-            <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-              {t("minutes")}
-            </span>
-          </p>
-          <p className="whitespace-nowrap">
-            <span
-              className="font-[family-name:var(--font-heading)] text-xl font-extrabold"
-              style={{ color: accentColor }}
-            >
-              {fmt.format(stats.streams)}
-            </span>{" "}
-            <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-              {t("streams")}
-            </span>
-          </p>
-        </div>
-        <a
-          href={statsfmUrl ?? "https://stats.fm"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pixel-text text-[10px] uppercase tracking-widest text-text-muted hover:text-accent-primary transition-colors shrink-0"
-        >
-          stats.fm ↗
-        </a>
-      </div>
-    </section>
+    <Widget tint={tint} wide label={label} labelExtra={<Credit href={statsfmUrl} />}>
+      <p className="sc-widget-big">
+        {fmt.format(stats.minutes)} <small>{t("minutes")}</small>
+      </p>
+      <p className="sc-widget-sub">
+        {fmt.format(stats.streams)} {t("streams")}
+      </p>
+    </Widget>
   );
 }

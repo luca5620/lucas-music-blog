@@ -78,7 +78,10 @@ const THEMES: { id: ProfileTheme; label: string; hex: string }[] = [
    filter below strips it from older rows on next save, and the
    profile page no longer renders it. "Credentials" (badges) went the
    same way 2026-09-02: badges now sit under the username on every
-   profile, nothing to arrange. */
+   profile, nothing to arrange.
+   Mixtapes (lists) and Waiting On (anticipated) left 2026-10-24 (Luca,
+   showcases overhaul round 2) — the same load filter drops them on the
+   next save. Taste match + Most loved songs are automatic, not here. */
 // LANGUAGES: `label` is a key into messages → home.showcases (shared
 // with the logged-out home's customization card); the hint is
 // settings.showcases.hints.<id>.
@@ -86,8 +89,6 @@ const SHOWCASE_OPTIONS: { id: ShowcaseType; label: string }[] = [
   { id: "stats", label: "tasteReadout" },
   { id: "recent_reviews", label: "nowShowing" },
   { id: "featured_review", label: "featurePresentation" },
-  { id: "lists", label: "mixtapes" },
-  { id: "anticipated", label: "waitingOn" },
   { id: "listening", label: "onRotation" },
   { id: "listening_stats", label: "listeningStats" },
   { id: "sotd", label: "songOfTheDay" },

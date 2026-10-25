@@ -144,7 +144,7 @@
       "hint": "Which blocks appear on your profile, and in what order.",
       "intro": "Pick which blocks appear on your profile and drag their order with the arrows. Top of the list = top of your page.",
       "hints": {
-        "stats": "Review count, average, rating histogram",
+        "stats": "Your average rating + every rating as a row of dots",
         "recent_reviews": "Your latest 8 reviews as a poster wall",
         "featured_review": "One pinned review, front and center",
         "lists": "Your newest public lists",
@@ -342,7 +342,9 @@
       "waitingOn": "Waiting On",
       "onRotation": "On Rotation",
       "songOfTheDay": "Song of the Day",
-      "listeningStats": "All-Time Listening"
+      "listeningStats": "All-Time Listening",
+      "tasteMatch": "Taste Match",
+      "mostLoved": "Most Loved Songs"
     },
     "community": {
       "eyebrow": "Community",
@@ -677,7 +679,21 @@
     "ctaList": "Start a list",
     "ctaPost": "Write a post",
     "ctaAnticipated": "Find a release",
-    "noSignalOwnPosts": "NO SIGNAL — share a take, a video or a hot list and it lands here."
+    "noSignalOwnPosts": "NO SIGNAL — share a take, a video or a hot list and it lands here.",
+    "sc": {
+      "ratings": "Ratings",
+      "averageOf": "{n, plural, one {from # rating} other {average of #}}",
+      "tasteMatch": "Taste match · you + {name}",
+      "tasteBoth": "You both gave {title} a {score}",
+      "tasteClose": "{title}: you {mine}, them {theirs}",
+      "tasteCommon": "{n} releases in common",
+      "mostLoved": "Most loved songs",
+      "mostLovedHint": "♥ picks + top song scores",
+      "loved": "Personal favorite",
+      "addShowcase": "＋ Add a showcase",
+      "onlyYou": "Only you see this",
+      "statsfmNudge": "Show what you're playing: add your stats.fm link in <link>Settings</link>."
+    }
   },
   "badges": {
     "event": {

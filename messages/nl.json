@@ -144,7 +144,7 @@
       "hint": "Welke blokken op je profiel staan, en in welke volgorde.",
       "intro": "Kies welke blokken op je profiel staan en zet ze met de pijlen in de goede volgorde. Wat hier bovenaan staat, staat ook bovenaan je pagina.",
       "hints": {
-        "stats": "Hoeveel recensies je hebt, je gemiddelde en het cijferhistogram",
+        "stats": "Je gemiddelde + elke beoordeling als rij stippen",
         "recent_reviews": "Je laatste 8 recensies als een muur van hoezen",
         "featured_review": "Eén vastgezette recensie, uitgelicht",
         "lists": "Je nieuwste openbare lijsten",
@@ -342,7 +342,9 @@
       "waitingOn": "Wachten op",
       "onRotation": "Nu in rotatie",
       "songOfTheDay": "Nummer van de dag",
-      "listeningStats": "Luistertotaal"
+      "listeningStats": "Luistertotaal",
+      "tasteMatch": "Smaakmatch",
+      "mostLoved": "Favoriete nummers"
     },
     "community": {
       "eyebrow": "Community",
@@ -677,7 +679,21 @@
     "ctaList": "Begin een lijst",
     "ctaPost": "Schrijf een post",
     "ctaAnticipated": "Zoek een release",
-    "noSignalOwnPosts": "GEEN SIGNAAL: deel een mening, een video of een lijst en die verschijnt hier."
+    "noSignalOwnPosts": "GEEN SIGNAAL: deel een mening, een video of een lijst en die verschijnt hier.",
+    "sc": {
+      "ratings": "Beoordelingen",
+      "averageOf": "{n, plural, one {uit # beoordeling} other {gemiddelde van #}}",
+      "tasteMatch": "Smaakmatch · jij + {name}",
+      "tasteBoth": "Jullie gaven {title} allebei een {score}",
+      "tasteClose": "{title}: jij {mine}, zij {theirs}",
+      "tasteCommon": "{n} releases gemeen",
+      "mostLoved": "Favoriete nummers",
+      "mostLovedHint": "♥-favorieten + hoogste cijfers per nummer",
+      "loved": "Persoonlijke favoriet",
+      "addShowcase": "＋ Showcase toevoegen",
+      "onlyYou": "Alleen jij ziet dit",
+      "statsfmNudge": "Laat zien wat je luistert: zet je stats.fm-link in <link>Instellingen</link>."
+    }
   },
   "badges": {
     "event": {

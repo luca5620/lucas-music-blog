@@ -144,7 +144,7 @@
       "hint": "Welche Blöcke auf deinem Profil stehen, und in welcher Reihenfolge.",
       "intro": "Wähl aus, welche Blöcke auf deinem Profil stehen, und ordne sie mit den Pfeilen. Was hier oben steht, steht auch auf deiner Seite oben.",
       "hints": {
-        "stats": "Wie viele Rezensionen du hast, dein Durchschnitt und das Bewertungshistogramm",
+        "stats": "Dein Schnitt + jede Bewertung als Punktreihe",
         "recent_reviews": "Deine letzten 8 Rezensionen als Wand aus Covern",
         "featured_review": "Eine angepinnte Rezension, groß in Szene gesetzt",
         "lists": "Deine neuesten öffentlichen Listen",
@@ -342,7 +342,9 @@
       "waitingOn": "Warten auf",
       "onRotation": "In Rotation",
       "songOfTheDay": "Song des Tages",
-      "listeningStats": "Hörbilanz"
+      "listeningStats": "Hörbilanz",
+      "tasteMatch": "Geschmacks-Match",
+      "mostLoved": "Lieblingssongs"
     },
     "community": {
       "eyebrow": "Community",
@@ -677,7 +679,21 @@
     "ctaList": "Liste anlegen",
     "ctaPost": "Post schreiben",
     "ctaAnticipated": "Release finden",
-    "noSignalOwnPosts": "KEIN SIGNAL: Teile eine Meinung, ein Video oder eine Liste – dann landet sie hier."
+    "noSignalOwnPosts": "KEIN SIGNAL: Teile eine Meinung, ein Video oder eine Liste – dann landet sie hier.",
+    "sc": {
+      "ratings": "Bewertungen",
+      "averageOf": "{n, plural, one {aus # Bewertung} other {Schnitt aus #}}",
+      "tasteMatch": "Geschmacks-Match · du + {name}",
+      "tasteBoth": "Ihr habt beide {title} eine {score} gegeben",
+      "tasteClose": "{title}: du {mine}, sie {theirs}",
+      "tasteCommon": "{n} gemeinsame Releases",
+      "mostLoved": "Lieblingssongs",
+      "mostLovedHint": "♥-Picks + beste Song-Wertungen",
+      "loved": "Persönlicher Favorit",
+      "addShowcase": "＋ Showcase hinzufügen",
+      "onlyYou": "Nur du siehst das",
+      "statsfmNudge": "Zeig, was du gerade hörst: Füge deinen stats.fm-Link in den <link>Einstellungen</link> hinzu."
+    }
   },
   "badges": {
     "event": {

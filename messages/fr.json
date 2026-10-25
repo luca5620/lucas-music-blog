@@ -144,7 +144,7 @@
       "hint": "Quels blocs apparaissent sur ton profil, et dans quel ordre.",
       "intro": "Choisis les blocs qui s'affichent sur ton profil et règle leur ordre avec les flèches. Le premier de la liste est le premier de ta page.",
       "hints": {
-        "stats": "Nombre de critiques, moyenne et histogramme des notes",
+        "stats": "Ta moyenne + chaque note en rangée de points",
         "recent_reviews": "Tes 8 dernières critiques en mur de pochettes",
         "featured_review": "Une critique épinglée, bien en avant",
         "lists": "Tes listes publiques les plus récentes",
@@ -342,7 +342,9 @@
       "waitingOn": "En attente",
       "onRotation": "En rotation",
       "songOfTheDay": "Morceau du jour",
-      "listeningStats": "Écoute cumulée"
+      "listeningStats": "Écoute cumulée",
+      "tasteMatch": "Affinité",
+      "mostLoved": "Morceaux préférés"
     },
     "community": {
       "eyebrow": "Communauté",
@@ -677,7 +679,21 @@
     "ctaList": "Créer une liste",
     "ctaPost": "Écrire un post",
     "ctaAnticipated": "Trouver une sortie",
-    "noSignalOwnPosts": "PAS DE SIGNAL : partage un avis, une vidéo ou une liste et ça s'affichera ici."
+    "noSignalOwnPosts": "PAS DE SIGNAL : partage un avis, une vidéo ou une liste et ça s'affichera ici.",
+    "sc": {
+      "ratings": "Notes",
+      "averageOf": "{n, plural, one {sur # note} other {moyenne de #}}",
+      "tasteMatch": "Affinité · toi + {name}",
+      "tasteBoth": "Vous avez tous les deux mis {score} à {title}",
+      "tasteClose": "{title} : toi {mine}, eux {theirs}",
+      "tasteCommon": "{n} sorties en commun",
+      "mostLoved": "Morceaux préférés",
+      "mostLovedHint": "♥ coups de cœur + meilleures notes par morceau",
+      "loved": "Coup de cœur",
+      "addShowcase": "＋ Ajouter une section",
+      "onlyYou": "Visible par toi seul",
+      "statsfmNudge": "Montre ce que tu écoutes : ajoute ton lien stats.fm dans les <link>Réglages</link>."
+    }
   },
   "badges": {
     "event": {

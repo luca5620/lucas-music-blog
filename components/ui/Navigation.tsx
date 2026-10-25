@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { markNavRoot } from "@/lib/nav-root";
 import PenguinMark from "@/components/ui/PenguinMark";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
@@ -344,7 +345,11 @@ export default function Navigation() {
                       <div className="py-1">
                         <Link
                           href={`/profile/${profile?.username || ""}`}
-                          onClick={() => setDropdownOpen(false)}
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            // top-level nav: the profile skips its ← Back
+                            markNavRoot(`/profile/${profile?.username || ""}`);
+                          }}
                           className="block px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
                         >
                           {t("profile")}

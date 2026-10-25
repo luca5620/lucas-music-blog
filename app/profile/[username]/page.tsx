@@ -364,8 +364,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
       {/* ← Back, like every other detail page (Luca 2026-10-24: opening a
           profile from a review or the home feed had no way back). Pops
-          real history; a direct visit falls back to the home page. */}
+          real history. onlyAfterRedirect (2026-10-25): hidden when the
+          profile was opened from the tab bar / top-right menu or loaded
+          directly, so it only shows after an obvious jump from a page. */}
       <BackLink
+        onlyAfterRedirect
         fallback="/"
         label={tc("back")}
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1 pt-4 sm:pt-6"

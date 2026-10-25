@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap } from "@/lib/native";
+import { markNavRoot } from "@/lib/nav-root";
 import { useIsNativeApp } from "@/lib/useIsNativeApp";
 import CreateSheet from "@/components/ui/CreateSheet";
 import { useTranslations } from "next-intl";
@@ -179,7 +180,11 @@ export default function TabBar() {
             <Link
               key={tab.href}
               href={tab.href}
-              onClick={() => hapticTap()}
+              onClick={() => {
+                hapticTap();
+                // your own profile from the tab bar: no ← Back on it
+                if (tab.href === profileHref) markNavRoot(profileHref);
+              }}
               aria-current={isActive ? "page" : undefined}
               className={`tab-bar-item${isActive ? " active" : ""}`}
             >

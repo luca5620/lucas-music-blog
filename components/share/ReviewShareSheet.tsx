@@ -68,6 +68,8 @@ export interface ReviewCard {
   typeLabel: string | null;
   rating: number;
   handle: string;
+  /** The reviewer's profiles.role, for the checkmark after the @. */
+  role?: string | null;
   avatarUrl: string | null;
   coverUrl: string | null;
   quote: string | null;
@@ -118,6 +120,7 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
       subtitle: [card.artist, card.year].filter(Boolean).join(" · "),
       rating: card.rating,
       handle: card.handle,
+      role: card.role,
       songs: card.songs,
       quote: card.quote,
       labels: {
@@ -134,6 +137,7 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
       subtitle: [card.artist, card.typeLabel].filter(Boolean).join(" · "),
       rating: card.rating,
       handle: card.handle,
+      role: card.role,
       quote: card.quote,
       labels: { outOf: t("outOf") },
     }),

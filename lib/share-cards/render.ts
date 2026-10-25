@@ -262,19 +262,75 @@ function drawBrand(ctx: CanvasRenderingContext2D, a: CardAssets, x: number, cy: 
   ctx.fillText("Peak Music", left + icon + 6, cy + size * 0.06);
 }
 
-/** Avatar + @handle. align = which edge x is. maxW caps the whole
-    thing (avatar included); a longer handle ends in an ellipsis. */
-function drawWho(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x: number, cy: number, align: "left" | "right", size = 12, color = "#fff", maxW = Infinity) {
+/**
+ * The verification checkmark next to a handle (Luca 2026-10-25: "the
+ * checkmarks too, in any share feature with the @"). Same badge as
+ * components/ui/RoleBadge.tsx: a tinted circle with a check, gold for
+ * the Founder ('owner'), site blue for Admin, green for Verified
+ * Reviewer, purple for Early Tester; all but the reviewer green glow.
+ * Regular members ('user', or no role) get nothing. Keep these colours
+ * in step with RoleBadge's badgeConfig.
+ */
+const ROLE_BADGES: Record<string, { color: string; glow: boolean }> = {
+  owner: { color: "#fbbf24", glow: true },
+  admin: { color: "#1e90ff", glow: true },
+  reviewer: { color: "#22c55e", glow: false },
+  tester: { color: "#a855f7", glow: true },
+};
+
+/** Width the badge adds after the handle (gap + circle), 0 for none. */
+function roleBadgeWidth(role: string | null | undefined, size: number) {
+  return role && ROLE_BADGES[role] ? 4 + size * 1.15 : 0;
+}
+
+/** Draw the badge with its left edge at x, centred on cy. */
+function drawRoleBadge(ctx: CanvasRenderingContext2D, role: string | null | undefined, x: number, cy: number, size: number) {
+  const b = role ? ROLE_BADGES[role] : undefined;
+  if (!b) return;
+  const r = (size * 1.15) / 2;
+  const cx = x + r;
+  // RoleBadge's art is a 24-unit box with a r=10 circle; u = one unit
+  const u = r / 10;
+  ctx.save();
+  if (b.glow) {
+    ctx.shadowColor = b.color;
+    ctx.shadowBlur = 6;
+  }
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - u, 0, Math.PI * 2);
+  ctx.fillStyle = `${b.color}33`;
+  ctx.fill();
+  ctx.lineWidth = 2 * u;
+  ctx.strokeStyle = b.color;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.beginPath();
+  ctx.moveTo(cx - 3 * u, cy);
+  ctx.lineTo(cx - 1 * u, cy + 2 * u);
+  ctx.lineTo(cx + 3 * u, cy - 2 * u);
+  ctx.lineWidth = 2.5 * u;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** Avatar + @handle (+ the verification check for verified roles).
+    align = which edge x is. maxW caps the whole thing (avatar and
+    check included); a longer handle ends in an ellipsis. */
+function drawWho(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x: number, cy: number, align: "left" | "right", size = 12, color = "#fff", maxW = Infinity, role: string | null = null) {
   ctx.font = font(a, size, 600);
-  const label = Number.isFinite(maxW) ? fit(ctx, `@${handle}`, maxW - size * 1.83 - 7) : `@${handle}`;
+  const badgeW = roleBadgeWidth(role, size);
+  const label = Number.isFinite(maxW) ? fit(ctx, `@${handle}`, maxW - size * 1.83 - 7 - badgeW) : `@${handle}`;
   const tw = ctx.measureText(label).width;
   const av = size * 1.83;
-  const left = align === "left" ? x : x - (av + 7 + tw);
+  const left = align === "left" ? x : x - (av + 7 + tw + badgeW);
   circleImage(ctx, a.avatar, left + av / 2, cy, av / 2, "#3a3a44");
   ctx.fillStyle = color;
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.fillText(label, left + av + 7, cy + 0.5);
+  drawRoleBadge(ctx, role, left + av + 7 + tw + 4, cy, size);
 }
 
 /**
@@ -283,20 +339,22 @@ function drawWho(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x
  * exactly where TikTok / Reels lay their username + caption over the
  * video. Now it sits in the middle of the card, under the title.
  * align "center" centres the whole line on x; "left" starts it at x.
- * maxW caps the line; a long handle ends in an ellipsis.
+ * maxW caps the line; a long handle ends in an ellipsis. role adds the
+ * verification check after the handle.
  */
-function drawCredit(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x: number, cy: number, align: "left" | "center", maxW: number) {
+function drawCredit(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x: number, cy: number, align: "left" | "center", maxW: number, role: string | null = null) {
   const size = 11.5;
   const bsize = 12.5;
   ctx.font = `${bsize}px ${a.brand}`;
   const brandW = bsize * 1.57 + 6 + ctx.measureText("Peak Music").width;
   const sep = 18; // room for the dot between the two halves
   const av = size * 1.83;
+  const badgeW = roleBadgeWidth(role, size);
   ctx.font = font(a, size, 600);
-  const label = fit(ctx, `@${handle}`, maxW - brandW - sep - av - 7);
-  const whoW = av + 7 + ctx.measureText(label).width;
+  const label = fit(ctx, `@${handle}`, maxW - brandW - sep - av - 7 - badgeW);
+  const whoW = av + 7 + ctx.measureText(label).width + badgeW;
   const left = align === "center" ? x - (whoW + sep + brandW) / 2 : x;
-  drawWho(ctx, a, label.slice(1), left, cy, "left", size);
+  drawWho(ctx, a, label.slice(1), left, cy, "left", size, "#fff", Infinity, role);
   ctx.fillStyle = "rgba(255,255,255,0.35)";
   ctx.beginPath();
   ctx.arc(left + whoW + sep / 2, cy, 1.4, 0, Math.PI * 2);
@@ -386,6 +444,8 @@ export interface ScorecardData {
   subtitle: string;
   rating: number;
   handle: string;
+  /** profiles.role: verified roles get the checkmark after the handle. */
+  role?: string | null;
   /** Song scores in album order; empty = a whole-album review. */
   songs: { n: number; title: string; score: number }[];
   /** Shown in place of the song list when there are no song scores. */
@@ -480,7 +540,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   ctx.font = font(a, 12, 400);
   ctx.fillText(fit(ctx, d.subtitle, SC_INNER), CARD_W / 2, 181 + (1 - intro) * 8);
   // who made it + Peak Music, out of the caption corner
-  drawCredit(ctx, a, d.handle, CARD_W / 2, 203 + (1 - intro) * 8, "center", SC_INNER);
+  drawCredit(ctx, a, d.handle, CARD_W / 2, 203 + (1 - intro) * 8, "center", SC_INNER, d.role ?? null);
   ctx.restore();
 
   const { step, ov0 } = scorecardTiming(d.songs.length);
@@ -612,6 +672,8 @@ export interface StickerData {
   subtitle: string;
   rating: number;
   handle: string;
+  /** profiles.role: verified roles get the checkmark after the handle. */
+  role?: string | null;
   quote: string | null;
   labels: { outOf: string };
 }
@@ -672,7 +734,7 @@ export function drawSticker(ctx: CanvasRenderingContext2D, a: CardAssets, d: Sti
 
   // Row 1: brand left, who right
   drawBrand(ctx, a, 16, 25, "left", 14, "#fff");
-  drawWho(ctx, a, d.handle, w - 16, 25, "right", 12.5);
+  drawWho(ctx, a, d.handle, w - 16, 25, "right", 12.5, "#fff", Infinity, d.role ?? null);
 
   // Row 2: the sleeve (cover + record spinning behind it, no score on it)
   const r2 = 49;
@@ -769,6 +831,9 @@ export interface MonthRow {
 export interface MonthData {
   monthLabel: string;
   handle: string;
+  /** profiles.role: verified roles get the checkmark after the handle. */
+  role?: string | null;
+
   rated: number;
   average: number | null;
   written: number;
@@ -834,7 +899,7 @@ export function drawMonth(ctx: CanvasRenderingContext2D, a: CardAssets, d: Month
   });
 
   // who made it + Peak Music, out of the caption corner
-  drawCredit(ctx, a, d.handle, L, 204, "left", R - L);
+  drawCredit(ctx, a, d.handle, L, 204, "left", R - L, d.role ?? null);
 
   // the list
   let y = 222;

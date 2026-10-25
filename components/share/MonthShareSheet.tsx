@@ -43,11 +43,13 @@ const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart
 export default function MonthShareSheet({
   userId,
   handle,
+  role = null,
   avatarUrl,
   onClose,
 }: {
   userId: string;
   handle: string;
+  role?: string | null;
   avatarUrl: string | null;
   onClose: () => void;
 }) {
@@ -148,6 +150,7 @@ export default function MonthShareSheet({
       setData({
         monthLabel,
         handle,
+        role,
         rated: list.length,
         average: Math.round(avg * 10) / 10,
         written: list.filter((r) => (r.summary ?? "").trim() || (r.snippet ?? "").trim()).length,
@@ -178,7 +181,7 @@ export default function MonthShareSheet({
     return () => {
       alive = false;
     };
-  }, [month, monthLabel, userId, handle, locale, t]);
+  }, [month, monthLabel, userId, handle, role, locale, t]);
 
   const draw = useCallback(() => {
     const ctx = canvasRef.current?.getContext("2d");

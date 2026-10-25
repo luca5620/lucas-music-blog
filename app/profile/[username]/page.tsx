@@ -471,6 +471,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 <MonthShareButton
                   userId={profile.id}
                   handle={profile.username}
+                  role={profile.role}
                   avatarUrl={profile.avatar_url}
                   accentColor={accentColor}
                 />

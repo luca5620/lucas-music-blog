@@ -16,11 +16,14 @@ const MonthShareSheet = dynamic(() => import("@/components/share/MonthShareSheet
 export default function MonthShareButton({
   userId,
   handle,
+  role = null,
   avatarUrl,
   accentColor,
 }: {
   userId: string;
   handle: string;
+  /** profiles.role, for the checkmark after the @ on the card */
+  role?: string | null;
   avatarUrl: string | null;
   accentColor: string;
 }) {
@@ -44,7 +47,7 @@ export default function MonthShareButton({
         <span aria-hidden="true">↗</span>
         <span className="month-share-label">{t("monthButton")}</span>
       </button>
-      {open && <MonthShareSheet userId={userId} handle={handle} avatarUrl={avatarUrl} onClose={close} />}
+      {open && <MonthShareSheet userId={userId} handle={handle} role={role} avatarUrl={avatarUrl} onClose={close} />}
     </>
   );
 }

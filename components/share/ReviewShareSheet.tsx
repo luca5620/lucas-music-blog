@@ -63,8 +63,6 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [note, setNote] = useState<string | null>(null);
-  // A still the member can press-and-hold to save (old app builds).
-  const [holdImage, setHoldImage] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // The last finished video, so "Share" again doesn't re-record.
   const videoRef = useRef<Blob | null>(null);
@@ -80,10 +78,6 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
       alive = false;
     };
   }, [card.coverUrl, card.avatarUrl]);
-
-  useEffect(() => () => {
-    if (holdImage) URL.revokeObjectURL(holdImage);
-  }, [holdImage]);
 
   const scorecard: ScorecardData = useMemo(
     () => ({
@@ -141,12 +135,16 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
     return () => cancelAnimationFrame(raf);
   }, [assets, tab, draw, duration]);
 
-  function report(result: HandOff, still: Blob | null, isVideo: boolean) {
+  /**
+   * Older app builds (before 1.3) can't save a file at all, and the app
+   * has iOS's press-and-hold image menu switched off — the old "press
+   * and hold this image" fallback did nothing there and only got the
+   * image highlighted (Luca 2026-10-24). So it just says so plainly.
+   */
+  function report(result: HandOff, isVideo: boolean) {
     if (result === "saved") setNote(t("saved"));
-    else if (result === "unsupported") {
-      setNote(isVideo ? t("videoNeedsUpdate") : t("longPress"));
-      if (still) setHoldImage(URL.createObjectURL(still));
-    } else setNote(null);
+    else if (result === "unsupported") setNote(isVideo ? t("videoNeedsUpdate") : t("imageNeedsUpdate"));
+    else setNote(null);
   }
 
   /** Final frame as a PNG — the fallback when video can't be made/saved. */
@@ -169,7 +167,7 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
       if (!videoOk) {
         const still = await scorecardStill();
         setNote(t("noVideo"));
-        if (still) report(await shareOrSave(still, `${base}.png`, card.shareTitle), still, false);
+        if (still) report(await shareOrSave(still, `${base}.png`, card.shareTitle), false);
         return;
       }
       if (!videoRef.current) {
@@ -186,7 +184,7 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
       }
       const video = videoRef.current;
       const result = await shareOrSave(video, `${base}.${extFor(video)}`, card.shareTitle);
-      report(result, result === "unsupported" ? await scorecardStill() : null, true);
+      report(result, true);
     } catch {
       setNote(t("failed"));
     } finally {
@@ -215,7 +213,7 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
     hapticTap();
     try {
       const png = await stickerPng();
-      report(await shareOrSave(png, `peak-music-sticker-${card.slug}.png`, card.shareTitle), png, false);
+      report(await shareOrSave(png, `peak-music-sticker-${card.slug}.png`, card.shareTitle), false);
     } catch {
       setNote(t("failed"));
     } finally {
@@ -238,7 +236,6 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
   function copySticker() {
     if (!assets) return;
     setNote(null);
-    setHoldImage(null);
     hapticTap();
     navigator.clipboard
       .write([new ClipboardItem({ "image/png": stickerPng() })])
@@ -262,7 +259,6 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
             onClick={() => {
               setTab(k);
               setNote(null);
-              setHoldImage(null);
             }}
           >
             {t(k)}
@@ -353,10 +349,6 @@ export default function ReviewShareSheet({ card, onClose }: { card: ReviewCard; 
       )}
 
       {note && <p className="share-note">{note}</p>}
-      {holdImage && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={holdImage} alt="" className="share-hold-image" />
-      )}
     </SheetFrame>
   );
 }

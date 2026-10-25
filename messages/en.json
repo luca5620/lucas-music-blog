@@ -1977,7 +1977,7 @@
     "preparing": "Getting the card ready…",
     "saved": "Saved to your downloads",
     "failed": "Couldn't make the file. Try again.",
-    "longPress": "Press and hold the image to save it.",
+    "imageNeedsUpdate": "Saving images in the app comes with the next app update. Open peakmusicreviews.com in Safari to save it now.",
     "videoNeedsUpdate": "Saving videos in the app comes with the next app update. Open peakmusicreviews.com in Safari to save it now.",
     "noVideo": "This browser can't record the video. The still card is below.",
     "songsProgress": "{done} of {total} songs",

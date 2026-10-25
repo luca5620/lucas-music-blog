@@ -60,7 +60,6 @@ export default function MonthShareSheet({
   const [empty, setEmpty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
-  const [holdImage, setHoldImage] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const month = useMemo(() => {
@@ -76,10 +75,6 @@ export default function MonthShareSheet({
       alive = false;
     };
   }, [avatarUrl]);
-
-  useEffect(() => () => {
-    if (holdImage) URL.revokeObjectURL(holdImage);
-  }, [holdImage]);
 
   // Read the month's reviews and work out the card.
   useEffect(() => {
@@ -204,10 +199,9 @@ export default function MonthShareSheet({
       const slug = month.toISOString().slice(0, 7);
       const result = await shareOrSave(png, `peak-music-my-month-${slug}.png`, t("monthTitle"));
       if (result === "saved") setNote(t("saved"));
-      if (result === "unsupported") {
-        setNote(t("longPress"));
-        setHoldImage(URL.createObjectURL(png));
-      }
+      // Older app builds can't save files at all (and the app has iOS's
+      // press-and-hold image menu switched off), so say so plainly.
+      if (result === "unsupported") setNote(t("imageNeedsUpdate"));
     } catch {
       setNote(t("failed"));
     } finally {
@@ -244,10 +238,6 @@ export default function MonthShareSheet({
         </div>
       )}
       {note && <p className="share-note">{note}</p>}
-      {holdImage && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={holdImage} alt="" className="share-hold-image" />
-      )}
     </SheetFrame>
   );
 }

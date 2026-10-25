@@ -1977,7 +1977,7 @@
     "preparing": "Kaart wordt klaargemaakt…",
     "saved": "Opgeslagen in je downloads",
     "failed": "Het bestand kon niet gemaakt worden. Probeer het opnieuw.",
-    "longPress": "Houd de afbeelding ingedrukt om hem op te slaan.",
+    "imageNeedsUpdate": "Afbeeldingen opslaan in de app komt met de volgende app-update. Open peakmusicreviews.com in Safari om hem nu op te slaan.",
     "videoNeedsUpdate": "Video's opslaan in de app komt met de volgende app-update. Open peakmusicreviews.com in Safari om hem nu op te slaan.",
     "noVideo": "Deze browser kan de video niet opnemen. Hieronder staat de kaart als afbeelding.",
     "songsProgress": "{done} van {total} nummers",

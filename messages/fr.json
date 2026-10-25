@@ -1977,7 +1977,7 @@
     "preparing": "Préparation de la carte…",
     "saved": "Enregistré dans tes téléchargements",
     "failed": "Impossible de créer le fichier. Réessaie.",
-    "longPress": "Appuie longuement sur l'image pour l'enregistrer.",
+    "imageNeedsUpdate": "L'enregistrement des images dans l'app arrive avec la prochaine mise à jour. Ouvre peakmusicreviews.com dans Safari pour l'enregistrer maintenant.",
     "videoNeedsUpdate": "L'enregistrement des vidéos dans l'app arrive avec la prochaine mise à jour. Ouvre peakmusicreviews.com dans Safari pour l'enregistrer maintenant.",
     "noVideo": "Ce navigateur ne peut pas enregistrer la vidéo. La carte en image est juste en dessous.",
     "songsProgress": "{done} sur {total} titres",

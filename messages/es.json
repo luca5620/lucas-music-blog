@@ -1977,7 +1977,7 @@
     "preparing": "Preparando la tarjeta…",
     "saved": "Guardado en tus descargas",
     "failed": "No se pudo crear el archivo. Inténtalo otra vez.",
-    "longPress": "Mantén pulsada la imagen para guardarla.",
+    "imageNeedsUpdate": "Guardar imágenes en la app llega con la próxima actualización. Abre peakmusicreviews.com en Safari para guardarla ahora.",
     "videoNeedsUpdate": "Guardar videos en la app llega con la próxima actualización. Abre peakmusicreviews.com en Safari para guardarlo ya.",
     "noVideo": "Este navegador no puede grabar el video. Abajo tienes la tarjeta como imagen.",
     "songsProgress": "{done} de {total} canciones",

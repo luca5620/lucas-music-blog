@@ -1322,9 +1322,19 @@ body {
   user-select: none;
 }
 
+/* …and spelled out on every element, because a press-and-hold could
+   still highlight a score in the app (Luca 2026-10-24: "unacceptable").
+   An element that sets its own user-select would otherwise win. */
+.native-app *:not(input):not(textarea):not([contenteditable="true"]) {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .native-app input,
 .native-app textarea,
-.native-app [contenteditable="true"] {
+.native-app [contenteditable="true"],
+.native-app [contenteditable="true"] * {
   -webkit-user-select: text;
   user-select: text;
 }
@@ -6070,8 +6080,11 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 .share-sheet {
   width: 100%;
   max-width: 27rem;
-  max-height: 100dvh;
+  /* never under the status bar / notch, so the ✕ is always reachable
+     (Luca 2026-10-24: the sheet grew past the top and the ✕ was gone) */
+  max-height: calc(100dvh - env(safe-area-inset-top) - 12px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.9rem 1rem calc(1.1rem + env(safe-area-inset-bottom));
   border-radius: 22px 22px 0 0;
   background: #0f1015;
@@ -6091,11 +6104,17 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   from { transform: translateY(24px); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
+/* the title row + ✕ stay pinned to the top of the sheet if it scrolls */
 .share-sheet-head {
+  position: sticky;
+  top: -0.9rem;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin: -0.9rem -1rem 0.75rem;
+  padding: 0.9rem 1rem 0.5rem;
+  background: #0f1015;
 }
 .share-sheet-title {
   font-family: var(--font-heading);
@@ -6104,8 +6123,8 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   color: var(--text-primary);
 }
 .share-sheet-x {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 999px;
   color: var(--text-secondary);
   font-size: 1rem;
@@ -6167,17 +6186,6 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--text-primary);
-}
-/* Old app builds: press-and-hold this to save (iOS's own image menu). */
-.share-hold-image {
-  display: block;
-  width: 100%;
-  max-width: 16rem;
-  margin: 0.75rem auto 0;
-  border-radius: 12px;
-  -webkit-touch-callout: default;
-  -webkit-user-select: auto;
-  user-select: auto;
 }
 
 /* "Share my month" on your own profile. */

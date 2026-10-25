@@ -518,6 +518,36 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🧾 Share-flow + review-page batch (2026-10-24 late, Windows) — SHIPPED
+Luca's list ("so that settles 1"), all live on main:
+- 9d01754 share sheets: dropped the press-and-hold fallback image (it can't
+  save in the app: allowsLinkPreview is off and the 1.2 build has no
+  Filesystem plugin) → plain "needs the app update" note instead; sheet is
+  capped to the screen with a sticky header so the ✕ is always reachable;
+  app-wide no-select / no-callout rule (no text highlighting in the app).
+- 51b806a review page: ✎ Edit on your own reviews; "Reviewed {date}" with
+  "Edited {date}" under it (only if edited 10+ min later); THE REVIEW is its
+  own accent panel (pull quote when there's a summary); song-by-song list
+  uses the new SVG hearts + square rating badges; Personal Favorites section
+  hidden when every pick is a hearted song in the list (a "♥ = their
+  personal favorites" note sits under the heading instead).
+- 0927915 profiles get the ← Back link (fallback home).
+- 0017195 scorecard share: songs land one at a time (≤0.75s apart) as square
+  rating badges with a pop + glow, then the big score.
+- 8015362 stinky 0–1.9 record toned down (2 plumes, halo/haze ~halved).
+- NEXT: showcases B+C mix mockup with the new lineup (below), then the
+  step-by-step one-tap IG/TikTok walkthrough for Luca.
+
+### 🪟 SHOWCASES — he picked a MIX OF B + C (2026-10-24) + new lineup
+- Remove: Waiting On (anticipated), Mixtapes (lists). Keep: stats, Now
+  Showing (recent reviews), featured review, listening, listening stats,
+  Song of the day. Add: **Taste match** (visitor vs owner overlap, signed-in
+  visitors only, hidden on your own profile) and **Most loved songs** (♥
+  favourites + top song-by-song scores across their reviews).
+- Universal: hide empty showcases from visitors, featured review not
+  repeated in Now Showing, same settings. Mockup first, then build.
+
+
 ### 🎚️ RATING SLIDER = OPTION A "jump to your finger" (2026-10-24 evening, Windows) — SHIPPED
 Path: camera-dial ruler + slide-the-row ("not very precise and feels off")
 → original slider + − / + (c3ec4cc; still "off", and he disliked − / +) →

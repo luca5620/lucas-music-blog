@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const supabase = await createClient();
 
-    const [{ data: reviews }, { data: releases }] = await Promise.all([
+    const [{ data: reviews }, { data: releases }, { data: artists }] = await Promise.all([
       supabase
         .from("reviews")
         .select("slug, updated_at")
@@ -35,6 +35,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .limit(2000),
       supabase
         .from("releases")
+        .select("slug, updated_at")
+        .order("created_at", { ascending: false })
+        .limit(2000),
+      // Artist pages (SEO pass 2026-10-25): they were only reachable by
+      // clicking through, never listed here, so Google had to stumble on
+      // them. Each one links to that artist's releases, which also gives
+      // the "Discovered, not indexed" release pages a second way in.
+      supabase
+        .from("artists")
         .select("slug, updated_at")
         .order("created_at", { ascending: false })
         .limit(2000),
@@ -58,7 +67,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    return [...staticPages, ...reviewPages, ...releasePages];
+    const artistPages: MetadataRoute.Sitemap = (
+      (artists ?? []) as { slug: string; updated_at: string | null }[]
+    )
+      .filter((a) => a.slug)
+      .map((a) => ({
+        url: `${BASE_URL}/artists/${a.slug}`,
+        ...(a.updated_at && { lastModified: new Date(a.updated_at) }),
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      }));
+
+    return [...staticPages, ...reviewPages, ...releasePages, ...artistPages];
   } catch {
     return staticPages;
   }

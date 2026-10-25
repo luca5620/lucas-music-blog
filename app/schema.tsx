@@ -308,6 +308,7 @@ export function ReleaseSchema({
   artistSlug,
   stats,
   reviews,
+  tracks = [],
 }: {
   release: {
     slug: string;
@@ -321,6 +322,9 @@ export function ReleaseSchema({
   artistSlug?: string;
   stats: { review_count: number; avg_rating: number | null };
   reviews: ReleaseSchemaReview[];
+  /** The tracklist, in album order (optional: Genius-only releases may
+      have none). */
+  tracks?: ReleaseSchemaTrack[];
 }) {
   const releaseUrl = `${SITE_URL}/releases/${release.slug}`;
 
@@ -339,6 +343,28 @@ export function ReleaseSchema({
       name: artistName,
       ...(artistSlug && { url: `${SITE_URL}/artists/${artistSlug}` }),
     },
+    // The tracklist (SEO pass 2026-10-25). Release pages already win
+    // "<album> tracklist" / "release date" searches in Search Console,
+    // and the songs are listed visibly on the page, so the markup just
+    // says the same thing in a form Google and AI search can read
+    // directly. Only for records with 2+ songs (a single IS its song).
+    ...(tracks.length > 1 && {
+      numTracks: tracks.length,
+      track: {
+        "@type": "ItemList",
+        numberOfItems: tracks.length,
+        itemListElement: tracks.map((t) => ({
+          "@type": "ListItem",
+          position: t.position,
+          item: {
+            "@type": "MusicRecording",
+            name: t.title,
+            byArtist: { "@type": "MusicGroup", name: artistName },
+            ...(t.spotify_id && { url: `https://open.spotify.com/track/${t.spotify_id}` }),
+          },
+        })),
+      },
+    }),
     // Google requires aggregateRating or review for rating rich results;
     // emit them only when real community activity exists.
     ...(stats.review_count > 0 &&

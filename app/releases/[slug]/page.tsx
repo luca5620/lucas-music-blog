@@ -369,6 +369,11 @@ export default async function ReleasePage({ params }: Props) {
         artistName={artistName}
         artistSlug={artistSlug}
         stats={stats}
+        tracks={tracks.map((tr) => ({
+          position: tr.position,
+          title: tr.title,
+          spotify_id: tr.spotify_id ?? null,
+        }))}
         reviews={reviews.map((r) => {
           const p = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
           return {

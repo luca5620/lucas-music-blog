@@ -262,10 +262,11 @@ function drawBrand(ctx: CanvasRenderingContext2D, a: CardAssets, x: number, cy: 
   ctx.fillText("Peak Music", left + icon + 6, cy + size * 0.06);
 }
 
-/** Avatar + @handle. align = which edge x is. */
-function drawWho(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x: number, cy: number, align: "left" | "right", size = 12, color = "#fff") {
+/** Avatar + @handle. align = which edge x is. maxW caps the whole
+    thing (avatar included); a longer handle ends in an ellipsis. */
+function drawWho(ctx: CanvasRenderingContext2D, a: CardAssets, handle: string, x: number, cy: number, align: "left" | "right", size = 12, color = "#fff", maxW = Infinity) {
   ctx.font = font(a, size, 600);
-  const label = `@${handle}`;
+  const label = Number.isFinite(maxW) ? fit(ctx, `@${handle}`, maxW - size * 1.83 - 7) : `@${handle}`;
   const tw = ctx.measureText(label).width;
   const av = size * 1.83;
   const left = align === "left" ? x : x - (av + 7 + tw);
@@ -392,6 +393,17 @@ export function scorecardDuration(data: ScorecardData): number {
 }
 
 /** Draw one frame of the scorecard at time `t` (seconds). ctx is pre-scaled. */
+/**
+ * The scorecard's side margins (Luca 2026-10-25). Everything sits
+ * between SC_X and SC_R, the same distance in from both edges, so the
+ * song scores on the right stay clear of TikTok's like / comment /
+ * share column (and Reels' buttons) and the card still looks centred.
+ * Was 24 / 336, edge to edge.
+ */
+const SC_X = 54;
+const SC_R = CARD_W - SC_X;
+const SC_INNER = SC_R - SC_X;
+
 export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: ScorecardData, t: number) {
   drawLiquid(ctx, a.palette, t);
   const intro = easeOut(t / 0.9);
@@ -425,10 +437,10 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "#fff";
   ctx.font = font(a, 20, 700);
-  ctx.fillText(fit(ctx, d.title, 312), CARD_W / 2, 202 + (1 - intro) * 8);
+  ctx.fillText(fit(ctx, d.title, SC_INNER), CARD_W / 2, 202 + (1 - intro) * 8);
   ctx.fillStyle = "rgba(255,255,255,0.6)";
   ctx.font = font(a, 12, 400);
-  ctx.fillText(fit(ctx, d.subtitle, 312), CARD_W / 2, 218 + (1 - intro) * 8);
+  ctx.fillText(fit(ctx, d.subtitle, SC_INNER), CARD_W / 2, 218 + (1 - intro) * 8);
   ctx.restore();
 
   const { step, ov0 } = scorecardTiming(d.songs.length);
@@ -459,16 +471,16 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.globalAlpha = k;
     ctx.translate(0, (1 - k) * 5);
     ctx.fillStyle = "rgba(255,255,255,0.08)";
-    ctx.fillRect(24, y, 312, 0.5);
+    ctx.fillRect(SC_X, y, SC_INNER, 0.5);
     const mid = y + rowH / 2 + fs * 0.36;
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
     ctx.font = font(a, fs * 0.875, 400);
     ctx.fillStyle = "rgba(255,255,255,0.35)";
-    ctx.fillText(String(song.n), 24, mid);
+    ctx.fillText(String(song.n), SC_X, mid);
     ctx.font = font(a, fs, 400);
     ctx.fillStyle = "#fff";
-    ctx.fillText(fit(ctx, song.title, 312 - 20 - 44), 44, mid);
+    ctx.fillText(fit(ctx, song.title, SC_INNER - 20 - 44), SC_X + 20, mid);
     // …and its score lands a beat later in the classic square badge,
     // already at its value and colour (no counting up): it fades in
     // while shrinking from a touch bigger into place, with a soft flash
@@ -478,7 +490,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
       const kl = easeOut(land);
       const bh = Math.min(rowH * 0.82, 18);
       const bw = bh * 1.34;
-      const bx = 336 - bw / 2;
+      const bx = SC_R - bw / 2;
       const by = y + rowH / 2;
       ctx.globalAlpha = k * kl;
       if (land < 1) glowBlob(ctx, hexToRgb(getRatingHex(song.score)), bx, by, bh * 1.6, 0.5 * (1 - kl));
@@ -495,7 +507,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, 10.5, 500);
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.textAlign = "left";
-    ctx.fillText(d.labels.more(hidden), 44, top + visible.length * rowH + rowH * 0.72);
+    ctx.fillText(d.labels.more(hidden), SC_X + 20, top + visible.length * rowH + rowH * 0.72);
   }
   // A whole-album review: their one-liner where the songs would be.
   if (d.songs.length === 0 && d.quote) {
@@ -505,7 +517,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, 17, 500);
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    wrap(ctx, `“${d.quote}”`, 290, 6).forEach((line, i) => ctx.fillText(line, CARD_W / 2, 330 + i * 25));
+    wrap(ctx, `“${d.quote}”`, SC_INNER - 22, 6).forEach((line, i) => ctx.fillText(line, CARD_W / 2, 330 + i * 25));
     ctx.restore();
   }
 
@@ -552,8 +564,9 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   // Foot: who + brand
   ctx.save();
   ctx.globalAlpha = intro;
-  drawWho(ctx, a, d.handle, 24, 611, "left");
-  drawBrand(ctx, a, 336, 611, "right");
+  // the handle gets what the brand leaves free (brand ≈ 90 wide)
+  drawWho(ctx, a, d.handle, SC_X, 611, "left", 12, "#fff", SC_INNER - 100);
+  drawBrand(ctx, a, SC_R, 611, "right");
   ctx.restore();
 }
 

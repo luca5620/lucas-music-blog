@@ -21,6 +21,10 @@
 //   { "type": "DROP", "drops": [ { user_id, username, title, artist,
 //     slug, more }, … ] }
 //
+// And since migration 063, "your Rewind is ready" (once, December 1):
+//
+//   { "type": "REWIND", "rewinds": [ { user_id, username, year, total }, … ] }
+//
 // Same devices, same APNs path, same secret — just different words —
 // so it lives here instead of in a third function to deploy.
 //
@@ -46,9 +50,11 @@ import {
   asLocale,
   dropAlert,
   recapAlert,
+  rewindAlert,
   streakAlert,
   type Locale,
   type RecapStats,
+  type RewindReady,
   type SavedDrop,
   type StreakSave,
 } from "../_shared/push-copy.ts";
@@ -62,6 +68,10 @@ interface StreakRow extends StreakSave {
 }
 
 interface DropRow extends SavedDrop {
+  user_id: string;
+}
+
+interface RewindRow extends RewindReady {
   user_id: string;
 }
 
@@ -110,6 +120,17 @@ function isDropRow(value: unknown): value is DropRow {
   );
 }
 
+function isRewindRow(value: unknown): value is RewindRow {
+  const r = value as Partial<RewindRow> | null;
+  return (
+    !!r &&
+    typeof r.user_id === "string" &&
+    typeof r.username === "string" &&
+    typeof r.year === "number" &&
+    typeof r.total === "number"
+  );
+}
+
 /** One message per person; each device gets it in its own language. */
 interface Outgoing {
   user_id: string;
@@ -141,6 +162,11 @@ Deno.serve(async (req) => {
     outgoing = (payload.drops as unknown[]).filter(isDropRow).map((d) => ({
       user_id: d.user_id,
       alertFor: (locale) => dropAlert(locale, d),
+    }));
+  } else if (payload?.type === "REWIND" && Array.isArray(payload.rewinds)) {
+    outgoing = (payload.rewinds as unknown[]).filter(isRewindRow).map((r) => ({
+      user_id: r.user_id,
+      alertFor: (locale) => rewindAlert(locale, r),
     }));
   } else {
     return new Response("ignored", { status: 200 });

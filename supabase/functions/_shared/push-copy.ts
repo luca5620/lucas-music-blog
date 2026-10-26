@@ -481,3 +481,56 @@ export function dropAlert(
 function capitalise(line: string): string {
   return line.charAt(0).toUpperCase() + line.slice(1);
 }
+
+/* ---------- Rewind is ready (push-recap, type REWIND) ---------- */
+
+// Migration 063 sends this once, on December 1 at 10am Eastern, to
+// everyone with an iPhone and at least 3 records rated that year (the
+// same bar /rewind uses). Tapping it opens /rewind.
+
+/** What the 063 SQL job sends per person (see send_rewind_pushes). */
+export interface RewindReady {
+  username: string;
+  year: number;
+  total: number;
+}
+
+const REWIND_COPY: Record<Locale, { title: string; body: string }> = {
+  en: {
+    title: "Your {year} Rewind is ready",
+    body: "{total} records, your top 10 and the numbers. Tap to watch.",
+  },
+  es: {
+    title: "Tu Rewind {year} está listo",
+    body: "{total} discos, tu top 10 y los números. Toca para verlo.",
+  },
+  fr: {
+    title: "Ton Rewind {year} est prêt",
+    body: "{total} disques, ton top 10 et les chiffres. Touche pour le voir.",
+  },
+  pt: {
+    title: "Seu Rewind {year} está pronto",
+    body: "{total} discos, seu top 10 e os números. Toque para ver.",
+  },
+  nl: {
+    title: "Je Rewind {year} staat klaar",
+    body: "{total} platen, je top 10 en de cijfers. Tik om te kijken.",
+  },
+  de: {
+    title: "Dein Rewind {year} ist da",
+    body: "{total} Platten, deine Top 10 und die Zahlen. Tippe zum Ansehen.",
+  },
+};
+
+/** The "your Rewind is ready" push for one person in one language. */
+export function rewindAlert(
+  locale: Locale,
+  r: RewindReady
+): { title: string; body: string; href: string } {
+  const copy = REWIND_COPY[locale];
+  return {
+    title: fill(copy.title, { year: String(r.year) }),
+    body: fill(copy.body, { total: String(r.total) }),
+    href: "/rewind",
+  };
+}

@@ -3,10 +3,11 @@
 /**
  * RewindShareSheet — "Share your Rewind" from the last screen of
  * /rewind (Luca 2026-10-25). The year as one 9:16 card
- * (drawRewind in lib/share-cards/render.ts):
+ * (drawRewind in lib/share-cards/render.ts) — the summary screen:
+ * #1 cover, top records + top songs/artists, the four big numbers.
  *   - Share image: the still, through the phone's share sheet / a download.
  *   - Instagram / TikTok (app 1.3+, only the apps on this phone): a
- *     6-second clip of the same card (covers fade in, then it holds),
+ *     6-second clip of the same card (it fades up in order, then holds),
  *     straight into the story / TikTok editor — same plugin and same
  *     rules as the review share sheet.
  * Loaded lazily: none of this ships with /rewind until someone taps Share.
@@ -34,9 +35,10 @@ export interface RewindShareInput {
   handle: string;
   role: string | null;
   avatarUrl: string | null;
-  covers: (string | null)[];
+  /** The #1 record's cover. */
+  cover: string | null;
+  cols: { label: string; rows: { name: string; cover: string | null }[] }[];
   stats: [string, string][];
-  topLine: string | null;
   labels: { eyebrow: string; heading: string };
 }
 
@@ -56,16 +58,21 @@ export default function RewindShareSheet({ input, onClose }: { input: RewindShar
     socialTargets().then((s) => alive && setSocial(s));
     Promise.all([
       loadCardAssets({ avatarUrl: input.avatarUrl }),
-      Promise.all(input.covers.slice(0, 9).map((c) => loadImage(c))),
-    ]).then(([a, covers]) => {
+      loadImage(input.cover),
+      // every row cover, in column order
+      Promise.all(input.cols.map((c) => Promise.all(c.rows.map((r) => loadImage(r.cover))))),
+    ]).then(([a, cover, rowCovers]) => {
       if (!alive) return;
       setAssets(a);
       setCard({
         handle: input.handle,
         role: input.role,
-        covers,
+        cover,
+        cols: input.cols.map((c, ci) => ({
+          label: c.label,
+          rows: c.rows.map((r, ri) => ({ name: r.name, cover: rowCovers[ci][ri] })),
+        })),
         stats: input.stats,
-        topLine: input.topLine,
         labels: input.labels,
       });
     });

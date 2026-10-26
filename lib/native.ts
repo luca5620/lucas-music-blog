@@ -318,12 +318,23 @@ export function socialSharePlugin(): SocialSharePlugin | null {
   return bridge()?.Plugins?.SocialShare ?? null;
 }
 
+/**
+ * TikTok switch (Luca 2026-10-25: "ship now and hide the tiktok button
+ * while we wait"). Build 1.3 still carries TikTok's SANDBOX client key,
+ * which only works for the test account, so the button stays hidden
+ * for everyone until TikTok approves the app and a build with the
+ * production key (1.3.1) is live on the App Store. Then flip this to
+ * true and push — the button itself is website code.
+ */
+const TIKTOK_SHARE_LIVE = false;
+
 /** Which of Instagram / TikTok this phone can hand off to (both false off-app). */
 export async function socialTargets(): Promise<{ instagram: boolean; tiktok: boolean }> {
   const plugin = socialSharePlugin();
   if (!plugin) return { instagram: false, tiktok: false };
   try {
-    return await plugin.isAvailable();
+    const found = await plugin.isAvailable();
+    return { instagram: found.instagram, tiktok: TIKTOK_SHARE_LIVE && found.tiktok };
   } catch {
     return { instagram: false, tiktok: false };
   }

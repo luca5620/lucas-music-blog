@@ -36,6 +36,8 @@ import ChromeDisc from "@/components/ui/ChromeDisc";
 import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import { BreadcrumbSchema } from "@/app/schema";
 import SupportTeaser from "@/components/support/SupportTeaser";
+import RewindPrompt from "@/components/rewind/RewindPrompt";
+import { getRewindTeaser } from "@/lib/rewind";
 /* App Store link for the web-only download badge in the HOME band —
    shared constant in lib/app-store.ts (also used by the SEO landing
    pages). The listing goes live the moment Apple approves the app. */
@@ -263,6 +265,12 @@ async function Dashboard({ userId }: { userId: string }) {
     .eq("is_published", true);
   const firstRun = reviewCount === 0;
 
+  // Peak Music Rewind (Dec 1 – Jan 15; staff + testers now): the card
+  // under the HOME band + a one-time popup. Null when it's closed for
+  // them or they rated fewer than 3 records that year.
+  const { data: me } = await supabase.from("profiles").select("role").eq("id", userId).single<{ role: string | null }>();
+  const rewind = await getRewindTeaser(userId, me?.role ?? null);
+
   // "On air" = releases whose live room saw activity in the last 24h.
   // Dashboard is an async SERVER component rendered once per request,
   // so reading the clock here is the intended behaviour — there's no
@@ -330,6 +338,7 @@ async function Dashboard({ userId }: { userId: string }) {
         <div className="scan-bar" />
       </section>
 
+      {rewind && <RewindPrompt year={rewind.year} covers={rewind.covers} />}
 
       {/* ===== ON AIR — rooms with a pulse right now ===== */}
       {onAir.length > 0 && (

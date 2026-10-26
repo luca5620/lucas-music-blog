@@ -107,8 +107,8 @@ interface TrackRatingJoinRow {
   track_position: number;
   rating: number | string;
   releases:
-    | { slug: string; title: string; artist: string; cover_image: string | null; tracks: ReleaseTrack[] | null }
-    | { slug: string; title: string; artist: string; cover_image: string | null; tracks: ReleaseTrack[] | null }[]
+    | { slug: string; title: string; artist: { name: string } | null; cover_image: string | null; tracks: ReleaseTrack[] | null }
+    | { slug: string; title: string; artist: { name: string } | null; cover_image: string | null; tracks: ReleaseTrack[] | null }[]
     | null;
 }
 
@@ -126,7 +126,7 @@ export async function getMostLovedSongs(
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("track_ratings")
-      .select("release_id, track_position, rating, releases(slug, title, artist, cover_image, tracks)")
+      .select("release_id, track_position, rating, releases(slug, title, cover_image, tracks, artist:artists!releases_primary_artist_id_fkey(name))")
       .eq("user_id", userId)
       .order("rating", { ascending: false })
       .limit(60);
@@ -154,7 +154,10 @@ export async function getMostLovedSongs(
     scored.push({
       key,
       title: track.title,
-      artist: rel.artist,
+      // releases has no artist text column — the name comes from the
+      // primary artist (this query used to ask for releases.artist,
+      // which PostgREST rejects, so the section only ever showed ♥ picks).
+      artist: rel.artist?.name ?? review?.artist ?? "",
       cover: rel.cover_image ?? review?.cover_image ?? null,
       href: review ? `/reviews/${review.slug}` : `/releases/${rel.slug}`,
       score,

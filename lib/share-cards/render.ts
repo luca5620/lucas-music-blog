@@ -970,21 +970,24 @@ export function drawMonth(ctx: CanvasRenderingContext2D, a: CardAssets, d: Month
 /* 4 · Peak Music Rewind (the year, still or a 6-second clip)          */
 /* ------------------------------------------------------------------ */
 
-// The last screen of /rewind as a 9:16 card (Luca 2026-10-25). Same
-// safe zones as the month card: SC_X margins both sides, nothing in
-// the top-left corner, credit line under the heading, everything done
-// by about y 515. As a clip the covers fade in one by one (calm, no
-// flashes), then it holds; the still is simply the last frame.
+// The last screen of /rewind as a 9:16 card — the summary (Luca
+// 2026-10-25: "like how spotify does it, emphasis on the stats, a bit
+// on the artworks"). Same safe zones as the month card: SC_X margins
+// both sides, everything done by about y 475 (clear of the story
+// reply bar). Top to bottom: the #1 record's cover + heading, the
+// credit line, two ranked columns (top records + top songs/artists),
+// then four big numbers. As a clip things fade up in that order
+// (calm, no flashes), then it holds; the still is the last frame.
 
 export interface RewindCardData {
   handle: string;
   role?: string | null;
-  /** Up to 9 covers, best first. */
-  covers: (HTMLImageElement | null)[];
-  /** Three [value, label] pairs, e.g. ["26", "records"]. */
+  /** The year's #1 record. */
+  cover: HTMLImageElement | null;
+  /** One or two ranked columns, up to 5 rows each. */
+  cols: { label: string; rows: { name: string; cover: HTMLImageElement | null }[] }[];
+  /** Four [value, label] pairs, e.g. ["26", "Records rated"]. */
   stats: [string, string][];
-  /** "Top record: House Of Balloons · 10", or null. */
-  topLine: string | null;
   labels: {
     eyebrow: string; // "PEAK MUSIC REWIND"
     heading: string; // "My 2026 on\nPeak Music"
@@ -1004,56 +1007,76 @@ export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: Rewi
   const L = SC_X;
   const R = SC_R;
   const W = R - L;
+  const OSD = "rgba(191,243,255,0.75)";
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
-  ctx.font = font(a, 11, 600);
-  ctx.fillStyle = "rgba(191,243,255,0.75)";
-  ctx.fillText(d.labels.eyebrow, L, 72);
-  ctx.font = font(a, 24, 800);
-  ctx.fillStyle = "#fff";
-  d.labels.heading.split("\n").forEach((line, i) => ctx.fillText(fit(ctx, line, W), L, 100 + i * 27));
 
-  drawCredit(ctx, a, d.handle, L, 154, "left", W, d.role ?? null);
-
-  // 3 × 3 covers, edge to edge (an empty slot = a dark sleeve).
-  const cell = W / 3;
-  const top = 176;
-  for (let i = 0; i < 9; i++) {
-    const k = easeOut((t - 0.15 - i * 0.12) / 0.5);
-    if (k <= 0) continue;
+  // fade + a 4px rise, starting at `at` seconds
+  const fadeIn = (at: number, draw: () => void, dur = 0.5) => {
+    const k = easeOut((t - at) / dur);
+    if (k <= 0) return;
     ctx.save();
     ctx.globalAlpha = k;
-    drawCover(ctx, d.covers[i] ?? null, L + (i % 3) * cell, top + Math.floor(i / 3) * cell + (1 - k) * 4, cell, cell, 0);
+    ctx.translate(0, (1 - k) * 4);
+    draw();
     ctx.restore();
-  }
-  ctx.strokeStyle = "rgba(191,243,255,0.18)";
-  ctx.lineWidth = 0.75;
-  ctx.strokeRect(L, top, W, W);
+  };
 
-  // stats + the top record fade in once the grid is down
-  const s = easeOut((t - 1.4) / 0.6);
-  ctx.save();
-  ctx.globalAlpha = s;
-  let sx = L;
-  const sy = top + W + 30;
-  d.stats.forEach(([v, k]) => {
-    ctx.font = font(a, 20, 700);
+  // header: eyebrow, #1 cover, heading beside it, credit under
+  fadeIn(0.1, () => {
+    ctx.font = font(a, 11, 600);
+    ctx.fillStyle = OSD;
+    ctx.fillText(d.labels.eyebrow, L, 72);
+    const c = 84;
+    drawCover(ctx, d.cover, L, 86, c, c, 4);
+    ctx.font = font(a, 21, 800);
     ctx.fillStyle = "#fff";
-    ctx.fillText(v, sx, sy);
-    const vw = ctx.measureText(v).width;
-    ctx.font = font(a, 11, 400);
-    ctx.fillStyle = "rgba(255,255,255,0.45)";
-    ctx.fillText(k, sx, sy + 15);
-    sx += Math.max(vw, ctx.measureText(k).width) + 18;
+    d.labels.heading.split("\n").forEach((line, i) => ctx.fillText(fit(ctx, line, W - c - 14), L + c + 14, 122 + i * 24));
+    drawCredit(ctx, a, d.handle, L, 194, "left", W, d.role ?? null);
   });
-  if (d.topLine) {
-    ctx.fillStyle = "rgba(255,255,255,0.09)";
-    ctx.fillRect(L, sy + 26, W, 0.5);
-    ctx.font = font(a, 12, 500);
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText(fit(ctx, d.topLine, W), L, sy + 44);
-  }
-  ctx.restore();
+
+  // the ranked columns, a row at a time
+  const gap = 14;
+  const colW = d.cols.length > 1 ? (W - gap) / 2 : W;
+  d.cols.forEach((col, ci) => {
+    const x = L + ci * (colW + gap);
+    fadeIn(0.6, () => {
+      ctx.font = font(a, 9.5, 700);
+      ctx.fillStyle = OSD;
+      ctx.fillText(col.label.toUpperCase(), x, 226);
+    });
+    col.rows.slice(0, 5).forEach((row, i) => {
+      fadeIn(0.75 + i * 0.09 + ci * 0.05, () => {
+        const y = 238 + i * 23;
+        ctx.font = font(a, 10, 600);
+        ctx.fillStyle = OSD;
+        ctx.fillText(String(i + 1), x, y + 12);
+        drawCover(ctx, row.cover, x + 11, y, 17, 17, 2);
+        ctx.font = font(a, 11.5, 600);
+        ctx.fillStyle = "#fff";
+        ctx.fillText(fit(ctx, row.name, colW - 34), x + 34, y + 12.5);
+      });
+    });
+  });
+
+  // the big numbers, 2 × 2
+  fadeIn(1.5, () => {
+    ctx.fillStyle = "rgba(255,255,255,0.1)";
+    ctx.fillRect(L, 362, W, 0.5);
+  });
+  const half = (W - gap) / 2;
+  d.stats.slice(0, 4).forEach(([v, k], i) => {
+    const x = L + (i % 2) * (half + gap);
+    const y = 386 + Math.floor(i / 2) * 58;
+    fadeIn(1.6 + i * 0.14, () => {
+      ctx.font = font(a, 9.5, 700);
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.fillText(fit(ctx, k.toUpperCase(), half), x, y);
+      ctx.font = font(a, 30, 800);
+      ctx.fillStyle = "#fff";
+      ctx.fillText(fit(ctx, v, half), x, y + 32);
+    }, 0.6);
+  });
 
   // faint scanlines: the CRT, quietly
   ctx.fillStyle = "rgba(255,255,255,0.025)";

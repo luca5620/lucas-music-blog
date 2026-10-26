@@ -89,22 +89,40 @@ export default function RewindStory({ data, preview }: { data: RewindData; previ
   const name = t("coverTitle", { name: data.name, year: data.year });
   const credit = <Credit handle={data.handle} role={data.role} avatarUrl={data.avatarUrl} />;
 
+  // The summary's two ranked columns: top records, then top songs
+  // (song-by-song scores) — or top artists when they haven't scored
+  // enough songs this year.
+  const sumCols = useMemo(() => {
+    const cols = [{ label: t("sumRecords"), rows: data.top.slice(0, 5).map((r) => ({ name: r.title, cover: r.cover })) }];
+    if (data.songs.length >= 3) cols.push({ label: t("sumSongs"), rows: data.songs.map((s) => ({ name: s.title, cover: s.cover })) });
+    else if (data.artists.length >= 2) cols.push({ label: t("sumArtists"), rows: data.artists.map((a) => ({ name: a.name, cover: a.cover })) });
+    return cols;
+  }, [data, t]);
+  // …and the four big numbers.
+  const sumStats = useMemo<[string, string][]>(
+    () => [
+      [String(data.total), t("sumStatRecords")],
+      [data.average.toFixed(2), t("sumStatAverage")],
+      [String(data.tens), t("sumStatTens")],
+      data.sotd
+        ? [String(data.sotd.days), t("sumStatSotd")]
+        : [new Date(Date.UTC(data.year, busiest, 15)).toLocaleDateString(locale, { month: "long", timeZone: "UTC" }), t("sumStatMonth")],
+    ],
+    [data, t, busiest, locale]
+  );
+
   const share: RewindShareInput = useMemo(
     () => ({
       year: data.year,
       handle: data.handle,
       role: data.role,
       avatarUrl: data.avatarUrl,
-      covers: grid.map((r) => r.cover),
-      stats: [
-        [String(data.total), t("statRecords")],
-        [data.average.toFixed(2), t("statAverage")],
-        data.sotd ? [String(data.sotd.days), t("statSotd")] : [String(data.tens), t("statTens")],
-      ],
-      topLine: data.top[0] ? t("topLine", { title: data.top[0].title, score: fmt(data.top[0].rating) }) : null,
+      cover: data.top[0]?.cover ?? null,
+      cols: sumCols,
+      stats: sumStats,
       labels: { eyebrow: t("eyebrow").toUpperCase(), heading: t("cardHeading", { year: data.year }) },
     }),
-    [data, grid, t]
+    [data, sumCols, sumStats, t]
   );
 
   /** Change channel to screen `next` (callers check the bounds). */
@@ -282,19 +300,44 @@ export default function RewindStory({ data, preview }: { data: RewindData; previ
     );
   }
 
-  // 8 · end card + share
-  const endStats = [
-    t("endRecords", { n: data.total }),
-    t("endAverage", { avg: data.average.toFixed(2) }),
-    ...(data.sotd ? [t("endSotd", { n: data.sotd.days })] : []),
-  ].join(" · ");
+  // 8 · the summary (Luca: "the comprehensive look of your top songs
+  // and whatnot like how spotify does it, emphasis on the stats, a bit
+  // on the artworks"). The #1 record's cover + who it is up top, two
+  // ranked columns, then the big numbers. The share card is this same
+  // screen (summary in RewindShareInput → drawRewind).
   screens.push(
-    <div className="rw-center">
-      <div className="rw-grid">{grid.map((r, i) => <Cover key={i} r={r} />)}</div>
-      <div className="rw-title">
-        <b>{name}</b>
-        {credit}
-        <small>{endStats}</small>
+    <div className="rw-sum">
+      <div className="rw-sum-head">
+        {data.top[0] && <Cover r={data.top[0]} />}
+        <div className="rw-sum-who">
+          <span className="rw-eyebrow">{t("eyebrow")}</span>
+          <b>{name}</b>
+        </div>
+      </div>
+      {credit}
+      <div className="rw-sum-cols">
+        {sumCols.map((col) => (
+          <div key={col.label}>
+            <span className="rw-sum-label">{col.label}</span>
+            <ol>
+              {col.rows.map((row, i) => (
+                <li key={i}>
+                  <span className="rw-n">{i + 1}</span>
+                  <Cover r={{ cover: row.cover, title: row.name }} />
+                  <span className="rw-sum-name">{row.name}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+      <div className="rw-sum-stats">
+        {sumStats.map(([v, k]) => (
+          <div key={k}>
+            <span className="rw-sum-label">{k}</span>
+            <b>{v}</b>
+          </div>
+        ))}
       </div>
       <div className="rw-end-actions">
         <button type="button" className="btn-y2k btn-y2k-primary" onClick={() => setSharing(true)}>

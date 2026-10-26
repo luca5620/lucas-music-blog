@@ -521,8 +521,8 @@ uses the second option yet).
 ### 🕔 Real drop times (2026-10-25 night, Windows)
 - Luca: ILLIT's BREAK EVEN said "out now" at midnight ET but K-pop drops at
   6pm Korea time (5am ET). Not everything drops at midnight Eastern.
-- **⚠️ Migration 064 NOT RUN YET** — `064-real-drop-times.sql`, paste + Run,
-  nothing to fill in. Adds releases.drops_at / drop_waiting_at, a 'drop-check'
+- Migration 064 RUN ✓ (2026-10-26; first check 06:30 UTC marked BREAK EVEN
+  waiting, live page showed "Out later today"). Adds releases.drops_at / drop_waiting_at, a 'drop-check'
   cron (every 5 min) and makes the saved-record push wait until it's really
   out (cron now '2-59/5 * * * *'; only people who saved it before the drop).
 - Edge function **drop-check** DEPLOYED ✓ (asks Spotify, market=US, whether the

@@ -519,9 +519,24 @@ uses the second option yet).
 ## ⏳ In progress
 
 ### 📼 Save for later + Rewind + less boxy (2026-10-25 night, Windows) — 67d6b9d
-- **⚠️ MIGRATION 062 NOT RUN YET** — `supabase/migrations/062-saved-release-drop-push.sql`
-  in the SQL Editor (nothing to paste in: it copies the push secret from the
-  060 job). push-recap with the DROP message is already deployed ✓.
+- Migration 062 RUN ✓ (2026-10-25, cron job id 5).
+- **⚠️ MIGRATION 063 NOT RUN YET** — `supabase/migrations/063-rewind-ready-push.sql`
+  (Dec 1, 10am Eastern "Your Rewind is ready" push; uses the 062 secret,
+  nothing to paste). push-recap with REWIND is already deployed ✓. — 4457ef2
+- **Rewind entry (4457ef2):** home card under the HOME band + one-time popup
+  (components/rewind/RewindPrompt.tsx, localStorage ),
+  shown Dec 1–Jan 15 to members with 3+ records that year (staff/testers now).
+  Last screen = Spotify-style summary (top records + top songs/artists, four
+  big numbers); share card draws the same.
+- **TikTok share button HIDDEN** ( in lib/native.ts)
+  until TikTok approves + a 1.3.1 build with the production key is live. Luca
+  says when → flip to true and push.
+- Fixed: Most loved songs / Rewind songs asked for releases.artist (no such
+  column) → PostgREST error → only hearted picks showed. Embeds the primary
+  artist now.
+- **Website frame options sent** (Design canvas ByASgsL1CVpUQJi31m2kix): A spine
+  follows you, B no spine wider screen, C label strip on top, D main column +
+  side rail. Waiting on Luca's pick.
 - **Save for later:** release page button = "Save for later" / "Saved ✓"
   (still release_follows; counts say "Saved by N"). Profile **Saved** tab
   (`?tab=saved`, components/profile/SavedShelf.tsx): saved + not rated,

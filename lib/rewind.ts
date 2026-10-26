@@ -55,24 +55,8 @@ export interface RewindData {
   /** Most-rated artist (2+ records), with up to 3 of their covers. */
   artist: { name: string; count: number; covers: (string | null)[] } | null;
   runnerUp: { name: string; count: number } | null;
-  /** Top artists by how many of their records were rated (up to 5),
-      for the summary screen. Ties → the higher average first. */
-  artists: { name: string; count: number; cover: string | null }[];
-  /** Best song scores given this year (track_ratings, up to 5) — the
-      summary shows these as "Top songs" when there are at least 3. */
-  songs: { title: string; artist: string; rating: number; cover: string | null }[];
   /** Song of the Day: days picked this year + the longest run. */
   sotd: { days: number; longest: number; picked: string[]; from: string; to: string } | null;
-}
-
-interface SongRow {
-  track_position: number;
-  rating: number | string;
-  updated_at: string;
-  releases:
-    | { artist: { name: string } | null; cover_image: string | null; tracks: { position: number; title: string }[] | null }
-    | { artist: { name: string } | null; cover_image: string | null; tracks: { position: number; title: string }[] | null }[]
-    | null;
 }
 
 interface ReviewRow {
@@ -103,7 +87,7 @@ export async function getRewind(
   const from = `${year}-01-01`;
   const to = `${year + 1}-01-01`;
 
-  const [reviewsRes, sotdRes, songsRes] = await Promise.all([
+  const [reviewsRes, sotdRes] = await Promise.all([
     supabase
       .from("reviews")
       .select("title, artist, rating, cover_image, review_date, created_at")
@@ -121,17 +105,6 @@ export async function getRewind(
       .lt("picked_on", to)
       .order("picked_on", { ascending: true })
       .limit(400),
-    // Song-by-song scores given this year (migration 041), best first.
-    // Song titles live on the release's tracklist, matched by position.
-    supabase
-      .from("track_ratings")
-      .select("track_position, rating, updated_at, releases(cover_image, tracks, artist:artists!releases_primary_artist_id_fkey(name))")
-      .eq("user_id", profile.id)
-      .gte("updated_at", from)
-      .lt("updated_at", to)
-      .order("rating", { ascending: false })
-      .order("updated_at", { ascending: false })
-      .limit(40),
   ]);
 
   const rows = ((reviewsRes.data ?? []) as ReviewRow[]).map((r) => ({
@@ -164,29 +137,8 @@ export async function getRewind(
   // Most records first; a tie goes to the higher average.
   const avgOf = (rs: RewindRecord[]) => rs.reduce((s, r) => s + r.rating, 0) / rs.length;
   const artists = [...byArtist.entries()].sort((a, b) => b[1].length - a[1].length || avgOf(b[1]) - avgOf(a[1]));
-  const topArtists = artists
-    .slice(0, 5)
-    .map(([name, rs]) => ({ name, count: rs.length, cover: rs[0].cover }));
   const top = artists[0];
   const second = artists[1];
-
-  // Top songs: one row per song (a re-scored song counts once).
-  const songs: RewindData["songs"] = [];
-  const seenSongs = new Set<string>();
-  for (const row of (songsRes.data ?? []) as unknown as SongRow[]) {
-    const rel = Array.isArray(row.releases) ? row.releases[0] : row.releases;
-    const track = rel?.tracks?.find((t) => t.position === row.track_position);
-    if (!rel || !track) continue;
-    const artist = rel.artist?.name ?? "";
-    // Same song on a single and the album, or a " - Remix" / "(Live)"
-    // version → counts once, under the best score.
-    const base = track.title.split(" - ")[0].replace(/\s*[([].*$/, "");
-    const key = `${artist}|${base}`.toLowerCase();
-    if (seenSongs.has(key)) continue;
-    seenSongs.add(key);
-    songs.push({ title: track.title, artist, rating: Number(row.rating), cover: rel.cover_image });
-    if (songs.length === 5) break;
-  }
 
   // Song of the Day: count + longest run of consecutive days.
   const picked = ((sotdRes.data ?? []) as { picked_on: string }[]).map((r) => r.picked_on);
@@ -226,8 +178,6 @@ export async function getRewind(
       top && top[1].length >= 2 && second && second[1].length >= 2
         ? { name: second[0], count: second[1].length }
         : null,
-    artists: topArtists,
-    songs,
     sotd:
       picked.length >= 3
         ? { days: picked.length, longest, picked, from: picked[0], to: picked[picked.length - 1] }

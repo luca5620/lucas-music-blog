@@ -525,8 +525,9 @@ uses the second option yet).
 - **Rewind entry (4457ef2):** home card under the HOME band + one-time popup
   (components/rewind/RewindPrompt.tsx, localStorage key "rewind-intro-<year>"),
   shown Dec 1–Jan 15 to members with 3+ records that year (staff/testers now).
-  Last screen = Spotify-style summary (top records + top songs/artists, four
-  big numbers); share card draws the same.
+  Last screen = summary: #1 cover, ONE "Top ratings" list (5 best records +
+  scores; songs/artists columns dropped 2026-10-25 per Luca), four big
+  numbers; share card draws the same.
 - **TikTok share button HIDDEN** (TIKTOK_SHARE_LIVE = false in lib/native.ts)
   until TikTok approves + a 1.3.1 build with the production key is live. Luca
   says when → flip to true and push.

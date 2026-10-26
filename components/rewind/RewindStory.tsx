@@ -89,15 +89,17 @@ export default function RewindStory({ data, preview }: { data: RewindData; previ
   const name = t("coverTitle", { name: data.name, year: data.year });
   const credit = <Credit handle={data.handle} role={data.role} avatarUrl={data.avatarUrl} />;
 
-  // The summary's two ranked columns: top records, then top songs
-  // (song-by-song scores) — or top artists when they haven't scored
-  // enough songs this year.
-  const sumCols = useMemo(() => {
-    const cols = [{ label: t("sumRecords"), rows: data.top.slice(0, 5).map((r) => ({ name: r.title, cover: r.cover })) }];
-    if (data.songs.length >= 3) cols.push({ label: t("sumSongs"), rows: data.songs.map((s) => ({ name: s.title, cover: s.cover })) });
-    else if (data.artists.length >= 2) cols.push({ label: t("sumArtists"), rows: data.artists.map((a) => ({ name: a.name, cover: a.cover })) });
-    return cols;
-  }, [data, t]);
+  // The summary's one ranked list: "Top ratings", the year's 5
+  // best-scored records with their scores. (It used to be two columns,
+  // top records + top songs; Luca 2026-10-25: "just do top ratings,
+  // and that be it" — two lists read as the same thing twice.)
+  const sumList = useMemo(
+    () => ({
+      label: t("sumTop"),
+      rows: data.top.slice(0, 5).map((r) => ({ name: r.title, artist: r.artist, score: fmt(r.rating), cover: r.cover })),
+    }),
+    [data, t]
+  );
   // …and the four big numbers.
   const sumStats = useMemo<[string, string][]>(
     () => [
@@ -118,11 +120,11 @@ export default function RewindStory({ data, preview }: { data: RewindData; previ
       role: data.role,
       avatarUrl: data.avatarUrl,
       cover: data.top[0]?.cover ?? null,
-      cols: sumCols,
+      list: sumList,
       stats: sumStats,
       labels: { eyebrow: t("eyebrow").toUpperCase(), heading: t("cardHeading", { year: data.year }) },
     }),
-    [data, sumCols, sumStats, t]
+    [data, sumList, sumStats, t]
   );
 
   /** Change channel to screen `next` (callers check the bounds). */
@@ -302,8 +304,8 @@ export default function RewindStory({ data, preview }: { data: RewindData; previ
 
   // 8 · the summary (Luca: "the comprehensive look of your top songs
   // and whatnot like how spotify does it, emphasis on the stats, a bit
-  // on the artworks"). The #1 record's cover + who it is up top, two
-  // ranked columns, then the big numbers. The share card is this same
+  // on the artworks"). The #1 record's cover + who it is up top, the
+  // Top ratings list, then the big numbers. The share card is this same
   // screen (summary in RewindShareInput → drawRewind).
   screens.push(
     <div className="rw-sum">
@@ -315,21 +317,21 @@ export default function RewindStory({ data, preview }: { data: RewindData; previ
         </div>
       </div>
       {credit}
-      <div className="rw-sum-cols">
-        {sumCols.map((col) => (
-          <div key={col.label}>
-            <span className="rw-sum-label">{col.label}</span>
-            <ol>
-              {col.rows.map((row, i) => (
-                <li key={i}>
-                  <span className="rw-n">{i + 1}</span>
-                  <Cover r={{ cover: row.cover, title: row.name }} />
-                  <span className="rw-sum-name">{row.name}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        ))}
+      <div className="rw-sum-list">
+        <span className="rw-sum-label">{sumList.label}</span>
+        <ol>
+          {sumList.rows.map((row, i) => (
+            <li key={i}>
+              <span className="rw-n">{i + 1}</span>
+              <Cover r={{ cover: row.cover, title: row.name }} />
+              <span className="rw-sum-name">
+                {row.name}
+                <small>{row.artist}</small>
+              </span>
+              <span className="rw-score">{row.score}</span>
+            </li>
+          ))}
+        </ol>
       </div>
       <div className="rw-sum-stats">
         {sumStats.map(([v, k]) => (

@@ -984,8 +984,8 @@ export interface RewindCardData {
   role?: string | null;
   /** The year's #1 record. */
   cover: HTMLImageElement | null;
-  /** One or two ranked columns, up to 5 rows each. */
-  cols: { label: string; rows: { name: string; cover: HTMLImageElement | null }[] }[];
+  /** "Top ratings": up to 5 records, best first, score already formatted. */
+  list: { label: string; rows: { name: string; artist: string; score: string; cover: HTMLImageElement | null }[] };
   /** Four [value, label] pairs, e.g. ["26", "Records rated"]. */
   stats: [string, string][];
   labels: {
@@ -1038,27 +1038,36 @@ export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: Rewi
     drawCredit(ctx, a, d.handle, L, 238, "left", W, d.role ?? null);
   });
 
-  // the ranked columns, a row at a time
-  const gap = 14;
-  const colW = d.cols.length > 1 ? (W - gap) / 2 : W;
-  d.cols.forEach((col, ci) => {
-    const x = L + ci * (colW + gap);
-    fadeIn(0.6, () => {
-      ctx.font = font(a, 9.5, 700);
+  // Top ratings, a row at a time: rank · cover · title · artist … score
+  fadeIn(0.6, () => {
+    ctx.font = font(a, 9.5, 700);
+    ctx.fillStyle = OSD;
+    ctx.fillText(d.list.label.toUpperCase(), L, 280);
+  });
+  d.list.rows.slice(0, 5).forEach((row, i) => {
+    fadeIn(0.75 + i * 0.09, () => {
+      const y = 294 + i * 28;
+      ctx.font = font(a, 10, 600);
       ctx.fillStyle = OSD;
-      ctx.fillText(col.label.toUpperCase(), x, 280);
-    });
-    col.rows.slice(0, 5).forEach((row, i) => {
-      fadeIn(0.75 + i * 0.09 + ci * 0.05, () => {
-        const y = 294 + i * 28;
-        ctx.font = font(a, 10, 600);
-        ctx.fillStyle = OSD;
-        ctx.fillText(String(i + 1), x, y + 14);
-        drawCover(ctx, row.cover, x + 11, y, 20, 20, 2);
-        ctx.font = font(a, 12, 600);
-        ctx.fillStyle = "#fff";
-        ctx.fillText(fit(ctx, row.name, colW - 38), x + 38, y + 14.5);
-      });
+      ctx.fillText(String(i + 1), L, y + 14);
+      drawCover(ctx, row.cover, L + 11, y, 20, 20, 2);
+      // the score, right-aligned; the words get whatever is left
+      ctx.font = font(a, 12.5, 800);
+      ctx.textAlign = "right";
+      ctx.fillText(row.score, R, y + 14.5);
+      ctx.textAlign = "left";
+      const room = W - 38 - 34;
+      ctx.font = font(a, 12, 600);
+      ctx.fillStyle = "#fff";
+      const name = fit(ctx, row.name, room);
+      ctx.fillText(name, L + 38, y + 14.5);
+      // artist after the title in grey, only if it fits
+      const used = ctx.measureText(name).width;
+      if (row.artist && used < room - 30) {
+        ctx.font = font(a, 11, 500);
+        ctx.fillStyle = "rgba(255,255,255,0.5)";
+        ctx.fillText(fit(ctx, `  ${row.artist}`, room - used), L + 38 + used, y + 14.5);
+      }
     });
   });
 
@@ -1067,6 +1076,7 @@ export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: Rewi
     ctx.fillStyle = "rgba(255,255,255,0.1)";
     ctx.fillRect(L, 446, W, 0.5);
   });
+  const gap = 14;
   const half = (W - gap) / 2;
   d.stats.slice(0, 4).forEach(([v, k], i) => {
     const x = L + (i % 2) * (half + gap);

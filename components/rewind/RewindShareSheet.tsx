@@ -4,7 +4,7 @@
  * RewindShareSheet — "Share your Rewind" from the last screen of
  * /rewind (Luca 2026-10-25). The year as one 9:16 card
  * (drawRewind in lib/share-cards/render.ts) — the summary screen:
- * #1 cover, top records + top songs/artists, the four big numbers.
+ * #1 cover, the Top ratings list, the four big numbers.
  *   - Share image: the still, through the phone's share sheet / a download.
  *   - Instagram / TikTok (app 1.3+, only the apps on this phone): a
  *     6-second clip of the same card (it fades up in order, then holds),
@@ -37,7 +37,8 @@ export interface RewindShareInput {
   avatarUrl: string | null;
   /** The #1 record's cover. */
   cover: string | null;
-  cols: { label: string; rows: { name: string; cover: string | null }[] }[];
+  /** "Top ratings": the year's 5 best records, with scores. */
+  list: { label: string; rows: { name: string; artist: string; score: string; cover: string | null }[] };
   stats: [string, string][];
   labels: { eyebrow: string; heading: string };
 }
@@ -59,8 +60,8 @@ export default function RewindShareSheet({ input, onClose }: { input: RewindShar
     Promise.all([
       loadCardAssets({ avatarUrl: input.avatarUrl }),
       loadImage(input.cover),
-      // every row cover, in column order
-      Promise.all(input.cols.map((c) => Promise.all(c.rows.map((r) => loadImage(r.cover))))),
+      // every row cover, in list order
+      Promise.all(input.list.rows.map((r) => loadImage(r.cover))),
     ]).then(([a, cover, rowCovers]) => {
       if (!alive) return;
       setAssets(a);
@@ -68,10 +69,10 @@ export default function RewindShareSheet({ input, onClose }: { input: RewindShar
         handle: input.handle,
         role: input.role,
         cover,
-        cols: input.cols.map((c, ci) => ({
-          label: c.label,
-          rows: c.rows.map((r, ri) => ({ name: r.name, cover: rowCovers[ci][ri] })),
-        })),
+        list: {
+          label: input.list.label,
+          rows: input.list.rows.map((r, i) => ({ ...r, cover: rowCovers[i] })),
+        },
         stats: input.stats,
         labels: input.labels,
       });

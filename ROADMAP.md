@@ -519,6 +519,13 @@ uses the second option yet).
 ## ⏳ In progress
 
 ### 🕔 Real drop times (2026-10-25 night, Windows)
+- **EXACT TIMES (2026-10-26, Luca: "why not just have the accurate countdown?"):**
+  Spotify's embed page has releaseDate.isoString for pre-release records
+  (BREAK EVEN 09:00Z, US records 05:00Z/04:00Z = midnight ET). drop-check now
+  saves it in drops_at (redeployed ✓) and every countdown runs to it; the
+  playable check is only the fallback when the embed has no time.
+  **⚠️ Migration 065 NOT RUN YET** (`065-exact-drop-push.sql`, paste + Run):
+  saved-record push treats a future drops_at as "not yet".
 - Luca: ILLIT's BREAK EVEN said "out now" at midnight ET but K-pop drops at
   6pm Korea time (5am ET). Not everything drops at midnight Eastern.
 - Migration 064 RUN ✓ (2026-10-26; first check 06:30 UTC marked BREAK EVEN

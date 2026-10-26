@@ -3,17 +3,18 @@
 /**
  * LiveCountdown — a ticking DD:HH:MM:SS clock to a release date.
  *
- * Counts down to MIDNIGHT EASTERN of release day (the US drop
- * moment) via lib/upcoming's easternMidnightUtcMs — the one shared
- * anchor, so the tick and every D–x badge always agree. Never do
- * date math here directly.
+ * Counts down to the record's EXACT drop moment when we know it
+ * (Spotify's own release time, migration 064 — BREAK EVEN ticks to
+ * 5am ET), otherwise to MIDNIGHT EASTERN of release day, via
+ * lib/upcoming's dropMomentMs — the one shared anchor, so the tick and
+ * every D–x badge always agree. Never do date math here directly.
  *
  * Hydration-safe: the server renders a static "D–x" placeholder and
  * the ticking clock only takes over after mount (a live clock can
  * never match the server's HTML anyway). When the clock hits zero it
- * flips to OUT NOW — no refresh needed at midnight — or to "Later
- * today" when Spotify hasn't switched the record on yet (K-pop drops
- * at 6pm Korea time; migration 064, lib/upcoming isWaitingForDrop).
+ * flips to OUT NOW — no refresh needed — or to "Later today" when
+ * there's no exact time and Spotify hasn't switched the record on yet
+ * (lib/upcoming isWaitingForDrop).
  */
 
 import { useEffect, useState } from "react";
@@ -86,7 +87,7 @@ export default function LiveCountdown({
       // can straddle a midnight boundary — a one-day flicker beats a
       // hydration error.
       <span className={`tabular-nums ${className}`} suppressHydrationWarning>
-        {days > 0 ? t("dMinus", { n: days }) : waiting ? t("laterToday") : t("outNow")}
+        {waiting ? t("laterToday") : days > 0 ? t("dMinus", { n: days }) : t("outNow")}
       </span>
     );
   }

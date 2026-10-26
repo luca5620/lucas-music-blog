@@ -468,9 +468,11 @@ async function ReleaseContent({
   // or, for a record that doesn't drop at midnight Eastern (K-pop at
   // 6pm Korea time), once Spotify actually switches it on (064).
   const upcoming = isUpcoming(release.release_date, release);
-  // Past midnight Eastern but not playable yet → "Out later today"
-  // instead of a clock stuck on zero.
-  const waitingForDrop = isWaitingForDrop(release.release_date, release);
+  // Past midnight Eastern, not out yet, and NO exact time to count
+  // down to → "Out later today" instead of a clock stuck on zero. With
+  // Spotify's exact time (drops_at) the banner just keeps ticking.
+  const waitingForDrop =
+    !release.drops_at && isWaitingForDrop(release.release_date, release);
 
   return (
     // NO PANEL (Luca 2026-10-25, "improve the boxy flow"): the page

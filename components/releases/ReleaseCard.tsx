@@ -45,9 +45,10 @@ export default function ReleaseCard({
   const t = useTranslations("releases.views");
   const tc = useTranslations("common");
   const hasRating = typeof avgRating === "number" && !Number.isNaN(avgRating);
-  const days = daysUntil(release.release_date, release);
-  // Release day, but Spotify hasn't switched it on yet (migration 064).
-  const waiting = days === null && isWaitingForDrop(release.release_date, release);
+  // Release day, but not out yet (a 5am ET K-pop drop, migration 064)
+  // → "Later today", not "Tomorrow" (a few hours still rounds up to 1).
+  const waiting = isWaitingForDrop(release.release_date, release);
+  const days = waiting ? null : daysUntil(release.release_date, release);
 
   return (
     <Link href={`/releases/${release.slug}`} className="disc-tile group">

@@ -52,17 +52,21 @@ export function easternMidnightUtcMs(
    NOT EVERYTHING DROPS AT MIDNIGHT EASTERN (Luca 2026-10-25: ILLIT's
    BREAK EVEN said "out now" at midnight ET but K-pop comes out at 6pm
    Korea time, 5am ET). Migration 064 gives each release two facts,
-   filled in every 5 minutes by the drop-check edge function, which
-   asks Spotify whether the tracks are actually playable yet:
-     drops_at         the moment Spotify was first seen playing it
-                      (can be BEFORE midnight ET, e.g. a Japanese
-                      release at midnight Tokyo time)
-     drop_waiting_at  the last time the check found it NOT out yet
-   Midnight Eastern stays the default. After it, a release only counts
-   as out once Spotify agrees — and if the checker ever stops
-   reporting (30 minutes of silence) or a whole day passes, it falls
-   back to the old midnight rule, so a broken check can never leave a
-   normal US release stuck on "later today".
+   filled in every 5 minutes by the drop-check edge function:
+     drops_at         THE EXACT DROP MOMENT. Spotify's embed page
+                      carries it for every pre-release record
+                      (releaseDate.isoString — "2026-10-26T09:00:00Z"
+                      for BREAK EVEN, 05:00Z = midnight ET for US
+                      records), so countdowns run to the real second
+                      (Luca 2026-10-26: "why not just have the accurate
+                      countdown?"). When there's no time on the embed,
+                      it's the moment Spotify was first seen playing it.
+     drop_waiting_at  the last time the check found it NOT out yet —
+                      only used when drops_at is unknown
+   No drops_at → midnight Eastern stays the default; after it, a fresh
+   "not out yet" report holds it back, and if the checker stops
+   reporting (30 minutes of silence) or a whole day passes it falls
+   back to the old midnight rule.
    Every helper below takes the row's DropInfo as an optional second
    argument; without it they behave exactly like before.
    ------------------------------------------------------------------ */
@@ -77,27 +81,41 @@ export interface DropInfo {
 const WAITING_FRESH_MS = 30 * 60_000;
 /** Reports from just before midnight ET count (the checker runs every 5 min). */
 const WAITING_EARLY_MS = 15 * 60_000;
+/** An exact time this far from the release date's midnight ET is
+    ignored (the date was moved and the row is stale). */
+const EXACT_SLACK_MS = 36 * 3_600_000;
 
-/** Confirmed out: Spotify was seen playing it, and that moment has passed. */
-function confirmedOut(drop?: DropInfo | null): boolean {
+/** The row's exact drop moment (ms), or NaN when there isn't a
+    believable one. */
+function exactDropMs(
+  releaseDate: string | null | undefined,
+  drop?: DropInfo | null
+): number {
   const at = drop?.drops_at ? Date.parse(drop.drops_at) : NaN;
-  return !Number.isNaN(at) && at <= Date.now();
+  if (Number.isNaN(at)) return NaN;
+  const midnight = easternMidnightUtcMs(releaseDate);
+  if (!Number.isNaN(midnight) && Math.abs(at - midnight) > EXACT_SLACK_MS) return NaN;
+  return at;
 }
 
 /**
- * Past midnight Eastern on release day, but Spotify still says the
- * music isn't playable — "out later today". False whenever we lack a
- * fresh report, so this can only ever DELAY "out now", never invent it.
+ * Past midnight Eastern on release day, but not out yet — "out later
+ * today". Either the exact time is still ahead (BREAK EVEN between
+ * midnight and 5am ET), or, with no exact time, Spotify said "not
+ * playable" in the last 30 minutes. Can only DELAY "out now".
  */
 export function isWaitingForDrop(
   releaseDate: string | null | undefined,
   drop?: DropInfo | null
 ): boolean {
-  if (!drop || confirmedOut(drop) || !drop.drop_waiting_at) return false;
   const midnight = easternMidnightUtcMs(releaseDate);
-  const waited = Date.parse(drop.drop_waiting_at);
+  if (Number.isNaN(midnight) || !drop) return false;
   const now = Date.now();
-  if (Number.isNaN(midnight) || Number.isNaN(waited)) return false;
+  const exact = exactDropMs(releaseDate, drop);
+  if (!Number.isNaN(exact)) return now >= midnight && now < exact;
+  if (!drop.drop_waiting_at) return false;
+  const waited = Date.parse(drop.drop_waiting_at);
+  if (Number.isNaN(waited)) return false;
   return (
     now >= midnight &&
     now < midnight + 86_400_000 && // a full day late → give up waiting
@@ -106,14 +124,22 @@ export function isWaitingForDrop(
   );
 }
 
-/** True when the release hasn't dropped yet (now < midnight ET, or
- *  Spotify hasn't switched it on yet — see isWaitingForDrop). */
+/** The moment a countdown should run to: the exact drop time when we
+ *  know it, otherwise midnight Eastern. */
+export function dropMomentMs(
+  releaseDate: string | null | undefined,
+  drop?: DropInfo | null
+): number {
+  const exact = exactDropMs(releaseDate, drop);
+  return Number.isNaN(exact) ? easternMidnightUtcMs(releaseDate) : exact;
+}
+
+/** True when the release hasn't dropped yet. */
 export function isUpcoming(
   releaseDate: string | null | undefined,
   drop?: DropInfo | null
 ): boolean {
-  if (confirmedOut(drop)) return false;
-  const target = easternMidnightUtcMs(releaseDate);
+  const target = dropMomentMs(releaseDate, drop);
   if (Number.isNaN(target)) return false;
   return target > Date.now() || isWaitingForDrop(releaseDate, drop);
 }
@@ -125,21 +151,8 @@ export function hasDropped(
   releaseDate: string | null | undefined,
   drop?: DropInfo | null
 ): boolean {
-  if (confirmedOut(drop)) return true;
-  const target = easternMidnightUtcMs(releaseDate);
-  return !Number.isNaN(target) && Date.now() >= target && !isWaitingForDrop(releaseDate, drop);
-}
-
-/** The moment a countdown should run to: midnight Eastern, or earlier
- *  when Spotify already had it out before then. */
-export function dropMomentMs(
-  releaseDate: string | null | undefined,
-  drop?: DropInfo | null
-): number {
-  const midnight = easternMidnightUtcMs(releaseDate);
-  const at = drop?.drops_at ? Date.parse(drop.drops_at) : NaN;
-  if (!Number.isNaN(at) && (Number.isNaN(midnight) || at < midnight)) return at;
-  return midnight;
+  const target = dropMomentMs(releaseDate, drop);
+  return !Number.isNaN(target) && !isUpcoming(releaseDate, drop);
 }
 
 /**
@@ -176,9 +189,7 @@ export function daysUntil(
   releaseDate: string | null | undefined,
   drop?: DropInfo | null
 ): number | null {
-  // Already playable on Spotify (an early drop) → no countdown.
-  if (confirmedOut(drop)) return null;
-  const target = easternMidnightUtcMs(releaseDate);
+  const target = dropMomentMs(releaseDate, drop);
   if (Number.isNaN(target) || target <= Date.now()) return null;
   return Math.ceil((target - Date.now()) / 86_400_000);
 }

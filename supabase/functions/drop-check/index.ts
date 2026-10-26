@@ -8,21 +8,28 @@
 // sat there "out" for hours while nobody could play it.
 //
 // So now we ask Spotify. Migration 064's pg_cron job calls this every
-// 5 minutes. It looks at records whose release day is today or
-// tomorrow (Eastern) that aren't confirmed out yet, and for each one
-// asks Spotify (US market) whether its tracks are playable:
-//   playable     → releases.drops_at       = now   (it's out)
-//   not playable → releases.drop_waiting_at = now  (still waiting)
-// The site reads those two columns (lib/upcoming.ts isWaitingForDrop):
-// after midnight ET it shows "Later today" instead of OUT NOW until
-// drops_at is set. If this function ever stops running, the waiting
-// reports go stale after 30 minutes and everything falls back to the
-// old midnight rule — a broken check can only make things look like
-// before, never stick a record on "later today".
+// 5 minutes, for every upcoming record that doesn't have its drop
+// moment yet:
 //
-// The signal (checked by hand 2026-10-25): before release,
-// GET /v1/albums/{id}?market=US returns tracks with is_playable=false
-// (restrictions.reason "market"); once it's out they flip to true.
+// 1. THE EXACT TIME (Luca 2026-10-26: "why not just have the accurate
+//    countdown? its literally right there"). Spotify's embed page
+//    (open.spotify.com/embed/album/<id>) carries the real release
+//    moment in its page data: releaseDate.isoString —
+//    "2026-10-26T09:00:00Z" for BREAK EVEN, "…T05:00:00Z" (midnight
+//    ET) for a US record. → releases.drops_at = that moment, and every
+//    countdown on the site runs to the real second.
+// 2. FALLBACK, only when the embed has no time (or is down) and the
+//    record is due today/tomorrow: ask the Web API (US market) whether
+//    the tracks are playable —
+//      playable     → drops_at        = now  (it's out)
+//      not playable → drop_waiting_at = now  (still waiting)
+//    Before release, GET /v1/albums/{id}?market=US returns tracks with
+//    is_playable=false (restrictions.reason "market"); once it's out
+//    they flip to true (checked by hand 2026-10-25).
+//
+// The site reads those columns through lib/upcoming.ts. If this
+// function ever stops running, waiting reports go stale after 30
+// minutes and everything falls back to the old midnight rule.
 //
 // ⚠️ Deploy by hand (does NOT ship with Vercel):
 //     supabase functions deploy drop-check --no-verify-jwt
@@ -37,7 +44,7 @@ import { hasPushSecret } from "../_shared/apns.ts";
 /** Tomorrow's records are only checked this close to their drop
     (catches a Japanese midnight release, 11am ET the day before). */
 const EARLY_WINDOW_MS = 18 * 3_600_000;
-/** Spotify calls per run — far more than a day's drops. */
+/** Records per run — far more than a day's drops. */
 const MAX_PER_RUN = 40;
 
 interface Row {
@@ -87,6 +94,23 @@ async function spotifyToken(): Promise<string | null> {
   return typeof json.access_token === "string" ? json.access_token : null;
 }
 
+/**
+ * The exact release moment from Spotify's embed page, or null. Only
+ * for records Spotify still calls pre-release — once it's out the
+ * embed stops being a countdown and the fallback below takes over.
+ */
+async function embedReleaseTime(spotifyId: string): Promise<string | null> {
+  const res = await fetch(
+    `https://open.spotify.com/embed/album/${encodeURIComponent(spotifyId)}`,
+    { headers: { "User-Agent": "Mozilla/5.0 (compatible; PeakMusicDropCheck/1.0)" } }
+  );
+  if (!res.ok) return null;
+  const html = await res.text();
+  const m = html.match(/"isPreRelease":true,"releaseDate":{"isoString":"([^"]+)"/);
+  if (!m) return null;
+  return Number.isNaN(Date.parse(m[1])) ? null : new Date(m[1]).toISOString();
+}
+
 /** true = playable in the US now, false = not yet, null = couldn't tell. */
 async function isPlayable(token: string, spotifyId: string): Promise<boolean | null> {
   const res = await fetch(
@@ -119,28 +143,42 @@ Deno.serve(async (req) => {
     { auth: { persistSession: false } }
   );
 
+  // Every upcoming record still missing its drop moment (once set,
+  // it leaves this list — one embed fetch per record, usually).
   const { data, error } = await supabase
     .from("releases")
     .select("id, spotify_id, release_date")
-    .in("release_date", [today, tomorrow])
+    .gte("release_date", today)
     .is("drops_at", null)
     .not("spotify_id", "is", null)
     .order("release_date", { ascending: true })
     .limit(MAX_PER_RUN);
   if (error) return new Response("lookup failed", { status: 500 });
 
-  // Tomorrow's records only inside the last 18 hours before their drop.
-  const rows = ((data ?? []) as Row[]).filter(
-    (r) => r.release_date === today || now >= easternMidnight(tomorrow) - EARLY_WINDOW_MS
-  );
+  const rows = (data ?? []) as Row[];
   if (rows.length === 0) return new Response("nothing to check", { status: 200 });
 
-  const token = await spotifyToken();
-  if (!token) return new Response("no spotify token", { status: 500 });
-
+  let exact = 0;
   let out = 0;
   let waiting = 0;
+  let token: string | null | undefined;
   for (const r of rows) {
+    // 1. The exact time from the embed page.
+    const at = await embedReleaseTime(r.spotify_id).catch(() => null);
+    if (at) {
+      await supabase.from("releases").update({ drops_at: at }).eq("id", r.id);
+      exact++;
+      continue;
+    }
+
+    // 2. Fallback: playable-or-not, only for records due soon
+    //    (today, or tomorrow inside the last 18 hours before it).
+    const dueSoon =
+      r.release_date === today ||
+      (r.release_date === tomorrow && now >= easternMidnight(tomorrow) - EARLY_WINDOW_MS);
+    if (!dueSoon) continue;
+    if (token === undefined) token = await spotifyToken();
+    if (!token) continue;
     const playable = await isPlayable(token, r.spotify_id).catch(() => null);
     // Couldn't tell (Spotify error, empty album) → write nothing, so the
     // site's 30-minute fallback takes over instead of a wrong answer.
@@ -155,7 +193,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  return new Response(`checked ${rows.length}: ${out} out, ${waiting} waiting`, {
+  return new Response(`checked ${rows.length}: ${exact} exact times, ${out} out, ${waiting} waiting`, {
     status: 200,
   });
 });

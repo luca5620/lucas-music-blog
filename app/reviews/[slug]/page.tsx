@@ -23,7 +23,8 @@ import Link from "next/link";
 import UserLink from "@/components/ui/UserLink";
 import { getReviewWithContextBySlug } from "@/lib/db/reviews";
 import { getReleaseBySlug, getReleaseReviews, isFollowingRelease } from "@/lib/db/releases";
-import ReviewRail, { type RailRating } from "@/components/reviews/ReviewRail";
+import ReviewRail, { type RailMoreReview, type RailRating } from "@/components/reviews/ReviewRail";
+import { smallCover } from "@/lib/images";
 import { getMemberTrackRatings } from "@/lib/db/track-ratings";
 import {
   resolveAppleMusic,
@@ -249,12 +250,44 @@ export default async function ReviewPage({
      rating of this record + whether the viewer saved it. Both fail
      soft (empty list / false), and the rail only shows on wide
      desktop, so a slow query here never holds up the review itself. */
-  const [railRows, viewerSaved] = release
+  const [railRows, viewerSaved, moreRows] = release
     ? await Promise.all([
         getReleaseReviews(release.id),
         user ? isFollowingRelease(user.id, release.id) : Promise.resolve(false),
+        // "More from <reviewer>" — their 4 latest other reviews, any
+        // artist (Luca 2026-10-26). Fails soft to an empty list.
+        supabase
+          .from("reviews")
+          .select("slug, rating, releases(title, cover_image, artists!releases_primary_artist_id_fkey(name))")
+          .eq("user_id", review.user_id)
+          .eq("is_published", true)
+          .neq("id", review.id)
+          .order("created_at", { ascending: false })
+          .limit(4)
+          .then(({ data }) => data ?? [], () => []),
       ])
-    : [[], false];
+    : [[], false, []];
+  type MoreRow = {
+    slug: string;
+    rating: number;
+    releases: {
+      title: string;
+      cover_image: string | null;
+      artists: { name: string } | { name: string }[] | null;
+    } | null;
+  };
+  const railMore: RailMoreReview[] = (moreRows as unknown as MoreRow[])
+    .filter((r) => r.releases)
+    .map((r) => {
+      const a = r.releases!.artists;
+      return {
+        slug: r.slug,
+        title: r.releases!.title,
+        artist: (Array.isArray(a) ? a[0]?.name : a?.name) ?? "",
+        cover: r.releases!.cover_image ? smallCover(r.releases!.cover_image) : null,
+        rating: Number(r.rating),
+      };
+    });
   type RailRow = {
     id: string;
     slug: string;
@@ -574,7 +607,12 @@ export default async function ReviewPage({
           currentReviewId={review.id}
           viewerId={user?.id ?? null}
           release={release}
+          spotifyIsTrack={
+            (release.tracks ?? []).length === 1 &&
+            release.tracks?.[0]?.spotify_id === release.spotify_id
+          }
           artist={review.artist ?? ""}
+          more={railMore}
           ratings={railRatings}
           viewerSaved={viewerSaved}
           labels={{
@@ -588,6 +626,7 @@ export default async function ReviewPage({
             // the release page lists every rating, so "See all" counts them all
             seeAll: t("railSeeAll", { n: railRatings.length }),
             listen: t("railListen"),
+            more: t("railMore", { name: author.display_name || author.username }),
           }}
         />
       )}

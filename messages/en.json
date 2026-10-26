@@ -879,7 +879,8 @@
       "railYours": "Your rating",
       "railAlso": "Also rated it",
       "railSeeAll": "See all {n}",
-      "railListen": "Listen"
+      "railListen": "Listen",
+      "railMore": "More from {name}"
     },
     "form": {
       "editTitle": "Edit Review",

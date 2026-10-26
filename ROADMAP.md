@@ -528,6 +528,12 @@ uses the second option yet).
   addresses to the kept page (308). catalog_import_release now matches artists by
   name across sources and Spotify records by artist + type + release_title_key()
   (edition tags stripped; "(Original)"/"(Version 2)" kept).
+- **⚠️ Migration 067 NOT RUN YET** (after 066) — `067-genius-to-spotify.sql`: 5 released songs that came in
+  through Genius (KARINA UP, 24kGoldn Mood, Yes Gates of Delirium, Pearl Jam Once, GONE.Fludd BOYS DON'T CRY)
+  get their Spotify track id in place → player + previews. Future Genius picks check Spotify first
+  (lib/catalog.ts findSpotifyTwin + lib/catalog-rank isSpotifyTwin).
+- Side rail: Rate it yourself = site blue, average in its rating colour, "More from <reviewer>" (4 latest
+  reviews, any artist), Spotify link opens /track/ for song-singles. No phone strip (Luca: no).
 - Review page: THE REVIEW boxed again (cover-tinted), Personal favorites + Song
   by song in the same box (.review-box). "Rated, no words" filler removed on the
   review page AND release page.

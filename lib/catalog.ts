@@ -25,7 +25,7 @@ import {
   geniusDateToIso,
   geniusConfigured,
 } from "@/lib/genius";
-import { foldText, matchScore, artistMatches } from "@/lib/catalog-rank";
+import { foldText, matchScore, artistMatches, isSpotifyTwin } from "@/lib/catalog-rank";
 import type { Release, ReleaseTrack } from "@/lib/types/database";
 
 /* ---------------------------------------------------------------
@@ -1123,6 +1123,33 @@ async function ensureFromSpotifyTrack(trackId: string): Promise<Release> {
 }
 
 /**
+ * The Spotify copy of a Genius pick, if Spotify has the song (see
+ * isSpotifyTwin for how strict "same song" is). Two searches: the
+ * fielded one first, then plain words — Spotify files KARINA's "UP"
+ * under aespa, so an artist: filter alone never finds it. null = not
+ * on Spotify (a leak) or Spotify didn't answer.
+ */
+async function findSpotifyTwin(title: string, artist: string): Promise<string | null> {
+  const plainArtist = artist.replace(/\s*\([^)]*\)\s*$/, "");
+  if (!title || !plainArtist) return null;
+  for (const q of [`track:${title} artist:${plainArtist}`, `${title} ${plainArtist}`]) {
+    try {
+      const raw = (await spotifyFetch(
+        `/search?type=track&limit=10&market=US&q=${encodeURIComponent(q)}`
+      )) as { tracks?: { items?: (SpotifyTrackHit | null)[] } };
+      const hit = (raw.tracks?.items ?? []).find(
+        (t): t is SpotifyTrackHit =>
+          !!t && isSpotifyTwin(title, artist, t.name, (t.artists ?? []).map((a) => a.name))
+      );
+      if (hit) return hit.id;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
  * A Genius pick is always THE SONG the user clicked, imported as a
  * standalone single-track release — same intent as the Spotify track
  * flow ("I want this song"), never the album/EP it appears on.
@@ -1134,6 +1161,14 @@ async function ensureFromSpotifyTrack(trackId: string): Promise<Release> {
 async function ensureFromGenius(songId: number): Promise<Release> {
   const song = await getGeniusSong(songId);
   if (!song) throw new Error(`Genius song ${songId} not found`);
+
+  // ON SPOTIFY TOO? Then that's the copy we keep (Luca 2026-10-26: a
+  // review of KARINA's "UP" went through its Genius result, so its page
+  // had no player and no previews). Same song, Spotify's version: the
+  // player, previews and Apple Music link all work. Leaks aren't on
+  // Spotify, so they still come in from Genius below.
+  const twin = await findSpotifyTwin(song.title, song.primary_artist?.name ?? "");
+  if (twin) return ensureFromSpotifyTrack(twin);
 
   const releaseDate =
     song.release_date ?? geniusDateToIso(song.release_date_components);

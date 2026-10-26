@@ -8,6 +8,8 @@
  *                   then "Rate it yourself" (or "Your rating" when the
  *                   viewer already has one) and "Save for later"
  *   ALSO RATED IT   everyone else's score, best first, up to 5
+ *   MORE FROM …     the reviewer's latest other reviews, up to 4
+ *                   (Luca 2026-10-26 — any artist, not just this one)
  *   LISTEN          Spotify / Apple Music, straight to the record
  *
  * Server component: everything is worked out from rows the page already
@@ -21,6 +23,15 @@ import UserLink from "@/components/ui/UserLink";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import { getRatingHex, formatRating } from "@/lib/rating";
 import { appleMusicUrl, parseAppleMusicId } from "@/lib/apple-music";
+
+/** One of the reviewer's other reviews ("More from …"). */
+export interface RailMoreReview {
+  slug: string;
+  title: string;
+  artist: string;
+  cover: string | null;
+  rating: number;
+}
 
 /** One published review of the record, trimmed to what the rail shows. */
 export interface RailRating {
@@ -44,7 +55,12 @@ interface ReviewRailProps {
     spotify_id: string | null;
     apple_music_id?: string | null;
   };
+  /** A single picked as a SONG keys its row by the track id — the
+      Spotify link has to open /track/, not /album/. */
+  spotifyIsTrack?: boolean;
   artist: string;
+  /** The reviewer's latest other reviews (empty → section hidden). */
+  more?: RailMoreReview[];
   /** Every published review of the record, best score first. */
   ratings: RailRating[];
   viewerSaved: boolean;
@@ -59,6 +75,8 @@ interface ReviewRailProps {
     also: string;
     seeAll: string;
     listen: string;
+    /** "More from Luca" */
+    more?: string;
   };
 }
 
@@ -69,7 +87,9 @@ export default function ReviewRail({
   currentReviewId,
   viewerId,
   release,
+  spotifyIsTrack = false,
   artist,
+  more = [],
   ratings,
   viewerSaved,
   labels,
@@ -90,7 +110,7 @@ export default function ReviewRail({
      the lazy cache only (lib/apple-music.ts) — no lookup on this page. */
   const query = encodeURIComponent(`${release.title} ${artist}`);
   const spotifyHref = release.spotify_id
-    ? `https://open.spotify.com/album/${release.spotify_id}`
+    ? `https://open.spotify.com/${spotifyIsTrack ? "track" : "album"}/${release.spotify_id}`
     : `https://open.spotify.com/search/${query}`;
   const appleRef = parseAppleMusicId(release.apple_music_id);
   const appleHref = appleRef ? appleMusicUrl(appleRef) : `https://music.apple.com/us/search?term=${query}`;
@@ -102,7 +122,8 @@ export default function ReviewRail({
           <p className="review-rail-eyebrow">{labels.on}</p>
           {average && (
             <p className="review-rail-avg">
-              <b>{average}</b>
+              {/* in the score's own colour, like every other rating (Luca 2026-10-26) */}
+              <b style={{ color: getRatingHex(Number(average)) }}>{average}</b>
               <span>{labels.ratings}</span>
             </p>
           )}
@@ -160,6 +181,33 @@ export default function ReviewRail({
                 {labels.seeAll}
               </Link>
             )}
+          </section>
+        )}
+
+        {more.length > 0 && labels.more && (
+          <section className="review-rail-block">
+            <p className="review-rail-eyebrow">{labels.more}</p>
+            <ul className="review-rail-more-list">
+              {more.map((m) => (
+                <li key={m.slug}>
+                  <Link href={`/reviews/${m.slug}`} className="review-rail-record">
+                    {m.cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- Spotify/Genius CDN covers, same as everywhere else
+                      <img src={m.cover} alt="" loading="lazy" />
+                    ) : (
+                      <span className="review-rail-record-blank" />
+                    )}
+                    <span className="review-rail-record-text">
+                      <b>{m.title}</b>
+                      <small>{m.artist}</small>
+                    </span>
+                    <span className="review-rail-score" style={{ color: getRatingHex(m.rating) }}>
+                      {formatRating(m.rating)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 

@@ -6136,14 +6136,17 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 .review-rail-btn:disabled { opacity: 0.5; }
 .review-rail-btn[aria-pressed="true"] { color: var(--text-secondary); }
 .review-rail-btn.is-primary {
-  /* Plain white, dark words: readable on every cover. (A cover-coloured
-     button was tried first; a pale cover like Thriller turned it into
-     grey with white text.) */
-  background: #f4f1ee;
-  box-shadow: none;
-  color: #111114;
+  /* The site's own blue (Luca 2026-10-26: "should be blue to follow our
+     theme"). Not the cover colour — a pale cover like Thriller turned
+     that into grey with white text. */
+  background: var(--accent-primary);
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.28);
+  color: #fff;
 }
-.review-rail-btn.is-primary:hover { background: #fff; }
+.review-rail-btn.is-primary:hover {
+  background: var(--accent-glow);
+  box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.4);
+}
 /* "Your rating  8.4 ›" when the viewer already rated the record */
 .review-rail-mine {
   display: flex;
@@ -6216,6 +6219,38 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 }
 .review-rail-more:hover { color: var(--text-primary); }
 /* Listen — two quiet tiles, the service colour on the word only */
+/* "More from <reviewer>": cover · title/artist · score */
+.review-rail-more-list { display: flex; flex-direction: column; gap: 0.15rem; }
+.review-rail-record {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0.4rem;
+  margin: 0 -0.4rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+.review-rail-record:hover { background: rgba(255, 255, 255, 0.05); }
+.review-rail-record img,
+.review-rail-record-blank {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 4px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.06);
+}
+.review-rail-record-text { display: flex; flex-direction: column; min-width: 0; }
+.review-rail-record-text b,
+.review-rail-record-text small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.review-rail-record-text b { font-size: 0.84rem; font-weight: 700; color: var(--text-primary); }
+.review-rail-record:hover .review-rail-record-text b { color: var(--accent-glow); }
+.review-rail-record-text small { font-size: 0.74rem; color: var(--text-muted); }
+
 .review-rail-listen {
   display: flex;
   gap: 0.5rem;

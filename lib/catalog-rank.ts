@@ -116,3 +116,41 @@ export function artistMatches(query: string, name: string): boolean {
   // "rappels telephone" → the artist Téléphone is IN the query.
   return ` ${q} `.includes(` ${n} `);
 }
+
+/**
+ * Is this Spotify track THE SAME SONG as a Genius pick? (Luca
+ * 2026-10-26: a friend reviewed KARINA's "UP" through its Genius
+ * result, so the page had no Spotify player.) Strict on purpose — a
+ * wrong match would attach someone's review to a different song:
+ *   • titles equal once Spotify's "(feat. …)" / "(with …)" is dropped,
+ *     plus a " - KARINA Solo" / "(KARINA Solo)" tag when that tag names
+ *     the Genius artist ("UP - KARINA Solo" by aespa = Genius "UP" by
+ *     KARINA);
+ *   • and the Genius artist is one of the track's artists, or is the
+ *     one that tag named.
+ * Remix / live / sped-up uploads keep their extra words, so they never
+ * match the original.
+ */
+export function isSpotifyTwin(
+  geniusTitle: string,
+  geniusArtist: string,
+  spotifyName: string,
+  spotifyArtists: string[]
+): boolean {
+  // "NewJeans (뉴진스)" → "NewJeans" for comparing.
+  const artist = foldText(geniusArtist.replace(/\s*\([^)]*\)\s*$/, ""));
+  if (!artist) return false;
+
+  let title = spotifyName.replace(/\s*[([](?:feat\.?|ft\.?|with)\s[^)\]]*[)\]]/gi, "");
+  let taggedArtist = false;
+  const tag = title.match(/^(.*?)\s*(?:\s-\s+(.+)|\(([^)]+)\))$/);
+  if (tag) {
+    const suffix = foldText(tag[2] ?? tag[3] ?? "");
+    if (suffix.split(" ").includes(artist.split(" ")[0]) && suffix.includes(artist)) {
+      title = tag[1];
+      taggedArtist = true;
+    }
+  }
+  if (foldText(title) !== foldText(geniusTitle)) return false;
+  return taggedArtist || spotifyArtists.some((a) => foldText(a) === artist);
+}

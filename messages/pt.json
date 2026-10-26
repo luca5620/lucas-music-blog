@@ -879,7 +879,8 @@
       "railYours": "Sua nota",
       "railAlso": "Também avaliaram",
       "railSeeAll": "Ver todas as {n}",
-      "railListen": "Ouvir"
+      "railListen": "Ouvir",
+      "railMore": "Mais de {name}"
     },
     "form": {
       "editTitle": "Editar resenha",

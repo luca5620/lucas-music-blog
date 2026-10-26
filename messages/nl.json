@@ -879,7 +879,8 @@
       "railYours": "Jouw cijfer",
       "railAlso": "Ook beoordeeld door",
       "railSeeAll": "Alle {n} bekijken",
-      "railListen": "Luisteren"
+      "railListen": "Luisteren",
+      "railMore": "Meer van {name}"
     },
     "form": {
       "editTitle": "Recensie bewerken",

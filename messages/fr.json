@@ -879,7 +879,8 @@
       "railYours": "Ta note",
       "railAlso": "Ils l'ont noté aussi",
       "railSeeAll": "Voir les {n}",
-      "railListen": "Écouter"
+      "railListen": "Écouter",
+      "railMore": "Plus de {name}"
     },
     "form": {
       "editTitle": "Modifier la critique",

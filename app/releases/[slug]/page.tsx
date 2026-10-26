@@ -501,7 +501,7 @@ async function ReleaseContent({
               {t("dropsIn")}{" "}
               <LiveCountdown
                 releaseDate={release.release_date}
-                drop={release}
+                drop={{ drops_at: release.drops_at, drop_waiting_at: release.drop_waiting_at }}
                 className="animate-pulse"
               />
               {releaseDateFormatted ? ` — ${releaseDateFormatted}` : ""}

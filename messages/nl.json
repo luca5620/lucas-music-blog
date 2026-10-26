@@ -873,7 +873,14 @@
       "edited": "Bewerkt op {date}",
       "edit": "Bewerken",
       "theReview": "Review",
-      "favoritesInList": "♥ = persoonlijke favorieten"
+      "favoritesInList": "♥ = persoonlijke favorieten",
+      "railOn": "Op Peak Music",
+      "railRatings": "{n, plural, one {gemiddeld · # beoordeling} other {gemiddeld · # beoordelingen}}",
+      "railRate": "Beoordeel het zelf",
+      "railYours": "Jouw cijfer",
+      "railAlso": "Ook beoordeeld door",
+      "railSeeAll": "Alle {n} bekijken",
+      "railListen": "Luisteren"
     },
     "form": {
       "editTitle": "Recensie bewerken",

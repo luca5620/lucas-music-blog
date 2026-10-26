@@ -520,9 +520,8 @@ uses the second option yet).
 
 ### 📼 Save for later + Rewind + less boxy (2026-10-25 night, Windows) — 67d6b9d
 - Migration 062 RUN ✓ (2026-10-25, cron job id 5).
-- **⚠️ MIGRATION 063 NOT RUN YET** — `supabase/migrations/063-rewind-ready-push.sql`
-  (Dec 1, 10am Eastern "Your Rewind is ready" push; uses the 062 secret,
-  nothing to paste). push-recap with REWIND is already deployed ✓. — 4457ef2
+- Migration 063 RUN ✓ (2026-10-25; Dec 1, 10am Eastern "Your Rewind is ready"
+  push). push-recap with REWIND deployed ✓. — 4457ef2
 - **Rewind entry (4457ef2):** home card under the HOME band + one-time popup
   (components/rewind/RewindPrompt.tsx, localStorage key "rewind-intro-<year>"),
   shown Dec 1–Jan 15 to members with 3+ records that year (staff/testers now).
@@ -534,9 +533,13 @@ uses the second option yet).
 - Fixed: Most loved songs / Rewind songs asked for releases.artist (no such
   column) → PostgREST error → only hearted picks showed. Embeds the primary
   artist now.
-- **Website frame options sent** (Design canvas ByASgsL1CVpUQJi31m2kix): A spine
-  follows you, B no spine wider screen, C label strip on top, D main column +
-  side rail. Waiting on Luca's pick.
+- **Website frame = option D, SHIPPED (2026-10-25)** (canvas ByASgsL1CVpUQJi31m2kix
+  had A–D). The left game-case spine is GONE (CRTShell + globals.css); review
+  pages on wide desktop (80rem+) get a right rail, components/reviews/
+  ReviewRail.tsx: average + count, Rate it yourself / Your rating, Save for
+  later, Also rated it (top 5 → See all), Listen (Spotify / Apple). The REVIEW
+  section is open text now (no box), all sizes. Rewind share card re-spaced
+  to fill the 9:16 frame. Next if Luca likes it: rails on release/profile pages?
 - **Save for later:** release page button = "Save for later" / "Saved ✓"
   (still release_follows; counts say "Saved by N"). Profile **Saved** tab
   (`?tab=saved`, components/profile/SavedShelf.tsx): saved + not rated,

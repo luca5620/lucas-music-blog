@@ -873,7 +873,14 @@
       "edited": "Editada em {date}",
       "edit": "Editar",
       "theReview": "Resenha",
-      "favoritesInList": "♥ = favoritas pessoais"
+      "favoritesInList": "♥ = favoritas pessoais",
+      "railOn": "No Peak Music",
+      "railRatings": "{n, plural, one {média · # avaliação} other {média · # avaliações}}",
+      "railRate": "Avalie você também",
+      "railYours": "Sua nota",
+      "railAlso": "Também avaliaram",
+      "railSeeAll": "Ver todas as {n}",
+      "railListen": "Ouvir"
     },
     "form": {
       "editTitle": "Editar resenha",

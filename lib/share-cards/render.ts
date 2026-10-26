@@ -1000,7 +1000,7 @@ export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: Rewi
   ctx.fillStyle = "#050708";
   ctx.fillRect(0, 0, CARD_W, CARD_H);
   ctx.save();
-  ctx.translate(180, 300);
+  ctx.translate(180, 320);
   glowBlob(ctx, "191, 243, 255", 0, 0, 260, 0.07);
   ctx.restore();
 
@@ -1022,17 +1022,20 @@ export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: Rewi
     ctx.restore();
   };
 
+  /* Vertical rhythm (2026-10-25 second pass): the blocks are spread
+     over the whole card, roughly y100 → y580, so the 9:16 story has no
+     empty bottom third. */
   // header: eyebrow, #1 cover, heading beside it, credit under
   fadeIn(0.1, () => {
     ctx.font = font(a, 11, 600);
     ctx.fillStyle = OSD;
-    ctx.fillText(d.labels.eyebrow, L, 72);
-    const c = 84;
-    drawCover(ctx, d.cover, L, 86, c, c, 4);
-    ctx.font = font(a, 21, 800);
+    ctx.fillText(d.labels.eyebrow, L, 100);
+    const c = 96;
+    drawCover(ctx, d.cover, L, 114, c, c, 4);
+    ctx.font = font(a, 22, 800);
     ctx.fillStyle = "#fff";
-    d.labels.heading.split("\n").forEach((line, i) => ctx.fillText(fit(ctx, line, W - c - 14), L + c + 14, 122 + i * 24));
-    drawCredit(ctx, a, d.handle, L, 194, "left", W, d.role ?? null);
+    d.labels.heading.split("\n").forEach((line, i) => ctx.fillText(fit(ctx, line, W - c - 14), L + c + 14, 156 + i * 26));
+    drawCredit(ctx, a, d.handle, L, 238, "left", W, d.role ?? null);
   });
 
   // the ranked columns, a row at a time
@@ -1043,18 +1046,18 @@ export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: Rewi
     fadeIn(0.6, () => {
       ctx.font = font(a, 9.5, 700);
       ctx.fillStyle = OSD;
-      ctx.fillText(col.label.toUpperCase(), x, 226);
+      ctx.fillText(col.label.toUpperCase(), x, 280);
     });
     col.rows.slice(0, 5).forEach((row, i) => {
       fadeIn(0.75 + i * 0.09 + ci * 0.05, () => {
-        const y = 238 + i * 23;
+        const y = 294 + i * 28;
         ctx.font = font(a, 10, 600);
         ctx.fillStyle = OSD;
-        ctx.fillText(String(i + 1), x, y + 12);
-        drawCover(ctx, row.cover, x + 11, y, 17, 17, 2);
-        ctx.font = font(a, 11.5, 600);
+        ctx.fillText(String(i + 1), x, y + 14);
+        drawCover(ctx, row.cover, x + 11, y, 20, 20, 2);
+        ctx.font = font(a, 12, 600);
         ctx.fillStyle = "#fff";
-        ctx.fillText(fit(ctx, row.name, colW - 34), x + 34, y + 12.5);
+        ctx.fillText(fit(ctx, row.name, colW - 38), x + 38, y + 14.5);
       });
     });
   });
@@ -1062,19 +1065,19 @@ export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: Rewi
   // the big numbers, 2 × 2
   fadeIn(1.5, () => {
     ctx.fillStyle = "rgba(255,255,255,0.1)";
-    ctx.fillRect(L, 362, W, 0.5);
+    ctx.fillRect(L, 446, W, 0.5);
   });
   const half = (W - gap) / 2;
   d.stats.slice(0, 4).forEach(([v, k], i) => {
     const x = L + (i % 2) * (half + gap);
-    const y = 386 + Math.floor(i / 2) * 58;
+    const y = 476 + Math.floor(i / 2) * 68;
     fadeIn(1.6 + i * 0.14, () => {
       ctx.font = font(a, 9.5, 700);
       ctx.fillStyle = "rgba(255,255,255,0.5)";
       ctx.fillText(fit(ctx, k.toUpperCase(), half), x, y);
-      ctx.font = font(a, 30, 800);
+      ctx.font = font(a, 32, 800);
       ctx.fillStyle = "#fff";
-      ctx.fillText(fit(ctx, v, half), x, y + 32);
+      ctx.fillText(fit(ctx, v, half), x, y + 35);
     }, 0.6);
   });
 

@@ -15,6 +15,9 @@ interface FollowEntityButtonProps {
   accentColor?: string;
   labelFollow?: string;
   labelFollowing?: string;
+  /** Drop the chunky Y2K look and the inline colours so the caller
+      styles the button itself (the review page side rail, 2026-10-25). */
+  plainClassName?: string;
 }
 
 /**
@@ -38,6 +41,7 @@ export default function FollowEntityButton({
   accentColor = "#1e90ff",
   labelFollow,
   labelFollowing,
+  plainClassName,
 }: FollowEntityButtonProps) {
   // Callers may pass their own labels; the defaults are translated.
   const t = useTranslations("follow");
@@ -119,8 +123,8 @@ export default function FollowEntityButton({
       onClick={handleClick}
       disabled={isPending}
       aria-pressed={following}
-      className="btn-y2k transition-all disabled:opacity-50"
-      style={following ? outlinedStyle : filledStyle}
+      className={plainClassName ?? "btn-y2k transition-all disabled:opacity-50"}
+      style={plainClassName ? undefined : following ? outlinedStyle : filledStyle}
     >
       {isPending
         ? "..."

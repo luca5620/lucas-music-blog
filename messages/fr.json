@@ -873,7 +873,14 @@
       "edited": "Modifiée le {date}",
       "edit": "Modifier",
       "theReview": "Critique",
-      "favoritesInList": "♥ = ses coups de cœur"
+      "favoritesInList": "♥ = ses coups de cœur",
+      "railOn": "Sur Peak Music",
+      "railRatings": "{n, plural, one {moyenne · # note} other {moyenne · # notes}}",
+      "railRate": "Note-le toi aussi",
+      "railYours": "Ta note",
+      "railAlso": "Ils l'ont noté aussi",
+      "railSeeAll": "Voir les {n}",
+      "railListen": "Écouter"
     },
     "form": {
       "editTitle": "Modifier la critique",

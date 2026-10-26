@@ -435,7 +435,7 @@ body {
 /* Spine + screen sit side by side inside the bezel.
    NO overflow clipping here — dropdowns (account menu, release
    search) must be able to hang past the screen edge. The rounded
-   corners are drawn on the spine/screen themselves instead. */
+   corners are drawn on the screen itself instead. */
 .crt-body {
   display: flex;
   border-radius: 10px;
@@ -444,91 +444,16 @@ body {
   position: relative;
 }
 
-/* ============================================================
-   GAME-CASE SPINE — the PS1 disc-box spine, back by request.
-   Vertical "Peak Music" in the PlayStation font + an ESRB-style
-   "R for Real" rating badge at the bottom.
-   ============================================================ */
-.crt-spine {
-  position: relative;
-  width: 58px;
-  min-width: 58px;
-  background: linear-gradient(90deg, #050506 0%, #0c0c0e 40%, #17171a 50%, #0c0c0e 60%, #050506 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* Brand + badge sit at the TOP, like a real game-case spine
-     (2026-10-25). The spine is as tall as the whole page, so when the
-     brand was centred in it, "Peak Music" sat halfway down a long page
-     and the first screen only ever showed an empty black bar. */
-  justify-content: flex-start;
-  gap: 14px;
-  padding: 16px 0;
-  border-right: 1px solid #1c1c20;
-  border-radius: 10px 0 0 10px;
-}
-
-/* "Peak Music" branding — PlayStation font, rotated to read upward */
-.crt-spine-brand {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-family: 'PlayStation', sans-serif;
-  font-size: 2.6rem;
-  color: #c4c4c8;
-  user-select: none;
-  flex: none;
-  height: min(62vh, 520px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-shadow: 0 0 8px rgba(200, 200, 200, 0.12);
-}
-
-/* ESRB-style rating badge — R for Real */
-.crt-spine-rating {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 36px;
-  user-select: none;
-  background: #fff;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.crt-rating-letter {
-  font-family: 'Times New Roman', Georgia, serif;
-  font-size: 1.25rem;
-  font-weight: 900;
-  font-style: italic;
-  color: #000;
-  line-height: 1;
-  padding: 3px 0 1px;
-  width: 100%;
-  text-align: center;
-  border-bottom: 2px solid #000;
-}
-
-.crt-rating-text {
-  font-family: var(--font-heading);
-  font-size: 0.32rem;
-  font-weight: 700;
-  color: #000;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  width: 100%;
-  text-align: center;
-  padding: 2px 0;
-  background: #fff;
-}
-
+/* (The PS1 game-case spine that ran down the left of the screen —
+   vertical "Peak Music" + the "R for Real" badge — was removed
+   2026-10-25, option D: Luca called it "ridiculous" next to long pages.
+   The screen takes the full width, and review pages use the room for
+   a side rail instead; see .review-rail.) */
 .crt-screen {
   position: relative;
   flex: 1;
   min-width: 0;
-  border-radius: 0 10px 10px 0;
+  border-radius: 10px;
   background: var(--bg-screen);
   min-height: 78vh;
   padding: 1.75rem 2rem 3rem;
@@ -1603,9 +1528,6 @@ body {
   padding-top: 4px;
 }
 .native-app .crt-screen::before {
-  display: none;
-}
-.native-app .crt-spine {
   display: none;
 }
 /* ...and there is only ONE liquid field: the screen goes transparent
@@ -3803,7 +3725,7 @@ fieldset {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  clip-path: inset(0 round 0 10px 10px 0);
+  clip-path: inset(0 round 10px);
 }
 
 /* Must outrank the `.crt-screen > *` z-index:1 rule so the wash
@@ -3814,8 +3736,8 @@ fieldset {
 
 /* --- BEZEL LIQUID: the molten light bleeding through the gray
    plastic ring around the screen, so the app's borders are as alive
-   as the modules. The layer spans the whole TV; .crt-body (spine +
-   screen, both opaque and positioned later in the DOM) paints over
+   as the modules. The layer spans the whole TV; .crt-body (the
+   screen — opaque and positioned later in the DOM) paints over
    it, so only the bezel ring — and the status-bar band in the app
    shell — actually glows. --- */
 .crt-bezel-liquid {
@@ -3997,14 +3919,9 @@ fieldset {
 
   .crt-screen {
     padding: 1rem 1rem 2.5rem;
-    /* Spine is hidden on mobile, so round all four corners */
     border-radius: 6px;
   }
 
-  /* The spine eats too much width on a phone — screen goes full bleed */
-  .crt-spine {
-    display: none;
-  }
 
   .panel-xbox-glow { padding: 1.25rem !important; }
   .panel-xbox { padding: 1rem !important; }
@@ -5979,25 +5896,210 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 }
 .review-dates span + span { font-size: 0.74rem; opacity: 0.8; }
 
+/* ============================================================
+   REVIEW SIDE RAIL — website frame option D (Luca 2026-10-25).
+   The left game-case spine is gone; on wide desktop the review page
+   becomes two columns: the review on the left, and a slim rail on the
+   right with the record's average, Rate it yourself, Save for later,
+   who else rated it and where to listen (components/reviews/
+   ReviewRail.tsx). Below 80rem the rail is hidden and the page is the
+   single column it always was — phones and the app don't change.
+   No panel around it: a hairline on its left edge and the same
+   eyebrow labels as the rest of the page, so it reads as part of the
+   page, not a box beside it.
+   ============================================================ */
+.review-rail { display: none; }
+@media (min-width: 80rem) {
+  .review-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 17.5rem;
+    gap: 3rem;
+    align-items: start;
+  }
+  /* stretch, not start: the aside has to be as tall as the review
+     for .review-rail-sticky to have room to ride down with the page */
+  .review-rail { display: block; align-self: stretch; }
+  /* The sleeve steps down a size so title + sleeve still fit beside
+     each other in the narrower column; big monitors get it back. */
+  .review-grid .review-sleeve { --sleeve: 15rem; }
+}
+@media (min-width: 1440px) {
+  .review-grid .review-sleeve { --sleeve: 18rem; }
+}
+/* Rides along while you read a long review and its comments. */
+.review-rail-sticky {
+  position: sticky;
+  top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding-left: 1.6rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.review-rail-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.review-rail-eyebrow {
+  font-family: var(--font-pixel);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+/* 9.55  average · 2 ratings */
+.review-rail-avg {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+.review-rail-avg b {
+  font-family: var(--font-heading);
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.review-rail-avg span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+/* Rate it yourself (filled, in the album's colour) / Save for later */
+.review-rail-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 2.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.review-rail-btn:hover { background: rgba(255, 255, 255, 0.06); }
+.review-rail-btn:disabled { opacity: 0.5; }
+.review-rail-btn[aria-pressed="true"] { color: var(--text-secondary); }
+.review-rail-btn.is-primary {
+  /* Plain white, dark words: readable on every cover. (A cover-coloured
+     button was tried first; a pale cover like Thriller turned it into
+     grey with white text.) */
+  background: #f4f1ee;
+  box-shadow: none;
+  color: #111114;
+}
+.review-rail-btn.is-primary:hover { background: #fff; }
+/* "Your rating  8.4 ›" when the viewer already rated the record */
+.review-rail-mine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+.review-rail-mine b { font-size: 1rem; font-variant-numeric: tabular-nums; }
+.review-rail-mine:hover { background: rgba(255, 255, 255, 0.06); }
+/* Also rated it — avatar · name · score */
+.review-rail-people {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.review-rail-people li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.review-rail-person {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  flex: 1;
+  padding: 0.3rem 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.review-rail-person img,
+.review-rail-initial {
+  width: 1.85rem;
+  height: 1.85rem;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.review-rail-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.08);
+}
+.review-rail-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.review-rail-person:hover .review-rail-name { color: var(--accent-glow); }
+.review-rail-score {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+.review-rail-more {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.review-rail-more:hover { color: var(--text-primary); }
+/* Listen — two quiet tiles, the service colour on the word only */
+.review-rail-listen {
+  display: flex;
+  gap: 0.5rem;
+}
+.review-rail-listen a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: background-color 0.2s;
+}
+.review-rail-listen a:hover { background: rgba(255, 255, 255, 0.1); }
+.review-rail-listen .is-spotify { color: #1ed760; }
+.review-rail-listen .is-apple { color: #ff5f7a; }
+
 /* THE REVIEW — the centerpiece gets its own marked section (Luca
    2026-10-24): a soft panel in the accent colour, a label tab, the
    one-liner as a pull quote, then the full words. */
 .review-body {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  padding: 1.1rem 1.1rem 1.25rem;
-  border-radius: 16px;
-  /* Tinted with the ALBUM COVER, not the site blue (Luca 2026-10-25:
-     the blue box broke the immersion). CoverLiquidSync puts the
-     cover's three colours on <html> as --liquid-1/2/3 for the page's
-     glow; the box borrows the same light, so it reads as part of the
-     room. Before the cover is sampled it shows the default trio. */
-  background: linear-gradient(180deg, rgba(var(--liquid-1), 0.1), rgba(var(--liquid-3), 0.04));
-  border: 1px solid rgba(var(--liquid-1), 0.22);
-}
-@media (min-width: 48rem) {
-  .review-body { padding: 1.5rem 1.6rem 1.6rem; }
+  gap: 0.7rem;
+  /* OPEN SECTION, no box (Luca 2026-10-25, website frame option D —
+     "improve the boxy flow"). It used to be a cover-tinted panel; now
+     the words sit straight on the page like everything else, marked
+     only by the REVIEW label in the cover's colour. */
+  padding: 0.25rem 0;
 }
 /* .cover-accent: everything inside takes the ALBUM COVER as its accent
    instead of the site blue (Luca 2026-10-25, the review page's
@@ -6015,9 +6117,6 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 }
 .review-body-label {
   align-self: flex-start;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  background: rgba(var(--liquid-1), 0.16);
   font-family: var(--font-heading);
   font-weight: 800;
   font-size: 0.66rem;

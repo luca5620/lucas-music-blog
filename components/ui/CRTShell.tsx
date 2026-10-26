@@ -2,10 +2,10 @@ import ShellLiquid from "@/components/ui/ShellLiquid";
 
 /**
  * CRTShell — the frame every page renders inside.
- * A slim plastic bezel around a true-black screen, with the classic
- * game-disc-box spine down the left: vertical "Peak Music" in the
- * PlayStation font and the ESRB-style "R for Real" rating badge.
- * The spine hides on phones (see globals.css).
+ * A slim plastic bezel around a true-black screen. (The game-case
+ * spine that used to run down the left was removed 2026-10-25 —
+ * option D: the screen takes the full width, and review pages put a
+ * side rail in the room it freed.)
  */
 export default function CRTShell({ children }: { children: React.ReactNode }) {
   return (
@@ -27,15 +27,6 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
           the same surface as everything else — the wash flows through
           it; scrolled content passes under the clock. */}
       <div className="crt-body">
-        {/* Left spine — the disc-box edge */}
-        <div className="crt-spine" aria-hidden="true">
-          <span className="crt-spine-brand">Peak Music</span>
-          <div className="crt-spine-rating">
-            <span className="crt-rating-letter">R</span>
-            <span className="crt-rating-text">Real</span>
-          </div>
-        </div>
-
         {/* The screen — all site content */}
         <div className="crt-screen">
           {/* WEB: the site-wide wash behind everything on the screen.

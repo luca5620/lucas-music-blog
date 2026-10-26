@@ -873,7 +873,14 @@
       "edited": "Edited {date}",
       "edit": "Edit",
       "theReview": "Review",
-      "favoritesInList": "♥ = their personal favorites"
+      "favoritesInList": "♥ = their personal favorites",
+      "railOn": "On Peak Music",
+      "railRatings": "{n, plural, one {average · # rating} other {average · # ratings}}",
+      "railRate": "Rate it yourself",
+      "railYours": "Your rating",
+      "railAlso": "Also rated it",
+      "railSeeAll": "See all {n}",
+      "railListen": "Listen"
     },
     "form": {
       "editTitle": "Edit Review",

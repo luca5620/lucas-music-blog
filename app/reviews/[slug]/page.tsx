@@ -22,7 +22,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import UserLink from "@/components/ui/UserLink";
 import { getReviewWithContextBySlug } from "@/lib/db/reviews";
-import { getReleaseBySlug } from "@/lib/db/releases";
+import { getReleaseBySlug, getReleaseReviews, isFollowingRelease } from "@/lib/db/releases";
+import ReviewRail, { type RailRating } from "@/components/reviews/ReviewRail";
 import { getMemberTrackRatings } from "@/lib/db/track-ratings";
 import {
   resolveAppleMusic,
@@ -242,6 +243,34 @@ export default async function ReviewPage({
 
   const t = await getTranslations("reviews.page");
   const tc = await getTranslations("common");
+  const tr = await getTranslations("releases.page");
+
+  /* Side rail (option D, Luca 2026-10-25) — everyone's published
+     rating of this record + whether the viewer saved it. Both fail
+     soft (empty list / false), and the rail only shows on wide
+     desktop, so a slow query here never holds up the review itself. */
+  const [railRows, viewerSaved] = release
+    ? await Promise.all([
+        getReleaseReviews(release.id),
+        user ? isFollowingRelease(user.id, release.id) : Promise.resolve(false),
+      ])
+    : [[], false];
+  type RailRow = {
+    id: string;
+    slug: string;
+    user_id: string;
+    rating: number;
+    profiles: { username: string; display_name: string | null; avatar_url: string | null };
+  };
+  const railRatings: RailRating[] = (railRows as unknown as RailRow[]).map((r) => ({
+    reviewId: r.id,
+    slug: r.slug,
+    userId: r.user_id,
+    rating: Number(r.rating),
+    username: r.profiles.username,
+    name: r.profiles.display_name || r.profiles.username,
+    avatarUrl: r.profiles.avatar_url,
+  }));
   const locale = await getLocale();
   const longDate = (iso: string) =>
     new Date(iso + "T12:00:00").toLocaleDateString(locale, {
@@ -312,7 +341,7 @@ export default async function ReviewPage({
   const year = review.release_date ? review.release_date.slice(0, 4) : null;
 
   return (
-    <div className="review-page space-y-6 max-w-3xl lg:max-w-5xl mx-auto">
+    <div className="review-page space-y-6 max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto">
       {/* JSON-LD Structured Data */}
       <BreadcrumbSchema
         items={[
@@ -369,6 +398,11 @@ export default async function ReviewPage({
           puts the title beside the sleeve, bottom-aligned. (A local liquid glow was tried
           here and drew a visible rectangle — the site-wide wash, recoloured
           by CoverLiquidSync, is the only light.) */}
+      {/* review-grid: on wide desktop the review is the left column and
+          ReviewRail the right one (option D, 2026-10-25); everywhere
+          else the rail is hidden and this is the same single column. */}
+      <div className="review-grid">
+      <div className="review-main space-y-6">
       <header className="review-head">
         <ReviewSleeve
           cover={review.cover_image}
@@ -532,6 +566,31 @@ export default async function ReviewPage({
           cover-accent tints the panel with the album cover (2026-10-25) */}
       <div id="comments" className="scroll-mt-24 cover-accent">
         <CommentsSection reviewId={review.id} />
+      </div>
+      </div>
+
+      {release && (
+        <ReviewRail
+          currentReviewId={review.id}
+          viewerId={user?.id ?? null}
+          release={release}
+          artist={review.artist ?? ""}
+          ratings={railRatings}
+          viewerSaved={viewerSaved}
+          labels={{
+            on: t("railOn"),
+            ratings: t("railRatings", { n: railRatings.length }),
+            rate: t("railRate"),
+            yours: t("railYours"),
+            save: tr("followRelease"),
+            saved: tr("following"),
+            also: t("railAlso"),
+            // the release page lists every rating, so "See all" counts them all
+            seeAll: t("railSeeAll", { n: railRatings.length }),
+            listen: t("railListen"),
+          }}
+        />
+      )}
       </div>
     </div>
   );

@@ -51,7 +51,6 @@ import {
 } from "@/lib/apple-music";
 import { createClient } from "@/lib/supabase/server";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
-import LiquidAtmosphere from "@/components/ui/LiquidAtmosphere";
 import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
 import ReleaseRoomChat from "@/components/rooms/ReleaseRoomChat";
 import { type ChatMessageWithProfile } from "@/components/rooms/ChatPanel";
@@ -469,14 +468,16 @@ async function ReleaseContent({
   const upcoming = isUpcoming(release.release_date);
 
   return (
-    // release-unclip: at xl the panel switches to overflow:visible so
-    // the sticky chat column works (sticky dies inside overflow:
-    // hidden). Safe because LiquidAtmosphere clips its own blobs and
-    // CoverLiquidSync renders nothing. See globals.css.
-    <div className="panel-xbox-glow release-unclip p-4 sm:p-6 md:p-8 relative isolate">
-      {/* Molten light drifting behind the whole release panel — and
-          the whole site's liquid takes this album's palette while
-          you're here (Luca 2026-08-25: cover-colored immersion). */}
+    // NO PANEL (Luca 2026-10-25, "improve the boxy flow"): the page
+    // used to sit inside one big glowing box, with more boxes inside
+    // it. Now it sits straight on the screen like the review page;
+    // only the player and the live room keep a frame, because they are
+    // tools you use, not text you read. No overflow clip either, so the
+    // sticky chat column just works.
+    <div className="relative">
+      {/* The whole site's liquid takes this album's palette while
+          you're here (Luca 2026-08-25: cover-colored immersion). The
+          panel's own LiquidAtmosphere went with the panel. */}
       <CoverLiquidSync coverUrl={release.cover_image} />
 
       {/* Countdown banner — big OSD-amber broadcast strip. This is the
@@ -494,7 +495,6 @@ async function ReleaseContent({
           </span>
         </div>
       )}
-      <LiquidAtmosphere />
       {/* On desktop (xl+) the page splits three ways: identity on the
           left, preview + reviews in the middle, and the LIVE CHAT as
           its own column running down the whole right side (sticky,
@@ -556,8 +556,9 @@ async function ReleaseContent({
         </div>
 
         {/* Community pulse: everyone's ratings in one picture —
-            average, review count, and the spread of scores. */}
-        <div className="card-y2k p-4 space-y-3">
+            average, review count, and the spread of scores. Open, no
+            card (2026-10-25): hairlines above and below mark it. */}
+        <div className="release-pulse space-y-3">
           {stats.avg_rating !== null ? (
             <>
               <div className="flex items-center gap-3">
@@ -814,7 +815,7 @@ async function ReleaseContent({
           </div>
 
           {reviews.length === 0 ? (
-            <div className="panel-xbox p-6 text-center space-y-3">
+            <div className="py-6 text-center space-y-3">
               <p className="font-[family-name:var(--font-vt323)] text-base text-text-muted">
                 {t("noReviewsRelease")}
               </p>
@@ -827,7 +828,7 @@ async function ReleaseContent({
               </Link>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="release-reviews">
               {reviews.map((r) => (
                 <ReleaseReviewEntry key={r.id} review={r} t={t} locale={locale} />
               ))}
@@ -881,9 +882,6 @@ async function ReleaseContent({
         )}
       </div>
       </div>
-
-        {/* Scan bar */}
-        <div className="scan-bar" />
     </div>
   );
 }
@@ -995,7 +993,9 @@ function ReleaseReviewEntry({
   }
 
   return (
-    <article className="panel-xbox p-4 sm:p-5 space-y-3 relative overflow-hidden">
+    // An open row, not a card (2026-10-25): a hairline between reviews,
+    // the same as comments on a review page.
+    <article className="release-review space-y-3">
       {/* Reviewer header: avatar + name lead, rating rides along */}
       <div className="flex items-center gap-3">
         {profile?.username ? (

@@ -1864,7 +1864,10 @@
       "noReleases": "No releases yet.",
       "followers": "Followers",
       "fans": "Fans",
-      "more": "+ {n} more"
+      "more": "+ {n} more",
+      "rankedEyebrow": "Ranked on Peak Music",
+      "rankedTitle": "{name} albums ranked",
+      "rankedCount": "{n, plural, one {# rating} other {# ratings}}"
     },
     "card": {
       "followers": "{n, plural, one {# follower} other {# followers}}"

@@ -1,14 +1,17 @@
 /**
- * ReleaseCard — Server component card for a release in grid contexts
- * (artist pages, /releases list, search results).
+ * ReleaseCard — one record in a grid (the artist page discography).
  *
- * Visual: panel-xbox card with square cover, title, optional artist link,
- * release_type + year row, rating + review count row.
+ * OPEN TILE (Luca 2026-10-25, "improve the boxy flow"): it used to be a
+ * panel-xbox card with its own border, glow and scan bar, so a
+ * discography read as a wall of boxes. Now the cover IS the tile — a
+ * square sleeve with a soft shadow — and the words sit under it on the
+ * page: title, "ALBUM · 2011" (or the countdown), then the community
+ * score and how many reviews it has. Hover lifts the cover a touch.
  */
 
 import Link from "next/link";
 import type { Release } from "@/lib/types/database";
-import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
+import { getRatingHex, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
 import { daysUntil } from "@/lib/upcoming";
 import LiveBadge from "@/components/rooms/LiveBadge";
@@ -42,115 +45,67 @@ export default function ReleaseCard({
   const t = useTranslations("releases.views");
   const tc = useTranslations("common");
   const hasRating = typeof avgRating === "number" && !Number.isNaN(avgRating);
-  const ratingDisplay = hasRating ? formatRating(avgRating!) : null;
-  const ratingColor = hasRating ? getRatingHex(avgRating!) : "#1e90ff";
-  const ratingClass = hasRating ? getRatingColor(avgRating!) : "";
+  const days = daysUntil(release.release_date);
 
   return (
-    <Link
-      href={`/releases/${release.slug}`}
-      className="release-tile panel-xbox p-4 sm:p-5 space-y-4 group cursor-pointer hover-glow relative overflow-hidden block"
-    >
-      {/* Cover art */}
-      <div className="aspect-square rounded-lg bg-[rgba(30,144,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center relative overflow-hidden group-hover:border-[rgba(255,255,255,0.3)] transition-all">
+    <Link href={`/releases/${release.slug}`} className="disc-tile group">
+      {/* The sleeve */}
+      <div className="disc-tile-cover">
         {release.cover_image ? (
           <img
             src={release.cover_image}
             // Browser picks: 300px file at grid sizes, 640 when the
-            // card spans a phone screen.
+            // tile spans a phone screen.
             srcSet={`${smallCover(release.cover_image)} 300w, ${release.cover_image} 640w`}
-            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
+            sizes="(min-width: 1024px) 22vw, (min-width: 640px) 30vw, 45vw"
             alt={tc("coverAlt", { title: release.title })}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
           />
         ) : (
-          <span className="text-5xl text-text-muted group-hover:scale-110 transition-transform">
-            {"//"}
-          </span>
+          <span className="disc-tile-blank">{"//"}</span>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.4)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute top-2 right-2 z-10">
+        <span className="disc-tile-live">
           <LiveBadge lastActivityAt={lastActivityAt} />
-        </div>
-      </div>
-
-      {/* Type + Year (or countdown when the date is still ahead) */}
-      <div className="flex items-center justify-between">
-        <span className="label-xbox text-[0.6rem]">
-          {release.release_type.toUpperCase()}
         </span>
-        {(() => {
-          const days = daysUntil(release.release_date);
-          if (days !== null) {
-            return (
-              <span className="pixel-text text-xs text-osd-amber uppercase tracking-widest animate-pulse">
-                {days === 1 ? t("tomorrow") : t("dMinus", { n: days })}
-              </span>
-            );
-          }
-          return year ? (
-            <span className="pixel-text text-xs text-text-muted uppercase tracking-widest">
-              {year}
-            </span>
-          ) : null;
-        })()}
       </div>
 
-      {/* Title + Artist */}
-      <div>
-        <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-[#e8e6e3] group-hover:text-accent-primary transition-colors line-clamp-2">
-          {release.title}
-        </h3>
-        {artistName && (
-          artistSlug ? (
+      {/* Title, then type · year (or the countdown while it's still ahead) */}
+      <div className="disc-tile-text">
+        <h3>{release.title}</h3>
+        {artistName &&
+          (artistSlug ? (
             <span
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 window.location.href = `/artists/${artistSlug}`;
               }}
-              className="text-sm text-text-secondary hover:text-accent-primary transition-colors cursor-pointer inline-block"
+              className="disc-tile-artist hover:text-accent-primary cursor-pointer"
             >
               {artistName}
             </span>
           ) : (
-            <p className="text-sm text-text-secondary">{artistName}</p>
-          )
+            <span className="disc-tile-artist">{artistName}</span>
+          ))}
+        <p className="disc-tile-meta">
+          {release.release_type}
+          {days !== null ? (
+            <b className="text-osd-amber"> · {days === 1 ? t("tomorrow") : t("dMinus", { n: days })}</b>
+          ) : (
+            year && <> · {year}</>
+          )}
+        </p>
+
+        {/* Community score + counts, only when there's something to say */}
+        {(hasRating || (followerCount ?? 0) > 0) && (
+          <p className="disc-tile-score">
+            {hasRating && <b style={{ color: getRatingHex(avgRating!) }}>{formatRating(avgRating!)}</b>}
+            {(reviewCount ?? 0) > 0 && <span>{t("reviews", { n: reviewCount! })}</span>}
+            {(followerCount ?? 0) > 0 && <span>{t("followers", { n: followerCount! })}</span>}
+          </p>
         )}
       </div>
-
-      {/* Stats row: rating + review count + followers */}
-      {(hasRating || (reviewCount !== undefined && reviewCount > 0) || (followerCount !== undefined && followerCount > 0)) && (
-        <div className="flex items-center justify-between gap-2 pt-1">
-          {hasRating && ratingDisplay ? (
-            <div
-              className={`rating-badge text-sm w-10 h-10 ${ratingClass}`}
-              style={{ color: ratingColor, borderColor: ratingColor }}
-            >
-              {ratingDisplay}
-            </div>
-          ) : (
-            <span className="text-xs text-text-muted italic">{t("noReviews")}</span>
-          )}
-
-          <div className="flex flex-col items-end gap-0.5 text-right">
-            {reviewCount !== undefined && reviewCount > 0 && (
-              <span className="text-xs text-text-muted">
-                {t("reviews", { n: reviewCount })}
-              </span>
-            )}
-            {followerCount !== undefined && followerCount > 0 && (
-              <span className="text-xs text-text-muted">
-                {t("followers", { n: followerCount })}
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="scan-bar" />
     </Link>
   );
 }

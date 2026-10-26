@@ -18,6 +18,7 @@ import {
   isFollowingArtist,
 } from "@/lib/db/artists";
 import { getReleaseStats } from "@/lib/db/releases";
+import { getRatingHex, formatRating } from "@/lib/rating";
 import { getUser } from "@/lib/auth";
 import FollowEntityButton from "@/components/follow/FollowEntityButton";
 import ReleaseCard from "@/components/releases/ReleaseCard";
@@ -91,6 +92,21 @@ export default async function ArtistPage({ params }: PageProps) {
       return { release: r, stats: rs };
     })
   );
+
+  /* "<Artist> albums ranked" (Luca 2026-10-25, from the SEO research:
+     people search exactly that). The artist's albums, EPs and mixtapes
+     that have at least one rating, best community average first; a tie
+     goes to the one more people rated. Singles stay out so the heading
+     is true. Needs 2+ rated records — a ranking of one isn't one. */
+  const ranked = releaseStats
+    .filter(
+      ({ release, stats: rs }) =>
+        rs.avg_rating !== null && ["album", "EP", "mixtape"].includes(release.release_type)
+    )
+    .sort(
+      (a, b) =>
+        (b.stats.avg_rating ?? 0) - (a.stats.avg_rating ?? 0) || b.stats.review_count - a.stats.review_count
+    );
 
   const accentColor = "#1e90ff";
   const initial = artist.name[0]?.toUpperCase() ?? "?";
@@ -266,6 +282,42 @@ export default async function ArtistPage({ params }: PageProps) {
         />
       </div>
 
+      {/* ========== RANKED ========== */}
+      {ranked.length >= 2 && (
+        <section className="px-4 sm:px-8 space-y-3" aria-labelledby="ranked-h">
+          <div className="artist-ranked-head">
+            <span className="artist-ranked-eyebrow">{t("rankedEyebrow")}</span>
+            <h2 id="ranked-h">{t("rankedTitle", { name: artist.name })}</h2>
+          </div>
+          <ol className="artist-ranked">
+            {ranked.map(({ release, stats: rs }, i) => (
+              <li key={release.id}>
+                <Link href={`/releases/${release.slug}`} className="artist-ranked-row group">
+                  <span className="artist-ranked-n">{i + 1}</span>
+                  {release.cover_image ? (
+                    <img src={release.cover_image} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <span className="artist-ranked-blank" />
+                  )}
+                  <span className="artist-ranked-text">
+                    <b>{release.title}</b>
+                    <small>
+                      {[release.release_type === "EP" ? "EP" : release.release_type.charAt(0).toUpperCase() + release.release_type.slice(1), release.release_date?.slice(0, 4)]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </small>
+                  </span>
+                  <span className="artist-ranked-score">
+                    <b style={{ color: getRatingHex(rs.avg_rating!) }}>{formatRating(rs.avg_rating!)}</b>
+                    <small>{t("rankedCount", { n: rs.review_count })}</small>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
       {/* ========== RELEASES ========== */}
       <div className="px-4 sm:px-8 space-y-4">
         <div className="flex items-center gap-3">
@@ -298,7 +350,10 @@ export default async function ArtistPage({ params }: PageProps) {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          // Open tiles (2026-10-25): no card around each record, so the
+          // grid can hold more per row.
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 sm:gap-x-5">
+
             {releaseStats.map(({ release, stats: rs }) => (
               <ReleaseCard
                 key={release.id}

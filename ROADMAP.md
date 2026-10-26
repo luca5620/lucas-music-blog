@@ -541,6 +541,15 @@ uses the second option yet).
   later, Also rated it (top 5 → See all), Listen (Spotify / Apple). The REVIEW
   section is open text now (no box), all sizes. Rewind share card re-spaced
   to fill the 9:16 frame. Next if Luca likes it: rails on release/profile pages?
+- **Less boxy, pass 2 (2026-10-25):** release page has NO outer panel (and no
+  LiquidAtmosphere); community score = open block between hairlines; reviews
+  = open rows. Player + live room keep their frames (tools). Artist page
+  discography = open cover tiles (ReleaseCard → .disc-tile, 2–5 per row).
+  Still boxy: the signed-in home dashboard modules (not looked at yet).
+- **"<Artist> albums ranked" on artist pages (2026-10-25):** albums/EPs/
+  mixtapes with 1+ rating, best average first (tie → more ratings), shown when
+  2+ qualify; h2 "<name> albums ranked" for search. Re-check Search Console
+  for these queries along with the ~11-05 check.
 - **Save for later:** release page button = "Save for later" / "Saved ✓"
   (still release_follows; counts say "Saved by N"). Profile **Saved** tab
   (`?tab=saved`, components/profile/SavedShelf.tsx): saved + not rated,

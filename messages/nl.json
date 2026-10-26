@@ -1864,7 +1864,10 @@
       "noReleases": "Nog geen releases.",
       "followers": "Volgers",
       "fans": "Fans",
-      "more": "+ {n} meer"
+      "more": "+ {n} meer",
+      "rankedEyebrow": "Gerangschikt op Peak Music",
+      "rankedTitle": "Albums van {name} gerangschikt",
+      "rankedCount": "{n, plural, one {# beoordeling} other {# beoordelingen}}"
     },
     "card": {
       "followers": "{n, plural, one {# volger} other {# volgers}}"

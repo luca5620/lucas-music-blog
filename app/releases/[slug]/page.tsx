@@ -13,7 +13,6 @@ import GifView from "@/components/ui/GifView";
 import { gifFromRow } from "@/lib/gif";
 import UserLink from "@/components/ui/UserLink";
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getReleaseDescription } from "@/lib/descriptions";
 import BackLink from "@/components/ui/BackLink";
@@ -36,6 +35,7 @@ import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { isUpcoming, isWaitingForDrop } from "@/lib/upcoming";
 import LiveCountdown from "@/components/releases/LiveCountdown";
+import { redirectMergedOr404 } from "@/lib/db/redirects";
 import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
 import TrackRatings from "@/components/releases/TrackRatings";
@@ -132,7 +132,8 @@ async function DescriptionBlock({
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const release = await getReleaseBySlug(slug);
-  if (!release) notFound(); // real 404, not a soft one — see app/not-found.tsx
+  // Not here → maybe merged into another page (066), else a real 404.
+  if (!release) return redirectMergedOr404("release", slug);
 
   const [artist, stats] = await Promise.all([
     getArtistById(release.primary_artist_id),
@@ -264,7 +265,7 @@ function formatDate(date: string | null, locale: string): string | null {
 export default async function ReleasePage({ params }: Props) {
   const { slug } = await params;
   const release = await getReleaseBySlug(slug);
-  if (!release) notFound();
+  if (!release) return redirectMergedOr404("release", slug);
 
   const artist = await getArtistById(release.primary_artist_id);
 
@@ -1046,14 +1047,12 @@ function ReleaseReviewEntry({
       </div>
 
       {/* The review itself, in full — words, then the GIF reaction
-          (the release page shows reviews whole, so no box limit). */}
-      {body ? (
+          (the release page shows reviews whole, so no box limit). A
+          rating with no words shows just the score — no filler line
+          (Luca 2026-10-26). */}
+      {body && (
         <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
           {body}
-        </p>
-      ) : gif ? null : (
-        <p className="text-sm text-text-muted italic">
-          {t("noWords")}
         </p>
       )}
       {gif && <GifView gif={gif} size="sm" />}

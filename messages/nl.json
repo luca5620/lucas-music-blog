@@ -855,7 +855,6 @@
       "songReview": "Recensie van het nummer",
       "albumReview": "Recensie van het album",
       "review": "Recensie",
-      "noWords": "Beoordeeld zonder woorden: het cijfer zegt genoeg.",
       "favorites": "Persoonlijke favorieten",
       "previewHint": "speel elk nummer hier meteen af",
       "songsPreviewHint": "speel elk nummer hier meteen af",
@@ -1033,7 +1032,6 @@
       "ratingSpread": "cijferverdeling",
       "histogramBar": "{score}: {n, plural, one {# recensie} other {# recensies}}",
       "anonymous": "anoniem",
-      "noWords": "Beoordeeld zonder woorden: het cijfer zegt genoeg.",
       "likesComments": "Likes en reacties →",
       "dropsLater": "Komt later vandaag uit — nog niet op Spotify"
     },

@@ -518,6 +518,25 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🧹 Duplicates merged + review boxes back (2026-10-26, Windows)
+- **⚠️ Migration 066 NOT RUN YET** — `066-merge-duplicates.sql`, paste + Run, nothing
+  to fill in, all-or-nothing. Merges 4 duplicate records (Morning Glory deluxe,
+  2× Beauty Behind The Madness, Dark Side 50th, Fragile Super Deluxe → standard;
+  7 reviews move, nobody had reviewed both) + 10 duplicate artists (Genius copy
+  → Spotify artist: The Weeknd, Kanye, Carti, Nettspend, Uzi, Ariana, Che, Juice
+  WRLD, Yes, Pearl Jam). public.slug_redirects + lib/db/redirects.ts send old
+  addresses to the kept page (308). catalog_import_release now matches artists by
+  name across sources and Spotify records by artist + type + release_title_key()
+  (edition tags stripped; "(Original)"/"(Version 2)" kept).
+- Review page: THE REVIEW boxed again (cover-tinted), Personal favorites + Song
+  by song in the same box (.review-box). "Rated, no words" filler removed on the
+  review page AND release page.
+- Luca's calls: signed-in home NOT de-boxed; share flow is fine; side rail only
+  on review pages (maybe more in it — he asked how it works on mobile first).
+- **1.3 submission waits for TikTok** (Luca 2026-10-26): when TikTok approves,
+  put the production key in, check the TikTok logo works next to Instagram, give
+  him the thumbs up → he submits 1.3 (with the iPhone Duo fixes). No separate 1.3.1.
+
 ### 🕔 Real drop times (2026-10-25 night, Windows)
 - **EXACT TIMES (2026-10-26, Luca: "why not just have the accurate countdown?"):**
   Spotify's embed page has releaseDate.isoString for pre-release records

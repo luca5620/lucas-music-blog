@@ -855,7 +855,6 @@
       "songReview": "Critique du morceau",
       "albumReview": "Critique de l'album",
       "review": "Critique",
-      "noWords": "Noté, sans un mot : le chiffre parle de lui-même.",
       "favorites": "Favoris personnels",
       "previewHint": "écoutez chaque titre ici même",
       "songsPreviewHint": "écoutez chaque titre ici même",
@@ -1033,7 +1032,6 @@
       "ratingSpread": "répartition des notes",
       "histogramBar": "{score} : {n, plural, one {# critique} other {# critiques}}",
       "anonymous": "anonyme",
-      "noWords": "Noté, sans un mot : le chiffre parle de lui-même.",
       "likesComments": "Likes et commentaires →",
       "dropsLater": "Sort plus tard aujourd'hui — pas encore sur Spotify"
     },

@@ -498,11 +498,10 @@ export default async function ReviewPage({
       {/* THE REVIEW — its own clearly marked section (Luca 2026-10-24:
           "it is the centerpiece of the app"). The one-liner leads as a
           pull quote when there's a full review under it too. */}
-      {/* A rating with no words and no GIF keeps the plain one-liner —
-          an empty-looking box would be worse than none. */}
-      {!review.summary && !review.snippet && !reviewGif ? (
-        <p className="text-text-muted leading-relaxed text-base italic">{t("noWords")}</p>
-      ) : (
+      {/* BOXED again (Luca 2026-10-26: "the box emphasises it"). A
+          rating with no words and no GIF shows nothing here at all —
+          no box, no filler line; the score up top says it. */}
+      {(review.summary || review.snippet || reviewGif) && (
       <section className="review-body" aria-label={t("theReview")}>
         <p className="review-body-label">{t("theReview")}</p>
         {review.summary ? (
@@ -523,8 +522,9 @@ export default async function ReviewPage({
 
       {/* Personal Favorites, each with the viewer's own player (the
           standout_tracks column keeps its name — display label only). */}
+      {/* Boxed like THE REVIEW (Luca 2026-10-26). */}
       {review.standout_tracks.length > 0 && !favoritesInList && (
-        <section className="space-y-2">
+        <section className="review-box">
           <h2 className="review-h">
             <span>{t("favorites")}</span>
             {/* Only promise a player when there is one to play. */}
@@ -538,7 +538,7 @@ export default async function ReviewPage({
           migration 041). Only the songs they actually rated, and only on
           records with 2+ songs (on a single the score above IS the song). */}
       {release && showSongList && (
-        <section className="space-y-1">
+        <section className="review-box">
           <h2 className="review-h">
             {/* just "Song by song", no "· N rated" count (Luca 2026-10-25) */}
             <span>{t("songBySong")}</span>

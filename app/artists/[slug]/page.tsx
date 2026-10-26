@@ -6,7 +6,7 @@
 
 import Link from "next/link";
 import BackLink from "@/components/ui/BackLink";
-import { notFound } from "next/navigation";
+import { redirectMergedOr404 } from "@/lib/db/redirects";
 import type { Metadata } from "next";
 // LANGUAGES: every word we wrote comes from messages/<locale>.json.
 import { getTranslations } from "next-intl/server";
@@ -41,7 +41,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const artist = await getArtistBySlug(slug);
 
-  if (!artist) notFound(); // real 404, not a soft one — see app/not-found.tsx
+  // Not here → maybe merged into another page (066), else a real 404.
+  if (!artist) return redirectMergedOr404("artist", slug);
 
   const description =
     artist.bio?.replace(/\s+/g, " ").trim().slice(0, 160) ??
@@ -69,9 +70,7 @@ export default async function ArtistPage({ params }: PageProps) {
   const { slug } = await params;
   const artist = await getArtistBySlug(slug);
 
-  if (!artist) {
-    notFound();
-  }
+  if (!artist) return redirectMergedOr404("artist", slug);
 
   const t = await getTranslations("artists.page");
   const [stats, releases, followers, currentUser] = await Promise.all([

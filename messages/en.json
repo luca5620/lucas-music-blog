@@ -855,7 +855,6 @@
       "songReview": "Song Review",
       "albumReview": "Album Review",
       "review": "Review",
-      "noWords": "Rated, no words — the number speaks for itself.",
       "favorites": "Personal Favorites",
       "previewHint": "play any song right here",
       "songsPreviewHint": "play any song right here",
@@ -1033,7 +1032,6 @@
       "ratingSpread": "rating spread",
       "histogramBar": "{score}: {n, plural, one {# review} other {# reviews}}",
       "anonymous": "anonymous",
-      "noWords": "Rated, no words — the number speaks for itself.",
       "likesComments": "Likes + comments →",
       "dropsLater": "Out later today — not on Spotify yet"
     },

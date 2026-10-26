@@ -855,7 +855,6 @@
       "songReview": "Resenha da música",
       "albumReview": "Resenha do álbum",
       "review": "Resenha",
-      "noWords": "Avaliado sem palavras: o número fala por si.",
       "favorites": "Favoritas pessoais",
       "previewHint": "ouça qualquer música aqui mesmo",
       "songsPreviewHint": "ouça qualquer música aqui mesmo",
@@ -1033,7 +1032,6 @@
       "ratingSpread": "distribuição de notas",
       "histogramBar": "{score}: {n, plural, one {# resenha} other {# resenhas}}",
       "anonymous": "anônimo",
-      "noWords": "Avaliado sem palavras: o número fala por si.",
       "likesComments": "Curtidas e comentários →",
       "dropsLater": "Sai mais tarde hoje — ainda não está no Spotify"
     },

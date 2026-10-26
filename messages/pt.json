@@ -1034,7 +1034,8 @@
       "histogramBar": "{score}: {n, plural, one {# resenha} other {# resenhas}}",
       "anonymous": "anônimo",
       "noWords": "Avaliado sem palavras: o número fala por si.",
-      "likesComments": "Curtidas e comentários →"
+      "likesComments": "Curtidas e comentários →",
+      "dropsLater": "Sai mais tarde hoje — ainda não está no Spotify"
     },
     "views": {
       "avg": "MÉD",
@@ -1046,7 +1047,8 @@
       "followers": "{n, plural, one {# seguidor} other {# seguidores}}",
       "noReviews": "Sem resenhas",
       "tomorrow": "Amanhã",
-      "dMinus": "Faltam {n}"
+      "dMinus": "Faltam {n}",
+      "laterToday": "Mais tarde hoje"
     },
     "dropping": {
       "title": "Saindo em breve",
@@ -1055,7 +1057,8 @@
     "countdown": {
       "outNow": "JÁ SAIU",
       "dMinus": "Faltam {n} dias",
-      "days": "{n} d "
+      "days": "{n} d ",
+      "laterToday": "Mais tarde hoje"
     },
     "embed": {
       "preview": "Prévia",

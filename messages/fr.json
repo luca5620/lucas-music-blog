@@ -1034,7 +1034,8 @@
       "histogramBar": "{score} : {n, plural, one {# critique} other {# critiques}}",
       "anonymous": "anonyme",
       "noWords": "Noté, sans un mot : le chiffre parle de lui-même.",
-      "likesComments": "Likes et commentaires →"
+      "likesComments": "Likes et commentaires →",
+      "dropsLater": "Sort plus tard aujourd'hui — pas encore sur Spotify"
     },
     "views": {
       "avg": "MOY",
@@ -1046,7 +1047,8 @@
       "followers": "{n, plural, one {# abonné} other {# abonnés}}",
       "noReviews": "Pas de critiques",
       "tomorrow": "Demain",
-      "dMinus": "J–{n}"
+      "dMinus": "J–{n}",
+      "laterToday": "Plus tard aujourd'hui"
     },
     "dropping": {
       "title": "Bientôt",
@@ -1055,7 +1057,8 @@
     "countdown": {
       "outNow": "SORTI",
       "dMinus": "J–{n}",
-      "days": "{n} j "
+      "days": "{n} j ",
+      "laterToday": "Plus tard aujourd'hui"
     },
     "embed": {
       "preview": "Extrait",

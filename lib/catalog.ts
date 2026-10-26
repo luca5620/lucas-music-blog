@@ -144,7 +144,7 @@ async function resolveSpotifyLink(
           kind: existing.release_type,
           slug: existing.slug,
           unreleased: existing.is_unreleased,
-          upcoming: isUpcoming(existing.release_date),
+          upcoming: isUpcoming(existing.release_date, existing),
         },
       ],
     };

@@ -73,7 +73,7 @@ export default async function DroppingSoonRail() {
                     gesture IS the info */}
                 {release.release_date && (
                   <span className="absolute bottom-2 left-2 pixel-text text-[11px] text-osd-amber bg-black/80 border border-osd-amber/50 rounded px-1.5 py-0.5 tracking-widest">
-                    <LiveCountdown releaseDate={release.release_date} />
+                    <LiveCountdown releaseDate={release.release_date} drop={release} />
                   </span>
                 )}
               </div>

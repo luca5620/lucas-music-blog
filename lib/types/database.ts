@@ -208,6 +208,11 @@ export interface Release {
       the migration runs. */
   apple_music_id?: string | null;
   apple_music_checked_at?: string | null;
+  /** When Spotify was first seen playing it / last seen NOT playing it
+      yet (migration 064, the drop-check edge function). lib/upcoming
+      reads both — not every record drops at midnight Eastern. */
+  drops_at?: string | null;
+  drop_waiting_at?: string | null;
   /** SoundCloud track/set permalink for the preview player (migration
       042) — same lazy resolve + cache as Apple. */
   soundcloud_url?: string | null;

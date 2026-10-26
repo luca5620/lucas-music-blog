@@ -466,8 +466,8 @@ async function listUpcomingReleasesUncached(limit = 12): Promise<
       // inside each group.
       .sort(
         (a, b) =>
-          Number(hasDropped(a.release_date)) -
-          Number(hasDropped(b.release_date))
+          Number(hasDropped(a.release_date, a)) -
+          Number(hasDropped(b.release_date, b))
       )
   );
 }

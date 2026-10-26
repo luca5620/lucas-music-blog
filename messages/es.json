@@ -1034,7 +1034,8 @@
       "histogramBar": "{score}: {n, plural, one {# reseña} other {# reseñas}}",
       "anonymous": "anónimo",
       "noWords": "Calificado sin palabras: el número habla por sí solo.",
-      "likesComments": "Me gusta y comentarios →"
+      "likesComments": "Me gusta y comentarios →",
+      "dropsLater": "Sale más tarde hoy — aún no está en Spotify"
     },
     "views": {
       "avg": "PROM",
@@ -1046,7 +1047,8 @@
       "followers": "{n, plural, one {# seguidor} other {# seguidores}}",
       "noReviews": "Sin reseñas",
       "tomorrow": "Mañana",
-      "dMinus": "Faltan {n}"
+      "dMinus": "Faltan {n}",
+      "laterToday": "Más tarde hoy"
     },
     "dropping": {
       "title": "Próximos lanzamientos",
@@ -1055,7 +1057,8 @@
     "countdown": {
       "outNow": "YA SALIÓ",
       "dMinus": "Faltan {n} días",
-      "days": "{n} d "
+      "days": "{n} d ",
+      "laterToday": "Más tarde hoy"
     },
     "embed": {
       "preview": "Adelanto",

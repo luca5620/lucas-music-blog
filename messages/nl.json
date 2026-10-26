@@ -1034,7 +1034,8 @@
       "histogramBar": "{score}: {n, plural, one {# recensie} other {# recensies}}",
       "anonymous": "anoniem",
       "noWords": "Beoordeeld zonder woorden: het cijfer zegt genoeg.",
-      "likesComments": "Likes en reacties →"
+      "likesComments": "Likes en reacties →",
+      "dropsLater": "Komt later vandaag uit — nog niet op Spotify"
     },
     "views": {
       "avg": "GEM",
@@ -1046,7 +1047,8 @@
       "followers": "{n, plural, one {# volger} other {# volgers}}",
       "noReviews": "Geen recensies",
       "tomorrow": "Morgen",
-      "dMinus": "Nog {n}"
+      "dMinus": "Nog {n}",
+      "laterToday": "Later vandaag"
     },
     "dropping": {
       "title": "Komt binnenkort uit",
@@ -1055,7 +1057,8 @@
     "countdown": {
       "outNow": "NU UIT",
       "dMinus": "Nog {n} dagen",
-      "days": "{n} d "
+      "days": "{n} d ",
+      "laterToday": "Later vandaag"
     },
     "embed": {
       "preview": "Preview",

@@ -13,7 +13,7 @@ import Link from "next/link";
 import type { Release } from "@/lib/types/database";
 import { getRatingHex, formatRating } from "@/lib/rating";
 import { smallCover } from "@/lib/images";
-import { daysUntil } from "@/lib/upcoming";
+import { daysUntil, isWaitingForDrop } from "@/lib/upcoming";
 import LiveBadge from "@/components/rooms/LiveBadge";
 import { useTranslations } from "next-intl";
 
@@ -45,7 +45,9 @@ export default function ReleaseCard({
   const t = useTranslations("releases.views");
   const tc = useTranslations("common");
   const hasRating = typeof avgRating === "number" && !Number.isNaN(avgRating);
-  const days = daysUntil(release.release_date);
+  const days = daysUntil(release.release_date, release);
+  // Release day, but Spotify hasn't switched it on yet (migration 064).
+  const waiting = days === null && isWaitingForDrop(release.release_date, release);
 
   return (
     <Link href={`/releases/${release.slug}`} className="disc-tile group">
@@ -92,6 +94,8 @@ export default function ReleaseCard({
           {release.release_type}
           {days !== null ? (
             <b className="text-osd-amber"> · {days === 1 ? t("tomorrow") : t("dMinus", { n: days })}</b>
+          ) : waiting ? (
+            <b className="text-osd-amber"> · {t("laterToday")}</b>
           ) : (
             year && <> · {year}</>
           )}

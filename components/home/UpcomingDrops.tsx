@@ -38,6 +38,8 @@ export default async function UpcomingDrops({
       release_type: r.release_type,
       release_date: r.release_date!,
       artistName: r.artists?.name ?? null,
+      drops_at: r.drops_at ?? null,
+      drop_waiting_at: r.drop_waiting_at ?? null,
     }));
 
   return <UpcomingDropsClient items={items} canAdd={canAdd} />;

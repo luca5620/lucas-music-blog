@@ -34,7 +34,7 @@ import {
 } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
-import { isUpcoming } from "@/lib/upcoming";
+import { isUpcoming, isWaitingForDrop } from "@/lib/upcoming";
 import LiveCountdown from "@/components/releases/LiveCountdown";
 import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
@@ -161,7 +161,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? formatDate(release.release_date, "en-US")
     : null;
   const lead = dateText
-    ? `${typeLabel}, ${isUpcoming(release.release_date) ? "out" : "released"} ${dateText}.`
+    ? `${typeLabel}, ${isUpcoming(release.release_date, release) ? "out" : "released"} ${dateText}.`
     : `${typeLabel} by ${artistName}.`;
 
   const ratingLine =
@@ -464,8 +464,13 @@ async function ReleaseContent({
   const tEmbed = await getTranslations("releases.embed");
   const locale = await getLocale();
   // Countdown album: the page (and its live room) exists BEFORE the
-  // music does. isUpcoming flips to false on release day by itself.
-  const upcoming = isUpcoming(release.release_date);
+  // music does. isUpcoming flips to false on release day by itself —
+  // or, for a record that doesn't drop at midnight Eastern (K-pop at
+  // 6pm Korea time), once Spotify actually switches it on (064).
+  const upcoming = isUpcoming(release.release_date, release);
+  // Past midnight Eastern but not playable yet → "Out later today"
+  // instead of a clock stuck on zero.
+  const waitingForDrop = isWaitingForDrop(release.release_date, release);
 
   return (
     // NO PANEL (Luca 2026-10-25, "improve the boxy flow"): the page
@@ -485,14 +490,21 @@ async function ReleaseContent({
           be here when it drops. */}
       {upcoming && release.release_date && (
         <div className="mb-5 sm:mb-6 border border-osd-amber/50 rounded-lg bg-osd-amber/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-          <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest">
-            {t("dropsIn")}{" "}
-            <LiveCountdown
-              releaseDate={release.release_date}
-              className="animate-pulse"
-            />
-            {releaseDateFormatted ? ` — ${releaseDateFormatted}` : ""}
-          </span>
+          {waitingForDrop ? (
+            <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest animate-pulse">
+              {t("dropsLater")}
+            </span>
+          ) : (
+            <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest">
+              {t("dropsIn")}{" "}
+              <LiveCountdown
+                releaseDate={release.release_date}
+                drop={release}
+                className="animate-pulse"
+              />
+              {releaseDateFormatted ? ` — ${releaseDateFormatted}` : ""}
+            </span>
+          )}
         </div>
       )}
       {/* On desktop (xl+) the page splits three ways: identity on the

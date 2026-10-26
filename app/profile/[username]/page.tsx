@@ -42,6 +42,8 @@ import RoleBadge from "@/components/ui/RoleBadge";
 import { getSupporterSince } from "@/lib/db/supporters";
 import ListeningShowcase from "@/components/profile/ListeningShowcase";
 import SongOfDayShowcase from "@/components/profile/SongOfDayShowcase";
+import SavedShelf from "@/components/profile/SavedShelf";
+import { getSavedReleases } from "@/lib/db/releases";
 import {
   WidgetGrid,
   RatingsWidget,
@@ -99,11 +101,11 @@ const BANNER_FADE_MASK_Y =
 const BANNER_FADE_MASK_X =
   "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.68) 3%, rgba(0,0,0,0.8) 6%, rgba(0,0,0,0.92) 10%, black 14%, black 86%, rgba(0,0,0,0.92) 90%, rgba(0,0,0,0.8) 94%, rgba(0,0,0,0.68) 97%, rgba(0,0,0,0.55) 100%)";
 
-/** The two profile tabs. Anything else falls back to "reviews". */
-type ProfileTab = "reviews" | "lists" | "posts";
+/** The profile tabs. Anything else falls back to "reviews". */
+type ProfileTab = "reviews" | "lists" | "posts" | "saved";
 
 function resolveTab(raw: string | undefined): ProfileTab {
-  return raw === "lists" || raw === "posts" ? raw : "reviews";
+  return raw === "lists" || raw === "posts" || raw === "saved" ? raw : "reviews";
 }
 
 /* --- Theme → accent hex now lives in lib/profile-theme.ts (one
@@ -242,6 +244,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     featuredRes,
     profileLists,
     supporterSince,
+    savedReleases,
   ] = await Promise.all([
     getUser(),
     getProfileStats(profile.id),
@@ -270,6 +273,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     // "Supporter since …" under the handle (migration 061). Null for
     // everyone who never supported, and before 061 runs.
     getSupporterSince(profile.id),
+    // Saved tab ("Save for later" = release follows) — only when open.
+    activeTab === "saved" ? getSavedReleases(profile.id) : Promise.resolve([]),
   ]);
 
   const isOwnProfile = currentUser?.id === profile.id;
@@ -827,6 +832,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               { key: "reviews", label: t("tabs.reviews") },
               { key: "lists", label: t("tabs.lists") },
               { key: "posts", label: t("tabs.posts") },
+              { key: "saved", label: t("tabs.saved") },
             ] as { key: ProfileTab; label: string }[]
           ).map((t) => (
             <Link
@@ -913,6 +919,26 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 </Link>
               ))}
             </div>
+          ))}
+
+        {/* ----- Saved tab ("Save for later", Luca 2026-10-25) -----
+            Records saved and not rated yet; upcoming ones show their
+            drop date, and a push goes out the moment they drop (062). */}
+        {activeTab === "saved" &&
+          (savedReleases.length === 0 ? (
+            <EmptyState
+              text={isOwnProfile ? t("noSignalOwnSaved") : t("noSignalSaved")}
+              cta={isOwnProfile ? { href: "/releases", label: t("ctaSaved") } : undefined}
+            />
+          ) : (
+            <SavedShelf
+              items={savedReleases}
+              locale={locale}
+              labels={{
+                drops: (date) => t("savedDrops", { date }),
+                outToday: t("savedOutToday"),
+              }}
+            />
           ))}
       </div>
 

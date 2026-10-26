@@ -8,9 +8,10 @@ the rules by the next submission. This file is the repo copy of
 both machines (Windows + MacBook) have it. CLAUDE.md tells Claude to
 run the check below.
 
-**Last checked: 2026-10-24** (against the live guidelines page and
-Apple Developer News, after the 2026-10-16 guidelines update and the
-iPhone Duo launch on 2026-10-23).
+**Last checked: 2026-10-25** (Apple Developer News: nothing new since
+the 2026-10-16 guidelines update except the 2026-10-22 multiseat
+subscriptions note, which doesn't apply — Peak Music sells nothing in
+the app).
 
 ---
 
@@ -45,6 +46,7 @@ big website features, not only to App Store submissions.
 | 2026-10-16 | 3.1.1(a) music-streaming link rules clarified. | No — nothing is sold. | Re-read before any revenue (see the revenue-stream topic). |
 | 2026-10-25 (planning note) | Luca plans **website-only ads + a supporter ("donator") checkmark**; subscriptions later. Re-read 3.1.1, 3.1.1(a), 3.1.3, 3.1.3(b), 2.5.18, 3.2.2(iv) on the live page. | **Yes, if any of it shows in the app** (the app loads the live site). Ads in-app → 2.5.18 (report-an-ad, targeting info) + privacy labels; a support link in-app → 3.1.1(a)/3.1.3 steering outside the US storefront; selling anything in-app → IAP + EU trader. | Gate every ad and support link with `isNativeApp()` so the shell shows none. A web-bought checkmark *displayed* in the app is a 3.1.3(b) grey zone: show it with no price/link/CTA; if Apple objects, hide it in the app (website-only fix). Full notes: `.claude/skills/web-monetization/references/apple-and-eu.md`. |
 | 2026-10-25 (built, af1237b) | Supporter checkmark shipped: Stripe Checkout on the website, any amount → silver 'supporter' role forever; ads held. | Only via display: the silver check + "Supporter since <year>" show in the app (recognition, no price/link/CTA). | /support in the app = the wall only (server checks the PMRBuild UA, client `useWebOnly`); footer link web only. If a reviewer flags the badge under 3.1.3(b), hide `supporter` badges when `isNativeApp()` — a website-only fix. Mention nothing about support in reviewer notes or screenshots. |
+| 2026-10-25 (built, supporter links) | Support links added to the home end-of-feed module, About and Settings; "Save for later" release-day push (062); Peak Music Rewind (/rewind) with Instagram/TikTok share. | Support links: no — all three use `useWebOnly`, so the app shows none (3.1.1/3.1.3). Release-day push: 4.5.4 says pushes must not be marketing unless opted in — this one only fires for a record the person saved themselves and is about that record, so it's a requested alert, not marketing. Rewind: no payments, no new data collection. | Nothing to change. Reviewer notes for 1.3 can mention "a push when a record you saved comes out". |
 | 2026-10-13 | New Apple Developer Program License Agreement. | Yes. | Luca must accept it at developer.apple.com/account or uploads are blocked. |
 | 2026-10-05 | **iPhone Duo** (foldable, launched 2026-10-23). Screenshots for it earn a "Made for iPhone Duo" badge now; **from April 2027 every submission must include Duo screenshots.** | Yes. | 1.3 = the Duo build (see ROADMAP). Screenshot sizes: outer 1398×2034, inner 2007×2853. |
 | 2026-09-09 | **From April 2027 apps must be built with the iOS 27 SDK.** | Already fine (1.2 was built with Xcode 27). | Build 1.3 with Xcode 27.1+. |

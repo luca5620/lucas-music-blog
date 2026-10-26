@@ -457,7 +457,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  /* Brand + badge sit at the TOP, like a real game-case spine
+     (2026-10-25). The spine is as tall as the whole page, so when the
+     brand was centred in it, "Peak Music" sat halfway down a long page
+     and the first screen only ever showed an empty black bar. */
+  justify-content: flex-start;
+  gap: 14px;
   padding: 16px 0;
   border-right: 1px solid #1c1c20;
   border-radius: 10px 0 0 10px;
@@ -471,7 +476,8 @@ body {
   font-size: 2.6rem;
   color: #c4c4c8;
   user-select: none;
-  flex: 1;
+  flex: none;
+  height: min(62vh, 520px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -486,7 +492,6 @@ body {
   flex-direction: column;
   align-items: center;
   width: 36px;
-  margin-top: 8px;
   user-select: none;
   background: #fff;
   border-radius: 2px;
@@ -7102,3 +7107,146 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
   .share-sheet-backdrop,
   .share-swap { animation: none; }
 }
+
+/* ============================================================
+   PEAK MUSIC REWIND (/rewind, 2026-10-25) — components/rewind.
+   A dark CRT screen with clean album typography. The channel
+   change is deliberately calm (Luca: "cleaner and professional,
+   not crazy and fast"): the old screen dims and settles out, a
+   soft band of light scans down the glass, the new one fades up.
+   Corners hold only: progress bars, the close button, the Peak
+   Music mark.
+   ============================================================ */
+.rw-wrap { display: grid; justify-items: center; gap: 14px; }
+.rw-screen {
+  --rw-osd: #bff3ff;
+  position: relative; isolation: isolate; overflow: hidden;
+  height: min(78dvh, 800px); aspect-ratio: 9 / 16; max-width: 100%;
+  border-radius: 28px; background: #050708; color: #fff;
+  box-shadow: 0 0 0 1px rgba(191,243,255,.14), 0 30px 80px -24px #000;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+.rw-screen:focus-visible { outline: 2px solid var(--rw-osd); outline-offset: 3px; }
+.rw-screen::after {
+  content: ""; position: absolute; inset: 0; z-index: 20; pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.025) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% 45%, transparent 60%, rgba(0,0,0,.6) 100%);
+}
+.rw-slide {
+  position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px;
+  padding: 52px 22px 16px; visibility: hidden; opacity: 0;
+}
+.rw-slide.is-on { visibility: visible; opacity: 1; }
+.rw-slide.is-out { visibility: visible; animation: rw-out .28s ease-in forwards; }
+.rw-slide.is-in { animation: rw-in .46s cubic-bezier(.2,.7,.2,1) .1s both; }
+@keyframes rw-out {
+  from { opacity: 1; transform: none; filter: none; }
+  to   { opacity: 0; transform: scale(.985); filter: brightness(1.35); }
+}
+@keyframes rw-in {
+  from { opacity: 0; transform: translateY(10px); filter: brightness(1.3); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+.rw-scan {
+  position: absolute; left: 0; right: 0; top: -40%; height: 40%; z-index: 15; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(191,243,255,.07) 50%, transparent);
+  animation: rw-scan .62s ease-in-out forwards;
+}
+@keyframes rw-scan { from { top: -40%; } to { top: 100%; } }
+
+/* corners */
+.rw-bars { position: absolute; top: 14px; left: 18px; right: 18px; z-index: 12; display: flex; gap: 4px; }
+.rw-bars i { flex: 1; height: 2.5px; border-radius: 2px; background: var(--rw-osd); opacity: .25; transition: opacity .3s; }
+.rw-bars i.is-done { opacity: .9; }
+.rw-close {
+  position: absolute; top: 24px; right: 12px; z-index: 12; width: 32px; height: 32px;
+  display: grid; place-items: center; border-radius: 50%; color: rgba(255,255,255,.75); font-size: 15px;
+}
+.rw-close:hover { color: #fff; background: rgba(255,255,255,.08); }
+.rw-foot { margin-top: auto; display: flex; justify-content: flex-end; padding-top: 6px; }
+
+/* type */
+.rw-eyebrow { font-family: var(--font-pixel); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--rw-osd); opacity: .85; }
+.rw-num { font-weight: 900; font-size: 116px; letter-spacing: -.06em; line-height: .88; font-variant-numeric: tabular-nums; text-shadow: 0 0 22px rgba(191,243,255,.3); }
+.rw-hed { margin: 0; font-weight: 800; font-size: 28px; letter-spacing: -.035em; line-height: 1.05; text-wrap: balance; }
+.rw-hed-sm { font-size: 23px; }
+.rw-hed-lg { font-size: 38px; }
+.rw-lede { margin: 0; font-size: 14px; line-height: 1.45; color: #c9d3dc; }
+.rw-lede b { color: #fff; }
+.rw-hint { margin: 0; text-align: center; font-size: 12px; color: rgba(255,255,255,.5); }
+.rw-score { font-weight: 800; color: var(--rw-osd); font-variant-numeric: tabular-nums; }
+.rw-cold .rw-score { color: #ff6b6b; }
+.rw-cold img { filter: grayscale(1) contrast(1.1); }
+
+/* layouts */
+.rw-center { margin: auto 0; display: grid; gap: 18px; }
+.rw-bottom { margin-top: auto; display: grid; gap: 10px; }
+.rw-top { margin: auto 0; display: grid; gap: 12px; align-content: start; min-height: 0; }
+.rw-cov { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; background: #15181d; box-shadow: 0 0 0 1px rgba(191,243,255,.16), 0 0 22px rgba(191,243,255,.1); }
+.rw-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.rw-grid .rw-cov { border-radius: 0; box-shadow: none; }
+.rw-grid-gap { gap: 8px; margin-top: 6px; }
+.rw-grid-gap .rw-cov { border-radius: 4px; }
+.rw-title { display: grid; gap: 10px; justify-items: center; text-align: center; }
+.rw-title b { font-size: 28px; font-weight: 800; letter-spacing: -.035em; line-height: 1; }
+.rw-title small { font-size: 12.5px; color: #9fb0bd; }
+.rw-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rw-single { display: grid; justify-items: start; }
+.rw-single figure { width: 72%; }
+.rw-pair figure, .rw-single figure { margin: 0; display: grid; gap: 7px; min-width: 0; }
+.rw-pair figcaption, .rw-single figcaption { font-size: 12.5px; line-height: 1.3; color: #9fb0bd; }
+.rw-pair figcaption b, .rw-single figcaption b { display: block; font-size: 13.5px; color: #fff; }
+.rw-tracks { list-style: none; margin: 0; padding: 0; display: grid; }
+.rw-tracks li { display: grid; grid-template-columns: 16px 30px 1fr auto; gap: 9px; align-items: center; padding: 5px 0; font-size: 13px; border-top: 1px solid rgba(191,243,255,.12); }
+.rw-tracks .rw-cov { width: 30px; border-radius: 3px; box-shadow: none; }
+.rw-n { font-family: var(--font-pixel); font-size: 11px; color: var(--rw-osd); opacity: .8; }
+.rw-t { min-width: 0; }
+.rw-t b, .rw-t span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rw-t b { font-weight: 650; }
+.rw-t span { font-size: 11.5px; color: #9fb0bd; }
+.rw-months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; height: 58px; margin-top: 6px; }
+.rw-months span { display: grid; grid-template-rows: 1fr auto; gap: 4px; justify-items: center; min-width: 0; }
+.rw-months i { align-self: end; width: 100%; border-radius: 2px; background: rgba(191,243,255,.22); }
+.rw-months .is-top i { background: var(--rw-osd); box-shadow: 0 0 8px rgba(191,243,255,.45); }
+.rw-months small { font-size: 9.5px; color: rgba(255,255,255,.45); }
+.rw-cal { display: grid; gap: 3px; margin: 6px 0 4px; }
+.rw-cal i { aspect-ratio: 1; border-radius: 2px; background: rgba(191,243,255,.1); }
+.rw-cal i.is-on { background: var(--rw-osd); }
+.rw-end-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* the share-card credit line, in HTML (drawCredit in render.ts).
+   The check sits AFTER the handle with a real gap (the mockup's
+   overlapped the last letter). */
+.rw-credit { display: inline-flex; align-items: center; white-space: nowrap; max-width: 100%; }
+.rw-who { display: inline-flex; align-items: center; gap: 7px; min-width: 0; font-size: 12.5px; font-weight: 600; color: #fff; }
+.rw-who > span:not(.rw-who-blank) { overflow: hidden; text-overflow: ellipsis; }
+.rw-who img, .rw-who-blank { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; background: #3a3a44; flex: none; }
+.rw-dot { width: 18px; display: grid; place-items: center; flex: none; }
+.rw-dot::before { content: ""; width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.35); }
+.rw-brand { display: inline-flex; align-items: center; gap: 6px; flex: none; font-family: "PlayStation", var(--font-inter), sans-serif; font-size: 13.5px; line-height: 1; color: rgba(255,255,255,.92); }
+.rw-brand img { width: 21px; height: 21px; object-fit: contain; }
+.rw-foot .rw-brand { font-size: 11.5px; color: rgba(255,255,255,.6); }
+.rw-foot .rw-brand img { width: 17px; height: 17px; opacity: .85; }
+
+/* under the screen */
+.rw-ctrls { display: flex; align-items: center; gap: 12px; }
+.rw-ctrls button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14); font-size: 18px; line-height: 1; }
+.rw-ctrls button:disabled { opacity: .3; }
+.rw-ctrls span { min-width: 3.5em; text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; opacity: .7; }
+.rw-preview-note { margin: 0; font-size: 12px; opacity: .6; text-align: center; }
+.rw-notice { max-width: 420px; display: grid; gap: 14px; justify-items: center; text-align: center; }
+.rw-notice h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -.03em; }
+.rw-notice p { margin: 0; font-size: 14px; line-height: 1.55; opacity: .75; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rw-slide.is-out, .rw-slide.is-in, .rw-scan { animation: none; }
+  .rw-slide.is-out { visibility: hidden; }
+}
+/* Low detail (on by default): the same calm change, minus the
+   brightness filter (filters are the costly part on old phones). */
+@keyframes rw-out-lite { to { opacity: 0; transform: scale(.985); } }
+@keyframes rw-in-lite { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.low-detail .rw-slide.is-out { animation-name: rw-out-lite; }
+.low-detail .rw-slide.is-in { animation-name: rw-in-lite; }

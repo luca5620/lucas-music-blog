@@ -152,6 +152,78 @@ export async function unfollowRelease(
     .eq("release_id", releaseId);
 }
 
+/** One record on someone's Saved tab ("Save for later" = a release follow). */
+export interface SavedRelease {
+  id: string;
+  slug: string;
+  title: string;
+  cover_image: string | null;
+  release_date: string | null;
+  release_type: string;
+  artistName: string | null;
+}
+
+/**
+ * The Saved tab (Luca 2026-10-25): records someone saved for later and
+ * hasn't rated yet. Still-coming records first (soonest drop on top),
+ * then everything else, most recently saved first. Rating a record
+ * takes it off the shelf on its own — no "remove" step.
+ */
+export async function getSavedReleases(
+  userId: string,
+  limit = 60
+): Promise<SavedRelease[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("release_follows")
+    .select(
+      "created_at, releases(id, slug, title, cover_image, release_date, release_type, artists!releases_primary_artist_id_fkey(name))"
+    )
+    .eq("follower_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error || !data) return [];
+
+  type Row = {
+    created_at: string;
+    releases:
+      | (Omit<SavedRelease, "artistName"> & {
+          artists: { name: string } | { name: string }[] | null;
+        })
+      | null;
+  };
+  const saved = (data as unknown as Row[])
+    .map((r) => r.releases)
+    .filter((r): r is NonNullable<Row["releases"]> => !!r)
+    .map(({ artists, ...r }) => ({
+      ...r,
+      artistName: (Array.isArray(artists) ? artists[0]?.name : artists?.name) ?? null,
+    }));
+  if (saved.length === 0) return [];
+
+  // Already rated → off the shelf.
+  const { data: rated } = await supabase
+    .from("reviews")
+    .select("release_id")
+    .eq("user_id", userId)
+    .in(
+      "release_id",
+      saved.map((r) => r.id)
+    );
+  const ratedIds = new Set(
+    ((rated ?? []) as { release_id: string | null }[]).map((r) => r.release_id)
+  );
+  const shelf = saved.filter((r) => !ratedIds.has(r.id));
+
+  // Still coming (release day today or later, Eastern) → top, soonest first.
+  const today = todayEastern();
+  const coming = shelf
+    .filter((r) => r.release_date && r.release_date.slice(0, 10) >= today)
+    .sort((a, b) => a.release_date!.localeCompare(b.release_date!));
+  const rest = shelf.filter((r) => !coming.includes(r));
+  return [...coming, ...rest];
+}
+
 export async function isFollowingRelease(
   userId: string,
   releaseId: string

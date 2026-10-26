@@ -393,3 +393,91 @@ export function streakAlert(
     href: `/profile/${encodeURIComponent(s.username)}`,
   };
 }
+
+/* ---------- Saved record is out (push-recap, type DROP) ---------- */
+
+// Migration 062 sends these at midnight Eastern (the drop moment) to
+// people who saved a record that comes out today and haven't rated it.
+// One push per person per day: the first record they saved is named,
+// the rest are counted. Plain and calm, like the streak saver.
+
+/** What the 062 SQL job sends per person (see send_saved_drop_pushes). */
+export interface SavedDrop {
+  username: string;
+  title: string;
+  artist: string;
+  slug: string;
+  more: number;
+}
+
+const DROP_COPY: Record<
+  Locale,
+  { title: string; titleMore: string; body: string; bodyMore: string }
+> = {
+  en: {
+    title: "Out now: {title}",
+    titleMore: "Out now: {title} + {n} more",
+    body: "{artist} · you saved it. Be one of the first to rate it.",
+    bodyMore: "Records you saved just came out. Be one of the first to rate them.",
+  },
+  es: {
+    title: "Ya disponible: {title}",
+    titleMore: "Ya disponible: {title} + {n} más",
+    body: "{artist} · lo guardaste. Sé de los primeros en calificarlo.",
+    bodyMore: "Salieron discos que guardaste. Sé de los primeros en calificarlos.",
+  },
+  fr: {
+    title: "Disponible : {title}",
+    titleMore: "Disponible : {title} + {n} autres",
+    body: "{artist} · tu l'as gardé. Sois parmi les premiers à le noter.",
+    bodyMore: "Des disques que tu as gardés viennent de sortir. Sois parmi les premiers à les noter.",
+  },
+  pt: {
+    title: "Saiu: {title}",
+    titleMore: "Saiu: {title} + {n}",
+    body: "{artist} · você salvou. Seja um dos primeiros a avaliar.",
+    bodyMore: "Discos que você salvou acabaram de sair. Seja um dos primeiros a avaliar.",
+  },
+  nl: {
+    title: "Nu uit: {title}",
+    titleMore: "Nu uit: {title} + {n} meer",
+    body: "{artist} · je hebt hem bewaard. Wees een van de eersten die hem beoordeelt.",
+    bodyMore: "Platen die je bewaarde zijn net uit. Wees een van de eersten die ze beoordeelt.",
+  },
+  de: {
+    title: "Jetzt draußen: {title}",
+    titleMore: "Jetzt draußen: {title} + {n} weitere",
+    body: "{artist} · du hast es gespeichert. Bewerte es als einer der Ersten.",
+    bodyMore: "Platten, die du gespeichert hast, sind gerade erschienen. Bewerte sie als einer der Ersten.",
+  },
+};
+
+/** The saved-record-is-out push for one person in one language. */
+export function dropAlert(
+  locale: Locale,
+  d: SavedDrop
+): { title: string; body: string; href: string } {
+  const copy = DROP_COPY[locale];
+  const title = shortTitle(d.title);
+  if (d.more > 0) {
+    return {
+      title: fill(copy.titleMore, { title, n: String(d.more) }),
+      body: copy.bodyMore,
+      // Several records → their Saved tab, where all of them are.
+      href: `/profile/${encodeURIComponent(d.username)}?tab=saved`,
+    };
+  }
+  return {
+    title: fill(copy.title, { title }),
+    // No artist on file → drop the "artist · " part rather than show a
+    // lone dot, and capitalise what's left.
+    body: d.artist
+      ? fill(copy.body, { artist: d.artist })
+      : capitalise(copy.body.replace("{artist} · ", "")),
+    href: `/releases/${encodeURIComponent(d.slug)}`,
+  };
+}
+
+function capitalise(line: string): string {
+  return line.charAt(0).toUpperCase() + line.slice(1);
+}

@@ -965,3 +965,97 @@ export function drawMonth(ctx: CanvasRenderingContext2D, a: CardAssets, d: Month
     ctx.fillText(fit(ctx, v.title, boxW - 24), bx + 12, y + 57);
   });
 }
+
+/* ------------------------------------------------------------------ */
+/* 4 · Peak Music Rewind (the year, still or a 6-second clip)          */
+/* ------------------------------------------------------------------ */
+
+// The last screen of /rewind as a 9:16 card (Luca 2026-10-25). Same
+// safe zones as the month card: SC_X margins both sides, nothing in
+// the top-left corner, credit line under the heading, everything done
+// by about y 515. As a clip the covers fade in one by one (calm, no
+// flashes), then it holds; the still is simply the last frame.
+
+export interface RewindCardData {
+  handle: string;
+  role?: string | null;
+  /** Up to 9 covers, best first. */
+  covers: (HTMLImageElement | null)[];
+  /** Three [value, label] pairs, e.g. ["26", "records"]. */
+  stats: [string, string][];
+  /** "Top record: House Of Balloons · 10", or null. */
+  topLine: string | null;
+  labels: {
+    eyebrow: string; // "PEAK MUSIC REWIND"
+    heading: string; // "My 2026 on\nPeak Music"
+  };
+}
+
+export const REWIND_CLIP = 6;
+
+export function drawRewind(ctx: CanvasRenderingContext2D, a: CardAssets, d: RewindCardData, t = REWIND_CLIP) {
+  ctx.fillStyle = "#050708";
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+  ctx.save();
+  ctx.translate(180, 300);
+  glowBlob(ctx, "191, 243, 255", 0, 0, 260, 0.07);
+  ctx.restore();
+
+  const L = SC_X;
+  const R = SC_R;
+  const W = R - L;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.font = font(a, 11, 600);
+  ctx.fillStyle = "rgba(191,243,255,0.75)";
+  ctx.fillText(d.labels.eyebrow, L, 72);
+  ctx.font = font(a, 24, 800);
+  ctx.fillStyle = "#fff";
+  d.labels.heading.split("\n").forEach((line, i) => ctx.fillText(fit(ctx, line, W), L, 100 + i * 27));
+
+  drawCredit(ctx, a, d.handle, L, 154, "left", W, d.role ?? null);
+
+  // 3 × 3 covers, edge to edge (an empty slot = a dark sleeve).
+  const cell = W / 3;
+  const top = 176;
+  for (let i = 0; i < 9; i++) {
+    const k = easeOut((t - 0.15 - i * 0.12) / 0.5);
+    if (k <= 0) continue;
+    ctx.save();
+    ctx.globalAlpha = k;
+    drawCover(ctx, d.covers[i] ?? null, L + (i % 3) * cell, top + Math.floor(i / 3) * cell + (1 - k) * 4, cell, cell, 0);
+    ctx.restore();
+  }
+  ctx.strokeStyle = "rgba(191,243,255,0.18)";
+  ctx.lineWidth = 0.75;
+  ctx.strokeRect(L, top, W, W);
+
+  // stats + the top record fade in once the grid is down
+  const s = easeOut((t - 1.4) / 0.6);
+  ctx.save();
+  ctx.globalAlpha = s;
+  let sx = L;
+  const sy = top + W + 30;
+  d.stats.forEach(([v, k]) => {
+    ctx.font = font(a, 20, 700);
+    ctx.fillStyle = "#fff";
+    ctx.fillText(v, sx, sy);
+    const vw = ctx.measureText(v).width;
+    ctx.font = font(a, 11, 400);
+    ctx.fillStyle = "rgba(255,255,255,0.45)";
+    ctx.fillText(k, sx, sy + 15);
+    sx += Math.max(vw, ctx.measureText(k).width) + 18;
+  });
+  if (d.topLine) {
+    ctx.fillStyle = "rgba(255,255,255,0.09)";
+    ctx.fillRect(L, sy + 26, W, 0.5);
+    ctx.font = font(a, 12, 500);
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText(fit(ctx, d.topLine, W), L, sy + 44);
+  }
+  ctx.restore();
+
+  // faint scanlines: the CRT, quietly
+  ctx.fillStyle = "rgba(255,255,255,0.025)";
+  for (let y = 0; y < CARD_H; y += 3) ctx.fillRect(0, y, CARD_W, 1);
+}

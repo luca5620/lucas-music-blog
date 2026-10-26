@@ -15,6 +15,12 @@
 //
 //   { "type": "STREAK", "streaks": [ { user_id, username, streak }, … ] }
 //
+// And since migration 062, the "a record you saved is out" push
+// (midnight Eastern, the drop moment):
+//
+//   { "type": "DROP", "drops": [ { user_id, username, title, artist,
+//     slug, more }, … ] }
+//
 // Same devices, same APNs path, same secret — just different words —
 // so it lives here instead of in a third function to deploy.
 //
@@ -38,10 +44,12 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { hasPushSecret, sendApns } from "../_shared/apns.ts";
 import {
   asLocale,
+  dropAlert,
   recapAlert,
   streakAlert,
   type Locale,
   type RecapStats,
+  type SavedDrop,
   type StreakSave,
 } from "../_shared/push-copy.ts";
 
@@ -50,6 +58,10 @@ interface RecapRow extends RecapStats {
 }
 
 interface StreakRow extends StreakSave {
+  user_id: string;
+}
+
+interface DropRow extends SavedDrop {
   user_id: string;
 }
 
@@ -85,6 +97,19 @@ function isStreakRow(value: unknown): value is StreakRow {
   );
 }
 
+function isDropRow(value: unknown): value is DropRow {
+  const r = value as Partial<DropRow> | null;
+  return (
+    !!r &&
+    typeof r.user_id === "string" &&
+    typeof r.username === "string" &&
+    typeof r.title === "string" &&
+    typeof r.artist === "string" &&
+    typeof r.slug === "string" &&
+    typeof r.more === "number"
+  );
+}
+
 /** One message per person; each device gets it in its own language. */
 interface Outgoing {
   user_id: string;
@@ -111,6 +136,11 @@ Deno.serve(async (req) => {
     outgoing = (payload.streaks as unknown[]).filter(isStreakRow).map((s) => ({
       user_id: s.user_id,
       alertFor: (locale) => streakAlert(locale, s),
+    }));
+  } else if (payload?.type === "DROP" && Array.isArray(payload.drops)) {
+    outgoing = (payload.drops as unknown[]).filter(isDropRow).map((d) => ({
+      user_id: d.user_id,
+      alertFor: (locale) => dropAlert(locale, d),
     }));
   } else {
     return new Response("ignored", { status: 200 });

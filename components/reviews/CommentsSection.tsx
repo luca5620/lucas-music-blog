@@ -176,8 +176,10 @@ function CommentForm({
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder={placeholder}
-        rows={3}
-        className="w-full px-4 py-3 rounded-lg bg-bg-elevated border border-border-subtle text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/25 transition-all resize-none"
+        rows={2}
+        // Less boxy (Luca 2026-10-25): a soft filled field, no hard
+        // outline until you're typing in it.
+        className="w-full px-4 py-3 rounded-2xl bg-white/[0.045] border border-transparent text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:bg-white/[0.07] focus:border-accent-primary/40 transition-all resize-none"
       />
       {/* GIF slot — the "+ GIF" button, the picker, or the attached
           GIF. GifAttach renders nothing without a KLIPY key. */}
@@ -737,20 +739,18 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
   return (
     // Sheet variant sheds the panel chrome — the Switchboard sheet
     // provides its own surface, header and WRITE affordance.
-    <div className={sheet ? "space-y-5" : "panel-xbox p-4 sm:p-6 space-y-5"}>
+    // Default variant is an OPEN section now, not a panel (Luca
+    // 2026-10-25, "less locked into modules"): the review above sits
+    // in its own panel, so the conversation flows on underneath it.
+    <div className={sheet ? "space-y-5" : "space-y-5 pt-2"}>
       {/* Header — default only (the sheet has "CALLERS ON THE LINE") */}
       {!sheet && (
-        <>
-          <div className="flex items-center gap-2">
-            <span className="glow-orb" />
-            <span className="label-xbox">{t("title")}</span>
-            <span className="text-xs text-text-muted ml-1">
-              ({loading ? "--" : commentCount})
-            </span>
-          </div>
-
-          <div className="divider-glow" />
-        </>
+        // Same section heading as the review page's other sections
+        // (.review-h): dot, spaced caps, hairline. No boxed label.
+        <h2 className="review-h">
+          <span>{t("title")}</span>
+          <small>{loading ? "--" : commentCount}</small>
+        </h2>
       )}
 
       {/* New Comment Form or Sign In Prompt — default only. The
@@ -763,7 +763,7 @@ const CommentsSection = forwardRef<CommentsSectionHandle, CommentsSectionProps>(
           allowGif
         />
       ) : (
-        <div className="card-y2k p-4 text-center">
+        <div>
           <p className="text-sm text-text-muted">
             {t.rich("toComment", {
               a: (chunks) => (

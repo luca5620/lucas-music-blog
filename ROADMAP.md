@@ -519,7 +519,7 @@ uses the second option yet).
 ## ⏳ In progress
 
 ### 🧹 Duplicates merged + review boxes back (2026-10-26, Windows)
-- **⚠️ Migration 066 NOT RUN YET** — `066-merge-duplicates.sql`, paste + Run, nothing
+- Migration 066 RUN ✓ 2026-10-26 (14 redirects, 308s verified live) — `066-merge-duplicates.sql`, paste + Run, nothing
   to fill in, all-or-nothing. Merges 4 duplicate records (Morning Glory deluxe,
   2× Beauty Behind The Madness, Dark Side 50th, Fragile Super Deluxe → standard;
   7 reviews move, nobody had reviewed both) + 10 duplicate artists (Genius copy
@@ -528,7 +528,7 @@ uses the second option yet).
   addresses to the kept page (308). catalog_import_release now matches artists by
   name across sources and Spotify records by artist + type + release_title_key()
   (edition tags stripped; "(Original)"/"(Version 2)" kept).
-- **⚠️ Migration 067 NOT RUN YET** (after 066) — `067-genius-to-spotify.sql`: 5 released songs that came in
+- Migration 067 RUN ✓ 2026-10-26 (UP/Mood/Once now source=spotify) — `067-genius-to-spotify.sql`: 5 released songs that came in
   through Genius (KARINA UP, 24kGoldn Mood, Yes Gates of Delirium, Pearl Jam Once, GONE.Fludd BOYS DON'T CRY)
   get their Spotify track id in place → player + previews. Future Genius picks check Spotify first
   (lib/catalog.ts findSpotifyTwin + lib/catalog-rank isSpotifyTwin).

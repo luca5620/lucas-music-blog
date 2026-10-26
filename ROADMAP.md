@@ -518,6 +518,26 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 📼 Save for later + Rewind + less boxy (2026-10-25 night, Windows) — 67d6b9d
+- **⚠️ MIGRATION 062 NOT RUN YET** — `supabase/migrations/062-saved-release-drop-push.sql`
+  in the SQL Editor (nothing to paste in: it copies the push secret from the
+  060 job). push-recap with the DROP message is already deployed ✓.
+- **Save for later:** release page button = "Save for later" / "Saved ✓"
+  (still release_follows; counts say "Saved by N"). Profile **Saved** tab
+  (`?tab=saved`, components/profile/SavedShelf.tsx): saved + not rated,
+  upcoming first with "Drops <date>". 062 = one push at 12:05am Eastern on
+  release day ("Out now: <title>"), max one per person per day.
+- **Peak Music Rewind LIVE at /rewind** (lib/rewind.ts, components/rewind/).
+  Open Dec 1 – Jan 15; owner/admin/tester roles can open it now (preview
+  note under the screen). Calm transition, corners = bars / ✕ / brand only,
+  check no longer touches the @. Share = drawRewind card (image, or 6s clip
+  to Instagram/TikTok). Not linked anywhere yet — before Dec 1 add an entry
+  point (home module / profile / push on Dec 1).
+- **Less boxy:** review-page comments are an open section (no panel, soft
+  field, .review-h heading). Website TV spine: brand + R badge at the TOP
+  (it used to sit halfway down the page = empty black bar on first screen).
+- Rules check logged 2026-10-25 (nothing new from Apple since 10-22).
+
 ### 💸 Supporters + streak push + About (2026-10-25 late, Windows)
 - **About story rewritten (99418cd)** in Luca's voice, 6 languages: "made by
   one person: me", best platform I could make, leaks/what others leave out,

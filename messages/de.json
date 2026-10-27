@@ -1869,7 +1869,12 @@
       "more": "+ {n} weitere",
       "rankedEyebrow": "Ranking auf Peak Music",
       "rankedTitle": "{name}: Alben im Ranking",
-      "rankedCount": "{n, plural, one {# Bewertung} other {# Bewertungen}}"
+      "rankedCount": "{n, plural, one {# Bewertung} other {# Bewertungen}}",
+      "unreleasedEyebrow": "Unveröffentlicht",
+      "unreleasedTitle": "Unveröffentlichte Songs von {name}",
+      "unreleasedTag": "UNVERÖFFENTLICHT",
+      "unreleasedNoRatings": "Noch keine Bewertungen",
+      "unreleasedAdd": "Unveröffentlichten Song von {name} hinzufügen"
     },
     "card": {
       "followers": "{n, plural, one {# Follower} other {# Follower}}"

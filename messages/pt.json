@@ -1869,7 +1869,12 @@
       "more": "+ mais {n}",
       "rankedEyebrow": "Ranking no Peak Music",
       "rankedTitle": "Álbuns de {name} em ranking",
-      "rankedCount": "{n, plural, one {# avaliação} other {# avaliações}}"
+      "rankedCount": "{n, plural, one {# avaliação} other {# avaliações}}",
+      "unreleasedEyebrow": "Inéditas",
+      "unreleasedTitle": "Músicas inéditas de {name}",
+      "unreleasedTag": "INÉDITA",
+      "unreleasedNoRatings": "Ainda sem avaliações",
+      "unreleasedAdd": "Adicionar uma música inédita de {name}"
     },
     "card": {
       "followers": "{n, plural, one {# seguidor} other {# seguidores}}"

@@ -1869,7 +1869,12 @@
       "more": "+ {n} meer",
       "rankedEyebrow": "Gerangschikt op Peak Music",
       "rankedTitle": "Albums van {name} gerangschikt",
-      "rankedCount": "{n, plural, one {# beoordeling} other {# beoordelingen}}"
+      "rankedCount": "{n, plural, one {# beoordeling} other {# beoordelingen}}",
+      "unreleasedEyebrow": "Onuitgebracht",
+      "unreleasedTitle": "Onuitgebrachte nummers van {name}",
+      "unreleasedTag": "ONUITGEBRACHT",
+      "unreleasedNoRatings": "Nog geen beoordelingen",
+      "unreleasedAdd": "Voeg een onuitgebracht nummer van {name} toe"
     },
     "card": {
       "followers": "{n, plural, one {# volger} other {# volgers}}"

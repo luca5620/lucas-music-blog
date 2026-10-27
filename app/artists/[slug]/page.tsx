@@ -100,12 +100,32 @@ export default async function ArtistPage({ params }: PageProps) {
   const ranked = releaseStats
     .filter(
       ({ release, stats: rs }) =>
-        rs.avg_rating !== null && ["album", "EP", "mixtape"].includes(release.release_type)
+        !release.is_unreleased &&
+        rs.avg_rating !== null &&
+        ["album", "EP", "mixtape"].includes(release.release_type)
     )
     .sort(
       (a, b) =>
         (b.stats.avg_rating ?? 0) - (a.stats.avg_rating ?? 0) || b.stats.review_count - a.stats.review_count
     );
+
+  /* "<Artist> unreleased songs" (Luca 2026-10-27, option C of the
+     mockups: plain rows like "albums ranked" + an UNRELEASED tag). The
+     Genius-only records — leaks, loosies, original versions — get their
+     own section instead of hiding in the discography grid. That's the
+     wedge (nobody else rates unreleased music) and it's what people
+     search for. Metadata and ratings only, never file links. Rated ones
+     first (best average first), then the rest newest-added first.
+     The discography below is everything else. */
+  const unreleased = releaseStats
+    .filter(({ release }) => release.is_unreleased)
+    .sort(
+      (a, b) =>
+        (b.stats.avg_rating ?? -1) - (a.stats.avg_rating ?? -1) ||
+        b.stats.review_count - a.stats.review_count ||
+        b.release.created_at.localeCompare(a.release.created_at)
+    );
+  const discography = releaseStats.filter(({ release }) => !release.is_unreleased);
 
   const accentColor = "#1e90ff";
   const initial = artist.name[0]?.toUpperCase() ?? "?";
@@ -317,7 +337,63 @@ export default async function ArtistPage({ params }: PageProps) {
         </section>
       )}
 
+      {/* ========== UNRELEASED ==========
+          Same open rows as the ranking above, no rank number, an amber
+          UNRELEASED tag under the title (the amber family every
+          unreleased badge on the site uses). Only when the artist has
+          one — most have one or none, so no empty section. The add
+          link opens search with the artist's name typed in: Genius
+          results there create the page in one tap. */}
+      {unreleased.length > 0 && (
+        <section className="px-4 sm:px-8 space-y-3" aria-labelledby="unreleased-h">
+          <div className="artist-ranked-head">
+            <span className="artist-ranked-eyebrow artist-unreleased-eyebrow">{t("unreleasedEyebrow")}</span>
+            <h2 id="unreleased-h">{t("unreleasedTitle", { name: artist.name })}</h2>
+          </div>
+          <ul className="artist-ranked">
+            {unreleased.map(({ release, stats: rs }) => (
+              <li key={release.id}>
+                <Link href={`/releases/${release.slug}`} className="artist-ranked-row artist-unreleased-row group">
+                  {release.cover_image ? (
+                    <img src={release.cover_image} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <span className="artist-ranked-blank" />
+                  )}
+                  <span className="artist-ranked-text">
+                    <b>{release.title}</b>
+                    <span className="artist-unreleased-tag">{t("unreleasedTag")}</span>
+                  </span>
+                  <span className="artist-ranked-score">
+                    {rs.avg_rating !== null ? (
+                      <>
+                        <b style={{ color: getRatingHex(rs.avg_rating) }}>{formatRating(rs.avg_rating)}</b>
+                        <small>{t("rankedCount", { n: rs.review_count })}</small>
+                      </>
+                    ) : (
+                      <>
+                        <b className="text-text-muted">—</b>
+                        <small>{t("unreleasedNoRatings")}</small>
+                      </>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href={`/search?q=${encodeURIComponent(artist.name)}`}
+            className="inline-flex items-center gap-1.5 text-sm text-accent-glow hover:text-text-primary transition-colors"
+          >
+            <span aria-hidden="true">+</span>
+            {t("unreleasedAdd", { name: artist.name })}
+          </Link>
+        </section>
+      )}
+
       {/* ========== RELEASES ========== */}
+      {/* Hidden when the artist only has unreleased songs (the section
+          above already shows them — no "No releases yet" under it). */}
+      {(discography.length > 0 || unreleased.length === 0) && (
       <div className="px-4 sm:px-8 space-y-4">
         <div className="flex items-center gap-3">
           <span className="label-xbox">{t("releases")}</span>
@@ -338,11 +414,11 @@ export default async function ArtistPage({ params }: PageProps) {
               border: `1px solid ${accentColor}30`,
             }}
           >
-            {t("releaseCount", { n: releases.length })}
+            {t("releaseCount", { n: discography.length })}
           </span>
         </div>
 
-        {releaseStats.length === 0 ? (
+        {discography.length === 0 ? (
           <div className="panel-xbox p-8 text-center">
             <p className="font-[family-name:var(--font-vt323)] text-lg text-[#5a5a60]">
               {t("noReleases")}
@@ -353,7 +429,7 @@ export default async function ArtistPage({ params }: PageProps) {
           // grid can hold more per row.
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 sm:gap-x-5">
 
-            {releaseStats.map(({ release, stats: rs }) => (
+            {discography.map(({ release, stats: rs }) => (
               <ReleaseCard
                 key={release.id}
                 release={release}
@@ -364,6 +440,7 @@ export default async function ArtistPage({ params }: PageProps) {
           </div>
         )}
       </div>
+      )}
 
       {/* ========== FOLLOWERS ========== */}
       {followers.length > 0 && (

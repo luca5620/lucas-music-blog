@@ -538,7 +538,11 @@ uses the second option yet).
   unreleased songs): A "the vault" cassette tapes, B burned CD-R + marker
   tracklist, C plain rows like "albums ranked". All end with an "add one"
   slot. Live catalog: only 16 unreleased songs over 14 artists (all singles,
-  most unrated), so it must look right with 1 song. Waiting on his pick.
+  most unrated), so it must look right with 1 song. **Luca picked C → SHIPPED**
+  (artist page: section between "albums ranked" and Discography, only when the
+  artist has one; unreleased taken out of the grid + the ranking; add link =
+  /search?q=<artist>, where Genius results create the page; 6 languages;
+  discography hidden when an artist ONLY has unreleased songs).
 - **Boxy + long-list audit (2026-10-27):** longest lists today = 46 reviews
   on one profile (profile Reviews tab renders ALL), 16 records for one artist,
   6 reviews on one release; /reviews pages 100 at a time. Panels left: feed

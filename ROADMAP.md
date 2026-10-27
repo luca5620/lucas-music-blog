@@ -533,6 +533,18 @@ uses the second option yet).
   (components/releases/DropBanner.tsx) that router.refresh()es once when
   it's really out (banner goes, "Released", rating opens). Home shelf +
   /releases rail pass releaseId to LiveCountdown.
+- **Artist unreleased section — 3 mockups SENT** (canvas
+  https://claude.ai/artifact/38HopQvQxA7CRRTqtW1M1U, The Weeknd's 3 real
+  unreleased songs): A "the vault" cassette tapes, B burned CD-R + marker
+  tracklist, C plain rows like "albums ranked". All end with an "add one"
+  slot. Live catalog: only 16 unreleased songs over 14 artists (all singles,
+  most unrated), so it must look right with 1 song. Waiting on his pick.
+- **Boxy + long-list audit (2026-10-27):** longest lists today = 46 reviews
+  on one profile (profile Reviews tab renders ALL), 16 records for one artist,
+  6 reviews on one release; /reviews pages 100 at a time. Panels left: feed
+  review cards (home/profile/reviews/latest drops), /reviews/mine (8),
+  profile lists tab, list page header, /social hero; tools (forms, settings,
+  Aux Wars, chat, support) keep frames by the pass-2 rule.
 
 ### 🧹 Duplicates merged + review boxes back (2026-10-26, Windows)
 - Migration 066 RUN ✓ 2026-10-26 (14 redirects, 308s verified live) — `066-merge-duplicates.sql`, paste + Run, nothing

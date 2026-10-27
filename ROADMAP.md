@@ -549,6 +549,18 @@ uses the second option yet).
   review cards (home/profile/reviews/latest drops), /reviews/mine (8),
   profile lists tab, list page header, /social hero; tools (forms, settings,
   Aux Wars, chat, support) keep frames by the pass-2 rule.
+- ✅ **Long lists SHIPPED (6cbe01b):** profile Reviews tab shows 24 + "Show
+  more (N left)" (components/profile/ProfileReviewsGrid.tsx, 6 languages);
+  /reviews 30 per page (was 100), Older/Newer links walk the rest.
+- **Less-boxy mockups SENT** (Luca OK'd the four pages): canvas
+  https://claude.ai/artifact/URAYszPdGW8gPgJRUL4QES — /reviews/mine as
+  hairline rows + underline section tabs + Show more; profile Lists tab with
+  no card (big fanned covers); list page header with no glow panel + item
+  posters without card frames; /social header with no glow box/disc (search
+  keeps its frame). Waiting on his verdict. Catch: /social uses the shared
+  PageHero (9 pages, "same as HOME") — opening only /social breaks that
+  match. Feed review cards stay boxed (matches boxed home feed). Only 1 public
+  list exists on the site, so the two list boards are low-traffic.
 
 ### 🧹 Duplicates merged + review boxes back (2026-10-26, Windows)
 - Migration 066 RUN ✓ 2026-10-26 (14 redirects, 308s verified live) — `066-merge-duplicates.sql`, paste + Run, nothing

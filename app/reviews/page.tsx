@@ -7,8 +7,8 @@
  * Pagination (SEO review 2026-10-22): the wall used to stop at the
  * newest 100 with no way further back, so Google had no path to older
  * reviews except through release/profile pages (105 review URLs sat
- * in "Discovered – currently not indexed"). Page 1 is unchanged;
- * ?page=2, 3… walk back in time, 100 at a time, each with its own
+ * in "Discovered – currently not indexed"). Since 2026-10-27 a page
+ * holds 30 (was 100); ?page=2, 3… walk back in time, each with its own
  * canonical. The search box + genre chips filter the page you're on.
  */
 
@@ -32,8 +32,8 @@ import { reviewsFAQs } from "@/lib/faq-data";
 // LANGUAGES: hero copy (messages → reviews.index). Metadata stays English.
 import { getTranslations } from "next-intl/server";
 
-/** Reviews per page — page 1 shows exactly what the wall always did. */
-const PAGE_SIZE = 100;
+/** Reviews per page — 30 keeps the wall quick to scroll; "Older" pages hold the rest. */
+const PAGE_SIZE = 30;
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;

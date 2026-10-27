@@ -6,17 +6,27 @@
  * Posters / Compact rows). Shares the persisted choice via
  * useReviewView, so a user's preferred density follows them
  * everywhere reviews are listed.
+ *
+ * Long histories render 24 at a time behind a "Show more" button, so a
+ * 40+ review profile doesn't load every cover at once.
  */
 
+import { useState } from "react";
 import Link from "next/link";
 import type { Review } from "@/lib/types/database";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
 import { useReviewView, ViewToggle } from "@/components/reviews/ViewToggle";
 import { useTranslations } from "next-intl";
 
-export default function ProfileReviewsGrid({ reviews }: { reviews: Review[] }) {
+/** Reviews shown before (and added by each) "Show more". */
+const BATCH = 24;
+
+export default function ProfileReviewsGrid({ reviews: allReviews }: { reviews: Review[] }) {
   const [view, setView] = useReviewView();
   const t = useTranslations("profile");
+  const [shown, setShown] = useState(BATCH);
+  const reviews = allReviews.slice(0, shown);
+  const left = allReviews.length - reviews.length;
 
   return (
     <div className="space-y-3">
@@ -108,6 +118,18 @@ export default function ProfileReviewsGrid({ reviews }: { reviews: Review[] }) {
               </span>
             </Link>
           ))}
+        </div>
+      )}
+
+      {left > 0 && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => setShown((n) => n + BATCH)}
+            className="btn-y2k btn-y2k-outline"
+          >
+            {t("showMoreReviews", { n: left })}
+          </button>
         </div>
       )}
     </div>

@@ -544,6 +544,7 @@
   },
   "profile": {
     "customize": "Personnaliser",
+    "showMoreReviews": "Voir plus (encore {n})",
     "loginToFollow": "Connecte-toi pour suivre",
     "stats": {
       "reviews": "Critiques",

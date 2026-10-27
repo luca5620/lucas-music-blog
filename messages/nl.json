@@ -544,6 +544,7 @@
   },
   "profile": {
     "customize": "Aanpassen",
+    "showMoreReviews": "Meer tonen (nog {n})",
     "loginToFollow": "Log in om te volgen",
     "stats": {
       "reviews": "Recensies",

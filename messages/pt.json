@@ -544,6 +544,7 @@
   },
   "profile": {
     "customize": "Personalizar",
+    "showMoreReviews": "Ver mais (faltam {n})",
     "loginToFollow": "Entre para seguir",
     "stats": {
       "reviews": "Resenhas",

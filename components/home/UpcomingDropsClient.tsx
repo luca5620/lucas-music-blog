@@ -104,7 +104,7 @@ export default function UpcomingDropsClient({
                   </span>
                 )}
                 <span className="absolute bottom-1.5 left-1.5 pixel-text text-[11px] text-osd-amber bg-black/80 border border-osd-amber/50 rounded px-1.5 py-0.5 tracking-widest">
-                  <LiveCountdown releaseDate={item.release_date} drop={item} />
+                  <LiveCountdown releaseDate={item.release_date} drop={item} releaseId={item.id} />
                 </span>
               </span>
               <span className="block">
@@ -159,7 +159,7 @@ export default function UpcomingDropsClient({
                 {formatDropDate(item.release_date)}
               </span>
               <span className="pixel-text text-xs text-osd-amber tracking-widest shrink-0">
-                <LiveCountdown releaseDate={item.release_date} drop={item} />
+                <LiveCountdown releaseDate={item.release_date} drop={item} releaseId={item.id} />
               </span>
             </Link>
           ))}
@@ -219,7 +219,7 @@ export default function UpcomingDropsClient({
                   {t("dropsIn")}
                 </span>
                 <span className="pixel-text text-base font-bold text-osd-amber tracking-widest">
-                  <LiveCountdown releaseDate={item.release_date} drop={item} />
+                  <LiveCountdown releaseDate={item.release_date} drop={item} releaseId={item.id} />
                 </span>
               </div>
 

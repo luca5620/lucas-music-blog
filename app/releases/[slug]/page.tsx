@@ -33,8 +33,8 @@ import {
 } from "@/lib/db/rooms";
 import { getUser } from "@/lib/auth";
 import { getRatingHex, getRatingColor, formatRating } from "@/lib/rating";
-import { isUpcoming, isWaitingForDrop } from "@/lib/upcoming";
-import LiveCountdown from "@/components/releases/LiveCountdown";
+import { isUpcoming } from "@/lib/upcoming";
+import DropBanner from "@/components/releases/DropBanner";
 import { redirectMergedOr404 } from "@/lib/db/redirects";
 import SpotifyEmbed from "@/components/releases/SpotifyEmbed";
 import AppleMusicEmbed from "@/components/releases/AppleMusicEmbed";
@@ -469,11 +469,6 @@ async function ReleaseContent({
   // or, for a record that doesn't drop at midnight Eastern (K-pop at
   // 6pm Korea time), once Spotify actually switches it on (064).
   const upcoming = isUpcoming(release.release_date, release);
-  // Past midnight Eastern, not out yet, and NO exact time to count
-  // down to → "Out later today" instead of a clock stuck on zero. With
-  // Spotify's exact time (drops_at) the banner just keeps ticking.
-  const waitingForDrop =
-    !release.drops_at && isWaitingForDrop(release.release_date, release);
 
   return (
     // NO PANEL (Luca 2026-10-25, "improve the boxy flow"): the page
@@ -490,25 +485,16 @@ async function ReleaseContent({
 
       {/* Countdown banner — big OSD-amber broadcast strip. This is the
           "waiting room" signal: follow the release, sit in the chat,
-          be here when it drops. */}
+          be here when it drops. Client-side so it keeps watching the
+          drop-check while the page is open and refreshes the page
+          when the record is really out (components/releases/DropBanner). */}
       {upcoming && release.release_date && (
-        <div className="mb-5 sm:mb-6 border border-osd-amber/50 rounded-lg bg-osd-amber/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-          {waitingForDrop ? (
-            <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest animate-pulse">
-              {t("dropsLater")}
-            </span>
-          ) : (
-            <span className="pixel-text text-xs sm:text-sm text-osd-amber uppercase tracking-widest">
-              {t("dropsIn")}{" "}
-              <LiveCountdown
-                releaseDate={release.release_date}
-                drop={{ drops_at: release.drops_at, drop_waiting_at: release.drop_waiting_at }}
-                className="animate-pulse"
-              />
-              {releaseDateFormatted ? ` — ${releaseDateFormatted}` : ""}
-            </span>
-          )}
-        </div>
+        <DropBanner
+          releaseId={release.id}
+          releaseDate={release.release_date}
+          drop={{ drops_at: release.drops_at, drop_waiting_at: release.drop_waiting_at }}
+          dateLabel={releaseDateFormatted}
+        />
       )}
       {/* On desktop (xl+) the page splits three ways: identity on the
           left, preview + reviews in the middle, and the LIVE CHAT as

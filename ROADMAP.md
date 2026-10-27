@@ -518,6 +518,22 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🧰 General improvements (2026-10-27, Windows)
+- **1.3 goes to the App Store TOMORROW (2026-10-28), NOT waiting for TikTok**
+  (Luca 2026-10-27: TikTok review can take weeks). Replaces the "waits for
+  TikTok" line below. TikTok button stays hidden (TIKTOK_SHARE_LIVE = false);
+  the production key goes in a later build once TikTok approves.
+- Today's order (Luca): ✅ 1 countdown fix → 2 unreleased section on artist
+  pages (mockup first) → 3 evaluate boxy areas + paging for long song/review
+  lists. No Discord post this round.
+- ✅ **Countdown no longer goes stale on an open page.** lib/useLiveDrop.ts:
+  at zero the clock re-reads drops_at / drop_waiting_at (anon read, no
+  server), re-asks every minute while "Later today", sleeps to a new exact
+  time if one appears. Release page banner is now a client component
+  (components/releases/DropBanner.tsx) that router.refresh()es once when
+  it's really out (banner goes, "Released", rating opens). Home shelf +
+  /releases rail pass releaseId to LiveCountdown.
+
 ### 🧹 Duplicates merged + review boxes back (2026-10-26, Windows)
 - Migration 066 RUN ✓ 2026-10-26 (14 redirects, 308s verified live) — `066-merge-duplicates.sql`, paste + Run, nothing
   to fill in, all-or-nothing. Merges 4 duplicate records (Morning Glory deluxe,
@@ -539,7 +555,7 @@ uses the second option yet).
   review page AND release page.
 - Luca's calls: signed-in home NOT de-boxed; share flow is fine; side rail only
   on review pages (maybe more in it — he asked how it works on mobile first).
-- **1.3 submission waits for TikTok** (Luca 2026-10-26): when TikTok approves,
+- ~~**1.3 submission waits for TikTok**~~ (superseded 2026-10-27: 1.3 goes tomorrow) (Luca 2026-10-26): when TikTok approves,
   put the production key in, check the TikTok logo works next to Instagram, give
   him the thumbs up → he submits 1.3 (with the iPhone Duo fixes). No separate 1.3.1.
 
@@ -565,7 +581,7 @@ uses the second option yet).
   Spotify yet", discography tile). Checker silent 30 min or a day late → old
   midnight rule. Early drops (Spotify playable before midnight ET) stop the
   clock early.
-- Known limit: a page opened BEFORE midnight still flips to OUT NOW at zero
+- ~~Known limit: a page opened BEFORE midnight still flips to OUT NOW at zero~~ FIXED 2026-10-27 (lib/useLiveDrop)
   until refreshed (the page only knows what the checker said when it loaded).
 
 ### 📼 Save for later + Rewind + less boxy (2026-10-25 night, Windows) — 67d6b9d

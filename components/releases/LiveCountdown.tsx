@@ -15,11 +15,17 @@
  * flips to OUT NOW — no refresh needed — or to "Later today" when
  * there's no exact time and Spotify hasn't switched the record on yet
  * (lib/upcoming isWaitingForDrop).
+ *
+ * Pass `releaseId` and the clock re-asks the drop-check at zero
+ * (lib/useLiveDrop) instead of trusting what the page knew when it
+ * loaded — a page left open across midnight used to say OUT NOW for a
+ * record that wasn't on Spotify yet (fixed 2026-10-27).
  */
 
 import { useEffect, useState } from "react";
 import { dropMomentMs, isWaitingForDrop, type DropInfo } from "@/lib/upcoming";
 import { useHydrated } from "@/lib/useHydrated";
+import { useLiveDrop } from "@/lib/useLiveDrop";
 import { useTranslations } from "next-intl";
 
 interface LiveCountdownProps {
@@ -29,6 +35,11 @@ interface LiveCountdownProps {
       Spotify hasn't switched on yet reads "Later today" at zero
       instead of OUT NOW, and an early drop stops the clock early. */
   drop?: DropInfo | null;
+  /** The release's id. With it, the clock re-checks the drop facts at
+      zero and every minute while "Later today" (lib/useLiveDrop).
+      Leave it off when a parent already does that (the release page
+      banner) so the same record isn't asked about twice. */
+  releaseId?: string | null;
   className?: string;
 }
 
@@ -44,9 +55,13 @@ function pad(n: number): string {
 
 export default function LiveCountdown({
   releaseDate,
-  drop,
+  drop: dropFromPage,
+  releaseId,
   className = "",
 }: LiveCountdownProps) {
+  // Fresh drop facts once the clock has hit zero (the page's own facts
+  // until then, or always without a releaseId).
+  const drop = useLiveDrop(releaseId, releaseDate, dropFromPage);
   // Plain strings for the effect deps (a fresh drop object every render
   // would restart the timer each time).
   const dropsAt = drop?.drops_at ?? null;

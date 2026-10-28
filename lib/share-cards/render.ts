@@ -35,6 +35,7 @@
  */
 
 import { formatRating, getRatingHex } from "@/lib/rating";
+import { drawSiteLiquid } from "@/lib/share-cards/liquid";
 
 export const CARD_W = 360;
 export const CARD_H = 640;
@@ -403,7 +404,10 @@ function drawOdometer(
     const frac = pos - lo;
     ctx.save();
     ctx.beginPath();
-    ctx.rect(cx - w / 2 - 2, baseline - size * 0.98, w + 4, size * 1.2);
+    // The clip only has to cut top and bottom (the roll). Sideways it
+    // stays wide so the album score's glow isn't cut into a visible
+    // square once the lit liquid sits behind it (2026-10-28).
+    ctx.rect(cx - w / 2 - 18, baseline - size * 0.98, w + 36, size * 1.2);
     ctx.clip();
     ctx.fillText(labels(Math.min(lo, max)), cx, baseline - frac * size);
     if (frac > 0.001) ctx.fillText(labels(Math.min(lo + 1, max)), cx, baseline + (1 - frac) * size);
@@ -415,8 +419,23 @@ function drawOdometer(
   return total;
 }
 
-/** The moving cover-colour liquid behind the scorecard. */
+/**
+ * The moving cover-colour liquid behind the scorecard. Since
+ * 2026-10-28 it's the site's real material (lib/share-cards/liquid.ts —
+ * same shader, same cover colours as the release page), with only a
+ * light shade toward the bottom so the song list stays readable. The
+ * glows below are the fallback for a phone without WebGL.
+ */
 function drawLiquid(ctx: CanvasRenderingContext2D, palette: string[], t: number) {
+  if (drawSiteLiquid(ctx, palette, t, CARD_W, CARD_H)) {
+    const shade = ctx.createLinearGradient(0, 0, 0, CARD_H);
+    shade.addColorStop(0, "rgba(0,0,0,0)");
+    shade.addColorStop(0.45, "rgba(0,0,0,0.12)");
+    shade.addColorStop(1, "rgba(0,0,0,0.42)");
+    ctx.fillStyle = shade;
+    ctx.fillRect(0, 0, CARD_W, CARD_H);
+    return;
+  }
   ctx.fillStyle = "#040405";
   ctx.fillRect(0, 0, CARD_W, CARD_H);
   const pal = palette.length >= 4 ? palette : [...palette, ...DEFAULT_PALETTE].slice(0, 4);
@@ -494,26 +513,50 @@ export function scorecardDuration(data: ScorecardData): number {
  * Reels can lay their username + caption over the bottom fifth without
  * covering anything. The record shrank a little (146 → 120) to make the
  * room, so a 17-song album still shows every song.
+ *
+ * LOWERED (Luca 2026-10-28, a friend's TikTok screenshot): the cover
+ * started at y 22, right under TikTok's status bar + "Find related
+ * content" search bar, which covered its top half. Everything now
+ * starts at SC_TOP (TikTok's top safe line is ~250px of 1920 = 83
+ * units; Instagram's name row sits higher still). To keep the bottom
+ * caption area free AND a 17-song album whole, the record now shrinks
+ * on long albums (112 for a short one, down to 72) instead of the list
+ * losing songs.
  */
-/** How much smaller the record is than it was drawn (146 → 120). */
-const SC_REC = 120 / 146;
-/** Where the song list starts and the last pixel it may use. */
-const SC_LIST_TOP = 276;
+/** First pixel anything may use (below TikTok / Reels' top bar). */
+const SC_TOP = 92;
+/** The last pixel the song list may use (caption area below). */
 const SC_LIST_END = 505;
+/** Record bottom → list top: title, subtitle, credit, score, gap. */
+const SC_HEAD = 132;
 const SC_X = 54;
 const SC_R = CARD_W - SC_X;
 const SC_INNER = SC_R - SC_X;
 
+/** The record's drawn height for this many songs (aims for ~14-unit rows). */
+function scorecardRecord(count: number) {
+  return Math.max(72, Math.min(112, SC_LIST_END - SC_TOP - SC_HEAD - count * 14));
+}
+
 export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: ScorecardData, t: number) {
   drawLiquid(ctx, a.palette, t);
   const intro = easeOut(t / 0.9);
+
+  // Vertical layout, all from the record's size (see SC_TOP above).
+  const recH = scorecardRecord(d.songs.length);
+  const SC_REC = recH / 146;
+  const recBottom = SC_TOP + recH;
+  const titleY = recBottom + 22;
+  const creditY = recBottom + 59;
+  const scoreY = creditY + 47;
+  const listTop = scoreY + 26;
 
   // The record: cover with the record behind it to the right, spinning.
   ctx.save();
   ctx.globalAlpha = intro;
   const recW = 210;
   const scale = 0.9 + 0.1 * intro;
-  ctx.translate(CARD_W / 2, 22 + 73 * SC_REC);
+  ctx.translate(CARD_W / 2, SC_TOP + 73 * SC_REC);
   ctx.scale(scale * SC_REC, scale * SC_REC);
   ctx.translate(-recW / 2, -73);
   // a calm turn (was 200°/s)
@@ -537,24 +580,25 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "#fff";
   ctx.font = font(a, 20, 700);
-  ctx.fillText(fit(ctx, d.title, SC_INNER), CARD_W / 2, 166 + (1 - intro) * 8);
+  ctx.fillText(fit(ctx, d.title, SC_INNER), CARD_W / 2, titleY + (1 - intro) * 8);
   ctx.fillStyle = "rgba(255,255,255,0.6)";
   ctx.font = font(a, 12, 400);
-  ctx.fillText(fit(ctx, d.subtitle, SC_INNER), CARD_W / 2, 181 + (1 - intro) * 8);
+  ctx.fillText(fit(ctx, d.subtitle, SC_INNER), CARD_W / 2, titleY + 15 + (1 - intro) * 8);
   // who made it + Peak Music, out of the caption corner
-  drawCredit(ctx, a, d.handle, CARD_W / 2, 203 + (1 - intro) * 8, "center", SC_INNER, d.role ?? null);
+  drawCredit(ctx, a, d.handle, CARD_W / 2, creditY + (1 - intro) * 8, "center", SC_INNER, d.role ?? null);
   ctx.restore();
 
   const { step, ov0 } = scorecardTiming(d.songs.length);
 
   // Song rows
-  const top = SC_LIST_TOP;
-  const room = SC_LIST_END - SC_LIST_TOP;
+  const top = listTop;
+  const room = SC_LIST_END - listTop;
   let rowH = d.songs.length ? Math.min(21, room / d.songs.length) : 21;
   let visible = d.songs;
   let hidden = 0;
-  if (rowH < 13) {
-    rowH = 13;
+  // 12 (was 13) so 17 songs still fit under the lowered header
+  if (rowH < 12) {
+    rowH = 12;
     const fitRows = Math.floor(room / rowH) - 1;
     visible = d.songs.slice(0, fitRows);
     hidden = d.songs.length - fitRows;
@@ -619,7 +663,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, 17, 500);
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    wrap(ctx, `“${d.quote}”`, SC_INNER - 22, 6).forEach((line, i) => ctx.fillText(line, CARD_W / 2, 300 + i * 25));
+    wrap(ctx, `“${d.quote}”`, SC_INNER - 22, 6).forEach((line, i) => ctx.fillText(line, CARD_W / 2, listTop + 24 + i * 25));
     ctx.restore();
   }
 
@@ -632,7 +676,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     ctx.font = font(a, 11.5, 500);
     ctx.fillStyle = "rgba(255,255,255,0.55)";
     ctx.textAlign = "center";
-    ctx.fillText(d.labels.songsProgress(done, d.songs.length), CARD_W / 2, 254);
+    ctx.fillText(d.labels.songsProgress(done, d.songs.length), CARD_W / 2, scoreY + 4);
     ctx.restore();
   }
   if (t >= ov0) {
@@ -644,7 +688,7 @@ export function drawScorecard(ctx: CanvasRenderingContext2D, a: CardAssets, d: S
     const color = getRatingHex(d.rating);
     ctx.save();
     ctx.globalAlpha = easeOut(p / 0.45);
-    ctx.translate(CARD_W / 2, 250 + (1 - easeOut(p / 0.6)) * 8);
+    ctx.translate(CARD_W / 2, scoreY + (1 - easeOut(p / 0.6)) * 8);
     ctx.shadowColor = color;
     ctx.shadowBlur = 14 * easeOut(p);
     ctx.font = font(a, 14, 600);

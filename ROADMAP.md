@@ -518,6 +518,23 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🎬 Scorecard lowered + site liquid (2026-10-28, Windows) — a23e863
+- ✅ **Album scorecard lowered** (Luca, a friend's TikTok screenshot: TikTok's
+  status bar + "Find related content" search bar covered the top half of the
+  cover). Everything now starts at SC_TOP = 92 card units (TikTok's top safe
+  line is ~250px of 1920 = 83). Bottom caption line unchanged (505). The record
+  shrinks on long albums (112 → 72, scorecardRecord) and rows can go to 12,
+  so a 17-song album still shows every song.
+- ✅ **Scorecard background = the site's real liquid** ("more lighting, more
+  like the actual website background"): lib/share-cards/liquid.ts renders the
+  same shader as the site (lib/liquidMaterial FRAG, cover trio → rolesFromTrio)
+  on one offscreen WebGL canvas at intensity 0.9 (the site's phone wash is
+  0.42) and copies it into the card each frame; the old glows are the no-WebGL
+  fallback. The sticker tab's preview backdrop uses it too. Also fixed: the
+  album score's glow was cut into squares by the odometer clip.
+- Checked with a headless render (6 / 17 / 0 songs, BREAK EVEN + a colourful
+  cover) + npm run build. Not re-posted to TikTok yet to see it under the UI.
+
 ### 🧰 General improvements (2026-10-27, Windows)
 - **1.3 goes to the App Store TOMORROW (2026-10-28), NOT waiting for TikTok**
   (Luca 2026-10-27: TikTok review can take weeks). Replaces the "waits for

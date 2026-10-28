@@ -567,6 +567,9 @@ uses the second option yet).
   "not sure how 4 would look"; added a "Social — today" board beside the open
   one on the canvas to compare. If yes: only /social or all 9 PageHero pages?
   /reviews/mine needs login, so it was checked by build only, not rendered.
+- **Social STAYS BOXED** (Luca 2026-10-27: "that cd is part of the identity,
+  cant really get rid of it unless you incorporate it in a non-boxy way").
+  PageHero untouched on all 9 pages. Less-boxy round DONE.
 
 ### 🧹 Duplicates merged + review boxes back (2026-10-26, Windows)
 - Migration 066 RUN ✓ 2026-10-26 (14 redirects, 308s verified live) — `066-merge-duplicates.sql`, paste + Run, nothing

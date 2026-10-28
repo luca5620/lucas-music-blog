@@ -544,7 +544,6 @@
   },
   "profile": {
     "customize": "Aanpassen",
-    "showMoreReviews": "Meer tonen (nog {n})",
     "loginToFollow": "Log in om te volgen",
     "stats": {
       "reviews": "Recensies",
@@ -750,6 +749,7 @@
     }
   },
   "common": {
+    "showMore": "Meer tonen (nog {n})",
     "backToHome": "← Terug naar home",
     "back": "Terug",
     "cancel": "Annuleren",

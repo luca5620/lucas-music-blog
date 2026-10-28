@@ -874,9 +874,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               cta={isOwnProfile ? { href: "/lists/new", label: t("ctaList") } : undefined}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            // Open rows, no cards (less-boxy pass, Luca 2026-10-27).
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
               {profileLists.map((list) => (
-                <ListCard key={list.id} list={list} />
+                <ListCard key={list.id} list={list} variant="open" />
               ))}
             </div>
           ))}

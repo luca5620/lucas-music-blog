@@ -6,6 +6,11 @@
  * Shows a fanned stack of up to five item covers, the list title,
  * the author (avatar + username), and item/like counts.
  *
+ * variant="open" (profile Lists tab, Luca 2026-10-27 less-boxy pass):
+ * no card — bigger fanned covers straight on the page, title + count
+ * under them, a hairline below. The author is left out there because
+ * it's their own profile.
+ *
  * This file also exports ListLikeButton — the like toggle used on the
  * list detail page. It mirrors components/reviews/LikeButton.tsx but
  * posts to /api/lists/[listId]/like instead.
@@ -19,9 +24,50 @@ import type { ListSummary } from "@/lib/db/lists";
 import { smallCover } from "@/lib/images";
 import { useTranslations } from "next-intl";
 
-export default function ListCard({ list }: { list: ListSummary }) {
+export default function ListCard({
+  list,
+  variant = "card",
+}: {
+  list: ListSummary;
+  variant?: "card" | "open";
+}) {
   const { author } = list;
   const t = useTranslations("lists.page");
+
+  if (variant === "open") {
+    return (
+      <Link
+        href={`/lists/${author.username}/${list.slug}`}
+        className="list-open group"
+      >
+        <span className="list-open-covers" aria-hidden>
+          {list.item_covers.length > 0 ? (
+            list.item_covers.map((cover, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={smallCover(cover)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                style={{ zIndex: list.item_covers.length - i }}
+              />
+            ))
+          ) : (
+            <span className="list-open-empty">💿</span>
+          )}
+        </span>
+        <span className="flex flex-col gap-1 min-w-0">
+          <span className="list-open-title">{list.title}</span>
+          <span className="pixel-text text-[11px] uppercase tracking-widest text-text-muted">
+            {list.is_ranked && <>{t("ranked")} · </>}
+            {t("albums", { n: list.item_count })}
+            {list.like_count > 0 && <> · ♥ {list.like_count}</>}
+          </span>
+        </span>
+      </Link>
+    );
+  }
 
   return (
     <Link

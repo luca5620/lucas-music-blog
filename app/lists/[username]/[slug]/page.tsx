@@ -62,8 +62,11 @@ export default async function ListDetailPage({ params }: PageParams) {
         className="pixel-text text-xs text-accent-primary hover:text-accent-glow transition-colors uppercase tracking-widest inline-flex items-center gap-1"
       />
 
-      {/* --- Header --- */}
-      <div className="panel-xbox-glow p-4 sm:p-6 space-y-4 relative overflow-hidden">
+      {/* --- Header ---
+          Open, no glow panel (less-boxy pass, Luca 2026-10-27): the
+          title, byline and description sit straight on the page and a
+          blue hairline closes the header off from the items. */}
+      <div className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-2 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -160,11 +163,11 @@ export default async function ListDetailPage({ params }: PageParams) {
             {t("albums", { n: list.items.length })}
           </span>
         </div>
-
-        <div className="scan-bar" />
       </div>
 
-      {/* --- Items: poster grid --- */}
+      <div className="list-header-rule" aria-hidden />
+
+      {/* --- Items: poster grid (cover + text, no card frame) --- */}
       {list.items.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {list.items.map((item, index) => {
@@ -178,9 +181,7 @@ export default async function ListDetailPage({ params }: PageParams) {
               : item.spotify_album_id
                 ? `/releases/spotify/${item.spotify_album_id}`
                 : null;
-            const cardClass = `card-y2k p-3 space-y-2 overflow-hidden block${
-              href ? " hover-glow" : ""
-            }`;
+            const cardClass = "list-poster group";
 
             const content = (
               <>
@@ -235,7 +236,7 @@ export default async function ListDetailPage({ params }: PageParams) {
           })}
         </div>
       ) : (
-        <div className="panel-xbox p-8 text-center">
+        <div className="py-8 text-center">
           <p className="text-text-secondary">{t("empty")}</p>
           {isOwner && (
             <p className="font-[family-name:var(--font-vt323)] text-[#9a9a9e] mt-2">

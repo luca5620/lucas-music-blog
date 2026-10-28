@@ -24,6 +24,7 @@ const BATCH = 24;
 export default function ProfileReviewsGrid({ reviews: allReviews }: { reviews: Review[] }) {
   const [view, setView] = useReviewView();
   const t = useTranslations("profile");
+  const tc = useTranslations("common");
   const [shown, setShown] = useState(BATCH);
   const reviews = allReviews.slice(0, shown);
   const left = allReviews.length - reviews.length;
@@ -128,7 +129,7 @@ export default function ProfileReviewsGrid({ reviews: allReviews }: { reviews: R
             onClick={() => setShown((n) => n + BATCH)}
             className="btn-y2k btn-y2k-outline"
           >
-            {t("showMoreReviews", { n: left })}
+            {tc("showMore", { n: left })}
           </button>
         </div>
       )}

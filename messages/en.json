@@ -544,7 +544,6 @@
   },
   "profile": {
     "customize": "Customize",
-    "showMoreReviews": "Show more ({n} left)",
     "loginToFollow": "Log in to follow",
     "stats": {
       "reviews": "Reviews",
@@ -750,6 +749,7 @@
     }
   },
   "common": {
+    "showMore": "Show more ({n} left)",
     "backToHome": "← Back to Home",
     "back": "Back",
     "cancel": "Cancel",

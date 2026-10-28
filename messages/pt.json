@@ -544,7 +544,6 @@
   },
   "profile": {
     "customize": "Personalizar",
-    "showMoreReviews": "Ver mais (faltam {n})",
     "loginToFollow": "Entre para seguir",
     "stats": {
       "reviews": "Resenhas",
@@ -750,6 +749,7 @@
     }
   },
   "common": {
+    "showMore": "Ver mais (faltam {n})",
     "backToHome": "← Voltar ao início",
     "back": "Voltar",
     "cancel": "Cancelar",

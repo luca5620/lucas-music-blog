@@ -5,6 +5,13 @@
  * all edits in one area"). Reviews, posts, lists, Aux Wars (which
  * replaced debates on 2026-09-13) — each with Edit + Delete in the
  * row, drafts included.
+ *
+ * LESS BOXY (Luca 2026-10-27, mockup approved): every item is a plain
+ * row with a hairline under it (.mine-row) instead of its own glowing
+ * panel, status pills are a dot + word, the rating is a coloured
+ * number, and the section jump links are underline tabs. Reviews show
+ * 24 at a time behind "Show more" (ShowMore) — the page is a manager,
+ * not a reading page, so it shouldn't scroll forever.
  */
 
 import { requireAuth } from "@/lib/auth";
@@ -21,6 +28,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import DeleteReviewButton from "@/components/reviews/DeleteReviewButton";
 import DeletePostButton from "@/components/posts/DeletePostButton";
+import ShowMore from "@/components/ui/ShowMore";
 // LANGUAGES: messages → reviews.mine (+ common). Metadata stays English.
 import { getTranslations } from "next-intl/server";
 
@@ -55,14 +63,14 @@ export default async function MyReviewsPage() {
             {t("sub")}
           </p>
           {/* Jump links: four sections, each with its own count */}
-          <nav className="flex flex-wrap gap-2 pt-1">
+          <nav className="mine-tabs">
             {[
               { href: "#reviews", label: t("reviewsCount", { n: reviews.length }) },
               { href: "#posts", label: t("postsCount", { n: posts.length }) },
               { href: "#lists", label: t("listsCount", { n: lists.length }) },
               { href: "#aux", label: t("auxCount", { n: rooms.length }) },
             ].map((t) => (
-              <a key={t.href} href={t.href} className="tab-y2k">
+              <a key={t.href} href={t.href} className="mine-tab">
                 {t.label}
               </a>
             ))}
@@ -92,21 +100,18 @@ export default async function MyReviewsPage() {
         {t("myReviews")}
       </h2>
       {reviews.length === 0 ? (
-        <div className="panel-xbox p-8 text-center">
+        <div className="mine-empty">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
             {t("noReviews")}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <ShowMore className="mine-rows">
           {reviews.map((review) => {
             const ratingColor = getRatingHex(review.rating);
 
             return (
-              <div
-                key={review.id}
-                className="panel-xbox p-4 hover-glow"
-              >
+              <li key={review.id} className="mine-row">
                 <div className="flex items-start gap-4">
                   {/* Cover Image */}
                   {review.cover_image ? (
@@ -159,12 +164,8 @@ export default async function MyReviewsPage() {
 
                       {/* Rating Badge */}
                       <div
-                        className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-lg text-sm font-bold font-[family-name:var(--font-heading)]"
-                        style={{
-                          background: `${ratingColor}15`,
-                          border: `2px solid ${ratingColor}`,
-                          color: ratingColor,
-                        }}
+                        className="shrink-0 text-xl font-extrabold leading-none font-[family-name:var(--font-heading)]"
+                        style={{ color: ratingColor }}
                       >
                         {review.rating}
                       </div>
@@ -187,12 +188,12 @@ export default async function MyReviewsPage() {
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
                       {/* Status Badge */}
                       {review.is_published ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
+                        <span className="mine-status text-green-400">
                           <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
                           {tc("published")}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+                        <span className="mine-status text-yellow-400">
                           <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
                           {tc("draft")}
                         </span>
@@ -231,10 +232,10 @@ export default async function MyReviewsPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ShowMore>
       )}
 
       {/* ===== My Posts — same manage-from-one-place treatment ===== */}
@@ -254,15 +255,15 @@ export default async function MyReviewsPage() {
       </div>
 
       {posts.length === 0 ? (
-        <div className="panel-xbox p-8 text-center">
+        <div className="mine-empty">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
             {t("noPosts")}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <ul className="mine-rows">
           {posts.map((post) => (
-            <div key={post.id} className="panel-xbox p-4 hover-glow">
+            <li key={post.id} className="mine-row">
               <div className="flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <Link
@@ -282,18 +283,18 @@ export default async function MyReviewsPage() {
                     {/* Status badge — same green/yellow pair as reviews.
                         Old rows without the 024 column count as published. */}
                     {post.is_published !== false ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-green-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
                         {tc("published")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-yellow-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
                         {tc("draft")}
                       </span>
                     )}
                     {post.video_kind && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-accent-primary/10 text-accent-primary border border-accent-primary/20 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-accent-primary">
                         ▶ {post.video_kind === "youtube" ? "YouTube" : "TikTok"}
                       </span>
                     )}
@@ -331,9 +332,9 @@ export default async function MyReviewsPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       {/* ===== My Lists (Luca 2026-09-02) ===== */}
@@ -352,15 +353,15 @@ export default async function MyReviewsPage() {
       </div>
 
       {lists.length === 0 ? (
-        <div className="panel-xbox p-8 text-center">
+        <div className="mine-empty">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
             {t("noLists")}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <ul className="mine-rows">
           {lists.map((list) => (
-            <div key={list.id} className="panel-xbox p-4 hover-glow">
+            <li key={list.id} className="mine-row">
               <div className="flex items-start gap-4">
                 {/* Cover stack — up to three item covers */}
                 <div className="flex -space-x-3 shrink-0">
@@ -397,12 +398,12 @@ export default async function MyReviewsPage() {
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
                     {list.is_public ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-green-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
                         {tc("public")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-yellow-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
                         {tc("private")}
                       </span>
@@ -424,9 +425,9 @@ export default async function MyReviewsPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       {/* ===== My Aux Wars (debates → Aux Wars, Luca 2026-09-13) ===== */}
@@ -445,15 +446,15 @@ export default async function MyReviewsPage() {
       </div>
 
       {rooms.length === 0 ? (
-        <div className="panel-xbox p-8 text-center">
+        <div className="mine-empty">
           <p className="font-[family-name:var(--font-vt323)] text-xl text-[#5a5a60]">
             {t("noAux")}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <ul className="mine-rows">
           {rooms.map((room) => (
-            <div key={room.id} className="panel-xbox p-4 hover-glow">
+            <li key={room.id} className="mine-row">
               <div className="flex items-start gap-4">
                 <span className="w-12 h-12 rounded-lg border border-white/10 bg-bg-elevated flex items-center justify-center shrink-0 text-xl">
                   🎧
@@ -478,17 +479,17 @@ export default async function MyReviewsPage() {
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3">
                     {room.status === "live" ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-green-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
                         {ta("live")}
                       </span>
                     ) : room.status === "lobby" ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-yellow-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
                         {ta("lobby")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white/5 text-[#9a9a9e] border border-white/10 font-[family-name:var(--font-vt323)]">
+                      <span className="mine-status text-[#9a9a9e]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#9a9a9e]" />
                         {ta("final")}
                       </span>
@@ -503,9 +504,9 @@ export default async function MyReviewsPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

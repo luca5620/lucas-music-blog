@@ -544,7 +544,6 @@
   },
   "profile": {
     "customize": "Anpassen",
-    "showMoreReviews": "Mehr anzeigen (noch {n})",
     "loginToFollow": "Anmelden, um zu folgen",
     "stats": {
       "reviews": "Rezensionen",
@@ -750,6 +749,7 @@
     }
   },
   "common": {
+    "showMore": "Mehr anzeigen (noch {n})",
     "backToHome": "← Zurück zur Startseite",
     "back": "Zurück",
     "cancel": "Abbrechen",

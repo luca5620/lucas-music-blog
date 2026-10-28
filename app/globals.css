@@ -6064,6 +6064,125 @@ a.review-menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--t
 }
 
 /* ============================================================
+   MY STUFF (/reviews/mine) — less boxy, 2026-10-27. Items are plain
+   rows with a hairline under them instead of a panel each; the
+   section jump links are underline tabs on one rule.
+   ============================================================ */
+.mine-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.35rem;
+}
+.mine-tab {
+  padding: 0.6rem 0;
+  margin-bottom: -1px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.mine-tab:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-primary);
+}
+.mine-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mine-row {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.mine-empty {
+  padding: 1rem 0 0.5rem;
+  font-family: var(--font-vt323);
+  font-size: 1.15rem;
+  color: var(--text-muted);
+}
+/* Status = a coloured dot + word (was a filled pill). The word's
+   colour comes from the text-* class beside it. */
+.mine-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ============================================================
+   LISTS, OPEN (2026-10-27 less-boxy pass)
+   .list-open — profile Lists tab item: fanned covers + title on the
+   page, hairline below, no card. .list-poster — a list page item:
+   cover + title + artist, no card frame. .list-header-rule — the
+   blue hairline that ends the open list header.
+   ============================================================ */
+.list-open {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem 0 1.25rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.list-open-covers {
+  display: flex;
+}
+.list-open-covers img,
+.list-open-empty {
+  position: relative;
+  width: 5.75rem;
+  height: 5.75rem;
+  flex-shrink: 0;
+  border-radius: 4px;
+  object-fit: cover;
+  box-shadow: 6px 0 14px rgba(0, 0, 0, 0.6);
+}
+.list-open-covers img + img {
+  margin-left: -1.75rem;
+}
+.list-open-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+.list-open-title {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--text-primary);
+  transition: color 0.15s;
+}
+.list-open:hover .list-open-title {
+  color: var(--accent-primary);
+}
+.list-poster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.list-poster > div:first-child {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s;
+}
+a.list-poster:hover > div:first-child {
+  transform: translateY(-2px);
+}
+.list-header-rule {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.55), transparent);
+}
+
+/* ============================================================
    REVIEW SIDE RAIL — website frame option D (Luca 2026-10-25).
    The left game-case spine is gone; on wide desktop the review page
    becomes two columns: the review on the left, and a slim rail on the

@@ -561,6 +561,12 @@ uses the second option yet).
   PageHero (9 pages, "same as HOME") — opening only /social breaks that
   match. Feed review cards stay boxed (matches boxed home feed). Only 1 public
   list exists on the site, so the two list boards are low-traffic.
+- ✅ **Luca: "all 4 sure" → 1–3 SHIPPED (6fd0c55):** /reviews/mine rows + Show
+  more (components/ui/ShowMore, common.showMore), profile Lists tab = ListCard
+  variant="open", list page header + items unboxed. **Social HELD** — he said
+  "not sure how 4 would look"; added a "Social — today" board beside the open
+  one on the canvas to compare. If yes: only /social or all 9 PageHero pages?
+  /reviews/mine needs login, so it was checked by build only, not rendered.
 
 ### 🧹 Duplicates merged + review boxes back (2026-10-26, Windows)
 - Migration 066 RUN ✓ 2026-10-26 (14 redirects, 308s verified live) — `066-merge-duplicates.sql`, paste + Run, nothing

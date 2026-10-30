@@ -539,6 +539,13 @@ uses the second option yet).
   histogram, 2 amber spotlight strip + song-by-song you vs members list
   (gap bars, most loved, biggest split), 3 the room first (pinned "why this
   album" + latest messages with each person's score). Waiting on his pick.
+- Round 2 verdict: "don't really like them, definitely not 3" (room first is
+  OUT). He chose two directions for round 3, now on the canvas: **scores on
+  the record label** (the ReviewSleeve look: cover + LP slid out with the
+  members' score on its label, plus a 7" single with YOUR score; before you
+  rate the label reads ?.? and the 7" is an empty "your record" slot) and
+  **option 1 cleaned up** (full-size cover, no sticker, SPOTLIGHT tag next to
+  ALBUM, community average + your score badges, ▼ you in the histogram).
 - v1 plan once picked (website only, no build):
   migration for the weekly pick (next free number), admin picker, home
   section below the HOME band, album-page banner, the release's live room

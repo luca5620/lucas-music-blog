@@ -518,6 +518,28 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### 🔦 Community Spotlight (2026-10-30, Windows): mockups sent, nothing built
+- Idea from michorex (Discord): one album a week on the home page that
+  everyone listens to, rates and talks about. Why: last 30 days, 64
+  signups → 40 rated → only 4 rated on a 2nd day; 231 reviews over 203
+  releases, 189 with exactly ONE review, so nobody overlaps.
+- Luca picked "mockups first" and is OK with **your score vs the members'
+  score** for this feature (the parked "score vs the room" rule doesn't
+  apply here).
+- Canvas: https://claude.ai/artifact/S3TPyzKZY8DiahexUZpoEH (Currents as the
+  example, numbers are examples). Home section: A the sleeve (record out
+  of the sleeve), B the tape (VHS, cover in the window), C plain row (+
+  Mon–Sun ratings bars). Album page: banner before rating (members' score
+  hidden as ?.? until you rate) and after rating (you vs members, score
+  spread, most-loved song, where you differ most from track_ratings,
+  "Defend it in the room" + Share).
+- Waiting on his pick. v1 plan once picked (website only, no build):
+  migration for the weekly pick (next free number), admin picker, home
+  section below the HOME band, album-page banner, the release's live room
+  = the discussion, Monday push. Week 2: Sunday wrap share card. Vote for
+  next week's album only once ~15+ people take part. Polish before push
+  (6 languages, empty states, phone + web).
+
 ### 🎬 Scorecard lowered + site liquid (2026-10-28, Windows) — a23e863
 - ✅ **Album scorecard lowered** (Luca, a friend's TikTok screenshot: TikTok's
   status bar + "Find related content" search bar covered the top half of the

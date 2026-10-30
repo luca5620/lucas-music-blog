@@ -533,7 +533,13 @@ uses the second option yet).
   hidden as ?.? until you rate) and after rating (you vs members, score
   spread, most-loved song, where you differ most from track_ratings,
   "Defend it in the room" + Share).
-- Waiting on his pick. v1 plan once picked (website only, no build):
+- **Luca picked home look A (the sleeve)** and asked for different album-page
+  looks. Round 2 on the same canvas (old banner pair removed): 1 sticker on
+  the cover + you/members badges and a YOU marker in the existing pulse
+  histogram, 2 amber spotlight strip + song-by-song you vs members list
+  (gap bars, most loved, biggest split), 3 the room first (pinned "why this
+  album" + latest messages with each person's score). Waiting on his pick.
+- v1 plan once picked (website only, no build):
   migration for the weekly pick (next free number), admin picker, home
   section below the HOME band, album-page banner, the release's live room
   = the discussion, Monday push. Week 2: Sunday wrap share card. Vote for

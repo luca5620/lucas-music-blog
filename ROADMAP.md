@@ -522,7 +522,7 @@ uses the second option yet).
 - Idea from michorex (Discord): one album a week everyone listens to, rates
   and talks about. Why: last 30 days, 64 signups → 40 rated → only 4 rated on
   a 2nd day; 231 reviews over 203 releases, 189 with exactly ONE review.
-- Picks (mockups: https://claude.ai/artifact/S3TPyzKZY8DiahexUZpoEH): home
+- Picks (mockup canvas deleted by Luca 2026-10-30): home
   look **A "the sleeve"**; album page **"the record label"** (members' score on
   the LP, yours on a 7" single, ?.? + empty "your record" slot until you rate).
   Luca is OK with "your score vs the members" for this feature.
@@ -544,6 +544,9 @@ uses the second option yet).
   "no spotlight" until 068 is run.
 - **⚠️ Luca to do:** (1) run 068 in the SQL Editor, (2) ~~redeploy push-recap~~ DONE by Claude 2026-10-30 (v6,
   still 403 without the secret), (3) pick week 1 at /admin/spotlight (write the "why this one" line).
+  It is in the avatar menu under Admin as "Spotlight Tool", where the two
+  "Staged Aux War" links used to be (removed 2026-10-30; /aux-wars/preview
+  still works by URL).
 - Next (not built): Sunday wrap share card (members' final score, most-loved
   song, top review); vote for next week's album once ~15+ take part.
 

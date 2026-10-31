@@ -7743,3 +7743,231 @@ a.list-poster:hover > div:first-child {
 .low-detail .rw-slide.is-out { animation-name: rw-out-lite; }
 .low-detail .rw-slide.is-in { animation-name: rw-in-lite; }
 
+
+/* ============================================================
+   COMMUNITY SPOTLIGHT (Luca 2026-10-30) — one album a week that
+   everyone listens to, rates and talks about (migration 068).
+   Home: "the sleeve" (components/spotlight/SpotlightShelf).
+   Album page: "the record label" (SpotlightSleeve) — it reuses the
+   review sleeve's jacket / disc / label classes above and adds a 7"
+   single for YOUR score. Orange = the spotlight's colour.
+   ============================================================ */
+.spotlight-orb {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ff8a3d;
+  box-shadow: 0 0 10px #ff8a3d;
+}
+.spotlight-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 138, 61, 0.6), transparent);
+}
+/* Amber on-screen-display text: "4 DAYS LEFT" */
+.spotlight-osd {
+  font-family: var(--font-vt323), monospace;
+  font-size: 1.1rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--osd-amber);
+}
+.spotlight-live-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--osd-green);
+  box-shadow: 0 0 8px var(--osd-green);
+}
+/* "SPOTLIGHT · WEEK 1" next to the ALBUM pill */
+.spotlight-tag {
+  color: var(--osd-amber);
+  border-color: rgba(255, 176, 47, 0.45);
+}
+/* The little faces of who's rated it this week */
+.spotlight-face {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+  background: var(--bg-elevated);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.spotlight-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Your bar in the spread of scores */
+.spotlight-your-bar {
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* --- Home: the sleeve. Cover in front, record slid out behind it,
+       the record's centre label is the cover art. --- */
+.spotlight-home-sleeve {
+  --home-sleeve: min(64vw, 15.5rem);
+  position: relative;
+  display: block;
+  width: calc(var(--home-sleeve) * 1.37);
+  height: var(--home-sleeve);
+  margin-inline: auto;
+}
+.spotlight-home-jacket {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: var(--home-sleeve);
+  height: var(--home-sleeve);
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 60px rgba(var(--accent-rgb), 0.18);
+}
+.spotlight-home-jacket img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.spotlight-home-disc {
+  position: absolute;
+  top: 4%;
+  left: calc(var(--home-sleeve) * 0.45);
+  width: calc(var(--home-sleeve) * 0.92);
+  height: calc(var(--home-sleeve) * 0.92);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 34%, rgba(255, 255, 255, 0.06) 35%, transparent 37%),
+    repeating-radial-gradient(circle, #121214 0 2px, #1b1b1f 2px 3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.spotlight-home-disc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  background: conic-gradient(from 200deg, transparent, rgba(255, 255, 255, 0.12), transparent 30%, transparent 60%, rgba(255, 255, 255, 0.08), transparent 80%);
+}
+.spotlight-home-disc img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 36%;
+  height: 36%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+}
+/* Hover (desktop): the record slides a little further out */
+.spotlight-home-sleeve:hover .spotlight-home-disc {
+  transform: translateX(8%) rotate(25deg);
+}
+
+/* --- Album page: the record label. Same proportions as the review
+       sleeve, plus room under the LP for the 7" single. --- */
+.spotlight-sleeve {
+  /* 46vw, not the review sleeve 50vw: the 7" makes this one 1.83
+     sleeves wide, and it has to fit a 390px phone with the page gutters */
+  --sleeve: min(46vw, 12.5rem);
+  position: relative;
+  flex-shrink: 0;
+  width: calc(var(--sleeve) * 1.83);
+  height: calc(var(--sleeve) * 1.39);
+  margin-inline: auto;
+}
+@media (min-width: 40rem) {
+  .spotlight-sleeve { --sleeve: 15rem; }
+}
+/* xl: the album page's left column is 340px wide */
+@media (min-width: 80rem) {
+  .spotlight-sleeve { --sleeve: 11.5rem; margin-inline: 0; }
+}
+/* ?.? until you rate */
+.review-sleeve-label.spotlight-label-hidden {
+  background: #2a2a30;
+  color: #b4b4b8;
+}
+/* Your 7" — drops in after the LP has rolled out */
+.spotlight-single {
+  position: absolute;
+  z-index: 3;
+  left: calc(var(--sleeve) * 1.21);
+  top: calc(var(--sleeve) * 0.77);
+  width: calc(var(--sleeve) * 0.62);
+  height: calc(var(--sleeve) * 0.62);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 40%, rgba(255, 255, 255, 0.07) 41%, transparent 43%),
+    repeating-radial-gradient(circle, #141416 0 2px, #1e1e22 2px 3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  animation: spotlight-single-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.9s both;
+}
+.spotlight-single::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 120deg, transparent, rgba(255, 255, 255, 0.12), transparent 30%, transparent 60%, rgba(255, 255, 255, 0.08), transparent 80%);
+}
+.review-sleeve-label.spotlight-single-label {
+  width: 46%;
+  height: 46%;
+}
+.spotlight-single-label b {
+  font-size: calc(var(--sleeve) * 0.085);
+}
+.spotlight-single-label i {
+  font-size: max(6px, calc(var(--sleeve) * 0.03));
+}
+/* No score yet: an empty dashed slot that opens the rating screen */
+.spotlight-single.is-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+  color: var(--text-secondary);
+  animation: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.spotlight-single.is-empty::before { display: none; }
+.spotlight-single.is-empty span {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.spotlight-single.is-empty small {
+  font-family: var(--font-vt323), monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.spotlight-single.is-empty:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+@keyframes spotlight-single-in {
+  from { opacity: 0; transform: translateY(-30%) rotate(-90deg); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-single { animation: none; }
+  .spotlight-home-disc { transition: none; }
+}
+/* Low detail: the 7" still drops in once (one transform, plays once —
+   same call as the review sleeve's roll-out); nothing loops here. */

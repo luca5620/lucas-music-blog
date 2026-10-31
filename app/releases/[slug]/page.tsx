@@ -55,6 +55,13 @@ import CoverLiquidSync from "@/components/ui/CoverLiquidSync";
 import ReleaseRoomChat from "@/components/rooms/ReleaseRoomChat";
 import { type ChatMessageWithProfile } from "@/components/rooms/ChatPanel";
 import { BreadcrumbSchema, ReleaseSchema } from "@/app/schema";
+import SpotlightSleeve from "@/components/spotlight/SpotlightSleeve";
+import SpotlightPulse from "@/components/spotlight/SpotlightPulse";
+import {
+  getCurrentSpotlight,
+  spotlightDaysLeft,
+  type CurrentSpotlight,
+} from "@/lib/db/spotlight";
 // LANGUAGES: page copy (messages → releases.page + common); dates use
 // the viewer's locale. Metadata and JSON-LD stay English.
 import { getLocale, getTranslations } from "next-intl/server";
@@ -296,7 +303,7 @@ export default async function ReleasePage({ params }: Props) {
     }
   }
 
-  const [stats, reviewsRaw, followers, isFollowing, room, trackRatings] =
+  const [stats, reviewsRaw, followers, isFollowing, room, trackRatings, currentSpotlight] =
     await Promise.all([
       getReleaseStats(release.id),
       getReleaseReviews(release.id),
@@ -306,9 +313,23 @@ export default async function ReleasePage({ params }: Props) {
       // Per-song scores (migration 041) — one read, viewer's own
       // rows folded in.
       getTrackRatingSummaries(release.id, user?.id),
+      // Community Spotlight (068) — only matters if it's THIS record.
+      getCurrentSpotlight(),
     ]);
 
   const reviews = reviewsRaw as unknown as ReviewWithProfile[];
+
+  // This record is the week's spotlight → the record-label hero and the
+  // ?.?-until-you-rate score section. The viewer's own score comes off
+  // the review list we already have (no extra query).
+  const spotlight =
+    currentSpotlight && currentSpotlight.release.id === release.id ? currentSpotlight : null;
+  const viewerRating = user
+    ? (reviews.find((r) => r.user_id === user.id)?.rating ?? null)
+    : null;
+  // Server component, rendered once per request — reading the clock is fine.
+  // eslint-disable-next-line react-hooks/purity
+  const spotlightLeft = spotlight ? spotlightDaysLeft(spotlight.endsAt, Date.now()) : 0;
 
   // Track-level emoji reactions were removed 2026-08-19 (Luca: too
   // cluttered) — the live chat room stays, the per-track emoji rows go.
@@ -412,6 +433,9 @@ export default async function ReleasePage({ params }: Props) {
         releaseDateFormatted={releaseDateFormatted}
         artistName={artistName}
         artistSlug={artistSlug}
+        spotlight={spotlight}
+        spotlightLeft={spotlightLeft}
+        viewerRating={viewerRating === null ? null : Number(viewerRating)}
       />
     </div>
   );
@@ -440,9 +464,17 @@ interface ReleaseContentProps {
   /** Set only when the viewer prefers Apple Music AND Apple carries
       the record — then the Apple player replaces the Spotify one. */
   apple: AppleMusicRef | null;
+  /** Set only while THIS record is the Community Spotlight (068). */
+  spotlight: CurrentSpotlight | null;
+  spotlightLeft: number;
+  /** The viewer's own published score, or null (not rated / signed out). */
+  viewerRating: number | null;
 }
 
 async function ReleaseContent({
+  spotlight,
+  spotlightLeft,
+  viewerRating,
   apple,
   release,
   stats,
@@ -463,6 +495,7 @@ async function ReleaseContent({
   const t = await getTranslations("releases.page");
   const tc = await getTranslations("common");
   const tEmbed = await getTranslations("releases.embed");
+  const tSpot = await getTranslations("spotlight");
   const locale = await getLocale();
   // Countdown album: the page (and its live room) exists BEFORE the
   // music does. isUpcoming flips to false on release day by itself —
@@ -503,7 +536,29 @@ async function ReleaseContent({
           On phones everything stacks exactly like before. */}
       <div className="xl:grid xl:grid-cols-[minmax(0,340px)_minmax(0,1fr)_minmax(0,380px)] xl:gap-8 xl:items-start">
       <div className="space-y-5 sm:space-y-6">
-        {/* Cover Image */}
+        {/* Spotlight week: the cover becomes a sleeve with the record
+            slid out — members' score on the LP, yours on a 7" single,
+            ?.? until you rate (components/spotlight/SpotlightSleeve). */}
+        {spotlight ? (
+          <SpotlightSleeve
+            cover={release.cover_image}
+            coverAlt={tc("coverAlt", { title: release.title })}
+            members={stats.avg_rating}
+            you={viewerRating}
+            rateHref={`/reviews/new?release_id=${release.id}`}
+            labels={{
+              members: tSpot("labelMembers"),
+              you: tSpot("labelYou"),
+              yourRecord: tSpot("yourRecord"),
+              srScores: tSpot("srScores", {
+                members: stats.avg_rating !== null ? formatRating(stats.avg_rating) : "",
+                you: viewerRating !== null ? formatRating(viewerRating) : "",
+              }),
+              srHidden: tSpot("srHidden"),
+            }}
+          />
+        ) : (
+        /* Cover Image */
         <div
           className="aspect-square max-w-md mx-auto xl:mx-0 rounded-lg bg-bg-elevated flex items-center justify-center overflow-hidden border-2"
           style={{
@@ -522,6 +577,7 @@ async function ReleaseContent({
             <span className="text-6xl text-text-muted">{"//"}</span>
           )}
         </div>
+        )}
 
         {/* Title + Artist */}
         <div className="space-y-1">
@@ -545,6 +601,11 @@ async function ReleaseContent({
           <span className="label-xbox text-[0.6rem]">
             {release.release_type.toUpperCase()}
           </span>
+          {spotlight && (
+            <span className="label-xbox spotlight-tag text-[0.6rem]">
+              {tSpot("label", { n: spotlight.weekNumber })}
+            </span>
+          )}
           {releaseDateFormatted && (
             <span
               className={
@@ -558,7 +619,19 @@ async function ReleaseContent({
 
         {/* Community pulse: everyone's ratings in one picture —
             average, review count, and the spread of scores. Open, no
-            card (2026-10-25): hairlines above and below mark it. */}
+            card (2026-10-25): hairlines above and below mark it.
+            Spotlight week swaps in SpotlightPulse: no numbers until
+            you rate, then you vs the members. */}
+        {spotlight ? (
+          <SpotlightPulse
+            ratings={reviews.map((r) => r.rating)}
+            members={stats.avg_rating}
+            you={viewerRating}
+            ratedThisWeek={spotlight.ratedThisWeek}
+            daysLeft={spotlightLeft}
+            rateHref={`/reviews/new?release_id=${release.id}`}
+          />
+        ) : (
         <div className="release-pulse space-y-3">
           {stats.avg_rating !== null ? (
             <>
@@ -593,6 +666,7 @@ async function ReleaseContent({
             </div>
           )}
         </div>
+        )}
 
         {/* Follow button */}
         <div className="flex flex-col sm:flex-row gap-3">
@@ -765,7 +839,9 @@ async function ReleaseContent({
           ReleaseRoomChat renders a fixed bottom bar + slide-up sheet
           instead, so the countdown / artwork / Spotify preview stay
           in view while the chat is up. */}
-      <div className="xl:col-start-3 xl:row-start-1 xl:self-stretch">
+      {/* id="room": the Spotlight's "Join the room" links land here
+          (desktop scrolls to it; phones open the sheet on #room). */}
+      <div id="room" className="xl:col-start-3 xl:row-start-1 xl:self-stretch scroll-mt-24">
         {room && (
           <div className="xl:h-full">
             <ReleaseRoomChat
@@ -944,6 +1020,8 @@ interface ReviewWithProfile {
   title: string;
   artist: string;
   rating: number;
+  /** The author — used to find the viewer's own score (Spotlight). */
+  user_id: string;
   cover_image: string | null;
   snippet: string | null;
   summary: string | null;

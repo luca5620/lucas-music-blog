@@ -2141,5 +2141,29 @@
     "promptLede": "Cada disco que calificaste este año, tu top 10 y los números.",
     "promptWatch": "Verlo ahora",
     "promptLater": "Ahora no"
+  },
+  "spotlight": {
+    "label": "Spotlight · Semana {n}",
+    "daysLeft": "{n, plural, one {Queda # día} other {Quedan # días}}",
+    "lastDay": "Último día",
+    "songs": "{n, plural, one {# canción} other {# canciones}}",
+    "openAlbum": "Abrir {title}",
+    "ratedHome": "{n, plural, =0 {Sé el primero en puntuarlo esta semana} one {<b>1 miembro</b> lo puntuó esta semana} other {<b># miembros</b> lo puntuaron esta semana}}",
+    "rateIt": "Puntúalo",
+    "seeCompare": "Mira cómo te comparas",
+    "joinRoom": "Entra a la sala",
+    "labelMembers": "MIEMBROS",
+    "labelYou": "TÚ",
+    "yourRecord": "Tu disco",
+    "srScores": "Nota de los miembros: {members} de 10. La tuya: {you}.",
+    "srHidden": "La nota de los miembros aparece cuando lo puntúes.",
+    "hiddenLine": "{n, plural, =0 {Nadie lo ha puntuado esta semana todavía. Puntúalo para ver la nota de los miembros y dónde cae la tuya.} one {<b>1 miembro</b> lo puntuó esta semana. Puntúalo para ver su nota y dónde cae la tuya.} other {<b># miembros</b> lo puntuaron esta semana. Puntúalo para ver su nota y dónde cae la tuya.}}",
+    "endsSunday": "El spotlight termina el domingo · {left}",
+    "compareSame": "Estás <b>justo en</b> la nota de los miembros",
+    "compareBelow": "Estás <b>{d} por debajo</b> de los miembros",
+    "compareAbove": "Estás <b>{d} por encima</b> de los miembros",
+    "ratedThisWeek": "{n, plural, one {# lo puntuó esta semana} other {# lo puntuaron esta semana}}",
+    "histogramBar": "{n, plural, one {# miembro le dio} other {# miembros le dieron}} {score}",
+    "spreadLabel": "Tú ▼ entre los miembros"
   }
 }

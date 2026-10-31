@@ -27,7 +27,7 @@ import { formatRating, getRatingHex } from "@/lib/rating";
 
 /** Dark ink on light label colours, white ink on dark ones — the label
     has to stay readable whatever colour the score lands on. */
-function labelInk(hex: string): string {
+export function labelInk(hex: string): string {
   const n = parseInt(hex.slice(1), 16);
   const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => {
     const s = c / 255;
@@ -35,6 +35,13 @@ function labelInk(hex: string): string {
   });
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return luminance > 0.22 ? "#120a1f" : "#ffffff";
+}
+
+/** Which special band a score sits in — the label classes that add the
+    stinky plumes (0–1.9) or the sparks (9.5+). Shared with the
+    spotlight record label (components/spotlight/SpotlightSleeve). */
+export function scoreTier(rating: number): string {
+  return rating === 10 ? " is-perfect" : rating >= 9.5 ? " is-elite" : rating < 2 ? " is-stinky" : "";
 }
 
 export default function ReviewSleeve({
@@ -53,7 +60,7 @@ export default function ReviewSleeve({
   unreleasedLabel?: string | null;
 }) {
   const color = getRatingHex(rating);
-  const tier = rating === 10 ? " is-perfect" : rating >= 9.5 ? " is-elite" : rating < 2 ? " is-stinky" : "";
+  const tier = scoreTier(rating);
   return (
     <div className="review-sleeve">
       {/* The record. The label is part of it, so it turns with the

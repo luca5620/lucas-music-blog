@@ -38,6 +38,8 @@ import { BreadcrumbSchema } from "@/app/schema";
 import SupportTeaser from "@/components/support/SupportTeaser";
 import RewindPrompt from "@/components/rewind/RewindPrompt";
 import { getRewindTeaser } from "@/lib/rewind";
+import SpotlightShelf from "@/components/spotlight/SpotlightShelf";
+import { getCurrentSpotlight, getViewerRating, spotlightDaysLeft } from "@/lib/db/spotlight";
 /* App Store link for the web-only download badge in the HOME band —
    shared constant in lib/app-store.ts (also used by the SEO landing
    pages). The listing goes live the moment Apple approves the app. */
@@ -271,6 +273,17 @@ async function Dashboard({ userId }: { userId: string }) {
   const { data: me } = await supabase.from("profiles").select("role").eq("id", userId).single<{ role: string | null }>();
   const rewind = await getRewindTeaser(userId, me?.role ?? null);
 
+  // Community Spotlight (migration 068): this week's shared album, or
+  // null between weeks. If they've already rated it, the button says
+  // "See how you compare" instead of "Rate it".
+  const spotlight = await getCurrentSpotlight();
+  const spotlightRated = spotlight
+    ? (await getViewerRating(userId, spotlight.release.id)) !== null
+    : false;
+  // Same server-render clock note as ON AIR below.
+  // eslint-disable-next-line react-hooks/purity
+  const spotlightLeft = spotlight ? spotlightDaysLeft(spotlight.endsAt, Date.now()) : 0;
+
   // "On air" = releases whose live room saw activity in the last 24h.
   // Dashboard is an async SERVER component rendered once per request,
   // so reading the clock here is the intended behaviour — there's no
@@ -339,6 +352,17 @@ async function Dashboard({ userId }: { userId: string }) {
       </section>
 
       {rewind && <RewindPrompt year={rewind.year} covers={rewind.covers} />}
+
+      {/* ===== COMMUNITY SPOTLIGHT — one album a week for everyone
+             (Luca 2026-10-30, look A "the sleeve"). Nothing between
+             weeks. ===== */}
+      {spotlight && (
+        <SpotlightShelf
+          spotlight={spotlight}
+          daysLeft={spotlightLeft}
+          viewerRated={spotlightRated}
+        />
+      )}
 
       {/* ===== ON AIR — rooms with a pulse right now ===== */}
       {onAir.length > 0 && (

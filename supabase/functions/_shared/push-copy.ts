@@ -534,3 +534,61 @@ export function rewindAlert(
     href: "/rewind",
   };
 }
+
+// ------------------------------------------------------------
+// Community Spotlight — Monday 10am New York (migration 068)
+// ------------------------------------------------------------
+// One push a week to everyone with the app on an iPhone who hasn't
+// rated the week's record yet. Tapping it opens the album page, where
+// the members' score sits as ?.? on the record label until they rate.
+
+/** What the 068 SQL job sends per person (see send_spotlight_pushes). */
+export interface SpotlightWeek {
+  username: string;
+  title: string;
+  artist: string;
+  slug: string;
+}
+
+const SPOTLIGHT_COPY: Record<Locale, { title: string; body: string }> = {
+  en: {
+    title: "This week's spotlight: {title}",
+    body: "{artist}. Listen, rate it and see how you compare with everyone.",
+  },
+  es: {
+    title: "El spotlight de esta semana: {title}",
+    body: "{artist}. Escúchalo, puntúalo y mira cómo te comparas con los demás.",
+  },
+  fr: {
+    title: "Le spotlight de la semaine : {title}",
+    body: "{artist}. Écoute, note-le et compare ta note à celle des autres.",
+  },
+  pt: {
+    title: "O spotlight da semana: {title}",
+    body: "{artist}. Ouça, avalie e veja como você se compara com todo mundo.",
+  },
+  nl: {
+    title: "De spotlight van deze week: {title}",
+    body: "{artist}. Luister, beoordeel het en zie hoe je scoort tegenover de rest.",
+  },
+  de: {
+    title: "Das Spotlight der Woche: {title}",
+    body: "{artist}. Hör rein, bewerte es und sieh, wie du im Vergleich liegst.",
+  },
+};
+
+/** The Monday spotlight push for one person in one language. */
+export function spotlightAlert(
+  locale: Locale,
+  s: SpotlightWeek
+): { title: string; body: string; href: string } {
+  const copy = SPOTLIGHT_COPY[locale];
+  return {
+    title: fill(copy.title, { title: s.title }),
+    // No artist on record (rare Genius imports) → drop the "{artist}. "
+    body: s.artist
+      ? fill(copy.body, { artist: s.artist })
+      : fill(copy.body, { artist: "" }).replace(/^\.\s*/, ""),
+    href: `/releases/${s.slug}`,
+  };
+}

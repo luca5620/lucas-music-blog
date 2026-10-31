@@ -2141,5 +2141,29 @@
     "promptLede": "Every record you rated this year, your top 10 and the numbers.",
     "promptWatch": "Watch now",
     "promptLater": "Not now"
+  },
+  "spotlight": {
+    "label": "Spotlight · Week {n}",
+    "daysLeft": "{n, plural, one {# day left} other {# days left}}",
+    "lastDay": "Last day",
+    "songs": "{n, plural, one {# song} other {# songs}}",
+    "openAlbum": "Open {title}",
+    "ratedHome": "{n, plural, =0 {Be the first to rate it this week} one {<b>1 member</b> rated it this week} other {<b># members</b> rated it this week}}",
+    "rateIt": "Rate it",
+    "seeCompare": "See how you compare",
+    "joinRoom": "Join the room",
+    "labelMembers": "MEMBERS",
+    "labelYou": "YOU",
+    "yourRecord": "Your record",
+    "srScores": "Members' score {members} out of 10. Yours: {you}.",
+    "srHidden": "The members' score shows once you rate it.",
+    "hiddenLine": "{n, plural, =0 {Nobody has rated it this week yet. Rate it to see the members' score and where yours lands.} one {<b>1 member</b> rated it this week. Rate it to see their score and where yours lands.} other {<b># members</b> rated it this week. Rate it to see their score and where yours lands.}}",
+    "endsSunday": "Spotlight ends Sunday · {left}",
+    "compareSame": "You're <b>right on</b> the members' score",
+    "compareBelow": "You're <b>{d} below</b> the members",
+    "compareAbove": "You're <b>{d} above</b> the members",
+    "ratedThisWeek": "{n, plural, one {# rated it this week} other {# rated it this week}}",
+    "histogramBar": "{n, plural, one {# member} other {# members}} gave it {score}",
+    "spreadLabel": "You ▼ among the members"
   }
 }

@@ -2141,5 +2141,29 @@
     "promptLede": "Jede Platte, die du dieses Jahr bewertet hast, deine Top 10 und die Zahlen.",
     "promptWatch": "Jetzt ansehen",
     "promptLater": "Später"
+  },
+  "spotlight": {
+    "label": "Spotlight · Woche {n}",
+    "daysLeft": "{n, plural, one {Noch # Tag} other {Noch # Tage}}",
+    "lastDay": "Letzter Tag",
+    "songs": "{n, plural, one {# Song} other {# Songs}}",
+    "openAlbum": "{title} öffnen",
+    "ratedHome": "{n, plural, =0 {Sei diese Woche der Erste, der es bewertet} one {<b>1 Mitglied</b> hat es diese Woche bewertet} other {<b># Mitglieder</b> haben es diese Woche bewertet}}",
+    "rateIt": "Bewerten",
+    "seeCompare": "Sieh, wie du liegst",
+    "joinRoom": "In den Live-Raum",
+    "labelMembers": "MITGLIEDER",
+    "labelYou": "DU",
+    "yourRecord": "Deine Platte",
+    "srScores": "Wertung der Mitglieder: {members} von 10. Deine: {you}.",
+    "srHidden": "Die Wertung der Mitglieder siehst du, sobald du bewertet hast.",
+    "hiddenLine": "{n, plural, =0 {Diese Woche hat es noch niemand bewertet. Bewerte es, um die Wertung der Mitglieder zu sehen und wo deine liegt.} one {<b>1 Mitglied</b> hat es diese Woche bewertet. Bewerte es, um die Wertung zu sehen und wo deine liegt.} other {<b># Mitglieder</b> haben es diese Woche bewertet. Bewerte es, um ihre Wertung zu sehen und wo deine liegt.}}",
+    "endsSunday": "Das Spotlight endet Sonntag · {left}",
+    "compareSame": "Du liegst <b>genau auf</b> der Wertung der Mitglieder",
+    "compareBelow": "Du liegst <b>{d} unter</b> den Mitgliedern",
+    "compareAbove": "Du liegst <b>{d} über</b> den Mitgliedern",
+    "ratedThisWeek": "{n, plural, one {# hat es diese Woche bewertet} other {# haben es diese Woche bewertet}}",
+    "histogramBar": "{n, plural, one {# Mitglied gab} other {# Mitglieder gaben}} eine {score}",
+    "spreadLabel": "Du ▼ unter den Mitgliedern"
   }
 }

@@ -25,6 +25,11 @@
 //
 //   { "type": "REWIND", "rewinds": [ { user_id, username, year, total }, … ] }
 //
+// And since migration 068, the Monday Community Spotlight push:
+//
+//   { "type": "SPOTLIGHT", "spotlights": [ { user_id, username, title,
+//     artist, slug }, … ] }
+//
 // Same devices, same APNs path, same secret — just different words —
 // so it lives here instead of in a third function to deploy.
 //
@@ -51,11 +56,13 @@ import {
   dropAlert,
   recapAlert,
   rewindAlert,
+  spotlightAlert,
   streakAlert,
   type Locale,
   type RecapStats,
   type RewindReady,
   type SavedDrop,
+  type SpotlightWeek,
   type StreakSave,
 } from "../_shared/push-copy.ts";
 
@@ -72,6 +79,10 @@ interface DropRow extends SavedDrop {
 }
 
 interface RewindRow extends RewindReady {
+  user_id: string;
+}
+
+interface SpotlightRow extends SpotlightWeek {
   user_id: string;
 }
 
@@ -131,6 +142,18 @@ function isRewindRow(value: unknown): value is RewindRow {
   );
 }
 
+function isSpotlightRow(value: unknown): value is SpotlightRow {
+  const r = value as Partial<SpotlightRow> | null;
+  return (
+    !!r &&
+    typeof r.user_id === "string" &&
+    typeof r.username === "string" &&
+    typeof r.title === "string" &&
+    typeof r.artist === "string" &&
+    typeof r.slug === "string"
+  );
+}
+
 /** One message per person; each device gets it in its own language. */
 interface Outgoing {
   user_id: string;
@@ -167,6 +190,11 @@ Deno.serve(async (req) => {
     outgoing = (payload.rewinds as unknown[]).filter(isRewindRow).map((r) => ({
       user_id: r.user_id,
       alertFor: (locale) => rewindAlert(locale, r),
+    }));
+  } else if (payload?.type === "SPOTLIGHT" && Array.isArray(payload.spotlights)) {
+    outgoing = (payload.spotlights as unknown[]).filter(isSpotlightRow).map((s) => ({
+      user_id: s.user_id,
+      alertFor: (locale) => spotlightAlert(locale, s),
     }));
   } else {
     return new Response("ignored", { status: 200 });

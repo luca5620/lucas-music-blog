@@ -518,40 +518,35 @@ uses the second option yet).
 
 ## ⏳ In progress
 
-### 🔦 Community Spotlight (2026-10-30, Windows): mockups sent, nothing built
-- Idea from michorex (Discord): one album a week on the home page that
-  everyone listens to, rates and talks about. Why: last 30 days, 64
-  signups → 40 rated → only 4 rated on a 2nd day; 231 reviews over 203
-  releases, 189 with exactly ONE review, so nobody overlaps.
-- Luca picked "mockups first" and is OK with **your score vs the members'
-  score** for this feature (the parked "score vs the room" rule doesn't
-  apply here).
-- Canvas: https://claude.ai/artifact/S3TPyzKZY8DiahexUZpoEH (Currents as the
-  example, numbers are examples). Home section: A the sleeve (record out
-  of the sleeve), B the tape (VHS, cover in the window), C plain row (+
-  Mon–Sun ratings bars). Album page: banner before rating (members' score
-  hidden as ?.? until you rate) and after rating (you vs members, score
-  spread, most-loved song, where you differ most from track_ratings,
-  "Defend it in the room" + Share).
-- **Luca picked home look A (the sleeve)** and asked for different album-page
-  looks. Round 2 on the same canvas (old banner pair removed): 1 sticker on
-  the cover + you/members badges and a YOU marker in the existing pulse
-  histogram, 2 amber spotlight strip + song-by-song you vs members list
-  (gap bars, most loved, biggest split), 3 the room first (pinned "why this
-  album" + latest messages with each person's score). Waiting on his pick.
-- Round 2 verdict: "don't really like them, definitely not 3" (room first is
-  OUT). He chose two directions for round 3, now on the canvas: **scores on
-  the record label** (the ReviewSleeve look: cover + LP slid out with the
-  members' score on its label, plus a 7" single with YOUR score; before you
-  rate the label reads ?.? and the 7" is an empty "your record" slot) and
-  **option 1 cleaned up** (full-size cover, no sticker, SPOTLIGHT tag next to
-  ALBUM, community average + your score badges, ▼ you in the histogram).
-- v1 plan once picked (website only, no build):
-  migration for the weekly pick (next free number), admin picker, home
-  section below the HOME band, album-page banner, the release's live room
-  = the discussion, Monday push. Week 2: Sunday wrap share card. Vote for
-  next week's album only once ~15+ people take part. Polish before push
-  (6 languages, empty states, phone + web).
+### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT, needs migration 068 + a redeploy
+- Idea from michorex (Discord): one album a week everyone listens to, rates
+  and talks about. Why: last 30 days, 64 signups → 40 rated → only 4 rated on
+  a 2nd day; 231 reviews over 203 releases, 189 with exactly ONE review.
+- Picks (mockups: https://claude.ai/artifact/S3TPyzKZY8DiahexUZpoEH): home
+  look **A "the sleeve"**; album page **"the record label"** (members' score on
+  the LP, yours on a 7" single, ?.? + empty "your record" slot until you rate).
+  Luca is OK with "your score vs the members" for this feature.
+- **Shipped code:** migration `068-community-spotlight.sql` (spotlight_weeks,
+  Monday→Monday New York via trigger, public read, staff+email-code writes;
+  Monday 10am NY push to iPhone users who haven't rated it, ledger
+  push_spotlight_sent, cron `spotlight-monday-push`), `lib/db/spotlight.ts`,
+  `components/spotlight/` (SpotlightShelf home, SpotlightSleeve + SpotlightPulse
+  album page; sleeve reuses ReviewSleeve classes, labelInk/scoreTier now
+  exported), `/admin/spotlight` + `/api/admin/spotlight` (paste album link,
+  pick Monday, optional note), ReleaseRoomChat opens its phone sheet on
+  `#room` (Join the room links), push-copy SPOTLIGHT + push-recap handler,
+  `spotlight` messages in all 6 languages, CSS "COMMUNITY SPOTLIGHT" at the end
+  of globals.css. During its week the album page HIDES the community average
+  + spread until the viewer rates (reviews list below still shows scores).
+- Checked: npm run build, eslint, 390px DevTools-emulated screenshots of every
+  state (headless Chrome's window can't go under 512px — use a CDP
+  setDeviceMetricsOverride script for phone shots). Everything fails soft to
+  "no spotlight" until 068 is run.
+- **⚠️ Luca to do:** (1) run 068 in the SQL Editor, (2) redeploy push-recap:
+  `npx supabase functions deploy push-recap --no-verify-jwt --project-ref qhbtfhyzbiwqwaxtetgd`,
+  (3) pick week 1 at /admin/spotlight (write the "why this one" line).
+- Next (not built): Sunday wrap share card (members' final score, most-loved
+  song, top review); vote for next week's album once ~15+ take part.
 
 ### 🎬 Scorecard lowered + site liquid (2026-10-28, Windows) — a23e863
 - ✅ **Album scorecard lowered** (Luca, a friend's TikTok screenshot: TikTok's

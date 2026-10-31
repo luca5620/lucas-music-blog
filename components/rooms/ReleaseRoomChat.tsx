@@ -96,7 +96,21 @@ function LiveRoomSheet({
   // mounted-flag effect).
   const t = useTranslations("rooms");
   const mounted = useHydrated();
-  const [open, setOpen] = useState(false);
+  // Opens straight away when the page was reached through a #room
+  // link (the Community Spotlight's "Join the room" buttons). This
+  // sheet only ever mounts in the browser (mode is null on the
+  // server), so reading the address here is safe.
+  const [open, setOpen] = useState(
+    () => typeof window !== "undefined" && window.location.hash === "#room"
+  );
+  // …and when a #room link on the same page is tapped.
+  useEffect(() => {
+    const onHash = () => {
+      if (window.location.hash === "#room") setOpen(true);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
   // Live head-count for the collapsed bar (Luca 2026-08-28: rooms
   // show PEOPLE, not comment counts). Relayed up from PresencePile
   // through ChatPanel — the sheet keeps ChatPanel mounted while
@@ -128,6 +142,10 @@ function LiveRoomSheet({
     hapticTap();
     setKb(false);
     setOpen(false);
+    // Drop the #room so tapping "Join the room" again re-opens it.
+    if (window.location.hash === "#room") {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
   };
 
   const handleFocus = (e: React.FocusEvent) => {

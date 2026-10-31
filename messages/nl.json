@@ -2141,5 +2141,29 @@
     "promptLede": "Elke plaat die je dit jaar beoordeelde, je top 10 en de cijfers.",
     "promptWatch": "Nu kijken",
     "promptLater": "Niet nu"
+  },
+  "spotlight": {
+    "label": "Spotlight · Week {n}",
+    "daysLeft": "{n, plural, one {Nog # dag} other {Nog # dagen}}",
+    "lastDay": "Laatste dag",
+    "songs": "{n, plural, one {# nummer} other {# nummers}}",
+    "openAlbum": "{title} openen",
+    "ratedHome": "{n, plural, =0 {Wees deze week de eerste die het beoordeelt} one {<b>1 lid</b> beoordeelde het deze week} other {<b># leden</b> beoordeelden het deze week}}",
+    "rateIt": "Beoordeel",
+    "seeCompare": "Zie hoe je scoort",
+    "joinRoom": "Naar de live room",
+    "labelMembers": "LEDEN",
+    "labelYou": "JIJ",
+    "yourRecord": "Jouw plaat",
+    "srScores": "Score van de leden: {members} van 10. Die van jou: {you}.",
+    "srHidden": "De score van de leden zie je zodra je hem beoordeelt.",
+    "hiddenLine": "{n, plural, =0 {Niemand heeft het deze week al beoordeeld. Beoordeel het om de score van de leden te zien en waar de jouwe uitkomt.} one {<b>1 lid</b> beoordeelde het deze week. Beoordeel het om de score te zien en waar de jouwe uitkomt.} other {<b># leden</b> beoordeelden het deze week. Beoordeel het om hun score te zien en waar de jouwe uitkomt.}}",
+    "endsSunday": "De spotlight eindigt zondag · {left}",
+    "compareSame": "Je zit <b>precies op</b> de score van de leden",
+    "compareBelow": "Je zit <b>{d} onder</b> de leden",
+    "compareAbove": "Je zit <b>{d} boven</b> de leden",
+    "ratedThisWeek": "{n, plural, one {# beoordeelde het deze week} other {# beoordeelden het deze week}}",
+    "histogramBar": "{n, plural, one {# lid gaf} other {# leden gaven}} een {score}",
+    "spreadLabel": "Jij ▼ tussen de leden"
   }
 }

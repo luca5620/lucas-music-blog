@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
 import {
   getOpenReports,
+  getHandledReports,
   getHandledReportCount,
   getReportedProfiles,
   type ReportTargetType,
@@ -15,7 +16,8 @@ import ReportActions from "./ReportActions";
 /**
  * /admin/reports — the moderation queue. Staff-only (same gate as
  * /admin/import). Lists open content reports newest-first with
- * Resolve / Dismiss / Delete-content actions.
+ * Resolve / Dismiss / Delete-content actions, then the HISTORY: the
+ * last 50 handled reports (Luca 2026-10-30), read-only.
  */
 
 export const metadata: Metadata = {
@@ -88,8 +90,9 @@ export default async function AdminReportsPage() {
     );
   }
 
-  const [reports, handledCount] = await Promise.all([
+  const [reports, history, handledCount] = await Promise.all([
     getOpenReports(100),
+    getHandledReports(50),
     getHandledReportCount(),
   ]);
 
@@ -98,7 +101,9 @@ export default async function AdminReportsPage() {
   // leaving the page (Apple 1.2, tightened 2026-10-16).
   const reportedProfiles = await getReportedProfiles([
     ...new Set(
-      reports.filter((r) => r.target_type === "profile").map((r) => r.target_id)
+      [...reports, ...history]
+        .filter((r) => r.target_type === "profile")
+        .map((r) => r.target_id)
     ),
   ]);
 
@@ -179,9 +184,78 @@ export default async function AdminReportsPage() {
         </div>
       )}
 
-      <p className="text-xs text-text-muted">
-        {handledCount} report{handledCount === 1 ? "" : "s"} previously handled.
-      </p>
+      {/* ===== HISTORY — handled reports, newest first. One line
+             each, no actions: it's the record of what came in and
+             what was done with it. "Delete content" shows as
+             Resolved (the delete resolves the report). ===== */}
+      <section className="space-y-3 pt-4">
+        <div className="flex items-center gap-3">
+          <h2 className="label-xbox">History</h2>
+          <span className="text-xs text-text-muted">
+            {handledCount} handled
+            {handledCount > history.length ? ` · latest ${history.length} shown` : ""}
+          </span>
+        </div>
+        {history.length === 0 ? (
+          <p className="text-sm text-text-muted">Nothing handled yet.</p>
+        ) : (
+          <ul className="divide-y divide-border-subtle border-y border-border-subtle">
+            {history.map((r) => {
+              const profile =
+                r.target_type === "profile" ? reportedProfiles.get(r.target_id) : undefined;
+              return (
+                <li key={r.id} className="py-3 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`pixel-text text-[11px] uppercase tracking-widest ${
+                        r.status === "resolved" ? "text-osd-green" : "text-text-muted"
+                      }`}
+                    >
+                      {r.status === "resolved" ? "Resolved" : "Dismissed"}
+                    </span>
+                    <span className="label-xbox">{targetLabel(r.target_type)}</span>
+                    <span className="text-xs text-text-muted">
+                      {new Date(r.created_at).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    {r.reporter && (
+                      <span className="text-xs text-text-muted">
+                        by{" "}
+                        <Link
+                          href={`/profile/${r.reporter.username}`}
+                          className="text-accent-primary hover:underline"
+                        >
+                          @{r.reporter.username}
+                        </Link>
+                      </span>
+                    )}
+                    {profile && (
+                      <span className="text-xs text-text-muted">
+                        about{" "}
+                        <Link
+                          href={`/profile/${profile.username}`}
+                          className="text-accent-primary hover:underline"
+                        >
+                          @{profile.username}
+                        </Link>
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-text-secondary break-words">{r.reason}</p>
+                  <p className="text-[11px] text-text-muted font-mono break-all">
+                    target: {r.target_id}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }

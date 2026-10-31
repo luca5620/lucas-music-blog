@@ -79,11 +79,28 @@ export async function createReport(
 
 /** Open reports, newest first, with the reporter's identity joined in. */
 export async function getOpenReports(limit = 100): Promise<ReportWithReporter[]> {
+  return getReportsWithReporter("open", limit);
+}
+
+/** The report HISTORY (Luca 2026-10-30): everything already resolved
+    or dismissed, newest report first. There's no "handled at" column,
+    so it's ordered by when the report was filed. */
+export async function getHandledReports(limit = 50): Promise<ReportWithReporter[]> {
+  return getReportsWithReporter("handled", limit);
+}
+
+async function getReportsWithReporter(
+  which: "open" | "handled",
+  limit: number
+): Promise<ReportWithReporter[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const base = supabase
     .from("content_reports")
-    .select("*, profiles!content_reports_reporter_id_fkey(username, display_name)")
-    .eq("status", "open")
+    .select("*, profiles!content_reports_reporter_id_fkey(username, display_name)");
+  const { data, error } = await (which === "open"
+    ? base.eq("status", "open")
+    : base.neq("status", "open")
+  )
     .order("created_at", { ascending: false })
     .limit(limit);
 

@@ -12,12 +12,14 @@ import {
   type ReportedProfile,
 } from "@/lib/db/moderation";
 import ReportActions from "./ReportActions";
+import HistoryActions from "./HistoryActions";
 
 /**
  * /admin/reports — the moderation queue. Staff-only (same gate as
  * /admin/import). Lists open content reports newest-first with
  * Resolve / Dismiss / Delete-content actions, then the HISTORY: the
- * last 50 handled reports (Luca 2026-10-30), read-only.
+ * last 50 handled reports (Luca 2026-10-30), each with Reopen, and
+ * Restore when its content was deleted (migration 069 keeps a copy).
  */
 
 export const metadata: Metadata = {
@@ -116,6 +118,9 @@ export default async function AdminReportsPage() {
           report, Delete content = remove the reported thing and resolve.
           On a profile report, Remove avatar / Remove banner delete that
           image (the report stays open — resolve it when you&apos;re done).
+          Made a mistake? In the history below, Reopen sends a report back
+          here and Restore brings deleted content back (removed pictures
+          can&apos;t come back).
         </p>
       </div>
 
@@ -184,10 +189,10 @@ export default async function AdminReportsPage() {
         </div>
       )}
 
-      {/* ===== HISTORY — handled reports, newest first. One line
-             each, no actions: it's the record of what came in and
-             what was done with it. "Delete content" shows as
-             Resolved (the delete resolves the report). ===== */}
+      {/* ===== HISTORY — handled reports, newest first: the record
+             of what came in and what was done with it, plus the undo
+             buttons (HistoryActions). A delete shows as "Deleted",
+             a put-back one as "Restored". ===== */}
       <section className="space-y-3 pt-4">
         <div className="flex items-center gap-3">
           <h2 className="label-xbox">History</h2>
@@ -203,53 +208,73 @@ export default async function AdminReportsPage() {
             {history.map((r) => {
               const profile =
                 r.target_type === "profile" ? reportedProfiles.get(r.target_id) : undefined;
+              // What happened, most specific first. deleted_at /
+              // restored_at only exist once migration 069 has run.
+              const outcome = r.restored_at
+                ? { text: "Restored", tone: "text-osd-amber" }
+                : r.deleted_at
+                  ? { text: "Deleted", tone: "text-accent-rose" }
+                  : r.status === "resolved"
+                    ? { text: "Resolved", tone: "text-osd-green" }
+                    : { text: "Dismissed", tone: "text-text-muted" };
               return (
-                <li key={r.id} className="py-3 space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span
-                      className={`pixel-text text-[11px] uppercase tracking-widest ${
-                        r.status === "resolved" ? "text-osd-green" : "text-text-muted"
-                      }`}
-                    >
-                      {r.status === "resolved" ? "Resolved" : "Dismissed"}
-                    </span>
-                    <span className="label-xbox">{targetLabel(r.target_type)}</span>
-                    <span className="text-xs text-text-muted">
-                      {new Date(r.created_at).toLocaleString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                    {r.reporter && (
-                      <span className="text-xs text-text-muted">
-                        by{" "}
-                        <Link
-                          href={`/profile/${r.reporter.username}`}
-                          className="text-accent-primary hover:underline"
-                        >
-                          @{r.reporter.username}
-                        </Link>
+                <li key={r.id} className="py-3 flex items-start justify-between gap-4">
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className={`pixel-text text-[11px] uppercase tracking-widest ${outcome.tone}`}
+                      >
+                        {outcome.text}
                       </span>
-                    )}
-                    {profile && (
+                      <span className="label-xbox">{targetLabel(r.target_type)}</span>
                       <span className="text-xs text-text-muted">
-                        about{" "}
-                        <Link
-                          href={`/profile/${profile.username}`}
-                          className="text-accent-primary hover:underline"
-                        >
-                          @{profile.username}
-                        </Link>
+                        {new Date(r.created_at).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
                       </span>
-                    )}
+                      {r.reporter && (
+                        <span className="text-xs text-text-muted">
+                          by{" "}
+                          <Link
+                            href={`/profile/${r.reporter.username}`}
+                            className="text-accent-primary hover:underline"
+                          >
+                            @{r.reporter.username}
+                          </Link>
+                        </span>
+                      )}
+                      {profile && (
+                        <span className="text-xs text-text-muted">
+                          about{" "}
+                          <Link
+                            href={`/profile/${profile.username}`}
+                            className="text-accent-primary hover:underline"
+                          >
+                            @{profile.username}
+                          </Link>
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-text-secondary break-words">{r.reason}</p>
+                    <p className="text-[11px] text-text-muted font-mono break-all">
+                      target: {r.target_id}
+                      {r.handled_at &&
+                        ` · handled ${new Date(r.handled_at).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}`}
+                    </p>
                   </div>
-                  <p className="text-sm text-text-secondary break-words">{r.reason}</p>
-                  <p className="text-[11px] text-text-muted font-mono break-all">
-                    target: {r.target_id}
-                  </p>
+                  <HistoryActions
+                    reportId={r.id}
+                    restorable={!!r.deleted_at && !r.restored_at}
+                  />
                 </li>
               );
             })}

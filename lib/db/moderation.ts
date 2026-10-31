@@ -45,6 +45,14 @@ export interface ContentReport {
   reason: string;
   status: "open" | "resolved" | "dismissed";
   created_at: string;
+  // Migration 069 (undo). Missing until it's been run — hence optional.
+  /** When / by whom it was resolved or dismissed (null while open). */
+  handled_at?: string | null;
+  handled_by?: string | null;
+  /** Set when "Delete content" removed the target AND kept a copy. */
+  deleted_at?: string | null;
+  /** Set when that copy was put back. */
+  restored_at?: string | null;
 }
 
 export interface ReportWithReporter extends ContentReport {
@@ -83,8 +91,9 @@ export async function getOpenReports(limit = 100): Promise<ReportWithReporter[]>
 }
 
 /** The report HISTORY (Luca 2026-10-30): everything already resolved
-    or dismissed, newest report first. There's no "handled at" column,
-    so it's ordered by when the report was filed. */
+    or dismissed, newest report first. Ordered by when the report was
+    filed — handled_at only exists from migration 069 on, and older
+    rows don't have it. */
 export async function getHandledReports(limit = 50): Promise<ReportWithReporter[]> {
   return getReportsWithReporter("handled", limit);
 }
@@ -94,16 +103,22 @@ async function getReportsWithReporter(
   limit: number
 ): Promise<ReportWithReporter[]> {
   const supabase = await createClient();
-  const base = supabase
-    .from("content_reports")
-    .select("*, profiles!content_reports_reporter_id_fkey(username, display_name)");
-  const { data, error } = await (which === "open"
-    ? base.eq("status", "open")
-    : base.neq("status", "open")
-  )
-    .order("created_at", { ascending: false })
-    .limit(limit);
+  const reporter = "profiles!content_reports_reporter_id_fkey(username, display_name)";
+  // Named columns, not "*": since 069 a report can carry a snapshot of
+  // everything it deleted, which the list never needs to download.
+  const withUndo = `id, reporter_id, target_type, target_id, reason, status, created_at, handled_at, handled_by, deleted_at, restored_at, ${reporter}`;
+  const plain = `id, reporter_id, target_type, target_id, reason, status, created_at, ${reporter}`;
 
+  const run = (columns: string) => {
+    const base = supabase.from("content_reports").select(columns);
+    return (which === "open" ? base.eq("status", "open") : base.neq("status", "open"))
+      .order("created_at", { ascending: false })
+      .limit(limit);
+  };
+
+  let { data, error } = await run(withUndo);
+  // Before 069 is run those columns don't exist — ask again without them.
+  if (error) ({ data, error } = await run(plain));
   if (error || !data) return [];
 
   type Row = ContentReport & {
@@ -133,7 +148,7 @@ export async function getReportById(id: string): Promise<ContentReport | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("content_reports")
-    .select("*")
+    .select("id, reporter_id, target_type, target_id, reason, status, created_at")
     .eq("id", id)
     .single();
   if (error || !data) return null;
@@ -167,7 +182,8 @@ export async function getReportedProfiles(
 
 export async function setReportStatus(
   id: string,
-  status: "resolved" | "dismissed"
+  // "open" = Reopen from the history (sends it back to the queue).
+  status: "open" | "resolved" | "dismissed"
 ): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase

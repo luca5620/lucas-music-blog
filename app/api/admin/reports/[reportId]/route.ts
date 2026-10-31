@@ -13,7 +13,16 @@ import type { Profile } from "@/lib/types/database";
  *                              dealt with elsewhere)
  *   action: "dismiss"        → mark bogus/spam report
  *   action: "delete_content" → delete the reported row (where that
- *                              makes sense), then mark resolved
+ *                              makes sense), then mark resolved. Since
+ *                              migration 069 a copy of the row (and
+ *                              everything that cascades off it) is
+ *                              kept on the report first, so…
+ *   action: "restore"        → …puts a deleted row back exactly as it
+ *                              was and marks the report dismissed
+ *                              (Luca 2026-10-30: "what if i accidentally
+ *                              deleted something that actually wasnt
+ *                              an issue")
+ *   action: "reopen"         → send a handled report back to the queue
  *   action: "remove_avatar" / "remove_banner"
  *                            → PROFILE reports only: delete that
  *                              member's uploaded picture/banner files
@@ -101,6 +110,8 @@ export async function POST(
     action !== "resolve" &&
     action !== "dismiss" &&
     action !== "delete_content" &&
+    action !== "restore" &&
+    action !== "reopen" &&
     action !== "remove_avatar" &&
     action !== "remove_banner"
   ) {
@@ -125,7 +136,55 @@ export async function POST(
       return NextResponse.json({ ok: true, removed: which, status: "open" });
     }
 
+    if (action === "reopen") {
+      // Back to the queue as if nobody had touched it. A deleted row
+      // stays deleted — Restore is the button for that.
+      await setReportStatus(reportId, "open");
+      return NextResponse.json({ ok: true, status: "open" });
+    }
+
+    if (action === "restore") {
+      // Migration 069's function does it all in one transaction: puts
+      // every copied row back with its original id, resets counters,
+      // marks the report dismissed. It checks staff + email code itself.
+      const { data, error } = await supabase.rpc(
+        "staff_restore_reported_content",
+        { p_report: reportId } as never
+      );
+      if (error) {
+        if (error.code === "PGRST202") {
+          throw new MigrationMissing(
+            "Restore needs migration 069 — run it in the Supabase SQL editor first."
+          );
+        }
+        if (error.message.includes("Nothing to restore")) {
+          return NextResponse.json(
+            { error: "Nothing to restore — this was deleted before undo existed, or it's already back." },
+            { status: 400 }
+          );
+        }
+        throw new Error(`staff_restore_reported_content failed: ${error.message}`);
+      }
+      return NextResponse.json({ ok: true, restored: data ?? 0, status: "dismissed" });
+    }
+
     if (action === "delete_content") {
+      // Since migration 069: delete through the function that keeps a
+      // copy first, so the delete can be undone from the history.
+      const { data, error } = await supabase.rpc(
+        "staff_delete_reported_content",
+        { p_report: reportId } as never
+      );
+      if (!error) {
+        return NextResponse.json({ ok: true, deleted: data === true, status: "resolved" });
+      }
+      // PGRST202 = function not found = 069 not run yet. Fall through
+      // to the old hard delete so the queue keeps working meanwhile
+      // (those deletes just can't be restored).
+      if (error.code !== "PGRST202") {
+        throw new Error(`staff_delete_reported_content failed: ${error.message}`);
+      }
+
       const table = DELETABLE[report.target_type];
       if (table) {
         // RLS (007's admin delete policies) authorizes this delete.

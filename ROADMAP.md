@@ -518,6 +518,22 @@ uses the second option yet).
 
 ## ⏳ In progress
 
+### ↩️ Report queue undo (2026-10-30, Windows) — needs migration 069 (after 068)
+- Luca: "what if i accidentally deleted something that actually wasnt an issue".
+  Reports page now has a **History** (last 50 handled) and every history row has
+  **Reopen** (back to the open queue); rows whose content was deleted also get
+  **Restore** (puts the content back with its original id, comments/likes and all,
+  counters reset to what they were; report becomes dismissed + "Restored").
+- `069-report-undo.sql`: content_reports.handled_at/handled_by (trigger),
+  snapshot/deleted_at/restored_at; `staff_delete_reported_content` copies the row +
+  everything that ON DELETE CASCADEs off it (found through the foreign keys,
+  never notifications) before deleting; `staff_restore_reported_content` puts it back.
+  Tested in PGlite (review + comments + likes round trip, no double counts).
+- Before 069 is run the queue still works (old hard delete, Reopen works, Restore
+  says "run 069"). Deletes made BEFORE 069 and removed avatars/banners (files)
+  can never be restored; SET NULL links (e.g. a featured review) stay cleared.
+- **⚠️ Luca to do:** run 069 in the SQL Editor (after 068).
+
 ### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT 2bf3b8f, needs migration 068 + week 1 picked
 - Idea from michorex (Discord): one album a week everyone listens to, rates
   and talks about. Why: last 30 days, 64 signups → 40 rated → only 4 rated on

@@ -20,9 +20,10 @@ interface ReportActionsProps {
 
 type Action = "resolve" | "dismiss" | "delete_content" | "remove_avatar" | "remove_banner";
 
-/** The irreversible actions and what the confirm box says for each. */
+/** The destructive actions and what the confirm box says for each. */
 const CONFIRM: Partial<Record<Action, string>> = {
-  delete_content: "Delete the reported content? This can't be undone.",
+  // Since migration 069 a delete keeps a copy — Restore in the history.
+  delete_content: "Delete the reported content? (Restore in the history brings it back if it was a mistake.)",
   remove_avatar: "Delete this member's profile picture (every copy they uploaded)? This can't be undone.",
   remove_banner: "Delete this member's banner (every copy they uploaded)? This can't be undone.",
 };

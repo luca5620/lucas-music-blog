@@ -518,7 +518,7 @@ uses the second option yet).
 
 ## ⏳ In progress
 
-### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT, needs migration 068 + a redeploy
+### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT 2bf3b8f, needs migration 068 + week 1 picked
 - Idea from michorex (Discord): one album a week everyone listens to, rates
   and talks about. Why: last 30 days, 64 signups → 40 rated → only 4 rated on
   a 2nd day; 231 reviews over 203 releases, 189 with exactly ONE review.
@@ -542,9 +542,8 @@ uses the second option yet).
   state (headless Chrome's window can't go under 512px — use a CDP
   setDeviceMetricsOverride script for phone shots). Everything fails soft to
   "no spotlight" until 068 is run.
-- **⚠️ Luca to do:** (1) run 068 in the SQL Editor, (2) redeploy push-recap:
-  `npx supabase functions deploy push-recap --no-verify-jwt --project-ref qhbtfhyzbiwqwaxtetgd`,
-  (3) pick week 1 at /admin/spotlight (write the "why this one" line).
+- **⚠️ Luca to do:** (1) run 068 in the SQL Editor, (2) ~~redeploy push-recap~~ DONE by Claude 2026-10-30 (v6,
+  still 403 without the secret), (3) pick week 1 at /admin/spotlight (write the "why this one" line).
 - Next (not built): Sunday wrap share card (members' final score, most-loved
   song, top review); vote for next week's album once ~15+ take part.
 

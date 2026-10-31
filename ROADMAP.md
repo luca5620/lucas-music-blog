@@ -518,7 +518,7 @@ uses the second option yet).
 
 ## ⏳ In progress
 
-### ↩️ Report queue undo (2026-10-30, Windows) — needs migration 069 (after 068)
+### ↩️ Report queue undo (2026-10-30, Windows) — 069 RUN ✓ (verified 2026-10-30)
 - Luca: "what if i accidentally deleted something that actually wasnt an issue".
   Reports page now has a **History** (last 50 handled) and every history row has
   **Reopen** (back to the open queue); rows whose content was deleted also get
@@ -532,9 +532,9 @@ uses the second option yet).
 - Before 069 is run the queue still works (old hard delete, Reopen works, Restore
   says "run 069"). Deletes made BEFORE 069 and removed avatars/banners (files)
   can never be restored; SET NULL links (e.g. a featured review) stay cleared.
-- **⚠️ Luca to do:** run 069 in the SQL Editor (after 068).
+- ✅ 069 run by Luca, verified 2026-10-30 (columns + functions answer over REST).
 
-### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT 2bf3b8f, needs migration 068 + week 1 picked
+### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT 2bf3b8f, 068 RUN ✓, needs week 1 picked
 - Idea from michorex (Discord): one album a week everyone listens to, rates
   and talks about. Why: last 30 days, 64 signups → 40 rated → only 4 rated on
   a 2nd day; 231 reviews over 203 releases, 189 with exactly ONE review.
@@ -558,7 +558,7 @@ uses the second option yet).
   state (headless Chrome's window can't go under 512px — use a CDP
   setDeviceMetricsOverride script for phone shots). Everything fails soft to
   "no spotlight" until 068 is run.
-- **⚠️ Luca to do:** (1) run 068 in the SQL Editor, (2) ~~redeploy push-recap~~ DONE by Claude 2026-10-30 (v6,
+- **⚠️ Luca to do:** (1) ~~run 068~~ DONE (verified 2026-10-30), (2) ~~redeploy push-recap~~ DONE by Claude 2026-10-30 (v6,
   still 403 without the secret), (3) pick week 1 at /admin/spotlight (write the "why this one" line).
   It is in the avatar menu under Admin as "Spotlight Tool", where the two
   "Staged Aux War" links used to be (removed 2026-10-30; /aux-wars/preview

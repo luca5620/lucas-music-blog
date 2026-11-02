@@ -18,7 +18,7 @@
  * other app control does.
  *
  * CHRISTMAS 2026: the image now sits in a small wrapper together with
- * a Santa hat (Luca, 2026-11-02). The hat is always in the markup but
+ * a Santa hat (Luca, 2026-11-02; generated art since the same day). The hat is always in the markup but
  * only displayed under html.xmas (lib/season.ts decides). The greeting
  * animation moved from the image to the WRAPPER so the hat dips and
  * tilts with the bird instead of floating still above a moving head —
@@ -75,35 +75,26 @@ export default function PenguinMark({
 }
 
 /**
- * The Santa hat (Christmas 2026). Drawn to sit on the mark's head,
- * tipped back a little with the tip flopping to the right: a red body
- * with a darker fold and a soft highlight, a fluffy white brim made of
- * overlapping puffs, and a pompom. Sized in % of the wrapper, so it
- * fits the 44px header mark and the bigger sign-in mark alike.
+ * The Santa hat (Christmas 2026) — Luca's generated art (ChatGPT,
+ * 2026-11-02; prompt in docs/marketing/christmas-2026-art.md), which
+ * replaced the first hand-drawn SVG. A hat ON ITS OWN, laid over the
+ * real penguin, because a generator asked for "the penguin in a hat"
+ * redraws the penguin too. Trimmed transparent WebP in
+ * public/seasonal/ (128px and 256px wide for 1x/2x+ screens).
  * Hidden outside the season by CSS (.penguin-santa).
  */
 function SantaHat() {
   return (
-    <svg className="penguin-santa" viewBox="0 0 64 48" aria-hidden="true">
-      {/* body */}
-      <path d="M8 37 C 10 22, 22 9, 38 8 C 48 7.5, 55 12, 57 20 L 52 24 C 49 18, 44 16, 39 18 C 31 21, 27 29, 26 37 Z" fill="#d42a3c" />
-      {/* fold / shadow side */}
-      <path d="M39 18 C 44 16, 49 18, 52 24 L 57 20 C 55.5 15, 51 11.5, 45 10.5 C 46 13, 44 16, 39 18 Z" fill="#a51d2c" />
-      <path d="M26 37 C 27 29, 31 21, 39 18 C 33 22, 30 29, 30 37 Z" fill="#b8202f" />
-      {/* highlight */}
-      <path d="M14 33 C 16 23, 24 14, 34 12" fill="none" stroke="#ef6574" strokeWidth="2" strokeLinecap="round" opacity=".7" />
-      {/* fluffy brim */}
-      <g fill="#f6f2ea">
-        <ellipse cx="17" cy="38" rx="11" ry="6" />
-        <ellipse cx="9" cy="38.5" rx="6" ry="5.2" />
-        <ellipse cx="26" cy="38.5" rx="6.5" ry="5.4" />
-        <ellipse cx="18" cy="35.5" rx="8" ry="4" />
-      </g>
-      <path d="M5 40.5 C 12 44, 24 44, 31 40.5" fill="none" stroke="#d8d1c4" strokeWidth="1.6" strokeLinecap="round" />
-      {/* pompom */}
-      <circle cx="56" cy="24" r="6.2" fill="#f6f2ea" />
-      <circle cx="57.5" cy="26" r="3.2" fill="#e2dbcf" />
-      <circle cx="54.2" cy="21.8" r="1.6" fill="#ffffff" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      className="penguin-santa"
+      src="/seasonal/santa-hat-128.webp"
+      srcSet="/seasonal/santa-hat-128.webp 1x, /seasonal/santa-hat-256.webp 2x"
+      alt=""
+      aria-hidden="true"
+      width={128}
+      height={103}
+      decoding="async"
+    />
   );
 }

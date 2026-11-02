@@ -65,3 +65,34 @@ transparent background."
 **After saving:** drop the three PNGs anywhere on the Mac (Downloads is fine)
 and tell Claude — it checks they're really transparent, trims and sizes them,
 and wires them in.
+
+---
+
+## ✅ 2026-11-02 — hat, bow and ribbon DONE
+
+Luca generated all three; they're trimmed and live as
+`public/seasonal/santa-hat-128/256.webp`, `gift-bow.webp`,
+`gift-ribbon.webp` (+ `gift-ribbon-v.webp`, the same strip turned
+upright for the side band).
+
+## 4. Christmas light bulbs (optional — the lights already got a redraw)
+
+The string lights were redrawn the same day (C9-shaped bulbs with a
+highlight, a twisted two-strand wire, a soft glow with full effects on)
+and are pinned full-width to the top of the screen. If Luca still wants
+generated bulbs, this is the prompt — stylised, not photoreal. Each bulb
+must be its own image so they can keep blinking one by one.
+
+> Generate four Christmas light bulbs in one image, as a PNG with a fully
+> transparent background: classic C9 teardrop bulbs hanging straight down
+> from a small dark-green plastic socket, in a clean stylised
+> illustration style — soft gradients and a small glossy highlight, NOT
+> photorealistic, no harsh outlines. Left to right: red, warm amber, green,
+> blue. Each bulb is lit from inside with a gentle glow that stays close
+> to the glass. Lay them out in one row, evenly spaced, each centered in
+> its own equal quarter of a 1024×256 image, all the same size and height,
+> sockets at the same height at the top. No wire between them, no
+> background, no shadow, no text.
+
+When it comes back, Claude slices the four bulbs apart and swaps them
+into `public/seasonal/lights-a.svg` / `lights-b.svg` (the wire stays).

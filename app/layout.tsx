@@ -22,6 +22,7 @@ import PushRegistration from "@/components/ui/PushRegistration";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
 import Snowfall from "@/components/seasonal/Snowfall";
+import StringLights from "@/components/seasonal/StringLights";
 import { isChristmasSeason } from "@/lib/season";
 import ShellLiquid from "@/components/ui/ShellLiquid";
 
@@ -282,6 +283,7 @@ export default async function RootLayout({
 
         {/* CRT atmosphere: grain, scanlines, grille */}
         {christmas && <Snowfall />}
+        {christmas && <StringLights />}
         <GrainOverlay />
         {/* Tags <html> when running inside the native app shell */}
         <NativeMode />

@@ -38,6 +38,14 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    gift wrap on the Rewind card — ribbon + bow, NO "to/from" tag (Luca)
    (`RewindPrompt.tsx` .rw-gift). CSS: globals.css "CHRISTMAS 2026".
    Next year: change the two dates in lib/season.ts.
+   **Round 2 (same day):** Luca's generated Santa hat, gift bow and
+   satin ribbon replaced the drawn ones (`public/seasonal/`, prompts in
+   docs/marketing/christmas-2026-art.md); full-detail snow is now a
+   six-armed crystal (low detail keeps dots); the lights moved out of
+   the header into `components/seasonal/StringLights.tsx` — FIXED,
+   full width, under the app's status bar, staying put on scroll —
+   with C9 bulbs, a twisted wire and a pulsing glow (glow = full
+   detail only). Optional generated-bulb prompt is in the art doc.
    Earlier note — **MIX PICKED 2026-11-02, mockups made** Canvas: https://claude.ai/artifact/LrZioo9ayX8N1BEMtUJvjy
    (4 directions on row 1, "Your mix" home + review page on row 2). His
    mix, and NOTHING else (Luca: "everything else i didnt mention dont

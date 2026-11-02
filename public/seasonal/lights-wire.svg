@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="34" viewBox="0 0 200 34">
+  <!-- Two twisted strands of dark-green light wire, one 200px tile that repeats. -->
+  <path d="M0 6 Q 25 19 50 9 Q 75 19 100 9 Q 125 19 150 9 Q 175 19 200 6" fill="none" stroke="#14261a" stroke-width="2.6"/>
+  <path d="M0 7 Q 25 17.5 50 10 Q 75 17.5 100 10 Q 125 17.5 150 10 Q 175 17.5 200 7" fill="none" stroke="#2c4a33" stroke-width="1.2" stroke-dasharray="3 3"/>
+</svg>

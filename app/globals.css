@@ -3028,42 +3028,70 @@ html:not(.low-detail) .xmas-snow span:nth-child(even)::before {
 .low-detail .xmas-snow span:nth-child(n + 9) { display: none; }
 .low-detail .xmas-snow span { animation-duration: 20s !important; }
 
-/* 3. String lights — a strip along the very top of the header. Two
-   layers of bulbs on one wire, each layer blinking on its own beat,
-   so neighbouring bulbs alternate. The tile is 200px wide (4 bulbs:
-   red, amber, green, blue) and repeats to any width. */
-.xmas-lights { display: none; }
-html.xmas .xmas-lights {
-  display: block;
-  position: relative;
-  height: 26px;
-  margin: 0 0 6px;
+/* 3. String lights (components/seasonal/StringLights.tsx) — FIXED
+   across the full width of the top of the screen, so they stay put
+   while the page scrolls (Luca: "the light strip should stay up there
+   too"). In the app they hang just under the status bar; on the web,
+   across the top of the window above the TV. Tiles repeat every
+   200px: wire, two bulb layers blinking out of step, and — with full
+   effects only — two glow layers pulsing with the bulbs. */
+.xmas-lights {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: env(safe-area-inset-top, 0px);
+  height: 34px;
+  z-index: 46;
   pointer-events: none;
 }
 .xmas-lights i {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 34px;
   background-repeat: repeat-x;
-  background-size: 200px 26px;
+  background-size: 200px 34px;
 }
-/* The wire. */
-.xmas-lights i:nth-child(1) {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26'%3E%3Cpath d='M0 4 Q 25 16 50 6 Q 75 16 100 6 Q 125 16 150 6 Q 175 16 200 4' fill='none' stroke='%23243424' stroke-width='2'/%3E%3C/svg%3E");
-}
-/* Bulbs: red + green on one layer, amber + blue on the other. */
-.xmas-lights i:nth-child(2) {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26'%3E%3Crect x='23' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='25' cy='17' rx='4' ry='6' fill='%23ff4d5e'/%3E%3Crect x='123' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='125' cy='17' rx='4' ry='6' fill='%233ddc84'/%3E%3C/svg%3E");
-  filter: drop-shadow(0 0 4px rgba(255, 220, 160, .55));
+.xmas-wire { background-image: url("/seasonal/lights-wire.svg"); }
+.xmas-bulbs-a {
+  background-image: url("/seasonal/lights-a.svg");
   animation: xmas-twinkle 2.6s ease-in-out infinite;
 }
-.xmas-lights i:nth-child(3) {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26'%3E%3Crect x='73' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='75' cy='17' rx='4' ry='6' fill='%23ffb347'/%3E%3Crect x='173' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='175' cy='17' rx='4' ry='6' fill='%234dacff'/%3E%3C/svg%3E");
-  filter: drop-shadow(0 0 4px rgba(255, 220, 160, .55));
+.xmas-bulbs-b {
+  background-image: url("/seasonal/lights-b.svg");
+  animation: xmas-twinkle 2.6s ease-in-out -1.3s infinite;
+}
+/* The glow: soft coloured halos under the bulbs, 56px tall so the
+   light spills a little onto the page. Full detail only. */
+.xmas-lights .xmas-glow-a,
+.xmas-lights .xmas-glow-b {
+  display: none;
+  height: 56px;
+  background-size: 200px 56px;
+  mix-blend-mode: screen;
+}
+html:not(.low-detail) .xmas-lights .xmas-glow-a {
+  display: block;
+  background-image: url("/seasonal/lights-glow-a.svg");
+  animation: xmas-twinkle 2.6s ease-in-out infinite;
+}
+html:not(.low-detail) .xmas-lights .xmas-glow-b {
+  display: block;
+  background-image: url("/seasonal/lights-glow-b.svg");
   animation: xmas-twinkle 2.6s ease-in-out -1.3s infinite;
 }
 @keyframes xmas-twinkle {
   0%, 100% { opacity: 1; }
-  50% { opacity: .35; }
+  50% { opacity: .3; }
+}
+/* Make room so the lights never sit on the header: the app's screen
+   starts 30px lower, the web's TV gets a deeper top margin. */
+html.xmas.native-app .crt-tv {
+  padding-top: calc(max(12px, env(safe-area-inset-top, 0px)) + 30px);
+}
+html.xmas:not(.native-app) .crt-tv {
+  margin-top: calc(1.25rem + 26px);
 }
 
 /* 4. Gift wrap on the Rewind card — a plain present: a red ribbon
@@ -3080,19 +3108,19 @@ html.xmas .rw-gift {
   pointer-events: none;
 }
 html.xmas .rw-card { padding-top: 22px; }
+/* Luca's generated satin ribbon (public/seasonal/gift-ribbon*.webp),
+   tiled along each band, and the generated bow where they cross. */
 .rw-gift i:nth-child(1) {
-  position: absolute; left: 0; right: 0; top: 0; height: 10px;
-  background: #c8102e;
-  box-shadow: inset 0 -2px 0 #9e0c24, inset 0 2px 0 #e23a50;
+  position: absolute; left: 0; right: 0; top: 0; height: 12px;
+  background: url("/seasonal/gift-ribbon.webp") repeat-x left center / auto 12px;
 }
 .rw-gift i:nth-child(2) {
-  position: absolute; top: 0; bottom: 0; right: 46px; width: 10px;
-  background: #c8102e;
-  box-shadow: inset 2px 0 0 #e23a50, inset -2px 0 0 #9e0c24;
+  position: absolute; top: 0; bottom: 0; right: 44px; width: 12px;
+  background: url("/seasonal/gift-ribbon-v.webp") repeat-y center top / 12px auto;
 }
-.rw-gift svg {
-  position: absolute; right: 25px; top: -4px; width: 52px; height: 34px;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .5));
+.rw-gift img {
+  position: absolute; right: 18px; top: -6px; width: 64px; height: auto;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .55));
 }
 
 @media (prefers-reduced-motion: reduce) {

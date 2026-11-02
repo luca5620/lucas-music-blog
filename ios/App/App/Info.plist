@@ -87,12 +87,12 @@
 			<string>tiktok</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>sbawg43ojzaf6kd4h2</string>
+				<string>awcktsiew1eejoqr</string>
 			</array>
 		</dict>
 	</array>
 	<key>TikTokClientKey</key>
-	<string>sbawg43ojzaf6kd4h2</string>
+	<string>awcktsiew1eejoqr</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>instagram-stories</string>

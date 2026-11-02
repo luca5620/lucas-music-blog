@@ -319,14 +319,18 @@ export function socialSharePlugin(): SocialSharePlugin | null {
 }
 
 /**
- * TikTok switch (Luca 2026-10-25: "ship now and hide the tiktok button
- * while we wait"). Build 1.3 still carries TikTok's SANDBOX client key,
- * which only works for the test account, so the button stays hidden
- * for everyone until TikTok approves the app and a build with the
- * production key (1.3.1) is live on the App Store. Then flip this to
- * true and push — the button itself is website code.
+ * TikTok switch — ON since 2026-11-02. TikTok approved the app, and
+ * build 4 (1.3) now carries the PRODUCTION client key in Info.plist
+ * (it was hidden while only the sandbox key, which works for the test
+ * account alone, was in the build — Luca 2026-10-25: "ship now and
+ * hide the tiktok button while we wait").
+ *
+ * Safe to have on before 1.3 is in the App Store: the button only
+ * appears when the native SocialShare plugin reports TikTok, and that
+ * plugin exists only in build 4 — the 1.2 app and the website never
+ * see it. Flip back to false to hide it again without a new build.
  */
-const TIKTOK_SHARE_LIVE = false;
+const TIKTOK_SHARE_LIVE = true;
 
 /** Which of Instagram / TikTok this phone can hand off to (both false off-app). */
 export async function socialTargets(): Promise<{ instagram: boolean; tiktok: boolean }> {

@@ -92,7 +92,7 @@ Don't paste the **App Secret** anywhere. We don't need it.
 ## Part 3 — the code (Claude) — DONE 2026-10-25
 
 Team ID `82VZZ93GVV` (matches DEVELOPMENT_TEAM in the Xcode project).
-TikTok **sandbox** client key `sbawg43ojzaf6kd4h2` is in Info.plist for now.
+TikTok **production** client key `awcktsiew1eejoqr` is in Info.plist since 2026-11-02 (TikTok approved the app; it replaced the sandbox key `sbawg43ojzaf6kd4h2`, which only worked for the test account). It lives in TWO places there — TikTokClientKey and the "tiktok" CFBundleURLSchemes entry — and both must match.
 
 - [x] Share sheet (components/share/ReviewShareSheet.tsx): "Instagram
       story" + "TikTok" buttons, only when the installed app has the

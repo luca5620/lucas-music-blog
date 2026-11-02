@@ -14,7 +14,12 @@ remnants: every piece of content is community-made and catalog-backed.
 didn't happen. Good: TikTok was approved since, so the TikTok button
 rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
 
-1. **TikTok share button LIVE** — TikTok approved Peak Music. Swap the
+1. ✅ **DONE 2026-11-02** — production key `awcktsiew1eejoqr` swapped
+   into Info.plist (both spots), `TIKTOK_SHARE_LIVE = true`. Pushed. The
+   button appears only in build 4; **test it for real on TestFlight**
+   (the simulator can't have TikTok installed): review → Share → TikTok
+   should open TikTok's editor with the card/video.
+   Original note: **TikTok share button LIVE** — TikTok approved Peak Music. Swap the
    SANDBOX key (`sbawg43ojzaf6kd4h2`) for the PRODUCTION Client key in
    `ios/App/App/Info.plist` (TikTokClientKey AND the "tiktok"
    CFBundleURLSchemes entry), flip `TIKTOK_SHARE_LIVE` to true in

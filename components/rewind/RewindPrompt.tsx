@@ -59,6 +59,21 @@ export default function RewindPrompt({ year, covers }: { year: number; covers: (
   return (
     <>
       <Link href="/rewind" className="rw-card">
+        {/* CHRISTMAS 2026: the card wrapped as a plain present — ribbon
+            across the top and down the side, a bow where they cross.
+            Only displayed under html.xmas (lib/season.ts, globals.css
+            "CHRISTMAS 2026"); Luca asked for no gift tag. */}
+        <span className="rw-gift" aria-hidden="true">
+          <i />
+          <i />
+          <svg viewBox="0 0 80 50">
+            <path d="M40 25 C 26 6, 6 10, 12 26 C 16 36, 30 30, 40 25 Z" fill="#d7263d" stroke="#9e0c24" strokeWidth="1.5" />
+            <path d="M40 25 C 54 6, 74 10, 68 26 C 64 36, 50 30, 40 25 Z" fill="#d7263d" stroke="#9e0c24" strokeWidth="1.5" />
+            <path d="M37 27 L 28 46 L 35 44 L 38 49 Z" fill="#c8102e" />
+            <path d="M43 27 L 52 46 L 45 44 L 42 49 Z" fill="#c8102e" />
+            <ellipse cx="40" cy="25" rx="6" ry="5" fill="#e23a50" stroke="#9e0c24" strokeWidth="1.5" />
+          </svg>
+        </span>
         <Covers covers={covers} className="rw-card-grid" />
         <span className="rw-card-text">
           <span className="rw-eyebrow">{t("eyebrow")}</span>

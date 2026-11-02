@@ -21,6 +21,8 @@ import TabBar from "@/components/ui/TabBar";
 import PushRegistration from "@/components/ui/PushRegistration";
 import SiteFooter from "@/components/ui/SiteFooter";
 import CRTShell from "@/components/ui/CRTShell";
+import Snowfall from "@/components/seasonal/Snowfall";
+import { isChristmasSeason } from "@/lib/season";
 import ShellLiquid from "@/components/ui/ShellLiquid";
 
 /* The database origin, for the preconnect below. Wrapped because a
@@ -188,6 +190,13 @@ export default async function RootLayout({
   // component asks next-intl directly.
   const locale = await getLocale();
 
+  // CHRISTMAS 2026 (lib/season.ts): on until midnight Eastern going into
+  // Dec 31. While it's on, <html> gets the `xmas` class (which shows the
+  // penguin's Santa hat, the header string lights and the gift-wrapped
+  // Rewind card — globals.css "CHRISTMAS 2026") and the snow layer
+  // renders. Off = this is false and none of it exists.
+  const christmas = isChristmasSeason();
+
   let profile: Profile | null = null;
   if (user) {
     const { data } = await supabase
@@ -231,6 +240,7 @@ export default async function RootLayout({
       className={`
         ${inter.variable} ${chakraPetch.variable} ${jost.variable}
         ${michroma.variable} ${quicksand.variable} ${vt323.variable}
+        ${christmas ? "xmas" : ""}
       `}
     >
       <head>
@@ -271,6 +281,7 @@ export default async function RootLayout({
         </div>
 
         {/* CRT atmosphere: grain, scanlines, grille */}
+        {christmas && <Snowfall />}
         <GrainOverlay />
         {/* Tags <html> when running inside the native app shell */}
         <NativeMode />

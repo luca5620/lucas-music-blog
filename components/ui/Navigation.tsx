@@ -89,6 +89,14 @@ export default function Navigation() {
       {/* app-nav-row: in the native shell the link strip is hidden, so
           this collapses to ONE row — logo left, CREATE + avatar right
           (globals.css forces flex-row + justify-between there). */}
+      {/* CHRISTMAS 2026: string lights along the very top of the header —
+          a wire and two layers of bulbs that blink out of step. Only
+          displayed under html.xmas (lib/season.ts, globals.css). */}
+      <div className="xmas-lights" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
       <div className="app-nav-row flex flex-col lg:flex-row lg:items-center gap-3">
         {/* Logo / Site Title */}
         {/* nav-logo/nav-app-title: in the app THIS side flexes and the

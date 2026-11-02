@@ -27,8 +27,18 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    users never see it. ⏳ **Waiting on Luca for the production Client
    key** (portal → app → Production tab; the key is public, never the
    secret).
-2. ⏳ **Christmas theme — MIX PICKED 2026-11-02, mockups made, awaiting
-   Luca's OK.** Canvas: https://claude.ai/artifact/LrZioo9ayX8N1BEMtUJvjy
+2. ✅ **Christmas theme LIVE 2026-11-02** (Luca: "the christmas stuff
+   should be live now"; it switches itself OFF at midnight Eastern going
+   into Dec 31 — `lib/season.ts`, the one switch). Built: snow
+   (`components/seasonal/Snowfall.tsx`, 18 flakes, 8 under low detail,
+   none under Reduce Motion), polished Santa hat on the header + sign-in
+   penguin (`components/ui/PenguinMark.tsx`; the greeting animation now
+   runs on a wrapper so the hat moves with the bird), string lights along
+   the top of the header (`Navigation.tsx` .xmas-lights), and a PLAIN
+   gift wrap on the Rewind card — ribbon + bow, NO "to/from" tag (Luca)
+   (`RewindPrompt.tsx` .rw-gift). CSS: globals.css "CHRISTMAS 2026".
+   Next year: change the two dates in lib/season.ts.
+   Earlier note — **MIX PICKED 2026-11-02, mockups made** Canvas: https://claude.ai/artifact/LrZioo9ayX8N1BEMtUJvjy
    (4 directions on row 1, "Your mix" home + review page on row 2). His
    mix, and NOTHING else (Luca: "everything else i didnt mention dont
    add"): **falling snow site-wide** (from 1 — snowfall only, not the

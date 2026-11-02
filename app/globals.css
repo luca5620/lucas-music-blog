@@ -2875,13 +2875,22 @@ fieldset {
    would mean almost nobody ever sees the feature. Reduced motion
    still turns it off, because that is an accessibility preference
    rather than a thermal one. */
+/* The animation runs on the WRAPPER (components/ui/PenguinMark.tsx)
+   since Christmas 2026, so anything worn on the bird — the Santa hat —
+   moves with it. Same pivot as before: the chest, not the middle. */
+.penguin-mark-wrap {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  transform-origin: 50% 88%;
+}
 @media (hover: hover) and (pointer: fine) {
-  .nav-logo:hover .penguin-mark,
-  .penguin-link:hover .penguin-mark {
+  .nav-logo:hover .penguin-mark-wrap,
+  .penguin-link:hover .penguin-mark-wrap {
     animation: penguin-greet 700ms ease-out;
   }
 }
-.penguin-mark.penguin-tapped {
+.penguin-mark-wrap.penguin-tapped {
   animation: penguin-greet 700ms ease-out;
 }
 
@@ -2920,10 +2929,144 @@ fieldset {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .penguin-mark,
-  .nav-logo:hover .penguin-mark,
-  .penguin-link:hover .penguin-mark,
-  .penguin-mark.penguin-tapped { animation: none; }
+  .penguin-mark-wrap,
+  .nav-logo:hover .penguin-mark-wrap,
+  .penguin-link:hover .penguin-mark-wrap,
+  .penguin-mark-wrap.penguin-tapped { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHRISTMAS 2026 (Luca, 2026-11-02) — lib/season.ts switches it on by
+   adding `xmas` to <html>; it ends by itself at midnight Eastern
+   going into Dec 31. Four pieces, and ONLY these four ("everything
+   else i didnt mention dont add"):
+     1. SNOW across the site (components/seasonal/Snowfall.tsx)
+     2. a SANTA HAT on the header penguin (components/ui/PenguinMark)
+     3. STRING LIGHTS along the top of the header (Navigation)
+     4. the Rewind card WRAPPED as a plain present (RewindPrompt)
+   The hat, lights and wrap are always in the markup and only shown
+   here under html.xmas, so turning the season off is one boolean.
+   Motion: Reduce Motion stops the snow and the twinkle. Low detail
+   (on by default) keeps them but lighter — 8 flakes instead of 18,
+   falling slower — because switching them off there would mean
+   almost nobody ever saw the theme (same call as the penguin's
+   greeting above).
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 2. Santa hat — hidden outside the season. Sized in % of the mark so
+   it fits the 44px header bird and the big sign-in bird. */
+.penguin-santa { display: none; }
+html.xmas .penguin-santa {
+  display: block;
+  position: absolute;
+  left: 7%;
+  top: -29%;
+  width: 92%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .45));
+}
+
+/* 1. Snow — a fixed layer under the CRT scanlines (z 49) and aperture
+   grille (z 48), over the page, never catching a tap. */
+.xmas-snow {
+  position: fixed;
+  inset: 0;
+  z-index: 47;
+  overflow: hidden;
+  pointer-events: none;
+}
+.xmas-snow span {
+  position: absolute;
+  top: -12px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: .82;
+  box-shadow: 0 0 4px rgba(255, 255, 255, .55);
+  animation-name: xmas-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+@keyframes xmas-fall {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(12px, 55vh, 0); }
+  100% { transform: translate3d(-6px, calc(100vh + 24px), 0); }
+}
+/* Low detail: the first 8 flakes only, a third slower. */
+.low-detail .xmas-snow span:nth-child(n + 9) { display: none; }
+.low-detail .xmas-snow span { animation-duration: 20s !important; }
+
+/* 3. String lights — a strip along the very top of the header. Two
+   layers of bulbs on one wire, each layer blinking on its own beat,
+   so neighbouring bulbs alternate. The tile is 200px wide (4 bulbs:
+   red, amber, green, blue) and repeats to any width. */
+.xmas-lights { display: none; }
+html.xmas .xmas-lights {
+  display: block;
+  position: relative;
+  height: 26px;
+  margin: 0 0 6px;
+  pointer-events: none;
+}
+.xmas-lights i {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  background-size: 200px 26px;
+}
+/* The wire. */
+.xmas-lights i:nth-child(1) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26'%3E%3Cpath d='M0 4 Q 25 16 50 6 Q 75 16 100 6 Q 125 16 150 6 Q 175 16 200 4' fill='none' stroke='%23243424' stroke-width='2'/%3E%3C/svg%3E");
+}
+/* Bulbs: red + green on one layer, amber + blue on the other. */
+.xmas-lights i:nth-child(2) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26'%3E%3Crect x='23' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='25' cy='17' rx='4' ry='6' fill='%23ff4d5e'/%3E%3Crect x='123' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='125' cy='17' rx='4' ry='6' fill='%233ddc84'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 0 4px rgba(255, 220, 160, .55));
+  animation: xmas-twinkle 2.6s ease-in-out infinite;
+}
+.xmas-lights i:nth-child(3) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='26'%3E%3Crect x='73' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='75' cy='17' rx='4' ry='6' fill='%23ffb347'/%3E%3Crect x='173' y='9' width='4' height='3' fill='%23243424'/%3E%3Cellipse cx='175' cy='17' rx='4' ry='6' fill='%234dacff'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 0 4px rgba(255, 220, 160, .55));
+  animation: xmas-twinkle 2.6s ease-in-out -1.3s infinite;
+}
+@keyframes xmas-twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+
+/* 4. Gift wrap on the Rewind card — a plain present: a red ribbon
+   across the top and down the right-hand side, and a bow where they
+   cross. Under the card's content, over its background. */
+.rw-gift { display: none; }
+html.xmas .rw-gift {
+  display: block;
+  position: absolute;
+  inset: 0;
+  /* Below the covers, text and arrow, above the card background: the
+     card is isolation: isolate, so -1 stays inside it. */
+  z-index: -1;
+  pointer-events: none;
+}
+html.xmas .rw-card { padding-top: 22px; }
+.rw-gift i:nth-child(1) {
+  position: absolute; left: 0; right: 0; top: 0; height: 10px;
+  background: #c8102e;
+  box-shadow: inset 0 -2px 0 #9e0c24, inset 0 2px 0 #e23a50;
+}
+.rw-gift i:nth-child(2) {
+  position: absolute; top: 0; bottom: 0; right: 46px; width: 10px;
+  background: #c8102e;
+  box-shadow: inset 2px 0 0 #e23a50, inset -2px 0 0 #9e0c24;
+}
+.rw-gift svg {
+  position: absolute; right: 25px; top: -4px; width: 52px; height: 34px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .5));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xmas-snow { display: none; }
+  .xmas-lights i { animation: none; }
 }
 
 :root {

@@ -9,12 +9,17 @@
  * UNDER the CRT's scanlines and aperture grille so the snow looks like
  * it's on the TV picture, not stuck to the glass.
  *
- * Cost: transform-only animations on a handful of 2–4px dots, which
- * the GPU composites without repainting the page. Even so:
- *   - LOW DETAIL (on by default — so it can't simply turn snow off,
- *     or almost nobody would see it): only the first 8 flakes fall,
- *     more slowly. Same trade the penguin's greeting makes.
+ * Two looks (Luca, 2026-11-02: "when low detail mode is off I would
+ * want a more detailed like snowflake"):
+ *   - FULL DETAIL: each flake is a six-armed crystal with side branches
+ *     (an SVG drawn in globals.css), 8–16px, turning slowly as it falls.
+ *   - LOW DETAIL (on by default — so it can't simply turn snow off, or
+ *     almost nobody would see it): plain 2–4px dots, and only the first
+ *     8 of them, falling more slowly.
  *   - REDUCE MOTION (an accessibility preference): no snow at all.
+ * Both are transform-only animations the GPU composites without
+ * repainting the page. Each flake carries its size as --s (2–4); CSS
+ * turns that into a dot or a crystal.
  *
  * The flake list is fixed (not random) so the server and the browser
  * render the same markup — no hydration mismatch, no layout shift.
@@ -37,8 +42,9 @@ export default function Snowfall() {
           key={i}
           style={{
             left: `${left}%`,
-            width: size,
-            height: size,
+            // The flake's scale, read by globals.css: a 2–4px dot in low
+            // detail, a crystal 4× that size with full effects on.
+            ["--s" as string]: size,
             animationDuration: `${duration}s`,
             animationDelay: `${delay}s`,
           }}

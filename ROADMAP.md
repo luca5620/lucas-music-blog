@@ -27,7 +27,19 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    users never see it. ⏳ **Waiting on Luca for the production Client
    key** (portal → app → Production tab; the key is public, never the
    secret).
-2. **Christmas theme, live until 12/30/2026** — brainstorm → mockups →
+2. ⏳ **Christmas theme — MIX PICKED 2026-11-02, mockups made, awaiting
+   Luca's OK.** Canvas: https://claude.ai/artifact/LrZioo9ayX8N1BEMtUJvjy
+   (4 directions on row 1, "Your mix" home + review page on row 2). His
+   mix, and NOTHING else (Luca: "everything else i didnt mention dont
+   add"): **falling snow site-wide** (from 1 — snowfall only, not the
+   frost or ice-blue), **Santa hat on the penguin** (from 2), **gift
+   wrap — red ribbon, bow, "TO: you / FROM: Peak" tag — around the
+   Rewind card** (from 3, no cassette/green), **string lights along the
+   very top** (from 4, not over the tab bar). Rest of the site stays its
+   normal blue-on-black. Open: start date (suggested Dec 1 with Rewind),
+   final penguin-with-hat art (Luca in Astra), low detail + Reduce Motion
+   must switch the snow and twinkle off.
+   Original note: **Christmas theme, live until 12/30/2026** — brainstorm → mockups →
    Luca picks + fine-tunes → build. Website-only, DATE-GATED (switches
    itself on and off; ends 12/31 with no push needed — matters because
    main freezes during review).

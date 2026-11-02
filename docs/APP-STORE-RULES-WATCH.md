@@ -8,10 +8,22 @@ the rules by the next submission. This file is the repo copy of
 both machines (Windows + MacBook) have it. CLAUDE.md tells Claude to
 run the check below.
 
-**Last checked: 2026-10-25** (Apple Developer News: nothing new since
-the 2026-10-16 guidelines update except the 2026-10-22 multiseat
-subscriptions note, which doesn't apply — Peak Music sells nothing in
-the app).
+**Last checked: 2026-11-02** (MacBook, before the 1.3 build). The
+guidelines page still says "Last Updated: October 16, 2026" — no change.
+Two news items since 2026-10-25:
+- **2026-10-29 Taiwan storefront commission 30%→26%; the Developer
+  Program License Agreement was REVISED again** → hits Peak Music only
+  as paperwork: if the agreement was accepted before Oct 29, accept the
+  new one at developer.apple.com/account before uploading build 4
+  (uploads are blocked until it's accepted). No IAP, so no money impact.
+- **2026-10-28 "Touch on Mac"** → Mac hardware preview, nothing for iOS.
+- Older, still relevant: Sign in with Apple relay addresses will also
+  come from **private.icloud.com** "later this year" (Aug 24 news) —
+  checked: nothing in the app special-cases privaterelay.appleid.com,
+  so no change needed.
+- The seasonal Christmas theme (Dec 2026) is fine; under 2.5.19 it must
+  not be hidden behaviour — it's dated and visible to everyone, and the
+  What's New / ROADMAP describe it.
 
 ---
 

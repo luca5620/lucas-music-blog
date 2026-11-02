@@ -8,6 +8,50 @@ as physical media — the whole site lives inside a CRT. No personal-blog
 remnants: every piece of content is community-made and catalog-backed.
 
 
+## 👉 PICK UP HERE — 2026-11-02 (MacBook): the road to 1.3, in Luca's order
+
+**1.3 (build 4) was NEVER submitted** — the 2026-10-27 "goes tomorrow"
+didn't happen. Good: TikTok was approved since, so the TikTok button
+rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
+
+1. **TikTok share button LIVE** — TikTok approved Peak Music. Swap the
+   SANDBOX key (`sbawg43ojzaf6kd4h2`) for the PRODUCTION Client key in
+   `ios/App/App/Info.plist` (TikTokClientKey AND the "tiktok"
+   CFBundleURLSchemes entry), flip `TIKTOK_SHARE_LIVE` to true in
+   `lib/native.ts`. Only build 4 has the SocialShare plugin, so 1.2
+   users never see it. ⏳ **Waiting on Luca for the production Client
+   key** (portal → app → Production tab; the key is public, never the
+   secret).
+2. **Christmas theme, live until 12/30/2026** — brainstorm → mockups →
+   Luca picks + fine-tunes → build. Website-only, DATE-GATED (switches
+   itself on and off; ends 12/31 with no push needed — matters because
+   main freezes during review).
+3. **iPhone Duo pass** on the MacBook (the "📱 1.3 (build 4)" block
+   below has the steps: Xcode 27.1+, Duo simulator fold/unfold/rotate,
+   regular iPhone regression pass).
+4. **iPhone Duo screenshots** for the store — Luca wants them now (inner
+   2007×2853, outer 1398×2034; mandatory from April 2027, earns the
+   "Made for iPhone Duo" badge).
+5. **Submit 1.3**, freeze main while in review.
+6. After it's live: promo content + ads/edits for Instagram and TikTok,
+   and the **revenue** talk during/after that marketing wave.
+
+**Already done — don't re-raise (Luca, 2026-11-02):** age-rating
+"social media" = Yes ✓; developer agreement accepted ✓ (BUT Apple
+revised it again on 2026-10-29 — if his acceptance was before that,
+accept the new one before uploading); Rewind's home module exists and
+it notifies on Dec 1 ✓ (nothing to build); Community Spotlight picked
+through week 2 ✓; Google/Apple sign-in works ✓ (still tap it once on
+the Duo + iOS 27 simulators during step 3 — that's how 1.2's bug got
+through). **Apple rules check re-run 2026-11-02**, nothing new that
+hits the app (docs/APP-STORE-RULES-WATCH.md). **Native sync files**
+(Filesystem + TikTok pods, Android plugin entries) committed b90b341.
+
+**MacBook npm quirk:** this Mac's npm 12 keeps deleting one optional
+lockfile entry (`next-intl/node_modules/@swc/helpers`), which then
+blocks `git pull`. It's harmless: `git checkout -- package-lock.json`
+before pulling, and use `npm ci` (not `npm install`) here.
+
 ## 📝 2026-10-22 — Reddit, banner, penguin 3-D (not in the repo)
 
 - **Subreddit: r/peakmusicreviewsapp.** The first sub was insta-banned

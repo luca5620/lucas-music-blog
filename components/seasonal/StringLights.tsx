@@ -13,12 +13,11 @@
  *     status bar (clock/battery) so it never covers them; on the
  *     website it hangs across the top of the browser window, above
  *     the TV.
- *   - Art lives in public/seasonal/ as small SVG tiles that repeat
- *     every 200px: a twisted two-strand wire, and the bulbs split into
- *     two layers (red + green, amber + blue) that blink out of step so
- *     neighbouring bulbs alternate. Swap the tiles to change the look —
- *     Luca may replace the bulbs with generated art
- *     (docs/marketing/christmas-2026-art.md).
+ *   - Art lives in public/seasonal/ as tiles that repeat every 200px:
+ *     a twisted two-strand wire (SVG), and Luca's generated C9 bulbs
+ *     (2026-11-02, docs/marketing/christmas-2026-art.md) split into two
+ *     layers — red + green, amber + blue — drawn at 2x as WebP, which
+ *     blink out of step so neighbouring bulbs alternate.
  *   - GLOW (full detail only — low detail is on by default and this is
  *     the costly part): a soft coloured halo under each bulb, pulsing
  *     in step with it, washing a little light onto the page below.

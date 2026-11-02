@@ -45,7 +45,11 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    the header into `components/seasonal/StringLights.tsx` — FIXED,
    full width, under the app's status bar, staying put on scroll —
    with C9 bulbs, a twisted wire and a pulsing glow (glow = full
-   detail only). Optional generated-bulb prompt is in the art doc.
+   detail only). **Bulbs: Luca's generated C9 bulbs are in** (sliced from
+   his image, 2x WebP tiles public/seasonal/lights-a/b.webp; the wire
+   stays SVG). **Christmas look is DONE.**
+   **Rewind window stays Dec 1 → Jan 15** (Luca, 2026-11-02: "keep it
+   until the 15th") — lib/rewind.ts unchanged.
    Earlier note — **MIX PICKED 2026-11-02, mockups made** Canvas: https://claude.ai/artifact/LrZioo9ayX8N1BEMtUJvjy
    (4 directions on row 1, "Your mix" home + review page on row 2). His
    mix, and NOTHING else (Luca: "everything else i didnt mention dont

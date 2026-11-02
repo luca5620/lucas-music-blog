@@ -3055,11 +3055,11 @@ html:not(.low-detail) .xmas-snow span:nth-child(even)::before {
 }
 .xmas-wire { background-image: url("/seasonal/lights-wire.svg"); }
 .xmas-bulbs-a {
-  background-image: url("/seasonal/lights-a.svg");
+  background-image: url("/seasonal/lights-a.webp");
   animation: xmas-twinkle 2.6s ease-in-out infinite;
 }
 .xmas-bulbs-b {
-  background-image: url("/seasonal/lights-b.svg");
+  background-image: url("/seasonal/lights-b.webp");
   animation: xmas-twinkle 2.6s ease-in-out -1.3s infinite;
 }
 /* The glow: soft coloured halos under the bulbs, 56px tall so the

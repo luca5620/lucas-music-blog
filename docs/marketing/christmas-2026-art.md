@@ -75,7 +75,7 @@ Luca generated all three; they're trimmed and live as
 `gift-ribbon.webp` (+ `gift-ribbon-v.webp`, the same strip turned
 upright for the side band).
 
-## 4. Christmas light bulbs (optional — the lights already got a redraw)
+## 4. Christmas light bulbs — ✅ DONE 2026-11-02 (Luca generated them; sliced into public/seasonal/lights-a/b.webp)
 
 The string lights were redrawn the same day (C9-shaped bulbs with a
 highlight, a twisted two-strand wire, a soft glow with full effects on)

@@ -2959,9 +2959,12 @@ fieldset {
 html.xmas .penguin-santa {
   display: block;
   position: absolute;
-  left: 7%;
-  top: -29%;
-  width: 92%;
+  /* 78% of the penguin's width (was 92% — Luca, 2026-11-02: "a bit
+     smaller"), shrunk around the brim so it still sits on the same
+     spot on the head: the brim's bottom edge stays where it was. */
+  left: 13%;
+  top: -19%;
+  width: 78%;
   height: auto;
   pointer-events: none;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .45));

@@ -139,7 +139,9 @@ export default function QuickAccessStrip() {
             ? // Flush to y=0, chips resting at the safe-area line.
               // strip-pin-anim: the position swap itself can't
               // animate, so a quick drop-in masks the teleport.
-              "fixed left-0 right-0 top-0 z-40 isolate px-4 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)] strip-pin-anim"
+              // qa-pinned: in the Christmas season globals.css drops
+              // the chips below the string lights.
+              "qa-pinned fixed left-0 right-0 top-0 z-40 isolate px-4 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)] strip-pin-anim"
             : // -mx-4/px-4 mirrors .crt-screen's 1rem phone padding so
               // the row reads full-bleed in the flow too.
               "relative isolate -mx-4 px-4 py-2"

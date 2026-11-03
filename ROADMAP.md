@@ -48,6 +48,10 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    detail only). **Bulbs: Luca's generated C9 bulbs are in** (sliced from
    his image, 2x WebP tiles public/seasonal/lights-a/b.webp; the wire
    stays SVG). **Christmas look is DONE.**
+   Lights raised into the status-bar zone (75% of the inset) and the
+   app home's pinned Reviews/Releases/Aux Wars/Lists row drops below
+   the bulbs in season (`.qa-pinned`) — Luca, 2026-11-02: the row ran
+   into the lights on scroll. Check on the TestFlight build.
    **Rewind window stays Dec 1 → Jan 15** (Luca, 2026-11-02: "keep it
    until the 15th") — lib/rewind.ts unchanged.
    Earlier note — **MIX PICKED 2026-11-02, mockups made** Canvas: https://claude.ai/artifact/LrZioo9ayX8N1BEMtUJvjy

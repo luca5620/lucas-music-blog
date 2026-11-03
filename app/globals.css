@@ -3039,7 +3039,14 @@ html:not(.low-detail) .xmas-snow span:nth-child(even)::before {
   position: fixed;
   left: 0;
   right: 0;
-  top: env(safe-area-inset-top, 0px);
+  /* RAISED into the status-bar zone (Luca, 2026-11-02: on the app
+     home, the pinned Reviews / Releases / Aux Wars / Lists row ran
+     into the bulbs). The bottom quarter of the status-bar inset is
+     empty space under the clock on every iPhone, so the lights sit
+     at 75% of the inset: ~15px higher on a Dynamic Island phone,
+     ~12px on a notch phone, 5px on a home-button phone (whose 20px
+     bar has no spare room). 0 on the web, where the inset is 0. */
+  top: calc(env(safe-area-inset-top, 0px) * .75);
   height: 34px;
   z-index: 46;
   pointer-events: none;
@@ -3086,9 +3093,22 @@ html:not(.low-detail) .xmas-lights .xmas-glow-b {
   50% { opacity: .3; }
 }
 /* Make room so the lights never sit on the header: the app's screen
-   starts 30px lower, the web's TV gets a deeper top margin. */
+   starts 30px lower (less the quarter-inset the lights were raised
+   by), the web's TV gets a deeper top margin. */
 html.xmas.native-app .crt-tv {
-  padding-top: calc(max(12px, env(safe-area-inset-top, 0px)) + 30px);
+  padding-top: calc(max(12px, env(safe-area-inset-top, 0px)) + 30px - env(safe-area-inset-top, 0px) * .25);
+}
+/* The app home's quick-access row (QuickAccessStrip) pins to the top
+   when you scroll. Its chips normally rest just under the clock —
+   right where the bulbs hang — so in season they drop to just below
+   the bulbs (whose bottoms hang 18px below the top of the strip). The
+   lights draw OVER the row's black backdrop, so it reads as the
+   string hanging across the top of the bar. */
+html.xmas.native-app .qa-pinned {
+  padding-top: max(
+    calc(env(safe-area-inset-top, 0px) + .5rem),
+    calc(env(safe-area-inset-top, 0px) * .75 + 24px)
+  );
 }
 html.xmas:not(.native-app) .crt-tv {
   margin-top: calc(1.25rem + 26px);

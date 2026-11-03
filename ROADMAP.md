@@ -69,6 +69,13 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    Luca picks + fine-tunes → build. Website-only, DATE-GATED (switches
    itself on and off; ends 12/31 with no push needed — matters because
    main freezes during review).
+   **2026-11-02 evening (Windows): submission kit WRITTEN** —
+   `docs/1.3-SUBMISSION.md` (What's New, reviewer notes, age-rating
+   answers incl. Apple's new Nov 16 questions: Shared Location = No,
+   Dating = No). Rules re-checked, logged. Duo screenshot plan:
+   `docs/marketing/app-store-screenshots/DUO.md` (capture 6 inner + 6
+   outer in the simulator, Claude composes them in code, no AI scenes).
+   Community Spotlight week 1 picked ✓ (Luca).
 3. **iPhone Duo pass** on the MacBook (the "📱 1.3 (build 4)" block
    below has the steps: Xcode 27.1+, Duo simulator fold/unfold/rotate,
    regular iPhone regression pass).
@@ -621,7 +628,7 @@ uses the second option yet).
   can never be restored; SET NULL links (e.g. a featured review) stay cleared.
 - ✅ 069 run by Luca, verified 2026-10-30 (columns + functions answer over REST).
 
-### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT 2bf3b8f, 068 RUN ✓, needs week 1 picked
+### 🔦 Community Spotlight (2026-10-30, Windows) — BUILT 2bf3b8f, 068 RUN ✓, weeks 1–2 picked ✓
 - Idea from michorex (Discord): one album a week everyone listens to, rates
   and talks about. Why: last 30 days, 64 signups → 40 rated → only 4 rated on
   a 2nd day; 231 reviews over 203 releases, 189 with exactly ONE review.

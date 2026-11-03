@@ -8,9 +8,22 @@ the rules by the next submission. This file is the repo copy of
 both machines (Windows + MacBook) have it. CLAUDE.md tells Claude to
 run the check below.
 
-**Last checked: 2026-11-02** (MacBook, before the 1.3 build). The
-guidelines page still says "Last Updated: October 16, 2026" — no change.
-Two news items since 2026-10-25:
+**Last checked: 2026-11-02** (MacBook before the 1.3 build, then
+re-checked on Windows the same evening). The guidelines page still says
+"Last Updated: October 16, 2026" — no change. News since 2026-10-25:
+- **2026-11-02 (evening) New age-rating questions from 2026-11-16:
+  "Shared Location" and "Dating and Relationships"**; every app must
+  answer them by 2027-01-12 (dating apps get 18+) → hits Peak Music
+  only as paperwork: answer **No** to both (the app never shares a
+  location; it isn't a dating app). If 1.3 is submitted after Nov 16
+  the questionnaire will ask; if before, answer them by Jan 12 anyway.
+  Logged in docs/1.3-SUBMISSION.md.
+- **Watch, not a rule break yet — 4.5.4 push for marketing:** the app
+  now sends weekly recap, streak, Spotlight and Rewind pushes with no
+  per-type switch in the app (only iOS Settings → Notifications). They
+  are about the user's own activity / the community, not promotions, so
+  they should pass. If a reviewer reads one as marketing, the fix is a
+  website-only "Notifications" section in Settings with toggles.
 - **2026-10-29 Taiwan storefront commission 30%→26%; the Developer
   Program License Agreement was REVISED again** → hits Peak Music only
   as paperwork: if the agreement was accepted before Oct 29, accept the

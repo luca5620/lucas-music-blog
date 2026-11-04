@@ -2959,12 +2959,17 @@ fieldset {
 html.xmas .penguin-santa {
   display: block;
   position: absolute;
-  /* 78% of the penguin's width (was 92% — Luca, 2026-11-02: "a bit
-     smaller"), shrunk around the brim so it still sits on the same
-     spot on the head: the brim's bottom edge stays where it was. */
-  left: 13%;
-  top: -19%;
-  width: 78%;
+  /* 70% of the penguin's width (92% → 78% → 70% — Luca, 2026-11-02
+     and 11-04: "a bit smaller", then "slightly a bit smaller"), with
+     the brim's bottom edge kept where it was on the head.
+     CENTRED ON THE BRIM, NOT THE IMAGE (Luca, 11-04: "a little off to
+     the left"): the pompom hangs off the right of the picture, so the
+     fur brim's middle is only 39% of the way across it. left =
+     50% − 39% × 70% puts the brim's middle on the head's middle
+     (measured: the penguin mark itself is centred at 50%). */
+  left: 23%;
+  top: -14%;
+  width: 70%;
   height: auto;
   pointer-events: none;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .45));

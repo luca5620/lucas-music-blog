@@ -101,13 +101,31 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    - **Pinned home row** pads by the side insets (camera covered LISTS).
    - **Profile: The Log sits beside the stats** below 1440px (under the
      pinned buttons) instead of wrapping under the bio — web too.
-   **Verified on the simulator:** unfolded sideways + unfolded upright
-   (home, own profile, rotate both ways). **NOT yet verified: the
-   FRONT screen** (Claude can't fold the simulator — Luca folds, Claude
-   screenshots; SIDE_BLOCK_H_FRONT = 158 is an estimate from his
-   screenshot). **Known leftovers:** (1) the slide-up sheets and
-   full-screen Your Taste still keep the old right-hand padding in the
-   side case; (2) own profile unfolded UPRIGHT (and any 640–900px
+   - **Round three (same day, 675cfc4 → latest):** Luca, after seeing
+     both: the FRONT screen gets the **side rail back** ("leaving the
+     bottom free") — `.duo-front .tab-rail`, page keeps iOS's side
+     padding there; the full-width + corner-box treatment is
+     UNFOLDED-only. Unfolded: **tab bar 14px lower** (`.duo-inner`,
+     `--tab-bar-pad` 28 → 14). Unfolded sideways: **Create sheet, all
+     slide-up sheets and full-screen Taste run full width** (they were
+     still shifted left), and the Taste ✕ slides left of the clock.
+     StatusCorner now also **re-detects when the insets change** (a
+     hidden probe + ResizeObserver): one cold launch in three came up
+     with the old layout because iOS reported the insets late and no
+     resize fires for that.
+   **Verified on the simulator (unfolded, both ways up):** home, own
+   profile, Create sheet, full-screen Taste, rotate both ways, cold
+   launch. **NOT verified: the FRONT screen** — Claude can't fold the
+   simulator (no simctl control); Luca folds, Claude screenshots.
+   Check there: the rail, the pinned row, Create sheet, full-screen
+   Taste (its frame now stops at the strip).
+   **Open question for Luca — the Reviews / Releases / Aux Wars / Lists
+   row on the front screen:** he said it "should be reworked, it looks
+   odd with the pills being so small". With the rail back the row is
+   the page's full width again (same pill size as any iPhone); if it
+   still reads small, the offer is two rows of two bigger pills there.
+   NOT built — needs his eye on the front screen first.
+   **Known leftover:** own profile unfolded UPRIGHT (and any 640–900px
    window): the left column is squeezed to ~190pt by the room kept for
    Customize + Share my month, so the name drops under the avatar with
    a gap — pre-existing, needs its own layout decision. Then the rest

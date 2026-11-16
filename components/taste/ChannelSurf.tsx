@@ -1097,7 +1097,10 @@ export default function ChannelSurf({
         type="button"
         onClick={() => (fullscreen ? close() : setFullscreen(true))}
         aria-label={fullscreen ? t("exitFullscreen") : t("fullscreen")}
-        className={`absolute right-3 z-10 w-9 h-9 rounded-full border border-border-medium bg-black/50 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-all flex items-center justify-center ${
+        // surf-toggle-btn: on the iPhone Duo (unfolded, sideways) the
+        // clock + wifi sit in this corner; globals.css "STATUS CORNER"
+        // slides the button left of them.
+        className={`surf-toggle-btn absolute right-3 z-10 w-9 h-9 rounded-full border border-border-medium bg-black/50 text-text-secondary hover:text-accent-primary hover:border-accent-primary/60 transition-all flex items-center justify-center ${
           // Fullscreen: clear the notch/status bar in the app shell.
           fullscreen ? "top-[max(0.75rem,env(safe-area-inset-top))]" : "top-3"
         }`}

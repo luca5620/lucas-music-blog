@@ -8286,6 +8286,12 @@ html.status-corner-side .live-sheet-panel {
   padding-right: 0;
 }
 
+/* ...which puts the full-screen Taste channel's ✕ (top-right) under
+   the clock, so there it slides to just left of the block. */
+html.status-corner-side .surf-fullscreen .surf-toggle-btn {
+  right: calc(var(--corner-w, 0px) + 0.25rem);
+}
+
 /* UNFOLDED, either way up: the tab bar sits lower (Luca 2026-11-16:
    "it takes up a bit too much space"). The flat 28px under the icons
    was tuned on his iPhone; on the big screen it read as a thick black
@@ -8318,6 +8324,15 @@ html.tab-rail {
   /* No bar to draw: the strip is already the page's own black. */
   background: transparent;
   border-top: none;
+}
+/* The full-screen Taste channel pins its ✕ and its like / comment /
+   view buttons to its own right edge, and padding doesn't move
+   pinned things — they would have landed in the strip, under the
+   camera and on top of the rail. So here the frame itself stops at
+   the strip instead of padding for it. */
+html.tab-rail .surf-fullscreen {
+  right: env(safe-area-inset-right, 0px);
+  padding-right: 0;
 }
 .tab-rail .tab-bar-item {
   /* Fixed-height cells instead of equal shares of the bar, each one

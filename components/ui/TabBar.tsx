@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { hapticTap } from "@/lib/native";
 import { markNavRoot } from "@/lib/nav-root";
@@ -80,40 +80,6 @@ const icons = {
   ),
 };
 
-/**
- * SIDE RAIL (iPhone Duo, Luca 2026-11-16). On the Duo the camera,
- * clock and wifi live in a strip down one SIDE of the screen; the page
- * already steps aside for it, which left the strip empty below the
- * icons. There the tabs stack up that strip instead of sitting along
- * the bottom (CSS: globals.css "SIDE RAIL").
- *
- * The rule, in real pixels: one side inset is wide enough to hold a
- * tab (RAIL_MIN) and the other side has next to none (RAIL_OTHER_MAX)
- * — i.e. the strip is on ONE side. An ordinary iPhone has no side
- * inset upright and the SAME inset on both sides when turned sideways,
- * so it can never match. The screen must also be tall enough for five
- * tabs under the status icons (RAIL_MIN_HEIGHT).
- */
-const RAIL_MIN = 60;
-const RAIL_OTHER_MAX = 24;
-const RAIL_MIN_HEIGHT = 520;
-
-/** env(safe-area-inset-left/right) in real pixels, via a hidden probe. */
-function measureSideInsets(): { left: number; right: number } {
-  const probe = document.createElement("div");
-  probe.style.cssText =
-    "position:fixed;visibility:hidden;pointer-events:none;" +
-    "padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)";
-  document.body.appendChild(probe);
-  const style = getComputedStyle(probe);
-  const insets = {
-    left: parseFloat(style.paddingLeft) || 0,
-    right: parseFloat(style.paddingRight) || 0,
-  };
-  probe.remove();
-  return insets;
-}
-
 export default function TabBar() {
   const pathname = usePathname();
   const { user, profile } = useAuth();
@@ -148,39 +114,6 @@ export default function TabBar() {
     };
     vv.addEventListener("resize", onResize);
     return () => vv.removeEventListener("resize", onResize);
-  }, [native]);
-
-  // SIDE RAIL: tag <html> so the CSS can move the bar into the side
-  // strip (see the note above RAIL_MIN). A layout effect, so the very
-  // first paint already has the bar in the right place — no hop from
-  // the bottom to the side. Re-checked on every resize, which is what
-  // folding, unfolding and rotating the Duo fire; the second, delayed
-  // check is because the insets can settle a beat after the size does.
-  useLayoutEffect(() => {
-    if (!native) return;
-    const root = document.documentElement;
-    const apply = () => {
-      const { left, right } = measureSideInsets();
-      const tall = window.innerHeight >= RAIL_MIN_HEIGHT;
-      const onRight = tall && right >= RAIL_MIN && left < RAIL_OTHER_MAX;
-      const onLeft = tall && left >= RAIL_MIN && right < RAIL_OTHER_MAX;
-      root.classList.toggle("tab-rail", onRight || onLeft);
-      root.classList.toggle("tab-rail-right", onRight);
-      root.classList.toggle("tab-rail-left", onLeft);
-    };
-    let settle: ReturnType<typeof setTimeout> | undefined;
-    const onResize = () => {
-      apply();
-      if (settle) clearTimeout(settle);
-      settle = setTimeout(apply, 350);
-    };
-    apply();
-    window.addEventListener("resize", onResize);
-    return () => {
-      if (settle) clearTimeout(settle);
-      window.removeEventListener("resize", onResize);
-      root.classList.remove("tab-rail", "tab-rail-right", "tab-rail-left");
-    };
   }, [native]);
 
   if (!native) return null;

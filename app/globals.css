@@ -1380,6 +1380,18 @@ body {
 .native-app .nav-auth {
   margin-left: 0; /* the 8px gap already spaces it */
 }
+/* The site name is never cut off (Luca 2026-11-16): Navigation.tsx
+   measures the title and, the moment it would end in "…", sets
+   data-compact on the header — "1" drops the ALERTS / SEARCH words
+   (bell + magnifying glass stay), "2" also drops the account name
+   beside the avatar. Unlayered on purpose: Tailwind's `sm:inline`
+   lives in @layer utilities and loses to this. */
+.site-nav[data-compact] .nav-label {
+  display: none;
+}
+.site-nav[data-compact="2"] .nav-account-name {
+  display: none;
+}
 /* Raise EVERYTHING below the header (Luca 2026-08-28: lifting only
    the bar would leave the home module too low — the whole page
    rises together). Web keeps pb-4/mb-6. */
@@ -1553,19 +1565,15 @@ body {
    device. Don't move it again without his say-so. */
 :root {
   --tab-bar-pad: 28px;
-  /* The bar's content height. A variable (2026-11-16) so the SIDE
-     RAIL below can set it to 0 in one place — every surface that
-     stacks on the bar reads it. */
-  --tab-bar-h: 52px;
 }
 
 /* Room for the fixed tab bar so page bottoms are never covered.
-   3rem matches .crt-screen's own bottom padding. --tab-bar-h (52px)
-   = the tab bar's content height (keep in sync with .tab-bar-item
-   sizing — slimmed from 64px, Luca 2026-08-25: more room for the
-   actual page). */
+   3rem matches .crt-screen's own bottom padding. 52px = the tab
+   bar's content height (keep in sync with .tab-bar-item sizing and
+   .surf-fullscreen's bottom offset — slimmed from 64px, Luca
+   2026-08-25: more room for the actual page). */
 .native-app .crt-screen {
-  padding-bottom: calc(3rem + var(--tab-bar-h) + var(--tab-bar-pad));
+  padding-bottom: calc(3rem + 52px + var(--tab-bar-pad));
 }
 
 /* ============================================================
@@ -1665,50 +1673,6 @@ body {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-primary) 45%, transparent));
 }
 
-/* SIDE RAIL (iPhone Duo, Luca 2026-11-16, simulator pass). On the
-   Duo the camera, clock and wifi sit in a strip down ONE SIDE of the
-   screen, and the page already steps aside for it (SIDE SAFE AREAS
-   above) — which left that strip empty below the wifi icon while the
-   tab bar still took a row off the bottom. Luca: "the bottom bar
-   should actually shift over to that unused space". So there the five
-   tabs stack into the strip, bottom-up from the thumb, and the page
-   gets the bottom row back.
-   WHEN: TabBar.tsx measures the side insets and tags <html> with
-   .tab-rail + .tab-rail-right / .tab-rail-left only when ONE side has
-   a wide inset and the other doesn't. An ordinary iPhone upright has
-   no side inset, and sideways it has the same inset on both sides, so
-   neither ever gets the rail — the approved bottom bar is untouched.
-   With the bar gone from the bottom, --tab-bar-h is 0 and the pad
-   becomes just the home-indicator inset, so the page, the full-screen
-   Taste channel and the slide-up sheets all run to the bottom. */
-html.tab-rail {
-  --tab-bar-h: 0px;
-  --tab-bar-pad: env(safe-area-inset-bottom, 0px);
-}
-.tab-rail .tab-bar {
-  top: auto;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 0 max(16px, env(safe-area-inset-bottom, 0px));
-  /* No bar to draw: the strip is already the page's own black. */
-  background: transparent;
-  border-top: none;
-}
-.tab-rail-right .tab-bar {
-  left: auto;
-  width: env(safe-area-inset-right, 0px);
-}
-.tab-rail-left .tab-bar {
-  right: auto;
-  width: env(safe-area-inset-left, 0px);
-}
-.tab-rail .tab-bar-item {
-  /* Fixed-height cells instead of equal shares of the bar, each one
-     a full-width tap target across the strip. */
-  flex: 0 0 60px;
-  padding: 0 2px;
-}
-
 /* Quick-access strip (QuickAccessStrip.tsx): the pin is a position
    swap and can't animate, so the arriving bar drops in softly.
    Runs once per pin — exempt from the mobile animation freeze, it's
@@ -1725,15 +1689,6 @@ html.tab-rail {
 }
 .strip-pin-anim {
   animation: strip-pin 0.28s ease;
-}
-/* The pinned row spans the whole screen (its backdrop has to), so its
-   chips must step aside for a side camera strip themselves — on the
-   iPhone Duo's front screen the camera covered LISTS (Luca
-   2026-11-16). 1rem is the row's normal side padding; the insets are
-   0 on an ordinary upright iPhone. */
-.native-app .qa-pinned {
-  padding-left: calc(1rem + env(safe-area-inset-left, 0px));
-  padding-right: calc(1rem + env(safe-area-inset-right, 0px));
 }
 
 /* ============================================================
@@ -1753,7 +1708,7 @@ html.tab-rail {
    under it — 52px matches the bar's content height (see the
    .native-app .crt-screen padding note). */
 .native-app .surf-fullscreen {
-  bottom: calc(var(--tab-bar-h) + var(--tab-bar-pad));
+  bottom: calc(52px + var(--tab-bar-pad));
 }
 
 /* Enter/exit: fade + slight zoom (Luca's pick, 2026-08-22 — CRT
@@ -1822,7 +1777,7 @@ html.tab-rail {
 /* In the app the bar/sheet sit ABOVE the tab bar (same offset as
    .surf-fullscreen — keep the 52px in sync with the tab bar). */
 .native-app .live-sheet-bottom {
-  bottom: calc(var(--tab-bar-h) + var(--tab-bar-pad));
+  bottom: calc(52px + var(--tab-bar-pad));
 }
 /* Web phones pad the home-indicator inset INSIDE the bar/sheet;
    the app already cleared it via the bottom offset above. */
@@ -1871,7 +1826,7 @@ html.tab-rail {
   height: 52dvh;
 }
 .native-app .live-sheet-half {
-  --live-sheet-gap: calc(var(--tab-bar-h) + var(--tab-bar-pad));
+  --live-sheet-gap: calc(52px + var(--tab-bar-pad));
 }
 
 /* ============================================================
@@ -4856,6 +4811,24 @@ html.xmas .rw-card { padding-top: 22px; }
     top: 5.5rem;
     right: 2rem;
     margin: 0;
+  }
+}
+/* THE LOG GOES UNDER THE BUTTONS, NOT UNDER THE PAGE (Luca 2026-11-16,
+   iPhone Duo unfolded: the log had dropped below the bio with a big
+   empty block to the right of the stats — "it can fit to the right").
+   Why it dropped: the rule above keeps the whole strip under the
+   pinned buttons clear by giving the log a right margin as wide as
+   the buttons, and since Customize + Share my month (24rem) that
+   margin plus the log no longer fits on any screen narrower than
+   ~1440px — laptops included — so the log wrapped to its own line.
+   Below 1440px the log gives that margin up and starts a little
+   LOWER instead, just beneath the buttons (4rem = their height + a
+   gap), in the open space beside the stats and bio. From 1440px up
+   there is room for the original side-by-side row, untouched. */
+@media (min-width: 640px) and (max-width: 1439.98px) {
+  .profile-header-log {
+    margin-right: 0;
+    padding-top: 9.5rem;
   }
 }
 .the-log {
@@ -8258,3 +8231,74 @@ a.list-poster:hover > div:first-child {
 }
 /* Low detail: the 7" still drops in once (one transform, plays once —
    same call as the review sleeve's roll-out); nothing loops here. */
+
+/* ============================================================
+   STATUS CORNER — iPhone Duo (Luca, 2026-11-16, simulator pass).
+   components/ui/StatusCorner.tsx tags <html> when the clock + wifi
+   sit as a block in the top-right CORNER instead of in a normal
+   status bar, and sets --corner-w / --corner-h (the block's size)
+   and --corner-float-w / --corner-float-h (the part of it that
+   reaches into the page). Read that file's header for the why.
+   Lives at the END of this file on purpose: several rules here have
+   to beat same-strength rules above (SIDE SAFE AREAS, the Christmas
+   header room) and "later wins" is how they do it.
+   ============================================================ */
+
+/* The invisible box the header steps around. Nothing unless tagged. */
+.status-corner-box {
+  display: none;
+}
+html.status-corner .status-corner-box {
+  display: block;
+  float: right;
+  width: var(--corner-float-w, 0px);
+  height: var(--corner-float-h, 0px);
+  /* a little air between the header's last button and the wifi icon */
+  margin-left: 12px;
+  pointer-events: none;
+}
+/* The header becomes its own block-formatting context, which is what
+   makes a box NARROW beside a float (a plain block only wraps its
+   text around one — its bottom border line would still have run
+   underneath the wifi icon). */
+html.status-corner .site-nav {
+  display: flow-root;
+}
+
+/* SIDE CASE (front screen, and unfolded sideways): iOS reserves a
+   strip down the whole right side for a block that only occupies its
+   top. Give the strip back: the page and the tab bar run to the right
+   edge again, so the site and the five tabs are centred on the screen
+   instead of shoved left. (The full-screen Taste channel and the
+   slide-up sheets keep their side padding for now — see ROADMAP.) */
+html.status-corner-side.native-app .crt-tv,
+html.status-corner-side .tab-bar {
+  padding-right: 0;
+}
+
+/* TOP CASE (unfolded upright): iOS reserves a tall band along the
+   top that is empty except for its right-hand corner. Luca: "the top
+   bar should fit at the top". The page starts near the top of the
+   screen and the header sits IN the band, to the left of the clock;
+   56px = the header row's height plus breathing room, so the row's
+   bottom lines up with the bottom of the band and the content below
+   starts where it always did. */
+html.status-corner-top.native-app .crt-tv {
+  padding-top: max(12px, calc(var(--corner-h) - 56px));
+}
+/* Christmas lights: with the header up in the band, the string hangs
+   from the very top of the screen, above it (it is normally pinned
+   3/4 of the way down the band — which is now the header's row). */
+html.status-corner-top .xmas-lights {
+  top: 0;
+}
+
+/* The home page's pinned Reviews / Releases / Aux Wars / Lists row
+   spans the whole screen (its backdrop has to), so its chips step
+   aside for a side strip themselves — on the Duo's front screen the
+   camera covered LISTS. 1rem is the row's normal side padding; the
+   insets are 0 on an ordinary upright iPhone. */
+.native-app .qa-pinned {
+  padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+  padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+}

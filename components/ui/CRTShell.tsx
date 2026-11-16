@@ -1,4 +1,5 @@
 import ShellLiquid from "@/components/ui/ShellLiquid";
+import StatusCorner from "@/components/ui/StatusCorner";
 
 /**
  * CRTShell — the frame every page renders inside.
@@ -39,6 +40,11 @@ export default function CRTShell({ children }: { children: React.ReactNode }) {
           <div className="crt-liquid" aria-hidden="true">
             <ShellLiquid where="web" />
           </div>
+          {/* APP-ONLY, iPhone Duo only: an invisible box floated into
+              the top-right corner so the header steps around the
+              clock + wifi while the page keeps the full screen. Must
+              come BEFORE the header to float beside it. */}
+          <StatusCorner />
           {children}
         </div>
       </div>

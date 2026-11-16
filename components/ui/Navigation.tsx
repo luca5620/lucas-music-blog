@@ -4,7 +4,8 @@ import Link from "next/link";
 import { markNavRoot } from "@/lib/nav-root";
 import PenguinMark from "@/components/ui/PenguinMark";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useIsNativeApp } from "@/lib/useIsNativeApp";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { VerifiedBadge } from "@/components/ui/RoleBadge";
 import NotificationsBell from "@/components/notifications/NotificationsBell";
@@ -61,6 +62,49 @@ export default function Navigation() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // THE SITE NAME IS NEVER CUT OFF (Luca, 2026-11-16, iPhone Duo held
+  // upright: "Peak Music Revi…" beside full ALERTS and SEARCH pills).
+  // In the app the title is the flexible side of the row and ends in
+  // "…" when it runs out of room; the moment that would happen the
+  // buttons give way instead: first ALERTS / SEARCH drop to their bell
+  // and magnifying-glass icons, then, only if the name STILL doesn't
+  // fit, the account name beside the avatar goes too. Measured rather
+  // than a fixed width because the labels are translated (six
+  // languages) and the account name is whatever the member chose.
+  // Every pass starts from the full header and takes away only what it
+  // must, so the labels come straight back when there is room (rotate,
+  // unfold). The level rides on a data attribute, which React doesn't
+  // manage, so a re-render can't wipe it. App-only: on the web the
+  // title never clips, so there is nothing to fit.
+  const native = useIsNativeApp();
+  const navRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    if (!native) return;
+    const nav = navRef.current;
+    const title = titleRef.current;
+    if (!nav || !title) return;
+    const fit = () => {
+      for (const level of ["", "1", "2"]) {
+        if (level) nav.dataset.compact = level;
+        else delete nav.dataset.compact;
+        if (title.scrollWidth <= title.clientWidth) break;
+      }
+    };
+    fit();
+    // The row's width changes on rotate / fold; the web font arriving
+    // changes how wide the name is.
+    const observer = new ResizeObserver(fit);
+    observer.observe(nav);
+    document.fonts?.ready.then(fit);
+    return () => {
+      observer.disconnect();
+      delete nav.dataset.compact;
+    };
+    // user / profile / loading / pathname: each can change what is in
+    // the row (bell appears, account name loads), so re-fit on them.
+  }, [native, user, profile, loading, pathname]);
+
   const handleSignOut = async () => {
     setDropdownOpen(false);
     await signOut();
@@ -76,6 +120,7 @@ export default function Navigation() {
     // .crt-screen gives every direct child z-index:1, so without this
     // the avatar dropdown painted UNDER content further down the DOM.
     <nav
+      ref={navRef}
       className={`${
         onProfilePage ? "" : "border-b border-border-subtle"
       } site-nav pb-4 mb-6 relative z-40`}
@@ -104,7 +149,7 @@ export default function Navigation() {
               2026-09-16): now that the mascot greets you on hover, two
               animations competing in one small row read as noise. The
               bird performs; the word just rises a little. */}
-          <span className="nav-app-title nav-title-lift pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors whitespace-nowrap">
+          <span ref={titleRef} className="nav-app-title nav-title-lift pixel-text text-base sm:text-xl text-accent-primary group-hover:text-accent-glow transition-colors whitespace-nowrap">
             Peak Music Reviews
           </span>
         </Link>
@@ -181,7 +226,7 @@ export default function Navigation() {
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.8-3.8" />
             </svg>
-            <span className="hidden sm:inline">{t("search")}</span>
+            <span className="nav-label hidden sm:inline">{t("search")}</span>
           </Link>
 
           {/* CREATE — one button for every content type (Luca
@@ -309,7 +354,7 @@ export default function Navigation() {
                         ignored on plain inline elements, which is why the
                         earlier attempt didn't ellipsize. Dropdown shows
                         the full name regardless. */}
-                    <span className="hidden sm:inline-block align-middle text-sm text-text-secondary font-[family-name:var(--font-heading)] max-w-[9rem] truncate">
+                    <span className="nav-account-name hidden sm:inline-block align-middle text-sm text-text-secondary font-[family-name:var(--font-heading)] max-w-[9rem] truncate">
                       {profile?.display_name || profile?.username || t("user")}
                     </span>
                     {profile?.role && profile.role !== "user" && (

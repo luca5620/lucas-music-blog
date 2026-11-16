@@ -226,7 +226,7 @@ export default function NotificationsBell() {
         {/* Web-only label — gives the pill the same height/width as
             Search and Create; below sm (and so in the app) the bell
             stays icon-only. */}
-        <span className="hidden sm:inline">{t("alerts")}</span>
+        <span className="nav-label hidden sm:inline">{t("alerts")}</span>
         {unread > 0 && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent-rose text-white text-[10px] font-bold flex items-center justify-center border border-black/40">
             {unread > 9 ? "9+" : unread}

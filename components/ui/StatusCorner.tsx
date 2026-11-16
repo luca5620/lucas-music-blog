@@ -20,21 +20,30 @@ import { useIsNativeApp } from "@/lib/useIsNativeApp";
  * Luca: "find a way to compromise to still get a fully functioning
  * fullscreen experience accounting for that top right issue".
  *
- * The compromise: the page takes the WHOLE screen, and only what is
- * actually up in that corner steps around it. This component renders
+ * The compromise on the UNFOLDED screen (both ways up): the page takes
+ * the WHOLE screen, and only what is actually up in that corner steps
+ * around it. This component renders
  * one invisible box floated into the top-right of the page, sized to
  * the clock/wifi block. Ordinary CSS float rules then do the work: the
- * header row (and, on the small front screen, whatever sits right
- * under it) narrows beside the box, and everything below the box runs
- * full width. Scrolled content passes under the clock exactly like it
+ * header row narrows beside the box, and everything below the box
+ * runs full width. Scrolled content passes under the clock exactly like it
  * already does under a normal status bar.
  *
- * It tags <html> so globals.css ("STATUS CORNER") can drop the side
- * padding and re-seat the header:
- *   .status-corner        — either case
- *   .status-corner-side   — the block is reported as a right-hand strip
- *   .status-corner-top    — the block is reported as a tall top band
- * and sets --corner-w / --corner-h (the block's size, from the screen's
+ * The small FRONT screen is the exception (Luca, same day, after
+ * seeing both: "the front screen we should make it go to the right
+ * side again leaving the bottom free"). There the strip is a quarter
+ * of the width and the camera sits in it too, so the page keeps the
+ * side padding iOS asks for and the strip earns its keep instead: the
+ * five tabs stack up it as a SIDE RAIL, and the page gets the bottom
+ * row the tab bar used to take.
+ *
+ * It tags <html> so globals.css ("STATUS CORNER") can do all that:
+ *   .duo-front            — front screen: side rail (+ .tab-rail)
+ *   .duo-inner            — unfolded, either way up
+ *   .status-corner        — unfolded: full-width page + corner box
+ *   .status-corner-side   — …the block is reported as a right-hand strip
+ *   .status-corner-top    — …the block is reported as a tall top band
+ * and, unfolded, sets --corner-w / --corner-h (the block's size, from the screen's
  * top-right corner) plus --corner-float-w / --corner-float-h (the size
  * of the floated box, i.e. the part of the block that reaches into the
  * page's content area).
@@ -56,8 +65,9 @@ const TOP_BAND_MIN_WIDTH = 560;
 /* iOS tells us ONE dimension of the block (the inset); the other isn't
    exposed anywhere, so these come from measuring simulator screenshots
    (2026-11-16, iOS 27.1). If Apple moves the icons, re-measure. */
-/** Side strip, front screen: camera + clock + wifi stacked, bottom at ~152pt. */
-const SIDE_BLOCK_H_FRONT = 158;
+/** Front screen too short for five stacked tabs under the status
+    icons (5 × 60pt + the icons' ~152pt): keep the bottom bar. */
+const RAIL_MIN_HEIGHT = 520;
 /** Side strip, unfolded sideways: clock + wifi only, bottom at ~99pt. */
 const SIDE_BLOCK_H_INNER = 104;
 /** Below this width a side strip means the front screen. */
@@ -103,13 +113,19 @@ export default function StatusCorner() {
       const { top, left, right } = measureInsets();
       const width = window.innerWidth;
 
-      let mode: "side" | "top" | null = null;
+      let mode: "front" | "side" | "top" | null = null;
       let blockW = 0;
       let blockH = 0;
       if (right >= SIDE_MIN && left < OTHER_SIDE_MAX) {
-        mode = "side";
-        blockW = right;
-        blockH = width < FRONT_SCREEN_MAX_WIDTH ? SIDE_BLOCK_H_FRONT : SIDE_BLOCK_H_INNER;
+        if (width < FRONT_SCREEN_MAX_WIDTH) {
+          // Front screen: the rail, if the screen is tall enough for
+          // it; otherwise nothing special (padded page, bottom bar).
+          mode = window.innerHeight >= RAIL_MIN_HEIGHT ? "front" : null;
+        } else {
+          mode = "side";
+          blockW = right;
+          blockH = SIDE_BLOCK_H_INNER;
+        }
       } else if (
         left < OTHER_SIDE_MAX &&
         right < OTHER_SIDE_MAX &&
@@ -121,10 +137,14 @@ export default function StatusCorner() {
         blockH = top;
       }
 
-      root.classList.toggle("status-corner", mode !== null);
+      const inner = mode === "side" || mode === "top";
+      root.classList.toggle("duo-front", mode === "front");
+      root.classList.toggle("tab-rail", mode === "front");
+      root.classList.toggle("duo-inner", inner);
+      root.classList.toggle("status-corner", inner);
       root.classList.toggle("status-corner-side", mode === "side");
       root.classList.toggle("status-corner-top", mode === "top");
-      if (mode === null) {
+      if (!inner) {
         for (const name of ["--corner-w", "--corner-h", "--corner-float-w", "--corner-float-h"]) {
           root.style.removeProperty(name);
         }
@@ -179,7 +199,14 @@ export default function StatusCorner() {
     return () => {
       if (settle) clearTimeout(settle);
       window.removeEventListener("resize", onResize);
-      root.classList.remove("status-corner", "status-corner-side", "status-corner-top");
+      root.classList.remove(
+        "duo-front",
+        "tab-rail",
+        "duo-inner",
+        "status-corner",
+        "status-corner-side",
+        "status-corner-top",
+      );
       for (const name of ["--corner-w", "--corner-h", "--corner-float-w", "--corner-float-h"]) {
         root.style.removeProperty(name);
       }

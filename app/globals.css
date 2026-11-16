@@ -1565,6 +1565,11 @@ body {
    device. Don't move it again without his say-so. */
 :root {
   --tab-bar-pad: 28px;
+  /* The bar's content height (keep in sync with .tab-bar-item
+     sizing). A variable since 2026-11-16 so the iPhone Duo's side
+     rail can set it to 0 in one place — every surface that stacks on
+     the bar reads it (see STATUS CORNER at the end of this file). */
+  --tab-bar-h: 52px;
 }
 
 /* Room for the fixed tab bar so page bottoms are never covered.
@@ -1573,7 +1578,7 @@ body {
    .surf-fullscreen's bottom offset — slimmed from 64px, Luca
    2026-08-25: more room for the actual page). */
 .native-app .crt-screen {
-  padding-bottom: calc(3rem + 52px + var(--tab-bar-pad));
+  padding-bottom: calc(3rem + var(--tab-bar-h) + var(--tab-bar-pad));
 }
 
 /* ============================================================
@@ -1708,7 +1713,7 @@ body {
    under it — 52px matches the bar's content height (see the
    .native-app .crt-screen padding note). */
 .native-app .surf-fullscreen {
-  bottom: calc(52px + var(--tab-bar-pad));
+  bottom: calc(var(--tab-bar-h) + var(--tab-bar-pad));
 }
 
 /* Enter/exit: fade + slight zoom (Luca's pick, 2026-08-22 — CRT
@@ -1777,7 +1782,7 @@ body {
 /* In the app the bar/sheet sit ABOVE the tab bar (same offset as
    .surf-fullscreen — keep the 52px in sync with the tab bar). */
 .native-app .live-sheet-bottom {
-  bottom: calc(52px + var(--tab-bar-pad));
+  bottom: calc(var(--tab-bar-h) + var(--tab-bar-pad));
 }
 /* Web phones pad the home-indicator inset INSIDE the bar/sheet;
    the app already cleared it via the bottom offset above. */
@@ -1826,7 +1831,7 @@ body {
   height: 52dvh;
 }
 .native-app .live-sheet-half {
-  --live-sheet-gap: calc(52px + var(--tab-bar-pad));
+  --live-sheet-gap: calc(var(--tab-bar-h) + var(--tab-bar-pad));
 }
 
 /* ============================================================
@@ -8265,15 +8270,60 @@ html.status-corner .site-nav {
   display: flow-root;
 }
 
-/* SIDE CASE (front screen, and unfolded sideways): iOS reserves a
-   strip down the whole right side for a block that only occupies its
-   top. Give the strip back: the page and the tab bar run to the right
-   edge again, so the site and the five tabs are centred on the screen
-   instead of shoved left. (The full-screen Taste channel and the
-   slide-up sheets keep their side padding for now — see ROADMAP.) */
+/* SIDE CASE (unfolded, held sideways): iOS reserves a strip down the
+   whole right side for a block that only occupies its top. Give the
+   strip back to EVERYTHING that had stepped aside for it (SIDE SAFE
+   AREAS, and the tab bar's own rule): the page, the tab bar, the
+   slide-up sheets — Create, comments, the live room — and the
+   full-screen Taste channel all run to the right edge again, so
+   nothing sits shoved to the left (Luca: the Create sheet "is still
+   shifted over to the left"). */
 html.status-corner-side.native-app .crt-tv,
-html.status-corner-side .tab-bar {
+html.status-corner-side .tab-bar,
+html.status-corner-side .surf-fullscreen,
+html.status-corner-side .live-sheet-fixed,
+html.status-corner-side .live-sheet-panel {
   padding-right: 0;
+}
+
+/* UNFOLDED, either way up: the tab bar sits lower (Luca 2026-11-16:
+   "it takes up a bit too much space"). The flat 28px under the icons
+   was tuned on his iPhone; on the big screen it read as a thick black
+   slab. 14px still clears the home-indicator line. Every surface that
+   stacks on the bar follows, because they all read this variable. */
+html.duo-inner {
+  --tab-bar-pad: 14px;
+}
+
+/* FRONT SCREEN — THE SIDE RAIL. The strip beside the page holds the
+   camera, clock and wifi at its top and nothing below them, while the
+   tab bar took a row off the bottom of a small screen. So the five
+   tabs stack up the strip instead, bottom-up from the thumb, and the
+   bottom row goes back to the page: --tab-bar-h is 0 and the pad is
+   just the home-indicator inset, so the page, the sheets and the
+   Taste channel all run to the bottom. The page keeps its right-hand
+   padding here (the rail lives in it), so the sheets stay lined up
+   with the page. */
+html.tab-rail {
+  --tab-bar-h: 0px;
+  --tab-bar-pad: env(safe-area-inset-bottom, 0px);
+}
+.tab-rail .tab-bar {
+  top: auto;
+  left: auto;
+  width: env(safe-area-inset-right, 0px);
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 0 max(16px, env(safe-area-inset-bottom, 0px));
+  /* No bar to draw: the strip is already the page's own black. */
+  background: transparent;
+  border-top: none;
+}
+.tab-rail .tab-bar-item {
+  /* Fixed-height cells instead of equal shares of the bar, each one
+     a full-width tap target across the strip. */
+  flex: 0 0 60px;
+  padding: 0 2px;
 }
 
 /* TOP CASE (unfolded upright): iOS reserves a tall band along the

@@ -80,18 +80,39 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
    below has the steps: Xcode 27.1+, Duo simulator fold/unfold/rotate,
    regular iPhone regression pass).
    **⏳ STARTED 2026-11-16** (Xcode updated, Duo simulator running).
-   Luca's first two notes on the FRONT screen, both shipped same day
-   (website-only, no rebuild): (a) **the tab bar becomes a side rail**
-   — the five tabs stack in the empty strip under the camera/clock/
-   wifi instead of along the bottom (`TabBar.tsx` measures the side
-   insets and tags `<html>` `.tab-rail`; globals.css "SIDE RAIL";
-   only when ONE side has a ≥60px inset, so ordinary iPhones never
-   get it; `--tab-bar-h` is the new shared bar-height variable);
-   (b) the pinned Reviews/Releases/Aux Wars/Lists row now pads by the
-   side insets (the camera covered LISTS). **Still to check on the
-   simulator:** the rail on the real front screen + unfolded inner
-   screen, sheets (Create, live room, Your Taste full-screen) with the
-   rail, then the rest of the pass list.
+   All website-only, live, no rebuild needed. What changed, from
+   Luca's simulator notes:
+   - **STATUS CORNER — the Duo's full-screen compromise** (e1e55d8,
+     ce542bc). iOS reserves a whole edge for the Duo's corner clock +
+     wifi block (a right-hand strip on the front screen and unfolded
+     sideways; a tall top band unfolded upright), which shoved the
+     site and tab bar off to the left. Now the page takes the full
+     screen and only the header steps around the corner:
+     `components/ui/StatusCorner.tsx` tags `<html>`
+     `.status-corner(-side|-top)` and floats an invisible box into the
+     top-right; globals.css "STATUS CORNER" (end of file). The block's
+     second dimension isn't exposed by iOS — the numbers in
+     StatusCorner.tsx were measured off simulator screenshots.
+     (A side-rail tab bar shipped first, e09afa3 — wrong read of his
+     note, REMOVED the same day.)
+   - **Header: the site name never clips** — ALERTS/SEARCH drop to
+     icons first, then the account name (Navigation.tsx,
+     `data-compact`).
+   - **Pinned home row** pads by the side insets (camera covered LISTS).
+   - **Profile: The Log sits beside the stats** below 1440px (under the
+     pinned buttons) instead of wrapping under the bio — web too.
+   **Verified on the simulator:** unfolded sideways + unfolded upright
+   (home, own profile, rotate both ways). **NOT yet verified: the
+   FRONT screen** (Claude can't fold the simulator — Luca folds, Claude
+   screenshots; SIDE_BLOCK_H_FRONT = 158 is an estimate from his
+   screenshot). **Known leftovers:** (1) the slide-up sheets and
+   full-screen Your Taste still keep the old right-hand padding in the
+   side case; (2) own profile unfolded UPRIGHT (and any 640–900px
+   window): the left column is squeezed to ~190pt by the room kept for
+   Customize + Share my month, so the name drops under the avatar with
+   a gap — pre-existing, needs its own layout decision. Then the rest
+   of the pass list (sign-in sheets, share sheet, photo picker, splash,
+   offline, ordinary iPhone regression).
 4. **iPhone Duo screenshots** for the store — Luca wants them now (inner
    2007×2853, outer 1398×2034; mandatory from April 2027, earns the
    "Made for iPhone Duo" badge).

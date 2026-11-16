@@ -196,7 +196,30 @@ export default function StatusCorner() {
     };
     apply();
     window.addEventListener("resize", onResize);
+
+    // THE INSETS ARRIVE LATE, AND SILENTLY (found 2026-11-16: one cold
+    // launch in three came up with the old shoved-left layout, and a
+    // rotate fixed it). On launch iOS can report the safe-area insets
+    // a moment AFTER this effect has run, and no resize event fires
+    // for it — the window didn't change size, only its insets did. So
+    // a permanent hidden probe wears the insets as padding and a
+    // ResizeObserver watches its outer box: whenever any inset
+    // changes, the box changes and we re-check. (The right inset is
+    // doubled so a strip swapping sides can't leave the box the same
+    // width.)
+    const watcher = document.createElement("div");
+    watcher.style.cssText =
+      "position:fixed;top:0;left:0;visibility:hidden;pointer-events:none;" +
+      "padding-top:env(safe-area-inset-top,0px);" +
+      "padding-left:env(safe-area-inset-left,0px);" +
+      "padding-right:calc(env(safe-area-inset-right,0px) * 2)";
+    document.body.appendChild(watcher);
+    const insetObserver = new ResizeObserver(apply);
+    insetObserver.observe(watcher, { box: "border-box" });
+
     return () => {
+      insetObserver.disconnect();
+      watcher.remove();
       if (settle) clearTimeout(settle);
       window.removeEventListener("resize", onResize);
       root.classList.remove(

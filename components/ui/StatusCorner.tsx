@@ -62,8 +62,8 @@ const SIDE_BLOCK_H_FRONT = 158;
 const SIDE_BLOCK_H_INNER = 104;
 /** Below this width a side strip means the front screen. */
 const FRONT_SCREEN_MAX_WIDTH = 600;
-/** Top band, unfolded upright: clock + wifi side by side, ~130pt wide. */
-const TOP_BLOCK_W = 140;
+/** Top band, unfolded upright: clock + wifi side by side; the clock's left edge is 115pt from the right of the screen. */
+const TOP_BLOCK_W = 120;
 
 /** env(safe-area-inset-*) in real pixels, via a hidden probe. */
 function measureInsets(): { top: number; left: number; right: number } {

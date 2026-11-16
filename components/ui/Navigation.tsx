@@ -92,12 +92,23 @@ export default function Navigation() {
       }
     };
     fit();
-    // The row's width changes on rotate / fold; the web font arriving
-    // changes how wide the name is.
+    // Re-fit whenever anything in the row changes size. Watching the
+    // header alone was not enough (first try, 2026-11-16: the name
+    // still ended in "…" on the Duo): the bell mounts a moment after
+    // the row, which squeezes the title without changing the header's
+    // own width. So the title and the button cluster are watched too.
+    // A pass always ends in the same state for the same sizes, so the
+    // extra callback its own changes cause settles after one round.
     const observer = new ResizeObserver(fit);
     observer.observe(nav);
+    observer.observe(title);
+    const actions = nav.querySelector(".nav-actions");
+    if (actions) observer.observe(actions);
+    // ...and when the web font arrives: it changes how wide the name is.
     document.fonts?.ready.then(fit);
+    document.fonts?.addEventListener?.("loadingdone", fit);
     return () => {
+      document.fonts?.removeEventListener?.("loadingdone", fit);
       observer.disconnect();
       delete nav.dataset.compact;
     };

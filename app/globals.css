@@ -1553,15 +1553,19 @@ body {
    device. Don't move it again without his say-so. */
 :root {
   --tab-bar-pad: 28px;
+  /* The bar's content height. A variable (2026-11-16) so the SIDE
+     RAIL below can set it to 0 in one place — every surface that
+     stacks on the bar reads it. */
+  --tab-bar-h: 52px;
 }
 
 /* Room for the fixed tab bar so page bottoms are never covered.
-   3rem matches .crt-screen's own bottom padding. 52px = the tab
-   bar's content height (keep in sync with .tab-bar-item sizing and
-   .surf-fullscreen's bottom offset — slimmed from 64px, Luca
-   2026-08-25: more room for the actual page). */
+   3rem matches .crt-screen's own bottom padding. --tab-bar-h (52px)
+   = the tab bar's content height (keep in sync with .tab-bar-item
+   sizing — slimmed from 64px, Luca 2026-08-25: more room for the
+   actual page). */
 .native-app .crt-screen {
-  padding-bottom: calc(3rem + 52px + var(--tab-bar-pad));
+  padding-bottom: calc(3rem + var(--tab-bar-h) + var(--tab-bar-pad));
 }
 
 /* ============================================================
@@ -1661,6 +1665,50 @@ body {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-primary) 45%, transparent));
 }
 
+/* SIDE RAIL (iPhone Duo, Luca 2026-11-16, simulator pass). On the
+   Duo the camera, clock and wifi sit in a strip down ONE SIDE of the
+   screen, and the page already steps aside for it (SIDE SAFE AREAS
+   above) — which left that strip empty below the wifi icon while the
+   tab bar still took a row off the bottom. Luca: "the bottom bar
+   should actually shift over to that unused space". So there the five
+   tabs stack into the strip, bottom-up from the thumb, and the page
+   gets the bottom row back.
+   WHEN: TabBar.tsx measures the side insets and tags <html> with
+   .tab-rail + .tab-rail-right / .tab-rail-left only when ONE side has
+   a wide inset and the other doesn't. An ordinary iPhone upright has
+   no side inset, and sideways it has the same inset on both sides, so
+   neither ever gets the rail — the approved bottom bar is untouched.
+   With the bar gone from the bottom, --tab-bar-h is 0 and the pad
+   becomes just the home-indicator inset, so the page, the full-screen
+   Taste channel and the slide-up sheets all run to the bottom. */
+html.tab-rail {
+  --tab-bar-h: 0px;
+  --tab-bar-pad: env(safe-area-inset-bottom, 0px);
+}
+.tab-rail .tab-bar {
+  top: auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 0 max(16px, env(safe-area-inset-bottom, 0px));
+  /* No bar to draw: the strip is already the page's own black. */
+  background: transparent;
+  border-top: none;
+}
+.tab-rail-right .tab-bar {
+  left: auto;
+  width: env(safe-area-inset-right, 0px);
+}
+.tab-rail-left .tab-bar {
+  right: auto;
+  width: env(safe-area-inset-left, 0px);
+}
+.tab-rail .tab-bar-item {
+  /* Fixed-height cells instead of equal shares of the bar, each one
+     a full-width tap target across the strip. */
+  flex: 0 0 60px;
+  padding: 0 2px;
+}
+
 /* Quick-access strip (QuickAccessStrip.tsx): the pin is a position
    swap and can't animate, so the arriving bar drops in softly.
    Runs once per pin — exempt from the mobile animation freeze, it's
@@ -1677,6 +1725,15 @@ body {
 }
 .strip-pin-anim {
   animation: strip-pin 0.28s ease;
+}
+/* The pinned row spans the whole screen (its backdrop has to), so its
+   chips must step aside for a side camera strip themselves — on the
+   iPhone Duo's front screen the camera covered LISTS (Luca
+   2026-11-16). 1rem is the row's normal side padding; the insets are
+   0 on an ordinary upright iPhone. */
+.native-app .qa-pinned {
+  padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+  padding-right: calc(1rem + env(safe-area-inset-right, 0px));
 }
 
 /* ============================================================
@@ -1696,7 +1753,7 @@ body {
    under it — 52px matches the bar's content height (see the
    .native-app .crt-screen padding note). */
 .native-app .surf-fullscreen {
-  bottom: calc(52px + var(--tab-bar-pad));
+  bottom: calc(var(--tab-bar-h) + var(--tab-bar-pad));
 }
 
 /* Enter/exit: fade + slight zoom (Luca's pick, 2026-08-22 — CRT
@@ -1765,7 +1822,7 @@ body {
 /* In the app the bar/sheet sit ABOVE the tab bar (same offset as
    .surf-fullscreen — keep the 52px in sync with the tab bar). */
 .native-app .live-sheet-bottom {
-  bottom: calc(52px + var(--tab-bar-pad));
+  bottom: calc(var(--tab-bar-h) + var(--tab-bar-pad));
 }
 /* Web phones pad the home-indicator inset INSIDE the bar/sheet;
    the app already cleared it via the bottom offset above. */
@@ -1814,7 +1871,7 @@ body {
   height: 52dvh;
 }
 .native-app .live-sheet-half {
-  --live-sheet-gap: calc(52px + var(--tab-bar-pad));
+  --live-sheet-gap: calc(var(--tab-bar-h) + var(--tab-bar-pad));
 }
 
 /* ============================================================

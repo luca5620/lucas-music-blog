@@ -79,6 +79,19 @@ rides in 1.3 (no 1.3.1). Luca's order (2026-11-02):
 3. **iPhone Duo pass** on the MacBook (the "📱 1.3 (build 4)" block
    below has the steps: Xcode 27.1+, Duo simulator fold/unfold/rotate,
    regular iPhone regression pass).
+   **⏳ STARTED 2026-11-16** (Xcode updated, Duo simulator running).
+   Luca's first two notes on the FRONT screen, both shipped same day
+   (website-only, no rebuild): (a) **the tab bar becomes a side rail**
+   — the five tabs stack in the empty strip under the camera/clock/
+   wifi instead of along the bottom (`TabBar.tsx` measures the side
+   insets and tags `<html>` `.tab-rail`; globals.css "SIDE RAIL";
+   only when ONE side has a ≥60px inset, so ordinary iPhones never
+   get it; `--tab-bar-h` is the new shared bar-height variable);
+   (b) the pinned Reviews/Releases/Aux Wars/Lists row now pads by the
+   side insets (the camera covered LISTS). **Still to check on the
+   simulator:** the rail on the real front screen + unfolded inner
+   screen, sheets (Create, live room, Your Taste full-screen) with the
+   rail, then the rest of the pass list.
 4. **iPhone Duo screenshots** for the store — Luca wants them now (inner
    2007×2853, outer 1398×2034; mandatory from April 2027, earns the
    "Made for iPhone Duo" badge).

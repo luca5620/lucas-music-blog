@@ -257,6 +257,12 @@ export default function UniversalSearch() {
         )}
       </div>
 
+      {/* Server-side hint about the music search (e.g. "Spotify search
+          is down — paste a link"). Shown as-is, like the review picker. */}
+      {music.notice && !music.searching && (
+        <p className="text-xs text-osd-amber">{music.notice}</p>
+      )}
+
       {/* States */}
       {!searched && !searching && (
         <p className="text-sm text-text-muted text-center py-8">

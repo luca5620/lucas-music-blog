@@ -8,6 +8,27 @@ as physical media — the whole site lives inside a CRT. No personal-blog
 remnants: every piece of content is community-made and catalog-backed.
 
 
+## 🚨 2026-11-18 — Search "eternal loading" outage — FIXED (76a5229 + follow-up)
+
+**What happened:** Spotify put our app in a penalty box for its SEARCH
+endpoint only (`429`, `Retry-After: 36004` = ~10 hours). Album/artist
+lookups by id kept working. `spotifyFetch` obeyed Retry-After with no
+cap, so every search slept for hours → eternal loading everywhere.
+
+**Fixed:** 8s timeout on every Spotify call + token request, 6s on
+Genius; a Retry-After over 3s now fails fast; every search source in
+`searchCatalog` races a 7s budget (slow source = empty, logged by name);
+circuit breaker stops calling Spotify /search during the penalty;
+notice on /search + the review picker: "Spotify search is down for a
+few hours… paste its Spotify link" (pasted links still work).
+
+**Open:** WHY the quota burned isn't known yet (no Vercel log access
+this session — the Vercel connector needs team access approved). Likely
+candidates: crawlers/bots on the public /api/search/catalog (each
+search = ~5–7 Spotify calls), or traffic growth. Next defence: a shared
+long cache (Upstash, ~24h per query) so repeat searches don't touch
+Spotify. Spotify dev-mode quota can't be raised by an individual.
+
 ## 👉 PICK UP HERE — 2026-11-02 (MacBook): the road to 1.3, in Luca's order
 
 **1.3 (build 4) was NEVER submitted** — the 2026-10-27 "goes tomorrow"

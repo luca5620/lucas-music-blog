@@ -61,9 +61,27 @@ const MAX_RETRY_WAIT_MS = 3_000;
 // One Spotify request never gets more than this before we give up.
 const REQUEST_TIMEOUT_MS = 8_000;
 
+// Circuit breaker for Spotify's SEARCH endpoint. On 2026-11-18 Spotify
+// put our app in a penalty box for search only (Retry-After 36004s ≈
+// 10 hours) while album/artist lookups by id kept working. Calling
+// search again during the penalty can make it longer, so once Spotify
+// says "come back at X", this server instance stops calling /search
+// until X. Memory-only: each Vercel instance learns it from one 429.
+let searchBlockedUntil = 0;
+
+/** True while Spotify has told us to stay off /search. */
+export function spotifySearchBlocked(): boolean {
+  return Date.now() < searchBlockedUntil;
+}
+
 export async function spotifyFetch(path: string): Promise<unknown> {
   const url = path.startsWith("http") ? path : `${SPOTIFY_API}${path}`;
+  const isSearch = path.startsWith("/search");
   const maxRetries = 2;
+
+  if (isSearch && spotifySearchBlocked()) {
+    throw new Error("Spotify search is rate limited — skipped until the penalty ends");
+  }
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const token = await getSpotifyToken();
@@ -82,6 +100,10 @@ export async function spotifyFetch(path: string): Promise<unknown> {
       if (attempt < maxRetries && delayMs <= MAX_RETRY_WAIT_MS) {
         await new Promise((r) => setTimeout(r, delayMs));
         continue;
+      }
+      // A long penalty on /search trips the breaker above.
+      if (isSearch && delayMs > MAX_RETRY_WAIT_MS) {
+        searchBlockedUntil = Date.now() + delayMs;
       }
       // Too long to wait (or out of retries) — fail fast and say why,
       // so the Vercel logs show the real Retry-After Spotify sent.

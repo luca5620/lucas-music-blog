@@ -15,7 +15,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import { spotifyFetch, slugify } from "@/lib/spotify-import";
+import { spotifyFetch, slugify, spotifySearchBlocked } from "@/lib/spotify-import";
 import { searchReleases, getReleaseBySpotifyId } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
 import { isUpcoming } from "@/lib/upcoming";
@@ -697,6 +697,15 @@ export async function searchCatalog(query: string): Promise<{
       .slice(0, 30),
     artists,
     geniusEnabled: geniusConfigured(),
+    // Spotify search in its penalty box → say so, and point at the one
+    // door that still works: pasting a Spotify link (lookup by id isn't
+    // affected by the search limit).
+    ...(spotifySearchBlocked()
+      ? {
+          notice:
+            "Spotify search is down for a few hours. Showing what we can find. To add an album, paste its Spotify link here.",
+        }
+      : {}),
   };
 }
 

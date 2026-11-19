@@ -22,12 +22,19 @@ circuit breaker stops calling Spotify /search during the penalty;
 notice on /search + the review picker: "Spotify search is down for a
 few hours… paste its Spotify link" (pasted links still work).
 
-**Open:** WHY the quota burned isn't known yet (no Vercel log access
-this session — the Vercel connector needs team access approved). Likely
-candidates: crawlers/bots on the public /api/search/catalog (each
-search = ~5–7 Spotify calls), or traffic growth. Next defence: a shared
-long cache (Upstash, ~24h per query) so repeat searches don't touch
-Spotify. Spotify dev-mode quota can't be raised by an individual.
+**Cause (Vercel outgoing-request metrics):** NOT bots — 100% real
+searches on /api/search/catalog. Each search fired 3–5 separate Spotify
+/search calls, so one busy session (11:10–12:00 UTC 11-17, 12:30–14:00
+UTC 11-18) hit ~250 Spotify calls per 10 min and tripped dev mode.
+First user-facing timeout 13:59 UTC 11-18; 70 timeouts, 9 people.
+Penalty ends ≈ 12:37 UTC 2026-11-19 (Redis key sp-search:blocked-until).
+
+**Fix shipped:** ONE combined Spotify search (type=album,track,artist)
+per query, results boiled down + cached 6h in Upstash (shared across
+instances), in-flight dedupe, penalty flag shared via Redis, debounce
+300 → 450ms. A search now costs 1–2 Spotify calls (was 3–5), repeats 0.
+⚠️ Combined-search parsing was verified only up to the 429 (Spotify
+was blocked) — check real results come back after the penalty ends.
 
 ## 👉 PICK UP HERE — 2026-11-02 (MacBook): the road to 1.3, in Luca's order
 

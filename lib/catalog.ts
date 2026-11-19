@@ -15,7 +15,14 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import { spotifyFetch, slugify, spotifySearchBlocked } from "@/lib/spotify-import";
+import {
+  spotifyFetch,
+  slugify,
+  spotifySearchBlocked,
+  spotifySearchBlockedUntil,
+  blockSpotifySearchUntil,
+} from "@/lib/spotify-import";
+import { redis } from "@/lib/rate-limit";
 import { searchReleases, getReleaseBySpotifyId } from "@/lib/db/releases";
 import { getArtistById } from "@/lib/db/artists";
 import { isUpcoming } from "@/lib/upcoming";
@@ -217,20 +224,112 @@ function albumHitToResult(a: SpotifyAlbumHit): CatalogResult {
   };
 }
 
-// Spotify caps search pages at 10 for apps in development mode (asking
-// for more is a 400 "Invalid limit") — every limit below stays ≤ 10.
-async function searchSpotifyAlbums(
-  query: string,
-  limit = 10
-): Promise<CatalogResult[]> {
-  try {
-    const raw = (await spotifyFetch(
-      `/search?type=album&limit=${limit}&q=${encodeURIComponent(query)}`
-    )) as { albums?: { items?: (SpotifyAlbumHit | null)[] } };
+/* ---------------------------------------------------------------
+   ONE Spotify search call per query, shared + cached
+   ---------------------------------------------------------------
+   2026-11-18: Spotify rate-limited our search for ~22 hours. Vercel's
+   outgoing-request metrics showed why: every search fired 3–5 SEPARATE
+   Spotify searches (albums, songs, artists, + 2 "sharp" ones), so a
+   normal busy session hit ~250 Spotify calls per 10 minutes.
 
-    return (raw.albums?.items ?? [])
-      .filter((a): a is SpotifyAlbumHit => !!a)
-      .map(albumHitToResult);
+   Now: Spotify's /search takes several types at once, so albums + songs
+   + artists come back from ONE request. The answer is boiled down to
+   the fields we show and cached in Upstash for 6 hours (shared by every
+   server instance), and concurrent asks for the same query share one
+   in-flight request. Same results, a fraction of the calls.
+   --------------------------------------------------------------- */
+
+interface SpotifySearchAll {
+  albums: CatalogResult[];
+  songs: CatalogResult[];
+  /** Unfiltered — searchSpotifyArtists applies the name-match filter. */
+  artists: CatalogArtist[];
+}
+
+const SEARCH_CACHE_TTL_S = 6 * 60 * 60;
+// Redis flag so every instance learns about a Spotify penalty from the
+// first one that hits it (value = epoch ms when it ends).
+const SEARCH_BLOCK_KEY = "sp-search:blocked-until";
+const searchInflight = new Map<string, Promise<SpotifySearchAll>>();
+
+function spotifySearchAll(query: string): Promise<SpotifySearchAll> {
+  const norm = query.trim().toLowerCase();
+  const pending = searchInflight.get(norm);
+  if (pending) return pending;
+
+  const work = (async (): Promise<SpotifySearchAll> => {
+    const cacheKey = `sp-search:v1:${norm}`;
+    if (redis) {
+      try {
+        const [hit, blockedUntil] = await redis.mget<[SpotifySearchAll | null, number | null]>(
+          cacheKey,
+          SEARCH_BLOCK_KEY
+        );
+        if (hit) return hit;
+        if (blockedUntil) blockSpotifySearchUntil(Number(blockedUntil));
+      } catch {
+        // Cache is a nice-to-have — on a Redis hiccup just ask Spotify.
+      }
+    }
+
+    let raw: {
+      albums?: { items?: (SpotifyAlbumHit | null)[] };
+      tracks?: { items?: (SpotifyTrackHit | null)[] };
+      artists?: { items?: (SpotifyArtistHit | null)[] };
+    };
+    try {
+      // Spotify caps search pages at 10 for apps in development mode
+      // (asking for more is a 400 "Invalid limit") — 10 per type.
+      raw = (await spotifyFetch(
+        `/search?type=album,track,artist&limit=10&q=${encodeURIComponent(query)}`
+      )) as typeof raw;
+    } catch (err) {
+      // Penalty just started? Tell the other instances via Redis.
+      if (redis && spotifySearchBlocked()) {
+        redis
+          .set(SEARCH_BLOCK_KEY, spotifySearchBlockedUntil(), {
+            pxat: spotifySearchBlockedUntil(),
+          })
+          .catch(() => {});
+      }
+      throw err;
+    }
+
+    const result: SpotifySearchAll = {
+      albums: (raw.albums?.items ?? [])
+        .filter((a): a is SpotifyAlbumHit => !!a)
+        .map(albumHitToResult),
+      songs: (raw.tracks?.items ?? [])
+        .filter((t): t is SpotifyTrackHit => !!t)
+        .map(trackHitToResult),
+      artists: (raw.artists?.items ?? [])
+        .filter((a): a is SpotifyArtistHit => !!a)
+        .map((a) => ({
+          id: a.id,
+          name: a.name,
+          // Smallest image that's still ≥ 160px — the row thumb is tiny.
+          image:
+            [...(a.images ?? [])].reverse().find((i) => (i.width ?? 0) >= 160)?.url ??
+            a.images?.[0]?.url ??
+            null,
+          genres: (a.genres ?? []).slice(0, 2),
+        })),
+    };
+    if (redis) {
+      redis.set(cacheKey, result, { ex: SEARCH_CACHE_TTL_S }).catch(() => {});
+    }
+    return result;
+  })();
+
+  searchInflight.set(norm, work);
+  const done = () => searchInflight.delete(norm);
+  work.then(done, done);
+  return work;
+}
+
+async function searchSpotifyAlbums(query: string): Promise<CatalogResult[]> {
+  try {
+    return (await spotifySearchAll(query)).albums;
   } catch (err) {
     console.warn("Spotify search failed:", err instanceof Error ? err.message : err);
     return [];
@@ -253,29 +352,28 @@ interface SpotifyTrackHit {
  * got nothing": album search only matches album titles, so deep cuts
  * like an album track were unfindable unless Genius surfaced them.
  */
+/** Spotify track → result row. */
+function trackHitToResult(t: SpotifyTrackHit): CatalogResult {
+  return {
+    source: "spotify_track" as const,
+    id: t.id,
+    title: t.name,
+    artist: t.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
+    cover: t.album?.images?.[0]?.url ?? null,
+    year: t.album?.release_date?.slice(0, 4) ?? null,
+    kind: "song",
+    // Which record the song is on — "La bombe humaine" exists on
+    // six Téléphone records; this line is how you tell them apart.
+    album: t.album?.name,
+  };
+}
+
 async function searchSpotifyTracks(
   query: string,
   limit = 10
 ): Promise<CatalogResult[]> {
   try {
-    const raw = (await spotifyFetch(
-      `/search?type=track&limit=${limit}&q=${encodeURIComponent(query)}`
-    )) as { tracks?: { items?: (SpotifyTrackHit | null)[] } };
-
-    return (raw.tracks?.items ?? [])
-      .filter((t): t is SpotifyTrackHit => !!t)
-      .map((t) => ({
-        source: "spotify_track" as const,
-        id: t.id,
-        title: t.name,
-        artist: t.artists?.map((x) => x.name).join(", ") || "Unknown Artist",
-        cover: t.album?.images?.[0]?.url ?? null,
-        year: t.album?.release_date?.slice(0, 4) ?? null,
-        kind: "song",
-        // Which record the song is on — "La bombe humaine" exists on
-        // six Téléphone records; this line is how you tell them apart.
-        album: t.album?.name,
-      }));
+    return (await spotifySearchAll(query)).songs.slice(0, limit);
   } catch (err) {
     console.warn(
       "Spotify track search failed:",
@@ -299,28 +397,11 @@ interface SpotifyArtistHit {
  * Loosely related names Spotify pads the answer with are dropped (see
  * artistMatches).
  */
-async function searchSpotifyArtists(
-  query: string,
-  limit = 6
-): Promise<CatalogArtist[]> {
+async function searchSpotifyArtists(query: string): Promise<CatalogArtist[]> {
   try {
-    const raw = (await spotifyFetch(
-      `/search?type=artist&limit=${limit}&q=${encodeURIComponent(query)}`
-    )) as { artists?: { items?: (SpotifyArtistHit | null)[] } };
-
-    return (raw.artists?.items ?? [])
-      .filter((a): a is SpotifyArtistHit => !!a && artistMatches(query, a.name))
-      .slice(0, 4)
-      .map((a) => ({
-        id: a.id,
-        name: a.name,
-        // Smallest image that's still ≥ 160px — the row thumb is tiny.
-        image:
-          [...(a.images ?? [])].reverse().find((i) => (i.width ?? 0) >= 160)?.url ??
-          a.images?.[0]?.url ??
-          null,
-        genres: (a.genres ?? []).slice(0, 2),
-      }));
+    return (await spotifySearchAll(query)).artists
+      .filter((a) => artistMatches(query, a.name))
+      .slice(0, 4);
   } catch (err) {
     console.warn(
       "Spotify artist search failed:",

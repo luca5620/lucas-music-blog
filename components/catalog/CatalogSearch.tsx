@@ -101,7 +101,10 @@ const resultKey = (r: CatalogResult) => `${r.source}:${r.id}`;
    useCatalogSearch — debounced fetch of /api/search/catalog
    ================================================================== */
 
-export function useCatalogSearch(query: string, delayMs = 300) {
+// 450ms (was 300): every pause while typing is a search, and each one
+// costs Spotify calls — a slightly longer wait fires far fewer
+// half-typed searches (2026-11-18 Spotify rate-limit outage).
+export function useCatalogSearch(query: string, delayMs = 450) {
   const t = useTranslations("catalog");
   const [results, setResults] = useState<CatalogResult[]>([]);
   const [artists, setArtists] = useState<CatalogArtist[]>([]);

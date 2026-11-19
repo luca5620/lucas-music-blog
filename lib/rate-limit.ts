@@ -20,7 +20,9 @@ import { getTranslations } from "next-intl/server";
 
 const url = process.env.UPSTASH_REDIS_REST_URL;
 const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-const redis = url && token ? new Redis({ url, token }) : null;
+// Exported so other server code (e.g. the Spotify search cache in
+// lib/catalog.ts) can share the same Upstash connection. null = not set up.
+export const redis = url && token ? new Redis({ url, token }) : null;
 
 async function tooMany(retryAfterSec: number): Promise<NextResponse> {
   // In the member's own language — screens show data.error as-is.

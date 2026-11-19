@@ -74,6 +74,16 @@ export function spotifySearchBlocked(): boolean {
   return Date.now() < searchBlockedUntil;
 }
 
+/** When the search penalty ends (epoch ms; 0 or past = not blocked). */
+export function spotifySearchBlockedUntil(): number {
+  return searchBlockedUntil;
+}
+
+/** Trip the breaker from outside — e.g. another instance's flag in Redis. */
+export function blockSpotifySearchUntil(until: number): void {
+  if (until > searchBlockedUntil) searchBlockedUntil = until;
+}
+
 export async function spotifyFetch(path: string): Promise<unknown> {
   const url = path.startsWith("http") ? path : `${SPOTIFY_API}${path}`;
   const isSearch = path.startsWith("/search");

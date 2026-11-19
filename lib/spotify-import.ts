@@ -51,25 +51,43 @@ export function slugify(text: string): string {
 // HTTP helper with 429 backoff
 // ---------------------------------------------------------------------------
 
+// Longest Retry-After we're willing to sleep through. Spotify can send
+// Retry-After values of MINUTES or HOURS when the app gets rate-limited
+// hard — the old code slept that long, so every search request just hung
+// with "eternal loading" (2026-11-18 outage). Anything longer than this
+// fails straight away; callers already treat a throw as "no results
+// from Spotify" and the rest of the search still answers.
+const MAX_RETRY_WAIT_MS = 3_000;
+// One Spotify request never gets more than this before we give up.
+const REQUEST_TIMEOUT_MS = 8_000;
+
 export async function spotifyFetch(path: string): Promise<unknown> {
   const url = path.startsWith("http") ? path : `${SPOTIFY_API}${path}`;
-  const maxRetries = 3;
+  const maxRetries = 2;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const token = await getSpotifyToken();
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
-    if (res.status === 429 && attempt < maxRetries) {
+    if (res.status === 429) {
       const retryAfterRaw = res.headers.get("retry-after");
       const retryAfter = retryAfterRaw ? Number(retryAfterRaw) : NaN;
       const delayMs = Number.isFinite(retryAfter) && retryAfter > 0
         ? retryAfter * 1000
         : (attempt + 1) * 1000;
-      await new Promise((r) => setTimeout(r, delayMs));
-      continue;
+      if (attempt < maxRetries && delayMs <= MAX_RETRY_WAIT_MS) {
+        await new Promise((r) => setTimeout(r, delayMs));
+        continue;
+      }
+      // Too long to wait (or out of retries) — fail fast and say why,
+      // so the Vercel logs show the real Retry-After Spotify sent.
+      throw new Error(
+        `Spotify 429 for ${path}: rate limited, Retry-After=${retryAfterRaw ?? "none"}`
+      );
     }
 
     if (!res.ok) {

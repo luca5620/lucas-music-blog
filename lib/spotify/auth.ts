@@ -38,6 +38,9 @@ export async function getSpotifyToken(): Promise<string> {
     },
     body: new URLSearchParams({ grant_type: "client_credentials" }),
     cache: "no-store",
+    // Never wait forever on Spotify — a hung token request used to hang
+    // every search behind it (2026-11-18 outage). 8s, then fail.
+    signal: AbortSignal.timeout(8_000),
   });
 
   if (!res.ok) {

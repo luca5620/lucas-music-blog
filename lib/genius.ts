@@ -22,10 +22,24 @@ async function geniusFetch(path: string): Promise<unknown | null> {
   const token = process.env.GENIUS_ACCESS_TOKEN;
   if (!token) return null;
 
-  const res = await fetch(`${GENIUS_API}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: "no-store",
-  });
+  // Hard 6s timeout: Genius sometimes stalls requests from cloud IPs
+  // instead of refusing them, and a stalled call used to hang the whole
+  // search (2026-11-18 outage). A timeout = "no Genius results", never
+  // a crash.
+  let res: Response;
+  try {
+    res = await fetch(`${GENIUS_API}${path}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(6_000),
+    });
+  } catch (err) {
+    console.warn(
+      `Genius request failed for ${path}:`,
+      err instanceof Error ? err.message : err
+    );
+    return null;
+  }
 
   if (!res.ok) {
     // 404s are expected (e.g. album endpoints for songs without albums);

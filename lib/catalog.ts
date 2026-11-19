@@ -598,6 +598,29 @@ function rank(query: string, lanes: CatalogResult[][]): CatalogResult[] {
  * `artist:Téléphone rappels` — the plain text search for that query
  * came back full of unrelated "Telephone" singles.
  */
+/** How long one search source gets before we answer without it. */
+const SOURCE_BUDGET_MS = 7_000;
+
+/**
+ * Race a search source against the clock. Resolves with the source's
+ * results, or with `fallback` if it's too slow or throws — and logs
+ * which source it was, so the Vercel logs name the culprit.
+ */
+function withBudget<T>(label: string, work: Promise<T>, fallback: T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<T>((resolve) => {
+    timer = setTimeout(() => {
+      console.warn(`Catalog search: ${label} took over ${SOURCE_BUDGET_MS}ms, skipped`);
+      resolve(fallback);
+    }, SOURCE_BUDGET_MS);
+  });
+  const guarded = work.catch((err) => {
+    console.warn(`Catalog search: ${label} failed:`, err instanceof Error ? err.message : err);
+    return fallback;
+  });
+  return Promise.race([guarded, timeout]).finally(() => clearTimeout(timer));
+}
+
 export async function searchCatalog(query: string): Promise<{
   results: CatalogResult[];
   /** Matching artists — tap one to browse their discography. */
@@ -632,12 +655,16 @@ export async function searchCatalog(query: string): Promise<{
     }
   }
 
+  // Every source gets a time budget. Whatever isn't back in time counts
+  // as "no results from that source" and the search answers with the
+  // rest — one stuck provider must never hang the whole search again
+  // (2026-11-18 outage: eternal loading on every search).
   const [local, albums, songs, artists, genius] = await Promise.all([
-    searchLocal(query),
-    searchSpotifyAlbums(query),
-    searchSpotifyTracks(query),
-    searchSpotifyArtists(query),
-    searchGenius(query, 6),
+    withBudget("local", searchLocal(query), [] as CatalogResult[]),
+    withBudget("spotify albums", searchSpotifyAlbums(query), [] as CatalogResult[]),
+    withBudget("spotify tracks", searchSpotifyTracks(query), [] as CatalogResult[]),
+    withBudget("spotify artists", searchSpotifyArtists(query), [] as CatalogArtist[]),
+    withBudget("genius", searchGenius(query, 6), [] as CatalogResult[]),
   ]);
 
   // Round two: the query names an artist AND something else.
@@ -653,8 +680,8 @@ export async function searchCatalog(query: string): Promise<{
     if (rest) {
       const sharp = `artist:${named.name} ${rest}`;
       [sharpAlbums, sharpSongs] = await Promise.all([
-        searchSpotifyAlbums(sharp),
-        searchSpotifyTracks(sharp, 8),
+        withBudget("spotify albums (sharp)", searchSpotifyAlbums(sharp), [] as CatalogResult[]),
+        withBudget("spotify tracks (sharp)", searchSpotifyTracks(sharp, 8), [] as CatalogResult[]),
       ]);
     }
   }
